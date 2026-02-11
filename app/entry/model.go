@@ -1,31 +1,20 @@
 package entry
 
 import (
-	"database/sql"
-	"fmt"
+	"context"
 	"html/template"
-	"time"
 
-	"webapp/internal/db"
+	"bandcash/internal/db"
 )
-
-type Entry struct {
-	ID          int
-	Title       string
-	Time        string
-	Description string
-	Amount      float64
-	CreatedAt   time.Time
-}
 
 type EntryData struct {
 	Title string
-	Entry *Entry
+	Entry *db.Entry
 }
 
 type EntriesData struct {
 	Title   string
-	Entries []Entry
+	Entries []db.Entry
 }
 
 type Entries struct {
@@ -40,102 +29,51 @@ func (e *Entries) SetTemplate(tmpl *template.Template) {
 	e.tmpl = tmpl
 }
 
-func (e *Entries) CreateEntry(title, entryTime, description string, amount float64) (*Entry, error) {
-	result, err := db.DB.Exec(
-		"INSERT INTO entries (title, time, description, amount) VALUES (?, ?, ?, ?)",
-		title, entryTime, description, amount,
-	)
-	if err != nil {
-		return nil, fmt.Errorf("failed to insert entry: %w", err)
-	}
-
-	id, err := result.LastInsertId()
-	if err != nil {
-		return nil, fmt.Errorf("failed to get last insert id: %w", err)
-	}
-
-	return &Entry{
-		ID:          int(id),
+func (e *Entries) CreateEntry(ctx context.Context, title, entryTime, description string, amount float64) (*db.Entry, error) {
+	entry, err := db.Qry.CreateEntry(ctx, db.CreateEntryParams{
 		Title:       title,
 		Time:        entryTime,
 		Description: description,
 		Amount:      amount,
-	}, nil
-}
-
-func (e *Entries) GetEntry(id int) (*Entry, error) {
-	row := db.DB.QueryRow(
-		"SELECT id, title, time, description, amount, created_at FROM entries WHERE id = ?",
-		id,
-	)
-
-	var entry Entry
-	var createdAt sql.NullTime
-	err := row.Scan(&entry.ID, &entry.Title, &entry.Time, &entry.Description, &entry.Amount, &createdAt)
-	if err == sql.ErrNoRows {
-		return nil, nil
-	}
+	})
 	if err != nil {
-		return nil, fmt.Errorf("failed to scan entry: %w", err)
+		return nil, err
 	}
-	if createdAt.Valid {
-		entry.CreatedAt = createdAt.Time
-	}
-
 	return &entry, nil
 }
 
-func (e *Entries) UpdateEntry(id int, title, entryTime, description string, amount float64) error {
-	_, err := db.DB.Exec(
-		"UPDATE entries SET title = ?, time = ?, description = ?, amount = ? WHERE id = ?",
-		title, entryTime, description, amount, id,
-	)
+func (e *Entries) GetEntry(ctx context.Context, id int) (*db.Entry, error) {
+	entry, err := db.Qry.GetEntry(ctx, int64(id))
 	if err != nil {
-		return fmt.Errorf("failed to update entry: %w", err)
+		return nil, err
 	}
-	return nil
+	return &entry, nil
 }
 
-func (e *Entries) AllEntries() ([]Entry, error) {
-	rows, err := db.DB.Query(
-		"SELECT id, title, time, description, amount, created_at FROM entries ORDER BY created_at DESC",
-	)
+func (e *Entries) UpdateEntry(ctx context.Context, id int, title, entryTime, description string, amount float64) (*db.Entry, error) {
+	updated, err := db.Qry.UpdateEntry(ctx, db.UpdateEntryParams{
+		Title:       title,
+		Time:        entryTime,
+		Description: description,
+		Amount:      amount,
+		ID:          int64(id),
+	})
 	if err != nil {
-		return nil, fmt.Errorf("failed to query entries: %w", err)
+		return nil, err
 	}
-	defer rows.Close()
-
-	var entries []Entry
-	for rows.Next() {
-		var entry Entry
-		var createdAt sql.NullTime
-		err := rows.Scan(&entry.ID, &entry.Title, &entry.Time, &entry.Description, &entry.Amount, &createdAt)
-		if err != nil {
-			return nil, fmt.Errorf("failed to scan entry: %w", err)
-		}
-		if createdAt.Valid {
-			entry.CreatedAt = createdAt.Time
-		}
-		entries = append(entries, entry)
-	}
-
-	if err := rows.Err(); err != nil {
-		return nil, fmt.Errorf("error iterating entries: %w", err)
-	}
-
-	return entries, nil
+	return &updated, nil
 }
 
-func (e *Entries) DeleteEntry(id int) error {
-	_, err := db.DB.Exec("DELETE FROM entries WHERE id = ?", id)
-	if err != nil {
-		return fmt.Errorf("failed to delete entry: %w", err)
-	}
-	return nil
+func (e *Entries) AllEntries(ctx context.Context) ([]db.Entry, error) {
+	return db.Qry.ListEntries(ctx)
 }
 
-func (e *Entries) GetEntriesData() (any, error) {
-	entries, err := e.AllEntries()
+func (e *Entries) DeleteEntry(ctx context.Context, id int) error {
+	return db.Qry.DeleteEntry(ctx, int64(id))
+}
+
+func (e *Entries) GetEntriesData(ctx context.Context) (any, error) {
+	entries, err := e.AllEntries(ctx)
 	if err != nil {
 		return nil, err
 	}

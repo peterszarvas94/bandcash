@@ -1,13 +1,23 @@
-# Stargazing
+# Bandcash
 
-Go + Echo + Datastar bootstrap for real-time web apps with SSE.
+Go + Echo + Datastar app with SQLite, sqlc, and goose migrations.
 
-## Quick Start
+## Setup
 
 ```bash
 # Clone and setup
 cp .env.example .env
 
+# Trust this repo's mise config
+mise trust
+
+# Install toolchain
+mise install
+```
+
+## Quick Start
+
+```bash
 # Development with hot reload
 make dev
 ```
@@ -18,9 +28,11 @@ Open http://localhost:8080
 
 ```
 cmd/server/         # Application entrypoint
+app/                # Feature modules (todo, entry, home)
+  entry/            # Entry REST handlers + templates
 internal/
   config/           # Environment configuration
-  handlers/         # HTTP handlers (index, sse, health)
+  db/               # Database init, sqlc output, migrations, queries
   logger/           # Colored slog handler + JSON file logging
   middleware/       # Request ID middleware
   store/            # In-memory data store with client management
@@ -28,8 +40,6 @@ internal/
 web/
   static/js/        # JavaScript (Datastar vendored)
   templates/        # Go HTML templates
-examples/
-  todo.go           # Example todo handler
 ```
 
 ## Configuration
@@ -41,6 +51,7 @@ Environment variables (see `.env.example`):
 | `PORT`      | `8080`         | Server port                          |
 | `LOG_LEVEL` | `debug`        | Log level (debug, info, warn, error) |
 | `LOG_FILE`  | `logs/app.log` | JSON log file path                   |
+| `DB_PATH`   | `./sqlite.db`  | SQLite database path                 |
 
 ## Make Commands
 
@@ -57,14 +68,33 @@ make docker     # Build docker image
 make docker-run # Build and run docker image
 ```
 
+## Database
+
+Migrations are handled by goose, and queries are compiled by sqlc.
+
+Run migrations:
+```bash
+goose -dir internal/db/migrations sqlite3 ./sqlite.db up
+```
+
+Create a new migration:
+```bash
+goose -dir internal/db/migrations create add_new_column sql
+```
+
+Regenerate sqlc code:
+```bash
+sqlc generate
+```
+
 ## Docker
 
 ```bash
 make docker-run
 
 # Or manually
-docker build -t stargazing .
-docker run -p 8080:8080 stargazing
+docker build -t bandcash .
+docker run -p 8080:8080 bandcash
 
 # Or with docker compose
 docker compose up --build
@@ -72,7 +102,7 @@ docker compose up --build
 
 ## How It Works
 
-1. Browser loads page, connects to `/sse` endpoint
+1. Browser loads page, connects to `/sse` or `/entry/sse` endpoint
 2. SSE connection stays open, receives HTML patches
 3. User actions trigger POST requests (e.g., `/todo`)
 4. POST handler updates state, signals SSE to push update

@@ -8,7 +8,7 @@ import (
 
 	"github.com/labstack/echo/v4"
 
-	"webapp/internal/store"
+	"bandcash/internal/store"
 )
 
 var Store *store.Store

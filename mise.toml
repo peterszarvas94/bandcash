@@ -1,6 +1,8 @@
 [tools]
 air = "latest"
 go = "latest"
+sqlc = "1.30.0"
+"github:pressly/goose" = "3.26.0"
 
 [tasks]
 dev = "air"

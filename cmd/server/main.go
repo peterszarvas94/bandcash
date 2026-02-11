@@ -13,16 +13,16 @@ import (
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 
-	"webapp/app/entry"
-	"webapp/app/health"
-	"webapp/app/home"
-	"webapp/app/todo"
-	"webapp/internal/config"
-	"webapp/internal/db"
-	"webapp/internal/logger"
-	appmw "webapp/internal/middleware"
-	"webapp/internal/store"
-	"webapp/internal/utils"
+	"bandcash/app/entry"
+	"bandcash/app/health"
+	"bandcash/app/home"
+	"bandcash/app/todo"
+	"bandcash/internal/config"
+	"bandcash/internal/db"
+	"bandcash/internal/logger"
+	appmw "bandcash/internal/middleware"
+	"bandcash/internal/store"
+	"bandcash/internal/utils"
 )
 
 func main() {
@@ -52,7 +52,7 @@ func main() {
 	utils.Store = store.New()
 
 	// Initialize database
-	if err := db.Init("data/app.db"); err != nil {
+	if err := db.Init(cfg.DBPath); err != nil {
 		slog.Error("failed to initialize database", "err", err)
 		os.Exit(1)
 	}

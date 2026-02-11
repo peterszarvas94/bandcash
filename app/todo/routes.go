@@ -5,7 +5,7 @@ import (
 
 	"github.com/labstack/echo/v4"
 
-	"webapp/internal/sse"
+	"bandcash/internal/sse"
 )
 
 // Register registers todo routes.

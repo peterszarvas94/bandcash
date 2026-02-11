@@ -1,14 +1,16 @@
 package entry
 
 import (
+	"context"
 	"log/slog"
 	"strconv"
 
 	"github.com/labstack/echo/v4"
 	"github.com/starfederation/datastar-go/datastar"
 
-	appmw "webapp/internal/middleware"
-	"webapp/internal/utils"
+	"bandcash/internal/db"
+	appmw "bandcash/internal/middleware"
+	"bandcash/internal/utils"
 )
 
 type createSignals struct {
@@ -22,7 +24,7 @@ func (e *Entries) List(c echo.Context) error {
 	utils.EnsureClientID(c)
 
 	log := appmw.Logger(c)
-	data, err := e.GetEntriesData()
+	data, err := e.GetEntriesData(c.Request().Context())
 	if err != nil {
 		log.Error("entry.list: failed to get data", "err", err)
 		return c.String(500, "Internal Server Error")
@@ -46,13 +48,10 @@ func (e *Entries) Show(c echo.Context) error {
 		return c.String(400, "Invalid ID")
 	}
 
-	entry, err := e.GetEntry(id)
+	entry, err := e.GetEntry(c.Request().Context(), id)
 	if err != nil {
 		log.Error("entry.show: failed to get entry", "err", err)
 		return c.String(500, "Internal Server Error")
-	}
-	if entry == nil {
-		return c.String(404, "Entry not found")
 	}
 
 	return e.tmpl.ExecuteTemplate(c.Response().Writer, "show", EntryData{Title: entry.Title, Entry: entry})
@@ -67,13 +66,10 @@ func (e *Entries) Edit(c echo.Context) error {
 		return c.String(400, "Invalid ID")
 	}
 
-	entry, err := e.GetEntry(id)
+	entry, err := e.GetEntry(c.Request().Context(), id)
 	if err != nil {
 		log.Error("entry.edit: failed to get entry", "err", err)
 		return c.String(500, "Internal Server Error")
-	}
-	if entry == nil {
-		return c.String(404, "Entry not found")
 	}
 
 	return e.tmpl.ExecuteTemplate(c.Response().Writer, "edit", EntryData{Title: "Edit Entry", Entry: entry})
@@ -93,7 +89,7 @@ func (e *Entries) Create(c echo.Context) error {
 		return c.NoContent(200)
 	}
 
-	entry, err := e.CreateEntry(signals.Title, signals.Time, signals.Description, signals.Amount)
+	entry, err := e.CreateEntry(c.Request().Context(), signals.Title, signals.Time, signals.Description, signals.Amount)
 	if err != nil {
 		log.Error("entry.create: failed to create entry", "err", err)
 		return c.String(500, "Internal Server Error")
@@ -119,7 +115,8 @@ func (e *Entries) Update(c echo.Context) error {
 		return c.NoContent(400)
 	}
 
-	if err := e.UpdateEntry(id, signals.Title, signals.Time, signals.Description, signals.Amount); err != nil {
+	_, err = e.UpdateEntry(c.Request().Context(), id, signals.Title, signals.Time, signals.Description, signals.Amount)
+	if err != nil {
 		log.Error("entry.update: failed to update entry", "err", err)
 		return c.String(500, "Internal Server Error")
 	}
@@ -140,7 +137,7 @@ func (e *Entries) Delete(c echo.Context) error {
 		return c.NoContent(400)
 	}
 
-	if err := e.DeleteEntry(id); err != nil {
+	if err := e.DeleteEntry(c.Request().Context(), id); err != nil {
 		log.Error("entry.delete: failed to delete entry", "err", err)
 		return c.String(500, "Internal Server Error")
 	}
@@ -152,10 +149,11 @@ func (e *Entries) Delete(c echo.Context) error {
 }
 
 func (e *Entries) DataForSSE() any {
-	data, err := e.GetEntriesData()
+	ctx := context.Background()
+	data, err := e.GetEntriesData(ctx)
 	if err != nil {
 		slog.Error("entry.DataForSSE: failed to get data", "err", err)
-		return EntriesData{Title: "Entries", Entries: []Entry{}}
+		return EntriesData{Title: "Entries", Entries: []db.Entry{}}
 	}
 	return data
 }

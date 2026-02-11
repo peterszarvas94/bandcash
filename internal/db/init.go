@@ -1,0 +1,60 @@
+package db
+
+import (
+	"database/sql"
+	"fmt"
+	"log/slog"
+	"os"
+	"path/filepath"
+
+	_ "github.com/mattn/go-sqlite3"
+	"github.com/pressly/goose/v3"
+)
+
+var (
+	DB  *sql.DB
+	Qry *Queries
+)
+
+func Init(dbPath string) error {
+	// Ensure directory exists
+	dir := filepath.Dir(dbPath)
+	if err := os.MkdirAll(dir, 0755); err != nil {
+		return fmt.Errorf("failed to create db directory: %w", err)
+	}
+
+	var err error
+	DB, err = sql.Open("sqlite3", dbPath)
+	if err != nil {
+		return fmt.Errorf("failed to open database: %w", err)
+	}
+
+	if err := DB.Ping(); err != nil {
+		return fmt.Errorf("failed to ping database: %w", err)
+	}
+
+	// Initialize queries
+	Qry = New(DB)
+
+	slog.Info("database initialized", "path", dbPath)
+	return nil
+}
+
+func Close() error {
+	if DB != nil {
+		return DB.Close()
+	}
+	return nil
+}
+
+func Migrate() error {
+	if err := goose.SetDialect("sqlite3"); err != nil {
+		return fmt.Errorf("failed to set goose dialect: %w", err)
+	}
+
+	if err := goose.Up(DB, "internal/db/migrations"); err != nil {
+		return fmt.Errorf("failed to run migrations: %w", err)
+	}
+
+	return nil
+}

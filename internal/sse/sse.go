@@ -7,8 +7,8 @@ import (
 	"github.com/labstack/echo/v4"
 	"github.com/starfederation/datastar-go/datastar"
 
-	appmw "webapp/internal/middleware"
-	"webapp/internal/utils"
+	appmw "bandcash/internal/middleware"
+	"bandcash/internal/utils"
 )
 
 // DataProvider is a function that returns data to render in the SSE response.
