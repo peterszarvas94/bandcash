@@ -1,0 +1,45 @@
+{{define "index"}}
+<!doctype html>
+<html lang="en">
+  {{template "head" .}}
+  <body>
+    <main id="app">
+      <h1>{{.Title}}</h1>
+      <nav class="row pb">
+        <a href="/">&larr; Home</a>
+        <a href="/entry/new">+ New Entry</a>
+      </nav>
+
+      <table class="table">
+        <thead>
+          <tr>
+            <th>Title</th>
+            <th>Time</th>
+            <th>Description</th>
+            <th>Amount</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {{range .Entries}}
+          <tr>
+            <td><a href="/entry/{{.ID}}">{{.Title}}</a></td>
+            <td>{{.Time}}</td>
+            <td>{{.Description}}</td>
+            <td class="text-right">{{printf "%.2f" .Amount}}</td>
+            <td>
+              <div class="row">
+                <a href="/entry/{{.ID}}/edit">Edit</a>
+                <button data-on:click="@delete('/entry/{{.ID}}')">
+                  Delete
+                </button>
+              </div>
+            </td>
+          </tr>
+          {{end}}
+        </tbody>
+      </table>
+    </main>
+  </body>
+</html>
+{{end}}

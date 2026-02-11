@@ -7,11 +7,7 @@ import (
 	"time"
 
 	"github.com/labstack/echo/v4"
-
-	"bandcash/internal/store"
 )
-
-var Store *store.Store
 
 // EnsureClientID returns the client ID from the cookie, or generates a new one and sets the cookie.
 func EnsureClientID(c echo.Context) string {

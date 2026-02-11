@@ -1,0 +1,39 @@
+@layer components {
+  .table {
+    width: 100%;
+    border-collapse: collapse;
+
+    th,
+    td {
+      border: var(--border) solid var(--border-color);
+      padding: var(--space) calc(var(--space) * 2);
+      text-align: left;
+    }
+
+    td:last-child {
+      white-space: nowrap;
+    }
+  }
+
+  .form {
+    display: grid;
+    gap: var(--space);
+
+    > div {
+      display: grid;
+      gap: calc(var(--space) * 0.5);
+    }
+
+    input,
+    textarea {
+      width: 100%;
+      field-sizing: fixed;
+      padding: var(--space) calc(var(--space) * 2);
+      border: var(--border) solid var(--border-color);
+    }
+
+    button {
+      width: fit-content;
+    }
+  }
+}

@@ -17,7 +17,7 @@ type Home struct {
 // Data returns data for rendering.
 func (h *Home) Data() any {
 	return HomeData{
-		Title: "Stargazing",
+		Title: "Bandcash",
 	}
 }
 

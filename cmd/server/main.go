@@ -16,13 +16,10 @@ import (
 	"bandcash/app/entry"
 	"bandcash/app/health"
 	"bandcash/app/home"
-	"bandcash/app/todo"
 	"bandcash/internal/config"
 	"bandcash/internal/db"
 	"bandcash/internal/logger"
 	appmw "bandcash/internal/middleware"
-	"bandcash/internal/store"
-	"bandcash/internal/utils"
 )
 
 func main() {
@@ -47,9 +44,6 @@ func main() {
 	// Setup logger
 	log := logger.New(logFile, cfg.LogLevel)
 	slog.SetDefault(log)
-
-	// Initialize store
-	utils.Store = store.New()
 
 	// Initialize database
 	if err := db.Init(cfg.DBPath); err != nil {
@@ -84,7 +78,6 @@ func main() {
 
 	health.Register(e)
 	home.Register(e)
-	todo.Register(e)
 	entry.Register(e)
 
 	// Graceful shutdown
@@ -100,9 +93,6 @@ func main() {
 	<-quit
 
 	slog.Info("shutting down server...")
-
-	// Close all SSE client connections first
-	utils.Store.Close()
 
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()

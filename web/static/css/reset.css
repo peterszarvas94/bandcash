@@ -1,0 +1,52 @@
+@layer reset {
+  * {
+    box-sizing: border-box;
+    min-width: 0;
+  }
+
+  :root {
+    color-scheme: light;
+    interpolate-size: allow-keywords;
+  }
+
+  html {
+    text-size-adjust: 100%;
+    line-height: 1.5;
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    margin: 0;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4 {
+    overflow-wrap: break-word;
+    text-wrap: balance;
+  }
+
+  p {
+    text-wrap: pretty;
+  }
+
+  img,
+  svg,
+  video,
+  canvas {
+    max-width: 100%;
+    display: block;
+  }
+
+  input,
+  textarea,
+  select {
+    field-sizing: content;
+    font: inherit;
+  }
+
+  button {
+    font: inherit;
+  }
+}

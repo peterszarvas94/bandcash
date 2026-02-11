@@ -3,7 +3,7 @@
 <html lang="en">
   {{template "head" .}}
   <body>
-    <div id="app">
+    <main id="app">
       <h1>{{.Title}}</h1>
       <p><a href="/entry">&larr; Back to Entries</a></p>
 
@@ -14,11 +14,15 @@
         <p><strong>Amount:</strong> {{printf "%.2f" .Entry.Amount}}</p>
       </div>
 
-      <p>
+      <p class="row">
         <a href="/entry/{{.Entry.ID}}/edit">Edit</a>
-        <button data-on:click="@delete('/entry/{{.Entry.ID}}'); window.location.href='/entry'">Delete</button>
+        <button
+          data-on:click="@delete('/entry/{{.Entry.ID}}'); window.location.href='/entry'"
+        >
+          Delete
+        </button>
       </p>
-    </div>
+    </main>
   </body>
 </html>
 {{end}}

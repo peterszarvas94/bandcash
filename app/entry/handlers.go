@@ -1,37 +1,34 @@
 package entry
 
 import (
-	"context"
-	"log/slog"
 	"strconv"
 
 	"github.com/labstack/echo/v4"
 	"github.com/starfederation/datastar-go/datastar"
 
-	"bandcash/internal/db"
 	appmw "bandcash/internal/middleware"
 	"bandcash/internal/utils"
 )
 
-type createSignals struct {
+type entryParams struct {
 	Title       string  `json:"title"`
 	Time        string  `json:"time"`
 	Description string  `json:"description"`
 	Amount      float64 `json:"amount"`
 }
 
-func (e *Entries) List(c echo.Context) error {
+func (e *Entries) Index(c echo.Context) error {
 	utils.EnsureClientID(c)
 
 	log := appmw.Logger(c)
-	data, err := e.GetEntriesData(c.Request().Context())
+	data, err := e.GetIndexData(c.Request().Context())
 	if err != nil {
 		log.Error("entry.list: failed to get data", "err", err)
 		return c.String(500, "Internal Server Error")
 	}
 
-	log.Debug("entry.list", "entry_count", len(data.(EntriesData).Entries))
-	return e.tmpl.ExecuteTemplate(c.Response().Writer, "list", data)
+	log.Debug("entry.index", "entry_count", len(data.(EntriesData).Entries))
+	return e.tmpl.ExecuteTemplate(c.Response().Writer, "index", data)
 }
 
 func (e *Entries) New(c echo.Context) error {
@@ -78,7 +75,7 @@ func (e *Entries) Edit(c echo.Context) error {
 func (e *Entries) Create(c echo.Context) error {
 	log := appmw.Logger(c)
 
-	var signals createSignals
+	var signals entryParams
 	if err := datastar.ReadSignals(c.Request(), &signals); err != nil {
 		log.Warn("entry.create: failed to read signals", "err", err)
 		return c.NoContent(400)
@@ -96,8 +93,6 @@ func (e *Entries) Create(c echo.Context) error {
 	}
 
 	log.Debug("entry.create", "id", entry.ID, "title", entry.Title)
-	utils.Store.SignalAll()
-
 	return c.NoContent(200)
 }
 
@@ -109,7 +104,7 @@ func (e *Entries) Update(c echo.Context) error {
 		return c.String(400, "Invalid ID")
 	}
 
-	var signals createSignals
+	var signals entryParams
 	if err := datastar.ReadSignals(c.Request(), &signals); err != nil {
 		log.Warn("entry.update: failed to read signals", "err", err)
 		return c.NoContent(400)
@@ -122,38 +117,24 @@ func (e *Entries) Update(c echo.Context) error {
 	}
 
 	log.Debug("entry.update", "id", id)
-	utils.Store.SignalAll()
-
 	return c.NoContent(200)
 }
 
-func (e *Entries) Delete(c echo.Context) error {
+func (e *Entries) Destroy(c echo.Context) error {
 	log := appmw.Logger(c)
 
 	idStr := c.Param("id")
 	id, err := strconv.Atoi(idStr)
 	if err != nil {
-		log.Warn("entry.delete: invalid id", "id", idStr)
+		log.Warn("entry.destroy: invalid id", "id", idStr)
 		return c.NoContent(400)
 	}
 
 	if err := e.DeleteEntry(c.Request().Context(), id); err != nil {
-		log.Error("entry.delete: failed to delete entry", "err", err)
+		log.Error("entry.destroy: failed to delete entry", "err", err)
 		return c.String(500, "Internal Server Error")
 	}
 
-	log.Debug("entry.delete", "id", id)
-	utils.Store.SignalAll()
-
+	log.Debug("entry.destroy", "id", id)
 	return c.NoContent(200)
-}
-
-func (e *Entries) DataForSSE() any {
-	ctx := context.Background()
-	data, err := e.GetEntriesData(ctx)
-	if err != nil {
-		slog.Error("entry.DataForSSE: failed to get data", "err", err)
-		return EntriesData{Title: "Entries", Entries: []db.Entry{}}
-	}
-	return data
 }

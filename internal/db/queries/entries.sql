@@ -20,3 +20,6 @@ RETURNING *;
 -- name: DeleteEntry :exec
 DELETE FROM entries
 WHERE id = ?;
+
+-- name: DeleteAllEntries :exec
+DELETE FROM entries;

@@ -33,6 +33,11 @@ func main() {
 		dbPath = *flagDBPath
 	}
 
+	if err := os.Remove(dbPath); err != nil && !os.IsNotExist(err) {
+		slog.Error("failed to remove existing database", "err", err)
+		os.Exit(1)
+	}
+
 	if err := db.Init(dbPath); err != nil {
 		slog.Error("failed to initialize database", "err", err)
 		os.Exit(1)

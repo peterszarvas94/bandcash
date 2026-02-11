@@ -72,7 +72,7 @@ func (e *Entries) DeleteEntry(ctx context.Context, id int) error {
 	return db.Qry.DeleteEntry(ctx, int64(id))
 }
 
-func (e *Entries) GetEntriesData(ctx context.Context) (any, error) {
+func (e *Entries) GetIndexData(ctx context.Context) (any, error) {
 	entries, err := e.AllEntries(ctx)
 	if err != nil {
 		return nil, err

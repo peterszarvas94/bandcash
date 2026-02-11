@@ -3,11 +3,14 @@
 <html lang="en">
   {{template "head" .}}
   <body>
-    <div id="app">
+    <main id="app">
       <h1>{{.Title}}</h1>
       <p><a href="/entry">&larr; Back to Entries</a></p>
 
-      <form data-on:submit="@post('/entry'); window.location.href='/entry'">
+      <form
+        class="form"
+        data-on:submit="@post('/entry'); window.location.href='/entry'"
+      >
         <div>
           <label>Title</label>
           <input type="text" name="title" data-bind="title" required />
@@ -18,16 +21,28 @@
         </div>
         <div>
           <label>Description</label>
-          <textarea name="description" data-bind="description" rows="3"></textarea>
+          <textarea
+            name="description"
+            data-bind="description"
+            rows="3"
+          ></textarea>
         </div>
         <div>
           <label>Amount</label>
-          <input type="number" name="amount" data-bind="amount" step="0.01" required />
+          <input
+            type="number"
+            name="amount"
+            data-bind="amount"
+            step="0.01"
+            required
+          />
         </div>
-        <button type="submit">Create Entry</button>
-        <a href="/entry">Cancel</a>
+        <div class="row">
+          <button type="submit">Create Entry</button>
+          <a href="/entry">Cancel</a>
+        </div>
       </form>
-    </div>
+    </main>
   </body>
 </html>
 {{end}}

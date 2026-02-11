@@ -28,15 +28,14 @@ Open http://localhost:8080
 
 ```
 cmd/server/         # Application entrypoint
-app/                # Feature modules (todo, entry, home)
+app/                # Feature modules (entry, home)
   entry/            # Entry REST handlers + templates
 internal/
   config/           # Environment configuration
   db/               # Database init, sqlc output, migrations, queries
   logger/           # Colored slog handler + JSON file logging
   middleware/       # Request ID middleware
-  store/            # In-memory data store with client management
-  utils/            # Shared state (store instance)
+  utils/            # Shared utilities
 web/
   static/js/        # JavaScript (Datastar vendored)
   templates/        # Go HTML templates
@@ -103,11 +102,10 @@ docker compose up --build
 
 ## How It Works
 
-1. Browser loads page, connects to `/sse` or `/entry/sse` endpoint
-2. SSE connection stays open, receives HTML patches
-3. User actions trigger POST requests (e.g., `/todo`)
-4. POST handler updates state, signals SSE to push update
-5. Datastar morphs the DOM with new HTML
+1. Browser loads page and renders templates
+2. User actions trigger POST/PUT/DELETE requests
+3. Handlers read/write entries in SQLite via sqlc
+4. Responses re-render the requested pages
 
 ## License
 
