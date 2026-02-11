@@ -1,0 +1,16 @@
+{{define "index"}}
+<!doctype html>
+<html lang="en">
+  {{template "head" .}}
+  <body>
+    <div id="app">
+      <h1>{{.Title}}</h1>
+      <p>Datastar + Go examples</p>
+      <ul>
+        <li><a href="/counter">Counter</a></li>
+        <li><a href="/todo">Todo List</a></li>
+      </ul>
+    </div>
+  </body>
+</html>
+{{end}}

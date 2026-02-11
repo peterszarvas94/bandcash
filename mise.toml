@@ -1,0 +1,8 @@
+[tools]
+air = "latest"
+go = "latest"
+
+[tasks]
+dev = "air"
+build = "go build -o tmp/server cmd/server/main.go"
+start = "./tmp/server"
