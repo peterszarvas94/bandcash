@@ -38,6 +38,7 @@ internal/
   utils/            # Shared utilities
 web/
   static/js/        # JavaScript (Datastar vendored)
+  static/css/       # Layered CSS (reset/base/components/utilities)
   templates/        # Go HTML templates
 ```
 
@@ -55,19 +56,19 @@ Environment variables (see `.env.example`):
 ## Mise Tasks
 
 ```bash
-mise run dev         # Hot reload development
-mise run build       # Build binary to tmp/server
-mise run start       # Run built binary
-mise run run         # Run server directly
-mise run test        # Run tests
-mise run fmt         # Format code
-mise run vet         # Vet code
-mise run check       # fmt + vet + test
-mise run sqlc        # Generate sqlc code
-mise run goose-up    # Run migrations
-mise run goose-status# Migration status
-mise run goose-create name=add_new_table
-mise run seed        # Seed database
+mise run dev                              # Hot reload development
+mise run build                            # Build binary to tmp/server
+mise run start                            # Run built binary
+mise run run                              # Run server directly
+mise run test                             # Run tests
+mise run fmt                              # Format code
+mise run vet                              # Vet code
+mise run check                            # fmt + vet + test
+mise run sqlc                             # Generate sqlc code
+mise run goose-up                         # Run migrations
+mise run goose-status                     # Migration status
+mise run goose-create name=add_new_table  # Create migration
+mise run seed                             # Seed database
 ```
 
 ## Database
