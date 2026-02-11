@@ -8,8 +8,9 @@ import (
 )
 
 type PayeeData struct {
-	Title string
-	Payee *db.Payee
+	Title   string
+	Payee   *db.Payee
+	Entries []db.ListParticipantsByPayeeRow
 }
 
 type PayeesData struct {
@@ -46,6 +47,10 @@ func (p *Payees) GetPayee(ctx context.Context, id int) (*db.Payee, error) {
 		return nil, err
 	}
 	return &payee, nil
+}
+
+func (p *Payees) GetEntries(ctx context.Context, payeeID int) ([]db.ListParticipantsByPayeeRow, error) {
+	return db.Qry.ListParticipantsByPayee(ctx, int64(payeeID))
 }
 
 func (p *Payees) UpdatePayee(ctx context.Context, id int, name, description string) (*db.Payee, error) {

@@ -5,7 +5,7 @@
   <body>
     <main id="app">
       <h1>{{.Title}}</h1>
-      <p><a href="/payee">&larr; Back to Payees</a></p>
+      <p><a href="/payee">Back to Payees</a></p>
 
       <div class="entry-details">
         <p><strong>Name:</strong> {{.Payee.Name}}</p>
@@ -15,11 +15,35 @@
       <p class="row">
         <a href="/payee/{{.Payee.ID}}/edit">Edit</a>
         <button
-          data-on:click="@delete('/payee/{{.Payee.ID}}'); window.location.href='/payee'"
+          data-on:click="@delete('/payee/{{.Payee.ID}}')"
         >
           Delete
         </button>
       </p>
+
+      <h2>Entries</h2>
+      <table class="table">
+        <thead>
+          <tr>
+            <th>Title</th>
+            <th>Time</th>
+            <th>Description</th>
+            <th>Entry Amount</th>
+            <th>Participant Amount</th>
+          </tr>
+        </thead>
+        <tbody>
+          {{range .Entries}}
+          <tr>
+            <td><a href="/entry/{{.ID}}">{{.Title}}</a></td>
+            <td>{{.Time}}</td>
+            <td>{{.Description}}</td>
+            <td class="text-right">{{printf "%.2f" .Amount}}</td>
+            <td class="text-right">{{printf "%.2f" .ParticipantAmount}}</td>
+          </tr>
+          {{end}}
+        </tbody>
+      </table>
     </main>
   </body>
 </html>

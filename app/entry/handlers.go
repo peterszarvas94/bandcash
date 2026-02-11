@@ -51,7 +51,17 @@ func (e *Entries) Show(c echo.Context) error {
 		return c.String(500, "Internal Server Error")
 	}
 
-	return e.tmpl.ExecuteTemplate(c.Response().Writer, "show", EntryData{Title: entry.Title, Entry: entry})
+	participants, err := e.GetParticipants(c.Request().Context(), id)
+	if err != nil {
+		log.Error("entry.show: failed to get participants", "err", err)
+		return c.String(500, "Internal Server Error")
+	}
+
+	return e.tmpl.ExecuteTemplate(c.Response().Writer, "show", EntryData{
+		Title:        entry.Title,
+		Entry:        entry,
+		Participants: participants,
+	})
 }
 
 func (e *Entries) Edit(c echo.Context) error {
@@ -93,7 +103,7 @@ func (e *Entries) Create(c echo.Context) error {
 	}
 
 	log.Debug("entry.create", "id", entry.ID, "title", entry.Title)
-	return c.NoContent(200)
+	return c.Redirect(303, "/entry")
 }
 
 func (e *Entries) Update(c echo.Context) error {
@@ -117,7 +127,7 @@ func (e *Entries) Update(c echo.Context) error {
 	}
 
 	log.Debug("entry.update", "id", id)
-	return c.NoContent(200)
+	return c.Redirect(303, "/entry/"+strconv.Itoa(id))
 }
 
 func (e *Entries) Destroy(c echo.Context) error {
@@ -136,5 +146,5 @@ func (e *Entries) Destroy(c echo.Context) error {
 	}
 
 	log.Debug("entry.destroy", "id", id)
-	return c.NoContent(200)
+	return c.Redirect(303, "/entry")
 }

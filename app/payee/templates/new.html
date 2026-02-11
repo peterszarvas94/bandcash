@@ -5,11 +5,11 @@
   <body>
     <main id="app">
       <h1>{{.Title}}</h1>
-      <p><a href="/payee">&larr; Back to Payees</a></p>
+      <p><a href="/payee">Back to Payees</a></p>
 
       <form
         class="form"
-        data-on:submit="@post('/payee'); window.location.href='/payee'"
+        data-on:submit="@post('/payee')"
       >
         <div>
           <label>Name</label>

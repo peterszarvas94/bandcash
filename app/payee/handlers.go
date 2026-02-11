@@ -49,7 +49,17 @@ func (p *Payees) Show(c echo.Context) error {
 		return c.String(500, "Internal Server Error")
 	}
 
-	return p.tmpl.ExecuteTemplate(c.Response().Writer, "show", PayeeData{Title: payee.Name, Payee: payee})
+	entries, err := p.GetEntries(c.Request().Context(), id)
+	if err != nil {
+		log.Error("payee.show: failed to get entries", "err", err)
+		return c.String(500, "Internal Server Error")
+	}
+
+	return p.tmpl.ExecuteTemplate(c.Response().Writer, "show", PayeeData{
+		Title:   payee.Name,
+		Payee:   payee,
+		Entries: entries,
+	})
 }
 
 func (p *Payees) Edit(c echo.Context) error {
@@ -91,7 +101,7 @@ func (p *Payees) Create(c echo.Context) error {
 	}
 
 	log.Debug("payee.create", "id", payee.ID, "name", payee.Name)
-	return c.NoContent(200)
+	return c.Redirect(303, "/payee")
 }
 
 func (p *Payees) Update(c echo.Context) error {
@@ -115,7 +125,7 @@ func (p *Payees) Update(c echo.Context) error {
 	}
 
 	log.Debug("payee.update", "id", id)
-	return c.NoContent(200)
+	return c.Redirect(303, "/payee/"+strconv.Itoa(id))
 }
 
 func (p *Payees) Destroy(c echo.Context) error {
@@ -134,5 +144,5 @@ func (p *Payees) Destroy(c echo.Context) error {
 	}
 
 	log.Debug("payee.destroy", "id", id)
-	return c.NoContent(200)
+	return c.Redirect(303, "/payee")
 }

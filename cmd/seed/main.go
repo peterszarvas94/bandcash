@@ -18,6 +18,17 @@ type seedEntry struct {
 	Amount      float64
 }
 
+type seedPayee struct {
+	Name        string
+	Description string
+}
+
+type seedParticipant struct {
+	EntryIndex int
+	PayeeIndex int
+	Amount     float64
+}
+
 func main() {
 	var (
 		flagDBPath  = flag.String("db", "", "SQLite database path (overrides DB_PATH)")
@@ -76,8 +87,24 @@ func main() {
 		},
 	}
 
+	payees := []seedPayee{
+		{
+			Name:        "Northside Studios",
+			Description: "Shared rehearsal space",
+		},
+		{
+			Name:        "Ari Lane",
+			Description: "Session guitarist",
+		},
+		{
+			Name:        "Soundcheck Supply",
+			Description: "Gear and cables",
+		},
+	}
+
+	createdEntries := make([]db.Entry, 0, len(entries))
 	for _, entry := range entries {
-		_, err := db.Qry.CreateEntry(ctx, db.CreateEntryParams{
+		created, err := db.Qry.CreateEntry(ctx, db.CreateEntryParams{
 			Title:       entry.Title,
 			Time:        entry.Time,
 			Description: entry.Description,
@@ -87,7 +114,41 @@ func main() {
 			slog.Error("failed to insert seed entry", "title", entry.Title, "err", err)
 			os.Exit(1)
 		}
+		createdEntries = append(createdEntries, created)
 	}
 
-	fmt.Printf("Seeded %d entries into %s\n", len(entries), dbPath)
+	createdPayees := make([]db.Payee, 0, len(payees))
+	for _, payee := range payees {
+		created, err := db.Qry.CreatePayee(ctx, db.CreatePayeeParams{
+			Name:        payee.Name,
+			Description: payee.Description,
+		})
+		if err != nil {
+			slog.Error("failed to insert seed payee", "name", payee.Name, "err", err)
+			os.Exit(1)
+		}
+		createdPayees = append(createdPayees, created)
+	}
+
+	participants := []seedParticipant{
+		{EntryIndex: 0, PayeeIndex: 1, Amount: 400.00},
+		{EntryIndex: 1, PayeeIndex: 0, Amount: -450.00},
+		{EntryIndex: 2, PayeeIndex: 2, Amount: -85.50},
+	}
+
+	for _, participant := range participants {
+		entry := createdEntries[participant.EntryIndex]
+		payee := createdPayees[participant.PayeeIndex]
+		_, err := db.Qry.AddParticipant(ctx, db.AddParticipantParams{
+			EntryID: entry.ID,
+			PayeeID: payee.ID,
+			Amount:  participant.Amount,
+		})
+		if err != nil {
+			slog.Error("failed to insert seed participant", "entry_id", entry.ID, "payee_id", payee.ID, "err", err)
+			os.Exit(1)
+		}
+	}
+
+	fmt.Printf("Seeded %d entries, %d payees, %d participants into %s\n", len(entries), len(payees), len(participants), dbPath)
 }

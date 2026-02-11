@@ -5,11 +5,11 @@
   <body>
     <main id="app">
       <h1>{{.Title}}</h1>
-      <p><a href="/entry">&larr; Back to Entries</a></p>
+      <p><a href="/entry">Back to Entries</a></p>
 
       <form
         class="form"
-        data-on:submit="@post('/entry'); window.location.href='/entry'"
+        data-on:submit="@post('/entry')"
       >
         <div>
           <label>Title</label>

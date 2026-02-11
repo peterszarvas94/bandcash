@@ -8,8 +8,9 @@ import (
 )
 
 type EntryData struct {
-	Title string
-	Entry *db.Entry
+	Title        string
+	Entry        *db.Entry
+	Participants []db.ListParticipantsByEntryRow
 }
 
 type EntriesData struct {
@@ -48,6 +49,10 @@ func (e *Entries) GetEntry(ctx context.Context, id int) (*db.Entry, error) {
 		return nil, err
 	}
 	return &entry, nil
+}
+
+func (e *Entries) GetParticipants(ctx context.Context, entryID int) ([]db.ListParticipantsByEntryRow, error) {
+	return db.Qry.ListParticipantsByEntry(ctx, int64(entryID))
 }
 
 func (e *Entries) UpdateEntry(ctx context.Context, id int, title, entryTime, description string, amount float64) (*db.Entry, error) {
