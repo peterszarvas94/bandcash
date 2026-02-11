@@ -33,6 +33,10 @@ func Init(dbPath string) error {
 		return fmt.Errorf("failed to ping database: %w", err)
 	}
 
+	if _, err := DB.Exec("PRAGMA foreign_keys = ON"); err != nil {
+		return fmt.Errorf("failed to enable foreign keys: %w", err)
+	}
+
 	// Initialize queries
 	Qry = New(DB)
 

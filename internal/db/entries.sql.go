@@ -12,7 +12,7 @@ import (
 const createEntry = `-- name: CreateEntry :one
 INSERT INTO entries (title, time, description, amount)
 VALUES (?, ?, ?, ?)
-RETURNING id, title, time, description, amount, created_at
+RETURNING id, title, time, description, amount, created_at, updated_at
 `
 
 type CreateEntryParams struct {
@@ -37,6 +37,7 @@ func (q *Queries) CreateEntry(ctx context.Context, arg CreateEntryParams) (Entry
 		&i.Description,
 		&i.Amount,
 		&i.CreatedAt,
+		&i.UpdatedAt,
 	)
 	return i, err
 }
@@ -61,7 +62,7 @@ func (q *Queries) DeleteEntry(ctx context.Context, id int64) error {
 }
 
 const getEntry = `-- name: GetEntry :one
-SELECT id, title, time, description, amount, created_at FROM entries
+SELECT id, title, time, description, amount, created_at, updated_at FROM entries
 WHERE id = ?
 `
 
@@ -75,12 +76,13 @@ func (q *Queries) GetEntry(ctx context.Context, id int64) (Entry, error) {
 		&i.Description,
 		&i.Amount,
 		&i.CreatedAt,
+		&i.UpdatedAt,
 	)
 	return i, err
 }
 
 const listEntries = `-- name: ListEntries :many
-SELECT id, title, time, description, amount, created_at FROM entries
+SELECT id, title, time, description, amount, created_at, updated_at FROM entries
 ORDER BY created_at DESC
 `
 
@@ -100,6 +102,7 @@ func (q *Queries) ListEntries(ctx context.Context) ([]Entry, error) {
 			&i.Description,
 			&i.Amount,
 			&i.CreatedAt,
+			&i.UpdatedAt,
 		); err != nil {
 			return nil, err
 		}
@@ -118,7 +121,7 @@ const updateEntry = `-- name: UpdateEntry :one
 UPDATE entries
 SET title = ?, time = ?, description = ?, amount = ?
 WHERE id = ?
-RETURNING id, title, time, description, amount, created_at
+RETURNING id, title, time, description, amount, created_at, updated_at
 `
 
 type UpdateEntryParams struct {
@@ -145,6 +148,7 @@ func (q *Queries) UpdateEntry(ctx context.Context, arg UpdateEntryParams) (Entry
 		&i.Description,
 		&i.Amount,
 		&i.CreatedAt,
+		&i.UpdatedAt,
 	)
 	return i, err
 }

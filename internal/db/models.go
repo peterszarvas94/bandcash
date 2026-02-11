@@ -15,4 +15,20 @@ type Entry struct {
 	Description string       `json:"description"`
 	Amount      float64      `json:"amount"`
 	CreatedAt   sql.NullTime `json:"created_at"`
+	UpdatedAt   sql.NullTime `json:"updated_at"`
+}
+
+type Participant struct {
+	EntryID   int64        `json:"entry_id"`
+	PayeeID   int64        `json:"payee_id"`
+	CreatedAt sql.NullTime `json:"created_at"`
+	UpdatedAt sql.NullTime `json:"updated_at"`
+}
+
+type Payee struct {
+	ID          int64        `json:"id"`
+	Name        string       `json:"name"`
+	Description string       `json:"description"`
+	CreatedAt   sql.NullTime `json:"created_at"`
+	UpdatedAt   sql.NullTime `json:"updated_at"`
 }
