@@ -1,0 +1,38 @@
+{{define "edit"}}
+<!doctype html>
+<html lang="en">
+  {{template "head" .}}
+  <body>
+    <main id="app">
+      <h1>{{.Title}}</h1>
+      <p><a href="/payee/{{.Payee.ID}}">&larr; Back to Payee</a></p>
+
+      <form
+        class="form"
+        data-on:submit="@put('/payee/{{.Payee.ID}}'); window.location.href='/payee/{{.Payee.ID}}'"
+      >
+        <div>
+          <label>Name</label>
+          <input
+            type="text"
+            name="name"
+            data-bind="name"
+            value="{{.Payee.Name}}"
+            required
+          />
+        </div>
+        <div>
+          <label>Description</label>
+          <textarea name="description" data-bind="description" rows="3">
+{{.Payee.Description}}</textarea
+          >
+        </div>
+        <div class="row">
+          <button type="submit">Update Payee</button>
+          <a href="/payee/{{.Payee.ID}}">Cancel</a>
+        </div>
+      </form>
+    </main>
+  </body>
+</html>
+{{end}}

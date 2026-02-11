@@ -7,54 +7,67 @@ package db
 
 import (
 	"context"
+	"database/sql"
 )
 
 const addParticipant = `-- name: AddParticipant :one
-INSERT INTO participants (entry_id, payee_id)
-VALUES (?, ?)
-RETURNING entry_id, payee_id, created_at, updated_at
+INSERT INTO participants (entry_id, payee_id, amount)
+VALUES (?, ?, ?)
+RETURNING entry_id, payee_id, created_at, updated_at, amount
 `
 
 type AddParticipantParams struct {
-	EntryID int64 `json:"entry_id"`
-	PayeeID int64 `json:"payee_id"`
+	EntryID int64   `json:"entry_id"`
+	PayeeID int64   `json:"payee_id"`
+	Amount  float64 `json:"amount"`
 }
 
 func (q *Queries) AddParticipant(ctx context.Context, arg AddParticipantParams) (Participant, error) {
-	row := q.db.QueryRowContext(ctx, addParticipant, arg.EntryID, arg.PayeeID)
+	row := q.db.QueryRowContext(ctx, addParticipant, arg.EntryID, arg.PayeeID, arg.Amount)
 	var i Participant
 	err := row.Scan(
 		&i.EntryID,
 		&i.PayeeID,
 		&i.CreatedAt,
 		&i.UpdatedAt,
+		&i.Amount,
 	)
 	return i, err
 }
 
 const listParticipantsByEntry = `-- name: ListParticipantsByEntry :many
-SELECT payees.id, payees.name, payees.description, payees.created_at, payees.updated_at
+SELECT payees.id, payees.name, payees.description, payees.created_at, payees.updated_at, participants.amount AS participant_amount
 FROM payees
 JOIN participants ON participants.payee_id = payees.id
 WHERE participants.entry_id = ?
 ORDER BY payees.name ASC
 `
 
-func (q *Queries) ListParticipantsByEntry(ctx context.Context, entryID int64) ([]Payee, error) {
+type ListParticipantsByEntryRow struct {
+	ID                int64        `json:"id"`
+	Name              string       `json:"name"`
+	Description       string       `json:"description"`
+	CreatedAt         sql.NullTime `json:"created_at"`
+	UpdatedAt         sql.NullTime `json:"updated_at"`
+	ParticipantAmount float64      `json:"participant_amount"`
+}
+
+func (q *Queries) ListParticipantsByEntry(ctx context.Context, entryID int64) ([]ListParticipantsByEntryRow, error) {
 	rows, err := q.db.QueryContext(ctx, listParticipantsByEntry, entryID)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
-	items := []Payee{}
+	items := []ListParticipantsByEntryRow{}
 	for rows.Next() {
-		var i Payee
+		var i ListParticipantsByEntryRow
 		if err := rows.Scan(
 			&i.ID,
 			&i.Name,
 			&i.Description,
 			&i.CreatedAt,
 			&i.UpdatedAt,
+			&i.ParticipantAmount,
 		); err != nil {
 			return nil, err
 		}
@@ -70,22 +83,33 @@ func (q *Queries) ListParticipantsByEntry(ctx context.Context, entryID int64) ([
 }
 
 const listParticipantsByPayee = `-- name: ListParticipantsByPayee :many
-SELECT entries.id, entries.title, entries.time, entries.description, entries.amount, entries.created_at, entries.updated_at
+SELECT entries.id, entries.title, entries.time, entries.description, entries.amount, entries.created_at, entries.updated_at, participants.amount AS participant_amount
 FROM entries
 JOIN participants ON participants.entry_id = entries.id
 WHERE participants.payee_id = ?
 ORDER BY entries.created_at DESC
 `
 
-func (q *Queries) ListParticipantsByPayee(ctx context.Context, payeeID int64) ([]Entry, error) {
+type ListParticipantsByPayeeRow struct {
+	ID                int64        `json:"id"`
+	Title             string       `json:"title"`
+	Time              string       `json:"time"`
+	Description       string       `json:"description"`
+	Amount            float64      `json:"amount"`
+	CreatedAt         sql.NullTime `json:"created_at"`
+	UpdatedAt         sql.NullTime `json:"updated_at"`
+	ParticipantAmount float64      `json:"participant_amount"`
+}
+
+func (q *Queries) ListParticipantsByPayee(ctx context.Context, payeeID int64) ([]ListParticipantsByPayeeRow, error) {
 	rows, err := q.db.QueryContext(ctx, listParticipantsByPayee, payeeID)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
-	items := []Entry{}
+	items := []ListParticipantsByPayeeRow{}
 	for rows.Next() {
-		var i Entry
+		var i ListParticipantsByPayeeRow
 		if err := rows.Scan(
 			&i.ID,
 			&i.Title,
@@ -94,6 +118,7 @@ func (q *Queries) ListParticipantsByPayee(ctx context.Context, payeeID int64) ([
 			&i.Amount,
 			&i.CreatedAt,
 			&i.UpdatedAt,
+			&i.ParticipantAmount,
 		); err != nil {
 			return nil, err
 		}

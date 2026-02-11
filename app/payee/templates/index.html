@@ -1,0 +1,41 @@
+{{define "index"}}
+<!doctype html>
+<html lang="en">
+  {{template "head" .}}
+  <body>
+    <main id="app">
+      <h1>{{.Title}}</h1>
+      <nav class="row pb">
+        <a href="/">&larr; Home</a>
+        <a href="/payee/new">+ New Payee</a>
+      </nav>
+
+      <table class="table">
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Description</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {{range .Payees}}
+          <tr>
+            <td><a href="/payee/{{.ID}}">{{.Name}}</a></td>
+            <td>{{.Description}}</td>
+            <td>
+              <div class="row">
+                <a href="/payee/{{.ID}}/edit">Edit</a>
+                <button data-on:click="@delete('/payee/{{.ID}}')">
+                  Delete
+                </button>
+              </div>
+            </td>
+          </tr>
+          {{end}}
+        </tbody>
+      </table>
+    </main>
+  </body>
+</html>
+{{end}}
