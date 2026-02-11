@@ -13,11 +13,12 @@ import (
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 
-	"webapp/app/counter"
+	"webapp/app/entry"
 	"webapp/app/health"
 	"webapp/app/home"
 	"webapp/app/todo"
 	"webapp/internal/config"
+	"webapp/internal/db"
 	"webapp/internal/logger"
 	appmw "webapp/internal/middleware"
 	"webapp/internal/store"
@@ -50,6 +51,19 @@ func main() {
 	// Initialize store
 	utils.Store = store.New()
 
+	// Initialize database
+	if err := db.Init("data/app.db"); err != nil {
+		slog.Error("failed to initialize database", "err", err)
+		os.Exit(1)
+	}
+	defer db.Close()
+
+	// Run migrations
+	if err := db.Migrate(); err != nil {
+		slog.Error("failed to migrate database", "err", err)
+		os.Exit(1)
+	}
+
 	e := echo.New()
 	e.HideBanner = true
 	e.HidePort = true
@@ -70,8 +84,8 @@ func main() {
 
 	health.Register(e)
 	home.Register(e)
-	counter.Register(e)
 	todo.Register(e)
+	entry.Register(e)
 
 	// Graceful shutdown
 	go func() {

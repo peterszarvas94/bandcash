@@ -1,0 +1,33 @@
+{{define "edit"}}
+<!doctype html>
+<html lang="en">
+  {{template "head" .}}
+  <body>
+    <div id="app">
+      <h1>{{.Title}}</h1>
+      <p><a href="/entry/{{.Entry.ID}}">&larr; Back to Entry</a></p>
+
+      <form data-on:submit="@put('/entry/{{.Entry.ID}}'); window.location.href='/entry/{{.Entry.ID}}'">
+        <div>
+          <label>Title</label>
+          <input type="text" name="title" data-bind="title" value="{{.Entry.Title}}" required />
+        </div>
+        <div>
+          <label>Time</label>
+          <input type="datetime-local" name="time" data-bind="time" value="{{.Entry.Time}}" required />
+        </div>
+        <div>
+          <label>Description</label>
+          <textarea name="description" data-bind="description" rows="3">{{.Entry.Description}}</textarea>
+        </div>
+        <div>
+          <label>Amount</label>
+          <input type="number" name="amount" data-bind="amount" value="{{.Entry.Amount}}" step="0.01" required />
+        </div>
+        <button type="submit">Update Entry</button>
+        <a href="/entry/{{.Entry.ID}}">Cancel</a>
+      </form>
+    </div>
+  </body>
+</html>
+{{end}}
