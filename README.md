@@ -75,19 +75,29 @@ mise run seed        # Seed database
 Migrations are handled by goose, and queries are compiled by sqlc.
 
 Run migrations:
+
 ```bash
 mise run goose-up
 ```
 
 Create a new migration:
+
 ```bash
 mise run goose-create name=add_new_column
 ```
 
 Regenerate sqlc code:
+
 ```bash
 mise run sqlc
 ```
+
+## Naming Conventions
+
+Rails-style conventions are used where it makes sense:
+
+- REST handlers follow `index`, `new`, `show`, `edit`, `create`, `update`, `destroy`.
+- Templates use `index.html`, `new.html`, `show.html`, `edit.html`.
 
 ## Docker
 
@@ -109,4 +119,6 @@ docker compose up --build
 
 ## License
 
-MIT
+[O’Saasy](https://osaasy.dev/) © 2026 Peter Szarvas
+
+See `LICENSE.md`
