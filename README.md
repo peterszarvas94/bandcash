@@ -19,7 +19,7 @@ mise install
 
 ```bash
 # Development with hot reload
-make dev
+mise run dev
 ```
 
 Open http://localhost:8080
@@ -53,19 +53,22 @@ Environment variables (see `.env.example`):
 | `LOG_FILE`  | `logs/app.log` | JSON log file path                   |
 | `DB_PATH`   | `./sqlite.db`  | SQLite database path                 |
 
-## Make Commands
+## Mise Tasks
 
 ```bash
-make dev        # Hot reload development
-make build      # Build binary to bin/
-make run        # Build and run
-make test       # Run tests
-make fmt        # Format code
-make vet        # Vet code
-make check      # fmt + vet + test
-make clean      # Remove build artifacts
-make docker     # Build docker image
-make docker-run # Build and run docker image
+mise run dev         # Hot reload development
+mise run build       # Build binary to tmp/server
+mise run start       # Run built binary
+mise run run         # Run server directly
+mise run test        # Run tests
+mise run fmt         # Format code
+mise run vet         # Vet code
+mise run check       # fmt + vet + test
+mise run sqlc        # Generate sqlc code
+mise run goose-up    # Run migrations
+mise run goose-status# Migration status
+mise run goose-create name=add_new_table
+mise run seed        # Seed database
 ```
 
 ## Database
@@ -74,24 +77,22 @@ Migrations are handled by goose, and queries are compiled by sqlc.
 
 Run migrations:
 ```bash
-goose -dir internal/db/migrations sqlite3 ./sqlite.db up
+mise run goose-up
 ```
 
 Create a new migration:
 ```bash
-goose -dir internal/db/migrations create add_new_column sql
+mise run goose-create name=add_new_column
 ```
 
 Regenerate sqlc code:
 ```bash
-sqlc generate
+mise run sqlc
 ```
 
 ## Docker
 
 ```bash
-make docker-run
-
 # Or manually
 docker build -t bandcash .
 docker run -p 8080:8080 bandcash

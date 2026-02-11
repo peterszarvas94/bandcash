@@ -27,28 +27,28 @@ mise install
 
 Run migrations:
 ```bash
-goose -dir internal/db/migrations sqlite3 data/app.db up
+mise run goose-up
 ```
 
 Create a new migration:
 ```bash
-goose -dir internal/db/migrations create add_new_column sql
+mise run goose-create name=add_new_column
 ```
 
 Check migration status:
 ```bash
-goose -dir internal/db/migrations sqlite3 data/app.db status
+mise run goose-status
 ```
 
 Regenerate sqlc code:
 ```bash
-sqlc generate
+mise run sqlc
 ```
 
 Add a new query:
 ```bash
 vim internal/db/queries/entries.sql
-sqlc generate
+mise run sqlc
 ```
 
 ## Notes
