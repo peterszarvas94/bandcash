@@ -34,12 +34,13 @@ type entryData struct {
 }
 
 type participantParams struct {
-	PayeeID json.RawMessage `json:"newPayeeId"`
-	Amount  json.RawMessage `json:"newAmount"`
+	Participants   map[string]participantData `json:"participants"`
+	NewParticipant participantData            `json:"newParticipant"`
 }
 
-type participantUpdateParams struct {
-	Amount json.RawMessage `json:"editAmount"`
+type participantData struct {
+	PayeeID json.RawMessage `json:"payeeId"`
+	Amount  json.RawMessage `json:"amount"`
 }
 
 func (e *Entries) Index(c echo.Context) error {
@@ -323,20 +324,15 @@ func (e *Entries) AddParticipant(c echo.Context) error {
 		return c.NoContent(400)
 	}
 
-	if len(signals.PayeeID) == 0 || string(signals.PayeeID) == "\"\"" {
-		log.Debug("participant.create: empty payee_id")
-		return c.Redirect(303, "/entry/"+strconv.Itoa(id))
-	}
-
-	payeeID, err := utils.ParseRawInt64(signals.PayeeID)
+	payeeID, err := utils.ParseRawInt64(signals.NewParticipant.PayeeID)
 	if err != nil {
-		log.Warn("participant.create: invalid payee_id", "payee_id", string(signals.PayeeID))
+		log.Warn("participant.create: invalid payee_id", "payee_id", string(signals.NewParticipant.PayeeID))
 		return c.String(400, "Invalid payee")
 	}
 
-	amount, err := utils.ParseRawInt64(signals.Amount)
+	amount, err := utils.ParseRawInt64(signals.NewParticipant.Amount)
 	if err != nil {
-		log.Warn("participant.create: invalid amount", "amount", string(signals.Amount))
+		log.Warn("participant.create: invalid amount", "amount", string(signals.NewParticipant.Amount))
 		return c.String(400, "Invalid amount")
 	}
 
@@ -362,15 +358,13 @@ func (e *Entries) AddParticipant(c echo.Context) error {
 
 	if err := hub.Hub.PatchSignals(clientID, map[string]any{
 		"addingParticipant": false,
-		"newPayeeId":        "",
-		"newAmount":         "",
+		"newParticipant":    map[string]any{"payeeId": "", "amount": 0},
 		"editingPayeeId":    0,
-		"editAmount":        "",
 	}); err != nil {
 		log.Warn("participant.create: failed to patch signals", "err", err)
 	}
 
-	log.Debug("participant.create", "entry_id", id, "payee_id", signals.PayeeID)
+	log.Debug("participant.create", "entry_id", id, "payee_id", payeeID)
 	return c.NoContent(200)
 }
 
@@ -387,15 +381,21 @@ func (e *Entries) UpdateParticipant(c echo.Context) error {
 		return c.String(400, "Invalid payee ID")
 	}
 
-	var signals participantUpdateParams
+	var signals participantParams
 	if err := datastar.ReadSignals(c.Request(), &signals); err != nil {
 		log.Warn("participant.update: failed to read signals", "err", err)
 		return c.NoContent(400)
 	}
 
-	amount, err := utils.ParseRawInt64(signals.Amount)
+	participantData, ok := signals.Participants[strconv.Itoa(payeeID)]
+	if !ok {
+		log.Warn("participant.update: participant not found in signals", "payee_id", payeeID)
+		return c.String(400, "Participant data not found")
+	}
+
+	amount, err := utils.ParseRawInt64(participantData.Amount)
 	if err != nil {
-		log.Warn("participant.update: invalid amount", "amount", string(signals.Amount))
+		log.Warn("participant.update: invalid amount", "amount", string(participantData.Amount))
 		return c.String(400, "Invalid amount")
 	}
 
@@ -420,7 +420,6 @@ func (e *Entries) UpdateParticipant(c echo.Context) error {
 
 	if err := hub.Hub.PatchSignals(clientID, map[string]any{
 		"editingPayeeId": 0,
-		"editAmount":     "",
 	}); err != nil {
 		log.Warn("participant.update: failed to patch signals", "err", err)
 	}

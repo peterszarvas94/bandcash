@@ -12,12 +12,13 @@ import (
 )
 
 type EntryData struct {
-	Title        string
-	Entry        *db.Entry
-	Participants []db.ListParticipantsByEntryRow
-	Payees       []db.Payee
-	PayeeIDs     map[int64]bool
-	Breadcrumbs  []view.Crumb
+	Title            string
+	Entry            *db.Entry
+	Participants     []db.ListParticipantsByEntryRow
+	ParticipantsJSON template.JS
+	Payees           []db.Payee
+	PayeeIDs         map[int64]bool
+	Breadcrumbs      []view.Crumb
 }
 
 type EntriesData struct {
@@ -99,12 +100,22 @@ func (e *Entries) GetShowData(ctx context.Context, id int) (EntryData, error) {
 
 	slog.Info("entry.show.data", "entry_id", id, "participants", len(participants), "payees_total", len(payees), "payees_filtered", len(filteredPayees))
 
+	// Build participants map for signals
+	participantsMap := make(map[string]map[string]interface{})
+	for _, p := range participants {
+		participantsMap[strconv.FormatInt(p.ID, 10)] = map[string]interface{}{
+			"amount": p.ParticipantAmount,
+		}
+	}
+	participantsJSON, _ := json.Marshal(participantsMap)
+
 	return EntryData{
-		Title:        entry.Title,
-		Entry:        entry,
-		Participants: participants,
-		Payees:       filteredPayees,
-		PayeeIDs:     payeeIDs,
+		Title:            entry.Title,
+		Entry:            entry,
+		Participants:     participants,
+		ParticipantsJSON: template.JS(participantsJSON),
+		Payees:           filteredPayees,
+		PayeeIDs:         payeeIDs,
 		Breadcrumbs: []view.Crumb{
 			{Label: "Entries", Href: "/entry"},
 			{Label: entry.Title},
