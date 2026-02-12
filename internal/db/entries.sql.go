@@ -83,7 +83,7 @@ func (q *Queries) GetEntry(ctx context.Context, id int64) (Entry, error) {
 
 const listEntries = `-- name: ListEntries :many
 SELECT id, title, time, description, amount, created_at, updated_at FROM entries
-ORDER BY created_at DESC
+ORDER BY time ASC
 `
 
 func (q *Queries) ListEntries(ctx context.Context) ([]Entry, error) {

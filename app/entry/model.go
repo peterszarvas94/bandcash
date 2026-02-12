@@ -2,8 +2,10 @@ package entry
 
 import (
 	"context"
+	"encoding/json"
 	"html/template"
 	"log/slog"
+	"strconv"
 
 	"bandcash/internal/db"
 	"bandcash/internal/view"
@@ -21,6 +23,7 @@ type EntryData struct {
 type EntriesData struct {
 	Title       string
 	Entries     []db.Entry
+	EntriesJSON template.JS
 	Breadcrumbs []view.Crumb
 }
 
@@ -136,9 +139,23 @@ func (e *Entries) GetIndexData(ctx context.Context) (any, error) {
 	if err != nil {
 		return nil, err
 	}
+
+	// Build entries map for signals
+	entriesMap := make(map[string]map[string]interface{})
+	for _, entry := range entries {
+		entriesMap[strconv.FormatInt(entry.ID, 10)] = map[string]interface{}{
+			"title":       entry.Title,
+			"time":        entry.Time,
+			"description": entry.Description,
+			"amount":      entry.Amount,
+		}
+	}
+	entriesJSON, _ := json.Marshal(entriesMap)
+
 	return EntriesData{
-		Title:   "Entries",
-		Entries: entries,
+		Title:       "Entries",
+		Entries:     entries,
+		EntriesJSON: template.JS(entriesJSON),
 		Breadcrumbs: []view.Crumb{
 			{Label: "Entries"},
 		},

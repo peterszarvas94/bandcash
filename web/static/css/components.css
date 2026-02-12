@@ -13,6 +13,18 @@
     td:last-child {
       white-space: nowrap;
     }
+
+    /* Table inputs should fill cells */
+    input,
+    select,
+    textarea {
+      width: 100%;
+    }
+  }
+
+    td:last-child {
+      white-space: nowrap;
+    }
   }
 
   .form {

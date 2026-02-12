@@ -21,6 +21,18 @@ type entryParams struct {
 	Amount      json.RawMessage `json:"amount"`
 }
 
+type entryInlineParams struct {
+	Entries  map[string]entryData `json:"entries"`
+	NewEntry entryData            `json:"newEntry"`
+}
+
+type entryData struct {
+	Title       string          `json:"title"`
+	Time        string          `json:"time"`
+	Description string          `json:"description"`
+	Amount      json.RawMessage `json:"amount"`
+}
+
 type participantParams struct {
 	PayeeID json.RawMessage `json:"newPayeeId"`
 	Amount  json.RawMessage `json:"newAmount"`
@@ -102,31 +114,83 @@ func (e *Entries) Edit(c echo.Context) error {
 func (e *Entries) Create(c echo.Context) error {
 	log := appmw.Logger(c)
 
-	var signals entryParams
-	if err := datastar.ReadSignals(c.Request(), &signals); err != nil {
-		log.Warn("entry.create: failed to read signals", "err", err)
-		return c.NoContent(400)
+	var title, entryTime, description string
+	var amount int64
+
+	if c.QueryParam("inline") == "1" {
+		var signals entryInlineParams
+		if err := datastar.ReadSignals(c.Request(), &signals); err != nil {
+			log.Warn("entry.create: failed to read inline signals", "err", err)
+			return c.NoContent(400)
+		}
+
+		title = signals.NewEntry.Title
+		entryTime = signals.NewEntry.Time
+		description = signals.NewEntry.Description
+		var err error
+		amount, err = utils.ParseRawInt64(signals.NewEntry.Amount)
+		if err != nil {
+			log.Warn("entry.create: invalid amount", "amount", string(signals.NewEntry.Amount))
+			return c.String(400, "Invalid amount")
+		}
+	} else {
+		var signals entryParams
+		if err := datastar.ReadSignals(c.Request(), &signals); err != nil {
+			signals.Title = c.FormValue("title")
+			signals.Time = c.FormValue("time")
+			signals.Description = c.FormValue("description")
+			amountVal := c.FormValue("amount")
+			if amountVal != "" {
+				signals.Amount = json.RawMessage(amountVal)
+			}
+		}
+
+		var err error
+		amount, err = utils.ParseRawInt64(signals.Amount)
+		if err != nil {
+			log.Warn("entry.create: invalid amount", "amount", string(signals.Amount))
+			return c.String(400, "Invalid amount")
+		}
+		title = signals.Title
+		entryTime = signals.Time
+		description = signals.Description
 	}
 
-	if signals.Title == "" {
+	if title == "" {
 		log.Debug("entry.create: empty title")
 		return c.NoContent(200)
 	}
 
-	amount, err := utils.ParseRawInt64(signals.Amount)
-	if err != nil {
-		log.Warn("entry.create: invalid amount", "amount", string(signals.Amount))
-		return c.String(400, "Invalid amount")
-	}
-
-	entry, err := e.CreateEntry(c.Request().Context(), signals.Title, signals.Time, signals.Description, amount)
+	entry, err := e.CreateEntry(c.Request().Context(), title, entryTime, description, amount)
 	if err != nil {
 		log.Error("entry.create: failed to create entry", "err", err)
 		return c.String(500, "Internal Server Error")
 	}
 
 	log.Debug("entry.create", "id", entry.ID, "title", entry.Title)
-	return c.Redirect(303, "/entry")
+
+	if c.QueryParam("inline") != "1" {
+		return c.Redirect(303, "/entry")
+	}
+
+	clientID, err := utils.GetClientID(c)
+	if err != nil {
+		log.Warn("entry.create: failed to read client_id", "err", err)
+		return c.NoContent(200)
+	}
+
+	if err := hub.Hub.PatchSignals(clientID, map[string]any{
+		"addingEntry": false,
+		"newEntry":    map[string]any{"title": "", "time": "", "description": "", "amount": ""},
+	}); err != nil {
+		log.Warn("entry.create: failed to patch signals", "err", err)
+	}
+
+	if err := hub.Hub.Render(clientID); err != nil {
+		log.Warn("entry.create: failed to signal client", "err", err)
+	}
+
+	return c.NoContent(200)
 }
 
 func (e *Entries) Update(c echo.Context) error {
@@ -137,26 +201,82 @@ func (e *Entries) Update(c echo.Context) error {
 		return c.String(400, "Invalid ID")
 	}
 
-	var signals entryParams
-	if err := datastar.ReadSignals(c.Request(), &signals); err != nil {
-		log.Warn("entry.update: failed to read signals", "err", err)
-		return c.NoContent(400)
+	var title, entryTime, description string
+	var amount int64
+
+	if c.QueryParam("inline") == "1" {
+		var signals entryInlineParams
+		if err := datastar.ReadSignals(c.Request(), &signals); err != nil {
+			log.Warn("entry.update: failed to read inline signals", "err", err)
+			return c.NoContent(400)
+		}
+
+		entryData, ok := signals.Entries[strconv.Itoa(id)]
+		if !ok {
+			log.Warn("entry.update: entry not found in signals", "id", id)
+			return c.String(400, "Entry data not found")
+		}
+
+		title = entryData.Title
+		entryTime = entryData.Time
+		description = entryData.Description
+		var err error
+		amount, err = utils.ParseRawInt64(entryData.Amount)
+		if err != nil {
+			log.Warn("entry.update: invalid amount", "amount", string(entryData.Amount))
+			return c.String(400, "Invalid amount")
+		}
+	} else {
+		var signals entryParams
+		if err := datastar.ReadSignals(c.Request(), &signals); err != nil {
+			signals.Title = c.FormValue("title")
+			signals.Time = c.FormValue("time")
+			signals.Description = c.FormValue("description")
+			amountVal := c.FormValue("amount")
+			if amountVal != "" {
+				signals.Amount = json.RawMessage(amountVal)
+			}
+		}
+
+		var err error
+		amount, err = utils.ParseRawInt64(signals.Amount)
+		if err != nil {
+			log.Warn("entry.update: invalid amount", "amount", string(signals.Amount))
+			return c.String(400, "Invalid amount")
+		}
+		title = signals.Title
+		entryTime = signals.Time
+		description = signals.Description
 	}
 
-	amount, err := utils.ParseRawInt64(signals.Amount)
-	if err != nil {
-		log.Warn("entry.update: invalid amount", "amount", string(signals.Amount))
-		return c.String(400, "Invalid amount")
-	}
-
-	_, err = e.UpdateEntry(c.Request().Context(), id, signals.Title, signals.Time, signals.Description, amount)
+	_, err = e.UpdateEntry(c.Request().Context(), id, title, entryTime, description, amount)
 	if err != nil {
 		log.Error("entry.update: failed to update entry", "err", err)
 		return c.String(500, "Internal Server Error")
 	}
 
 	log.Debug("entry.update", "id", id)
-	return c.Redirect(303, "/entry/"+strconv.Itoa(id))
+	if c.QueryParam("inline") != "1" {
+		return c.Redirect(303, "/entry/"+strconv.Itoa(id))
+	}
+
+	clientID, err := utils.GetClientID(c)
+	if err != nil {
+		log.Warn("entry.update: failed to read client_id", "err", err)
+		return c.NoContent(200)
+	}
+
+	if err := hub.Hub.PatchSignals(clientID, map[string]any{
+		"editingEntryId": 0,
+	}); err != nil {
+		log.Warn("entry.update: failed to patch signals", "err", err)
+	}
+
+	if err := hub.Hub.Render(clientID); err != nil {
+		log.Warn("entry.update: failed to signal client", "err", err)
+	}
+
+	return c.NoContent(200)
 }
 
 func (e *Entries) Destroy(c echo.Context) error {

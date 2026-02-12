@@ -4,7 +4,7 @@
   {{template "head" .}}
   <body>
     <div
-      data-signals="{view: '/entry/{{.Entry.ID}}', editingPayeeId: 0, editAmount: '', addingParticipant: false, newPayeeId: '', newAmount: ''}"
+      data-signals="{view: '/entry/{{.Entry.ID}}', editingEntry: false, editingPayeeId: 0, editAmount: '', addingParticipant: false, newPayeeId: '', newAmount: ''}"
       data-init="@get('/sse')"
     ></div>
     {{block "app" .}}
@@ -12,11 +12,65 @@
       <h1>{{.Title}}</h1>
       {{template "breadcrumbs" .}}
 
-      <div class="entry-details">
+      <div class="entry-details" data-show="!$editingEntry">
         <p><strong>Title:</strong> {{.Entry.Title}}</p>
         <p><strong>Time:</strong> {{.Entry.Time}}</p>
         <p><strong>Description:</strong> {{.Entry.Description}}</p>
         <p><strong>Amount:</strong> {{printf "%d" .Entry.Amount}}</p>
+      </div>
+
+      <div data-show="$editingEntry" style="display: none;">
+        <form
+          class="form"
+          data-on:submit="@put('/entry/{{.Entry.ID}}')"
+        >
+          <div>
+            <label>Title</label>
+            <input
+              type="text"
+              name="title"
+              data-bind="title"
+              value="{{.Entry.Title}}"
+              required
+            />
+          </div>
+          <div>
+            <label>Time</label>
+            <input
+              type="datetime-local"
+              name="time"
+              data-bind="time"
+              value="{{.Entry.Time}}"
+              required
+            />
+          </div>
+          <div>
+            <label>Description</label>
+            <textarea name="description" data-bind="description" rows="3">
+{{.Entry.Description}}</textarea
+            >
+          </div>
+          <div>
+            <label>Amount</label>
+            <input
+              type="number"
+              name="amount"
+              data-bind="amount"
+              value="{{.Entry.Amount}}"
+              step="1"
+              required
+            />
+          </div>
+          <div class="row">
+            <button type="submit">Update Entry</button>
+            <button
+              type="button"
+              data-on:click="window.location.href = '/entry/{{.Entry.ID}}'"
+            >
+              Cancel
+            </button>
+          </div>
+        </form>
       </div>
 
       <p class="row">

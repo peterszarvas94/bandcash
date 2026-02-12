@@ -9,7 +9,7 @@ WHERE id = ?;
 
 -- name: ListEntries :many
 SELECT * FROM entries
-ORDER BY created_at DESC;
+ORDER BY time ASC;
 
 -- name: UpdateEntry :one
 UPDATE entries

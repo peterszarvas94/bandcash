@@ -12,6 +12,7 @@ import (
 )
 
 type Renderer struct {
+	indexTmpl *template.Template
 	entryTmpl *template.Template
 	entries   *entry.Entries
 }
@@ -21,8 +22,13 @@ func NewRenderer() *Renderer {
 		"web/templates/breadcrumbs.html",
 		"app/entry/templates/show.html",
 	))
+	indexTmpl := template.Must(template.ParseFiles(
+		"web/templates/breadcrumbs.html",
+		"app/entry/templates/index.html",
+	))
 
 	return &Renderer{
+		indexTmpl: indexTmpl,
 		entryTmpl: entryTmpl,
 		entries:   entry.New(),
 	}
@@ -44,6 +50,19 @@ func (r *Renderer) Render(c echo.Context, view string) (string, error) {
 
 		var buf bytes.Buffer
 		if err := r.entryTmpl.ExecuteTemplate(&buf, "app", data); err != nil {
+			return "", err
+		}
+		return buf.String(), nil
+	}
+
+	if view == "/entry" {
+		data, err := r.entries.GetIndexData(c.Request().Context())
+		if err != nil {
+			return "", err
+		}
+
+		var buf bytes.Buffer
+		if err := r.indexTmpl.ExecuteTemplate(&buf, "app", data); err != nil {
 			return "", err
 		}
 		return buf.String(), nil
