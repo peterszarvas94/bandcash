@@ -9,13 +9,14 @@ import (
 	"time"
 
 	"bandcash/internal/db"
+	_ "bandcash/internal/logger"
 )
 
 type seedEntry struct {
 	Title       string
 	Time        string
 	Description string
-	Amount      float64
+	Amount      int64
 }
 
 type seedPayee struct {
@@ -26,7 +27,7 @@ type seedPayee struct {
 type seedParticipant struct {
 	EntryIndex int
 	PayeeIndex int
-	Amount     float64
+	Amount     int64
 }
 
 func main() {
@@ -34,11 +35,12 @@ func main() {
 		flagDBPath  = flag.String("db", "", "SQLite database path (overrides DB_PATH)")
 		flagSeedAll = flag.Bool("all", true, "Insert all seed rows")
 	)
+
 	flag.Parse()
 
 	dbPath := os.Getenv("DB_PATH")
 	if dbPath == "" {
-		dbPath = "./sqlite.db"
+		dbPath = "sqlite.db"
 	}
 	if *flagDBPath != "" {
 		dbPath = *flagDBPath
@@ -75,19 +77,19 @@ func main() {
 			Title:       "Client invoice",
 			Time:        time.Now().Add(-72 * time.Hour).Format("2006-01-02T15:04"),
 			Description: "Invoice for February retainers",
-			Amount:      1250.00,
+			Amount:      1250,
 		},
 		{
 			Title:       "Studio rent",
 			Time:        time.Now().Add(-48 * time.Hour).Format("2006-01-02T15:04"),
 			Description: "Monthly studio rent",
-			Amount:      -950.00,
+			Amount:      -950,
 		},
 		{
 			Title:       "Equipment",
 			Time:        time.Now().Add(-24 * time.Hour).Format("2006-01-02T15:04"),
 			Description: "Mic stand and cables",
-			Amount:      -85.50,
+			Amount:      -85,
 		},
 	}
 
@@ -135,9 +137,9 @@ func main() {
 	}
 
 	participants := []seedParticipant{
-		{EntryIndex: 0, PayeeIndex: 1, Amount: 400.00},
-		{EntryIndex: 1, PayeeIndex: 0, Amount: -450.00},
-		{EntryIndex: 2, PayeeIndex: 2, Amount: -85.50},
+		{EntryIndex: 0, PayeeIndex: 1, Amount: 400},
+		{EntryIndex: 1, PayeeIndex: 0, Amount: -450},
+		{EntryIndex: 2, PayeeIndex: 2, Amount: -85},
 	}
 
 	for _, participant := range participants {

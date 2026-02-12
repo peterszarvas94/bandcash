@@ -13,7 +13,7 @@ type Entry struct {
 	Title       string       `json:"title"`
 	Time        string       `json:"time"`
 	Description string       `json:"description"`
-	Amount      float64      `json:"amount"`
+	Amount      int64        `json:"amount"`
 	CreatedAt   sql.NullTime `json:"created_at"`
 	UpdatedAt   sql.NullTime `json:"updated_at"`
 }
@@ -21,9 +21,9 @@ type Entry struct {
 type Participant struct {
 	EntryID   int64        `json:"entry_id"`
 	PayeeID   int64        `json:"payee_id"`
+	Amount    int64        `json:"amount"`
 	CreatedAt sql.NullTime `json:"created_at"`
 	UpdatedAt sql.NullTime `json:"updated_at"`
-	Amount    float64      `json:"amount"`
 }
 
 type Payee struct {

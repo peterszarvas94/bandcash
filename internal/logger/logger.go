@@ -6,8 +6,11 @@ import (
 	"io"
 	"log/slog"
 	"os"
+	"path/filepath"
 	"strings"
 	"time"
+
+	"bandcash/internal/config"
 )
 
 // ANSI color codes
@@ -132,6 +135,26 @@ func New(logFile io.Writer, level slog.Level) *slog.Logger {
 		Level: level,
 	})
 	return slog.New(&MultiHandler{handlers: []slog.Handler{coloredHandler, jsonHandler}})
+}
+
+func SetDefault(log *slog.Logger) {
+	slog.SetDefault(log)
+}
+
+func init() {
+	cfg := config.Load()
+	SetDefault(New(os.Stdout, cfg.LogLevel))
+
+	if err := os.MkdirAll(filepath.Dir(cfg.LogFile), 0755); err != nil {
+		slog.Error("failed to create logs directory", "err", err)
+		os.Exit(1)
+	}
+	logFile, err := os.OpenFile(cfg.LogFile, os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0644)
+	if err != nil {
+		slog.Error("failed to open log file", "err", err)
+		os.Exit(1)
+	}
+	SetDefault(New(logFile, cfg.LogLevel))
 }
 
 func (m *MultiHandler) Enabled(ctx context.Context, level slog.Level) bool {

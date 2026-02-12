@@ -15,7 +15,7 @@
       <p class="row">
         <a href="/payee/{{.Payee.ID}}/edit">Edit</a>
         <button
-          data-on:click="@delete('/payee/{{.Payee.ID}}')"
+          data-on:click="if (window.confirm('Delete this payee?')) { @delete('/payee/{{.Payee.ID}}') }"
         >
           Delete
         </button>
@@ -38,8 +38,8 @@
             <td><a href="/entry/{{.ID}}">{{.Title}}</a></td>
             <td>{{.Time}}</td>
             <td>{{.Description}}</td>
-            <td class="text-right">{{printf "%.2f" .Amount}}</td>
-            <td class="text-right">{{printf "%.2f" .ParticipantAmount}}</td>
+            <td class="text-right">{{printf "%d" .Amount}}</td>
+            <td class="text-right">{{printf "%d" .ParticipantAmount}}</td>
           </tr>
           {{end}}
         </tbody>

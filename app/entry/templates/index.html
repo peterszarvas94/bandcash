@@ -26,11 +26,11 @@
             <td><a href="/entry/{{.ID}}">{{.Title}}</a></td>
             <td>{{.Time}}</td>
             <td>{{.Description}}</td>
-            <td class="text-right">{{printf "%.2f" .Amount}}</td>
+            <td class="text-right">{{printf "%d" .Amount}}</td>
             <td>
               <div class="row">
                 <a href="/entry/{{.ID}}/edit">Edit</a>
-                <button data-on:click="@delete('/entry/{{.ID}}')">
+                <button data-on:click="if (window.confirm('Delete this entry?')) { @delete('/entry/{{.ID}}') }">
                   Delete
                 </button>
               </div>

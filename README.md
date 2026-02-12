@@ -18,6 +18,9 @@ mise install
 ## Quick Start
 
 ```bash
+# Run migrations
+mise run goose-up
+
 # Development with hot reload
 mise run dev
 ```
@@ -51,7 +54,7 @@ Environment variables (see `.env.example`):
 | `PORT`      | `8080`         | Server port                          |
 | `LOG_LEVEL` | `debug`        | Log level (debug, info, warn, error) |
 | `LOG_FILE`  | `logs/app.log` | JSON log file path                   |
-| `DB_PATH`   | `./sqlite.db`  | SQLite database path                 |
+| `DB_PATH`   | `sqlite.db`    | SQLite database path                 |
 
 ## Mise Tasks
 
@@ -74,6 +77,8 @@ mise run seed                             # Seed database
 ## Database
 
 Migrations are handled by goose, and queries are compiled by sqlc.
+
+The server does not auto-run migrations; use `mise run goose-up` explicitly.
 
 Run migrations:
 

@@ -13,13 +13,13 @@ import (
 const addParticipant = `-- name: AddParticipant :one
 INSERT INTO participants (entry_id, payee_id, amount)
 VALUES (?, ?, ?)
-RETURNING entry_id, payee_id, created_at, updated_at, amount
+RETURNING entry_id, payee_id, amount, created_at, updated_at
 `
 
 type AddParticipantParams struct {
-	EntryID int64   `json:"entry_id"`
-	PayeeID int64   `json:"payee_id"`
-	Amount  float64 `json:"amount"`
+	EntryID int64 `json:"entry_id"`
+	PayeeID int64 `json:"payee_id"`
+	Amount  int64 `json:"amount"`
 }
 
 func (q *Queries) AddParticipant(ctx context.Context, arg AddParticipantParams) (Participant, error) {
@@ -28,9 +28,9 @@ func (q *Queries) AddParticipant(ctx context.Context, arg AddParticipantParams) 
 	err := row.Scan(
 		&i.EntryID,
 		&i.PayeeID,
+		&i.Amount,
 		&i.CreatedAt,
 		&i.UpdatedAt,
-		&i.Amount,
 	)
 	return i, err
 }
@@ -49,7 +49,7 @@ type ListParticipantsByEntryRow struct {
 	Description       string       `json:"description"`
 	CreatedAt         sql.NullTime `json:"created_at"`
 	UpdatedAt         sql.NullTime `json:"updated_at"`
-	ParticipantAmount float64      `json:"participant_amount"`
+	ParticipantAmount int64        `json:"participant_amount"`
 }
 
 func (q *Queries) ListParticipantsByEntry(ctx context.Context, entryID int64) ([]ListParticipantsByEntryRow, error) {
@@ -95,10 +95,10 @@ type ListParticipantsByPayeeRow struct {
 	Title             string       `json:"title"`
 	Time              string       `json:"time"`
 	Description       string       `json:"description"`
-	Amount            float64      `json:"amount"`
+	Amount            int64        `json:"amount"`
 	CreatedAt         sql.NullTime `json:"created_at"`
 	UpdatedAt         sql.NullTime `json:"updated_at"`
-	ParticipantAmount float64      `json:"participant_amount"`
+	ParticipantAmount int64        `json:"participant_amount"`
 }
 
 func (q *Queries) ListParticipantsByPayee(ctx context.Context, payeeID int64) ([]ListParticipantsByPayeeRow, error) {
@@ -155,9 +155,9 @@ WHERE entry_id = ? AND payee_id = ?
 `
 
 type UpdateParticipantAmountParams struct {
-	Amount  float64 `json:"amount"`
-	EntryID int64   `json:"entry_id"`
-	PayeeID int64   `json:"payee_id"`
+	Amount  int64 `json:"amount"`
+	EntryID int64 `json:"entry_id"`
+	PayeeID int64 `json:"payee_id"`
 }
 
 func (q *Queries) UpdateParticipantAmount(ctx context.Context, arg UpdateParticipantAmountParams) error {

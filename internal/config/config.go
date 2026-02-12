@@ -18,7 +18,7 @@ func Load() *Config {
 		Port:     getEnvInt("PORT", 8080),
 		LogLevel: getEnvLogLevel("LOG_LEVEL", slog.LevelDebug),
 		LogFile:  getEnv("LOG_FILE", "logs/app.log"),
-		DBPath:   getEnv("DB_PATH", "./sqlite.db"),
+		DBPath:   getEnv("DB_PATH", "sqlite.db"),
 	}
 }
 

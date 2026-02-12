@@ -15,10 +15,10 @@ import (
 )
 
 type entryParams struct {
-	Title       string  `json:"title"`
-	Time        string  `json:"time"`
-	Description string  `json:"description"`
-	Amount      float64 `json:"amount"`
+	Title       string          `json:"title"`
+	Time        string          `json:"time"`
+	Description string          `json:"description"`
+	Amount      json.RawMessage `json:"amount"`
 }
 
 type participantParams struct {
@@ -113,7 +113,13 @@ func (e *Entries) Create(c echo.Context) error {
 		return c.NoContent(200)
 	}
 
-	entry, err := e.CreateEntry(c.Request().Context(), signals.Title, signals.Time, signals.Description, signals.Amount)
+	amount, err := utils.ParseRawInt64(signals.Amount)
+	if err != nil {
+		log.Warn("entry.create: invalid amount", "amount", string(signals.Amount))
+		return c.String(400, "Invalid amount")
+	}
+
+	entry, err := e.CreateEntry(c.Request().Context(), signals.Title, signals.Time, signals.Description, amount)
 	if err != nil {
 		log.Error("entry.create: failed to create entry", "err", err)
 		return c.String(500, "Internal Server Error")
@@ -137,7 +143,13 @@ func (e *Entries) Update(c echo.Context) error {
 		return c.NoContent(400)
 	}
 
-	_, err = e.UpdateEntry(c.Request().Context(), id, signals.Title, signals.Time, signals.Description, signals.Amount)
+	amount, err := utils.ParseRawInt64(signals.Amount)
+	if err != nil {
+		log.Warn("entry.update: invalid amount", "amount", string(signals.Amount))
+		return c.String(400, "Invalid amount")
+	}
+
+	_, err = e.UpdateEntry(c.Request().Context(), id, signals.Title, signals.Time, signals.Description, amount)
 	if err != nil {
 		log.Error("entry.update: failed to update entry", "err", err)
 		return c.String(500, "Internal Server Error")
@@ -191,7 +203,7 @@ func (e *Entries) AddParticipant(c echo.Context) error {
 		return c.String(400, "Invalid payee")
 	}
 
-	amount, err := utils.ParseRawFloat64(signals.Amount)
+	amount, err := utils.ParseRawInt64(signals.Amount)
 	if err != nil {
 		log.Warn("participant.create: invalid amount", "amount", string(signals.Amount))
 		return c.String(400, "Invalid amount")
@@ -250,7 +262,7 @@ func (e *Entries) UpdateParticipant(c echo.Context) error {
 		return c.NoContent(400)
 	}
 
-	amount, err := utils.ParseRawFloat64(signals.Amount)
+	amount, err := utils.ParseRawInt64(signals.Amount)
 	if err != nil {
 		log.Warn("participant.update: invalid amount", "amount", string(signals.Amount))
 		return c.String(400, "Invalid amount")
@@ -283,5 +295,50 @@ func (e *Entries) UpdateParticipant(c echo.Context) error {
 	}
 
 	log.Debug("participant.update", "entry_id", entryID, "payee_id", payeeID)
+	return c.NoContent(200)
+}
+
+func (e *Entries) DeleteParticipant(c echo.Context) error {
+	log := appmw.Logger(c)
+
+	entryID, err := strconv.Atoi(c.Param("id"))
+	if err != nil {
+		return c.String(400, "Invalid entry ID")
+	}
+
+	payeeID, err := strconv.Atoi(c.Param("payeeId"))
+	if err != nil {
+		return c.String(400, "Invalid payee ID")
+	}
+
+	if err := db.Qry.RemoveParticipant(c.Request().Context(), db.RemoveParticipantParams{
+		EntryID: int64(entryID),
+		PayeeID: int64(payeeID),
+	}); err != nil {
+		log.Error("participant.delete: failed to remove participant", "err", err)
+		return c.String(500, "Internal Server Error")
+	}
+
+	clientID, err := utils.GetClientID(c)
+	if err != nil {
+		log.Warn("participant.delete: failed to read client_id", "err", err)
+		return c.NoContent(200)
+	}
+
+	if err := hub.Hub.Render(clientID); err != nil {
+		log.Warn("participant.delete: failed to signal client", "err", err)
+	}
+
+	if err := hub.Hub.PatchSignals(clientID, map[string]any{
+		"editingPayeeId":    0,
+		"editAmount":        "",
+		"addingParticipant": false,
+		"newPayeeId":        "",
+		"newAmount":         "",
+	}); err != nil {
+		log.Warn("participant.delete: failed to patch signals", "err", err)
+	}
+
+	log.Debug("participant.delete", "entry_id", entryID, "payee_id", payeeID)
 	return c.NoContent(200)
 }

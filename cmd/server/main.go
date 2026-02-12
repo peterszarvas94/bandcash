@@ -6,7 +6,6 @@ import (
 	"log/slog"
 	"os"
 	"os/signal"
-	"path/filepath"
 	"syscall"
 	"time"
 
@@ -20,32 +19,12 @@ import (
 	appSSE "bandcash/app/sse"
 	"bandcash/internal/config"
 	"bandcash/internal/db"
-	"bandcash/internal/logger"
+	_ "bandcash/internal/logger"
 	appmw "bandcash/internal/middleware"
 )
 
 func main() {
 	cfg := config.Load()
-
-	// Setup log file
-	if err := os.MkdirAll(filepath.Dir(cfg.LogFile), 0755); err != nil {
-		slog.Error("failed to create logs directory", "err", err)
-		os.Exit(1)
-	}
-	logFile, err := os.OpenFile(cfg.LogFile, os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0644)
-	if err != nil {
-		slog.Error("failed to open log file", "err", err)
-		os.Exit(1)
-	}
-	defer func() {
-		if err := logFile.Close(); err != nil {
-			slog.Error("failed to close log file", "err", err)
-		}
-	}()
-
-	// Setup logger
-	log := logger.New(logFile, cfg.LogLevel)
-	slog.SetDefault(log)
 
 	// Initialize database
 	if err := db.Init(cfg.DBPath); err != nil {
@@ -57,12 +36,6 @@ func main() {
 			slog.Error("failed to close database", "err", err)
 		}
 	}()
-
-	// Run migrations
-	if err := db.Migrate(); err != nil {
-		slog.Error("failed to migrate database", "err", err)
-		os.Exit(1)
-	}
 
 	e := echo.New()
 	e.HideBanner = true

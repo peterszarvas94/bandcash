@@ -16,10 +16,10 @@ RETURNING id, title, time, description, amount, created_at, updated_at
 `
 
 type CreateEntryParams struct {
-	Title       string  `json:"title"`
-	Time        string  `json:"time"`
-	Description string  `json:"description"`
-	Amount      float64 `json:"amount"`
+	Title       string `json:"title"`
+	Time        string `json:"time"`
+	Description string `json:"description"`
+	Amount      int64  `json:"amount"`
 }
 
 func (q *Queries) CreateEntry(ctx context.Context, arg CreateEntryParams) (Entry, error) {
@@ -125,11 +125,11 @@ RETURNING id, title, time, description, amount, created_at, updated_at
 `
 
 type UpdateEntryParams struct {
-	Title       string  `json:"title"`
-	Time        string  `json:"time"`
-	Description string  `json:"description"`
-	Amount      float64 `json:"amount"`
-	ID          int64   `json:"id"`
+	Title       string `json:"title"`
+	Time        string `json:"time"`
+	Description string `json:"description"`
+	Amount      int64  `json:"amount"`
+	ID          int64  `json:"id"`
 }
 
 func (q *Queries) UpdateEntry(ctx context.Context, arg UpdateEntryParams) (Entry, error) {

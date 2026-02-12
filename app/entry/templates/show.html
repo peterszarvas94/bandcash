@@ -16,13 +16,13 @@
         <p><strong>Title:</strong> {{.Entry.Title}}</p>
         <p><strong>Time:</strong> {{.Entry.Time}}</p>
         <p><strong>Description:</strong> {{.Entry.Description}}</p>
-        <p><strong>Amount:</strong> {{printf "%.2f" .Entry.Amount}}</p>
+        <p><strong>Amount:</strong> {{printf "%d" .Entry.Amount}}</p>
       </div>
 
       <p class="row">
         <a href="/entry/{{.Entry.ID}}/edit">Edit</a>
         <button
-          data-on:click="@delete('/entry/{{.Entry.ID}}')"
+          data-on:click="if (window.confirm('Delete this entry?')) { @delete('/entry/{{.Entry.ID}}') }"
         >
           Delete
         </button>
@@ -43,14 +43,21 @@
           <tr data-show="$editingPayeeId !== {{.ID}}" style="display: none;">
             <td><a href="/payee/{{.ID}}">{{.Name}}</a></td>
             <td>{{.Description}}</td>
-            <td class="text-right">{{printf "%.2f" .ParticipantAmount}}</td>
+            <td class="text-right">{{printf "%d" .ParticipantAmount}}</td>
             <td class="text-right">
               <button
                 type="button"
-                data-on:click="$editingPayeeId = {{.ID}}; $editAmount = '{{printf "%.2f" .ParticipantAmount}}'"
+                data-on:click="$editingPayeeId = {{.ID}}; $editAmount = '{{printf "%d" .ParticipantAmount}}'"
                 data-show="!$addingParticipant"
               >
                 Edit
+              </button>
+              <button
+                type="button"
+                data-on:click="if (window.confirm('Delete this participant?')) { @delete('/entry/{{$.Entry.ID}}/participants/{{.ID}}') }"
+                data-show="!$addingParticipant"
+              >
+                Delete
               </button>
             </td>
           </tr>
@@ -62,7 +69,7 @@
                 type="number"
                 name="amount"
                 data-bind="editAmount"
-                step="0.01"
+                step="1"
                 required
               />
             </td>
@@ -97,7 +104,7 @@
                 type="number"
                 name="amount"
                 data-bind="newAmount"
-                step="0.01"
+                step="1"
                 required
               />
             </td>

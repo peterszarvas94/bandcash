@@ -25,6 +25,7 @@ func Register(e *echo.Echo) {
 	e.GET("/entry/:id/edit", entries.Edit)
 	e.POST("/entry/:id/participants", entries.AddParticipant)
 	e.PUT("/entry/:id/participants/:payeeId", entries.UpdateParticipant)
+	e.DELETE("/entry/:id/participants/:payeeId", entries.DeleteParticipant)
 	e.PUT("/entry/:id", entries.Update)
 	e.DELETE("/entry/:id", entries.Destroy)
 }

@@ -26,7 +26,7 @@
             <td>
               <div class="row">
                 <a href="/payee/{{.ID}}/edit">Edit</a>
-                <button data-on:click="@delete('/payee/{{.ID}}')">
+                <button data-on:click="if (window.confirm('Delete this payee?')) { @delete('/payee/{{.ID}}') }">
                   Delete
                 </button>
               </div>

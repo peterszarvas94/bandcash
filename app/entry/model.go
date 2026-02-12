@@ -36,7 +36,7 @@ func (e *Entries) SetTemplate(tmpl *template.Template) {
 	e.tmpl = tmpl
 }
 
-func (e *Entries) CreateEntry(ctx context.Context, title, entryTime, description string, amount float64) (*db.Entry, error) {
+func (e *Entries) CreateEntry(ctx context.Context, title, entryTime, description string, amount int64) (*db.Entry, error) {
 	entry, err := db.Qry.CreateEntry(ctx, db.CreateEntryParams{
 		Title:       title,
 		Time:        entryTime,
@@ -109,7 +109,7 @@ func (e *Entries) GetShowData(ctx context.Context, id int) (EntryData, error) {
 	}, nil
 }
 
-func (e *Entries) UpdateEntry(ctx context.Context, id int, title, entryTime, description string, amount float64) (*db.Entry, error) {
+func (e *Entries) UpdateEntry(ctx context.Context, id int, title, entryTime, description string, amount int64) (*db.Entry, error) {
 	updated, err := db.Qry.UpdateEntry(ctx, db.UpdateEntryParams{
 		Title:       title,
 		Time:        entryTime,
