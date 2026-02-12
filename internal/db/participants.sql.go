@@ -147,3 +147,20 @@ func (q *Queries) RemoveParticipant(ctx context.Context, arg RemoveParticipantPa
 	_, err := q.db.ExecContext(ctx, removeParticipant, arg.EntryID, arg.PayeeID)
 	return err
 }
+
+const updateParticipantAmount = `-- name: UpdateParticipantAmount :exec
+UPDATE participants
+SET amount = ?
+WHERE entry_id = ? AND payee_id = ?
+`
+
+type UpdateParticipantAmountParams struct {
+	Amount  float64 `json:"amount"`
+	EntryID int64   `json:"entry_id"`
+	PayeeID int64   `json:"payee_id"`
+}
+
+func (q *Queries) UpdateParticipantAmount(ctx context.Context, arg UpdateParticipantAmountParams) error {
+	_, err := q.db.ExecContext(ctx, updateParticipantAmount, arg.Amount, arg.EntryID, arg.PayeeID)
+	return err
+}

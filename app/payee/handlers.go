@@ -8,6 +8,7 @@ import (
 
 	appmw "bandcash/internal/middleware"
 	"bandcash/internal/utils"
+	"bandcash/internal/view"
 )
 
 type payeeParams struct {
@@ -31,7 +32,13 @@ func (p *Payees) Index(c echo.Context) error {
 
 func (p *Payees) New(c echo.Context) error {
 	utils.EnsureClientID(c)
-	return p.tmpl.ExecuteTemplate(c.Response().Writer, "new", PayeeData{Title: "New Payee"})
+	return p.tmpl.ExecuteTemplate(c.Response().Writer, "new", PayeeData{
+		Title: "New Payee",
+		Breadcrumbs: []view.Crumb{
+			{Label: "Payees", Href: "/payee"},
+			{Label: "New"},
+		},
+	})
 }
 
 func (p *Payees) Show(c echo.Context) error {
@@ -59,6 +66,10 @@ func (p *Payees) Show(c echo.Context) error {
 		Title:   payee.Name,
 		Payee:   payee,
 		Entries: entries,
+		Breadcrumbs: []view.Crumb{
+			{Label: "Payees", Href: "/payee"},
+			{Label: payee.Name},
+		},
 	})
 }
 
@@ -77,7 +88,15 @@ func (p *Payees) Edit(c echo.Context) error {
 		return c.String(500, "Internal Server Error")
 	}
 
-	return p.tmpl.ExecuteTemplate(c.Response().Writer, "edit", PayeeData{Title: "Edit Payee", Payee: payee})
+	return p.tmpl.ExecuteTemplate(c.Response().Writer, "edit", PayeeData{
+		Title: "Edit Payee",
+		Payee: payee,
+		Breadcrumbs: []view.Crumb{
+			{Label: "Payees", Href: "/payee"},
+			{Label: payee.Name, Href: "/payee/" + strconv.Itoa(id)},
+			{Label: "Edit"},
+		},
+	})
 }
 
 func (p *Payees) Create(c echo.Context) error {

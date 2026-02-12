@@ -11,6 +11,7 @@ func Register(e *echo.Echo) {
 
 	entries.tmpl = template.Must(template.ParseFiles(
 		"web/templates/head.html",
+		"web/templates/breadcrumbs.html",
 		"app/entry/templates/index.html",
 		"app/entry/templates/new.html",
 		"app/entry/templates/show.html",
@@ -23,6 +24,7 @@ func Register(e *echo.Echo) {
 	e.GET("/entry/:id", entries.Show)
 	e.GET("/entry/:id/edit", entries.Edit)
 	e.POST("/entry/:id/participants", entries.AddParticipant)
+	e.PUT("/entry/:id/participants/:payeeId", entries.UpdateParticipant)
 	e.PUT("/entry/:id", entries.Update)
 	e.DELETE("/entry/:id", entries.Destroy)
 }

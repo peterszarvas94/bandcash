@@ -5,7 +5,7 @@
   <body>
     <main id="app">
       <h1>{{.Title}}</h1>
-      <p><a href="/entry">Back to Entries</a></p>
+      {{template "breadcrumbs" .}}
 
       <form
         class="form"

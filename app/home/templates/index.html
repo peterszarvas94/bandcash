@@ -5,6 +5,7 @@
   <body>
     <main id="app">
       <h1>{{.Title}}</h1>
+      {{template "breadcrumbs" .}}
       <p>Where is my cut?</p>
       <ul>
         <li><a href="/entry">Entries</a></li>

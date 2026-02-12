@@ -3,11 +3,14 @@
 <html lang="en">
   {{template "head" .}}
   <body>
-    <div data-signals="{view: '/entry/{{.Entry.ID}}'}" data-init="@get('/sse')"></div>
+    <div
+      data-signals="{view: '/entry/{{.Entry.ID}}', editingPayeeId: 0, editAmount: '', addingParticipant: false, newPayeeId: '', newAmount: ''}"
+      data-init="@get('/sse')"
+    ></div>
     {{block "app" .}}
     <main id="app">
       <h1>{{.Title}}</h1>
-      <p><a href="/entry">Back to Entries</a></p>
+      {{template "breadcrumbs" .}}
 
       <div class="entry-details">
         <p><strong>Title:</strong> {{.Entry.Title}}</p>
@@ -32,59 +35,95 @@
             <th>Payee</th>
             <th>Description</th>
             <th>Amount</th>
+            <th></th>
           </tr>
         </thead>
         <tbody>
           {{range .Participants}}
-          <tr>
+          <tr data-show="$editingPayeeId !== {{.ID}}" style="display: none;">
             <td><a href="/payee/{{.ID}}">{{.Name}}</a></td>
             <td>{{.Description}}</td>
             <td class="text-right">{{printf "%.2f" .ParticipantAmount}}</td>
+            <td class="text-right">
+              <button
+                type="button"
+                data-on:click="$editingPayeeId = {{.ID}}; $editAmount = '{{printf "%.2f" .ParticipantAmount}}'"
+                data-show="!$addingParticipant"
+              >
+                Edit
+              </button>
+            </td>
+          </tr>
+          <tr data-show="$editingPayeeId === {{.ID}}" style="display: none;">
+            <td><a href="/payee/{{.ID}}">{{.Name}}</a></td>
+            <td>{{.Description}}</td>
+            <td class="text-right">
+              <input
+                type="number"
+                name="amount"
+                data-bind="editAmount"
+                step="0.01"
+                required
+              />
+            </td>
+            <td class="text-right">
+              <button
+                type="button"
+                data-on:click="@put('/entry/{{$.Entry.ID}}/participants/{{.ID}}')"
+              >
+                Save
+              </button>
+              <button
+                type="button"
+                data-on:click="$editingPayeeId = 0; $editAmount = ''"
+              >
+                Cancel
+              </button>
+            </td>
           </tr>
           {{end}}
+          <tr data-show="$addingParticipant" style="display: none;">
+            <td>
+              <select name="payee_id" data-bind="newPayeeId" required>
+                <option value="">Select payee</option>
+                {{range .Payees}}
+                <option value="{{.ID}}">{{.Name}}</option>
+                {{end}}
+              </select>
+            </td>
+            <td></td>
+            <td class="text-right">
+              <input
+                type="number"
+                name="amount"
+                data-bind="newAmount"
+                step="0.01"
+                required
+              />
+            </td>
+            <td class="text-right">
+              <button type="button" data-on:click="@post('/entry/{{$.Entry.ID}}/participants')">
+                Add
+              </button>
+              <button
+                type="button"
+                data-on:click="$addingParticipant = false; $newPayeeId = ''; $newAmount = ''"
+              >
+                Cancel
+              </button>
+            </td>
+          </tr>
         </tbody>
       </table>
 
-      <div data-signals="{showAddParticipant: false}">
-        <p class="row">
-          <button type="button" data-on:click="$showAddParticipant = true">
-            Add participant
-          </button>
-        </p>
-
-        <form
-          class="form"
-          data-on:submit="@post('/entry/{{.Entry.ID}}/participants')"
-          data-show="$showAddParticipant"
-          style="display: none;"
-        >
-          <div>
-            <label>Payee</label>
-            <select name="payee_id" data-bind="payee_id" required>
-              <option value="">Select payee</option>
-              {{range .Payees}}
-              <option value="{{.ID}}">{{.Name}}</option>
-              {{end}}
-            </select>
-          </div>
-          <div>
-            <label>Amount</label>
-            <input
-              type="number"
-              name="amount"
-              data-bind="amount"
-              step="0.01"
-              required
-            />
-          </div>
-          <div class="row">
-            <button type="submit">Add</button>
-            <button type="button" data-on:click="$showAddParticipant = false">
-              Cancel
-            </button>
-          </div>
-        </form>
-      </div>
+      <p
+        class="row"
+        data-show="!$addingParticipant && $editingPayeeId === 0"
+      >
+        <button type="button" data-on:click="$addingParticipant = true">
+          Add participant
+        </button>
+      </p>
 
     </main>
     {{end}}

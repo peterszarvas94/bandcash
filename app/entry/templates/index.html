@@ -5,10 +5,10 @@
   <body>
     <main id="app">
       <h1>{{.Title}}</h1>
-      <nav class="row pb">
-        <a href="/">Home</a>
+      {{template "breadcrumbs" .}}
+      <p class="row pb">
         <a href="/entry/new">New Entry</a>
-      </nav>
+      </p>
 
       <table class="table">
         <thead>

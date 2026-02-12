@@ -18,6 +18,7 @@ type Renderer struct {
 
 func NewRenderer() *Renderer {
 	entryTmpl := template.Must(template.ParseFiles(
+		"web/templates/breadcrumbs.html",
 		"app/entry/templates/show.html",
 	))
 
@@ -30,8 +31,7 @@ func NewRenderer() *Renderer {
 func (r *Renderer) Render(c echo.Context, view string) (string, error) {
 	view = strings.TrimSuffix(view, "/")
 
-	if strings.HasPrefix(view, "/entry/") {
-		idStr := strings.TrimPrefix(view, "/entry/")
+	if idStr, ok := strings.CutPrefix(view, "/entry/"); ok {
 		id, err := strconv.Atoi(idStr)
 		if err != nil {
 			return "", echo.NewHTTPError(400, "Invalid entry ID")

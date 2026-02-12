@@ -5,17 +5,20 @@ import (
 	"html/template"
 
 	"bandcash/internal/db"
+	"bandcash/internal/view"
 )
 
 type PayeeData struct {
-	Title   string
-	Payee   *db.Payee
-	Entries []db.ListParticipantsByPayeeRow
+	Title       string
+	Payee       *db.Payee
+	Entries     []db.ListParticipantsByPayeeRow
+	Breadcrumbs []view.Crumb
 }
 
 type PayeesData struct {
-	Title  string
-	Payees []db.Payee
+	Title       string
+	Payees      []db.Payee
+	Breadcrumbs []view.Crumb
 }
 
 type Payees struct {
@@ -81,5 +84,8 @@ func (p *Payees) GetIndexData(ctx context.Context) (any, error) {
 	return PayeesData{
 		Title:  "Payees",
 		Payees: payees,
+		Breadcrumbs: []view.Crumb{
+			{Label: "Payees"},
+		},
 	}, nil
 }

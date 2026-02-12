@@ -11,6 +11,7 @@ import (
 	"bandcash/internal/hub"
 	appmw "bandcash/internal/middleware"
 	"bandcash/internal/utils"
+	"bandcash/internal/view"
 )
 
 type entryParams struct {
@@ -21,8 +22,12 @@ type entryParams struct {
 }
 
 type participantParams struct {
-	PayeeID json.RawMessage `json:"payee_id"`
-	Amount  json.RawMessage `json:"amount"`
+	PayeeID json.RawMessage `json:"newPayeeId"`
+	Amount  json.RawMessage `json:"newAmount"`
+}
+
+type participantUpdateParams struct {
+	Amount json.RawMessage `json:"editAmount"`
 }
 
 func (e *Entries) Index(c echo.Context) error {
@@ -41,7 +46,13 @@ func (e *Entries) Index(c echo.Context) error {
 
 func (e *Entries) New(c echo.Context) error {
 	utils.EnsureClientID(c)
-	return e.tmpl.ExecuteTemplate(c.Response().Writer, "new", EntryData{Title: "New Entry"})
+	return e.tmpl.ExecuteTemplate(c.Response().Writer, "new", EntryData{
+		Title: "New Entry",
+		Breadcrumbs: []view.Crumb{
+			{Label: "Entries", Href: "/entry"},
+			{Label: "New"},
+		},
+	})
 }
 
 func (e *Entries) Show(c echo.Context) error {
@@ -77,7 +88,15 @@ func (e *Entries) Edit(c echo.Context) error {
 		return c.String(500, "Internal Server Error")
 	}
 
-	return e.tmpl.ExecuteTemplate(c.Response().Writer, "edit", EntryData{Title: "Edit Entry", Entry: entry})
+	return e.tmpl.ExecuteTemplate(c.Response().Writer, "edit", EntryData{
+		Title: "Edit Entry",
+		Entry: entry,
+		Breadcrumbs: []view.Crumb{
+			{Label: "Entries", Href: "/entry"},
+			{Label: entry.Title, Href: "/entry/" + strconv.Itoa(id)},
+			{Label: "Edit"},
+		},
+	})
 }
 
 func (e *Entries) Create(c echo.Context) error {
@@ -198,10 +217,71 @@ func (e *Entries) AddParticipant(c echo.Context) error {
 		log.Warn("participant.create: failed to signal client", "err", err)
 	}
 
-	if err := hub.Hub.PatchSignals(clientID, map[string]any{"showAddParticipant": false}); err != nil {
+	if err := hub.Hub.PatchSignals(clientID, map[string]any{
+		"addingParticipant": false,
+		"newPayeeId":        "",
+		"newAmount":         "",
+		"editingPayeeId":    0,
+		"editAmount":        "",
+	}); err != nil {
 		log.Warn("participant.create: failed to patch signals", "err", err)
 	}
 
 	log.Debug("participant.create", "entry_id", id, "payee_id", signals.PayeeID)
+	return c.NoContent(200)
+}
+
+func (e *Entries) UpdateParticipant(c echo.Context) error {
+	log := appmw.Logger(c)
+
+	entryID, err := strconv.Atoi(c.Param("id"))
+	if err != nil {
+		return c.String(400, "Invalid entry ID")
+	}
+
+	payeeID, err := strconv.Atoi(c.Param("payeeId"))
+	if err != nil {
+		return c.String(400, "Invalid payee ID")
+	}
+
+	var signals participantUpdateParams
+	if err := datastar.ReadSignals(c.Request(), &signals); err != nil {
+		log.Warn("participant.update: failed to read signals", "err", err)
+		return c.NoContent(400)
+	}
+
+	amount, err := utils.ParseRawFloat64(signals.Amount)
+	if err != nil {
+		log.Warn("participant.update: invalid amount", "amount", string(signals.Amount))
+		return c.String(400, "Invalid amount")
+	}
+
+	if err := db.Qry.UpdateParticipantAmount(c.Request().Context(), db.UpdateParticipantAmountParams{
+		Amount:  amount,
+		EntryID: int64(entryID),
+		PayeeID: int64(payeeID),
+	}); err != nil {
+		log.Error("participant.update: failed to update participant", "err", err)
+		return c.String(500, "Internal Server Error")
+	}
+
+	clientID, err := utils.GetClientID(c)
+	if err != nil {
+		log.Warn("participant.update: failed to read client_id", "err", err)
+		return c.NoContent(200)
+	}
+
+	if err := hub.Hub.Render(clientID); err != nil {
+		log.Warn("participant.update: failed to signal client", "err", err)
+	}
+
+	if err := hub.Hub.PatchSignals(clientID, map[string]any{
+		"editingPayeeId": 0,
+		"editAmount":     "",
+	}); err != nil {
+		log.Warn("participant.update: failed to patch signals", "err", err)
+	}
+
+	log.Debug("participant.update", "entry_id", entryID, "payee_id", payeeID)
 	return c.NoContent(200)
 }

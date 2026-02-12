@@ -5,7 +5,7 @@
   <body>
     <main id="app">
       <h1>{{.Title}}</h1>
-      <p><a href="/payee">Back to Payees</a></p>
+      {{template "breadcrumbs" .}}
 
       <div class="entry-details">
         <p><strong>Name:</strong> {{.Payee.Name}}</p>

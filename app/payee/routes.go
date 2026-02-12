@@ -11,6 +11,7 @@ func Register(e *echo.Echo) {
 
 	payees.tmpl = template.Must(template.ParseFiles(
 		"web/templates/head.html",
+		"web/templates/breadcrumbs.html",
 		"app/payee/templates/index.html",
 		"app/payee/templates/new.html",
 		"app/payee/templates/show.html",

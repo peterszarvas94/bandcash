@@ -18,6 +18,8 @@ type viewSignals struct {
 }
 
 func HandlerWithView(render ViewRenderer) echo.HandlerFunc {
+	// HandlerWithView closes over the render function so one SSE handler can
+	// render different views based on the per-client view key.
 	return func(c echo.Context) error {
 		r := c.Request()
 		w := c.Response().Writer
@@ -41,6 +43,8 @@ func HandlerWithView(render ViewRenderer) echo.HandlerFunc {
 			return c.NoContent(400)
 		}
 
+		// Persist the view key for this client so updates can re-render
+		// the current route without needing the request path again.
 		hub.Hub.SetView(clientID, view)
 
 		log.Debug("sse: client connected", "view", view)
@@ -49,6 +53,7 @@ func HandlerWithView(render ViewRenderer) echo.HandlerFunc {
 		client := hub.Hub.AddClient(clientID, sse)
 
 		renderView := func() (string, error) {
+			// Resolve the current view for this client and render it into HTML.
 			currentView, ok := hub.Hub.GetView(clientID)
 			if !ok {
 				return "", echo.NewHTTPError(404, "view not set")
@@ -67,11 +72,14 @@ func HandlerWithView(render ViewRenderer) echo.HandlerFunc {
 		}
 		log.Debug("sse: initial app sent")
 
+		// Cleanup on disconnect.
 		defer func() {
 			hub.Hub.RemoveClient(clientID)
 			log.Debug("sse: client disconnected")
 		}()
 
+		// Wait for signals and send updates. Updates are triggered by handlers
+		// calling hub.Hub.Render(clientID) for the current client.
 		for {
 			select {
 			case <-r.Context().Done():

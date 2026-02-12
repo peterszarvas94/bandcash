@@ -4,10 +4,13 @@ import (
 	"html/template"
 
 	"github.com/labstack/echo/v4"
+
+	"bandcash/internal/view"
 )
 
 type HomeData struct {
-	Title string
+	Title       string
+	Breadcrumbs []view.Crumb
 }
 
 type Home struct {
@@ -17,7 +20,8 @@ type Home struct {
 // Data returns data for rendering.
 func (h *Home) Data() any {
 	return HomeData{
-		Title: "Bandcash",
+		Title:       "Bandcash",
+		Breadcrumbs: []view.Crumb{},
 	}
 }
 
@@ -28,6 +32,7 @@ func Register(e *echo.Echo) {
 	// Parse shared head + home template
 	h.tmpl = template.Must(template.ParseFiles(
 		"web/templates/head.html",
+		"web/templates/breadcrumbs.html",
 		"app/home/templates/index.html",
 	))
 

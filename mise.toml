@@ -3,6 +3,7 @@ air = "latest"
 go = "latest"
 sqlc = "1.30.0"
 "github:pressly/goose" = "3.26.0"
+golangci-lint = "latest"
 
 [tasks]
 dev = "air"
@@ -12,6 +13,8 @@ run = "go run ./cmd/server/main.go"
 test = "go test -v ./..."
 fmt = "go fmt ./..."
 vet = "go vet ./..."
+lint = "golangci-lint run"
+lsp = 'gopls check -severity=hint $(git ls-files "*.go" ":!internal/db/*.go")'
 check = "mise run fmt && mise run vet && mise run test"
 sqlc = "sqlc generate"
 goose-up = "goose -dir internal/db/migrations sqlite3 ./sqlite.db up"

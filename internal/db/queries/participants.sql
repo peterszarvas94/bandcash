@@ -7,6 +7,11 @@ RETURNING *;
 DELETE FROM participants
 WHERE entry_id = ? AND payee_id = ?;
 
+-- name: UpdateParticipantAmount :exec
+UPDATE participants
+SET amount = ?
+WHERE entry_id = ? AND payee_id = ?;
+
 -- name: ListParticipantsByEntry :many
 SELECT payees.*, participants.amount AS participant_amount
 FROM payees
