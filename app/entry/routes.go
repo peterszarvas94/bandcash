@@ -22,6 +22,7 @@ func Register(e *echo.Echo) {
 	e.POST("/entry", entries.Create)
 	e.GET("/entry/:id", entries.Show)
 	e.GET("/entry/:id/edit", entries.Edit)
+	e.POST("/entry/:id/participants", entries.AddParticipant)
 	e.PUT("/entry/:id", entries.Update)
 	e.DELETE("/entry/:id", entries.Destroy)
 }

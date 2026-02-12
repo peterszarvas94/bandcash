@@ -43,6 +43,47 @@
         </tbody>
       </table>
 
+      <div data-signals="{showAddParticipant: false}">
+        <p class="row">
+          <button type="button" data-on:click="$showAddParticipant = true">
+            Add participant
+          </button>
+        </p>
+
+        <form
+          class="form"
+          data-on:submit="@post('/entry/{{.Entry.ID}}/participants')"
+          data-show="$showAddParticipant"
+          style="display: none;"
+        >
+          <div>
+            <label>Payee</label>
+            <select name="payee_id" data-bind="payee_id" required>
+              <option value="">Select payee</option>
+              {{range .Payees}}
+              <option value="{{.ID}}">{{.Name}}</option>
+              {{end}}
+            </select>
+          </div>
+          <div>
+            <label>Amount</label>
+            <input
+              type="number"
+              name="amount"
+              data-bind="amount"
+              step="0.01"
+              required
+            />
+          </div>
+          <div class="row">
+            <button type="submit">Add</button>
+            <button type="button" data-on:click="$showAddParticipant = false">
+              Cancel
+            </button>
+          </div>
+        </form>
+      </div>
+
     </main>
   </body>
 </html>

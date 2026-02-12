@@ -25,6 +25,7 @@
     }
 
     input,
+    select,
     textarea {
       width: 100%;
       field-sizing: fixed;

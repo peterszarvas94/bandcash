@@ -11,6 +11,7 @@ type EntryData struct {
 	Title        string
 	Entry        *db.Entry
 	Participants []db.ListParticipantsByEntryRow
+	Payees       []db.Payee
 }
 
 type EntriesData struct {
@@ -53,6 +54,10 @@ func (e *Entries) GetEntry(ctx context.Context, id int) (*db.Entry, error) {
 
 func (e *Entries) GetParticipants(ctx context.Context, entryID int) ([]db.ListParticipantsByEntryRow, error) {
 	return db.Qry.ListParticipantsByEntry(ctx, int64(entryID))
+}
+
+func (e *Entries) GetPayees(ctx context.Context) ([]db.Payee, error) {
+	return db.Qry.ListPayees(ctx)
 }
 
 func (e *Entries) UpdateEntry(ctx context.Context, id int, title, entryTime, description string, amount float64) (*db.Entry, error) {

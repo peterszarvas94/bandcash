@@ -1,11 +1,13 @@
 package entry
 
 import (
+	"encoding/json"
 	"strconv"
 
 	"github.com/labstack/echo/v4"
 	"github.com/starfederation/datastar-go/datastar"
 
+	"bandcash/internal/db"
 	appmw "bandcash/internal/middleware"
 	"bandcash/internal/utils"
 )
@@ -15,6 +17,11 @@ type entryParams struct {
 	Time        string  `json:"time"`
 	Description string  `json:"description"`
 	Amount      float64 `json:"amount"`
+}
+
+type participantParams struct {
+	PayeeID json.RawMessage `json:"payee_id"`
+	Amount  json.RawMessage `json:"amount"`
 }
 
 func (e *Entries) Index(c echo.Context) error {
@@ -57,10 +64,17 @@ func (e *Entries) Show(c echo.Context) error {
 		return c.String(500, "Internal Server Error")
 	}
 
+	payees, err := e.GetPayees(c.Request().Context())
+	if err != nil {
+		log.Error("entry.show: failed to get payees", "err", err)
+		return c.String(500, "Internal Server Error")
+	}
+
 	return e.tmpl.ExecuteTemplate(c.Response().Writer, "show", EntryData{
 		Title:        entry.Title,
 		Entry:        entry,
 		Participants: participants,
+		Payees:       payees,
 	})
 }
 
@@ -147,4 +161,49 @@ func (e *Entries) Destroy(c echo.Context) error {
 
 	log.Debug("entry.destroy", "id", id)
 	return c.Redirect(303, "/entry")
+}
+
+func (e *Entries) AddParticipant(c echo.Context) error {
+	log := appmw.Logger(c)
+
+	id, err := strconv.Atoi(c.Param("id"))
+	if err != nil {
+		return c.String(400, "Invalid ID")
+	}
+
+	var signals participantParams
+	if err := datastar.ReadSignals(c.Request(), &signals); err != nil {
+		log.Warn("participant.create: failed to read signals", "err", err)
+		return c.NoContent(400)
+	}
+
+	if len(signals.PayeeID) == 0 || string(signals.PayeeID) == "\"\"" {
+		log.Debug("participant.create: empty payee_id")
+		return c.Redirect(303, "/entry/"+strconv.Itoa(id))
+	}
+
+	payeeID, err := utils.ParseRawInt64(signals.PayeeID)
+	if err != nil {
+		log.Warn("participant.create: invalid payee_id", "payee_id", string(signals.PayeeID))
+		return c.String(400, "Invalid payee")
+	}
+
+	amount, err := utils.ParseRawFloat64(signals.Amount)
+	if err != nil {
+		log.Warn("participant.create: invalid amount", "amount", string(signals.Amount))
+		return c.String(400, "Invalid amount")
+	}
+
+	_, err = db.Qry.AddParticipant(c.Request().Context(), db.AddParticipantParams{
+		EntryID: int64(id),
+		PayeeID: payeeID,
+		Amount:  amount,
+	})
+	if err != nil {
+		log.Error("participant.create: failed to add participant", "err", err)
+		return c.String(500, "Internal Server Error")
+	}
+
+	log.Debug("participant.create", "entry_id", id, "payee_id", signals.PayeeID)
+	return c.Redirect(303, "/entry/"+strconv.Itoa(id))
 }
