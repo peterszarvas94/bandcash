@@ -295,7 +295,18 @@ func (e *Entries) Destroy(c echo.Context) error {
 	}
 
 	log.Debug("entry.destroy", "id", id)
-	return c.Redirect(303, "/entry")
+
+	clientID, err := utils.GetClientID(c)
+	if err != nil {
+		log.Warn("entry.destroy: failed to read client_id", "err", err)
+		return c.NoContent(200)
+	}
+
+	if err := hub.Hub.Render(clientID); err != nil {
+		log.Warn("entry.destroy: failed to signal client", "err", err)
+	}
+
+	return c.NoContent(200)
 }
 
 func (e *Entries) AddParticipant(c echo.Context) error {
