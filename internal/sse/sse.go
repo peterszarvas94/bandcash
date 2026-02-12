@@ -79,7 +79,7 @@ func HandlerWithView(render ViewRenderer) echo.HandlerFunc {
 		}()
 
 		// Wait for signals and send updates. Updates are triggered by handlers
-		// calling hub.Hub.Render(clientID) for the current client.
+		// calling hub.Hub.Render(c) for the current client.
 		for {
 			select {
 			case <-r.Context().Done():

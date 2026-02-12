@@ -4,7 +4,10 @@ import (
 	"errors"
 	"sync"
 
+	"github.com/labstack/echo/v4"
 	"github.com/starfederation/datastar-go/datastar"
+
+	"bandcash/internal/utils"
 )
 
 type Client struct {
@@ -58,9 +61,14 @@ func (h *SSEHub) GetClient(id string) (*Client, error) {
 	return client, nil
 }
 
-func (h *SSEHub) Render(id string) error {
+func (h *SSEHub) Render(c echo.Context) error {
+	clientID, err := utils.GetClientID(c)
+	if err != nil {
+		return err
+	}
+
 	h.mu.RLock()
-	client, ok := h.clients[id]
+	client, ok := h.clients[clientID]
 	h.mu.RUnlock()
 
 	if !ok {

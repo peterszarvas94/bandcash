@@ -40,7 +40,7 @@ func Init(dbPath string) error {
 	// Initialize queries
 	Qry = New(DB)
 
-	slog.Info("database initialized", "path", dbPath)
+	slog.Info("database connected", "path", dbPath)
 	return nil
 }
 

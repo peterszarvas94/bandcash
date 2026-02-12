@@ -164,7 +164,7 @@ func (p *Payees) CreateTable(c echo.Context) error {
 		log.Warn("payee.create.table: failed to patch signals", "err", err)
 	}
 
-	if err := hub.Hub.Render(clientID); err != nil {
+	if err := hub.Hub.Render(c); err != nil {
 		log.Warn("payee.create.table: failed to signal client", "err", err)
 	}
 
@@ -231,7 +231,7 @@ func (p *Payees) UpdateTable(c echo.Context) error {
 		log.Warn("payee.update.table: failed to patch signals", "err", err)
 	}
 
-	if err := hub.Hub.Render(clientID); err != nil {
+	if err := hub.Hub.Render(c); err != nil {
 		log.Warn("payee.update.table: failed to signal client", "err", err)
 	}
 
@@ -255,13 +255,7 @@ func (p *Payees) Destroy(c echo.Context) error {
 
 	log.Debug("payee.destroy", "id", id)
 
-	clientID, err := utils.GetClientID(c)
-	if err != nil {
-		log.Warn("payee.destroy: failed to read client_id", "err", err)
-		return c.NoContent(200)
-	}
-
-	if err := hub.Hub.Render(clientID); err != nil {
+	if err := hub.Hub.Render(c); err != nil {
 		log.Warn("payee.destroy: failed to signal client", "err", err)
 	}
 

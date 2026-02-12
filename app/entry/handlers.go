@@ -198,7 +198,7 @@ func (e *Entries) CreateTable(c echo.Context) error {
 		log.Warn("entry.create.table: failed to patch signals", "err", err)
 	}
 
-	if err := hub.Hub.Render(clientID); err != nil {
+	if err := hub.Hub.Render(c); err != nil {
 		log.Warn("entry.create.table: failed to signal client", "err", err)
 	}
 
@@ -288,7 +288,7 @@ func (e *Entries) UpdateTable(c echo.Context) error {
 		log.Warn("entry.update.table: failed to patch signals", "err", err)
 	}
 
-	if err := hub.Hub.Render(clientID); err != nil {
+	if err := hub.Hub.Render(c); err != nil {
 		log.Warn("entry.update.table: failed to signal client", "err", err)
 	}
 
@@ -312,13 +312,7 @@ func (e *Entries) Destroy(c echo.Context) error {
 
 	log.Debug("entry.destroy", "id", id)
 
-	clientID, err := utils.GetClientID(c)
-	if err != nil {
-		log.Warn("entry.destroy: failed to read client_id", "err", err)
-		return c.NoContent(200)
-	}
-
-	if err := hub.Hub.Render(clientID); err != nil {
+	if err := hub.Hub.Render(c); err != nil {
 		log.Warn("entry.destroy: failed to signal client", "err", err)
 	}
 
@@ -367,7 +361,7 @@ func (e *Entries) AddParticipant(c echo.Context) error {
 		return c.NoContent(200)
 	}
 
-	if err := hub.Hub.Render(clientID); err != nil {
+	if err := hub.Hub.Render(c); err != nil {
 		log.Warn("participant.create: failed to signal client", "err", err)
 	}
 
@@ -425,7 +419,7 @@ func (e *Entries) AddParticipantTable(c echo.Context) error {
 		return c.NoContent(200)
 	}
 
-	if err := hub.Hub.Render(clientID); err != nil {
+	if err := hub.Hub.Render(c); err != nil {
 		log.Warn("participant.create.table: failed to signal client", "err", err)
 	}
 
@@ -481,7 +475,7 @@ func (e *Entries) UpdateParticipant(c echo.Context) error {
 		return c.NoContent(200)
 	}
 
-	if err := hub.Hub.Render(clientID); err != nil {
+	if err := hub.Hub.Render(c); err != nil {
 		log.Warn("participant.update: failed to signal client", "err", err)
 	}
 
@@ -537,7 +531,7 @@ func (e *Entries) UpdateParticipantTable(c echo.Context) error {
 		return c.NoContent(200)
 	}
 
-	if err := hub.Hub.Render(clientID); err != nil {
+	if err := hub.Hub.Render(c); err != nil {
 		log.Warn("participant.update.table: failed to signal client", "err", err)
 	}
 
@@ -580,7 +574,7 @@ func (e *Entries) DeleteParticipant(c echo.Context) error {
 		return c.NoContent(200)
 	}
 
-	if err := hub.Hub.Render(clientID); err != nil {
+	if err := hub.Hub.Render(c); err != nil {
 		log.Warn("participant.delete: failed to signal client", "err", err)
 	}
 
