@@ -2,29 +2,25 @@ package entry
 
 import (
 	"context"
-	"encoding/json"
 	"html/template"
 	"log/slog"
-	"strconv"
 
 	"bandcash/internal/db"
 	"bandcash/internal/view"
 )
 
 type EntryData struct {
-	Title            string
-	Entry            *db.Entry
-	Participants     []db.ListParticipantsByEntryRow
-	ParticipantsJSON template.JS
-	Payees           []db.Payee
-	PayeeIDs         map[int64]bool
-	Breadcrumbs      []view.Crumb
+	Title        string
+	Entry        *db.Entry
+	Participants []db.ListParticipantsByEntryRow
+	Payees       []db.Payee
+	PayeeIDs     map[int64]bool
+	Breadcrumbs  []view.Crumb
 }
 
 type EntriesData struct {
 	Title       string
 	Entries     []db.Entry
-	EntriesJSON template.JS
 	Breadcrumbs []view.Crumb
 }
 
@@ -100,22 +96,12 @@ func (e *Entries) GetShowData(ctx context.Context, id int) (EntryData, error) {
 
 	slog.Info("entry.show.data", "entry_id", id, "participants", len(participants), "payees_total", len(payees), "payees_filtered", len(filteredPayees))
 
-	// Build participants map for signals
-	participantsMap := make(map[string]map[string]interface{})
-	for _, p := range participants {
-		participantsMap[strconv.FormatInt(p.ID, 10)] = map[string]interface{}{
-			"amount": p.ParticipantAmount,
-		}
-	}
-	participantsJSON, _ := json.Marshal(participantsMap)
-
 	return EntryData{
-		Title:            entry.Title,
-		Entry:            entry,
-		Participants:     participants,
-		ParticipantsJSON: template.JS(participantsJSON),
-		Payees:           filteredPayees,
-		PayeeIDs:         payeeIDs,
+		Title:        entry.Title,
+		Entry:        entry,
+		Participants: participants,
+		Payees:       filteredPayees,
+		PayeeIDs:     payeeIDs,
 		Breadcrumbs: []view.Crumb{
 			{Label: "Entries", Href: "/entry"},
 			{Label: entry.Title},
@@ -151,22 +137,9 @@ func (e *Entries) GetIndexData(ctx context.Context) (any, error) {
 		return nil, err
 	}
 
-	// Build entries map for signals
-	entriesMap := make(map[string]map[string]interface{})
-	for _, entry := range entries {
-		entriesMap[strconv.FormatInt(entry.ID, 10)] = map[string]interface{}{
-			"title":       entry.Title,
-			"time":        entry.Time,
-			"description": entry.Description,
-			"amount":      entry.Amount,
-		}
-	}
-	entriesJSON, _ := json.Marshal(entriesMap)
-
 	return EntriesData{
-		Title:       "Entries",
-		Entries:     entries,
-		EntriesJSON: template.JS(entriesJSON),
+		Title:   "Entries",
+		Entries: entries,
 		Breadcrumbs: []view.Crumb{
 			{Label: "Entries"},
 		},

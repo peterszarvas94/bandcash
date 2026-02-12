@@ -4,7 +4,7 @@
   {{template "head" .}}
   <body>
     <div
-      data-signals="{view: '/entry/{{.Entry.ID}}', editingPayeeId: 0, addingParticipant: false, newParticipant: {payeeId: '', amount: 0}, participants: {{.ParticipantsJSON}}}"
+      data-signals="{view: '/entry/{{.Entry.ID}}', participantFormMode: '', editingPayeeId: 0, participantForm: {payeeId: '', payeeName: '', amount: 0}}"
       data-init="@get('/sse')"
     ></div>
     {{block "app" .}}
@@ -40,15 +40,19 @@
         </thead>
         <tbody>
           {{range .Participants}}
-          <tr data-show="$editingPayeeId !== {{.ID}}" style="display: none;">
+          <tr
+            data-payee-id="{{.ID}}"
+            data-payee-name="{{.Name}}"
+            data-participant-amount="{{.ParticipantAmount}}"
+          >
             <td><a href="/payee/{{.ID}}">{{.Name}}</a></td>
             <td>{{.Description}}</td>
             <td class="text-right">{{printf "%d" .ParticipantAmount}}</td>
             <td class="text-right">
-              <div class="row" data-show="$editingPayeeId === 0 && !$addingParticipant">
+              <div class="row" data-show="$participantFormMode === ''">
                 <button
                   type="button"
-                  data-on:click="$editingPayeeId = {{.ID}}"
+                  data-on:click="$participantFormMode = 'edit'; $editingPayeeId = {{.ID}}; $participantForm = {payeeId: el.closest('tr').dataset.payeeId, payeeName: el.closest('tr').dataset.payeeName, amount: el.closest('tr').dataset.participantAmount}"
                 >
                   Edit
                 </button>
@@ -61,78 +65,50 @@
               </div>
             </td>
           </tr>
-          <tr data-show="$editingPayeeId === {{.ID}}" style="display: none;">
-            <td><a href="/payee/{{.ID}}">{{.Name}}</a></td>
-            <td>{{.Description}}</td>
-            <td class="text-right">
-              <input
-                type="number"
-                data-bind="participants.{{.ID}}.amount"
-                step="1"
-                required
-              />
-            </td>
-            <td class="text-right">
-              <div class="row">
-                <button
-                  type="button"
-                  data-on:click="@put('/entry/{{$.Entry.ID}}/participants/{{.ID}}')"
-                >
-                  Save
-                </button>
-                <button
-                  type="button"
-                  data-on:click="$editingPayeeId = 0"
-                >
-                  Cancel
-                </button>
-              </div>
-            </td>
-          </tr>
           {{end}}
-          <tr data-show="$addingParticipant" style="display: none;">
-            <td>
-              <select data-bind="newParticipant.payeeId" required>
-                <option value="">Select payee</option>
-                {{range .Payees}}
-                <option value="{{.ID}}">{{.Name}}</option>
-                {{end}}
-              </select>
-            </td>
-            <td></td>
-            <td class="text-right">
-              <input
-                type="number"
-                data-bind="newParticipant.amount"
-                step="1"
-                required
-              />
-            </td>
-            <td class="text-right">
-              <div class="row">
-                <button type="button" data-on:click="@post('/entry/{{$.Entry.ID}}/participants')">
-                  Add
-                </button>
-                <button
-                  type="button"
-                  data-on:click="$addingParticipant = false; $newParticipant = {payeeId: '', amount: 0}"
-                >
-                  Cancel
-                </button>
-              </div>
-            </td>
-          </tr>
         </tbody>
       </table>
 
-      <p
-        class="row"
-        data-show="!$addingParticipant && $editingPayeeId === 0"
-      >
-        <button type="button" data-on:click="$addingParticipant = true">
+      <div data-show="$participantFormMode === ''" class="row">
+        <button type="button" data-on:click="$participantFormMode = 'add'; $editingPayeeId = 0; $participantForm = {payeeId: '', amount: 0}">
           Add participant
         </button>
-      </p>
+      </div>
+
+      <div data-show="$participantFormMode !== ''">
+        <h3 data-show="$participantFormMode === 'add'">New Participant</h3>
+        <h3 data-show="$participantFormMode === 'edit'">Edit Participant</h3>
+        <form class="form">
+          <div data-show="$participantFormMode === 'add'">
+            <label>Payee</label>
+            <select data-bind="participantForm.payeeId" required>
+              <option value="">Select payee</option>
+              {{range .Payees}}
+              <option value="{{.ID}}">{{.Name}}</option>
+              {{end}}
+            </select>
+          </div>
+          <div data-show="$participantFormMode === 'edit'">
+            <label>Payee</label>
+            <input type="text" data-bind="participantForm.payeeName" disabled />
+          </div>
+          <div>
+            <label>Amount</label>
+            <input type="number" data-bind="participantForm.amount" step="1" required />
+          </div>
+          <div class="row">
+            <button type="button" data-show="$participantFormMode === 'add'" data-on:click="@post('/entry/{{$.Entry.ID}}/participants')">
+              Add Participant
+            </button>
+            <button type="button" data-show="$participantFormMode === 'edit'" data-on:click="@put('/entry/{{$.Entry.ID}}/participants/' + $editingPayeeId)">
+              Update Participant
+            </button>
+            <button type="button" data-on:click="$participantFormMode = ''; $editingPayeeId = 0; $participantForm = {payeeId: '', payeeName: '', amount: 0}">
+              Cancel
+            </button>
+          </div>
+        </form>
+      </div>
 
     </main>
     {{end}}

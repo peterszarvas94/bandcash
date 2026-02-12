@@ -22,8 +22,7 @@ type entryParams struct {
 }
 
 type entryInlineParams struct {
-	Entries  map[string]entryData `json:"entries"`
-	NewEntry entryData            `json:"newEntry"`
+	FormData entryData `json:"formData"`
 }
 
 type entryData struct {
@@ -34,13 +33,13 @@ type entryData struct {
 }
 
 type participantParams struct {
-	Participants   map[string]participantData `json:"participants"`
-	NewParticipant participantData            `json:"newParticipant"`
+	ParticipantForm participantData `json:"participantForm"`
 }
 
 type participantData struct {
-	PayeeID json.RawMessage `json:"payeeId"`
-	Amount  json.RawMessage `json:"amount"`
+	PayeeID   json.RawMessage `json:"payeeId"`
+	PayeeName string          `json:"payeeName"`
+	Amount    json.RawMessage `json:"amount"`
 }
 
 func (e *Entries) Index(c echo.Context) error {
@@ -117,21 +116,30 @@ func (e *Entries) Create(c echo.Context) error {
 
 	var title, entryTime, description string
 	var amount int64
+	inline := false
 
-	if c.QueryParam("inline") == "1" {
+	var inlineSignals entryInlineParams
+	if err := datastar.ReadSignals(c.Request(), &inlineSignals); err == nil {
+		inline = inlineSignals.FormData.Title != "" ||
+			inlineSignals.FormData.Time != "" ||
+			inlineSignals.FormData.Description != "" ||
+			len(inlineSignals.FormData.Amount) > 0
+	}
+
+	if inline {
 		var signals entryInlineParams
 		if err := datastar.ReadSignals(c.Request(), &signals); err != nil {
 			log.Warn("entry.create: failed to read inline signals", "err", err)
 			return c.NoContent(400)
 		}
 
-		title = signals.NewEntry.Title
-		entryTime = signals.NewEntry.Time
-		description = signals.NewEntry.Description
+		title = signals.FormData.Title
+		entryTime = signals.FormData.Time
+		description = signals.FormData.Description
 		var err error
-		amount, err = utils.ParseRawInt64(signals.NewEntry.Amount)
+		amount, err = utils.ParseRawInt64(signals.FormData.Amount)
 		if err != nil {
-			log.Warn("entry.create: invalid amount", "amount", string(signals.NewEntry.Amount))
+			log.Warn("entry.create: invalid amount", "amount", string(signals.FormData.Amount))
 			return c.String(400, "Invalid amount")
 		}
 	} else {
@@ -170,7 +178,7 @@ func (e *Entries) Create(c echo.Context) error {
 
 	log.Debug("entry.create", "id", entry.ID, "title", entry.Title)
 
-	if c.QueryParam("inline") != "1" {
+	if !inline {
 		return c.Redirect(303, "/entry")
 	}
 
@@ -181,8 +189,9 @@ func (e *Entries) Create(c echo.Context) error {
 	}
 
 	if err := hub.Hub.PatchSignals(clientID, map[string]any{
-		"addingEntry": false,
-		"newEntry":    map[string]any{"title": "", "time": "", "description": "", "amount": ""},
+		"formMode":  "",
+		"editingId": 0,
+		"formData":  map[string]any{"title": "", "time": "", "description": "", "amount": 0},
 	}); err != nil {
 		log.Warn("entry.create: failed to patch signals", "err", err)
 	}
@@ -204,27 +213,30 @@ func (e *Entries) Update(c echo.Context) error {
 
 	var title, entryTime, description string
 	var amount int64
+	inline := false
 
-	if c.QueryParam("inline") == "1" {
+	var inlineSignals entryInlineParams
+	if err := datastar.ReadSignals(c.Request(), &inlineSignals); err == nil {
+		inline = inlineSignals.FormData.Title != "" ||
+			inlineSignals.FormData.Time != "" ||
+			inlineSignals.FormData.Description != "" ||
+			len(inlineSignals.FormData.Amount) > 0
+	}
+
+	if inline {
 		var signals entryInlineParams
 		if err := datastar.ReadSignals(c.Request(), &signals); err != nil {
 			log.Warn("entry.update: failed to read inline signals", "err", err)
 			return c.NoContent(400)
 		}
 
-		entryData, ok := signals.Entries[strconv.Itoa(id)]
-		if !ok {
-			log.Warn("entry.update: entry not found in signals", "id", id)
-			return c.String(400, "Entry data not found")
-		}
-
-		title = entryData.Title
-		entryTime = entryData.Time
-		description = entryData.Description
+		title = signals.FormData.Title
+		entryTime = signals.FormData.Time
+		description = signals.FormData.Description
 		var err error
-		amount, err = utils.ParseRawInt64(entryData.Amount)
+		amount, err = utils.ParseRawInt64(signals.FormData.Amount)
 		if err != nil {
-			log.Warn("entry.update: invalid amount", "amount", string(entryData.Amount))
+			log.Warn("entry.update: invalid amount", "amount", string(signals.FormData.Amount))
 			return c.String(400, "Invalid amount")
 		}
 	} else {
@@ -257,7 +269,7 @@ func (e *Entries) Update(c echo.Context) error {
 	}
 
 	log.Debug("entry.update", "id", id)
-	if c.QueryParam("inline") != "1" {
+	if !inline {
 		return c.Redirect(303, "/entry/"+strconv.Itoa(id))
 	}
 
@@ -268,7 +280,9 @@ func (e *Entries) Update(c echo.Context) error {
 	}
 
 	if err := hub.Hub.PatchSignals(clientID, map[string]any{
-		"editingEntryId": 0,
+		"formMode":  "",
+		"editingId": 0,
+		"formData":  map[string]any{"title": "", "time": "", "description": "", "amount": 0},
 	}); err != nil {
 		log.Warn("entry.update: failed to patch signals", "err", err)
 	}
@@ -324,15 +338,15 @@ func (e *Entries) AddParticipant(c echo.Context) error {
 		return c.NoContent(400)
 	}
 
-	payeeID, err := utils.ParseRawInt64(signals.NewParticipant.PayeeID)
+	payeeID, err := utils.ParseRawInt64(signals.ParticipantForm.PayeeID)
 	if err != nil {
-		log.Warn("participant.create: invalid payee_id", "payee_id", string(signals.NewParticipant.PayeeID))
+		log.Warn("participant.create: invalid payee_id", "payee_id", string(signals.ParticipantForm.PayeeID))
 		return c.String(400, "Invalid payee")
 	}
 
-	amount, err := utils.ParseRawInt64(signals.NewParticipant.Amount)
+	amount, err := utils.ParseRawInt64(signals.ParticipantForm.Amount)
 	if err != nil {
-		log.Warn("participant.create: invalid amount", "amount", string(signals.NewParticipant.Amount))
+		log.Warn("participant.create: invalid amount", "amount", string(signals.ParticipantForm.Amount))
 		return c.String(400, "Invalid amount")
 	}
 
@@ -357,9 +371,9 @@ func (e *Entries) AddParticipant(c echo.Context) error {
 	}
 
 	if err := hub.Hub.PatchSignals(clientID, map[string]any{
-		"addingParticipant": false,
-		"newParticipant":    map[string]any{"payeeId": "", "amount": 0},
-		"editingPayeeId":    0,
+		"participantFormMode": "",
+		"editingPayeeId":      0,
+		"participantForm":     map[string]any{"payeeId": "", "amount": 0},
 	}); err != nil {
 		log.Warn("participant.create: failed to patch signals", "err", err)
 	}
@@ -387,15 +401,9 @@ func (e *Entries) UpdateParticipant(c echo.Context) error {
 		return c.NoContent(400)
 	}
 
-	participantData, ok := signals.Participants[strconv.Itoa(payeeID)]
-	if !ok {
-		log.Warn("participant.update: participant not found in signals", "payee_id", payeeID)
-		return c.String(400, "Participant data not found")
-	}
-
-	amount, err := utils.ParseRawInt64(participantData.Amount)
+	amount, err := utils.ParseRawInt64(signals.ParticipantForm.Amount)
 	if err != nil {
-		log.Warn("participant.update: invalid amount", "amount", string(participantData.Amount))
+		log.Warn("participant.update: invalid amount", "amount", string(signals.ParticipantForm.Amount))
 		return c.String(400, "Invalid amount")
 	}
 
@@ -419,7 +427,9 @@ func (e *Entries) UpdateParticipant(c echo.Context) error {
 	}
 
 	if err := hub.Hub.PatchSignals(clientID, map[string]any{
-		"editingPayeeId": 0,
+		"participantFormMode": "",
+		"editingPayeeId":      0,
+		"participantForm":     map[string]any{"payeeId": "", "amount": 0},
 	}); err != nil {
 		log.Warn("participant.update: failed to patch signals", "err", err)
 	}
@@ -460,11 +470,9 @@ func (e *Entries) DeleteParticipant(c echo.Context) error {
 	}
 
 	if err := hub.Hub.PatchSignals(clientID, map[string]any{
-		"editingPayeeId":    0,
-		"editAmount":        "",
-		"addingParticipant": false,
-		"newPayeeId":        "",
-		"newAmount":         "",
+		"participantFormMode": "",
+		"editingPayeeId":      0,
+		"participantForm":     map[string]any{"payeeId": "", "amount": 0},
 	}); err != nil {
 		log.Warn("participant.delete: failed to patch signals", "err", err)
 	}

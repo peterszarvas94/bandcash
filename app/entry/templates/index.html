@@ -4,7 +4,7 @@
   {{template "head" .}}
   <body>
     <div
-      data-signals="{view: '/entry', editingEntryId: 0, addingEntry: false, newEntry: {title: '', time: '', description: '', amount: 0}, entries: {{.EntriesJSON}}}"
+      data-signals="{view: '/entry', formMode: '', editingId: 0, formData: {title: '', time: '', description: '', amount: 0}}"
       data-init="@get('/sse')"
     ></div>
     {{block "app" .}}
@@ -23,16 +23,21 @@
         </thead>
         <tbody>
           {{range .Entries}}
-          <tr data-show="$editingEntryId !== {{.ID}}" style="display: none">
+          <tr
+            data-entry-title="{{.Title}}"
+            data-entry-time="{{.Time}}"
+            data-entry-description="{{.Description}}"
+            data-entry-amount="{{.Amount}}"
+          >
             <td><a href="/entry/{{.ID}}">{{.Title}}</a></td>
             <td>{{.Time}}</td>
             <td>{{.Description}}</td>
             <td class="text-right">{{printf "%d" .Amount}}</td>
             <td>
-              <div class="row" data-show="$editingEntryId === 0 && !$addingEntry">
+              <div class="row" data-show="$formMode === ''">
                 <button
                   type="button"
-                  data-on:click="$editingEntryId = {{.ID}}"
+                  data-on:click="$formMode = 'edit'; $editingId = {{.ID}}; $formData = {title: el.closest('tr').dataset.entryTitle, time: el.closest('tr').dataset.entryTime, description: el.closest('tr').dataset.entryDescription, amount: el.closest('tr').dataset.entryAmount}"
                 >
                   Edit
                 </button>
@@ -44,87 +49,49 @@
               </div>
             </td>
           </tr>
-          <tr data-show="$editingEntryId === {{.ID}}" style="display: none">
-            <td>
-              <input type="text" data-bind="entries.{{.ID}}.title" required />
-            </td>
-            <td>
-              <input
-                type="datetime-local"
-                data-bind="entries.{{.ID}}.time"
-                required
-              />
-            </td>
-            <td>
-              <input type="text" data-bind="entries.{{.ID}}.description" />
-            </td>
-            <td class="text-right">
-              <input
-                type="number"
-                data-bind="entries.{{.ID}}.amount"
-                step="1"
-                required
-              />
-            </td>
-            <td>
-              <div class="row">
-                <button type="button" data-on:click="@put('/entry/{{.ID}}?inline=1')">
-                  Save
-                </button>
-                <button
-                  type="button"
-                  data-on:click="$editingEntryId = 0"
-                >
-                  Cancel
-                </button>
-              </div>
-            </td>
-          </tr>
           {{end}}
-          <tr data-show="$addingEntry" style="display: none">
-            <td>
-              <input type="text" data-bind="newEntry.title" required />
-            </td>
-            <td>
-              <input
-                type="datetime-local"
-                data-bind="newEntry.time"
-                required
-              />
-            </td>
-            <td>
-              <input type="text" data-bind="newEntry.description" />
-            </td>
-            <td class="text-right">
-              <input
-                type="number"
-                data-bind="newEntry.amount"
-                step="1"
-                required
-              />
-            </td>
-            <td>
-              <div class="row">
-                <button type="button" data-on:click="@post('/entry?inline=1')">
-                  Save
-                </button>
-                <button
-                  type="button"
-                  data-on:click="$addingEntry = false; $newEntry = {title: '', time: '', description: '', amount: 0}"
-                >
-                  Cancel
-                </button>
-              </div>
-            </td>
-          </tr>
         </tbody>
       </table>
 
-      <p class="row pb" data-show="$editingEntryId === 0 && !$addingEntry">
-        <button type="button" data-on:click="$addingEntry = true">
+      <div data-show="$formMode === ''" class="row pb">
+        <button type="button" data-on:click="$formMode = 'add'; $editingId = 0; $formData = {title: '', time: '', description: '', amount: 0}">
           Add entry
         </button>
-      </p>
+      </div>
+
+      <div data-show="$formMode !== ''">
+        <h3 data-show="$formMode === 'add'">New Entry</h3>
+        <h3 data-show="$formMode === 'edit'">Edit Entry</h3>
+        <form class="form">
+          <div>
+            <label>Title</label>
+            <input type="text" data-bind="formData.title" required />
+          </div>
+          <div>
+            <label>Time</label>
+            <input type="datetime-local" data-bind="formData.time" required />
+          </div>
+          <div>
+            <label>Description</label>
+            <input type="text" data-bind="formData.description" />
+          </div>
+          <div>
+            <label>Amount</label>
+            <input type="number" data-bind="formData.amount" step="1" required />
+          </div>
+          <div class="row">
+            <button type="button" data-show="$formMode === 'add'" data-on:click="@post('/entry')">
+              Create Entry
+            </button>
+            <button type="button" data-show="$formMode === 'edit'" data-on:click="@put('/entry/' + $editingId)">
+              Update Entry
+            </button>
+            <button type="button" data-on:click="$formMode = ''; $editingId = 0; $formData = {title: '', time: '', description: '', amount: 0}">
+              Cancel
+            </button>
+          </div>
+        </form>
+      </div>
     </main>
     {{end}}
   </body>
