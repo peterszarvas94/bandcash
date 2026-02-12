@@ -118,6 +118,13 @@ docker compose up --build
 3. Handlers read/write entries in SQLite via sqlc
 4. Responses re-render the requested pages
 
+## Realtime (SSE)
+
+- The client opens a single SSE stream at `/sse`.
+- A `view` signal (matching the route, e.g. `/entry/1`) is sent on connect.
+- The server renders the view and patches `main#app` via Datastar SSE events.
+- Handlers trigger updates by calling the hub (`hub.Hub.Render`) and can patch signals.
+
 ## License
 
 [O’Saasy](https://osaasy.dev/) © 2026 Peter Szarvas

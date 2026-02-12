@@ -17,6 +17,7 @@ import (
 	"bandcash/app/health"
 	"bandcash/app/home"
 	"bandcash/app/payee"
+	appSSE "bandcash/app/sse"
 	"bandcash/internal/config"
 	"bandcash/internal/db"
 	"bandcash/internal/logger"
@@ -81,6 +82,7 @@ func main() {
 	home.Register(e)
 	entry.Register(e)
 	payee.Register(e)
+	appSSE.Register(e)
 
 	// Graceful shutdown
 	go func() {

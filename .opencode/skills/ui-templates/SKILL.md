@@ -20,6 +20,7 @@ Use this for page layout, buttons, tables, and form changes.
 - Forms use `class="form"` and `data-on:submit` handlers.
 - Inputs use `data-bind` for Datastar signals.
 - Numeric inputs use `type="number"` and `step="0.01"`.
+- SSE views use `data-signals` + `data-init="@get('/sse')"`.
 
 ## Table conventions
 - Use `.table` class for tables.

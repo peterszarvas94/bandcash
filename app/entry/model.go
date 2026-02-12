@@ -3,6 +3,7 @@ package entry
 import (
 	"context"
 	"html/template"
+	"log/slog"
 
 	"bandcash/internal/db"
 )
@@ -12,6 +13,7 @@ type EntryData struct {
 	Entry        *db.Entry
 	Participants []db.ListParticipantsByEntryRow
 	Payees       []db.Payee
+	PayeeIDs     map[int64]bool
 }
 
 type EntriesData struct {
@@ -58,6 +60,46 @@ func (e *Entries) GetParticipants(ctx context.Context, entryID int) ([]db.ListPa
 
 func (e *Entries) GetPayees(ctx context.Context) ([]db.Payee, error) {
 	return db.Qry.ListPayees(ctx)
+}
+
+func (e *Entries) GetShowData(ctx context.Context, id int) (EntryData, error) {
+	entry, err := e.GetEntry(ctx, id)
+	if err != nil {
+		return EntryData{}, err
+	}
+
+	participants, err := e.GetParticipants(ctx, id)
+	if err != nil {
+		return EntryData{}, err
+	}
+
+	payees, err := e.GetPayees(ctx)
+	if err != nil {
+		return EntryData{}, err
+	}
+
+	payeeIDs := make(map[int64]bool, len(participants))
+	for _, participant := range participants {
+		payeeIDs[participant.ID] = true
+	}
+
+	filteredPayees := make([]db.Payee, 0, len(payees))
+	for _, payee := range payees {
+		if payeeIDs[payee.ID] {
+			continue
+		}
+		filteredPayees = append(filteredPayees, payee)
+	}
+
+	slog.Info("entry.show.data", "entry_id", id, "participants", len(participants), "payees_total", len(payees), "payees_filtered", len(filteredPayees))
+
+	return EntryData{
+		Title:        entry.Title,
+		Entry:        entry,
+		Participants: participants,
+		Payees:       filteredPayees,
+		PayeeIDs:     payeeIDs,
+	}, nil
 }
 
 func (e *Entries) UpdateEntry(ctx context.Context, id int, title, entryTime, description string, amount float64) (*db.Entry, error) {

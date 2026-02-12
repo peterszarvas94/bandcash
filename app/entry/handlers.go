@@ -8,6 +8,7 @@ import (
 	"github.com/starfederation/datastar-go/datastar"
 
 	"bandcash/internal/db"
+	"bandcash/internal/hub"
 	appmw "bandcash/internal/middleware"
 	"bandcash/internal/utils"
 )
@@ -52,30 +53,13 @@ func (e *Entries) Show(c echo.Context) error {
 		return c.String(400, "Invalid ID")
 	}
 
-	entry, err := e.GetEntry(c.Request().Context(), id)
+	data, err := e.GetShowData(c.Request().Context(), id)
 	if err != nil {
-		log.Error("entry.show: failed to get entry", "err", err)
+		log.Error("entry.show: failed to get data", "err", err)
 		return c.String(500, "Internal Server Error")
 	}
 
-	participants, err := e.GetParticipants(c.Request().Context(), id)
-	if err != nil {
-		log.Error("entry.show: failed to get participants", "err", err)
-		return c.String(500, "Internal Server Error")
-	}
-
-	payees, err := e.GetPayees(c.Request().Context())
-	if err != nil {
-		log.Error("entry.show: failed to get payees", "err", err)
-		return c.String(500, "Internal Server Error")
-	}
-
-	return e.tmpl.ExecuteTemplate(c.Response().Writer, "show", EntryData{
-		Title:        entry.Title,
-		Entry:        entry,
-		Participants: participants,
-		Payees:       payees,
-	})
+	return e.tmpl.ExecuteTemplate(c.Response().Writer, "show", data)
 }
 
 func (e *Entries) Edit(c echo.Context) error {
@@ -204,6 +188,20 @@ func (e *Entries) AddParticipant(c echo.Context) error {
 		return c.String(500, "Internal Server Error")
 	}
 
+	clientID, err := utils.GetClientID(c)
+	if err != nil {
+		log.Warn("participant.create: failed to read client_id", "err", err)
+		return c.NoContent(200)
+	}
+
+	if err := hub.Hub.Render(clientID); err != nil {
+		log.Warn("participant.create: failed to signal client", "err", err)
+	}
+
+	if err := hub.Hub.PatchSignals(clientID, map[string]any{"showAddParticipant": false}); err != nil {
+		log.Warn("participant.create: failed to patch signals", "err", err)
+	}
+
 	log.Debug("participant.create", "entry_id", id, "payee_id", signals.PayeeID)
-	return c.Redirect(303, "/entry/"+strconv.Itoa(id))
+	return c.NoContent(200)
 }

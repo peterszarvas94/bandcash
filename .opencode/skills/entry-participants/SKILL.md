@@ -15,8 +15,13 @@ Use this when adding participant UI or wiring add/remove participant actions.
 - Entry detail template: `app/entry/templates/show.html`
 - Entry handlers: `app/entry/handlers.go`
 - Participant queries: `internal/db/queries/participants.sql`
+- SSE hub: `internal/hub/store.go`
 
 ## UI conventions
 - Tables use `.table` and numeric values use `.text-right`.
 - Forms use `class="form"` and `data-on:submit`.
 - Number inputs use `type="number"` and `step="0.01"`.
+
+## SSE update pattern
+- Use `hub.Hub.Render(clientID)` to trigger re-render.
+- Optionally `hub.Hub.PatchSignals(clientID, ...)` for UI state.

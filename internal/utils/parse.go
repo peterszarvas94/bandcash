@@ -51,3 +51,21 @@ func ParseRawFloat64(value json.RawMessage) (float64, error) {
 
 	return 0, strconv.ErrSyntax
 }
+
+func ParseRawString(value json.RawMessage) (string, error) {
+	if len(value) == 0 {
+		return "", nil
+	}
+
+	var asString string
+	if err := json.Unmarshal(value, &asString); err == nil {
+		return asString, nil
+	}
+
+	var asNumber float64
+	if err := json.Unmarshal(value, &asNumber); err == nil {
+		return strconv.FormatFloat(asNumber, 'f', -1, 64), nil
+	}
+
+	return "", strconv.ErrSyntax
+}

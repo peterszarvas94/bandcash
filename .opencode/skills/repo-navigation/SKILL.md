@@ -14,6 +14,7 @@ Use this when you need to locate where to make changes without scanning the whol
 ## Key paths
 - Routes and handlers: `app/**/routes.go`, `app/**/handlers.go`
 - Models and data access: `app/**/model.go`, `internal/db/**`
+- SSE hub: `internal/hub/store.go`, `internal/sse/sse.go`
 - HTML templates: `app/**/templates/*.html`
 - Shared templates: `web/templates/*.html`
 - CSS: `web/static/css/*.css`
