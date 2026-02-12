@@ -58,7 +58,7 @@
                 </button>
                 <button
                   type="button"
-                  data-on:click="if (window.confirm('Delete this participant?')) { @delete('/entry/{{$.Entry.ID}}/participants/{{.ID}}') }"
+                  data-on:click="if (window.confirm('Delete this participant?')) { @delete('/entry/{{$.Entry.ID}}/participant/{{.ID}}') }"
                 >
                   Delete
                 </button>
@@ -78,7 +78,7 @@
         </button>
       </div>
 
-      <div data-show="$formState !== ''">
+      <div data-show="$formState !== ''" style="display: none">
         <h3 data-show="$formState === 'add'">New Participant</h3>
         <h3 data-show="$formState === 'edit'">Edit Participant</h3>
         <form class="form">
@@ -108,14 +108,14 @@
             <button
               type="button"
               data-show="$formState === 'add'"
-              data-on:click="@post('/entry/{{$.Entry.ID}}/participants/table')"
+              data-on:click="@post('/entry/{{$.Entry.ID}}/participant/table')"
             >
               Add Participant
             </button>
             <button
               type="button"
               data-show="$formState === 'edit'"
-              data-on:click="@put('/entry/{{$.Entry.ID}}/participants/' + $editingId + '/table')"
+              data-on:click="@put('/entry/{{$.Entry.ID}}/participant/' + $editingId + '/table')"
             >
               Update Participant
             </button>

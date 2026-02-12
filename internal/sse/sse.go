@@ -2,12 +2,12 @@ package sse
 
 import (
 	"encoding/json"
+	"log/slog"
 
 	"github.com/labstack/echo/v4"
 	"github.com/starfederation/datastar-go/datastar"
 
 	"bandcash/internal/hub"
-	appmw "bandcash/internal/middleware"
 	"bandcash/internal/utils"
 )
 
@@ -23,7 +23,7 @@ func HandlerWithView(render ViewRenderer) echo.HandlerFunc {
 	return func(c echo.Context) error {
 		r := c.Request()
 		w := c.Response().Writer
-		log := appmw.Logger(c)
+		log := slog.Default()
 
 		clientID, err := utils.GetClientID(c)
 		if err != nil {

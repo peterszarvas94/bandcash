@@ -39,7 +39,7 @@ func main() {
 		LogStatus: true,
 		LogURI:    true,
 		LogValuesFunc: func(c echo.Context, v middleware.RequestLoggerValues) error {
-			appmw.Logger(c).Info("request", "uri", v.URI, "method", c.Request().Method, "status", v.Status)
+			slog.Info("request", "uri", v.URI, "method", c.Request().Method, "status", v.Status)
 			return nil
 		},
 	}))

@@ -95,8 +95,13 @@ func (h *SSEHub) RenderAll() {
 	}
 }
 
-func (h *SSEHub) PatchSignals(id string, signals any) error {
-	client, err := h.GetClient(id)
+func (h *SSEHub) PatchSignals(c echo.Context, signals any) error {
+	clientID, err := utils.GetClientID(c)
+	if err != nil {
+		return err
+	}
+
+	client, err := h.GetClient(clientID)
 	if err != nil {
 		return err
 	}
