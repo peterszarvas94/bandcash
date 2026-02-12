@@ -81,7 +81,9 @@
     field-sizing: content;
     font: inherit;
     min-width: 12ch;
-    height: 2rem;
+    height: 2.5rem;
+    padding: var(--space) calc(var(--space) * 2);
+    border: var(--border) solid var(--border-color);
   }
 
   button {

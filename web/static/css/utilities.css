@@ -13,4 +13,8 @@
   .pb {
     padding-bottom: var(--space);
   }
+
+  .pt {
+    padding-top: var(--space);
+  }
 }

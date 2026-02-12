@@ -13,18 +13,6 @@
     td:last-child {
       white-space: nowrap;
     }
-
-    /* Table inputs should fill cells */
-    input,
-    select,
-    textarea {
-      width: 100%;
-    }
-  }
-
-    td:last-child {
-      white-space: nowrap;
-    }
   }
 
   .form {
@@ -39,10 +27,8 @@
     input,
     select,
     textarea {
-      width: 100%;
       field-sizing: fixed;
-      padding: var(--space) calc(var(--space) * 2);
-      border: var(--border) solid var(--border-color);
+      width: 100%;
     }
 
     button {
