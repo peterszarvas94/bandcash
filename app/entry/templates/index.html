@@ -4,7 +4,7 @@
   {{template "head" .}}
   <body>
     <div
-      data-signals="{view: '/entry', formMode: '', editingId: 0, formData: {title: '', time: '', description: '', amount: 0}}"
+      data-signals="{view: '/entry', formState: '', editingId: 0, formData: {title: '', time: '', description: '', amount: 0}}"
       data-init="@get('/sse')"
     ></div>
     {{block "app" .}}
@@ -34,10 +34,10 @@
             <td>{{.Description}}</td>
             <td class="text-right">{{printf "%d" .Amount}}</td>
             <td>
-              <div class="row" data-show="$formMode === ''">
+              <div class="row" data-show="$formState === ''">
                 <button
                   type="button"
-                  data-on:click="$formMode = 'edit'; $editingId = {{.ID}}; $formData = {title: el.closest('tr').dataset.entryTitle, time: el.closest('tr').dataset.entryTime, description: el.closest('tr').dataset.entryDescription, amount: el.closest('tr').dataset.entryAmount}"
+                  data-on:click="$formState = 'edit'; $editingId = {{.ID}}; $formData = {title: el.closest('tr').dataset.entryTitle, time: el.closest('tr').dataset.entryTime, description: el.closest('tr').dataset.entryDescription, amount: el.closest('tr').dataset.entryAmount}"
                 >
                   Edit
                 </button>
@@ -53,15 +53,18 @@
         </tbody>
       </table>
 
-      <div data-show="$formMode === ''" class="row pb">
-        <button type="button" data-on:click="$formMode = 'add'; $editingId = 0; $formData = {title: '', time: '', description: '', amount: 0}">
-          Add entry
+      <div data-show="$formState === ''" class="row pt">
+        <button
+          type="button"
+          data-on:click="$formState = 'add'; $editingId = 0; $formData = {title: '', time: '', description: '', amount: 0}"
+        >
+          Add Entry
         </button>
       </div>
 
-      <div data-show="$formMode !== ''">
-        <h3 data-show="$formMode === 'add'">New Entry</h3>
-        <h3 data-show="$formMode === 'edit'">Edit Entry</h3>
+      <div data-show="$formState !== ''">
+        <h3 data-show="$formState === 'add'">New Entry</h3>
+        <h3 data-show="$formState === 'edit'">Edit Entry</h3>
         <form class="form">
           <div>
             <label>Title</label>
@@ -77,16 +80,32 @@
           </div>
           <div>
             <label>Amount</label>
-            <input type="number" data-bind="formData.amount" step="1" required />
+            <input
+              type="number"
+              data-bind="formData.amount"
+              step="1"
+              required
+            />
           </div>
           <div class="row">
-            <button type="button" data-show="$formMode === 'add'" data-on:click="@post('/entry')">
+            <button
+              type="button"
+              data-show="$formState === 'add'"
+              data-on:click="@post('/entry/table')"
+            >
               Create Entry
             </button>
-            <button type="button" data-show="$formMode === 'edit'" data-on:click="@put('/entry/' + $editingId)">
+            <button
+              type="button"
+              data-show="$formState === 'edit'"
+              data-on:click="@put('/entry/' + $editingId + '/table')"
+            >
               Update Entry
             </button>
-            <button type="button" data-on:click="$formMode = ''; $editingId = 0; $formData = {title: '', time: '', description: '', amount: 0}">
+            <button
+              type="button"
+              data-on:click="$formState = ''; $editingId = 0; $formData = {title: '', time: '', description: '', amount: 0}"
+            >
               Cancel
             </button>
           </div>

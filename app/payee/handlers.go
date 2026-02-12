@@ -6,6 +6,7 @@ import (
 	"github.com/labstack/echo/v4"
 	"github.com/starfederation/datastar-go/datastar"
 
+	"bandcash/internal/hub"
 	appmw "bandcash/internal/middleware"
 	"bandcash/internal/utils"
 	"bandcash/internal/view"
@@ -14,6 +15,10 @@ import (
 type payeeParams struct {
 	Name        string `json:"name"`
 	Description string `json:"description"`
+}
+
+type payeeTableParams struct {
+	FormData payeeParams `json:"formData"`
 }
 
 func (p *Payees) Index(c echo.Context) error {
@@ -123,6 +128,49 @@ func (p *Payees) Create(c echo.Context) error {
 	return c.Redirect(303, "/payee")
 }
 
+func (p *Payees) CreateTable(c echo.Context) error {
+	log := appmw.Logger(c)
+
+	var signals payeeTableParams
+	if err := datastar.ReadSignals(c.Request(), &signals); err != nil {
+		log.Warn("payee.create.table: failed to read signals", "err", err)
+		return c.NoContent(400)
+	}
+
+	if signals.FormData.Name == "" {
+		log.Debug("payee.create.table: empty name")
+		return c.NoContent(200)
+	}
+
+	payee, err := p.CreatePayee(c.Request().Context(), signals.FormData.Name, signals.FormData.Description)
+	if err != nil {
+		log.Error("payee.create.table: failed to create payee", "err", err)
+		return c.String(500, "Internal Server Error")
+	}
+
+	log.Debug("payee.create.table", "id", payee.ID, "name", payee.Name)
+
+	clientID, err := utils.GetClientID(c)
+	if err != nil {
+		log.Warn("payee.create.table: failed to read client_id", "err", err)
+		return c.NoContent(200)
+	}
+
+	if err := hub.Hub.PatchSignals(clientID, map[string]any{
+		"formState": "",
+		"editingId": 0,
+		"formData":  map[string]any{"name": "", "description": ""},
+	}); err != nil {
+		log.Warn("payee.create.table: failed to patch signals", "err", err)
+	}
+
+	if err := hub.Hub.Render(clientID); err != nil {
+		log.Warn("payee.create.table: failed to signal client", "err", err)
+	}
+
+	return c.NoContent(200)
+}
+
 func (p *Payees) Update(c echo.Context) error {
 	log := appmw.Logger(c)
 
@@ -147,6 +195,49 @@ func (p *Payees) Update(c echo.Context) error {
 	return c.Redirect(303, "/payee/"+strconv.Itoa(id))
 }
 
+func (p *Payees) UpdateTable(c echo.Context) error {
+	log := appmw.Logger(c)
+
+	id, err := strconv.Atoi(c.Param("id"))
+	if err != nil {
+		return c.String(400, "Invalid ID")
+	}
+
+	var signals payeeTableParams
+	if err := datastar.ReadSignals(c.Request(), &signals); err != nil {
+		log.Warn("payee.update.table: failed to read signals", "err", err)
+		return c.NoContent(400)
+	}
+
+	_, err = p.UpdatePayee(c.Request().Context(), id, signals.FormData.Name, signals.FormData.Description)
+	if err != nil {
+		log.Error("payee.update.table: failed to update payee", "err", err)
+		return c.String(500, "Internal Server Error")
+	}
+
+	log.Debug("payee.update.table", "id", id)
+
+	clientID, err := utils.GetClientID(c)
+	if err != nil {
+		log.Warn("payee.update.table: failed to read client_id", "err", err)
+		return c.NoContent(200)
+	}
+
+	if err := hub.Hub.PatchSignals(clientID, map[string]any{
+		"formState": "",
+		"editingId": 0,
+		"formData":  map[string]any{"name": "", "description": ""},
+	}); err != nil {
+		log.Warn("payee.update.table: failed to patch signals", "err", err)
+	}
+
+	if err := hub.Hub.Render(clientID); err != nil {
+		log.Warn("payee.update.table: failed to signal client", "err", err)
+	}
+
+	return c.NoContent(200)
+}
+
 func (p *Payees) Destroy(c echo.Context) error {
 	log := appmw.Logger(c)
 
@@ -163,5 +254,16 @@ func (p *Payees) Destroy(c echo.Context) error {
 	}
 
 	log.Debug("payee.destroy", "id", id)
-	return c.Redirect(303, "/payee")
+
+	clientID, err := utils.GetClientID(c)
+	if err != nil {
+		log.Warn("payee.destroy: failed to read client_id", "err", err)
+		return c.NoContent(200)
+	}
+
+	if err := hub.Hub.Render(clientID); err != nil {
+		log.Warn("payee.destroy: failed to signal client", "err", err)
+	}
+
+	return c.NoContent(200)
 }

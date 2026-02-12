@@ -2,10 +2,12 @@ package main
 
 import (
 	"context"
+	"flag"
 	"fmt"
 	"log/slog"
 	"os"
 	"os/signal"
+	"sort"
 	"syscall"
 	"time"
 
@@ -24,18 +26,8 @@ import (
 )
 
 func main() {
-	cfg := config.Load()
-
-	// Initialize database
-	if err := db.Init(cfg.DBPath); err != nil {
-		slog.Error("failed to initialize database", "err", err)
-		os.Exit(1)
-	}
-	defer func() {
-		if err := db.Close(); err != nil {
-			slog.Error("failed to close database", "err", err)
-		}
-	}()
+	routesFlag := flag.Bool("routes", false, "Print routes and exit")
+	flag.Parse()
 
 	e := echo.New()
 	e.HideBanner = true
@@ -60,6 +52,33 @@ func main() {
 	entry.Register(e)
 	payee.Register(e)
 	appSSE.Register(e)
+
+	if *routesFlag {
+		routes := e.Routes()
+		sort.Slice(routes, func(i, j int) bool {
+			if routes[i].Path == routes[j].Path {
+				return routes[i].Method < routes[j].Method
+			}
+			return routes[i].Path < routes[j].Path
+		})
+		for _, route := range routes {
+			fmt.Printf("%s\t%s\n", route.Method, route.Path)
+		}
+		return
+	}
+
+	cfg := config.Load()
+
+	// Initialize database
+	if err := db.Init(cfg.DBPath); err != nil {
+		slog.Error("failed to initialize database", "err", err)
+		os.Exit(1)
+	}
+	defer func() {
+		if err := db.Close(); err != nil {
+			slog.Error("failed to close database", "err", err)
+		}
+	}()
 
 	// Graceful shutdown
 	go func() {

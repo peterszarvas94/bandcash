@@ -9,12 +9,15 @@ import (
 	"github.com/labstack/echo/v4"
 
 	"bandcash/app/entry"
+	"bandcash/app/payee"
 )
 
 type Renderer struct {
 	indexTmpl *template.Template
 	entryTmpl *template.Template
 	entries   *entry.Entries
+	payeeTmpl *template.Template
+	payees    *payee.Payees
 }
 
 func NewRenderer() *Renderer {
@@ -26,11 +29,17 @@ func NewRenderer() *Renderer {
 		"web/templates/breadcrumbs.html",
 		"app/entry/templates/index.html",
 	))
+	payeeTmpl := template.Must(template.ParseFiles(
+		"web/templates/breadcrumbs.html",
+		"app/payee/templates/index.html",
+	))
 
 	return &Renderer{
 		indexTmpl: indexTmpl,
 		entryTmpl: entryTmpl,
 		entries:   entry.New(),
+		payeeTmpl: payeeTmpl,
+		payees:    payee.New(),
 	}
 }
 
@@ -63,6 +72,19 @@ func (r *Renderer) Render(c echo.Context, view string) (string, error) {
 
 		var buf bytes.Buffer
 		if err := r.indexTmpl.ExecuteTemplate(&buf, "app", data); err != nil {
+			return "", err
+		}
+		return buf.String(), nil
+	}
+
+	if view == "/payee" {
+		data, err := r.payees.GetIndexData(c.Request().Context())
+		if err != nil {
+			return "", err
+		}
+
+		var buf bytes.Buffer
+		if err := r.payeeTmpl.ExecuteTemplate(&buf, "app", data); err != nil {
 			return "", err
 		}
 		return buf.String(), nil
