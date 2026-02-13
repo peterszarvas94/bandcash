@@ -26,11 +26,3 @@ func ValidateStruct(s interface{}) map[string]string {
 	}
 	return nil
 }
-
-// ValidateAndPatchSignals validates and returns signals with errors patched
-func ValidateAndPatchSignals(s interface{}) (map[string]any, bool) {
-	if errs := ValidateStruct(s); errs != nil {
-		return map[string]any{"errors": errs}, false
-	}
-	return map[string]any{"errors": map[string]string{}}, true
-}

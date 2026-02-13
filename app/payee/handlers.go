@@ -22,7 +22,7 @@ type payeeTableParams struct {
 	FormData payeeParams `json:"formData"`
 }
 
-// Default signal state for resetting payee forms
+// Default signal state for resetting payee forms on success
 var defaultPayeeSignals = map[string]any{
 	"formState": "",
 	"editingId": 0,
@@ -117,9 +117,9 @@ func (p *Payees) Create(c echo.Context) error {
 	}
 
 	// Validate
-	if errors := validation.ValidateStruct(signals.FormData); errors != nil {
-		hub.Hub.PatchSignals(c, map[string]any{"errors": errors})
+	if errs := validation.ValidateStruct(signals.FormData); errs != nil {
 		hub.Hub.Refresh(c)
+		hub.Hub.PatchSignals(c, map[string]any{"errors": errs})
 		return c.NoContent(422)
 	}
 
@@ -146,9 +146,9 @@ func (p *Payees) CreateTable(c echo.Context) error {
 	}
 
 	// Validate
-	if errors := validation.ValidateStruct(signals.FormData); errors != nil {
-		hub.Hub.PatchSignals(c, map[string]any{"errors": errors})
+	if errs := validation.ValidateStruct(signals.FormData); errs != nil {
 		hub.Hub.Refresh(c)
+		hub.Hub.PatchSignals(c, map[string]any{"errors": errs})
 		return c.NoContent(422)
 	}
 
@@ -160,13 +160,8 @@ func (p *Payees) CreateTable(c echo.Context) error {
 
 	slog.Debug("payee.create.table", "id", payee.ID, "name", payee.Name)
 
-	if err := hub.Hub.PatchSignals(c, defaultPayeeSignals); err != nil {
-		slog.Warn("payee.create.table: failed to patch signals", "err", err)
-	}
-
-	if err := hub.Hub.Refresh(c); err != nil {
-		slog.Warn("payee.create.table: failed to signal client", "err", err)
-	}
+	hub.Hub.PatchSignals(c, defaultPayeeSignals)
+	hub.Hub.Refresh(c)
 
 	return c.NoContent(200)
 }
@@ -184,9 +179,9 @@ func (p *Payees) Update(c echo.Context) error {
 	}
 
 	// Validate
-	if errors := validation.ValidateStruct(signals.FormData); errors != nil {
-		hub.Hub.PatchSignals(c, map[string]any{"errors": errors})
+	if errs := validation.ValidateStruct(signals.FormData); errs != nil {
 		hub.Hub.Refresh(c)
+		hub.Hub.PatchSignals(c, map[string]any{"errors": errs})
 		return c.NoContent(422)
 	}
 
@@ -218,9 +213,9 @@ func (p *Payees) UpdateTable(c echo.Context) error {
 	}
 
 	// Validate
-	if errors := validation.ValidateStruct(signals.FormData); errors != nil {
-		hub.Hub.PatchSignals(c, map[string]any{"errors": errors})
+	if errs := validation.ValidateStruct(signals.FormData); errs != nil {
 		hub.Hub.Refresh(c)
+		hub.Hub.PatchSignals(c, map[string]any{"errors": errs})
 		return c.NoContent(422)
 	}
 
@@ -232,22 +227,16 @@ func (p *Payees) UpdateTable(c echo.Context) error {
 
 	slog.Debug("payee.update.table", "id", id)
 
-	if err := hub.Hub.PatchSignals(c, defaultPayeeSignals); err != nil {
-		slog.Warn("payee.update.table: failed to patch signals", "err", err)
-	}
-
-	if err := hub.Hub.Refresh(c); err != nil {
-		slog.Warn("payee.update.table: failed to signal client", "err", err)
-	}
+	hub.Hub.PatchSignals(c, defaultPayeeSignals)
+	hub.Hub.Refresh(c)
 
 	return c.NoContent(200)
 }
 
 func (p *Payees) Destroy(c echo.Context) error {
-	idStr := c.Param("id")
-	id, err := strconv.Atoi(idStr)
+	id, err := utils.ParamInt(c, "id")
 	if err != nil {
-		slog.Warn("payee.destroy: invalid id", "id", idStr)
+		slog.Warn("payee.destroy: invalid id", "err", err)
 		return c.NoContent(400)
 	}
 
