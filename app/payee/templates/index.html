@@ -28,6 +28,7 @@
           <div>
             <label>Name</label>
             <input type="text" name="name" data-bind="formData.name" required />
+            <div data-show="$errors && $errors.name" class="color-error" data-text="$errors.name"></div>
           </div>
           <div>
             <label>Description</label>
@@ -36,6 +37,7 @@
               name="description"
               data-bind="formData.description"
             />
+            <div data-show="$errors && $errors.description" class="color-error" data-text="$errors.description"></div>
           </div>
           <div class="row">
             <button

@@ -51,6 +51,7 @@
               <option value="{{.ID}}">{{.Name}}</option>
               {{end}}
             </select>
+            <div data-show="$errors && $errors.payeeId" class="color-error" data-text="$errors.payeeId"></div>
           </div>
           <div data-show="$formState === 'edit'">
             <label>Payee</label>
@@ -64,6 +65,7 @@
               step="1"
               required
             />
+            <div data-show="$errors && $errors.amount" class="color-error" data-text="$errors.amount"></div>
           </div>
           <div class="row">
             <button

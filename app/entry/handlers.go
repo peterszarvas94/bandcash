@@ -11,6 +11,7 @@ import (
 	"bandcash/internal/db"
 	"bandcash/internal/hub"
 	"bandcash/internal/utils"
+	"bandcash/internal/validation"
 	"bandcash/internal/view"
 )
 
@@ -26,10 +27,10 @@ type entryInlineParams struct {
 }
 
 type entryData struct {
-	Title       string          `json:"title"`
-	Time        string          `json:"time"`
-	Description string          `json:"description"`
-	Amount      json.RawMessage `json:"amount"`
+	Title       string          `json:"title" validate:"required,min=1,max=255"`
+	Time        string          `json:"time" validate:"required"`
+	Description string          `json:"description" validate:"max=1000"`
+	Amount      json.RawMessage `json:"amount" validate:"required"`
 }
 
 type participantParams struct {
@@ -37,9 +38,9 @@ type participantParams struct {
 }
 
 type participantData struct {
-	PayeeID   json.RawMessage `json:"payeeId"`
+	PayeeID   json.RawMessage `json:"payeeId" validate:"required"`
 	PayeeName string          `json:"payeeName"`
-	Amount    json.RawMessage `json:"amount"`
+	Amount    json.RawMessage `json:"amount" validate:"required"`
 }
 
 type participantTableParams struct {
@@ -133,15 +134,35 @@ func (e *Entries) Create(c echo.Context) error {
 		return c.NoContent(400)
 	}
 
+	slog.Debug("entry.create: signals received", "formData", signals.FormData)
+
+	// Validate
+	if errs := validation.ValidateStruct(signals.FormData); errs != nil {
+		slog.Debug("entry.create: validation failed", "errors", errs)
+		hub.Hub.PatchSignals(c, map[string]any{"errors": errs})
+		if err := hub.Hub.Refresh(c); err != nil {
+			slog.Warn("entry.create: failed to refresh", "err", err)
+		}
+		return c.NoContent(422)
+	}
+
 	amount, err := utils.ParseRawInt64(signals.FormData.Amount)
 	if err != nil {
 		slog.Warn("entry.create: invalid amount", "amount", string(signals.FormData.Amount))
-		return c.String(400, "Invalid amount")
+		hub.Hub.PatchSignals(c, map[string]any{"errors": map[string]string{"amount": "Invalid amount"}})
+		if err := hub.Hub.Refresh(c); err != nil {
+			slog.Warn("entry.create: failed to refresh", "err", err)
+		}
+		return c.NoContent(422)
 	}
 
-	if signals.FormData.Title == "" {
-		slog.Debug("entry.create: empty title")
-		return c.NoContent(200)
+	if amount <= 0 {
+		slog.Debug("entry.create: amount <= 0", "amount", amount)
+		hub.Hub.PatchSignals(c, map[string]any{"errors": map[string]string{"amount": "Amount must be greater than 0"}})
+		if err := hub.Hub.Refresh(c); err != nil {
+			slog.Warn("entry.create: failed to refresh", "err", err)
+		}
+		return c.NoContent(422)
 	}
 
 	entry, err := e.CreateEntry(c.Request().Context(), signals.FormData.Title, signals.FormData.Time, signals.FormData.Description, amount)
@@ -160,22 +181,41 @@ func (e *Entries) Create(c echo.Context) error {
 }
 
 func (e *Entries) CreateTable(c echo.Context) error {
-
 	var signals entryInlineParams
 	if err := datastar.ReadSignals(c.Request(), &signals); err != nil {
 		slog.Warn("entry.create.table: failed to read signals", "err", err)
 		return c.NoContent(400)
 	}
 
+	slog.Debug("entry.create.table: signals received", "formData", signals.FormData)
+
+	// Validate
+	if errs := validation.ValidateStruct(signals.FormData); errs != nil {
+		slog.Debug("entry.create.table: validation failed", "errors", errs)
+		hub.Hub.PatchSignals(c, map[string]any{"errors": errs})
+		if err := hub.Hub.Refresh(c); err != nil {
+			slog.Warn("entry.create.table: failed to refresh", "err", err)
+		}
+		return c.NoContent(422)
+	}
+
 	amount, err := utils.ParseRawInt64(signals.FormData.Amount)
 	if err != nil {
 		slog.Warn("entry.create.table: invalid amount", "amount", string(signals.FormData.Amount))
-		return c.String(400, "Invalid amount")
+		hub.Hub.PatchSignals(c, map[string]any{"errors": map[string]string{"amount": "Invalid amount"}})
+		if err := hub.Hub.Refresh(c); err != nil {
+			slog.Warn("entry.create.table: failed to refresh", "err", err)
+		}
+		return c.NoContent(422)
 	}
 
-	if signals.FormData.Title == "" {
-		slog.Debug("entry.create.table: empty title")
-		return c.NoContent(200)
+	if amount <= 0 {
+		slog.Debug("entry.create.table: amount <= 0", "amount", amount)
+		hub.Hub.PatchSignals(c, map[string]any{"errors": map[string]string{"amount": "Amount must be greater than 0"}})
+		if err := hub.Hub.Refresh(c); err != nil {
+			slog.Warn("entry.create.table: failed to refresh", "err", err)
+		}
+		return c.NoContent(422)
 	}
 
 	entry, err := e.CreateEntry(c.Request().Context(), signals.FormData.Title, signals.FormData.Time, signals.FormData.Description, amount)
@@ -209,10 +249,25 @@ func (e *Entries) Update(c echo.Context) error {
 		return c.NoContent(400)
 	}
 
+	// Validate
+	if errors := validation.ValidateStruct(signals.FormData); errors != nil {
+		hub.Hub.PatchSignals(c, map[string]any{"errors": errors})
+		hub.Hub.Refresh(c)
+		return c.NoContent(422)
+	}
+
 	amount, err := utils.ParseRawInt64(signals.FormData.Amount)
 	if err != nil {
 		slog.Warn("entry.update: invalid amount", "amount", string(signals.FormData.Amount))
-		return c.String(400, "Invalid amount")
+		hub.Hub.PatchSignals(c, map[string]any{"errors": map[string]string{"amount": "Invalid amount"}})
+		hub.Hub.Refresh(c)
+		return c.NoContent(422)
+	}
+
+	if amount <= 0 {
+		hub.Hub.PatchSignals(c, map[string]any{"errors": map[string]string{"amount": "Amount must be greater than 0"}})
+		hub.Hub.Refresh(c)
+		return c.NoContent(422)
 	}
 
 	_, err = e.UpdateEntry(c.Request().Context(), id, signals.FormData.Title, signals.FormData.Time, signals.FormData.Description, amount)
@@ -243,10 +298,25 @@ func (e *Entries) UpdateTable(c echo.Context) error {
 		return c.NoContent(400)
 	}
 
+	// Validate
+	if errors := validation.ValidateStruct(signals.FormData); errors != nil {
+		hub.Hub.PatchSignals(c, map[string]any{"errors": errors})
+		hub.Hub.Refresh(c)
+		return c.NoContent(422)
+	}
+
 	amount, err := utils.ParseRawInt64(signals.FormData.Amount)
 	if err != nil {
 		slog.Warn("entry.update.table: invalid amount", "amount", string(signals.FormData.Amount))
-		return c.String(400, "Invalid amount")
+		hub.Hub.PatchSignals(c, map[string]any{"errors": map[string]string{"amount": "Invalid amount"}})
+		hub.Hub.Refresh(c)
+		return c.NoContent(422)
+	}
+
+	if amount <= 0 {
+		hub.Hub.PatchSignals(c, map[string]any{"errors": map[string]string{"amount": "Amount must be greater than 0"}})
+		hub.Hub.Refresh(c)
+		return c.NoContent(422)
 	}
 
 	_, err = e.UpdateEntry(c.Request().Context(), id, signals.FormData.Title, signals.FormData.Time, signals.FormData.Description, amount)
@@ -374,16 +444,41 @@ func (e *Entries) AddParticipantTable(c echo.Context) error {
 		return c.NoContent(400)
 	}
 
+	// Validate
+	if errs := validation.ValidateStruct(signals.FormData); errs != nil {
+		hub.Hub.PatchSignals(c, map[string]any{"errors": errs})
+		if err := hub.Hub.Refresh(c); err != nil {
+			slog.Warn("participant.create.table: failed to refresh", "err", err)
+		}
+		return c.NoContent(422)
+	}
+
 	payeeID, err := utils.ParseRawInt64(signals.FormData.PayeeID)
 	if err != nil {
 		slog.Warn("participant.create.table: invalid payee_id", "payee_id", string(signals.FormData.PayeeID))
-		return c.String(400, "Invalid payee")
+		hub.Hub.PatchSignals(c, map[string]any{"errors": map[string]string{"payeeId": "Invalid payee"}})
+		if err := hub.Hub.Refresh(c); err != nil {
+			slog.Warn("participant.create.table: failed to refresh", "err", err)
+		}
+		return c.NoContent(422)
 	}
 
 	amount, err := utils.ParseRawInt64(signals.FormData.Amount)
 	if err != nil {
 		slog.Warn("participant.create.table: invalid amount", "amount", string(signals.FormData.Amount))
-		return c.String(400, "Invalid amount")
+		hub.Hub.PatchSignals(c, map[string]any{"errors": map[string]string{"amount": "Invalid amount"}})
+		if err := hub.Hub.Refresh(c); err != nil {
+			slog.Warn("participant.create.table: failed to refresh", "err", err)
+		}
+		return c.NoContent(422)
+	}
+
+	if amount <= 0 {
+		hub.Hub.PatchSignals(c, map[string]any{"errors": map[string]string{"amount": "Amount must be greater than 0"}})
+		if err := hub.Hub.Refresh(c); err != nil {
+			slog.Warn("participant.create.table: failed to refresh", "err", err)
+		}
+		return c.NoContent(422)
 	}
 
 	_, err = db.Qry.AddParticipant(c.Request().Context(), db.AddParticipantParams{
@@ -471,10 +566,31 @@ func (e *Entries) UpdateParticipantTable(c echo.Context) error {
 		return c.NoContent(400)
 	}
 
+	// Validate
+	if errs := validation.ValidateStruct(signals.FormData); errs != nil {
+		hub.Hub.PatchSignals(c, map[string]any{"errors": errs})
+		if err := hub.Hub.Refresh(c); err != nil {
+			slog.Warn("participant.update.table: failed to refresh", "err", err)
+		}
+		return c.NoContent(422)
+	}
+
 	amount, err := utils.ParseRawInt64(signals.FormData.Amount)
 	if err != nil {
 		slog.Warn("participant.update.table: invalid amount", "amount", string(signals.FormData.Amount))
-		return c.String(400, "Invalid amount")
+		hub.Hub.PatchSignals(c, map[string]any{"errors": map[string]string{"amount": "Invalid amount"}})
+		if err := hub.Hub.Refresh(c); err != nil {
+			slog.Warn("participant.update.table: failed to refresh", "err", err)
+		}
+		return c.NoContent(422)
+	}
+
+	if amount <= 0 {
+		hub.Hub.PatchSignals(c, map[string]any{"errors": map[string]string{"amount": "Amount must be greater than 0"}})
+		if err := hub.Hub.Refresh(c); err != nil {
+			slog.Warn("participant.update.table: failed to refresh", "err", err)
+		}
+		return c.NoContent(422)
 	}
 
 	if err := db.Qry.UpdateParticipantAmount(c.Request().Context(), db.UpdateParticipantAmountParams{

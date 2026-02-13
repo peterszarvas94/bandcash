@@ -9,12 +9,13 @@ import (
 
 	"bandcash/internal/hub"
 	"bandcash/internal/utils"
+	"bandcash/internal/validation"
 	"bandcash/internal/view"
 )
 
 type payeeParams struct {
-	Name        string `json:"name"`
-	Description string `json:"description"`
+	Name        string `json:"name" validate:"required,min=1,max=255"`
+	Description string `json:"description" validate:"max=1000"`
 }
 
 type payeeTableParams struct {
@@ -115,9 +116,11 @@ func (p *Payees) Create(c echo.Context) error {
 		return c.NoContent(400)
 	}
 
-	if signals.FormData.Name == "" {
-		slog.Debug("payee.create: empty name")
-		return c.NoContent(200)
+	// Validate
+	if errors := validation.ValidateStruct(signals.FormData); errors != nil {
+		hub.Hub.PatchSignals(c, map[string]any{"errors": errors})
+		hub.Hub.Refresh(c)
+		return c.NoContent(422)
 	}
 
 	payee, err := p.CreatePayee(c.Request().Context(), signals.FormData.Name, signals.FormData.Description)
@@ -142,9 +145,11 @@ func (p *Payees) CreateTable(c echo.Context) error {
 		return c.NoContent(400)
 	}
 
-	if signals.FormData.Name == "" {
-		slog.Debug("payee.create.table: empty name")
-		return c.NoContent(200)
+	// Validate
+	if errors := validation.ValidateStruct(signals.FormData); errors != nil {
+		hub.Hub.PatchSignals(c, map[string]any{"errors": errors})
+		hub.Hub.Refresh(c)
+		return c.NoContent(422)
 	}
 
 	payee, err := p.CreatePayee(c.Request().Context(), signals.FormData.Name, signals.FormData.Description)
@@ -178,6 +183,13 @@ func (p *Payees) Update(c echo.Context) error {
 		return c.NoContent(400)
 	}
 
+	// Validate
+	if errors := validation.ValidateStruct(signals.FormData); errors != nil {
+		hub.Hub.PatchSignals(c, map[string]any{"errors": errors})
+		hub.Hub.Refresh(c)
+		return c.NoContent(422)
+	}
+
 	_, err = p.UpdatePayee(c.Request().Context(), id, signals.FormData.Name, signals.FormData.Description)
 	if err != nil {
 		slog.Error("payee.update: failed to update payee", "err", err)
@@ -203,6 +215,13 @@ func (p *Payees) UpdateTable(c echo.Context) error {
 	if err := datastar.ReadSignals(c.Request(), &signals); err != nil {
 		slog.Warn("payee.update.table: failed to read signals", "err", err)
 		return c.NoContent(400)
+	}
+
+	// Validate
+	if errors := validation.ValidateStruct(signals.FormData); errors != nil {
+		hub.Hub.PatchSignals(c, map[string]any{"errors": errors})
+		hub.Hub.Refresh(c)
+		return c.NoContent(422)
 	}
 
 	_, err = p.UpdatePayee(c.Request().Context(), id, signals.FormData.Name, signals.FormData.Description)

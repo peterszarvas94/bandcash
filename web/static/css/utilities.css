@@ -17,4 +17,8 @@
   .pt {
     padding-top: var(--space);
   }
+
+  .color-error {
+    color: var(--error-color);
+  }
 }

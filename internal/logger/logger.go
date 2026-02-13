@@ -143,18 +143,25 @@ func SetDefault(log *slog.Logger) {
 
 func init() {
 	cfg := config.Load()
-	SetDefault(New(os.Stdout, cfg.LogLevel))
 
 	if err := os.MkdirAll(filepath.Dir(cfg.LogFile), 0755); err != nil {
 		slog.Error("failed to create logs directory", "err", err)
 		os.Exit(1)
 	}
-	logFile, err := os.OpenFile(cfg.LogFile, os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0644)
+
+	timestamp := time.Now().Format("2006-01-02_150405")
+	ext := filepath.Ext(cfg.LogFile)
+	base := strings.TrimSuffix(cfg.LogFile, ext)
+	timestampedLogFile := fmt.Sprintf("%s_%s%s", base, timestamp, ext)
+
+	logFile, err := os.OpenFile(timestampedLogFile, os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0644)
 	if err != nil {
 		slog.Error("failed to open log file", "err", err)
 		os.Exit(1)
 	}
-	SetDefault(New(logFile, cfg.LogLevel))
+
+	log := New(logFile, cfg.LogLevel)
+	SetDefault(log)
 }
 
 func (m *MultiHandler) Enabled(ctx context.Context, level slog.Level) bool {

@@ -19,6 +19,7 @@
         <div>
           <label>Name</label>
           <input type="text" data-bind="formData.name" required />
+          <div data-show="$errors && $errors.name" class="color-error" data-text="$errors.name"></div>
         </div>
         <div>
           <label>Description</label>
@@ -26,6 +27,7 @@
             data-bind="formData.description"
             rows="3"
           ></textarea>
+          <div data-show="$errors && $errors.description" class="color-error" data-text="$errors.description"></div>
         </div>
         <div class="row">
           <button type="submit">Create Payee</button>

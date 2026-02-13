@@ -1,8 +1,0 @@
-@layer base {
-  /* Main app container */
-  main#app {
-    max-width: var(--content-width);
-    margin: 0 auto;
-    padding: var(--space);
-  }
-}

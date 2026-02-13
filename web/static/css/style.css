@@ -1,4 +1,3 @@
 @import url("/static/css/reset.css") layer(reset);
-@import url("/static/css/base.css") layer(base);
 @import url("/static/css/components.css") layer(components);
 @import url("/static/css/utilities.css") layer(utilities);
