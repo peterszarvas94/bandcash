@@ -23,11 +23,14 @@ type payeeTableParams struct {
 }
 
 // Default signal state for resetting payee forms on success
-var defaultPayeeSignals = map[string]any{
-	"formState": "",
-	"editingId": 0,
-	"formData":  map[string]any{"name": "", "description": ""},
-}
+var (
+	defaultPayeeSignals = map[string]any{
+		"formState": "",
+		"editingId": 0,
+		"formData":  map[string]any{"name": "", "description": ""},
+	}
+	payeeErrorFields = []string{"name", "description"}
+)
 
 func (p *Payees) Index(c echo.Context) error {
 	utils.EnsureClientID(c)
@@ -118,8 +121,7 @@ func (p *Payees) Create(c echo.Context) error {
 
 	// Validate
 	if errs := validation.ValidateStruct(signals.FormData); errs != nil {
-		hub.Hub.Refresh(c)
-		hub.Hub.PatchSignals(c, map[string]any{"errors": errs})
+		hub.Hub.PatchSignals(c, map[string]any{"errors": validation.WithErrors(payeeErrorFields, errs)})
 		return c.NoContent(422)
 	}
 
@@ -147,8 +149,7 @@ func (p *Payees) CreateTable(c echo.Context) error {
 
 	// Validate
 	if errs := validation.ValidateStruct(signals.FormData); errs != nil {
-		hub.Hub.Refresh(c)
-		hub.Hub.PatchSignals(c, map[string]any{"errors": errs})
+		hub.Hub.PatchSignals(c, map[string]any{"errors": validation.WithErrors(payeeErrorFields, errs)})
 		return c.NoContent(422)
 	}
 
@@ -180,8 +181,7 @@ func (p *Payees) Update(c echo.Context) error {
 
 	// Validate
 	if errs := validation.ValidateStruct(signals.FormData); errs != nil {
-		hub.Hub.Refresh(c)
-		hub.Hub.PatchSignals(c, map[string]any{"errors": errs})
+		hub.Hub.PatchSignals(c, map[string]any{"errors": validation.WithErrors(payeeErrorFields, errs)})
 		return c.NoContent(422)
 	}
 
@@ -214,8 +214,7 @@ func (p *Payees) UpdateTable(c echo.Context) error {
 
 	// Validate
 	if errs := validation.ValidateStruct(signals.FormData); errs != nil {
-		hub.Hub.Refresh(c)
-		hub.Hub.PatchSignals(c, map[string]any{"errors": errs})
+		hub.Hub.PatchSignals(c, map[string]any{"errors": validation.WithErrors(payeeErrorFields, errs)})
 		return c.NoContent(422)
 	}
 

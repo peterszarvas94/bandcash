@@ -51,6 +51,9 @@ var (
 		"editingId": 0,
 		"formData":  map[string]any{"payeeId": 0, "payeeName": "", "amount": 0},
 	}
+	// Error field lists for validation
+	entryErrorFields       = []string{"title", "time", "description", "amount"}
+	participantErrorFields = []string{"payeeId", "amount"}
 )
 
 func (e *Entries) Index(c echo.Context) error {
@@ -131,8 +134,7 @@ func (e *Entries) Create(c echo.Context) error {
 	// Validate
 	if errs := validation.ValidateStruct(signals.FormData); errs != nil {
 		slog.Debug("entry.create: validation failed", "errors", errs)
-		hub.Hub.Refresh(c)
-		hub.Hub.PatchSignals(c, map[string]any{"errors": errs})
+		hub.Hub.PatchSignals(c, map[string]any{"errors": validation.WithErrors(entryErrorFields, errs)})
 		return c.NoContent(422)
 	}
 
@@ -163,8 +165,7 @@ func (e *Entries) CreateTable(c echo.Context) error {
 	// Validate
 	if errs := validation.ValidateStruct(signals.FormData); errs != nil {
 		slog.Debug("entry.create.table: validation failed", "errors", errs)
-		hub.Hub.Refresh(c)
-		hub.Hub.PatchSignals(c, map[string]any{"errors": errs})
+		hub.Hub.PatchSignals(c, map[string]any{"errors": validation.WithErrors(entryErrorFields, errs)})
 		return c.NoContent(422)
 	}
 
@@ -196,8 +197,7 @@ func (e *Entries) Update(c echo.Context) error {
 
 	// Validate
 	if errs := validation.ValidateStruct(signals.FormData); errs != nil {
-		hub.Hub.Refresh(c)
-		hub.Hub.PatchSignals(c, map[string]any{"errors": errs})
+		hub.Hub.PatchSignals(c, map[string]any{"errors": validation.WithErrors(entryErrorFields, errs)})
 		return c.NoContent(422)
 	}
 
@@ -230,8 +230,7 @@ func (e *Entries) UpdateTable(c echo.Context) error {
 
 	// Validate
 	if errs := validation.ValidateStruct(signals.FormData); errs != nil {
-		hub.Hub.Refresh(c)
-		hub.Hub.PatchSignals(c, map[string]any{"errors": errs})
+		hub.Hub.PatchSignals(c, map[string]any{"errors": validation.WithErrors(entryErrorFields, errs)})
 		return c.NoContent(422)
 	}
 
@@ -303,8 +302,7 @@ func (e *Entries) AddParticipant(c echo.Context) error {
 
 	// Validate
 	if errs := validation.ValidateStruct(signals.ParticipantForm); errs != nil {
-		hub.Hub.Refresh(c)
-		hub.Hub.PatchSignals(c, map[string]any{"errors": errs})
+		hub.Hub.PatchSignals(c, map[string]any{"errors": validation.WithErrors(participantErrorFields, errs)})
 		return c.NoContent(422)
 	}
 
@@ -339,8 +337,7 @@ func (e *Entries) AddParticipantTable(c echo.Context) error {
 
 	// Validate
 	if errs := validation.ValidateStruct(signals.FormData); errs != nil {
-		hub.Hub.Refresh(c)
-		hub.Hub.PatchSignals(c, map[string]any{"errors": errs})
+		hub.Hub.PatchSignals(c, map[string]any{"errors": validation.WithErrors(participantErrorFields, errs)})
 		return c.NoContent(422)
 	}
 
@@ -380,8 +377,7 @@ func (e *Entries) UpdateParticipant(c echo.Context) error {
 
 	// Validate
 	if errs := validation.ValidateStruct(signals.ParticipantForm); errs != nil {
-		hub.Hub.Refresh(c)
-		hub.Hub.PatchSignals(c, map[string]any{"errors": errs})
+		hub.Hub.PatchSignals(c, map[string]any{"errors": validation.WithErrors(participantErrorFields, errs)})
 		return c.NoContent(422)
 	}
 
@@ -420,8 +416,7 @@ func (e *Entries) UpdateParticipantTable(c echo.Context) error {
 
 	// Validate
 	if errs := validation.ValidateStruct(signals.FormData); errs != nil {
-		hub.Hub.Refresh(c)
-		hub.Hub.PatchSignals(c, map[string]any{"errors": errs})
+		hub.Hub.PatchSignals(c, map[string]any{"errors": validation.WithErrors(participantErrorFields, errs)})
 		return c.NoContent(422)
 	}
 

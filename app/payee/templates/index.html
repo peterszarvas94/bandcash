@@ -15,7 +15,7 @@
       <div data-show="$formState === ''" class="row pb">
         <button
           type="button"
-          data-on:click="$formState = 'add'; $editingId = 0; $formData = {name: '', description: ''}"
+          data-on:click="$formState = 'add'; $editingId = 0; $formData = {name: '', description: ''}; $errors = {name: '', description: ''}"
         >
           Add Payee
         </button>
@@ -56,7 +56,7 @@
             </button>
             <button
               type="button"
-              data-on:click="$formState = ''; $editingId = 0; $formData = {name: '', description: ''}"
+              data-on:click="$formState = ''; $editingId = 0; $formData = {name: '', description: ''}; $errors = {name: '', description: ''}"
             >
               Cancel
             </button>
