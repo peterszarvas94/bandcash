@@ -115,7 +115,7 @@
               <div class="row" data-show="$formState === ''">
                 <button
                   type="button"
-                  data-on:click="$formState = 'edit'; $editingId = {{.ID}}; $formData = {payeeId: el.closest('tr').dataset.payeeId, payeeName: el.closest('tr').dataset.payeeName, amount: el.closest('tr').dataset.participantAmount}"
+                  data-on:click="$formState = 'edit'; $editingId = {{.ID}}; $formData = {payeeId: Number(el.closest('tr').dataset.payeeId), payeeName: el.closest('tr').dataset.payeeName, amount: Number(el.closest('tr').dataset.participantAmount)}"
                 >
                   Edit
                 </button>
