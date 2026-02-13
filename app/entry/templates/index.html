@@ -27,18 +27,30 @@
         <form class="form">
           <div>
             <label>Title</label>
-            <input type="text" data-bind="formData.title" required />
-            <div data-show="$errors && $errors.title" class="color-error" data-text="$errors.title"></div>
+            <input type="text" data-bind="formData.title" />
+            <div
+              data-show="$errors && $errors.title"
+              class="color-error"
+              data-text="$errors.title"
+            ></div>
           </div>
           <div>
             <label>Time</label>
-            <input type="datetime-local" data-bind="formData.time" required />
-            <div data-show="$errors && $errors.time" class="color-error" data-text="$errors.time"></div>
+            <input type="datetime-local" data-bind="formData.time" />
+            <div
+              data-show="$errors && $errors.time"
+              class="color-error"
+              data-text="$errors.time"
+            ></div>
           </div>
           <div>
             <label>Description</label>
             <input type="text" data-bind="formData.description" />
-            <div data-show="$errors && $errors.description" class="color-error" data-text="$errors.description"></div>
+            <div
+              data-show="$errors && $errors.description"
+              class="color-error"
+              data-text="$errors.description"
+            ></div>
           </div>
           <div>
             <label>Amount</label>
@@ -46,22 +58,25 @@
               type="number"
               data-bind="formData.amount"
               step="1"
-              required
             />
-            <div data-show="$errors && $errors.amount" class="color-error" data-text="$errors.amount"></div>
+            <div
+              data-show="$errors && $errors.amount"
+              class="color-error"
+              data-text="$errors.amount"
+            ></div>
           </div>
           <div class="row">
             <button
               type="button"
               data-show="$formState === 'add'"
-              data-on:click="@post('/entry/table')"
+              data-on:click="@post('/entry')"
             >
               Create Entry
             </button>
             <button
               type="button"
               data-show="$formState === 'edit'"
-              data-on:click="@put('/entry/' + $editingId + '/table')"
+              data-on:click="@put('/entry/' + $editingId + '/single')"
             >
               Update Entry
             </button>
@@ -106,7 +121,7 @@
                   Edit
                 </button>
                 <button
-                  data-on:click="if (window.confirm('Delete this entry?')) { @delete('/entry/{{.ID}}/table') }"
+                  data-on:click="if (window.confirm('Delete this entry?')) { @delete('/entry/{{.ID}}/single') }"
                 >
                   Delete
                 </button>

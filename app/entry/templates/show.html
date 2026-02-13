@@ -45,13 +45,17 @@
         <form class="form">
           <div data-show="$formState === 'add'">
             <label>Payee</label>
-            <select data-bind="formData.payeeId" required>
+            <select data-bind="formData.payeeId">
               <option value="">Select payee</option>
               {{range .Payees}}
               <option value="{{.ID}}">{{.Name}}</option>
               {{end}}
             </select>
-            <div data-show="$errors && $errors.payeeId" class="color-error" data-text="$errors.payeeId"></div>
+            <div
+              data-show="$errors && $errors.payeeId"
+              class="color-error"
+              data-text="$errors.payeeId"
+            ></div>
           </div>
           <div data-show="$formState === 'edit'">
             <label>Payee</label>
@@ -63,22 +67,25 @@
               type="number"
               data-bind="formData.amount"
               step="1"
-              required
             />
-            <div data-show="$errors && $errors.amount" class="color-error" data-text="$errors.amount"></div>
+            <div
+              data-show="$errors && $errors.amount"
+              class="color-error"
+              data-text="$errors.amount"
+            ></div>
           </div>
           <div class="row">
             <button
               type="button"
               data-show="$formState === 'add'"
-              data-on:click="@post('/entry/{{$.Entry.ID}}/participant/table')"
+              data-on:click="@post('/entry/{{$.Entry.ID}}/participant')"
             >
               Add Participant
             </button>
             <button
               type="button"
               data-show="$formState === 'edit'"
-              data-on:click="@put('/entry/{{$.Entry.ID}}/participant/' + $editingId + '/table')"
+              data-on:click="@put('/entry/{{$.Entry.ID}}/participant/' + $editingId)"
             >
               Update Participant
             </button>
@@ -121,7 +128,7 @@
                 </button>
                 <button
                   type="button"
-                  data-on:click="if (window.confirm('Delete this participant?')) { @delete('/entry/{{$.Entry.ID}}/participant/{{.ID}}/table') }"
+                  data-on:click="if (window.confirm('Delete this participant?')) { @delete('/entry/{{$.Entry.ID}}/participant/{{.ID}}') }"
                 >
                   Delete
                 </button>

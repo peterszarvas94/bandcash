@@ -19,18 +19,17 @@ func Register(e *echo.Echo) {
 	))
 
 	e.GET("/entry", entries.Index)
-	e.GET("/entry/new", entries.New)
-	e.POST("/entry", entries.Create)
-	e.POST("/entry/table", entries.CreateTable)
 	e.GET("/entry/:id", entries.Show)
 	e.GET("/entry/:id/edit", entries.Edit)
+
+	e.POST("/entry", entries.Create)
+	e.POST("/entry/:id/participant", entries.CreateParticipant)
+
 	e.PUT("/entry/:id", entries.Update)
-	e.PUT("/entry/:id/table", entries.UpdateTable)
-	e.DELETE("/entry/:id", entries.Destroy)
-	e.DELETE("/entry/:id/table", entries.DestroyTable)
-	e.POST("/entry/:id/participant", entries.AddParticipant)
-	e.POST("/entry/:id/participant/table", entries.AddParticipantTable)
+	e.PUT("/entry/:id/single", entries.UpdateSingle)
 	e.PUT("/entry/:id/participant/:payeeId", entries.UpdateParticipant)
-	e.PUT("/entry/:id/participant/:payeeId/table", entries.UpdateParticipantTable)
-	e.DELETE("/entry/:id/participant/:payeeId/table", entries.DeleteParticipantTable)
+
+	e.DELETE("/entry/:id", entries.Destroy)
+	e.DELETE("/entry/:id/single", entries.DestroySingle)
+	e.DELETE("/entry/:id/participant/:payeeId", entries.DeleteParticipantTable)
 }

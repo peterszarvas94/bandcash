@@ -21,7 +21,6 @@
           <input
             type="text"
             data-bind="formData.title"
-            required
           />
           <div data-show="$errors && $errors.title" class="color-error" data-text="$errors.title"></div>
         </div>
@@ -30,7 +29,6 @@
           <input
             type="datetime-local"
             data-bind="formData.time"
-            required
           />
           <div data-show="$errors && $errors.time" class="color-error" data-text="$errors.time"></div>
         </div>
@@ -45,7 +43,6 @@
             type="number"
             data-bind="formData.amount"
             step="1"
-            required
           />
           <div data-show="$errors && $errors.amount" class="color-error" data-text="$errors.amount"></div>
         </div>

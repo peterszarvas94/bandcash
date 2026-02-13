@@ -1,6 +1,8 @@
 package payee
 
 import (
+	"context"
+	"errors"
 	"log/slog"
 	"strconv"
 
@@ -10,7 +12,6 @@ import (
 	"bandcash/internal/hub"
 	"bandcash/internal/utils"
 	"bandcash/internal/validation"
-	"bandcash/internal/view"
 )
 
 type payeeParams struct {
@@ -45,17 +46,6 @@ func (p *Payees) Index(c echo.Context) error {
 	return p.tmpl.ExecuteTemplate(c.Response().Writer, "index", data)
 }
 
-func (p *Payees) New(c echo.Context) error {
-	utils.EnsureClientID(c)
-	return p.tmpl.ExecuteTemplate(c.Response().Writer, "new", PayeeData{
-		Title: "New Payee",
-		Breadcrumbs: []view.Crumb{
-			{Label: "Payees", Href: "/payee"},
-			{Label: "New"},
-		},
-	})
-}
-
 func (p *Payees) Show(c echo.Context) error {
 	utils.EnsureClientID(c)
 
@@ -64,27 +54,13 @@ func (p *Payees) Show(c echo.Context) error {
 		return c.String(400, "Invalid ID")
 	}
 
-	payee, err := p.GetPayee(c.Request().Context(), id)
+	data, err := p.GetShowData(c.Request().Context(), id)
 	if err != nil {
-		slog.Error("payee.show: failed to get payee", "err", err)
+		slog.Error("payee.show: failed to get data", "err", err)
 		return c.String(500, "Internal Server Error")
 	}
 
-	entries, err := p.GetEntries(c.Request().Context(), id)
-	if err != nil {
-		slog.Error("payee.show: failed to get entries", "err", err)
-		return c.String(500, "Internal Server Error")
-	}
-
-	return p.tmpl.ExecuteTemplate(c.Response().Writer, "show", PayeeData{
-		Title:   payee.Name,
-		Payee:   payee,
-		Entries: entries,
-		Breadcrumbs: []view.Crumb{
-			{Label: "Payees", Href: "/payee"},
-			{Label: payee.Name},
-		},
-	})
+	return p.tmpl.ExecuteTemplate(c.Response().Writer, "show", data)
 }
 
 func (p *Payees) Edit(c echo.Context) error {
@@ -95,52 +71,16 @@ func (p *Payees) Edit(c echo.Context) error {
 		return c.String(400, "Invalid ID")
 	}
 
-	payee, err := p.GetPayee(c.Request().Context(), id)
+	data, err := p.GetEditData(c.Request().Context(), id)
 	if err != nil {
-		slog.Error("payee.edit: failed to get payee", "err", err)
+		slog.Error("payee.edit: failed to get data", "err", err)
 		return c.String(500, "Internal Server Error")
 	}
 
-	return p.tmpl.ExecuteTemplate(c.Response().Writer, "edit", PayeeData{
-		Title: "Edit Payee",
-		Payee: payee,
-		Breadcrumbs: []view.Crumb{
-			{Label: "Payees", Href: "/payee"},
-			{Label: payee.Name, Href: "/payee/" + strconv.Itoa(id)},
-			{Label: "Edit"},
-		},
-	})
+	return p.tmpl.ExecuteTemplate(c.Response().Writer, "edit", data)
 }
 
 func (p *Payees) Create(c echo.Context) error {
-	var signals payeeTableParams
-	if err := datastar.ReadSignals(c.Request(), &signals); err != nil {
-		slog.Warn("payee.create: failed to read signals", "err", err)
-		return c.NoContent(400)
-	}
-
-	// Validate
-	if errs := validation.Validate(signals.FormData); errs != nil {
-		hub.Hub.PatchSignals(c, map[string]any{"errors": validation.WithErrors(payeeErrorFields, errs)})
-		return c.NoContent(422)
-	}
-
-	payee, err := p.CreatePayee(c.Request().Context(), signals.FormData.Name, signals.FormData.Description)
-	if err != nil {
-		slog.Error("payee.create: failed to create payee", "err", err)
-		return c.String(500, "Internal Server Error")
-	}
-
-	slog.Debug("payee.create", "id", payee.ID, "name", payee.Name)
-
-	if err := hub.Hub.Redirect(c, "/payee/"+strconv.FormatInt(payee.ID, 10)); err != nil {
-		slog.Warn("payee.create: failed to redirect", "err", err)
-	}
-
-	return c.NoContent(200)
-}
-
-func (p *Payees) CreateTable(c echo.Context) error {
 	var signals payeeTableParams
 	if err := datastar.ReadSignals(c.Request(), &signals); err != nil {
 		slog.Warn("payee.create.table: failed to read signals", "err", err)
@@ -194,13 +134,17 @@ func (p *Payees) Update(c echo.Context) error {
 	slog.Debug("payee.update", "id", id)
 
 	if err := hub.Hub.Redirect(c, "/payee/"+strconv.Itoa(id)); err != nil {
-		slog.Warn("payee.update: failed to redirect", "err", err)
+		if errors.Is(err, context.Canceled) {
+			slog.Debug("payee.update: redirect cancelled", "err", err)
+		} else {
+			slog.Warn("payee.update: failed to redirect", "err", err)
+		}
 	}
 
 	return c.NoContent(200)
 }
 
-func (p *Payees) UpdateTable(c echo.Context) error {
+func (p *Payees) UpdateSingle(c echo.Context) error {
 	id, err := utils.ParamInt(c, "id")
 	if err != nil {
 		return c.String(400, "Invalid ID")
@@ -208,7 +152,7 @@ func (p *Payees) UpdateTable(c echo.Context) error {
 
 	var signals payeeTableParams
 	if err := datastar.ReadSignals(c.Request(), &signals); err != nil {
-		slog.Warn("payee.update.table: failed to read signals", "err", err)
+		slog.Warn("payee.update.single: failed to read signals", "err", err)
 		return c.NoContent(400)
 	}
 
@@ -220,11 +164,11 @@ func (p *Payees) UpdateTable(c echo.Context) error {
 
 	_, err = p.UpdatePayee(c.Request().Context(), id, signals.FormData.Name, signals.FormData.Description)
 	if err != nil {
-		slog.Error("payee.update.table: failed to update payee", "err", err)
+		slog.Error("payee.update.single: failed to update payee", "err", err)
 		return c.String(500, "Internal Server Error")
 	}
 
-	slog.Debug("payee.update.table", "id", id)
+	slog.Debug("payee.update.single", "id", id)
 
 	hub.Hub.PatchSignals(c, defaultPayeeSignals)
 	hub.Hub.Refresh(c)

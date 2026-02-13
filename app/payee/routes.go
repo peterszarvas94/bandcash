@@ -19,12 +19,10 @@ func Register(e *echo.Echo) {
 	))
 
 	e.GET("/payee", payees.Index)
-	e.GET("/payee/new", payees.New)
 	e.POST("/payee", payees.Create)
-	e.POST("/payee/table", payees.CreateTable)
 	e.GET("/payee/:id", payees.Show)
 	e.GET("/payee/:id/edit", payees.Edit)
 	e.PUT("/payee/:id", payees.Update)
-	e.PUT("/payee/:id/table", payees.UpdateTable)
+	e.PUT("/payee/:id/single", payees.UpdateSingle)
 	e.DELETE("/payee/:id", payees.Destroy)
 }

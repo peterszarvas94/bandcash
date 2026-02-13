@@ -27,8 +27,12 @@
         <form class="form">
           <div>
             <label>Name</label>
-            <input type="text" name="name" data-bind="formData.name" required />
-            <div data-show="$errors && $errors.name" class="color-error" data-text="$errors.name"></div>
+            <input type="text" name="name" data-bind="formData.name" />
+            <div
+              data-show="$errors && $errors.name"
+              class="color-error"
+              data-text="$errors.name"
+            ></div>
           </div>
           <div>
             <label>Description</label>
@@ -37,20 +41,24 @@
               name="description"
               data-bind="formData.description"
             />
-            <div data-show="$errors && $errors.description" class="color-error" data-text="$errors.description"></div>
+            <div
+              data-show="$errors && $errors.description"
+              class="color-error"
+              data-text="$errors.description"
+            ></div>
           </div>
           <div class="row">
             <button
               type="button"
               data-show="$formState === 'add'"
-              data-on:click="@post('/payee/table')"
+              data-on:click="@post('/payee')"
             >
               Create Payee
             </button>
             <button
               type="button"
               data-show="$formState === 'edit'"
-              data-on:click="@put('/payee/' + $editingId + '/table')"
+              data-on:click="@put('/payee/' + $editingId + '/single')"
             >
               Update Payee
             </button>

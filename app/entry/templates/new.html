@@ -18,12 +18,12 @@
       >
         <div>
           <label>Title</label>
-          <input type="text" data-bind="formData.title" required />
+          <input type="text" data-bind="formData.title" />
           <div data-show="$errors && $errors.title" class="color-error" data-text="$errors.title"></div>
         </div>
         <div>
           <label>Time</label>
-          <input type="datetime-local" data-bind="formData.time" required />
+          <input type="datetime-local" data-bind="formData.time" />
           <div data-show="$errors && $errors.time" class="color-error" data-text="$errors.time"></div>
         </div>
         <div>
@@ -40,7 +40,6 @@
             type="number"
             data-bind="formData.amount"
             step="1"
-            required
           />
           <div data-show="$errors && $errors.amount" class="color-error" data-text="$errors.amount"></div>
         </div>

@@ -4,7 +4,7 @@
   {{template "head" .}}
   <body>
     <div
-      data-signals="{view: '/payee/{{.Payee.ID}}/edit', formData: {name: '{{.Payee.Name}}', description: '{{.Payee.Description}}'}"
+      data-signals="{view: '/payee/{{.Payee.ID}}/edit', formData: {name: {{printf "%q" .Payee.Name}}, description: {{printf "%q" .Payee.Description}}}}"
       data-init="@get('/sse')"
     ></div>
     {{block "app" .}}
@@ -21,13 +21,12 @@
           <input
             type="text"
             data-bind="formData.name"
-            required
           />
           <div data-show="$errors && $errors.name" class="color-error" data-text="$errors.name"></div>
         </div>
         <div>
           <label>Description</label>
-          <textarea data-bind="formData.description" rows="3"></textarea>
+          <textarea data-bind="formData.description" rows="3">{{.Payee.Description}}</textarea>
           <div data-show="$errors && $errors.description" class="color-error" data-text="$errors.description"></div>
         </div>
         <div class="row">

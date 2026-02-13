@@ -3,6 +3,7 @@ package payee
 import (
 	"context"
 	"html/template"
+	"strconv"
 
 	"bandcash/internal/db"
 	"bandcash/internal/view"
@@ -54,6 +55,45 @@ func (p *Payees) GetPayee(ctx context.Context, id int) (*db.Payee, error) {
 
 func (p *Payees) GetEntries(ctx context.Context, payeeID int) ([]db.ListParticipantsByPayeeRow, error) {
 	return db.Qry.ListParticipantsByPayee(ctx, int64(payeeID))
+}
+
+func (p *Payees) GetShowData(ctx context.Context, id int) (PayeeData, error) {
+	payee, err := p.GetPayee(ctx, id)
+	if err != nil {
+		return PayeeData{}, err
+	}
+
+	entries, err := p.GetEntries(ctx, id)
+	if err != nil {
+		return PayeeData{}, err
+	}
+
+	return PayeeData{
+		Title:   payee.Name,
+		Payee:   payee,
+		Entries: entries,
+		Breadcrumbs: []view.Crumb{
+			{Label: "Payees", Href: "/payee"},
+			{Label: payee.Name, Href: "/payee/" + strconv.Itoa(id)},
+		},
+	}, nil
+}
+
+func (p *Payees) GetEditData(ctx context.Context, id int) (PayeeData, error) {
+	payee, err := p.GetPayee(ctx, id)
+	if err != nil {
+		return PayeeData{}, err
+	}
+
+	return PayeeData{
+		Title: "Edit Payee",
+		Payee: payee,
+		Breadcrumbs: []view.Crumb{
+			{Label: "Payees", Href: "/payee"},
+			{Label: payee.Name, Href: "/payee/" + strconv.Itoa(id)},
+			{Label: "Edit"},
+		},
+	}, nil
 }
 
 func (p *Payees) UpdatePayee(ctx context.Context, id int, name, description string) (*db.Payee, error) {
