@@ -1,7 +1,6 @@
 package entry
 
 import (
-	"encoding/json"
 	"log/slog"
 	"strconv"
 
@@ -20,10 +19,10 @@ type entryInlineParams struct {
 }
 
 type entryData struct {
-	Title       string          `json:"title" validate:"required,min=1,max=255"`
-	Time        string          `json:"time" validate:"required"`
-	Description string          `json:"description" validate:"max=1000"`
-	Amount      json.RawMessage `json:"amount" validate:"required"`
+	Title       string `json:"title" validate:"required,min=1,max=255"`
+	Time        string `json:"time" validate:"required"`
+	Description string `json:"description" validate:"max=1000"`
+	Amount      int64  `json:"amount" validate:"required,gt=0"`
 }
 
 type participantParams struct {
@@ -31,9 +30,9 @@ type participantParams struct {
 }
 
 type participantData struct {
-	PayeeID   json.RawMessage `json:"payeeId" validate:"required"`
-	PayeeName string          `json:"payeeName"`
-	Amount    json.RawMessage `json:"amount" validate:"required"`
+	PayeeID   int64  `json:"payeeId" validate:"required,gt=0"`
+	PayeeName string `json:"payeeName"`
+	Amount    int64  `json:"amount" validate:"required,gt=0"`
 }
 
 type participantTableParams struct {
@@ -132,20 +131,14 @@ func (e *Entries) Create(c echo.Context) error {
 
 	slog.Debug("entry.create: signals received", "formData", signals.FormData)
 
-	// Validate
-	if errs := validation.ValidateStruct(signals.FormData); errs != nil {
+	// ValidateStruct
+	if errs := validation.Validate(signals.FormData); errs != nil {
 		slog.Debug("entry.create: validation failed", "errors", errs)
 		hub.Hub.PatchSignals(c, map[string]any{"errors": validation.WithErrors(entryErrorFields, errs)})
 		return c.NoContent(422)
 	}
 
-	amount, err := strconv.ParseInt(string(signals.FormData.Amount), 10, 64)
-	if err != nil {
-		hub.Hub.PatchSignals(c, map[string]any{"errors": validation.WithErrors(entryErrorFields, map[string]string{"amount": "Invalid amount"})})
-		return c.NoContent(422)
-	}
-
-	entry, err := e.CreateEntry(c.Request().Context(), signals.FormData.Title, signals.FormData.Time, signals.FormData.Description, amount)
+	entry, err := e.CreateEntry(c.Request().Context(), signals.FormData.Title, signals.FormData.Time, signals.FormData.Description, signals.FormData.Amount)
 	if err != nil {
 		slog.Error("entry.create: failed to create entry", "err", err)
 		return c.String(500, "Internal Server Error")
@@ -169,20 +162,14 @@ func (e *Entries) CreateTable(c echo.Context) error {
 
 	slog.Debug("entry.create.table: signals received", "formData", signals.FormData)
 
-	// Validate
-	if errs := validation.ValidateStruct(signals.FormData); errs != nil {
+	// ValidateStruct
+	if errs := validation.Validate(signals.FormData); errs != nil {
 		slog.Debug("entry.create.table: validation failed", "errors", errs)
 		hub.Hub.PatchSignals(c, map[string]any{"errors": validation.WithErrors(entryErrorFields, errs)})
 		return c.NoContent(422)
 	}
 
-	amount, err := strconv.ParseInt(string(signals.FormData.Amount), 10, 64)
-	if err != nil {
-		hub.Hub.PatchSignals(c, map[string]any{"errors": validation.WithErrors(entryErrorFields, map[string]string{"amount": "Invalid amount"})})
-		return c.NoContent(422)
-	}
-
-	entry, err := e.CreateEntry(c.Request().Context(), signals.FormData.Title, signals.FormData.Time, signals.FormData.Description, amount)
+	entry, err := e.CreateEntry(c.Request().Context(), signals.FormData.Title, signals.FormData.Time, signals.FormData.Description, signals.FormData.Amount)
 	if err != nil {
 		slog.Error("entry.create.table: failed to create entry", "err", err)
 		return c.String(500, "Internal Server Error")
@@ -208,19 +195,13 @@ func (e *Entries) Update(c echo.Context) error {
 		return c.NoContent(400)
 	}
 
-	// Validate
-	if errs := validation.ValidateStruct(signals.FormData); errs != nil {
+	// ValidateStruct
+	if errs := validation.Validate(signals.FormData); errs != nil {
 		hub.Hub.PatchSignals(c, map[string]any{"errors": validation.WithErrors(entryErrorFields, errs)})
 		return c.NoContent(422)
 	}
 
-	amount, err := strconv.ParseInt(string(signals.FormData.Amount), 10, 64)
-	if err != nil {
-		hub.Hub.PatchSignals(c, map[string]any{"errors": validation.WithErrors(entryErrorFields, map[string]string{"amount": "Invalid amount"})})
-		return c.NoContent(422)
-	}
-
-	_, err = e.UpdateEntry(c.Request().Context(), id, signals.FormData.Title, signals.FormData.Time, signals.FormData.Description, amount)
+	_, err = e.UpdateEntry(c.Request().Context(), id, signals.FormData.Title, signals.FormData.Time, signals.FormData.Description, signals.FormData.Amount)
 	if err != nil {
 		slog.Error("entry.update: failed to update entry", "err", err)
 		return c.String(500, "Internal Server Error")
@@ -249,20 +230,14 @@ func (e *Entries) UpdateTable(c echo.Context) error {
 
 	slog.Debug("entry.update.table: signals received", "formData", signals.FormData)
 
-	// Validate
-	if errs := validation.ValidateStruct(signals.FormData); errs != nil {
+	// ValidateStruct
+	if errs := validation.Validate(signals.FormData); errs != nil {
 		slog.Debug("entry.update.table: validation failed", "errors", errs)
 		hub.Hub.PatchSignals(c, map[string]any{"errors": validation.WithErrors(entryErrorFields, errs)})
 		return c.NoContent(422)
 	}
 
-	amount, err := strconv.ParseInt(string(signals.FormData.Amount), 10, 64)
-	if err != nil {
-		hub.Hub.PatchSignals(c, map[string]any{"errors": validation.WithErrors(entryErrorFields, map[string]string{"amount": "Invalid amount"})})
-		return c.NoContent(422)
-	}
-
-	_, err = e.UpdateEntry(c.Request().Context(), id, signals.FormData.Title, signals.FormData.Time, signals.FormData.Description, amount)
+	_, err = e.UpdateEntry(c.Request().Context(), id, signals.FormData.Title, signals.FormData.Time, signals.FormData.Description, signals.FormData.Amount)
 	if err != nil {
 		slog.Error("entry.update.table: failed to update entry", "err", err)
 		return c.String(500, "Internal Server Error")
@@ -328,28 +303,16 @@ func (e *Entries) AddParticipant(c echo.Context) error {
 		return c.NoContent(400)
 	}
 
-	// Validate
-	if errs := validation.ValidateStruct(signals.ParticipantForm); errs != nil {
+	// ValidateStruct
+	if errs := validation.Validate(signals.ParticipantForm); errs != nil {
 		hub.Hub.PatchSignals(c, map[string]any{"errors": validation.WithErrors(participantErrorFields, errs)})
-		return c.NoContent(422)
-	}
-
-	payeeID, err := strconv.ParseInt(string(signals.ParticipantForm.PayeeID), 10, 64)
-	if err != nil {
-		hub.Hub.PatchSignals(c, map[string]any{"errors": validation.WithErrors(participantErrorFields, map[string]string{"payeeId": "Invalid payee"})})
-		return c.NoContent(422)
-	}
-
-	amount, err := strconv.ParseInt(string(signals.ParticipantForm.Amount), 10, 64)
-	if err != nil {
-		hub.Hub.PatchSignals(c, map[string]any{"errors": validation.WithErrors(participantErrorFields, map[string]string{"amount": "Invalid amount"})})
 		return c.NoContent(422)
 	}
 
 	_, err = db.Qry.AddParticipant(c.Request().Context(), db.AddParticipantParams{
 		EntryID: int64(id),
-		PayeeID: payeeID,
-		Amount:  amount,
+		PayeeID: signals.ParticipantForm.PayeeID,
+		Amount:  signals.ParticipantForm.Amount,
 	})
 	if err != nil {
 		slog.Error("participant.create: failed to add participant", "err", err)
@@ -359,7 +322,7 @@ func (e *Entries) AddParticipant(c echo.Context) error {
 	hub.Hub.PatchSignals(c, defaultParticipantSignals)
 	hub.Hub.Refresh(c)
 
-	slog.Debug("participant.create", "entry_id", id, "payee_id", payeeID)
+	slog.Debug("participant.create", "entry_id", id, "payee_id", signals.ParticipantForm.PayeeID)
 	return c.NoContent(200)
 }
 
@@ -375,28 +338,16 @@ func (e *Entries) AddParticipantTable(c echo.Context) error {
 		return c.NoContent(400)
 	}
 
-	// Validate
-	if errs := validation.ValidateStruct(signals.FormData); errs != nil {
+	// ValidateStruct
+	if errs := validation.Validate(signals.FormData); errs != nil {
 		hub.Hub.PatchSignals(c, map[string]any{"errors": validation.WithErrors(participantErrorFields, errs)})
-		return c.NoContent(422)
-	}
-
-	payeeID, err := strconv.ParseInt(string(signals.FormData.PayeeID), 10, 64)
-	if err != nil {
-		hub.Hub.PatchSignals(c, map[string]any{"errors": validation.WithErrors(participantErrorFields, map[string]string{"payeeId": "Invalid payee"})})
-		return c.NoContent(422)
-	}
-
-	amount, err := strconv.ParseInt(string(signals.FormData.Amount), 10, 64)
-	if err != nil {
-		hub.Hub.PatchSignals(c, map[string]any{"errors": validation.WithErrors(participantErrorFields, map[string]string{"amount": "Invalid amount"})})
 		return c.NoContent(422)
 	}
 
 	_, err = db.Qry.AddParticipant(c.Request().Context(), db.AddParticipantParams{
 		EntryID: int64(id),
-		PayeeID: payeeID,
-		Amount:  amount,
+		PayeeID: signals.FormData.PayeeID,
+		Amount:  signals.FormData.Amount,
 	})
 	if err != nil {
 		slog.Error("participant.create.table: failed to add participant", "err", err)
@@ -406,7 +357,7 @@ func (e *Entries) AddParticipantTable(c echo.Context) error {
 	hub.Hub.Refresh(c)
 	hub.Hub.PatchSignals(c, defaultParticipantSignals)
 
-	slog.Debug("participant.create.table", "entry_id", id, "payee_id", payeeID)
+	slog.Debug("participant.create.table", "entry_id", id, "payee_id", signals.FormData.PayeeID)
 	return c.NoContent(200)
 }
 
@@ -427,20 +378,14 @@ func (e *Entries) UpdateParticipant(c echo.Context) error {
 		return c.NoContent(400)
 	}
 
-	// Validate
-	if errs := validation.ValidateStruct(signals.ParticipantForm); errs != nil {
+	// ValidateStruct
+	if errs := validation.Validate(signals.ParticipantForm); errs != nil {
 		hub.Hub.PatchSignals(c, map[string]any{"errors": validation.WithErrors(participantErrorFields, errs)})
 		return c.NoContent(422)
 	}
 
-	amount, err := strconv.ParseInt(string(signals.ParticipantForm.Amount), 10, 64)
-	if err != nil {
-		hub.Hub.PatchSignals(c, map[string]any{"errors": validation.WithErrors(participantErrorFields, map[string]string{"amount": "Invalid amount"})})
-		return c.NoContent(422)
-	}
-
 	if err := db.Qry.UpdateParticipantAmount(c.Request().Context(), db.UpdateParticipantAmountParams{
-		Amount:  amount,
+		Amount:  signals.ParticipantForm.Amount,
 		EntryID: int64(entryID),
 		PayeeID: int64(payeeID),
 	}); err != nil {
@@ -472,20 +417,14 @@ func (e *Entries) UpdateParticipantTable(c echo.Context) error {
 		return c.NoContent(400)
 	}
 
-	// Validate
-	if errs := validation.ValidateStruct(signals.FormData); errs != nil {
+	// ValidateStruct
+	if errs := validation.Validate(signals.FormData); errs != nil {
 		hub.Hub.PatchSignals(c, map[string]any{"errors": validation.WithErrors(participantErrorFields, errs)})
 		return c.NoContent(422)
 	}
 
-	amount, err := strconv.ParseInt(string(signals.FormData.Amount), 10, 64)
-	if err != nil {
-		hub.Hub.PatchSignals(c, map[string]any{"errors": validation.WithErrors(participantErrorFields, map[string]string{"amount": "Invalid amount"})})
-		return c.NoContent(422)
-	}
-
 	if err := db.Qry.UpdateParticipantAmount(c.Request().Context(), db.UpdateParticipantAmountParams{
-		Amount:  amount,
+		Amount:  signals.FormData.Amount,
 		EntryID: int64(entryID),
 		PayeeID: int64(payeeID),
 	}); err != nil {

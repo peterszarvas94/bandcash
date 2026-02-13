@@ -9,8 +9,8 @@ import (
 
 var validate = validator.New()
 
-// Errors returns a map of field names to error messages (lowercase keys)
-func Errors(err error) map[string]string {
+// MapErrora returns a map of field names to error messages (lowercase keys)
+func MapErrora(err error) map[string]string {
 	errors := make(map[string]string)
 	if validationErrors, ok := err.(validator.ValidationErrors); ok {
 		for _, e := range validationErrors {
@@ -20,16 +20,16 @@ func Errors(err error) map[string]string {
 	return errors
 }
 
-// ValidateStruct validates a struct and returns errors if any
-func ValidateStruct(s any) map[string]string {
+// Validate validates a struct and returns errors if any
+func Validate(s any) map[string]string {
 	if err := validate.Struct(s); err != nil {
-		return Errors(err)
+		return MapErrora(err)
 	}
 	return nil
 }
 
-// EmptyErrors creates an error map with all fields set to empty string
-func EmptyErrors(fields []string) map[string]string {
+// GetEmptyErrors creates an error map with all fields set to empty string
+func GetEmptyErrors(fields []string) map[string]string {
 	errs := make(map[string]string, len(fields))
 	for _, f := range fields {
 		errs[f] = ""
@@ -39,7 +39,7 @@ func EmptyErrors(fields []string) map[string]string {
 
 // WithErrors creates a complete error map with empty fields populated with actual errors
 func WithErrors(fields []string, actualErrors map[string]string) map[string]string {
-	errs := EmptyErrors(fields)
+	errs := GetEmptyErrors(fields)
 	maps.Copy(errs, actualErrors)
 	return errs
 }

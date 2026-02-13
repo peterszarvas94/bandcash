@@ -120,7 +120,7 @@ func (p *Payees) Create(c echo.Context) error {
 	}
 
 	// Validate
-	if errs := validation.ValidateStruct(signals.FormData); errs != nil {
+	if errs := validation.Validate(signals.FormData); errs != nil {
 		hub.Hub.PatchSignals(c, map[string]any{"errors": validation.WithErrors(payeeErrorFields, errs)})
 		return c.NoContent(422)
 	}
@@ -148,7 +148,7 @@ func (p *Payees) CreateTable(c echo.Context) error {
 	}
 
 	// Validate
-	if errs := validation.ValidateStruct(signals.FormData); errs != nil {
+	if errs := validation.Validate(signals.FormData); errs != nil {
 		hub.Hub.PatchSignals(c, map[string]any{"errors": validation.WithErrors(payeeErrorFields, errs)})
 		return c.NoContent(422)
 	}
@@ -180,7 +180,7 @@ func (p *Payees) Update(c echo.Context) error {
 	}
 
 	// Validate
-	if errs := validation.ValidateStruct(signals.FormData); errs != nil {
+	if errs := validation.Validate(signals.FormData); errs != nil {
 		hub.Hub.PatchSignals(c, map[string]any{"errors": validation.WithErrors(payeeErrorFields, errs)})
 		return c.NoContent(422)
 	}
@@ -213,7 +213,7 @@ func (p *Payees) UpdateTable(c echo.Context) error {
 	}
 
 	// Validate
-	if errs := validation.ValidateStruct(signals.FormData); errs != nil {
+	if errs := validation.Validate(signals.FormData); errs != nil {
 		hub.Hub.PatchSignals(c, map[string]any{"errors": validation.WithErrors(payeeErrorFields, errs)})
 		return c.NoContent(422)
 	}
