@@ -3,6 +3,11 @@
 <html lang="en">
   {{template "head" .}}
   <body>
+    <div
+      data-signals="{view: '/entry/new', formData: {title: '', time: '', description: '', amount: 0}}"
+      data-init="@get('/sse')"
+    ></div>
+    {{block "app" .}}
     <main id="app">
       <h1>{{.Title}}</h1>
       {{template "breadcrumbs" .}}
@@ -13,17 +18,16 @@
       >
         <div>
           <label>Title</label>
-          <input type="text" name="title" data-bind="title" required />
+          <input type="text" data-bind="formData.title" required />
         </div>
         <div>
           <label>Time</label>
-          <input type="datetime-local" name="time" data-bind="time" required />
+          <input type="datetime-local" data-bind="formData.time" required />
         </div>
         <div>
           <label>Description</label>
           <textarea
-            name="description"
-            data-bind="description"
+            data-bind="formData.description"
             rows="3"
           ></textarea>
         </div>
@@ -31,8 +35,7 @@
           <label>Amount</label>
           <input
             type="number"
-            name="amount"
-            data-bind="amount"
+            data-bind="formData.amount"
             step="1"
             required
           />
@@ -43,6 +46,7 @@
         </div>
       </form>
     </main>
+    {{end}}
   </body>
 </html>
 {{end}}

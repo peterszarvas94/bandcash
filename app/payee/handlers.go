@@ -21,6 +21,13 @@ type payeeTableParams struct {
 	FormData payeeParams `json:"formData"`
 }
 
+// Default signal state for resetting payee forms
+var defaultPayeeSignals = map[string]any{
+	"formState": "",
+	"editingId": 0,
+	"formData":  map[string]any{"name": "", "description": ""},
+}
+
 func (p *Payees) Index(c echo.Context) error {
 	utils.EnsureClientID(c)
 
@@ -102,25 +109,30 @@ func (p *Payees) Edit(c echo.Context) error {
 }
 
 func (p *Payees) Create(c echo.Context) error {
-	var signals payeeParams
+	var signals payeeTableParams
 	if err := datastar.ReadSignals(c.Request(), &signals); err != nil {
 		slog.Warn("payee.create: failed to read signals", "err", err)
 		return c.NoContent(400)
 	}
 
-	if signals.Name == "" {
+	if signals.FormData.Name == "" {
 		slog.Debug("payee.create: empty name")
 		return c.NoContent(200)
 	}
 
-	payee, err := p.CreatePayee(c.Request().Context(), signals.Name, signals.Description)
+	payee, err := p.CreatePayee(c.Request().Context(), signals.FormData.Name, signals.FormData.Description)
 	if err != nil {
 		slog.Error("payee.create: failed to create payee", "err", err)
 		return c.String(500, "Internal Server Error")
 	}
 
 	slog.Debug("payee.create", "id", payee.ID, "name", payee.Name)
-	return c.Redirect(303, "/payee")
+
+	if err := hub.Hub.Redirect(c, "/payee/"+strconv.FormatInt(payee.ID, 10)); err != nil {
+		slog.Warn("payee.create: failed to redirect", "err", err)
+	}
+
+	return c.NoContent(200)
 }
 
 func (p *Payees) CreateTable(c echo.Context) error {
@@ -143,15 +155,11 @@ func (p *Payees) CreateTable(c echo.Context) error {
 
 	slog.Debug("payee.create.table", "id", payee.ID, "name", payee.Name)
 
-	if err := hub.Hub.PatchSignals(c, map[string]any{
-		"formState": "",
-		"editingId": 0,
-		"formData":  map[string]any{"name": "", "description": ""},
-	}); err != nil {
+	if err := hub.Hub.PatchSignals(c, defaultPayeeSignals); err != nil {
 		slog.Warn("payee.create.table: failed to patch signals", "err", err)
 	}
 
-	if err := hub.Hub.Render(c); err != nil {
+	if err := hub.Hub.Refresh(c); err != nil {
 		slog.Warn("payee.create.table: failed to signal client", "err", err)
 	}
 
@@ -164,20 +172,25 @@ func (p *Payees) Update(c echo.Context) error {
 		return c.String(400, "Invalid ID")
 	}
 
-	var signals payeeParams
+	var signals payeeTableParams
 	if err := datastar.ReadSignals(c.Request(), &signals); err != nil {
 		slog.Warn("payee.update: failed to read signals", "err", err)
 		return c.NoContent(400)
 	}
 
-	_, err = p.UpdatePayee(c.Request().Context(), id, signals.Name, signals.Description)
+	_, err = p.UpdatePayee(c.Request().Context(), id, signals.FormData.Name, signals.FormData.Description)
 	if err != nil {
 		slog.Error("payee.update: failed to update payee", "err", err)
 		return c.String(500, "Internal Server Error")
 	}
 
 	slog.Debug("payee.update", "id", id)
-	return c.Redirect(303, "/payee/"+strconv.Itoa(id))
+
+	if err := hub.Hub.Redirect(c, "/payee/"+strconv.Itoa(id)); err != nil {
+		slog.Warn("payee.update: failed to redirect", "err", err)
+	}
+
+	return c.NoContent(200)
 }
 
 func (p *Payees) UpdateTable(c echo.Context) error {
@@ -200,15 +213,11 @@ func (p *Payees) UpdateTable(c echo.Context) error {
 
 	slog.Debug("payee.update.table", "id", id)
 
-	if err := hub.Hub.PatchSignals(c, map[string]any{
-		"formState": "",
-		"editingId": 0,
-		"formData":  map[string]any{"name": "", "description": ""},
-	}); err != nil {
+	if err := hub.Hub.PatchSignals(c, defaultPayeeSignals); err != nil {
 		slog.Warn("payee.update.table: failed to patch signals", "err", err)
 	}
 
-	if err := hub.Hub.Render(c); err != nil {
+	if err := hub.Hub.Refresh(c); err != nil {
 		slog.Warn("payee.update.table: failed to signal client", "err", err)
 	}
 
@@ -230,8 +239,8 @@ func (p *Payees) Destroy(c echo.Context) error {
 
 	slog.Debug("payee.destroy", "id", id)
 
-	if err := hub.Hub.Render(c); err != nil {
-		slog.Warn("payee.destroy: failed to signal client", "err", err)
+	if err := hub.Hub.Redirect(c, "/payee"); err != nil {
+		slog.Warn("payee.destroy: failed to redirect", "err", err)
 	}
 
 	return c.NoContent(200)

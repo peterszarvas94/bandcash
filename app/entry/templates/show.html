@@ -22,54 +22,15 @@
       <p class="row">
         <a href="/entry/{{.Entry.ID}}/edit">Edit</a>
         <button
-          data-on:click="if (window.confirm('Delete this entry?')) { @delete('/entry/{{.Entry.ID}}') }"
+          data-on:click="if (window.confirm('Delete this entry?')) { @delete('/entry/{{.Entry.ID}}').then(() => window.location.href = '/entry') }"
         >
           Delete
         </button>
       </p>
 
       <h2>Participants</h2>
-      <table class="table">
-        <thead>
-          <tr>
-            <th>Payee</th>
-            <th>Description</th>
-            <th>Amount</th>
-            <th></th>
-          </tr>
-        </thead>
-        <tbody>
-          {{range .Participants}}
-          <tr
-            data-payee-id="{{.ID}}"
-            data-payee-name="{{.Name}}"
-            data-participant-amount="{{.ParticipantAmount}}"
-          >
-            <td><a href="/payee/{{.ID}}">{{.Name}}</a></td>
-            <td>{{.Description}}</td>
-            <td class="text-right">{{printf "%d" .ParticipantAmount}}</td>
-            <td class="text-right">
-              <div class="row" data-show="$formState === ''">
-                <button
-                  type="button"
-                  data-on:click="$formState = 'edit'; $editingId = {{.ID}}; $formData = {payeeId: el.closest('tr').dataset.payeeId, payeeName: el.closest('tr').dataset.payeeName, amount: el.closest('tr').dataset.participantAmount}"
-                >
-                  Edit
-                </button>
-                <button
-                  type="button"
-                  data-on:click="if (window.confirm('Delete this participant?')) { @delete('/entry/{{$.Entry.ID}}/participant/{{.ID}}') }"
-                >
-                  Delete
-                </button>
-              </div>
-            </td>
-          </tr>
-          {{end}}
-        </tbody>
-      </table>
 
-      <div data-show="$formState === ''" class="row pt">
+      <div data-show="$formState === ''" class="row pb">
         <button
           type="button"
           data-on:click="$formState = 'add'; $editingId = 0; $formData = {payeeId: '', payeeName: '', amount: 0}"
@@ -78,7 +39,7 @@
         </button>
       </div>
 
-      <div data-show="$formState !== ''" style="display: none">
+      <div data-show="$formState !== ''" style="display: none" class="pb">
         <h3 data-show="$formState === 'add'">New Participant</h3>
         <h3 data-show="$formState === 'edit'">Edit Participant</h3>
         <form class="form">
@@ -128,6 +89,46 @@
           </div>
         </form>
       </div>
+
+      <table class="table">
+        <thead>
+          <tr>
+            <th>Payee</th>
+            <th>Description</th>
+            <th>Amount</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          {{range .Participants}}
+          <tr
+            data-payee-id="{{.ID}}"
+            data-payee-name="{{.Name}}"
+            data-participant-amount="{{.ParticipantAmount}}"
+          >
+            <td><a href="/payee/{{.ID}}">{{.Name}}</a></td>
+            <td>{{.Description}}</td>
+            <td class="text-right">{{printf "%d" .ParticipantAmount}}</td>
+            <td class="text-right">
+              <div class="row" data-show="$formState === ''">
+                <button
+                  type="button"
+                  data-on:click="$formState = 'edit'; $editingId = {{.ID}}; $formData = {payeeId: el.closest('tr').dataset.payeeId, payeeName: el.closest('tr').dataset.payeeName, amount: el.closest('tr').dataset.participantAmount}"
+                >
+                  Edit
+                </button>
+                <button
+                  type="button"
+                  data-on:click="if (window.confirm('Delete this participant?')) { @delete('/entry/{{$.Entry.ID}}/participant/{{.ID}}/table') }"
+                >
+                  Delete
+                </button>
+              </div>
+            </td>
+          </tr>
+          {{end}}
+        </tbody>
+      </table>
     </main>
     {{end}}
   </body>

@@ -61,7 +61,7 @@ func (h *SSEHub) GetClient(id string) (*Client, error) {
 	return client, nil
 }
 
-func (h *SSEHub) Render(c echo.Context) error {
+func (h *SSEHub) Refresh(c echo.Context) error {
 	clientID, err := utils.GetClientID(c)
 	if err != nil {
 		return err
@@ -106,6 +106,19 @@ func (h *SSEHub) PatchSignals(c echo.Context, signals any) error {
 		return err
 	}
 	return client.SSE.MarshalAndPatchSignals(signals)
+}
+
+func (h *SSEHub) Redirect(c echo.Context, url string) error {
+	clientID, err := utils.GetClientID(c)
+	if err != nil {
+		return err
+	}
+
+	client, err := h.GetClient(clientID)
+	if err != nil {
+		return err
+	}
+	return client.SSE.Redirect(url)
 }
 
 func (h *SSEHub) SetView(id, view string) {
