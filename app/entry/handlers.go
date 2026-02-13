@@ -228,8 +228,11 @@ func (e *Entries) UpdateTable(c echo.Context) error {
 		return c.NoContent(400)
 	}
 
+	slog.Debug("entry.update.table: signals received", "formData", signals.FormData)
+
 	// Validate
 	if errs := validation.ValidateStruct(signals.FormData); errs != nil {
+		slog.Debug("entry.update.table: validation failed", "errors", errs)
 		hub.Hub.PatchSignals(c, map[string]any{"errors": validation.WithErrors(entryErrorFields, errs)})
 		return c.NoContent(422)
 	}
