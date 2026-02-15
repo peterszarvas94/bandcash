@@ -98,10 +98,10 @@ func (e *Entries) GetEditData(ctx context.Context, id int) (EntryData, error) {
 	}, nil
 }
 
-func (e *Entries) GetIndexData(ctx context.Context) (any, error) {
+func (e *Entries) GetIndexData(ctx context.Context) (EntriesData, error) {
 	entries, err := db.Qry.ListEntries(ctx)
 	if err != nil {
-		return nil, err
+		return EntriesData{}, err
 	}
 
 	return EntriesData{

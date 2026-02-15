@@ -36,25 +36,26 @@ func (p *Payees) Index(c echo.Context) error {
 	data, err := p.GetIndexData(c.Request().Context())
 	if err != nil {
 		slog.Error("payee.list: failed to get data", "err", err)
-		return c.String(500, "Internal Server Error")
+		return c.NoContent(500)
 	}
 
-	slog.Debug("payee.index", "payee_count", len(data.(PayeesData).Payees))
+	slog.Debug("payee.index", "payee_count", len(data.Payees))
 	return utils.RenderTemplate(c.Response().Writer, p.tmpl, "index", data)
 }
 
 func (p *Payees) Show(c echo.Context) error {
 	utils.EnsureClientID(c)
 
-	id, err := utils.ParamInt(c, "id")
+	id, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
-		return c.String(400, "Invalid ID")
+		slog.Warn("payee.show: invalid id", "err", err)
+		return c.NoContent(400)
 	}
 
 	data, err := p.GetShowData(c.Request().Context(), id)
 	if err != nil {
 		slog.Error("payee.show: failed to get data", "err", err)
-		return c.String(500, "Internal Server Error")
+		return c.NoContent(500)
 	}
 
 	return utils.RenderTemplate(c.Response().Writer, p.tmpl, "show", data)
@@ -63,15 +64,16 @@ func (p *Payees) Show(c echo.Context) error {
 func (p *Payees) Edit(c echo.Context) error {
 	utils.EnsureClientID(c)
 
-	id, err := utils.ParamInt(c, "id")
+	id, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
-		return c.String(400, "Invalid ID")
+		slog.Warn("payee.edit: invalid id", "err", err)
+		return c.NoContent(400)
 	}
 
 	data, err := p.GetEditData(c.Request().Context(), id)
 	if err != nil {
 		slog.Error("payee.edit: failed to get data", "err", err)
-		return c.String(500, "Internal Server Error")
+		return c.NoContent(500)
 	}
 
 	return utils.RenderTemplate(c.Response().Writer, p.tmpl, "edit", data)
@@ -97,7 +99,7 @@ func (p *Payees) Create(c echo.Context) error {
 	})
 	if err != nil {
 		slog.Error("payee.create.table: failed to create payee", "err", err)
-		return c.String(500, "Internal Server Error")
+		return c.NoContent(500)
 	}
 
 	slog.Debug("payee.create.table", "id", payee.ID, "name", payee.Name)
@@ -111,7 +113,7 @@ func (p *Payees) Create(c echo.Context) error {
 	html, err := utils.RenderBlock(p.tmpl, "payee-index", data)
 	if err != nil {
 		slog.Error("payee.create.table: failed to render", "err", err)
-		return c.NoContent(200)
+		return c.NoContent(500)
 	}
 
 	utils.SSEHub.PatchHTML(c, html)
@@ -120,9 +122,10 @@ func (p *Payees) Create(c echo.Context) error {
 }
 
 func (p *Payees) Update(c echo.Context) error {
-	id, err := utils.ParamInt(c, "id")
+	id, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
-		return c.String(400, "Invalid ID")
+		slog.Warn("payee.update: invalid id", "err", err)
+		return c.NoContent(400)
 	}
 
 	var signals payeeTableParams
@@ -145,7 +148,7 @@ func (p *Payees) Update(c echo.Context) error {
 	})
 	if err != nil {
 		slog.Error("payee.update: failed to update payee", "err", err)
-		return c.String(500, "Internal Server Error")
+		return c.NoContent(500)
 	}
 
 	slog.Debug("payee.update", "id", id)
@@ -159,9 +162,10 @@ func (p *Payees) Update(c echo.Context) error {
 }
 
 func (p *Payees) UpdateSingle(c echo.Context) error {
-	id, err := utils.ParamInt(c, "id")
+	id, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
-		return c.String(400, "Invalid ID")
+		slog.Warn("payee.update.single: invalid id", "err", err)
+		return c.NoContent(400)
 	}
 
 	var signals payeeTableParams
@@ -184,7 +188,7 @@ func (p *Payees) UpdateSingle(c echo.Context) error {
 	})
 	if err != nil {
 		slog.Error("payee.update.single: failed to update payee", "err", err)
-		return c.String(500, "Internal Server Error")
+		return c.NoContent(500)
 	}
 
 	slog.Debug("payee.update.single", "id", id)
@@ -198,7 +202,7 @@ func (p *Payees) UpdateSingle(c echo.Context) error {
 	html, err := utils.RenderBlock(p.tmpl, "payee-index", data)
 	if err != nil {
 		slog.Error("payee.update.single: failed to render", "err", err)
-		return c.NoContent(200)
+		return c.NoContent(500)
 	}
 
 	utils.SSEHub.PatchHTML(c, html)
@@ -207,7 +211,7 @@ func (p *Payees) UpdateSingle(c echo.Context) error {
 }
 
 func (p *Payees) Destroy(c echo.Context) error {
-	id, err := utils.ParamInt(c, "id")
+	id, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
 		slog.Warn("payee.destroy: invalid id", "err", err)
 		return c.NoContent(400)
@@ -216,7 +220,7 @@ func (p *Payees) Destroy(c echo.Context) error {
 	err = db.Qry.DeletePayee(c.Request().Context(), int64(id))
 	if err != nil {
 		slog.Error("payee.destroy: failed to delete payee", "err", err)
-		return c.String(500, "Internal Server Error")
+		return c.NoContent(500)
 	}
 
 	slog.Debug("payee.destroy", "id", id)

@@ -23,8 +23,8 @@ var validate = func() *validator.Validate {
 	return v
 }()
 
-// MapErrora returns a map of field names to error messages.
-func MapErrora(err error) map[string]string {
+// MapErrors returns a map of field names to error messages.
+func MapErrors(err error) map[string]string {
 	errors := make(map[string]string)
 	if validationErrors, ok := err.(validator.ValidationErrors); ok {
 		for _, e := range validationErrors {
@@ -38,7 +38,7 @@ func MapErrora(err error) map[string]string {
 func Validate(s any) map[string]string {
 	err := validate.Struct(s)
 	if err != nil {
-		return MapErrora(err)
+		return MapErrors(err)
 	}
 	return nil
 }

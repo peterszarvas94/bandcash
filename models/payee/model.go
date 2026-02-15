@@ -73,10 +73,10 @@ func (p *Payees) GetEditData(ctx context.Context, id int) (PayeeData, error) {
 	}, nil
 }
 
-func (p *Payees) GetIndexData(ctx context.Context) (any, error) {
+func (p *Payees) GetIndexData(ctx context.Context) (PayeesData, error) {
 	payees, err := db.Qry.ListPayees(ctx)
 	if err != nil {
-		return nil, err
+		return PayeesData{}, err
 	}
 	return PayeesData{
 		Title:  "Payees",

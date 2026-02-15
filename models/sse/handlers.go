@@ -1,6 +1,7 @@
-package utils
+package sse
 
 import (
+	"bandcash/internal/utils"
 	"log/slog"
 
 	"github.com/labstack/echo/v4"
@@ -13,19 +14,19 @@ func SSEHandler() echo.HandlerFunc {
 		w := c.Response().Writer
 		log := slog.Default()
 
-		clientID, err := GetClientID(c)
+		clientID, err := utils.GetClientID(c)
 		if err != nil {
 			log.Warn("sse: no client_id cookie")
-			return c.String(400, "No client_id cookie")
+			return c.NoContent(400)
 		}
 
 		sseConn := datastar.NewSSE(w, r)
-		SSEHub.AddClient(clientID, sseConn)
+		utils.SSEHub.AddClient(clientID, sseConn)
 
 		log.Debug("sse: client connected", "client_id", clientID)
 
 		defer func() {
-			SSEHub.RemoveClient(clientID)
+			utils.SSEHub.RemoveClient(clientID)
 			log.Debug("sse: client disconnected", "client_id", clientID)
 		}()
 
