@@ -37,47 +37,18 @@ func (e *Entries) SetTemplate(tmpl *template.Template) {
 	e.tmpl = tmpl
 }
 
-func (e *Entries) CreateEntry(ctx context.Context, title, entryTime, description string, amount int64) (*db.Entry, error) {
-	entry, err := db.Qry.CreateEntry(ctx, db.CreateEntryParams{
-		Title:       title,
-		Time:        entryTime,
-		Description: description,
-		Amount:      amount,
-	})
-	if err != nil {
-		return nil, err
-	}
-	return &entry, nil
-}
-
-func (e *Entries) GetEntry(ctx context.Context, id int) (*db.Entry, error) {
+func (e *Entries) GetShowData(ctx context.Context, id int) (EntryData, error) {
 	entry, err := db.Qry.GetEntry(ctx, int64(id))
 	if err != nil {
-		return nil, err
+		return EntryData{}, err
 	}
-	return &entry, nil
-}
 
-func (e *Entries) GetParticipants(ctx context.Context, entryID int) ([]db.ListParticipantsByEntryRow, error) {
-	return db.Qry.ListParticipantsByEntry(ctx, int64(entryID))
-}
-
-func (e *Entries) GetPayees(ctx context.Context) ([]db.Payee, error) {
-	return db.Qry.ListPayees(ctx)
-}
-
-func (e *Entries) GetShowData(ctx context.Context, id int) (EntryData, error) {
-	entry, err := e.GetEntry(ctx, id)
+	participants, err := db.Qry.ListParticipantsByEntry(ctx, int64(id))
 	if err != nil {
 		return EntryData{}, err
 	}
 
-	participants, err := e.GetParticipants(ctx, id)
-	if err != nil {
-		return EntryData{}, err
-	}
-
-	payees, err := e.GetPayees(ctx)
+	payees, err := db.Qry.ListPayees(ctx)
 	if err != nil {
 		return EntryData{}, err
 	}
@@ -99,7 +70,7 @@ func (e *Entries) GetShowData(ctx context.Context, id int) (EntryData, error) {
 
 	return EntryData{
 		Title:        entry.Title,
-		Entry:        entry,
+		Entry:        &entry,
 		Participants: participants,
 		Payees:       filteredPayees,
 		PayeeIDs:     payeeIDs,
@@ -111,14 +82,14 @@ func (e *Entries) GetShowData(ctx context.Context, id int) (EntryData, error) {
 }
 
 func (e *Entries) GetEditData(ctx context.Context, id int) (EntryData, error) {
-	entry, err := e.GetEntry(ctx, id)
+	entry, err := db.Qry.GetEntry(ctx, int64(id))
 	if err != nil {
 		return EntryData{}, err
 	}
 
 	return EntryData{
 		Title: "Edit Entry",
-		Entry: entry,
+		Entry: &entry,
 		Breadcrumbs: []utils.Crumb{
 			{Label: "Entries", Href: "/entry"},
 			{Label: entry.Title, Href: "/entry/" + strconv.Itoa(id)},
@@ -127,30 +98,8 @@ func (e *Entries) GetEditData(ctx context.Context, id int) (EntryData, error) {
 	}, nil
 }
 
-func (e *Entries) UpdateEntry(ctx context.Context, id int, title, entryTime, description string, amount int64) (*db.Entry, error) {
-	updated, err := db.Qry.UpdateEntry(ctx, db.UpdateEntryParams{
-		Title:       title,
-		Time:        entryTime,
-		Description: description,
-		Amount:      amount,
-		ID:          int64(id),
-	})
-	if err != nil {
-		return nil, err
-	}
-	return &updated, nil
-}
-
-func (e *Entries) AllEntries(ctx context.Context) ([]db.Entry, error) {
-	return db.Qry.ListEntries(ctx)
-}
-
-func (e *Entries) DeleteEntry(ctx context.Context, id int) error {
-	return db.Qry.DeleteEntry(ctx, int64(id))
-}
-
 func (e *Entries) GetIndexData(ctx context.Context) (any, error) {
-	entries, err := e.AllEntries(ctx)
+	entries, err := db.Qry.ListEntries(ctx)
 	if err != nil {
 		return nil, err
 	}

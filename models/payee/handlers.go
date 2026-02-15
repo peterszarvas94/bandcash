@@ -7,6 +7,7 @@ import (
 	"github.com/labstack/echo/v4"
 	"github.com/starfederation/datastar-go/datastar"
 
+	"bandcash/internal/db"
 	"bandcash/internal/utils"
 )
 
@@ -90,7 +91,10 @@ func (p *Payees) Create(c echo.Context) error {
 		return c.NoContent(422)
 	}
 
-	payee, err := p.CreatePayee(c.Request().Context(), signals.FormData.Name, signals.FormData.Description)
+	payee, err := db.Qry.CreatePayee(c.Request().Context(), db.CreatePayeeParams{
+		Name:        signals.FormData.Name,
+		Description: signals.FormData.Description,
+	})
 	if err != nil {
 		slog.Error("payee.create.table: failed to create payee", "err", err)
 		return c.String(500, "Internal Server Error")
@@ -134,7 +138,11 @@ func (p *Payees) Update(c echo.Context) error {
 		return c.NoContent(422)
 	}
 
-	_, err = p.UpdatePayee(c.Request().Context(), id, signals.FormData.Name, signals.FormData.Description)
+	_, err = db.Qry.UpdatePayee(c.Request().Context(), db.UpdatePayeeParams{
+		Name:        signals.FormData.Name,
+		Description: signals.FormData.Description,
+		ID:          int64(id),
+	})
 	if err != nil {
 		slog.Error("payee.update: failed to update payee", "err", err)
 		return c.String(500, "Internal Server Error")
@@ -169,7 +177,11 @@ func (p *Payees) UpdateSingle(c echo.Context) error {
 		return c.NoContent(422)
 	}
 
-	_, err = p.UpdatePayee(c.Request().Context(), id, signals.FormData.Name, signals.FormData.Description)
+	_, err = db.Qry.UpdatePayee(c.Request().Context(), db.UpdatePayeeParams{
+		Name:        signals.FormData.Name,
+		Description: signals.FormData.Description,
+		ID:          int64(id),
+	})
 	if err != nil {
 		slog.Error("payee.update.single: failed to update payee", "err", err)
 		return c.String(500, "Internal Server Error")
@@ -201,7 +213,7 @@ func (p *Payees) Destroy(c echo.Context) error {
 		return c.NoContent(400)
 	}
 
-	err = p.DeletePayee(c.Request().Context(), id)
+	err = db.Qry.DeletePayee(c.Request().Context(), int64(id))
 	if err != nil {
 		slog.Error("payee.destroy: failed to delete payee", "err", err)
 		return c.String(500, "Internal Server Error")

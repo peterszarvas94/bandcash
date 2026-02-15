@@ -117,7 +117,12 @@ func (e *Entries) Create(c echo.Context) error {
 		return c.NoContent(422)
 	}
 
-	entry, err := e.CreateEntry(c.Request().Context(), signals.FormData.Title, signals.FormData.Time, signals.FormData.Description, signals.FormData.Amount)
+	entry, err := db.Qry.CreateEntry(c.Request().Context(), db.CreateEntryParams{
+		Title:       signals.FormData.Title,
+		Time:        signals.FormData.Time,
+		Description: signals.FormData.Description,
+		Amount:      signals.FormData.Amount,
+	})
 	if err != nil {
 		slog.Error("entry.create.table: failed to create entry", "err", err)
 		return c.String(500, "Internal Server Error")
@@ -162,7 +167,13 @@ func (e *Entries) Update(c echo.Context) error {
 		return c.NoContent(422)
 	}
 
-	_, err = e.UpdateEntry(c.Request().Context(), id, signals.FormData.Title, signals.FormData.Time, signals.FormData.Description, signals.FormData.Amount)
+	_, err = db.Qry.UpdateEntry(c.Request().Context(), db.UpdateEntryParams{
+		Title:       signals.FormData.Title,
+		Time:        signals.FormData.Time,
+		Description: signals.FormData.Description,
+		Amount:      signals.FormData.Amount,
+		ID:          int64(id),
+	})
 	if err != nil {
 		slog.Error("entry.update: failed to update entry", "err", err)
 		return c.String(500, "Internal Server Error")
@@ -200,7 +211,13 @@ func (e *Entries) UpdateSingle(c echo.Context) error {
 		return c.NoContent(422)
 	}
 
-	_, err = e.UpdateEntry(c.Request().Context(), id, signals.FormData.Title, signals.FormData.Time, signals.FormData.Description, signals.FormData.Amount)
+	_, err = db.Qry.UpdateEntry(c.Request().Context(), db.UpdateEntryParams{
+		Title:       signals.FormData.Title,
+		Time:        signals.FormData.Time,
+		Description: signals.FormData.Description,
+		Amount:      signals.FormData.Amount,
+		ID:          int64(id),
+	})
 	if err != nil {
 		slog.Error("entry.update.single: failed to update entry", "err", err)
 		return c.String(500, "Internal Server Error")
@@ -223,7 +240,7 @@ func (e *Entries) DestroySingle(c echo.Context) error {
 		return c.NoContent(400)
 	}
 
-	err = e.DeleteEntry(c.Request().Context(), id)
+	err = db.Qry.DeleteEntry(c.Request().Context(), int64(id))
 	if err != nil {
 		slog.Error("entry.destroy.single: failed to delete entry", "err", err)
 		return c.String(500, "Internal Server Error")
@@ -254,7 +271,7 @@ func (e *Entries) Destroy(c echo.Context) error {
 		return c.NoContent(400)
 	}
 
-	err = e.DeleteEntry(c.Request().Context(), id)
+	err = db.Qry.DeleteEntry(c.Request().Context(), int64(id))
 	if err != nil {
 		slog.Error("entry.destroy: failed to delete entry", "err", err)
 		return c.String(500, "Internal Server Error")

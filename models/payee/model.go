@@ -34,43 +34,20 @@ func (p *Payees) SetTemplate(tmpl *template.Template) {
 	p.tmpl = tmpl
 }
 
-func (p *Payees) CreatePayee(ctx context.Context, name, description string) (*db.Payee, error) {
-	payee, err := db.Qry.CreatePayee(ctx, db.CreatePayeeParams{
-		Name:        name,
-		Description: description,
-	})
-	if err != nil {
-		return nil, err
-	}
-	return &payee, nil
-}
-
-func (p *Payees) GetPayee(ctx context.Context, id int) (*db.Payee, error) {
-	payee, err := db.Qry.GetPayee(ctx, int64(id))
-	if err != nil {
-		return nil, err
-	}
-	return &payee, nil
-}
-
-func (p *Payees) GetEntries(ctx context.Context, payeeID int) ([]db.ListParticipantsByPayeeRow, error) {
-	return db.Qry.ListParticipantsByPayee(ctx, int64(payeeID))
-}
-
 func (p *Payees) GetShowData(ctx context.Context, id int) (PayeeData, error) {
-	payee, err := p.GetPayee(ctx, id)
+	payee, err := db.Qry.GetPayee(ctx, int64(id))
 	if err != nil {
 		return PayeeData{}, err
 	}
 
-	entries, err := p.GetEntries(ctx, id)
+	entries, err := db.Qry.ListParticipantsByPayee(ctx, int64(id))
 	if err != nil {
 		return PayeeData{}, err
 	}
 
 	return PayeeData{
 		Title:   payee.Name,
-		Payee:   payee,
+		Payee:   &payee,
 		Entries: entries,
 		Breadcrumbs: []utils.Crumb{
 			{Label: "Payees", Href: "/payee"},
@@ -80,14 +57,14 @@ func (p *Payees) GetShowData(ctx context.Context, id int) (PayeeData, error) {
 }
 
 func (p *Payees) GetEditData(ctx context.Context, id int) (PayeeData, error) {
-	payee, err := p.GetPayee(ctx, id)
+	payee, err := db.Qry.GetPayee(ctx, int64(id))
 	if err != nil {
 		return PayeeData{}, err
 	}
 
 	return PayeeData{
 		Title: "Edit Payee",
-		Payee: payee,
+		Payee: &payee,
 		Breadcrumbs: []utils.Crumb{
 			{Label: "Payees", Href: "/payee"},
 			{Label: payee.Name, Href: "/payee/" + strconv.Itoa(id)},
@@ -96,28 +73,8 @@ func (p *Payees) GetEditData(ctx context.Context, id int) (PayeeData, error) {
 	}, nil
 }
 
-func (p *Payees) UpdatePayee(ctx context.Context, id int, name, description string) (*db.Payee, error) {
-	updated, err := db.Qry.UpdatePayee(ctx, db.UpdatePayeeParams{
-		Name:        name,
-		Description: description,
-		ID:          int64(id),
-	})
-	if err != nil {
-		return nil, err
-	}
-	return &updated, nil
-}
-
-func (p *Payees) AllPayees(ctx context.Context) ([]db.Payee, error) {
-	return db.Qry.ListPayees(ctx)
-}
-
-func (p *Payees) DeletePayee(ctx context.Context, id int) error {
-	return db.Qry.DeletePayee(ctx, int64(id))
-}
-
 func (p *Payees) GetIndexData(ctx context.Context) (any, error) {
-	payees, err := p.AllPayees(ctx)
+	payees, err := db.Qry.ListPayees(ctx)
 	if err != nil {
 		return nil, err
 	}
