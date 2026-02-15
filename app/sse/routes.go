@@ -1,6 +1,8 @@
 package sse
 
 import (
+	"html/template"
+
 	"github.com/labstack/echo/v4"
 
 	"bandcash/app/entry"
@@ -8,10 +10,10 @@ import (
 	"bandcash/internal/sse"
 )
 
-func Register(e *echo.Echo) {
+func Register(e *echo.Echo, entryTmpl, payeeTmpl *template.Template) {
 	registry := sse.NewRegistry()
-	registry.Add(entry.NewSSERenderer().Render)
-	registry.Add(payee.NewSSERenderer().Render)
+	registry.Add(entry.NewSSERenderer(entryTmpl).Render)
+	registry.Add(payee.NewSSERenderer(payeeTmpl).Render)
 
 	e.GET("/sse", sse.HandlerWithView(registry.Render))
 }

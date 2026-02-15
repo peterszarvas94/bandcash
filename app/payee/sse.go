@@ -8,46 +8,32 @@ import (
 	"github.com/labstack/echo/v4"
 
 	"bandcash/internal/sse"
+	"bandcash/internal/view"
 )
 
 type SSERenderer struct {
-	indexTmpl *template.Template
-	showTmpl  *template.Template
-	editTmpl  *template.Template
-	payees    *Payees
-	routes    []payeeViewRoute
+	tmpl   *template.Template
+	payees *Payees
+	routes []payeeViewRoute
 }
 
 type payeeViewRoute struct {
-	pattern string
-	render  func(c echo.Context, params map[string]string) (string, error)
+	pattern   string
+	blockName string
+	render    func(c echo.Context, params map[string]string) (string, error)
 }
 
-func NewSSERenderer() *SSERenderer {
-	editTmpl := template.Must(template.ParseFiles(
-		"web/templates/breadcrumbs.html",
-		"app/payee/templates/edit.html",
-	))
-	showTmpl := template.Must(template.ParseFiles(
-		"web/templates/breadcrumbs.html",
-		"app/payee/templates/show.html",
-	))
-	indexTmpl := template.Must(template.ParseFiles(
-		"web/templates/breadcrumbs.html",
-		"app/payee/templates/index.html",
-	))
-
+func NewSSERenderer(tmpl *template.Template) *SSERenderer {
 	r := &SSERenderer{
-		indexTmpl: indexTmpl,
-		showTmpl:  showTmpl,
-		editTmpl:  editTmpl,
-		payees:    New(),
+		tmpl:   tmpl,
+		payees: New(),
 	}
 
 	r.routes = []payeeViewRoute{
-		{pattern: "/payee", render: r.renderIndex},
-		{pattern: "/payee/:id", render: r.renderShow},
-		{pattern: "/payee/:id/edit", render: r.renderEdit},
+		{pattern: "/payee", blockName: "payee-index", render: r.renderIndex},
+		{pattern: "/payee/new", blockName: "payee-new", render: r.renderNew},
+		{pattern: "/payee/:id", blockName: "payee-show", render: r.renderShow},
+		{pattern: "/payee/:id/edit", blockName: "payee-edit", render: r.renderEdit},
 	}
 
 	return r
@@ -74,7 +60,15 @@ func (r *SSERenderer) renderIndex(c echo.Context, _ map[string]string) (string, 
 		return "", err
 	}
 
-	return sse.RenderTemplate(r.indexTmpl, data)
+	return sse.RenderTemplate(r.tmpl, "payee-index", data)
+}
+
+func (r *SSERenderer) renderNew(c echo.Context, _ map[string]string) (string, error) {
+	data := map[string]any{
+		"Title":       "New Payee",
+		"Breadcrumbs": []view.Crumb{{Label: "Payees", Href: "/payee"}, {Label: "New"}},
+	}
+	return sse.RenderTemplate(r.tmpl, "payee-new", data)
 }
 
 func (r *SSERenderer) renderShow(c echo.Context, params map[string]string) (string, error) {
@@ -88,7 +82,7 @@ func (r *SSERenderer) renderShow(c echo.Context, params map[string]string) (stri
 		return "", err
 	}
 
-	return sse.RenderTemplate(r.showTmpl, data)
+	return sse.RenderTemplate(r.tmpl, "payee-show", data)
 }
 
 func (r *SSERenderer) renderEdit(c echo.Context, params map[string]string) (string, error) {
@@ -102,7 +96,7 @@ func (r *SSERenderer) renderEdit(c echo.Context, params map[string]string) (stri
 		return "", err
 	}
 
-	return sse.RenderTemplate(r.editTmpl, data)
+	return sse.RenderTemplate(r.tmpl, "payee-edit", data)
 }
 
 func matchPayeeView(pattern, view string) (map[string]string, bool) {

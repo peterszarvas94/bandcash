@@ -38,9 +38,9 @@ func (r *Registry) Render(c echo.Context, view string) (string, error) {
 	return "", echo.NewHTTPError(404, "View not found")
 }
 
-func RenderTemplate(tmpl *template.Template, data any) (string, error) {
+func RenderTemplate(tmpl *template.Template, blockName string, data any) (string, error) {
 	var buf bytes.Buffer
-	if err := tmpl.ExecuteTemplate(&buf, "app", data); err != nil {
+	if err := tmpl.ExecuteTemplate(&buf, blockName, data); err != nil {
 		return "", err
 	}
 	return buf.String(), nil

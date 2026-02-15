@@ -6,7 +6,7 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
-func Register(e *echo.Echo) {
+func Register(e *echo.Echo) *template.Template {
 	entries := New()
 
 	entries.tmpl = template.Must(template.ParseFiles(
@@ -32,4 +32,6 @@ func Register(e *echo.Echo) {
 	e.DELETE("/entry/:id", entries.Destroy)
 	e.DELETE("/entry/:id/single", entries.DestroySingle)
 	e.DELETE("/entry/:id/participant/:payeeId", entries.DeleteParticipantTable)
+
+	return entries.tmpl
 }

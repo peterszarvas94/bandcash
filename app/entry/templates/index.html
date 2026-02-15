@@ -7,7 +7,7 @@
       data-signals="{view: '/entry', formState: '', editingId: 0, formData: {title: '', time: '', description: '', amount: 0}}"
       data-init="@get('/sse')"
     ></div>
-    {{block "app" .}}
+    {{block "entry-index" .}}
     <main id="app">
       <h1>{{.Title}}</h1>
       {{template "breadcrumbs" .}}
