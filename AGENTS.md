@@ -5,7 +5,7 @@ Use this file as the default operating guide for agentic changes.
 
 ## Quick Orientation
 - Entry point: `cmd/server/main.go`.
-- Feature modules live in `app/` (entry, payee, home).
+- Feature modules live in `models/` (entry, payee, home).
 - Shared internals: `internal/` (config, db, logger, middleware, utils, view, hub, sse).
 - Templates live in `web/templates/`; static assets in `web/static/`.
 
@@ -20,9 +20,9 @@ Use `mise` tasks where possible.
 
 ### Tests
 - `mise run test`       Run all tests (`go test -v ./...`).
-- Single package: `go test -v ./app/entry`.
-- Single test: `go test -v ./app/entry -run TestName`.
-- Single test exact: `go test -v ./app/entry -run '^TestName$'`.
+- Single package: `go test -v ./models/entry`.
+- Single test: `go test -v ./models/entry -run TestName`.
+- Single test exact: `go test -v ./models/entry -run '^TestName$'`.
 - Short mode: `go test -short -v ./...`.
 
 ### Format, Lint, Vet
@@ -40,7 +40,7 @@ Use `mise` tasks where possible.
 - `mise run seed`           Seed database.
 
 ## Code Style Guidelines
-Follow existing patterns from `app/`, `internal/`, and `cmd/`.
+Follow existing patterns from `models/`, `internal/`, and `cmd/`.
 
 ### Formatting and Imports
 - Run `gofmt` (via `mise run fmt`) before final changes.
@@ -77,7 +77,7 @@ Follow existing patterns from `app/`, `internal/`, and `cmd/`.
 ### Templates and UI
 - Templates follow `index/new/show/edit` naming.
 - Use the shared breadcrumbs partial `web/templates/breadcrumbs.html`.
-- View data includes `Breadcrumbs []view.Crumb` when applicable.
+- View data includes `Breadcrumbs []utils.Crumb` when applicable.
 
 ### Datastar + SSE
 - Single SSE stream at `/sse` and a `view` signal drives rendering.
@@ -107,10 +107,10 @@ Follow existing patterns from `app/`, `internal/`, and `cmd/`.
 - No Copilot instructions found (`.github/copilot-instructions.md` not present).
 
 ## When Adding New Code
-- Match handler and model patterns in `app/entry` and `app/payee`.
+- Match handler and model patterns in `models/entry` and `models/payee`.
 - Keep handlers thin; prefer `GetXData` or `CreateX` helpers in the model.
 - Ensure signal names are consistent across handlers and templates.
-- Update breadcrumbs for new pages and include `view.Crumb` data.
+- Update breadcrumbs for new pages and include `utils.Crumb` data.
 
 ## Things to Avoid
 - Do not edit generated sqlc files in `internal/db/*.sql.go`.

@@ -12,39 +12,42 @@
       <h1>{{.Title}}</h1>
       {{template "breadcrumbs" .}}
 
-      <form
-        class="form"
-        data-on:submit="@put('/entry/{{.Entry.ID}}')"
-      >
+      <form class="form" data-on:submit="@put('/entry/{{.Entry.ID}}/single')">
         <div>
           <label>Title</label>
-          <input
-            type="text"
-            data-bind="formData.title"
-          />
-          <div data-show="$errors && $errors.title" class="color-error" data-text="$errors.title"></div>
+          <input type="text" data-bind="formData.title" />
+          <div
+            data-show="$errors && $errors.title"
+            class="color-error"
+            data-text="$errors.title"
+          ></div>
         </div>
         <div>
           <label>Time</label>
-          <input
-            type="datetime-local"
-            data-bind="formData.time"
-          />
-          <div data-show="$errors && $errors.time" class="color-error" data-text="$errors.time"></div>
+          <input type="datetime-local" data-bind="formData.time" />
+          <div
+            data-show="$errors && $errors.time"
+            class="color-error"
+            data-text="$errors.time"
+          ></div>
         </div>
         <div>
           <label>Description</label>
           <textarea data-bind="formData.description" rows="3"></textarea>
-          <div data-show="$errors && $errors.description" class="color-error" data-text="$errors.description"></div>
+          <div
+            data-show="$errors && $errors.description"
+            class="color-error"
+            data-text="$errors.description"
+          ></div>
         </div>
         <div>
           <label>Amount</label>
-          <input
-            type="number"
-            data-bind="formData.amount"
-            step="1"
-          />
-          <div data-show="$errors && $errors.amount" class="color-error" data-text="$errors.amount"></div>
+          <input type="number" data-bind="formData.amount" step="1" />
+          <div
+            data-show="$errors && $errors.amount"
+            class="color-error"
+            data-text="$errors.amount"
+          ></div>
         </div>
         <div class="row">
           <button type="submit">Update Entry</button>

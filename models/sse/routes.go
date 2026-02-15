@@ -3,9 +3,9 @@ package sse
 import (
 	"github.com/labstack/echo/v4"
 
-	"bandcash/internal/sse"
+	"bandcash/internal/utils"
 )
 
 func Register(e *echo.Echo) {
-	e.GET("/sse", sse.Handler())
+	e.GET("/sse", utils.SSEHandler())
 }

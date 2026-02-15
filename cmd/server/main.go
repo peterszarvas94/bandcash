@@ -12,20 +12,22 @@ import (
 	"time"
 
 	"github.com/labstack/echo/v4"
-	"github.com/labstack/echo/v4/middleware"
+	echoMiddleware "github.com/labstack/echo/v4/middleware"
 
-	"bandcash/app/entry"
-	"bandcash/app/health"
-	"bandcash/app/home"
-	"bandcash/app/payee"
-	appSSE "bandcash/app/sse"
 	"bandcash/internal/config"
 	"bandcash/internal/db"
-	_ "bandcash/internal/logger"
-	appmw "bandcash/internal/middleware"
+	"bandcash/internal/middleware"
+	"bandcash/internal/utils"
+	"bandcash/models/entry"
+	"bandcash/models/health"
+	"bandcash/models/home"
+	"bandcash/models/payee"
+	"bandcash/models/sse"
 )
 
 func main() {
+	utils.InitLogger()
+
 	routesFlag := flag.Bool("routes", false, "Print routes and exit")
 	flag.Parse()
 
@@ -33,12 +35,12 @@ func main() {
 	e.HideBanner = true
 	e.HidePort = true
 
-	e.Use(appmw.Compression())
-	e.Use(appmw.RequestID())
-	e.Use(middleware.RequestLoggerWithConfig(middleware.RequestLoggerConfig{
+	e.Use(middleware.Compression())
+	e.Use(middleware.RequestID())
+	e.Use(echoMiddleware.RequestLoggerWithConfig(echoMiddleware.RequestLoggerConfig{
 		LogStatus: true,
 		LogURI:    true,
-		LogValuesFunc: func(c echo.Context, v middleware.RequestLoggerValues) error {
+		LogValuesFunc: func(c echo.Context, v echoMiddleware.RequestLoggerValues) error {
 			slog.Info("request", "uri", v.URI, "method", c.Request().Method, "status", v.Status)
 			return nil
 		},
@@ -51,7 +53,7 @@ func main() {
 	home.Register(e)
 	entry.Register(e)
 	payee.Register(e)
-	appSSE.Register(e)
+	sse.Register(e)
 
 	if *routesFlag {
 		routes := e.Routes()
@@ -74,11 +76,7 @@ func main() {
 		slog.Error("failed to initialize database", "err", err)
 		os.Exit(1)
 	}
-	defer func() {
-		if err := db.Close(); err != nil {
-			slog.Error("failed to close database", "err", err)
-		}
-	}()
+	defer db.Close()
 
 	// Graceful shutdown
 	go func() {

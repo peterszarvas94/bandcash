@@ -1,4 +1,4 @@
-package view
+package utils
 
 type Crumb struct {
 	Label string

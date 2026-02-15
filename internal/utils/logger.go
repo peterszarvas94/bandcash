@@ -1,4 +1,4 @@
-package logger
+package utils
 
 import (
 	"context"
@@ -137,11 +137,7 @@ func New(logFile io.Writer, level slog.Level) *slog.Logger {
 	return slog.New(&MultiHandler{handlers: []slog.Handler{coloredHandler, jsonHandler}})
 }
 
-func SetDefault(log *slog.Logger) {
-	slog.SetDefault(log)
-}
-
-func init() {
+func SetupLogger() {
 	cfg := config.Load()
 
 	if err := os.MkdirAll(filepath.Dir(cfg.LogFile), 0755); err != nil {
@@ -161,7 +157,7 @@ func init() {
 	}
 
 	log := New(logFile, cfg.LogLevel)
-	SetDefault(log)
+	slog.SetDefault(log)
 }
 
 func (m *MultiHandler) Enabled(ctx context.Context, level slog.Level) bool {

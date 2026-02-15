@@ -1,4 +1,4 @@
-package sse
+package utils
 
 import (
 	"errors"
@@ -6,8 +6,6 @@ import (
 
 	"github.com/labstack/echo/v4"
 	"github.com/starfederation/datastar-go/datastar"
-
-	"bandcash/internal/utils"
 )
 
 type Client struct {
@@ -57,7 +55,7 @@ func (h *Hub) GetClient(id string) (*Client, error) {
 }
 
 func (h *Hub) PatchHTML(c echo.Context, html string) error {
-	clientID, err := utils.GetClientID(c)
+	clientID, err := GetClientID(c)
 	if err != nil {
 		return err
 	}
@@ -71,7 +69,7 @@ func (h *Hub) PatchHTML(c echo.Context, html string) error {
 }
 
 func (h *Hub) PatchSignals(c echo.Context, signals any) error {
-	clientID, err := utils.GetClientID(c)
+	clientID, err := GetClientID(c)
 	if err != nil {
 		return err
 	}
@@ -84,7 +82,7 @@ func (h *Hub) PatchSignals(c echo.Context, signals any) error {
 }
 
 func (h *Hub) Redirect(c echo.Context, url string) error {
-	clientID, err := utils.GetClientID(c)
+	clientID, err := GetClientID(c)
 	if err != nil {
 		return err
 	}

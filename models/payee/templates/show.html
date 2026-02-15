@@ -46,6 +46,10 @@
             <td class="text-right">{{printf "%d" .Amount}}</td>
             <td class="text-right">{{printf "%d" .ParticipantAmount}}</td>
           </tr>
+          {{else}}
+          <tr>
+            <td colspan="5">no items</td>
+          </tr>
           {{end}}
         </tbody>
       </table>

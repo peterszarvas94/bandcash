@@ -9,7 +9,7 @@ import (
 	"time"
 
 	"bandcash/internal/db"
-	_ "bandcash/internal/logger"
+	_ "bandcash/internal/utils"
 )
 
 type seedEntry struct {

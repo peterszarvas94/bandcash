@@ -12,10 +12,10 @@ func Register(e *echo.Echo) *Payees {
 	payees.tmpl = template.Must(template.ParseFiles(
 		"web/templates/head.html",
 		"web/templates/breadcrumbs.html",
-		"app/payee/templates/index.html",
-		"app/payee/templates/new.html",
-		"app/payee/templates/show.html",
-		"app/payee/templates/edit.html",
+		"models/payee/templates/index.html",
+		"models/payee/templates/new.html",
+		"models/payee/templates/show.html",
+		"models/payee/templates/edit.html",
 	))
 
 	e.GET("/payee", payees.Index)

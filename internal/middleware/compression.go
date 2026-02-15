@@ -2,6 +2,7 @@ package middleware
 
 import (
 	"net/http"
+	"strings"
 
 	"github.com/CAFxX/httpcompression"
 	"github.com/CAFxX/httpcompression/contrib/andybalholm/brotli"
@@ -27,6 +28,10 @@ func Compression() echo.MiddlewareFunc {
 		return func(c echo.Context) error {
 			req := c.Request()
 			res := c.Response()
+
+			if req.URL.Path == "/sse" || strings.Contains(req.Header.Get("Accept"), "text/event-stream") {
+				return next(c)
+			}
 
 			// Create a handler that calls the next Echo handler
 			h := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {

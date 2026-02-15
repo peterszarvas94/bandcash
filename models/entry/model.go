@@ -7,7 +7,7 @@ import (
 	"strconv"
 
 	"bandcash/internal/db"
-	"bandcash/internal/view"
+	"bandcash/internal/utils"
 )
 
 type EntryData struct {
@@ -16,13 +16,13 @@ type EntryData struct {
 	Participants []db.ListParticipantsByEntryRow
 	Payees       []db.Payee
 	PayeeIDs     map[int64]bool
-	Breadcrumbs  []view.Crumb
+	Breadcrumbs  []utils.Crumb
 }
 
 type EntriesData struct {
 	Title       string
 	Entries     []db.Entry
-	Breadcrumbs []view.Crumb
+	Breadcrumbs []utils.Crumb
 }
 
 type Entries struct {
@@ -103,7 +103,7 @@ func (e *Entries) GetShowData(ctx context.Context, id int) (EntryData, error) {
 		Participants: participants,
 		Payees:       filteredPayees,
 		PayeeIDs:     payeeIDs,
-		Breadcrumbs: []view.Crumb{
+		Breadcrumbs: []utils.Crumb{
 			{Label: "Entries", Href: "/entry"},
 			{Label: entry.Title},
 		},
@@ -119,7 +119,7 @@ func (e *Entries) GetEditData(ctx context.Context, id int) (EntryData, error) {
 	return EntryData{
 		Title: "Edit Entry",
 		Entry: entry,
-		Breadcrumbs: []view.Crumb{
+		Breadcrumbs: []utils.Crumb{
 			{Label: "Entries", Href: "/entry"},
 			{Label: entry.Title, Href: "/entry/" + strconv.Itoa(id)},
 			{Label: "Edit"},
@@ -158,7 +158,7 @@ func (e *Entries) GetIndexData(ctx context.Context) (any, error) {
 	return EntriesData{
 		Title:   "Entries",
 		Entries: entries,
-		Breadcrumbs: []view.Crumb{
+		Breadcrumbs: []utils.Crumb{
 			{Label: "Entries"},
 		},
 	}, nil

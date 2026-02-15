@@ -31,7 +31,7 @@ Open http://localhost:8080
 
 ```
 cmd/server/         # Application entrypoint
-app/                # Feature modules (entry, home)
+models/             # Feature modules (entry, home)
   entry/            # Entry REST handlers + templates
 internal/
   config/           # Environment configuration
