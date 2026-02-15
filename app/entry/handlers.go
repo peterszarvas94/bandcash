@@ -8,7 +8,7 @@ import (
 	"github.com/starfederation/datastar-go/datastar"
 
 	"bandcash/internal/db"
-	"bandcash/internal/hub"
+	"bandcash/internal/sse"
 	"bandcash/internal/utils"
 	"bandcash/internal/validation"
 )
@@ -114,7 +114,7 @@ func (e *Entries) Create(c echo.Context) error {
 	// Validate
 	if errs := validation.Validate(signals.FormData); errs != nil {
 		slog.Debug("entry.create.table: validation failed", "errors", errs)
-		hub.Hub.PatchSignals(c, map[string]any{"errors": validation.WithErrors(entryErrorFields, errs)})
+		sse.SSEHub.PatchSignals(c, map[string]any{"errors": validation.WithErrors(entryErrorFields, errs)})
 		return c.NoContent(422)
 	}
 
@@ -126,8 +126,18 @@ func (e *Entries) Create(c echo.Context) error {
 
 	slog.Debug("entry.create.table", "id", entry.ID, "title", entry.Title)
 
-	hub.Hub.PatchSignals(c, defaultEntrySignals)
-	hub.Hub.Refresh(c)
+	sse.SSEHub.PatchSignals(c, defaultEntrySignals)
+	data, err := e.GetIndexData(c.Request().Context())
+	if err != nil {
+		slog.Error("entry.create.table: failed to get data", "err", err)
+		return c.NoContent(500)
+	}
+	html, err := utils.RenderBlock(e.tmpl, "entry-index", data)
+	if err != nil {
+		slog.Error("entry.create.table: failed to render", "err", err)
+	} else {
+		sse.SSEHub.PatchHTML(c, html)
+	}
 
 	return c.NoContent(200)
 }
@@ -146,7 +156,7 @@ func (e *Entries) Update(c echo.Context) error {
 
 	// Validate
 	if errs := validation.Validate(signals.FormData); errs != nil {
-		hub.Hub.PatchSignals(c, map[string]any{"errors": validation.WithErrors(entryErrorFields, errs)})
+		sse.SSEHub.PatchSignals(c, map[string]any{"errors": validation.WithErrors(entryErrorFields, errs)})
 		return c.NoContent(422)
 	}
 
@@ -158,7 +168,7 @@ func (e *Entries) Update(c echo.Context) error {
 
 	slog.Debug("entry.update", "id", id)
 
-	if err := hub.Hub.Redirect(c, "/entry/"+strconv.Itoa(id)); err != nil {
+	if err := sse.SSEHub.Redirect(c, "/entry/"+strconv.Itoa(id)); err != nil {
 		slog.Warn("entry.update: failed to redirect", "err", err)
 	}
 
@@ -182,7 +192,7 @@ func (e *Entries) UpdateSingle(c echo.Context) error {
 	// Validate
 	if errs := validation.Validate(signals.FormData); errs != nil {
 		slog.Debug("entry.update.single: validation failed", "errors", errs)
-		hub.Hub.PatchSignals(c, map[string]any{"errors": validation.WithErrors(entryErrorFields, errs)})
+		sse.SSEHub.PatchSignals(c, map[string]any{"errors": validation.WithErrors(entryErrorFields, errs)})
 		return c.NoContent(422)
 	}
 
@@ -194,8 +204,18 @@ func (e *Entries) UpdateSingle(c echo.Context) error {
 
 	slog.Debug("entry.update.single", "id", id)
 
-	hub.Hub.PatchSignals(c, defaultEntrySignals)
-	hub.Hub.Refresh(c)
+	sse.SSEHub.PatchSignals(c, defaultEntrySignals)
+	data, err := e.GetIndexData(c.Request().Context())
+	if err != nil {
+		slog.Error("entry.update.single: failed to get data", "err", err)
+		return c.NoContent(500)
+	}
+	html, err := utils.RenderBlock(e.tmpl, "entry-index", data)
+	if err != nil {
+		slog.Error("entry.update.single: failed to render", "err", err)
+	} else {
+		sse.SSEHub.PatchHTML(c, html)
+	}
 
 	return c.NoContent(200)
 }
@@ -214,7 +234,17 @@ func (e *Entries) DestroySingle(c echo.Context) error {
 
 	slog.Debug("entry.destroy.single", "id", id)
 
-	hub.Hub.Refresh(c)
+	data, err := e.GetIndexData(c.Request().Context())
+	if err != nil {
+		slog.Error("entry.destroy.single: failed to get data", "err", err)
+		return c.NoContent(500)
+	}
+	html, err := utils.RenderBlock(e.tmpl, "entry-index", data)
+	if err != nil {
+		slog.Error("entry.destroy.single: failed to render", "err", err)
+	} else {
+		sse.SSEHub.PatchHTML(c, html)
+	}
 
 	return c.NoContent(200)
 }
@@ -233,7 +263,7 @@ func (e *Entries) Destroy(c echo.Context) error {
 
 	slog.Debug("entry.destroy", "id", id)
 
-	if err := hub.Hub.Redirect(c, "/entry"); err != nil {
+	if err := sse.SSEHub.Redirect(c, "/entry"); err != nil {
 		slog.Warn("entry.destroy: failed to redirect", "err", err)
 	}
 
@@ -254,7 +284,7 @@ func (e *Entries) CreateParticipant(c echo.Context) error {
 
 	// Validate
 	if errs := validation.Validate(signals.FormData); errs != nil {
-		hub.Hub.PatchSignals(c, map[string]any{"errors": validation.WithErrors(participantErrorFields, errs)})
+		sse.SSEHub.PatchSignals(c, map[string]any{"errors": validation.WithErrors(participantErrorFields, errs)})
 		return c.NoContent(422)
 	}
 
@@ -268,8 +298,18 @@ func (e *Entries) CreateParticipant(c echo.Context) error {
 		return c.String(500, "Internal Server Error")
 	}
 
-	hub.Hub.Refresh(c)
-	hub.Hub.PatchSignals(c, defaultParticipantSignals)
+	data, err := e.GetShowData(c.Request().Context(), id)
+	if err != nil {
+		slog.Error("participant.create.table: failed to get data", "err", err)
+		return c.NoContent(500)
+	}
+	html, err := utils.RenderBlock(e.tmpl, "entry-show", data)
+	if err != nil {
+		slog.Error("participant.create.table: failed to render", "err", err)
+	} else {
+		sse.SSEHub.PatchHTML(c, html)
+	}
+	sse.SSEHub.PatchSignals(c, defaultParticipantSignals)
 
 	slog.Debug("participant.create.table", "entry_id", id, "payee_id", signals.FormData.PayeeID)
 	return c.NoContent(200)
@@ -294,7 +334,7 @@ func (e *Entries) UpdateParticipant(c echo.Context) error {
 
 	// Validate
 	if errs := validation.Validate(signals.ParticipantForm); errs != nil {
-		hub.Hub.PatchSignals(c, map[string]any{"errors": validation.WithErrors(participantErrorFields, errs)})
+		sse.SSEHub.PatchSignals(c, map[string]any{"errors": validation.WithErrors(participantErrorFields, errs)})
 		return c.NoContent(422)
 	}
 
@@ -307,8 +347,18 @@ func (e *Entries) UpdateParticipant(c echo.Context) error {
 		return c.String(500, "Internal Server Error")
 	}
 
-	hub.Hub.PatchSignals(c, defaultParticipantSignals)
-	hub.Hub.Refresh(c)
+	sse.SSEHub.PatchSignals(c, defaultParticipantSignals)
+	data, err := e.GetShowData(c.Request().Context(), entryID)
+	if err != nil {
+		slog.Error("participant.update: failed to get data", "err", err)
+		return c.NoContent(500)
+	}
+	html, err := utils.RenderBlock(e.tmpl, "entry-show", data)
+	if err != nil {
+		slog.Error("participant.update: failed to render", "err", err)
+	} else {
+		sse.SSEHub.PatchHTML(c, html)
+	}
 
 	slog.Debug("participant.update", "entry_id", entryID, "payee_id", payeeID)
 	return c.NoContent(200)
@@ -333,8 +383,18 @@ func (e *Entries) DeleteParticipantTable(c echo.Context) error {
 		return c.String(500, "Internal Server Error")
 	}
 
-	hub.Hub.Refresh(c)
-	hub.Hub.PatchSignals(c, defaultParticipantSignals)
+	data, err := e.GetShowData(c.Request().Context(), entryID)
+	if err != nil {
+		slog.Error("participant.delete: failed to get data", "err", err)
+		return c.NoContent(500)
+	}
+	html, err := utils.RenderBlock(e.tmpl, "entry-show", data)
+	if err != nil {
+		slog.Error("participant.delete: failed to render", "err", err)
+	} else {
+		sse.SSEHub.PatchHTML(c, html)
+	}
+	sse.SSEHub.PatchSignals(c, defaultParticipantSignals)
 
 	slog.Debug("participant.delete", "entry_id", entryID, "payee_id", payeeID)
 	return c.NoContent(200)

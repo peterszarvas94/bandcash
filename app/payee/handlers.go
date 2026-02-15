@@ -9,7 +9,7 @@ import (
 	"github.com/labstack/echo/v4"
 	"github.com/starfederation/datastar-go/datastar"
 
-	"bandcash/internal/hub"
+	"bandcash/internal/sse"
 	"bandcash/internal/utils"
 	"bandcash/internal/validation"
 )
@@ -89,7 +89,7 @@ func (p *Payees) Create(c echo.Context) error {
 
 	// Validate
 	if errs := validation.Validate(signals.FormData); errs != nil {
-		hub.Hub.PatchSignals(c, map[string]any{"errors": validation.WithErrors(payeeErrorFields, errs)})
+		sse.SSEHub.PatchSignals(c, map[string]any{"errors": validation.WithErrors(payeeErrorFields, errs)})
 		return c.NoContent(422)
 	}
 
@@ -101,8 +101,18 @@ func (p *Payees) Create(c echo.Context) error {
 
 	slog.Debug("payee.create.table", "id", payee.ID, "name", payee.Name)
 
-	hub.Hub.PatchSignals(c, defaultPayeeSignals)
-	hub.Hub.Refresh(c)
+	sse.SSEHub.PatchSignals(c, defaultPayeeSignals)
+	data, err := p.GetIndexData(c.Request().Context())
+	if err != nil {
+		slog.Error("payee.create.table: failed to get data", "err", err)
+		return c.NoContent(500)
+	}
+	html, err := utils.RenderBlock(p.tmpl, "payee-index", data)
+	if err != nil {
+		slog.Error("payee.create.table: failed to render", "err", err)
+	} else {
+		sse.SSEHub.PatchHTML(c, html)
+	}
 
 	return c.NoContent(200)
 }
@@ -121,7 +131,7 @@ func (p *Payees) Update(c echo.Context) error {
 
 	// Validate
 	if errs := validation.Validate(signals.FormData); errs != nil {
-		hub.Hub.PatchSignals(c, map[string]any{"errors": validation.WithErrors(payeeErrorFields, errs)})
+		sse.SSEHub.PatchSignals(c, map[string]any{"errors": validation.WithErrors(payeeErrorFields, errs)})
 		return c.NoContent(422)
 	}
 
@@ -133,7 +143,7 @@ func (p *Payees) Update(c echo.Context) error {
 
 	slog.Debug("payee.update", "id", id)
 
-	if err := hub.Hub.Redirect(c, "/payee/"+strconv.Itoa(id)); err != nil {
+	if err := sse.SSEHub.Redirect(c, "/payee/"+strconv.Itoa(id)); err != nil {
 		if errors.Is(err, context.Canceled) {
 			slog.Debug("payee.update: redirect cancelled", "err", err)
 		} else {
@@ -158,7 +168,7 @@ func (p *Payees) UpdateSingle(c echo.Context) error {
 
 	// Validate
 	if errs := validation.Validate(signals.FormData); errs != nil {
-		hub.Hub.PatchSignals(c, map[string]any{"errors": validation.WithErrors(payeeErrorFields, errs)})
+		sse.SSEHub.PatchSignals(c, map[string]any{"errors": validation.WithErrors(payeeErrorFields, errs)})
 		return c.NoContent(422)
 	}
 
@@ -170,8 +180,18 @@ func (p *Payees) UpdateSingle(c echo.Context) error {
 
 	slog.Debug("payee.update.single", "id", id)
 
-	hub.Hub.PatchSignals(c, defaultPayeeSignals)
-	hub.Hub.Refresh(c)
+	sse.SSEHub.PatchSignals(c, defaultPayeeSignals)
+	data, err := p.GetIndexData(c.Request().Context())
+	if err != nil {
+		slog.Error("payee.update.single: failed to get data", "err", err)
+		return c.NoContent(500)
+	}
+	html, err := utils.RenderBlock(p.tmpl, "payee-index", data)
+	if err != nil {
+		slog.Error("payee.update.single: failed to render", "err", err)
+	} else {
+		sse.SSEHub.PatchHTML(c, html)
+	}
 
 	return c.NoContent(200)
 }
@@ -190,7 +210,7 @@ func (p *Payees) Destroy(c echo.Context) error {
 
 	slog.Debug("payee.destroy", "id", id)
 
-	if err := hub.Hub.Redirect(c, "/payee"); err != nil {
+	if err := sse.SSEHub.Redirect(c, "/payee"); err != nil {
 		slog.Warn("payee.destroy: failed to redirect", "err", err)
 	}
 

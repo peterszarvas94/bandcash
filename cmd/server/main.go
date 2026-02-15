@@ -49,9 +49,9 @@ func main() {
 
 	health.Register(e)
 	home.Register(e)
-	entryTmpl := entry.Register(e)
-	payeeTmpl := payee.Register(e)
-	appSSE.Register(e, entryTmpl, payeeTmpl)
+	entry.Register(e)
+	payee.Register(e)
+	appSSE.Register(e)
 
 	if *routesFlag {
 		routes := e.Routes()

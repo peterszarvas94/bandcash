@@ -6,7 +6,7 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
-func Register(e *echo.Echo) *template.Template {
+func Register(e *echo.Echo) *Payees {
 	payees := New()
 
 	payees.tmpl = template.Must(template.ParseFiles(
@@ -26,5 +26,5 @@ func Register(e *echo.Echo) *template.Template {
 	e.PUT("/payee/:id/single", payees.UpdateSingle)
 	e.DELETE("/payee/:id", payees.Destroy)
 
-	return payees.tmpl
+	return payees
 }
