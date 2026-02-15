@@ -19,17 +19,19 @@ var (
 func Init(dbPath string) error {
 	// Ensure directory exists
 	dir := filepath.Dir(dbPath)
-	if err := os.MkdirAll(dir, 0755); err != nil {
+
+	err := os.MkdirAll(dir, 0755)
+	if err != nil {
 		return fmt.Errorf("failed to create db directory: %w", err)
 	}
 
-	var err error
 	DB, err = sql.Open("sqlite3", dbPath)
 	if err != nil {
 		return fmt.Errorf("failed to open database: %w", err)
 	}
 
-	if err := DB.Ping(); err != nil {
+	err = DB.Ping()
+	if err != nil {
 		return fmt.Errorf("failed to ping database: %w", err)
 	}
 
@@ -52,11 +54,13 @@ func Close() error {
 }
 
 func Migrate() error {
-	if err := goose.SetDialect("sqlite3"); err != nil {
+	err := goose.SetDialect("sqlite3")
+	if err != nil {
 		return fmt.Errorf("failed to set goose dialect: %w", err)
 	}
 
-	if err := goose.Up(DB, "internal/db/migrations"); err != nil {
+	err = goose.Up(DB, "internal/db/migrations")
+	if err != nil {
 		return fmt.Errorf("failed to run migrations: %w", err)
 	}
 

@@ -1,8 +1,6 @@
 package payee
 
 import (
-	"context"
-	"errors"
 	"log/slog"
 	"strconv"
 
@@ -80,7 +78,8 @@ func (p *Payees) Edit(c echo.Context) error {
 
 func (p *Payees) Create(c echo.Context) error {
 	var signals payeeTableParams
-	if err := datastar.ReadSignals(c.Request(), &signals); err != nil {
+	err := datastar.ReadSignals(c.Request(), &signals)
+	if err != nil {
 		slog.Warn("payee.create.table: failed to read signals", "err", err)
 		return c.NoContent(400)
 	}
@@ -123,7 +122,8 @@ func (p *Payees) Update(c echo.Context) error {
 	}
 
 	var signals payeeTableParams
-	if err := datastar.ReadSignals(c.Request(), &signals); err != nil {
+	err = datastar.ReadSignals(c.Request(), &signals)
+	if err != nil {
 		slog.Warn("payee.update: failed to read signals", "err", err)
 		return c.NoContent(400)
 	}
@@ -142,12 +142,9 @@ func (p *Payees) Update(c echo.Context) error {
 
 	slog.Debug("payee.update", "id", id)
 
-	if err := utils.SSEHub.Redirect(c, "/payee/"+strconv.Itoa(id)); err != nil {
-		if errors.Is(err, context.Canceled) {
-			slog.Debug("payee.update: redirect cancelled", "err", err)
-		} else {
-			slog.Warn("payee.update: failed to redirect", "err", err)
-		}
+	err = utils.SSEHub.Redirect(c, "/payee/"+strconv.Itoa(id))
+	if err != nil {
+		slog.Warn("payee.update: failed to redirect", "err", err)
 	}
 
 	return c.NoContent(200)
@@ -160,7 +157,8 @@ func (p *Payees) UpdateSingle(c echo.Context) error {
 	}
 
 	var signals payeeTableParams
-	if err := datastar.ReadSignals(c.Request(), &signals); err != nil {
+	err = datastar.ReadSignals(c.Request(), &signals)
+	if err != nil {
 		slog.Warn("payee.update.single: failed to read signals", "err", err)
 		return c.NoContent(400)
 	}
@@ -203,14 +201,16 @@ func (p *Payees) Destroy(c echo.Context) error {
 		return c.NoContent(400)
 	}
 
-	if err := p.DeletePayee(c.Request().Context(), id); err != nil {
+	err = p.DeletePayee(c.Request().Context(), id)
+	if err != nil {
 		slog.Error("payee.destroy: failed to delete payee", "err", err)
 		return c.String(500, "Internal Server Error")
 	}
 
 	slog.Debug("payee.destroy", "id", id)
 
-	if err := utils.SSEHub.Redirect(c, "/payee"); err != nil {
+	err = utils.SSEHub.Redirect(c, "/payee")
+	if err != nil {
 		slog.Warn("payee.destroy: failed to redirect", "err", err)
 	}
 

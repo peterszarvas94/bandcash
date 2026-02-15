@@ -17,7 +17,7 @@ vet = "go vet ./..."
 lint = "golangci-lint run"
 lsp = 'gopls check -severity=hint $(git ls-files "*.go" ":!internal/db/*.go")'
 check = "mise run fmt && mise run vet && mise run test"
-sqlc = "go tool github.com/sqlc-dev/sqlc/cmd/sqlc generate"
+sqlc = "sqlc generate"
 goose-up = "goose -dir internal/db/migrations sqlite3 sqlite.db up"
 goose-status = "goose -dir internal/db/migrations sqlite3 sqlite.db status"
 goose-create = "goose -dir internal/db/migrations create ${name} sql"

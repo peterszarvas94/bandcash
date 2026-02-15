@@ -46,22 +46,26 @@ func main() {
 		dbPath = *flagDBPath
 	}
 
-	if err := os.Remove(dbPath); err != nil && !os.IsNotExist(err) {
+	err := os.Remove(dbPath)
+	if err != nil && !os.IsNotExist(err) {
 		slog.Error("failed to remove existing database", "err", err)
 		os.Exit(1)
 	}
 
-	if err := db.Init(dbPath); err != nil {
+	err = db.Init(dbPath)
+	if err != nil {
 		slog.Error("failed to initialize database", "err", err)
 		os.Exit(1)
 	}
 	defer func() {
-		if err := db.Close(); err != nil {
+		err := db.Close()
+		if err != nil {
 			slog.Error("failed to close database", "err", err)
 		}
 	}()
 
-	if err := db.Migrate(); err != nil {
+	err = db.Migrate()
+	if err != nil {
 		slog.Error("failed to run migrations", "err", err)
 		os.Exit(1)
 	}

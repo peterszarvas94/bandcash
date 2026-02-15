@@ -61,22 +61,25 @@ func (q *Queries) ListParticipantsByEntry(ctx context.Context, entryID int64) ([
 	items := []ListParticipantsByEntryRow{}
 	for rows.Next() {
 		var i ListParticipantsByEntryRow
-		if err := rows.Scan(
+		err = rows.Scan(
 			&i.ID,
 			&i.Name,
 			&i.Description,
 			&i.CreatedAt,
 			&i.UpdatedAt,
 			&i.ParticipantAmount,
-		); err != nil {
+		)
+		if err != nil {
 			return nil, err
 		}
 		items = append(items, i)
 	}
-	if err := rows.Close(); err != nil {
+	err = rows.Close()
+	if err != nil {
 		return nil, err
 	}
-	if err := rows.Err(); err != nil {
+	err = rows.Err()
+	if err != nil {
 		return nil, err
 	}
 	return items, nil
@@ -110,7 +113,7 @@ func (q *Queries) ListParticipantsByPayee(ctx context.Context, payeeID int64) ([
 	items := []ListParticipantsByPayeeRow{}
 	for rows.Next() {
 		var i ListParticipantsByPayeeRow
-		if err := rows.Scan(
+		err = rows.Scan(
 			&i.ID,
 			&i.Title,
 			&i.Time,
@@ -119,15 +122,18 @@ func (q *Queries) ListParticipantsByPayee(ctx context.Context, payeeID int64) ([
 			&i.CreatedAt,
 			&i.UpdatedAt,
 			&i.ParticipantAmount,
-		); err != nil {
+		)
+		if err != nil {
 			return nil, err
 		}
 		items = append(items, i)
 	}
-	if err := rows.Close(); err != nil {
+	err = rows.Close()
+	if err != nil {
 		return nil, err
 	}
-	if err := rows.Err(); err != nil {
+	err = rows.Err()
+	if err != nil {
 		return nil, err
 	}
 	return items, nil

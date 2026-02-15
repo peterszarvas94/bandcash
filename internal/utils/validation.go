@@ -36,7 +36,8 @@ func MapErrora(err error) map[string]string {
 
 // Validate validates a struct and returns errors if any
 func Validate(s any) map[string]string {
-	if err := validate.Struct(s); err != nil {
+	err := validate.Struct(s)
+	if err != nil {
 		return MapErrora(err)
 	}
 	return nil

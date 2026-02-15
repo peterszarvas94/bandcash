@@ -60,7 +60,8 @@ func main() {
 	cfg := config.Load()
 
 	// Initialize database
-	if err := db.Init(cfg.DBPath); err != nil {
+	err := db.Init(cfg.DBPath)
+	if err != nil {
 		slog.Error("failed to initialize database", "err", err)
 		os.Exit(1)
 	}
@@ -69,7 +70,8 @@ func main() {
 	// Graceful shutdown
 	go func() {
 		slog.Info("server starting", "port", cfg.Port)
-		if err := e.Start(fmt.Sprintf(":%d", cfg.Port)); err != nil {
+		err := e.Start(fmt.Sprintf(":%d", cfg.Port))
+		if err != nil {
 			slog.Info("server stopped", "err", err)
 		}
 	}()
@@ -83,7 +85,8 @@ func main() {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
-	if err := e.Shutdown(ctx); err != nil {
+	err = e.Shutdown(ctx)
+	if err != nil {
 		slog.Error("server forced to shutdown", "err", err)
 	}
 	slog.Info("server exited")

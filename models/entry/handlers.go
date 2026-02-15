@@ -102,7 +102,8 @@ func (e *Entries) Edit(c echo.Context) error {
 
 func (e *Entries) Create(c echo.Context) error {
 	var signals entryInlineParams
-	if err := datastar.ReadSignals(c.Request(), &signals); err != nil {
+	err := datastar.ReadSignals(c.Request(), &signals)
+	if err != nil {
 		slog.Warn("entry.create.table: failed to read signals", "err", err)
 		return c.NoContent(400)
 	}
@@ -130,6 +131,7 @@ func (e *Entries) Create(c echo.Context) error {
 		slog.Error("entry.create.table: failed to get data", "err", err)
 		return c.NoContent(500)
 	}
+
 	html, err := utils.RenderBlock(e.tmpl, "entry-index", data)
 	if err != nil {
 		slog.Error("entry.create.table: failed to render", "err", err)
@@ -148,7 +150,8 @@ func (e *Entries) Update(c echo.Context) error {
 	}
 
 	var signals entryInlineParams
-	if err := datastar.ReadSignals(c.Request(), &signals); err != nil {
+	err = datastar.ReadSignals(c.Request(), &signals)
+	if err != nil {
 		slog.Warn("entry.update: failed to read signals", "err", err)
 		return c.NoContent(400)
 	}
@@ -167,7 +170,8 @@ func (e *Entries) Update(c echo.Context) error {
 
 	slog.Debug("entry.update", "id", id)
 
-	if err := utils.SSEHub.Redirect(c, "/entry/"+strconv.Itoa(id)); err != nil {
+	err = utils.SSEHub.Redirect(c, "/entry/"+strconv.Itoa(id))
+	if err != nil {
 		slog.Warn("entry.update: failed to redirect", "err", err)
 	}
 
@@ -181,7 +185,8 @@ func (e *Entries) UpdateSingle(c echo.Context) error {
 	}
 
 	var signals entryInlineParams
-	if err := datastar.ReadSignals(c.Request(), &signals); err != nil {
+	err = datastar.ReadSignals(c.Request(), &signals)
+	if err != nil {
 		slog.Warn("entry.update.single: failed to read signals", "err", err)
 		return c.NoContent(400)
 	}
@@ -203,7 +208,8 @@ func (e *Entries) UpdateSingle(c echo.Context) error {
 
 	slog.Debug("entry.update.single", "id", id)
 
-	if err := utils.SSEHub.Redirect(c, "/entry/"+strconv.Itoa(id)); err != nil {
+	err = utils.SSEHub.Redirect(c, "/entry/"+strconv.Itoa(id))
+	if err != nil {
 		slog.Warn("entry.update.single: failed to redirect", "err", err)
 	}
 
@@ -217,7 +223,8 @@ func (e *Entries) DestroySingle(c echo.Context) error {
 		return c.NoContent(400)
 	}
 
-	if err := e.DeleteEntry(c.Request().Context(), id); err != nil {
+	err = e.DeleteEntry(c.Request().Context(), id)
+	if err != nil {
 		slog.Error("entry.destroy.single: failed to delete entry", "err", err)
 		return c.String(500, "Internal Server Error")
 	}
@@ -247,14 +254,16 @@ func (e *Entries) Destroy(c echo.Context) error {
 		return c.NoContent(400)
 	}
 
-	if err := e.DeleteEntry(c.Request().Context(), id); err != nil {
+	err = e.DeleteEntry(c.Request().Context(), id)
+	if err != nil {
 		slog.Error("entry.destroy: failed to delete entry", "err", err)
 		return c.String(500, "Internal Server Error")
 	}
 
 	slog.Debug("entry.destroy", "id", id)
 
-	if err := utils.SSEHub.Redirect(c, "/entry"); err != nil {
+	err = utils.SSEHub.Redirect(c, "/entry")
+	if err != nil {
 		slog.Warn("entry.destroy: failed to redirect", "err", err)
 	}
 
@@ -268,7 +277,8 @@ func (e *Entries) CreateParticipant(c echo.Context) error {
 	}
 
 	var signals participantTableParams
-	if err := datastar.ReadSignals(c.Request(), &signals); err != nil {
+	err = datastar.ReadSignals(c.Request(), &signals)
+	if err != nil {
 		slog.Warn("participant.create.table: failed to read signals", "err", err)
 		return c.NoContent(400)
 	}
@@ -319,7 +329,8 @@ func (e *Entries) UpdateParticipant(c echo.Context) error {
 	}
 
 	var signals participantParams
-	if err := datastar.ReadSignals(c.Request(), &signals); err != nil {
+	err = datastar.ReadSignals(c.Request(), &signals)
+	if err != nil {
 		slog.Warn("participant.update: failed to read signals", "err", err)
 		return c.NoContent(400)
 	}
@@ -330,11 +341,12 @@ func (e *Entries) UpdateParticipant(c echo.Context) error {
 		return c.NoContent(422)
 	}
 
-	if err := db.Qry.UpdateParticipantAmount(c.Request().Context(), db.UpdateParticipantAmountParams{
+	err = db.Qry.UpdateParticipantAmount(c.Request().Context(), db.UpdateParticipantAmountParams{
 		Amount:  signals.ParticipantForm.Amount,
 		EntryID: int64(entryID),
 		PayeeID: int64(payeeID),
-	}); err != nil {
+	})
+	if err != nil {
 		slog.Error("participant.update: failed to update participant", "err", err)
 		return c.String(500, "Internal Server Error")
 	}
@@ -368,10 +380,11 @@ func (e *Entries) DeleteParticipantTable(c echo.Context) error {
 		return c.String(400, "Invalid payee ID")
 	}
 
-	if err := db.Qry.RemoveParticipant(c.Request().Context(), db.RemoveParticipantParams{
+	err = db.Qry.RemoveParticipant(c.Request().Context(), db.RemoveParticipantParams{
 		EntryID: int64(entryID),
 		PayeeID: int64(payeeID),
-	}); err != nil {
+	})
+	if err != nil {
 		slog.Error("participant.delete: failed to remove participant", "err", err)
 		return c.String(500, "Internal Server Error")
 	}

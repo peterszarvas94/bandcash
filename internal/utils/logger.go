@@ -140,7 +140,8 @@ func New(logFile io.Writer, level slog.Level) *slog.Logger {
 func SetupLogger() {
 	cfg := config.Load()
 
-	if err := os.MkdirAll(filepath.Dir(cfg.LogFile), 0755); err != nil {
+	err := os.MkdirAll(filepath.Dir(cfg.LogFile), 0755)
+	if err != nil {
 		slog.Error("failed to create logs directory", "err", err)
 		os.Exit(1)
 	}
@@ -172,7 +173,8 @@ func (m *MultiHandler) Enabled(ctx context.Context, level slog.Level) bool {
 func (m *MultiHandler) Handle(ctx context.Context, r slog.Record) error {
 	for _, h := range m.handlers {
 		if h.Enabled(ctx, r.Level) {
-			if err := h.Handle(ctx, r); err != nil {
+			err := h.Handle(ctx, r)
+			if err != nil {
 				return err
 			}
 		}

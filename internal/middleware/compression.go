@@ -37,7 +37,8 @@ func Compression() echo.MiddlewareFunc {
 			h := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 				c.SetRequest(r)
 				c.Response().Writer = w
-				if err := next(c); err != nil {
+				err := next(c)
+				if err != nil {
 					c.Error(err)
 				}
 			})
