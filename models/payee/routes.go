@@ -23,7 +23,6 @@ func Register(e *echo.Echo) *Payees {
 	e.GET("/payee/:id", payees.Show)
 	e.GET("/payee/:id/edit", payees.Edit)
 	e.PUT("/payee/:id", payees.Update)
-	e.PUT("/payee/:id/single", payees.UpdateSingle)
 	e.DELETE("/payee/:id", payees.Destroy)
 
 	return payees

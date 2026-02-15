@@ -4,7 +4,7 @@
   {{template "head" .}}
   <body>
     <div
-      data-signals="{view: '/entry/{{.Entry.ID}}/edit', formData: {title: '{{.Entry.Title}}', time: '{{.Entry.Time}}', description: '{{.Entry.Description}}', amount: {{.Entry.Amount}}}}"
+      data-signals="{view: '/entry/{{.Entry.ID}}/edit', mode: 'single', formData: {title: '{{.Entry.Title}}', time: '{{.Entry.Time}}', description: '{{.Entry.Description}}', amount: {{.Entry.Amount}}}}"
       data-init="@get('/sse')"
     ></div>
     {{block "entry-edit" .}}
@@ -12,7 +12,7 @@
       <h1>{{.Title}}</h1>
       {{template "breadcrumbs" .}}
 
-      <form class="form" data-on:submit="@put('/entry/{{.Entry.ID}}/single')">
+      <form class="form" data-on:submit="@put('/entry/{{.Entry.ID}}')">
         <div>
           <label>Title</label>
           <input type="text" data-bind="formData.title" />

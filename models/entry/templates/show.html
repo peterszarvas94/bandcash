@@ -4,7 +4,7 @@
   {{template "head" .}}
   <body>
     <div
-      data-signals="{view: '/entry/{{.Entry.ID}}', formState: '', editingId: 0, formData: {payeeId: '', payeeName: '', amount: 0}}"
+      data-signals="{view: '/entry/{{.Entry.ID}}', mode: 'single', formState: '', editingId: 0, formData: {payeeId: '', payeeName: '', amount: 0}}"
       data-init="@get('/sse')"
     ></div>
     {{block "entry-show" .}}
@@ -22,7 +22,7 @@
       <p class="row">
         <a href="/entry/{{.Entry.ID}}/edit">Edit</a>
         <button
-          data-on:click="if (window.confirm('Delete this entry?')) { @delete('/entry/{{.Entry.ID}}').then(() => window.location.href = '/entry') }"
+          data-on:click="if (window.confirm('Delete this entry?')) { @delete('/entry/{{.Entry.ID}}') }"
         >
           Delete
         </button>

@@ -4,7 +4,7 @@
   {{template "head" .}}
   <body>
     <div
-      data-signals="{view: '/payee', formState: '', editingId: 0, formData: {name: '', description: ''}}"
+      data-signals="{view: '/payee', mode: '', formState: '', editingId: 0, formData: {name: '', description: ''}}"
       data-init="@get('/sse')"
     ></div>
     {{block "payee-index" .}}
@@ -58,7 +58,7 @@
             <button
               type="button"
               data-show="$formState === 'edit'"
-              data-on:click="@put('/payee/' + $editingId + '/single')"
+              data-on:click="@put('/payee/' + $editingId)"
             >
               Update Payee
             </button>

@@ -26,11 +26,9 @@ func Register(e *echo.Echo) *Entries {
 	e.POST("/entry/:id/participant", entries.CreateParticipant)
 
 	e.PUT("/entry/:id", entries.Update)
-	e.PUT("/entry/:id/single", entries.UpdateSingle)
 	e.PUT("/entry/:id/participant/:payeeId", entries.UpdateParticipant)
 
 	e.DELETE("/entry/:id", entries.Destroy)
-	e.DELETE("/entry/:id/single", entries.DestroySingle)
 	e.DELETE("/entry/:id/participant/:payeeId", entries.DeleteParticipantTable)
 
 	return entries

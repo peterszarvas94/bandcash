@@ -18,11 +18,17 @@ type payeeParams struct {
 
 type payeeTableParams struct {
 	FormData payeeParams `json:"formData"`
+	Mode     string      `json:"mode"`
+}
+
+type modeParams struct {
+	Mode string `json:"mode"`
 }
 
 // Default signal state for resetting payee forms on success
 var (
 	defaultPayeeSignals = map[string]any{
+		"mode":      "",
 		"formState": "",
 		"editingId": 0,
 		"formData":  map[string]any{"name": "", "description": ""},
@@ -153,55 +159,23 @@ func (p *Payees) Update(c echo.Context) error {
 
 	slog.Debug("payee.update", "id", id)
 
-	err = utils.SSEHub.Redirect(c, "/payee/"+strconv.Itoa(id))
-	if err != nil {
-		slog.Warn("payee.update: failed to redirect", "err", err)
+	if signals.Mode == "single" {
+		err = utils.SSEHub.Redirect(c, "/payee/"+strconv.Itoa(id))
+		if err != nil {
+			slog.Warn("payee.update: failed to redirect", "err", err)
+		}
+		return c.NoContent(200)
 	}
-
-	return c.NoContent(200)
-}
-
-func (p *Payees) UpdateSingle(c echo.Context) error {
-	id, err := strconv.Atoi(c.Param("id"))
-	if err != nil {
-		slog.Warn("payee.update.single: invalid id", "err", err)
-		return c.NoContent(400)
-	}
-
-	var signals payeeTableParams
-	err = datastar.ReadSignals(c.Request(), &signals)
-	if err != nil {
-		slog.Warn("payee.update.single: failed to read signals", "err", err)
-		return c.NoContent(400)
-	}
-
-	// Validate
-	if errs := utils.Validate(signals.FormData); errs != nil {
-		utils.SSEHub.PatchSignals(c, map[string]any{"errors": utils.WithErrors(payeeErrorFields, errs)})
-		return c.NoContent(422)
-	}
-
-	_, err = db.Qry.UpdatePayee(c.Request().Context(), db.UpdatePayeeParams{
-		Name:        signals.FormData.Name,
-		Description: signals.FormData.Description,
-		ID:          int64(id),
-	})
-	if err != nil {
-		slog.Error("payee.update.single: failed to update payee", "err", err)
-		return c.NoContent(500)
-	}
-
-	slog.Debug("payee.update.single", "id", id)
 
 	utils.SSEHub.PatchSignals(c, defaultPayeeSignals)
 	data, err := p.GetIndexData(c.Request().Context())
 	if err != nil {
-		slog.Error("payee.update.single: failed to get data", "err", err)
+		slog.Error("payee.update: failed to get data", "err", err)
 		return c.NoContent(500)
 	}
 	html, err := utils.RenderBlock(p.tmpl, "payee-index", data)
 	if err != nil {
-		slog.Error("payee.update.single: failed to render", "err", err)
+		slog.Error("payee.update: failed to render", "err", err)
 		return c.NoContent(500)
 	}
 
@@ -217,6 +191,13 @@ func (p *Payees) Destroy(c echo.Context) error {
 		return c.NoContent(400)
 	}
 
+	var signals modeParams
+	err = datastar.ReadSignals(c.Request(), &signals)
+	if err != nil {
+		slog.Warn("payee.destroy: failed to read signals", "err", err)
+		return c.NoContent(400)
+	}
+
 	err = db.Qry.DeletePayee(c.Request().Context(), int64(id))
 	if err != nil {
 		slog.Error("payee.destroy: failed to delete payee", "err", err)
@@ -225,10 +206,27 @@ func (p *Payees) Destroy(c echo.Context) error {
 
 	slog.Debug("payee.destroy", "id", id)
 
-	err = utils.SSEHub.Redirect(c, "/payee")
-	if err != nil {
-		slog.Warn("payee.destroy: failed to redirect", "err", err)
+	if signals.Mode == "single" {
+		err = utils.SSEHub.Redirect(c, "/payee")
+		if err != nil {
+			slog.Warn("payee.destroy: failed to redirect", "err", err)
+		}
+		return c.NoContent(200)
 	}
+
+	utils.SSEHub.PatchSignals(c, defaultPayeeSignals)
+	data, err := p.GetIndexData(c.Request().Context())
+	if err != nil {
+		slog.Error("payee.destroy: failed to get data", "err", err)
+		return c.NoContent(500)
+	}
+	html, err := utils.RenderBlock(p.tmpl, "payee-index", data)
+	if err != nil {
+		slog.Error("payee.destroy: failed to render", "err", err)
+		return c.NoContent(500)
+	}
+
+	utils.SSEHub.PatchHTML(c, html)
 
 	return c.NoContent(200)
 }

@@ -13,6 +13,11 @@ import (
 
 type entryInlineParams struct {
 	FormData entryData `json:"formData"`
+	Mode     string    `json:"mode"`
+}
+
+type modeParams struct {
+	Mode string `json:"mode"`
 }
 
 type entryData struct {
@@ -39,6 +44,7 @@ type participantTableParams struct {
 // Default signal states for resetting forms on success
 var (
 	defaultEntrySignals = map[string]any{
+		"mode":      "",
 		"formState": "",
 		"editingId": 0,
 		"formData":  map[string]any{"title": "", "time": "", "description": "", "amount": 0},
@@ -184,82 +190,23 @@ func (e *Entries) Update(c echo.Context) error {
 
 	slog.Debug("entry.update", "id", id)
 
-	err = utils.SSEHub.Redirect(c, "/entry/"+strconv.Itoa(id))
-	if err != nil {
-		slog.Warn("entry.update: failed to redirect", "err", err)
+	if signals.Mode == "single" {
+		err = utils.SSEHub.Redirect(c, "/entry/"+strconv.Itoa(id))
+		if err != nil {
+			slog.Warn("entry.update: failed to redirect", "err", err)
+		}
+		return c.NoContent(200)
 	}
 
-	return c.NoContent(200)
-}
-
-func (e *Entries) UpdateSingle(c echo.Context) error {
-	id, err := strconv.Atoi(c.Param("id"))
-	if err != nil {
-		slog.Warn("entry.update.single: invalid id", "err", err)
-		return c.NoContent(400)
-	}
-
-	var signals entryInlineParams
-	err = datastar.ReadSignals(c.Request(), &signals)
-	if err != nil {
-		slog.Warn("entry.update.single: failed to read signals", "err", err)
-		return c.NoContent(400)
-	}
-
-	slog.Debug("entry.update.single: signals received", "formData", signals.FormData)
-
-	// Validate
-	if errs := utils.Validate(signals.FormData); errs != nil {
-		slog.Debug("entry.update.single: validation failed", "errors", errs)
-		utils.SSEHub.PatchSignals(c, map[string]any{"errors": utils.WithErrors(entryErrorFields, errs)})
-		return c.NoContent(422)
-	}
-
-	_, err = db.Qry.UpdateEntry(c.Request().Context(), db.UpdateEntryParams{
-		Title:       signals.FormData.Title,
-		Time:        signals.FormData.Time,
-		Description: signals.FormData.Description,
-		Amount:      signals.FormData.Amount,
-		ID:          int64(id),
-	})
-	if err != nil {
-		slog.Error("entry.update.single: failed to update entry", "err", err)
-		return c.NoContent(500)
-	}
-
-	slog.Debug("entry.update.single", "id", id)
-
-	err = utils.SSEHub.Redirect(c, "/entry/"+strconv.Itoa(id))
-	if err != nil {
-		slog.Warn("entry.update.single: failed to redirect", "err", err)
-	}
-
-	return c.NoContent(200)
-}
-
-func (e *Entries) DestroySingle(c echo.Context) error {
-	id, err := strconv.Atoi(c.Param("id"))
-	if err != nil {
-		slog.Warn("entry.destroy.single: invalid id", "err", err)
-		return c.NoContent(400)
-	}
-
-	err = db.Qry.DeleteEntry(c.Request().Context(), int64(id))
-	if err != nil {
-		slog.Error("entry.destroy.single: failed to delete entry", "err", err)
-		return c.NoContent(500)
-	}
-
-	slog.Debug("entry.destroy.single", "id", id)
-
+	utils.SSEHub.PatchSignals(c, defaultEntrySignals)
 	data, err := e.GetIndexData(c.Request().Context())
 	if err != nil {
-		slog.Error("entry.destroy.single: failed to get data", "err", err)
+		slog.Error("entry.update: failed to get data", "err", err)
 		return c.NoContent(500)
 	}
 	html, err := utils.RenderBlock(e.tmpl, "entry-index", data)
 	if err != nil {
-		slog.Error("entry.destroy.single: failed to render", "err", err)
+		slog.Error("entry.update: failed to render", "err", err)
 		return c.NoContent(500)
 	}
 
@@ -275,6 +222,13 @@ func (e *Entries) Destroy(c echo.Context) error {
 		return c.NoContent(400)
 	}
 
+	var signals modeParams
+	err = datastar.ReadSignals(c.Request(), &signals)
+	if err != nil {
+		slog.Warn("entry.destroy: failed to read signals", "err", err)
+		return c.NoContent(400)
+	}
+
 	err = db.Qry.DeleteEntry(c.Request().Context(), int64(id))
 	if err != nil {
 		slog.Error("entry.destroy: failed to delete entry", "err", err)
@@ -283,10 +237,27 @@ func (e *Entries) Destroy(c echo.Context) error {
 
 	slog.Debug("entry.destroy", "id", id)
 
-	err = utils.SSEHub.Redirect(c, "/entry")
-	if err != nil {
-		slog.Warn("entry.destroy: failed to redirect", "err", err)
+	if signals.Mode == "single" {
+		err = utils.SSEHub.Redirect(c, "/entry")
+		if err != nil {
+			slog.Warn("entry.destroy: failed to redirect", "err", err)
+		}
+		return c.NoContent(200)
 	}
+
+	utils.SSEHub.PatchSignals(c, defaultEntrySignals)
+	data, err := e.GetIndexData(c.Request().Context())
+	if err != nil {
+		slog.Error("entry.destroy: failed to get data", "err", err)
+		return c.NoContent(500)
+	}
+	html, err := utils.RenderBlock(e.tmpl, "entry-index", data)
+	if err != nil {
+		slog.Error("entry.destroy: failed to render", "err", err)
+		return c.NoContent(500)
+	}
+
+	utils.SSEHub.PatchHTML(c, html)
 
 	return c.NoContent(200)
 }
