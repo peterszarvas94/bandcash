@@ -7,7 +7,6 @@ import (
 	"log/slog"
 	"os"
 	"os/signal"
-	"sort"
 	"syscall"
 	"time"
 
@@ -26,8 +25,6 @@ import (
 )
 
 func main() {
-	utils.InitLogger()
-
 	routesFlag := flag.Bool("routes", false, "Print routes and exit")
 	flag.Parse()
 
@@ -47,7 +44,7 @@ func main() {
 	}))
 
 	// Routes
-	e.Static("/static", "web/static")
+	e.Static("/static", "static")
 
 	health.Register(e)
 	home.Register(e)
@@ -56,16 +53,7 @@ func main() {
 	sse.Register(e)
 
 	if *routesFlag {
-		routes := e.Routes()
-		sort.Slice(routes, func(i, j int) bool {
-			if routes[i].Path == routes[j].Path {
-				return routes[i].Method < routes[j].Method
-			}
-			return routes[i].Path < routes[j].Path
-		})
-		for _, route := range routes {
-			fmt.Printf("%s\t%s\n", route.Method, route.Path)
-		}
+		utils.PrintRoutes(e)
 		return
 	}
 

@@ -31,8 +31,8 @@ func Register(e *echo.Echo) {
 
 	// Parse shared head + home template
 	h.tmpl = template.Must(template.ParseFiles(
-		"web/templates/head.html",
-		"web/templates/breadcrumbs.html",
+		"models/shared/templates/head.html",
+		"models/shared/templates/breadcrumbs.html",
 		"models/home/templates/index.html",
 	))
 

@@ -108,9 +108,10 @@ func (p *Payees) Create(c echo.Context) error {
 	html, err := utils.RenderBlock(p.tmpl, "payee-index", data)
 	if err != nil {
 		slog.Error("payee.create.table: failed to render", "err", err)
-	} else {
-		utils.SSEHub.PatchHTML(c, html)
+		return c.NoContent(200)
 	}
+
+	utils.SSEHub.PatchHTML(c, html)
 
 	return c.NoContent(200)
 }
@@ -187,9 +188,10 @@ func (p *Payees) UpdateSingle(c echo.Context) error {
 	html, err := utils.RenderBlock(p.tmpl, "payee-index", data)
 	if err != nil {
 		slog.Error("payee.update.single: failed to render", "err", err)
-	} else {
-		utils.SSEHub.PatchHTML(c, html)
+		return c.NoContent(200)
 	}
+
+	utils.SSEHub.PatchHTML(c, html)
 
 	return c.NoContent(200)
 }

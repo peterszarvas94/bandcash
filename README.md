@@ -33,16 +33,16 @@ Open http://localhost:8080
 cmd/server/         # Application entrypoint
 models/             # Feature modules (entry, home)
   entry/            # Entry REST handlers + templates
+  shared/templates/ # Go HTML templates
 internal/
   config/           # Environment configuration
   db/               # Database init, sqlc output, migrations, queries
   logger/           # Colored slog handler + JSON file logging
   middleware/       # Request ID middleware
   utils/            # Shared utilities
-web/
-  static/js/        # JavaScript (Datastar vendored)
-  static/css/       # Layered CSS (reset/base/components/utilities)
-  templates/        # Go HTML templates
+static/
+  js/               # JavaScript (Datastar vendored)
+  css/              # Layered CSS (reset/base/components/utilities)
 ```
 
 ## Configuration

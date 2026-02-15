@@ -7,7 +7,7 @@ Use this file as the default operating guide for agentic changes.
 - Entry point: `cmd/server/main.go`.
 - Feature modules live in `models/` (entry, payee, home).
 - Shared internals: `internal/` (config, db, logger, middleware, utils, view, hub, sse).
-- Templates live in `web/templates/`; static assets in `web/static/`.
+- Templates live in `models/shared/templates/`; static assets in `static/`.
 
 ## Build, Lint, and Test Commands
 Use `mise` tasks where possible.
@@ -76,7 +76,7 @@ Follow existing patterns from `models/`, `internal/`, and `cmd/`.
 
 ### Templates and UI
 - Templates follow `index/new/show/edit` naming.
-- Use the shared breadcrumbs partial `web/templates/breadcrumbs.html`.
+- Use the shared breadcrumbs partial `models/shared/templates/breadcrumbs.html`.
 - View data includes `Breadcrumbs []utils.Crumb` when applicable.
 
 ### Datastar + SSE

@@ -10,8 +10,8 @@ func Register(e *echo.Echo) *Payees {
 	payees := New()
 
 	payees.tmpl = template.Must(template.ParseFiles(
-		"web/templates/head.html",
-		"web/templates/breadcrumbs.html",
+		"models/shared/templates/head.html",
+		"models/shared/templates/breadcrumbs.html",
 		"models/payee/templates/index.html",
 		"models/payee/templates/new.html",
 		"models/payee/templates/show.html",

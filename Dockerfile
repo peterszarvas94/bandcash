@@ -13,7 +13,8 @@ FROM alpine:latest
 WORKDIR /app
 
 COPY --from=builder /app/server .
-COPY --from=builder /app/web ./web
+COPY --from=builder /app/static ./static
+COPY --from=builder /app/models ./models
 
 EXPOSE 8080
 

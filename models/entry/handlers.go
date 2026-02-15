@@ -133,9 +133,10 @@ func (e *Entries) Create(c echo.Context) error {
 	html, err := utils.RenderBlock(e.tmpl, "entry-index", data)
 	if err != nil {
 		slog.Error("entry.create.table: failed to render", "err", err)
-	} else {
-		utils.SSEHub.PatchHTML(c, html)
+		return c.NoContent(200)
 	}
+
+	utils.SSEHub.PatchHTML(c, html)
 
 	return c.NoContent(200)
 }
@@ -231,9 +232,10 @@ func (e *Entries) DestroySingle(c echo.Context) error {
 	html, err := utils.RenderBlock(e.tmpl, "entry-index", data)
 	if err != nil {
 		slog.Error("entry.destroy.single: failed to render", "err", err)
-	} else {
-		utils.SSEHub.PatchHTML(c, html)
+		return c.NoContent(200)
 	}
+
+	utils.SSEHub.PatchHTML(c, html)
 
 	return c.NoContent(200)
 }
@@ -295,9 +297,10 @@ func (e *Entries) CreateParticipant(c echo.Context) error {
 	html, err := utils.RenderBlock(e.tmpl, "entry-show", data)
 	if err != nil {
 		slog.Error("participant.create.table: failed to render", "err", err)
-	} else {
-		utils.SSEHub.PatchHTML(c, html)
+		return c.NoContent(200)
 	}
+
+	utils.SSEHub.PatchHTML(c, html)
 	utils.SSEHub.PatchSignals(c, defaultParticipantSignals)
 
 	slog.Debug("participant.create.table", "entry_id", id, "payee_id", signals.FormData.PayeeID)
@@ -345,9 +348,10 @@ func (e *Entries) UpdateParticipant(c echo.Context) error {
 	html, err := utils.RenderBlock(e.tmpl, "entry-show", data)
 	if err != nil {
 		slog.Error("participant.update: failed to render", "err", err)
-	} else {
-		utils.SSEHub.PatchHTML(c, html)
+		return c.NoContent(200)
 	}
+
+	utils.SSEHub.PatchHTML(c, html)
 
 	slog.Debug("participant.update", "entry_id", entryID, "payee_id", payeeID)
 	return c.NoContent(200)
@@ -380,9 +384,10 @@ func (e *Entries) DeleteParticipantTable(c echo.Context) error {
 	html, err := utils.RenderBlock(e.tmpl, "entry-show", data)
 	if err != nil {
 		slog.Error("participant.delete: failed to render", "err", err)
-	} else {
-		utils.SSEHub.PatchHTML(c, html)
+		return c.NoContent(200)
 	}
+
+	utils.SSEHub.PatchHTML(c, html)
 	utils.SSEHub.PatchSignals(c, defaultParticipantSignals)
 
 	slog.Debug("participant.delete", "entry_id", entryID, "payee_id", payeeID)

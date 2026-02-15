@@ -10,8 +10,8 @@ func Register(e *echo.Echo) *Entries {
 	entries := New()
 
 	entries.tmpl = template.Must(template.ParseFiles(
-		"web/templates/head.html",
-		"web/templates/breadcrumbs.html",
+		"models/shared/templates/head.html",
+		"models/shared/templates/breadcrumbs.html",
 		"models/entry/templates/index.html",
 		"models/entry/templates/new.html",
 		"models/entry/templates/show.html",
