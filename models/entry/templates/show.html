@@ -79,7 +79,7 @@
             <label>Quick Calc (% of entry)</label>
             <input
               type="number"
-              data-on:change="const pct = parseFloat(this.value); if (!isNaN(pct)) { $formData.amount = Math.round({{.Entry.Amount}} * pct / 100); }"
+              data-on:change="const pct = window.safeParseFloat(this.value); if (pct > 0) { $formData.amount = Math.round({{.Entry.Amount}} * pct / 100); }"
               step="0.01"
               placeholder="e.g., 20"
             />
