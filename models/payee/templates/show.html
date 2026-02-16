@@ -18,8 +18,9 @@
       </div>
 
       <p class="row">
-        <a href="/payee/{{.Payee.ID}}/edit">Edit</a>
+        <a class="btn" href="/payee/{{.Payee.ID}}/edit">Edit</a>
         <button
+          class="btn"
           data-on:click="if (window.confirm('Delete this payee?')) { @delete('/payee/{{.Payee.ID}}') }"
         >
           Delete

@@ -14,6 +14,7 @@
 
       <div data-show="$formState === ''" class="row pb">
         <button
+          class="btn"
           type="button"
           data-on:click="$formState = 'add'; $editingId = 0; $formData = {name: '', description: ''}; $errors = {name: '', description: ''}"
         >
@@ -49,6 +50,7 @@
           </div>
           <div class="row">
             <button
+              class="btn"
               type="button"
               data-show="$formState === 'add'"
               data-on:click="@post('/payee')"
@@ -56,6 +58,7 @@
               Create Payee
             </button>
             <button
+              class="btn"
               type="button"
               data-show="$formState === 'edit'"
               data-on:click="@put('/payee/' + $editingId)"
@@ -63,6 +66,7 @@
               Update Payee
             </button>
             <button
+              class="btn"
               type="button"
               data-on:click="$formState = ''; $editingId = 0; $formData = {name: '', description: ''}; $errors = {name: '', description: ''}"
             >
@@ -91,12 +95,14 @@
             <td>
               <div class="row" data-show="$formState === ''">
                 <button
+                  class="btn"
                   type="button"
                   data-on:click="$formState = 'edit'; $editingId = {{.ID}}; $formData = {name: el.closest('tr').dataset.payeeName, description: el.closest('tr').dataset.payeeDescription}"
                 >
                   Edit
                 </button>
                 <button
+                  class="btn"
                   data-on:click="if (window.confirm('Delete this payee?')) { @delete('/payee/{{.ID}}') }"
                 >
                   Delete

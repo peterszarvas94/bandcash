@@ -21,4 +21,33 @@
   .color-error {
     color: var(--error-color);
   }
+
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: var(--space) calc(var(--space) * 2);
+    font: inherit;
+    font-size: 0.875rem;
+    line-height: 1.5;
+    text-decoration: none;
+    text-align: center;
+    white-space: nowrap;
+    cursor: pointer;
+    border: var(--border) solid var(--border-color);
+    border-radius: var(--border);
+    background: var(--page-bg);
+    color: var(--text-color);
+    min-width: 5ch;
+    min-height: 2.5rem;
+  }
+
+  .btn:hover {
+    background: var(--border-color);
+  }
+
+  .btn:focus-visible {
+    outline: 2px solid var(--link-color);
+    outline-offset: 2px;
+  }
 }

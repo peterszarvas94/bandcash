@@ -12,27 +12,31 @@
       <h1>{{.Title}}</h1>
       {{template "breadcrumbs" .}}
 
-      <div class="entry-details">
-        <p><strong>Title:</strong> {{.Entry.Title}}</p>
-        <p><strong>Time:</strong> {{.Entry.Time}}</p>
-        <p><strong>Description:</strong> {{.Entry.Description}}</p>
-        <p><strong>Amount:</strong> {{printf "%d" .Entry.Amount}}</p>
-        <p><strong>Leftover (taxes):</strong> {{printf "%d" .Leftover}}</p>
-      </div>
+      <h2>Entry Details</h2>
 
       <p class="row">
-        <a href="/entry/{{.Entry.ID}}/edit">Edit</a>
+        <a href="/entry/{{.Entry.ID}}/edit" class="btn">Edit</a>
         <button
+          class="btn"
           data-on:click="if (window.confirm('Delete this entry?')) { @delete('/entry/{{.Entry.ID}}') }"
         >
           Delete
         </button>
       </p>
 
+      <div class="entry-details">
+        <p><strong>Title:</strong> {{.Entry.Title}}</p>
+        <p><strong>Time:</strong> {{.Entry.Time}}</p>
+        <p><strong>Description:</strong> {{.Entry.Description}}</p>
+        <p><strong>Amount:</strong> {{printf "%d" .Entry.Amount}}</p>
+        <p><strong>Leftover:</strong> {{printf "%d" .Leftover}}</p>
+      </div>
+
       <h2>Participants</h2>
 
       <div data-show="$formState === ''" class="row pb">
         <button
+          class="btn"
           type="button"
           data-on:click="$formState = 'add'; $editingId = 0; $calcPercent = 0; $formData = {payeeId: 0, payeeName: '', amount: 0, expense: 0}; $errors = {payeeId: '', amount: '', expense: ''}"
         >
@@ -72,6 +76,7 @@
                 style="flex: 1"
               />
               <button
+                class="btn"
                 type="button"
                 data-on:click="$calcPercent = $formData.amount > 0 ? Math.round($formData.amount / {{.Entry.Amount}} * 10000) / 100 : 0"
               >
@@ -96,10 +101,11 @@
                 style="flex: 1"
               />
               <button
+                class="btn"
                 type="button"
                 data-on:click="$formData.amount = Math.round({{.Entry.Amount}} * $calcPercent / 100)"
               >
-                Calculate Amount
+                Calc Amount
               </button>
             </div>
           </div>
@@ -118,6 +124,7 @@
           </div>
           <div class="row">
             <button
+              class="btn"
               type="button"
               data-show="$formState === 'add'"
               data-on:click="@post('/entry/{{$.Entry.ID}}/participant')"
@@ -125,6 +132,7 @@
               Add Participant
             </button>
             <button
+              class="btn"
               type="button"
               data-show="$formState === 'edit'"
               data-on:click="@put('/entry/{{$.Entry.ID}}/participant/' + $editingId)"
@@ -132,6 +140,7 @@
               Update Participant
             </button>
             <button
+              class="btn"
               type="button"
               data-on:click="$formState = ''; $editingId = 0; $calcPercent = 0; $formData = {payeeId: 0, payeeName: '', amount: 0, expense: 0}; $errors = {payeeId: '', amount: '', expense: ''}"
             >
@@ -170,12 +179,14 @@
             <td class="text-right">
               <div class="row" data-show="$formState === ''">
                 <button
+                  class="btn"
                   type="button"
                   data-on:click="$formState = 'edit'; $editingId = {{.ID}}; $formData = {payeeId: Number(el.closest('tr').dataset.payeeId), payeeName: el.closest('tr').dataset.payeeName, amount: Number(el.closest('tr').dataset.participantAmount), expense: Number(el.closest('tr').dataset.participantExpense)}"
                 >
                   Edit
                 </button>
                 <button
+                  class="btn"
                   type="button"
                   data-on:click="if (window.confirm('Delete this participant?')) { @delete('/entry/{{$.Entry.ID}}/participant/{{.ID}}') }"
                 >
