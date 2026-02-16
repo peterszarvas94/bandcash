@@ -1,20 +1,7 @@
 -- +goose Up
 ALTER TABLE participants ADD COLUMN expense INTEGER NOT NULL DEFAULT 0;
 
--- +goose StatementBegin
-CREATE TRIGGER IF NOT EXISTS participants_expense_updated_at
-AFTER UPDATE ON participants
-FOR EACH ROW
-BEGIN
-    UPDATE participants
-    SET updated_at = CURRENT_TIMESTAMP
-    WHERE entry_id = NEW.entry_id AND payee_id = NEW.payee_id;
-END;
--- +goose StatementEnd
-
 -- +goose Down
-DROP TRIGGER IF EXISTS participants_expense_updated_at;
-
 CREATE TABLE participants_new (
     entry_id INTEGER NOT NULL,
     payee_id INTEGER NOT NULL,
