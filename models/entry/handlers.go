@@ -51,9 +51,10 @@ var (
 		"formData":  map[string]any{"title": "", "time": "", "description": "", "amount": 0},
 	}
 	defaultParticipantSignals = map[string]any{
-		"formState": "",
-		"editingId": 0,
-		"formData":  map[string]any{"payeeId": 0, "payeeName": "", "amount": 0, "expense": 0},
+		"formState":   "",
+		"editingId":   0,
+		"calcPercent": 0,
+		"formData":    map[string]any{"payeeId": 0, "payeeName": "", "amount": 0, "expense": 0},
 	}
 	// Error field lists for validation
 	entryErrorFields       = []string{"title", "time", "description", "amount"}
