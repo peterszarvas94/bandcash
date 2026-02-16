@@ -26,34 +26,36 @@
         <h3 data-show="$formState === 'add'">New Entry</h3>
         <h3 data-show="$formState === 'edit'">Edit Entry</h3>
         <form class="form">
-          <div>
-            <label>Title</label>
-            <input type="text" data-bind="formData.title" />
-            <div
-              data-show="$errors && $errors.title"
-              class="color-error"
-              data-text="$errors.title"
-            ></div>
+          <div class="form-row">
+            <div class="field">
+              <label>Title</label>
+              <input type="text" data-bind="formData.title" />
+              <div
+                data-show="$errors && $errors.title"
+                class="color-error"
+                data-text="$errors.title"
+              ></div>
+            </div>
+            <div class="field">
+              <label>Time</label>
+              <input type="datetime-local" data-bind="formData.time" />
+              <div
+                data-show="$errors && $errors.time"
+                class="color-error"
+                data-text="$errors.time"
+              ></div>
+            </div>
           </div>
-          <div>
-            <label>Time</label>
-            <input type="datetime-local" data-bind="formData.time" />
-            <div
-              data-show="$errors && $errors.time"
-              class="color-error"
-              data-text="$errors.time"
-            ></div>
-          </div>
-          <div>
+          <div class="field">
             <label>Description</label>
-            <input type="text" data-bind="formData.description" />
+            <textarea data-bind="formData.description" rows="3"></textarea>
             <div
               data-show="$errors && $errors.description"
               class="color-error"
               data-text="$errors.description"
             ></div>
           </div>
-          <div>
+          <div class="field">
             <label>Amount</label>
             <input
               type="number"

@@ -12,8 +12,9 @@ import (
 )
 
 type entryInlineParams struct {
-	FormData entryData `json:"formData"`
-	Mode     string    `json:"mode"`
+	FormData      entryData `json:"formData"`
+	EntryFormData entryData `json:"entryFormData"`
+	Mode          string    `json:"mode"`
 }
 
 type modeParams struct {
@@ -172,17 +173,22 @@ func (e *Entries) Update(c echo.Context) error {
 		return c.NoContent(400)
 	}
 
+	entryForm := signals.FormData
+	if signals.EntryFormData.Title != "" || signals.EntryFormData.Time != "" || signals.EntryFormData.Amount != 0 {
+		entryForm = signals.EntryFormData
+	}
+
 	// Validate
-	if errs := utils.Validate(signals.FormData); errs != nil {
+	if errs := utils.Validate(entryForm); errs != nil {
 		utils.SSEHub.PatchSignals(c, map[string]any{"errors": utils.WithErrors(entryErrorFields, errs)})
 		return c.NoContent(422)
 	}
 
 	_, err = db.Qry.UpdateEntry(c.Request().Context(), db.UpdateEntryParams{
-		Title:       signals.FormData.Title,
-		Time:        signals.FormData.Time,
-		Description: signals.FormData.Description,
-		Amount:      signals.FormData.Amount,
+		Title:       entryForm.Title,
+		Time:        entryForm.Time,
+		Description: entryForm.Description,
+		Amount:      entryForm.Amount,
 		ID:          int64(id),
 	})
 	if err != nil {
@@ -193,10 +199,21 @@ func (e *Entries) Update(c echo.Context) error {
 	slog.Debug("entry.update", "id", id)
 
 	if signals.Mode == "single" {
-		err = utils.SSEHub.Redirect(c, "/entry/"+strconv.Itoa(id))
+		utils.SSEHub.PatchSignals(c, map[string]any{
+			"entryFormState": "",
+			"entryFormData":  map[string]any{"title": "", "time": "", "description": "", "amount": 0},
+		})
+		data, err := e.GetShowData(c.Request().Context(), id)
 		if err != nil {
-			slog.Warn("entry.update: failed to redirect", "err", err)
+			slog.Error("entry.update: failed to get data", "err", err)
+			return c.NoContent(500)
 		}
+		html, err := utils.RenderBlock(e.tmpl, "entry-show", data)
+		if err != nil {
+			slog.Error("entry.update: failed to render", "err", err)
+			return c.NoContent(500)
+		}
+		utils.SSEHub.PatchHTML(c, html)
 		return c.NoContent(200)
 	}
 

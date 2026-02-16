@@ -4,7 +4,7 @@
   {{template "head" .}}
   <body>
     <div
-      data-signals="{mode: 'single', formState: '', editingId: 0, calcPercent: 0, formData: {payeeId: '', payeeName: '', amount: 0, expense: 0}}"
+      data-signals="{mode: 'single', entryFormState: '', entryFormData: {title: '', time: '', description: '', amount: 0}, formState: '', editingId: 0, calcPercent: 0, formData: {payeeId: '', payeeName: '', amount: 0, expense: 0}}"
       data-init="@get('/sse')"
     ></div>
     {{block "entry-show" .}}
@@ -14,8 +14,14 @@
 
       <h2>Entry Details</h2>
 
-      <p class="row">
-        <a href="/entry/{{.Entry.ID}}/edit" class="btn">Edit</a>
+      <p class="row" data-show="$formState === '' && $entryFormState === ''">
+        <button
+          class="btn"
+          type="button"
+          data-on:click="$entryFormState = 'edit'; $entryFormData = {title: {{printf "%q" .Entry.Title}}, time: {{printf "%q" .Entry.Time}}, description: {{printf "%q" .Entry.Description}}, amount: {{.Entry.Amount}}}"
+        >
+          Edit Entry
+        </button>
         <button
           class="btn"
           data-on:click="if (window.confirm('Delete this entry?')) { @delete('/entry/{{.Entry.ID}}') }"
@@ -24,17 +30,94 @@
         </button>
       </p>
 
-      <div class="entry-details">
-        <p><strong>Title:</strong> {{.Entry.Title}}</p>
-        <p><strong>Time:</strong> {{.Entry.Time}}</p>
-        <p><strong>Description:</strong> {{.Entry.Description}}</p>
-        <p><strong>Amount:</strong> {{printf "%d" .Entry.Amount}}</p>
-        <p><strong>Leftover:</strong> {{printf "%d" .Leftover}}</p>
+      <div class="entry-details" data-show="$entryFormState === ''">
+        <div class="form-row">
+          <div class="field">
+            <label>Title</label>
+            <p>{{.Entry.Title}}</p>
+          </div>
+          <div class="field">
+            <label>Time</label>
+            <p>{{.Entry.Time}}</p>
+          </div>
+        </div>
+        <div class="field">
+          <label>Description</label>
+          <p>{{.Entry.Description}}</p>
+        </div>
+        <div class="field">
+          <label>Amount</label>
+          <p>{{printf "%d" .Entry.Amount}}</p>
+        </div>
+        <div class="field">
+          <label>Leftover</label>
+          <p>{{printf "%d" .Leftover}}</p>
+        </div>
+      </div>
+
+      <div data-show="$entryFormState === 'edit'" style="display: none" class="pb">
+        <h3>Edit Entry</h3>
+        <form class="form">
+          <div class="form-row">
+            <div class="field">
+              <label>Title</label>
+              <input type="text" data-bind="entryFormData.title" />
+              <div
+                data-show="$errors && $errors.title"
+                class="color-error"
+                data-text="$errors.title"
+              ></div>
+            </div>
+            <div class="field">
+              <label>Time</label>
+              <input type="datetime-local" data-bind="entryFormData.time" />
+              <div
+                data-show="$errors && $errors.time"
+                class="color-error"
+                data-text="$errors.time"
+              ></div>
+            </div>
+          </div>
+          <div class="field">
+            <label>Description</label>
+            <textarea data-bind="entryFormData.description" rows="3"></textarea>
+            <div
+              data-show="$errors && $errors.description"
+              class="color-error"
+              data-text="$errors.description"
+            ></div>
+          </div>
+          <div class="field">
+            <label>Amount</label>
+            <input type="number" data-bind="entryFormData.amount" step="1" />
+            <div
+              data-show="$errors && $errors.amount"
+              class="color-error"
+              data-text="$errors.amount"
+            ></div>
+          </div>
+          <div class="row">
+            <button
+              class="btn"
+              type="button"
+              data-on:click="@put('/entry/{{.Entry.ID}}')"
+            >
+              Update Entry
+            </button>
+            <button
+              class="btn"
+              type="button"
+              data-on:click="$entryFormState = ''; $entryFormData = {title: '', time: '', description: '', amount: 0}"
+            >
+              Cancel
+            </button>
+          </div>
+        </form>
       </div>
 
       <h2>Participants</h2>
 
-      <div data-show="$formState === ''" class="row pb">
+      <div data-show="$formState === '' && $entryFormState === ''" class="row pb">
         <button
           class="btn"
           type="button"
@@ -44,7 +127,7 @@
         </button>
       </div>
 
-      <div data-show="$formState !== ''" style="display: none" class="pb">
+      <div data-show="$formState !== '' && $entryFormState === ''" style="display: none" class="pb">
         <h3 data-show="$formState === 'add'">New Participant</h3>
         <h3 data-show="$formState === 'edit'">Edit Participant</h3>
         <form class="form">
@@ -177,7 +260,7 @@
               {{printf "%d" (add .ParticipantAmount .ParticipantExpense)}}
             </td>
             <td class="text-right">
-              <div class="row" data-show="$formState === ''">
+              <div class="row" data-show="$formState === '' && $entryFormState === ''">
                 <button
                   class="btn"
                   type="button"
