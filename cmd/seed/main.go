@@ -76,39 +76,72 @@ func main() {
 	}
 
 	ctx := context.Background()
+
+	// Gigs (entries) - band performances
 	entries := []seedEntry{
 		{
-			Title:       "Client invoice",
-			Time:        time.Now().Add(-72 * time.Hour).Format("2006-01-02T15:04"),
-			Description: "Invoice for February retainers",
-			Amount:      1250,
+			Title:       "The Blue Note - Friday Night",
+			Time:        time.Now().Add(-240 * time.Hour).Format("2006-01-02T15:04"),
+			Description: "Weekend show at downtown jazz club",
+			Amount:      80000, // $800.00
 		},
 		{
-			Title:       "Studio rent",
+			Title:       "Summer Fest Main Stage",
+			Time:        time.Now().Add(-192 * time.Hour).Format("2006-01-02T15:04"),
+			Description: "Outdoor festival performance",
+			Amount:      250000, // $2500.00
+		},
+		{
+			Title:       "Private Wedding - Johnson",
+			Time:        time.Now().Add(-144 * time.Hour).Format("2006-01-02T15:04"),
+			Description: "Private event, 3-hour set",
+			Amount:      120000, // $1200.00
+		},
+		{
+			Title:       "Riverside Bar Gig",
+			Time:        time.Now().Add(-96 * time.Hour).Format("2006-01-02T15:04"),
+			Description: "Acoustic Wednesday set",
+			Amount:      30000, // $300.00
+		},
+		{
+			Title:       "Corporate Event - TechCorp",
 			Time:        time.Now().Add(-48 * time.Hour).Format("2006-01-02T15:04"),
-			Description: "Monthly studio rent",
-			Amount:      -950,
+			Description: "Holiday party performance",
+			Amount:      150000, // $1500.00
 		},
 		{
-			Title:       "Equipment",
+			Title:       "Battle of the Bands",
 			Time:        time.Now().Add(-24 * time.Hour).Format("2006-01-02T15:04"),
-			Description: "Mic stand and cables",
-			Amount:      -85,
+			Description: "Competition, won 2nd place",
+			Amount:      50000, // $500.00 prize
 		},
 	}
 
+	// Band members and venues (payees)
 	payees := []seedPayee{
 		{
-			Name:        "Northside Studios",
-			Description: "Shared rehearsal space",
+			Name:        "Alex Rivera",
+			Description: "Lead vocals & rhythm guitar",
 		},
 		{
-			Name:        "Ari Lane",
-			Description: "Session guitarist",
+			Name:        "Jordan Chen",
+			Description: "Lead guitar & backing vocals",
 		},
 		{
-			Name:        "Soundcheck Supply",
-			Description: "Gear and cables",
+			Name:        "Morgan Blake",
+			Description: "Bass guitar",
+		},
+		{
+			Name:        "Casey Martinez",
+			Description: "Drums & percussion",
+		},
+		{
+			Name:        "Taylor Kim",
+			Description: "Keyboards & synth",
+		},
+		{
+			Name:        "Riley Park",
+			Description: "Band manager (10% cut)",
 		},
 	}
 
@@ -140,10 +173,56 @@ func main() {
 		createdPayees = append(createdPayees, created)
 	}
 
+	// Participants - band members getting cuts from each gig
+	// Index mapping: 0=Alex, 1=Jordan, 2=Morgan, 3=Casey, 4=Taylor, 5=Riley (manager)
 	participants := []seedParticipant{
-		{EntryIndex: 0, PayeeIndex: 1, Amount: 400},
-		{EntryIndex: 1, PayeeIndex: 0, Amount: -450},
-		{EntryIndex: 2, PayeeIndex: 2, Amount: -85},
+		// The Blue Note - $800 total
+		{EntryIndex: 0, PayeeIndex: 0, Amount: 18000}, // Alex: $180
+		{EntryIndex: 0, PayeeIndex: 1, Amount: 18000}, // Jordan: $180
+		{EntryIndex: 0, PayeeIndex: 2, Amount: 16000}, // Morgan: $160
+		{EntryIndex: 0, PayeeIndex: 3, Amount: 16000}, // Casey: $160
+		{EntryIndex: 0, PayeeIndex: 4, Amount: 8000},  // Taylor: $80
+		{EntryIndex: 0, PayeeIndex: 5, Amount: 4000},  // Riley (manager 10%): $40
+
+		// Summer Fest - $2500 total
+		{EntryIndex: 1, PayeeIndex: 0, Amount: 56250}, // Alex: $562.50
+		{EntryIndex: 1, PayeeIndex: 1, Amount: 56250}, // Jordan: $562.50
+		{EntryIndex: 1, PayeeIndex: 2, Amount: 50000}, // Morgan: $500
+		{EntryIndex: 1, PayeeIndex: 3, Amount: 50000}, // Casey: $500
+		{EntryIndex: 1, PayeeIndex: 4, Amount: 25000}, // Taylor: $250
+		{EntryIndex: 1, PayeeIndex: 5, Amount: 12500}, // Riley (manager 10%): $125
+
+		// Private Wedding - $1200 total
+		{EntryIndex: 2, PayeeIndex: 0, Amount: 27000}, // Alex: $270
+		{EntryIndex: 2, PayeeIndex: 1, Amount: 27000}, // Jordan: $270
+		{EntryIndex: 2, PayeeIndex: 2, Amount: 24000}, // Morgan: $240
+		{EntryIndex: 2, PayeeIndex: 3, Amount: 24000}, // Casey: $240
+		{EntryIndex: 2, PayeeIndex: 4, Amount: 12000}, // Taylor: $120
+		{EntryIndex: 2, PayeeIndex: 5, Amount: 6000},  // Riley (manager 10%): $60
+
+		// Riverside Bar - $300 total (smaller venue, smaller cuts)
+		{EntryIndex: 3, PayeeIndex: 0, Amount: 6750}, // Alex: $67.50
+		{EntryIndex: 3, PayeeIndex: 1, Amount: 6750}, // Jordan: $67.50
+		{EntryIndex: 3, PayeeIndex: 2, Amount: 6000}, // Morgan: $60
+		{EntryIndex: 3, PayeeIndex: 3, Amount: 6000}, // Casey: $60
+		{EntryIndex: 3, PayeeIndex: 4, Amount: 3000}, // Taylor: $30
+		{EntryIndex: 3, PayeeIndex: 5, Amount: 1500}, // Riley (manager 10%): $15
+
+		// Corporate Event - $1500 total
+		{EntryIndex: 4, PayeeIndex: 0, Amount: 33750}, // Alex: $337.50
+		{EntryIndex: 4, PayeeIndex: 1, Amount: 33750}, // Jordan: $337.50
+		{EntryIndex: 4, PayeeIndex: 2, Amount: 30000}, // Morgan: $300
+		{EntryIndex: 4, PayeeIndex: 3, Amount: 30000}, // Casey: $300
+		{EntryIndex: 4, PayeeIndex: 4, Amount: 15000}, // Taylor: $150
+		{EntryIndex: 4, PayeeIndex: 5, Amount: 7500},  // Riley (manager 10%): $75
+
+		// Battle of the Bands - $500 prize
+		{EntryIndex: 5, PayeeIndex: 0, Amount: 11250}, // Alex: $112.50
+		{EntryIndex: 5, PayeeIndex: 1, Amount: 11250}, // Jordan: $112.50
+		{EntryIndex: 5, PayeeIndex: 2, Amount: 10000}, // Morgan: $100
+		{EntryIndex: 5, PayeeIndex: 3, Amount: 10000}, // Casey: $100
+		{EntryIndex: 5, PayeeIndex: 4, Amount: 5000},  // Taylor: $50
+		{EntryIndex: 5, PayeeIndex: 5, Amount: 2500},  // Riley (manager 10%): $25
 	}
 
 	for _, participant := range participants {
