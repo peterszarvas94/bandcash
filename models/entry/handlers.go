@@ -323,7 +323,7 @@ func (e *Entries) UpdateParticipant(c echo.Context) error {
 		return c.NoContent(400)
 	}
 
-	var signals participantParams
+	var signals participantTableParams
 	err = datastar.ReadSignals(c.Request(), &signals)
 	if err != nil {
 		slog.Warn("participant.update: failed to read signals", "err", err)
@@ -331,13 +331,13 @@ func (e *Entries) UpdateParticipant(c echo.Context) error {
 	}
 
 	// Validate
-	if errs := utils.Validate(signals.ParticipantForm); errs != nil {
+	if errs := utils.Validate(signals.FormData); errs != nil {
 		utils.SSEHub.PatchSignals(c, map[string]any{"errors": utils.WithErrors(participantErrorFields, errs)})
 		return c.NoContent(422)
 	}
 
 	err = db.Qry.UpdateParticipantAmount(c.Request().Context(), db.UpdateParticipantAmountParams{
-		Amount:  signals.ParticipantForm.Amount,
+		Amount:  signals.FormData.Amount,
 		EntryID: int64(entryID),
 		PayeeID: int64(payeeID),
 	})
