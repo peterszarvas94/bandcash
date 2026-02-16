@@ -4,7 +4,7 @@
   {{template "head" .}}
   <body>
     <div
-      data-signals="{view: '/entry/{{.Entry.ID}}/edit', mode: 'single', formData: {title: '{{.Entry.Title}}', time: '{{.Entry.Time}}', description: '{{.Entry.Description}}', amount: {{.Entry.Amount}}}}"
+      data-signals="{mode: 'single', formData: {title: '{{.Entry.Title}}', time: '{{.Entry.Time}}', description: '{{.Entry.Description}}', amount: {{.Entry.Amount}}}}"
       data-init="@get('/sse')"
     ></div>
     {{block "entry-edit" .}}

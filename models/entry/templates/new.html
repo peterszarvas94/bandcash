@@ -4,7 +4,7 @@
   {{template "head" .}}
   <body>
     <div
-      data-signals="{view: '/entry/new', formData: {title: '', time: '', description: '', amount: 0}}"
+      data-signals="{formData: {title: '', time: '', description: '', amount: 0}}"
       data-init="@get('/sse')"
     ></div>
     {{block "entry-new" .}}
