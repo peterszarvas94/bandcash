@@ -67,6 +67,7 @@
             <input
               type="number"
               data-bind="formData.amount"
+              data-on:change="$calcPercent = 0"
               step="1"
             />
             <div
@@ -89,25 +90,22 @@
                 type="button"
                 data-on:click="if ($calcPercent > 0) { $formData.amount = Math.round({{.Entry.Amount}} * $calcPercent / 100); }"
               >
-                Calculate
+                Calculate Amount
               </button>
             </div>
           </div>
           <div>
             <label>Expense</label>
-            <input
-              type="number"
-              data-bind="formData.expense"
-              step="1"
-            />
+            <input type="number" data-bind="formData.expense" step="1" />
             <div
               data-show="$errors && $errors.expense"
               class="color-error"
               data-text="$errors.expense"
             ></div>
           </div>
-          <div style="font-weight: bold; padding: 10px 0;">
-            <strong>Total:</strong> <span data-text="$formData.amount + $formData.expense"></span>
+          <div style="font-weight: bold; padding: 10px 0">
+            <strong>Total:</strong>
+            <span data-text="$formData.amount + $formData.expense"></span>
           </div>
           <div class="row">
             <button
@@ -157,7 +155,9 @@
             <td>{{.Description}}</td>
             <td class="text-right">{{printf "%d" .ParticipantAmount}}</td>
             <td class="text-right">{{printf "%d" .ParticipantExpense}}</td>
-            <td class="text-right">{{printf "%d" (add .ParticipantAmount .ParticipantExpense)}}</td>
+            <td class="text-right">
+              {{printf "%d" (add .ParticipantAmount .ParticipantExpense)}}
+            </td>
             <td class="text-right">
               <div class="row" data-show="$formState === ''">
                 <button
