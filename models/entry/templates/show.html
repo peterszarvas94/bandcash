@@ -64,11 +64,20 @@
           </div>
           <div>
             <label>Cut Amount</label>
-            <input
-              type="number"
-              data-bind="formData.amount"
-              step="1"
-            />
+            <div class="row">
+              <input
+                type="number"
+                data-bind="formData.amount"
+                step="1"
+                style="flex: 1"
+              />
+              <button
+                type="button"
+                data-on:click="$calcPercent = $formData.amount > 0 ? Math.round($formData.amount / {{.Entry.Amount}} * 10000) / 100 : 0"
+              >
+                Calc %
+              </button>
+            </div>
             <div
               data-show="$errors && $errors.amount"
               class="color-error"
@@ -90,7 +99,7 @@
                 type="button"
                 data-on:click="$formData.amount = Math.round({{.Entry.Amount}} * $calcPercent / 100)"
               >
-                Calculate
+                Calculate Amount
               </button>
             </div>
           </div>
