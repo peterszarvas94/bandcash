@@ -2,12 +2,14 @@
   .table {
     width: 100%;
     border-collapse: collapse;
+    table-layout: fixed;
 
     th,
     td {
       border: var(--border) solid var(--border-color);
       padding: var(--space) calc(var(--space) * 2);
       text-align: left;
+      word-break: break-word;
     }
 
     td:last-child {
@@ -29,6 +31,11 @@
     textarea {
       field-sizing: fixed;
       width: 100%;
+    }
+
+    textarea {
+      min-height: 6rem;
+      resize: vertical;
     }
 
     button {

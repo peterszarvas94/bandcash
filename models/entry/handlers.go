@@ -93,24 +93,6 @@ func (e *Entries) Show(c echo.Context) error {
 	return utils.RenderTemplate(c.Response().Writer, e.tmpl, "show", data)
 }
 
-func (e *Entries) Edit(c echo.Context) error {
-	utils.EnsureClientID(c)
-
-	id, err := strconv.Atoi(c.Param("id"))
-	if err != nil {
-		slog.Warn("entry.edit: invalid id", "err", err)
-		return c.NoContent(400)
-	}
-
-	data, err := e.GetEditData(c.Request().Context(), id)
-	if err != nil {
-		slog.Error("entry.edit: failed to get data", "err", err)
-		return c.NoContent(500)
-	}
-
-	return utils.RenderTemplate(c.Response().Writer, e.tmpl, "edit", data)
-}
-
 func (e *Entries) Create(c echo.Context) error {
 	var signals entryInlineParams
 	err := datastar.ReadSignals(c.Request(), &signals)

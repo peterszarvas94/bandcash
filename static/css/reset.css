@@ -10,7 +10,8 @@
     --border: 1px;
     --border-color: light-dark(#ccc, #4a4a4a);
 
-    --content-width: 60rem;
+    --content-width: 80rem;
+    --sidebar-width: 22rem;
 
     --link-color: light-dark(#1f3a5f, #7fb1ff);
     --page-bg: light-dark(#ffffff, #1b1d21);
@@ -88,11 +89,5 @@
   a,
   a:visited {
     color: var(--link-color);
-  }
-
-  main#app {
-    max-width: var(--content-width);
-    margin: 0 auto;
-    padding: var(--space);
   }
 }

@@ -6,6 +6,14 @@
     gap: var(--space);
   }
 
+  .row-right {
+    justify-content: flex-end;
+  }
+
+  .row-center {
+    justify-content: center;
+  }
+
   .form-row {
     display: flex;
     flex-direction: row;
@@ -54,14 +62,54 @@
     color: var(--text-color);
     min-width: 5ch;
     min-height: 2.5rem;
+
+    &:hover {
+      background: var(--border-color);
+    }
+
+    &:focus-visible {
+      outline: 2px solid var(--link-color);
+      outline-offset: 2px;
+    }
+
+    &:disabled,
+    &[disabled] {
+      opacity: 0.55;
+      cursor: not-allowed;
+      background: var(--page-bg);
+    }
   }
 
-  .btn:hover {
-    background: var(--border-color);
+  .two-col {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) var(--sidebar-width);
+    gap: calc(var(--space) * 2);
+    align-items: start;
+    max-width: var(--content-width);
+    margin: 0 auto;
+    padding: var(--space);
+
+    > main#app {
+      max-width: none;
+      margin: 0;
+      padding: 0;
+      min-width: 0;
+    }
+
+    > aside {
+      min-width: 0;
+    }
   }
 
-  .btn:focus-visible {
-    outline: 2px solid var(--link-color);
-    outline-offset: 2px;
+  .sidebar-panel {
+    display: grid;
+    gap: calc(var(--space) * 1.5);
+    align-content: start;
+  }
+
+  @media (max-width: 900px) {
+    .two-col {
+      grid-template-columns: 1fr;
+    }
   }
 }

@@ -22,7 +22,6 @@ func Register(e *echo.Echo) *Entries {
 
 	e.GET("/entry", entries.Index)
 	e.GET("/entry/:id", entries.Show)
-	e.GET("/entry/:id/edit", entries.Edit)
 
 	e.POST("/entry", entries.Create)
 	e.POST("/entry/:id/participant", entries.CreateParticipant)
