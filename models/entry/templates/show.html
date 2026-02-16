@@ -4,7 +4,7 @@
   {{template "head" .}}
   <body>
     <div
-      data-signals="{mode: 'single', formState: '', editingId: 0, calcPercent: 0, formData: {payeeId: '', payeeName: '', amount: 0, expense: 0}}"
+      data-signals="{mode: 'single', formState: '', editingId: 0, lastEdited: '', calcPercent: 0, formData: {payeeId: '', payeeName: '', amount: 0, expense: 0}}"
       data-init="@get('/sse')"
     ></div>
     {{block "entry-show" .}}
@@ -34,7 +34,7 @@
       <div data-show="$formState === ''" class="row pb">
         <button
           type="button"
-          data-on:click="$formState = 'add'; $editingId = 0; $calcPercent = 0; $formData = {payeeId: 0, payeeName: '', amount: 0, expense: 0}; $errors = {payeeId: '', amount: '', expense: ''}"
+          data-on:click="$formState = 'add'; $editingId = 0; $lastEdited = ''; $calcPercent = 0; $formData = {payeeId: 0, payeeName: '', amount: 0, expense: 0}; $errors = {payeeId: '', amount: '', expense: ''}"
         >
           Add Participant
         </button>
@@ -67,7 +67,8 @@
             <input
               type="number"
               data-bind="formData.amount"
-              data-on:change="$calcPercent = 0"
+              data-on:input="$lastEdited = 'amount'"
+              data-computed="$lastEdited === 'percent' && $calcPercent > 0 ? $formData.amount = Math.round({{.Entry.Amount}} * $calcPercent / 100) : null"
               step="1"
             />
             <div
@@ -78,21 +79,15 @@
           </div>
           <div>
             <label>Quick Calc (% of entry)</label>
-            <div class="row">
-              <input
-                type="number"
-                data-bind="calcPercent"
-                step="0.01"
-                placeholder="e.g., 20"
-                style="flex: 1"
-              />
-              <button
-                type="button"
-                data-on:click="if ($calcPercent > 0) { $formData.amount = Math.round({{.Entry.Amount}} * $calcPercent / 100); }"
-              >
-                Calculate Amount
-              </button>
-            </div>
+            <input
+              type="number"
+              data-bind="calcPercent"
+              data-on:input="$lastEdited = 'percent'"
+              data-computed="$lastEdited === 'amount' && $formData.amount > 0 ? $calcPercent = Math.round($formData.amount / {{.Entry.Amount}} * 10000) / 100 : null"
+              step="0.01"
+              min="0"
+              placeholder="e.g., 20"
+            />
           </div>
           <div>
             <label>Expense</label>
@@ -124,7 +119,7 @@
             </button>
             <button
               type="button"
-              data-on:click="$formState = ''; $editingId = 0; $calcPercent = 0; $formData = {payeeId: 0, payeeName: '', amount: 0, expense: 0}; $errors = {payeeId: '', amount: '', expense: ''}"
+              data-on:click="$formState = ''; $editingId = 0; $lastEdited = ''; $calcPercent = 0; $formData = {payeeId: 0, payeeName: '', amount: 0, expense: 0}; $errors = {payeeId: '', amount: '', expense: ''}"
             >
               Cancel
             </button>
