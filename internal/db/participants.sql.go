@@ -11,19 +11,25 @@ import (
 )
 
 const addParticipant = `-- name: AddParticipant :one
-INSERT INTO participants (entry_id, payee_id, amount)
-VALUES (?, ?, ?)
-RETURNING entry_id, payee_id, amount, created_at, updated_at
+INSERT INTO participants (entry_id, payee_id, amount, expense)
+VALUES (?, ?, ?, ?)
+RETURNING entry_id, payee_id, amount, created_at, updated_at, expense
 `
 
 type AddParticipantParams struct {
 	EntryID int64 `json:"entry_id"`
 	PayeeID int64 `json:"payee_id"`
 	Amount  int64 `json:"amount"`
+	Expense int64 `json:"expense"`
 }
 
 func (q *Queries) AddParticipant(ctx context.Context, arg AddParticipantParams) (Participant, error) {
-	row := q.db.QueryRowContext(ctx, addParticipant, arg.EntryID, arg.PayeeID, arg.Amount)
+	row := q.db.QueryRowContext(ctx, addParticipant,
+		arg.EntryID,
+		arg.PayeeID,
+		arg.Amount,
+		arg.Expense,
+	)
 	var i Participant
 	err := row.Scan(
 		&i.EntryID,
@@ -31,12 +37,13 @@ func (q *Queries) AddParticipant(ctx context.Context, arg AddParticipantParams) 
 		&i.Amount,
 		&i.CreatedAt,
 		&i.UpdatedAt,
+		&i.Expense,
 	)
 	return i, err
 }
 
 const listParticipantsByEntry = `-- name: ListParticipantsByEntry :many
-SELECT payees.id, payees.name, payees.description, payees.created_at, payees.updated_at, participants.amount AS participant_amount
+SELECT payees.id, payees.name, payees.description, payees.created_at, payees.updated_at, participants.amount AS participant_amount, participants.expense AS participant_expense
 FROM payees
 JOIN participants ON participants.payee_id = payees.id
 WHERE participants.entry_id = ?
@@ -44,12 +51,13 @@ ORDER BY payees.name ASC
 `
 
 type ListParticipantsByEntryRow struct {
-	ID                int64        `json:"id"`
-	Name              string       `json:"name"`
-	Description       string       `json:"description"`
-	CreatedAt         sql.NullTime `json:"created_at"`
-	UpdatedAt         sql.NullTime `json:"updated_at"`
-	ParticipantAmount int64        `json:"participant_amount"`
+	ID                 int64        `json:"id"`
+	Name               string       `json:"name"`
+	Description        string       `json:"description"`
+	CreatedAt          sql.NullTime `json:"created_at"`
+	UpdatedAt          sql.NullTime `json:"updated_at"`
+	ParticipantAmount  int64        `json:"participant_amount"`
+	ParticipantExpense int64        `json:"participant_expense"`
 }
 
 func (q *Queries) ListParticipantsByEntry(ctx context.Context, entryID int64) ([]ListParticipantsByEntryRow, error) {
@@ -61,32 +69,30 @@ func (q *Queries) ListParticipantsByEntry(ctx context.Context, entryID int64) ([
 	items := []ListParticipantsByEntryRow{}
 	for rows.Next() {
 		var i ListParticipantsByEntryRow
-		err = rows.Scan(
+		if err := rows.Scan(
 			&i.ID,
 			&i.Name,
 			&i.Description,
 			&i.CreatedAt,
 			&i.UpdatedAt,
 			&i.ParticipantAmount,
-		)
-		if err != nil {
+			&i.ParticipantExpense,
+		); err != nil {
 			return nil, err
 		}
 		items = append(items, i)
 	}
-	err = rows.Close()
-	if err != nil {
+	if err := rows.Close(); err != nil {
 		return nil, err
 	}
-	err = rows.Err()
-	if err != nil {
+	if err := rows.Err(); err != nil {
 		return nil, err
 	}
 	return items, nil
 }
 
 const listParticipantsByPayee = `-- name: ListParticipantsByPayee :many
-SELECT entries.id, entries.title, entries.time, entries.description, entries.amount, entries.created_at, entries.updated_at, participants.amount AS participant_amount
+SELECT entries.id, entries.title, entries.time, entries.description, entries.amount, entries.created_at, entries.updated_at, participants.amount AS participant_amount, participants.expense AS participant_expense
 FROM entries
 JOIN participants ON participants.entry_id = entries.id
 WHERE participants.payee_id = ?
@@ -94,14 +100,15 @@ ORDER BY entries.created_at DESC
 `
 
 type ListParticipantsByPayeeRow struct {
-	ID                int64        `json:"id"`
-	Title             string       `json:"title"`
-	Time              string       `json:"time"`
-	Description       string       `json:"description"`
-	Amount            int64        `json:"amount"`
-	CreatedAt         sql.NullTime `json:"created_at"`
-	UpdatedAt         sql.NullTime `json:"updated_at"`
-	ParticipantAmount int64        `json:"participant_amount"`
+	ID                 int64        `json:"id"`
+	Title              string       `json:"title"`
+	Time               string       `json:"time"`
+	Description        string       `json:"description"`
+	Amount             int64        `json:"amount"`
+	CreatedAt          sql.NullTime `json:"created_at"`
+	UpdatedAt          sql.NullTime `json:"updated_at"`
+	ParticipantAmount  int64        `json:"participant_amount"`
+	ParticipantExpense int64        `json:"participant_expense"`
 }
 
 func (q *Queries) ListParticipantsByPayee(ctx context.Context, payeeID int64) ([]ListParticipantsByPayeeRow, error) {
@@ -113,7 +120,7 @@ func (q *Queries) ListParticipantsByPayee(ctx context.Context, payeeID int64) ([
 	items := []ListParticipantsByPayeeRow{}
 	for rows.Next() {
 		var i ListParticipantsByPayeeRow
-		err = rows.Scan(
+		if err := rows.Scan(
 			&i.ID,
 			&i.Title,
 			&i.Time,
@@ -122,18 +129,16 @@ func (q *Queries) ListParticipantsByPayee(ctx context.Context, payeeID int64) ([
 			&i.CreatedAt,
 			&i.UpdatedAt,
 			&i.ParticipantAmount,
-		)
-		if err != nil {
+			&i.ParticipantExpense,
+		); err != nil {
 			return nil, err
 		}
 		items = append(items, i)
 	}
-	err = rows.Close()
-	if err != nil {
+	if err := rows.Close(); err != nil {
 		return nil, err
 	}
-	err = rows.Err()
-	if err != nil {
+	if err := rows.Err(); err != nil {
 		return nil, err
 	}
 	return items, nil
@@ -154,19 +159,25 @@ func (q *Queries) RemoveParticipant(ctx context.Context, arg RemoveParticipantPa
 	return err
 }
 
-const updateParticipantAmount = `-- name: UpdateParticipantAmount :exec
+const updateParticipant = `-- name: UpdateParticipant :exec
 UPDATE participants
-SET amount = ?
+SET amount = ?, expense = ?
 WHERE entry_id = ? AND payee_id = ?
 `
 
-type UpdateParticipantAmountParams struct {
+type UpdateParticipantParams struct {
 	Amount  int64 `json:"amount"`
+	Expense int64 `json:"expense"`
 	EntryID int64 `json:"entry_id"`
 	PayeeID int64 `json:"payee_id"`
 }
 
-func (q *Queries) UpdateParticipantAmount(ctx context.Context, arg UpdateParticipantAmountParams) error {
-	_, err := q.db.ExecContext(ctx, updateParticipantAmount, arg.Amount, arg.EntryID, arg.PayeeID)
+func (q *Queries) UpdateParticipant(ctx context.Context, arg UpdateParticipantParams) error {
+	_, err := q.db.ExecContext(ctx, updateParticipant,
+		arg.Amount,
+		arg.Expense,
+		arg.EntryID,
+		arg.PayeeID,
+	)
 	return err
 }

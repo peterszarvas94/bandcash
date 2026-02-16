@@ -24,6 +24,7 @@ type Participant struct {
 	Amount    int64        `json:"amount"`
 	CreatedAt sql.NullTime `json:"created_at"`
 	UpdatedAt sql.NullTime `json:"updated_at"`
+	Expense   int64        `json:"expense"`
 }
 
 type Payee struct {

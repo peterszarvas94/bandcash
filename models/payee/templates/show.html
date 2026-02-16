@@ -34,7 +34,9 @@
             <th>Time</th>
             <th>Description</th>
             <th>Entry Amount</th>
-            <th>Participant Amount</th>
+            <th>Cut</th>
+            <th>Expense</th>
+            <th>Total</th>
           </tr>
         </thead>
         <tbody>
@@ -45,10 +47,12 @@
             <td>{{.Description}}</td>
             <td class="text-right">{{printf "%d" .Amount}}</td>
             <td class="text-right">{{printf "%d" .ParticipantAmount}}</td>
+            <td class="text-right">{{printf "%d" .ParticipantExpense}}</td>
+            <td class="text-right">{{printf "%d" (add .ParticipantAmount .ParticipantExpense)}}</td>
           </tr>
           {{else}}
           <tr>
-            <td colspan="5">no items</td>
+            <td colspan="7">no items</td>
           </tr>
           {{end}}
         </tbody>

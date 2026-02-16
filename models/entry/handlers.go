@@ -34,7 +34,8 @@ type participantParams struct {
 type participantData struct {
 	PayeeID   int64  `json:"payeeId" validate:"required,gt=0"`
 	PayeeName string `json:"payeeName"`
-	Amount    int64  `json:"amount" validate:"required,gt=0"`
+	Amount    int64  `json:"amount" validate:"required,gte=0"`
+	Expense   int64  `json:"expense" validate:"gte=0"`
 }
 
 type participantTableParams struct {
@@ -52,11 +53,11 @@ var (
 	defaultParticipantSignals = map[string]any{
 		"formState": "",
 		"editingId": 0,
-		"formData":  map[string]any{"payeeId": 0, "payeeName": "", "amount": 0},
+		"formData":  map[string]any{"payeeId": 0, "payeeName": "", "amount": 0, "expense": 0},
 	}
 	// Error field lists for validation
 	entryErrorFields       = []string{"title", "time", "description", "amount"}
-	participantErrorFields = []string{"payeeId", "amount"}
+	participantErrorFields = []string{"payeeId", "amount", "expense"}
 )
 
 func (e *Entries) Index(c echo.Context) error {
@@ -282,10 +283,14 @@ func (e *Entries) CreateParticipant(c echo.Context) error {
 		return c.NoContent(422)
 	}
 
+	// Set default expense to 0 if not provided
+	expense := signals.FormData.Expense
+
 	_, err = db.Qry.AddParticipant(c.Request().Context(), db.AddParticipantParams{
 		EntryID: int64(id),
 		PayeeID: signals.FormData.PayeeID,
 		Amount:  signals.FormData.Amount,
+		Expense: expense,
 	})
 	if err != nil {
 		slog.Error("participant.create.table: failed to add participant", "err", err)
@@ -336,8 +341,12 @@ func (e *Entries) UpdateParticipant(c echo.Context) error {
 		return c.NoContent(422)
 	}
 
-	err = db.Qry.UpdateParticipantAmount(c.Request().Context(), db.UpdateParticipantAmountParams{
+	// Set default expense to 0 if not provided
+	expense := signals.FormData.Expense
+
+	err = db.Qry.UpdateParticipant(c.Request().Context(), db.UpdateParticipantParams{
 		Amount:  signals.FormData.Amount,
+		Expense: expense,
 		EntryID: int64(entryID),
 		PayeeID: int64(payeeID),
 	})

@@ -75,24 +75,21 @@ func (q *Queries) ListPayees(ctx context.Context) ([]Payee, error) {
 	items := []Payee{}
 	for rows.Next() {
 		var i Payee
-		err = rows.Scan(
+		if err := rows.Scan(
 			&i.ID,
 			&i.Name,
 			&i.Description,
 			&i.CreatedAt,
 			&i.UpdatedAt,
-		)
-		if err != nil {
+		); err != nil {
 			return nil, err
 		}
 		items = append(items, i)
 	}
-	err = rows.Close()
-	if err != nil {
+	if err := rows.Close(); err != nil {
 		return nil, err
 	}
-	err = rows.Err()
-	if err != nil {
+	if err := rows.Err(); err != nil {
 		return nil, err
 	}
 	return items, nil

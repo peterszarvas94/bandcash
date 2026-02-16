@@ -11,12 +11,14 @@ import (
 )
 
 type EntryData struct {
-	Title        string
-	Entry        *db.Entry
-	Participants []db.ListParticipantsByEntryRow
-	Payees       []db.Payee
-	PayeeIDs     map[int64]bool
-	Breadcrumbs  []utils.Crumb
+	Title            string
+	Entry            *db.Entry
+	Participants     []db.ListParticipantsByEntryRow
+	Payees           []db.Payee
+	PayeeIDs         map[int64]bool
+	Breadcrumbs      []utils.Crumb
+	Leftover         int64
+	TotalDistributed int64
 }
 
 type EntriesData struct {
@@ -66,14 +68,23 @@ func (e *Entries) GetShowData(ctx context.Context, id int) (EntryData, error) {
 		filteredPayees = append(filteredPayees, payee)
 	}
 
-	slog.Info("entry.show.data", "entry_id", id, "participants", len(participants), "payees_total", len(payees), "payees_filtered", len(filteredPayees))
+	// Calculate total distributed and leftover
+	var totalDistributed int64
+	for _, p := range participants {
+		totalDistributed += p.ParticipantAmount + p.ParticipantExpense
+	}
+	leftover := entry.Amount - totalDistributed
+
+	slog.Info("entry.show.data", "entry_id", id, "participants", len(participants), "payees_total", len(payees), "payees_filtered", len(filteredPayees), "leftover", leftover)
 
 	return EntryData{
-		Title:        entry.Title,
-		Entry:        &entry,
-		Participants: participants,
-		Payees:       filteredPayees,
-		PayeeIDs:     payeeIDs,
+		Title:            entry.Title,
+		Entry:            &entry,
+		Participants:     participants,
+		Payees:           filteredPayees,
+		PayeeIDs:         payeeIDs,
+		Leftover:         leftover,
+		TotalDistributed: totalDistributed,
 		Breadcrumbs: []utils.Crumb{
 			{Label: "Entries", Href: "/entry"},
 			{Label: entry.Title},

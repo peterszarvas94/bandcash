@@ -95,7 +95,7 @@ func (q *Queries) ListEntries(ctx context.Context) ([]Entry, error) {
 	items := []Entry{}
 	for rows.Next() {
 		var i Entry
-		err = rows.Scan(
+		if err := rows.Scan(
 			&i.ID,
 			&i.Title,
 			&i.Time,
@@ -103,18 +103,15 @@ func (q *Queries) ListEntries(ctx context.Context) ([]Entry, error) {
 			&i.Amount,
 			&i.CreatedAt,
 			&i.UpdatedAt,
-		)
-		if err != nil {
+		); err != nil {
 			return nil, err
 		}
 		items = append(items, i)
 	}
-	err = rows.Close()
-	if err != nil {
+	if err := rows.Close(); err != nil {
 		return nil, err
 	}
-	err = rows.Err()
-	if err != nil {
+	if err := rows.Err(); err != nil {
 		return nil, err
 	}
 	return items, nil

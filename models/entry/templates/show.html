@@ -4,7 +4,7 @@
   {{template "head" .}}
   <body>
     <div
-      data-signals="{mode: 'single', formState: '', editingId: 0, formData: {payeeId: '', payeeName: '', amount: 0}}"
+      data-signals="{mode: 'single', formState: '', editingId: 0, formData: {payeeId: '', payeeName: '', amount: 0, expense: 0}}"
       data-init="@get('/sse')"
     ></div>
     {{block "entry-show" .}}
@@ -17,6 +17,7 @@
         <p><strong>Time:</strong> {{.Entry.Time}}</p>
         <p><strong>Description:</strong> {{.Entry.Description}}</p>
         <p><strong>Amount:</strong> {{printf "%d" .Entry.Amount}}</p>
+        <p><strong>Leftover (taxes):</strong> {{printf "%d" .Leftover}}</p>
       </div>
 
       <p class="row">
@@ -33,7 +34,7 @@
       <div data-show="$formState === ''" class="row pb">
         <button
           type="button"
-          data-on:click="$formState = 'add'; $editingId = 0; $formData = {payeeId: 0, payeeName: '', amount: 0}; $errors = {payeeId: '', amount: ''}"
+          data-on:click="$formState = 'add'; $editingId = 0; $formData = {payeeId: 0, payeeName: '', amount: 0, expense: 0}; $errors = {payeeId: '', amount: '', expense: ''}"
         >
           Add Participant
         </button>
@@ -62,7 +63,7 @@
             <input type="text" data-bind="formData.payeeName" disabled />
           </div>
           <div>
-            <label>Amount</label>
+            <label>Cut Amount</label>
             <input
               type="number"
               data-bind="formData.amount"
@@ -72,6 +73,28 @@
               data-show="$errors && $errors.amount"
               class="color-error"
               data-text="$errors.amount"
+            ></div>
+          </div>
+          <div>
+            <label>Quick Calc (% of entry)</label>
+            <input
+              type="number"
+              data-on:change="$formData.amount = Math.round({{.Entry.Amount}} * this.value / 100)"
+              step="0.01"
+              placeholder="e.g., 20"
+            />
+          </div>
+          <div>
+            <label>Expense</label>
+            <input
+              type="number"
+              data-bind="formData.expense"
+              step="1"
+            />
+            <div
+              data-show="$errors && $errors.expense"
+              class="color-error"
+              data-text="$errors.expense"
             ></div>
           </div>
           <div class="row">
@@ -91,7 +114,7 @@
             </button>
             <button
               type="button"
-              data-on:click="$formState = ''; $editingId = 0; $formData = {payeeId: 0, payeeName: '', amount: 0}; $errors = {payeeId: '', amount: ''}"
+              data-on:click="$formState = ''; $editingId = 0; $formData = {payeeId: 0, payeeName: '', amount: 0, expense: 0}; $errors = {payeeId: '', amount: '', expense: ''}"
             >
               Cancel
             </button>
@@ -104,7 +127,9 @@
           <tr>
             <th>Payee</th>
             <th>Description</th>
-            <th>Amount</th>
+            <th>Cut</th>
+            <th>Expense</th>
+            <th>Total</th>
             <th></th>
           </tr>
         </thead>
@@ -114,15 +139,18 @@
             data-payee-id="{{.ID}}"
             data-payee-name="{{.Name}}"
             data-participant-amount="{{.ParticipantAmount}}"
+            data-participant-expense="{{.ParticipantExpense}}"
           >
             <td><a href="/payee/{{.ID}}">{{.Name}}</a></td>
             <td>{{.Description}}</td>
             <td class="text-right">{{printf "%d" .ParticipantAmount}}</td>
+            <td class="text-right">{{printf "%d" .ParticipantExpense}}</td>
+            <td class="text-right">{{printf "%d" (add .ParticipantAmount .ParticipantExpense)}}</td>
             <td class="text-right">
               <div class="row" data-show="$formState === ''">
                 <button
                   type="button"
-                  data-on:click="$formState = 'edit'; $editingId = {{.ID}}; $formData = {payeeId: Number(el.closest('tr').dataset.payeeId), payeeName: el.closest('tr').dataset.payeeName, amount: Number(el.closest('tr').dataset.participantAmount)}"
+                  data-on:click="$formState = 'edit'; $editingId = {{.ID}}; $formData = {payeeId: Number(el.closest('tr').dataset.payeeId), payeeName: el.closest('tr').dataset.payeeName, amount: Number(el.closest('tr').dataset.participantAmount), expense: Number(el.closest('tr').dataset.participantExpense)}"
                 >
                   Edit
                 </button>
@@ -137,7 +165,7 @@
           </tr>
           {{else}}
           <tr>
-            <td colspan="4">no items</td>
+            <td colspan="6">no items</td>
           </tr>
           {{end}}
         </tbody>

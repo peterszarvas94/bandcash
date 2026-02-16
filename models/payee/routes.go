@@ -9,7 +9,9 @@ import (
 func Register(e *echo.Echo) *Payees {
 	payees := New()
 
-	payees.tmpl = template.Must(template.ParseFiles(
+	payees.tmpl = template.Must(template.New("").Funcs(template.FuncMap{
+		"add": func(a, b int64) int64 { return a + b },
+	}).ParseFiles(
 		"models/shared/templates/head.html",
 		"models/shared/templates/breadcrumbs.html",
 		"models/payee/templates/index.html",
