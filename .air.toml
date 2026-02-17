@@ -4,7 +4,7 @@ tmp_dir = "tmp"
 [build]
 args_bin = []
 entrypoint = "./tmp/server"
-cmd = "mise run templ && go build -o ./tmp/server ./cmd/server"
+cmd = "mise run templ && mise run build"
 delay = 1000
 exclude_dir = ["tmp", "logs"]
 exclude_file = []

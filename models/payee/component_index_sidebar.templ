@@ -29,20 +29,20 @@ templ PayeeIndexSidebar(data PayeesData) {
 				<div data-show="$errors && $errors.description" class="color-error" data-text="$errors.description"></div>
 			</div>
 			<div class="row">
-				<button
-					class="btn"
-					type="button"
-					data-show="$formState === 'add'"
-					data-on:click="@post('/payee')"
-				>
+			<button
+				class="btn btn-primary"
+				type="button"
+				data-show="$formState === 'add'"
+				data-on:click="@post('/payee')"
+			>
 					Create Payee
 				</button>
-				<button
-					class="btn"
-					type="button"
-					data-show="$formState === 'edit'"
-					data-on:click="@put('/payee/' + $editingId)"
-				>
+			<button
+				class="btn btn-primary"
+				type="button"
+				data-show="$formState === 'edit'"
+				data-on:click="@put('/payee/' + $editingId)"
+			>
 					Update Payee
 				</button>
 				<button

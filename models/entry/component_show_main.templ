@@ -72,7 +72,7 @@ templ EntryShowMain(data EntryData) {
 								Edit
 							</button>
 							<button
-								class="btn"
+								class="btn btn-danger"
 								type="button"
 								data-attr:disabled="$formState !== '' || $entryFormState !== ''"
 								data-on:click={fmt.Sprintf("if (window.confirm('Delete this participant?')) { @delete('/entry/%d/participant/%d') }", data.Entry.ID, participant.ID)}

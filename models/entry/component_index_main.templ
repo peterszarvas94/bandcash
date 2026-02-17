@@ -43,7 +43,7 @@ templ EntryIndexMain(data EntriesData) {
 								Edit
 							</button>
 							<button
-								class="btn"
+								class="btn btn-danger"
 								data-attr:disabled="$formState !== ''"
 								data-on:click={fmt.Sprintf("if (window.confirm('Delete this entry?')) { @delete('/entry/%d') }", entry.ID)}
 							>

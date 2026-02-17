@@ -33,7 +33,7 @@ templ PayeeIndexMain(data PayeesData) {
 								Edit
 							</button>
 							<button
-								class="btn"
+								class="btn btn-danger"
 								data-attr:disabled="$formState !== ''"
 								data-on:click={fmt.Sprintf("if (window.confirm('Delete this payee?')) { @delete('/payee/%d') }", payee.ID)}
 							>

@@ -41,20 +41,20 @@ templ EntryIndexSidebar(data EntriesData) {
 				<div data-show="$errors && $errors.amount" class="color-error" data-text="$errors.amount"></div>
 			</div>
 			<div class="row">
-				<button
-					class="btn"
-					type="button"
-					data-show="$formState === 'add'"
-					data-on:click="@post('/entry')"
-				>
+			<button
+				class="btn btn-primary"
+				type="button"
+				data-show="$formState === 'add'"
+				data-on:click="@post('/entry')"
+			>
 					Create Entry
 				</button>
-				<button
-					class="btn"
-					type="button"
-					data-show="$formState === 'edit'"
-					data-on:click="@put('/entry/' + $editingId)"
-				>
+			<button
+				class="btn btn-primary"
+				type="button"
+				data-show="$formState === 'edit'"
+				data-on:click="@put('/entry/' + $editingId)"
+			>
 					Update Entry
 				</button>
 				<button

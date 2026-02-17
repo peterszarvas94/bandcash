@@ -269,7 +269,7 @@ func EntryShowMain(data EntryData) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 20, "\">Edit</button> <button class=\"btn\" type=\"button\" data-attr:disabled=\"$formState !== '' || $entryFormState !== ''\" data-on:click=\"")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 20, "\">Edit</button> <button class=\"btn btn-danger\" type=\"button\" data-attr:disabled=\"$formState !== '' || $entryFormState !== ''\" data-on:click=\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}

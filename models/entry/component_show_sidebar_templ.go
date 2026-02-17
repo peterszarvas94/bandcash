@@ -31,20 +31,20 @@ func EntryShowSidebar(data EntryData) templ.Component {
 			templ_7745c5c3_Var1 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<div data-show=\"$entryFormState === '' && $formState === ''\"><div class=\"pb\"><h3>Entry Actions</h3><div class=\"row\"><button class=\"btn\" type=\"button\" data-on:click=\"$entryFormState = 'edit'; $errors = {title: '', time: '', description: '', amount: ''}\">Edit Entry</button> <button class=\"btn\" type=\"button\" data-on:click=\"")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<div data-show=\"$entryFormState === '' && $formState === ''\"><div class=\"pb\"><h3>Entry Actions</h3><div class=\"row\"><button class=\"btn\" type=\"button\" data-on:click=\"$entryFormState = 'edit'; $errors = {title: '', time: '', description: '', amount: ''}\">Edit Entry</button> <button class=\"btn btn-danger\" type=\"button\" data-on:click=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var2 string
 		templ_7745c5c3_Var2, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("if (window.confirm('Delete this entry?')) { @delete('/entry/%d') }", data.Entry.ID))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/entry/component_show_sidebar.templ`, Line: 20, Col: 116}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/entry/component_show_sidebar.templ`, Line: 20, Col: 115}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var2))
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "\">Delete Entry</button></div></div><div class=\"pb\"><h3>Add Participant</h3><div class=\"row\"><button class=\"btn\" type=\"button\" data-on:click=\"$formState = 'add'; $editingId = 0; $calcPercent = 0; $formData = {payeeId: 0, payeeName: '', amount: 0, expense: 0}; $errors = {payeeId: '', amount: '', expense: ''}\">Add Participant</button></div></div></div><div data-show=\"$entryFormState === 'edit'\" style=\"display: none\" class=\"pb\"><h3>Edit Entry</h3><form class=\"form\"><div class=\"form-row\"><div class=\"field\"><label>Title</label> <input type=\"text\" data-bind=\"entryFormData.title\"><div data-show=\"$errors && $errors.title\" class=\"color-error\" data-text=\"$errors.title\"></div></div><div class=\"field\"><label>Time</label> <input type=\"datetime-local\" data-bind=\"entryFormData.time\"><div data-show=\"$errors && $errors.time\" class=\"color-error\" data-text=\"$errors.time\"></div></div></div><div class=\"field\"><label>Description</label> <textarea data-bind=\"entryFormData.description\" rows=\"3\"></textarea><div data-show=\"$errors && $errors.description\" class=\"color-error\" data-text=\"$errors.description\"></div></div><div class=\"field\"><label>Amount</label> <input type=\"number\" data-bind=\"entryFormData.amount\" step=\"1\"><div data-show=\"$errors && $errors.amount\" class=\"color-error\" data-text=\"$errors.amount\"></div></div><div class=\"row\"><button class=\"btn\" type=\"button\" data-on:click=\"")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "\">Delete Entry</button></div></div><div class=\"pb\"><h3>Add Participant</h3><div class=\"row\"><button class=\"btn\" type=\"button\" data-on:click=\"$formState = 'add'; $editingId = 0; $calcPercent = 0; $formData = {payeeId: 0, payeeName: '', amount: 0, expense: 0}; $errors = {payeeId: '', amount: '', expense: ''}\">Add Participant</button></div></div></div><div data-show=\"$entryFormState === 'edit'\" style=\"display: none\" class=\"pb\"><h3>Edit Entry</h3><form class=\"form\"><div class=\"form-row\"><div class=\"field\"><label>Title</label> <input type=\"text\" data-bind=\"entryFormData.title\"><div data-show=\"$errors && $errors.title\" class=\"color-error\" data-text=\"$errors.title\"></div></div><div class=\"field\"><label>Time</label> <input type=\"datetime-local\" data-bind=\"entryFormData.time\"><div data-show=\"$errors && $errors.time\" class=\"color-error\" data-text=\"$errors.time\"></div></div></div><div class=\"field\"><label>Description</label> <textarea data-bind=\"entryFormData.description\" rows=\"3\"></textarea><div data-show=\"$errors && $errors.description\" class=\"color-error\" data-text=\"$errors.description\"></div></div><div class=\"field\"><label>Amount</label> <input type=\"number\" data-bind=\"entryFormData.amount\" step=\"1\"><div data-show=\"$errors && $errors.amount\" class=\"color-error\" data-text=\"$errors.amount\"></div></div><div class=\"row\"><button class=\"btn btn-primary\" type=\"button\" data-on:click=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -132,7 +132,7 @@ func EntryShowSidebar(data EntryData) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 10, "\">Calc Amount</button></div></div><div><label>Expense</label> <input type=\"number\" data-bind=\"formData.expense\" step=\"1\"><div data-show=\"$errors && $errors.expense\" class=\"color-error\" data-text=\"$errors.expense\"></div></div><div style=\"font-weight: bold; padding: 10px 0\"><strong>Total:</strong> <span data-text=\"$formData.amount + $formData.expense\"></span></div><div class=\"row\"><button class=\"btn\" type=\"button\" data-show=\"$formState === 'add'\" data-on:click=\"")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 10, "\">Calc Amount</button></div></div><div><label>Expense</label> <input type=\"number\" data-bind=\"formData.expense\" step=\"1\"><div data-show=\"$errors && $errors.expense\" class=\"color-error\" data-text=\"$errors.expense\"></div></div><div style=\"font-weight: bold; padding: 10px 0\"><strong>Total:</strong> <span data-text=\"$formData.amount + $formData.expense\"></span></div><div class=\"row\"><button class=\"btn btn-primary\" type=\"button\" data-show=\"$formState === 'add'\" data-on:click=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -145,7 +145,7 @@ func EntryShowSidebar(data EntryData) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 11, "\">Add Participant</button> <button class=\"btn\" type=\"button\" data-show=\"$formState === 'edit'\" data-on:click=\"")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 11, "\">Add Participant</button> <button class=\"btn btn-primary\" type=\"button\" data-show=\"$formState === 'edit'\" data-on:click=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

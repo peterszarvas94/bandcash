@@ -14,7 +14,7 @@ templ PayeeShowSidebar(data PayeeData) {
 				Edit Payee
 			</button>
 			<button
-				class="btn"
+				class="btn btn-danger"
 				type="button"
 				data-attr:disabled="$formState !== ''"
 				data-on:click={fmt.Sprintf("if (window.confirm('Delete this payee?')) { @delete('/payee/%d') }", data.Payee.ID)}
@@ -38,7 +38,7 @@ templ PayeeShowSidebar(data PayeeData) {
 				<div data-show="$errors && $errors.description" class="color-error" data-text="$errors.description"></div>
 			</div>
 			<div class="row">
-				<button class="btn" type="button" data-on:click={fmt.Sprintf("@put('/payee/%d')", data.Payee.ID)}>Update Payee</button>
+				<button class="btn btn-primary" type="button" data-on:click={fmt.Sprintf("@put('/payee/%d')", data.Payee.ID)}>Update Payee</button>
 				<button
 					class="btn"
 					type="button"
