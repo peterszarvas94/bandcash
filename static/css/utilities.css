@@ -82,7 +82,7 @@
 
   .btn-primary {
     background: transparent;
-    border-color: var(--link-color);
+    border-color: color-mix(in srgb, var(--link-color) 60%, transparent);
     color: var(--link-color);
 
     &:not(:disabled):not([disabled]):hover {
@@ -92,7 +92,7 @@
 
   .btn-danger {
     background: transparent;
-    border-color: var(--error-color);
+    border-color: color-mix(in srgb, var(--error-color) 60%, transparent);
     color: var(--error-color);
 
     &:not(:disabled):not([disabled]):hover {
