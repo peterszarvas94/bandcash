@@ -2,7 +2,6 @@ package entry
 
 import (
 	"context"
-	"html/template"
 	"log/slog"
 
 	"bandcash/internal/db"
@@ -27,15 +26,10 @@ type EntriesData struct {
 }
 
 type Entries struct {
-	tmpl *template.Template
 }
 
 func New() *Entries {
 	return &Entries{}
-}
-
-func (e *Entries) SetTemplate(tmpl *template.Template) {
-	e.tmpl = tmpl
 }
 
 func (e *Entries) GetShowData(ctx context.Context, id int) (EntryData, error) {

@@ -1,0 +1,33 @@
+package shared
+
+import "bandcash/internal/utils"
+
+templ Head(title string) {
+	<head>
+		<meta charset="UTF-8" />
+		<title>{title}</title>
+		<link rel="stylesheet" href="/static/css/style.css" />
+		<script type="importmap">
+			{
+				"imports": {
+					"datastar": "/static/js/vendor/datastar.js"
+				}
+			}
+		</script>
+		<script type="module" src="/static/js/main.js"></script>
+	</head>
+}
+
+templ Breadcrumbs(crumbs []utils.Crumb) {
+	<nav class="row pb">
+		<a href="/">Home</a>
+		for _, crumb := range crumbs {
+			<span>&gt;</span>
+			if crumb.Href != "" {
+				<a href={crumb.Href}>{crumb.Label}</a>
+			} else {
+				<span>{crumb.Label}</span>
+			}
+		}
+	</nav>
+}

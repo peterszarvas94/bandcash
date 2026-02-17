@@ -2,7 +2,6 @@ package payee
 
 import (
 	"context"
-	"html/template"
 	"strconv"
 
 	"bandcash/internal/db"
@@ -23,15 +22,10 @@ type PayeesData struct {
 }
 
 type Payees struct {
-	tmpl *template.Template
 }
 
 func New() *Payees {
 	return &Payees{}
-}
-
-func (p *Payees) SetTemplate(tmpl *template.Template) {
-	p.tmpl = tmpl
 }
 
 func (p *Payees) GetShowData(ctx context.Context, id int) (PayeeData, error) {

@@ -1,8 +1,6 @@
 package home
 
 import (
-	"html/template"
-
 	"github.com/labstack/echo/v4"
 
 	"bandcash/internal/utils"
@@ -14,11 +12,10 @@ type HomeData struct {
 }
 
 type Home struct {
-	tmpl *template.Template
 }
 
 // Data returns data for rendering.
-func (h *Home) Data() any {
+func (h *Home) Data() HomeData {
 	return HomeData{
 		Title:       "Bandcash",
 		Breadcrumbs: []utils.Crumb{},
@@ -28,13 +25,5 @@ func (h *Home) Data() any {
 // Register registers home routes.
 func Register(e *echo.Echo) {
 	h := &Home{}
-
-	// Parse shared head + home template
-	h.tmpl = template.Must(template.ParseFiles(
-		"models/shared/templates/head.html",
-		"models/shared/templates/breadcrumbs.html",
-		"models/home/templates/index.html",
-	))
-
 	e.GET("/", h.Index)
 }

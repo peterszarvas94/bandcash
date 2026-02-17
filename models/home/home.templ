@@ -1,0 +1,21 @@
+package home
+
+import "bandcash/models/shared"
+
+templ HomeIndex(data HomeData) {
+	<!doctype html>
+	<html lang="en">
+		@shared.Head(data.Title)
+		<body>
+			<main id="app" class="single-col">
+				<h1>{data.Title}</h1>
+				@shared.Breadcrumbs(data.Breadcrumbs)
+				<p>Where is my cut?</p>
+				<div class="row">
+					<a class="btn" href="/entry">Entries</a>
+					<a class="btn" href="/payee">Payees</a>
+				</div>
+			</main>
+		</body>
+	</html>
+}

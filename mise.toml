@@ -1,6 +1,7 @@
 [tools]
 air = "1.64.5"
 go = "1.26.0"
+"go:github.com/a-h/templ/cmd/templ" = "v0.3.977"
 "go:github.com/sqlc-dev/sqlc/cmd/sqlc" = "v1.30.0"
 "github:pressly/goose" = "3.26.0"
 golangci-lint = "2.9.0"
@@ -17,6 +18,7 @@ vet = "go vet ./..."
 lint = "golangci-lint run"
 lsp = 'gopls check -severity=hint $(git ls-files "*.go" ":!internal/db/*.go")'
 check = "mise run fmt && mise run vet && mise run test"
+templ = "templ generate"
 sqlc = "sqlc generate"
 goose-up = "goose -dir internal/db/migrations sqlite3 sqlite.db up"
 goose-status = "goose -dir internal/db/migrations sqlite3 sqlite.db status"

@@ -46,7 +46,7 @@ func (p *Payees) Index(c echo.Context) error {
 	}
 
 	slog.Debug("payee.index", "payee_count", len(data.Payees))
-	return utils.RenderTemplate(c.Response().Writer, p.tmpl, "index", data)
+	return utils.RenderComponent(c, PayeeIndex(data))
 }
 
 func (p *Payees) Show(c echo.Context) error {
@@ -64,7 +64,7 @@ func (p *Payees) Show(c echo.Context) error {
 		return c.NoContent(500)
 	}
 
-	return utils.RenderTemplate(c.Response().Writer, p.tmpl, "show", data)
+	return utils.RenderComponent(c, PayeeShow(data))
 }
 
 func (p *Payees) Create(c echo.Context) error {
@@ -98,7 +98,7 @@ func (p *Payees) Create(c echo.Context) error {
 		slog.Error("payee.create.table: failed to get data", "err", err)
 		return c.NoContent(500)
 	}
-	html, err := utils.RenderBlock(p.tmpl, "payee-index", data)
+	html, err := utils.RenderComponentString(c.Request().Context(), PayeeIndex(data))
 	if err != nil {
 		slog.Error("payee.create.table: failed to render", "err", err)
 		return c.NoContent(500)
@@ -155,7 +155,7 @@ func (p *Payees) Update(c echo.Context) error {
 		slog.Error("payee.update: failed to get data", "err", err)
 		return c.NoContent(500)
 	}
-	html, err := utils.RenderBlock(p.tmpl, "payee-index", data)
+	html, err := utils.RenderComponentString(c.Request().Context(), PayeeIndex(data))
 	if err != nil {
 		slog.Error("payee.update: failed to render", "err", err)
 		return c.NoContent(500)
@@ -202,7 +202,7 @@ func (p *Payees) Destroy(c echo.Context) error {
 		slog.Error("payee.destroy: failed to get data", "err", err)
 		return c.NoContent(500)
 	}
-	html, err := utils.RenderBlock(p.tmpl, "payee-index", data)
+	html, err := utils.RenderComponentString(c.Request().Context(), PayeeIndex(data))
 	if err != nil {
 		slog.Error("payee.destroy: failed to render", "err", err)
 		return c.NoContent(500)

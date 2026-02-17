@@ -1,22 +1,9 @@
 package entry
 
-import (
-	"html/template"
-
-	"github.com/labstack/echo/v4"
-)
+import "github.com/labstack/echo/v4"
 
 func Register(e *echo.Echo) *Entries {
 	entries := New()
-
-	entries.tmpl = template.Must(template.New("").Funcs(template.FuncMap{
-		"add": func(a, b int64) int64 { return a + b },
-	}).ParseFiles(
-		"models/shared/templates/head.html",
-		"models/shared/templates/breadcrumbs.html",
-		"models/entry/templates/index.html",
-		"models/entry/templates/show.html",
-	))
 
 	e.GET("/entry", entries.Index)
 	e.GET("/entry/:id", entries.Show)

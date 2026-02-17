@@ -4,6 +4,7 @@ go 1.26.0
 
 require (
 	github.com/CAFxX/httpcompression v0.0.9
+	github.com/a-h/templ v0.3.977
 	github.com/go-playground/validator/v10 v10.30.1
 	github.com/labstack/echo/v4 v4.15.0
 	github.com/mattn/go-sqlite3 v1.14.34

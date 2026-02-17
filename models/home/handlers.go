@@ -8,5 +8,5 @@ import (
 
 // Index renders the home page with links to examples.
 func (h *Home) Index(c echo.Context) error {
-	return utils.RenderTemplate(c.Response().Writer, h.tmpl, "index", h.Data())
+	return utils.RenderComponent(c, HomeIndex(h.Data()))
 }
