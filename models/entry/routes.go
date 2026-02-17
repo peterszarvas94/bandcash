@@ -15,9 +15,7 @@ func Register(e *echo.Echo) *Entries {
 		"models/shared/templates/head.html",
 		"models/shared/templates/breadcrumbs.html",
 		"models/entry/templates/index.html",
-		"models/entry/templates/new.html",
 		"models/entry/templates/show.html",
-		"models/entry/templates/edit.html",
 	))
 
 	e.GET("/entry", entries.Index)

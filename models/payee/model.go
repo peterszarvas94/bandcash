@@ -56,23 +56,6 @@ func (p *Payees) GetShowData(ctx context.Context, id int) (PayeeData, error) {
 	}, nil
 }
 
-func (p *Payees) GetEditData(ctx context.Context, id int) (PayeeData, error) {
-	payee, err := db.Qry.GetPayee(ctx, int64(id))
-	if err != nil {
-		return PayeeData{}, err
-	}
-
-	return PayeeData{
-		Title: "Edit Payee",
-		Payee: &payee,
-		Breadcrumbs: []utils.Crumb{
-			{Label: "Payees", Href: "/payee"},
-			{Label: payee.Name, Href: "/payee/" + strconv.Itoa(id)},
-			{Label: "Edit"},
-		},
-	}, nil
-}
-
 func (p *Payees) GetIndexData(ctx context.Context) (PayeesData, error) {
 	payees, err := db.Qry.ListPayees(ctx)
 	if err != nil {

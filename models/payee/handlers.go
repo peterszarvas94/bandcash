@@ -67,24 +67,6 @@ func (p *Payees) Show(c echo.Context) error {
 	return utils.RenderTemplate(c.Response().Writer, p.tmpl, "show", data)
 }
 
-func (p *Payees) Edit(c echo.Context) error {
-	utils.EnsureClientID(c)
-
-	id, err := strconv.Atoi(c.Param("id"))
-	if err != nil {
-		slog.Warn("payee.edit: invalid id", "err", err)
-		return c.NoContent(400)
-	}
-
-	data, err := p.GetEditData(c.Request().Context(), id)
-	if err != nil {
-		slog.Error("payee.edit: failed to get data", "err", err)
-		return c.NoContent(500)
-	}
-
-	return utils.RenderTemplate(c.Response().Writer, p.tmpl, "edit", data)
-}
-
 func (p *Payees) Create(c echo.Context) error {
 	var signals payeeTableParams
 	err := datastar.ReadSignals(c.Request(), &signals)

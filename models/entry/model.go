@@ -4,7 +4,6 @@ import (
 	"context"
 	"html/template"
 	"log/slog"
-	"strconv"
 
 	"bandcash/internal/db"
 	"bandcash/internal/utils"
@@ -88,23 +87,6 @@ func (e *Entries) GetShowData(ctx context.Context, id int) (EntryData, error) {
 		Breadcrumbs: []utils.Crumb{
 			{Label: "Entries", Href: "/entry"},
 			{Label: entry.Title},
-		},
-	}, nil
-}
-
-func (e *Entries) GetEditData(ctx context.Context, id int) (EntryData, error) {
-	entry, err := db.Qry.GetEntry(ctx, int64(id))
-	if err != nil {
-		return EntryData{}, err
-	}
-
-	return EntryData{
-		Title: "Edit Entry",
-		Entry: &entry,
-		Breadcrumbs: []utils.Crumb{
-			{Label: "Entries", Href: "/entry"},
-			{Label: entry.Title, Href: "/entry/" + strconv.Itoa(id)},
-			{Label: "Edit"},
 		},
 	}, nil
 }

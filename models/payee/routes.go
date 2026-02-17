@@ -15,15 +15,12 @@ func Register(e *echo.Echo) *Payees {
 		"models/shared/templates/head.html",
 		"models/shared/templates/breadcrumbs.html",
 		"models/payee/templates/index.html",
-		"models/payee/templates/new.html",
 		"models/payee/templates/show.html",
-		"models/payee/templates/edit.html",
 	))
 
 	e.GET("/payee", payees.Index)
 	e.POST("/payee", payees.Create)
 	e.GET("/payee/:id", payees.Show)
-	e.GET("/payee/:id/edit", payees.Edit)
 	e.PUT("/payee/:id", payees.Update)
 	e.DELETE("/payee/:id", payees.Destroy)
 

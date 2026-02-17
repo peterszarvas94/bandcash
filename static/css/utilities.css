@@ -84,20 +84,25 @@
     display: grid;
     grid-template-columns: minmax(0, 1fr) var(--sidebar-width);
     gap: calc(var(--space) * 2);
-    align-items: start;
+    align-items: stretch;
     max-width: var(--content-width);
     margin: 0 auto;
     padding: var(--space);
+    min-height: 100vh;
 
     > main#app {
       max-width: none;
       margin: 0;
       padding: 0;
       min-width: 0;
+      align-self: stretch;
     }
 
     > aside {
       min-width: 0;
+      border-left: var(--border) solid var(--border-color);
+      padding-left: calc(var(--space) * 2);
+      align-self: stretch;
     }
   }
 
@@ -107,9 +112,20 @@
     align-content: start;
   }
 
+  .single-col {
+    max-width: var(--content-width);
+    margin: 0 auto;
+    padding: var(--space);
+  }
+
   @media (max-width: 900px) {
     .two-col {
       grid-template-columns: 1fr;
+    }
+
+    .two-col > aside {
+      border-left: 0;
+      padding-left: 0;
     }
   }
 }

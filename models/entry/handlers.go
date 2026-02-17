@@ -183,7 +183,12 @@ func (e *Entries) Update(c echo.Context) error {
 	if signals.Mode == "single" {
 		utils.SSEHub.PatchSignals(c, map[string]any{
 			"entryFormState": "",
-			"entryFormData":  map[string]any{"title": "", "time": "", "description": "", "amount": 0},
+			"entryFormData": map[string]any{
+				"title":       entryForm.Title,
+				"time":        entryForm.Time,
+				"description": entryForm.Description,
+				"amount":      entryForm.Amount,
+			},
 		})
 		data, err := e.GetShowData(c.Request().Context(), id)
 		if err != nil {

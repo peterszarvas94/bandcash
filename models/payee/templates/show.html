@@ -4,61 +4,102 @@
   {{template "head" .}}
   <body>
     <div
-      data-signals="{mode: 'single'}"
+      data-signals="{mode: 'single', formState: '', formData: {name: '{{.Payee.Name | js}}', description: '{{.Payee.Description | js}}'}}"
       data-init="@get('/sse')"
     ></div>
     {{block "payee-show" .}}
-    <main id="app">
-      <h1>{{.Title}}</h1>
-      {{template "breadcrumbs" .}}
+    <div id="payee-show" class="two-col">
+      <main id="app">
+        <h1>{{.Title}}</h1>
+        {{template "breadcrumbs" .}}
 
-      <div class="entry-details">
-        <p><strong>Name:</strong> {{.Payee.Name}}</p>
-        <p><strong>Description:</strong> {{.Payee.Description}}</p>
-      </div>
+        <h2>Payee Details</h2>
+        <div class="entry-details">
+          <p><strong>Name:</strong> {{.Payee.Name}}</p>
+          <p><strong>Description:</strong> {{.Payee.Description}}</p>
+        </div>
 
-      <p class="row">
-        <a class="btn" href="/payee/{{.Payee.ID}}/edit">Edit</a>
-        <button
-          class="btn"
-          data-on:click="if (window.confirm('Delete this payee?')) { @delete('/payee/{{.Payee.ID}}') }"
-        >
-          Delete
-        </button>
-      </p>
+        <h2>Entries</h2>
+        <table class="table">
+          <thead>
+            <tr>
+              <th>Title</th>
+              <th>Time</th>
+              <th>Description</th>
+              <th>Entry Amount</th>
+              <th>Cut</th>
+              <th>Expense</th>
+              <th>Total</th>
+            </tr>
+          </thead>
+          <tbody>
+            {{range .Entries}}
+            <tr>
+              <td><a href="/entry/{{.ID}}">{{.Title}}</a></td>
+              <td>{{.Time}}</td>
+              <td>{{.Description}}</td>
+              <td class="text-right">{{printf "%d" .Amount}}</td>
+              <td class="text-right">{{printf "%d" .ParticipantAmount}}</td>
+              <td class="text-right">{{printf "%d" .ParticipantExpense}}</td>
+              <td class="text-right">{{printf "%d" (add .ParticipantAmount .ParticipantExpense)}}</td>
+            </tr>
+            {{else}}
+            <tr>
+              <td colspan="7">no items</td>
+            </tr>
+            {{end}}
+          </tbody>
+        </table>
+      </main>
+      <aside class="sidebar-panel">
+        <div data-show="$formState === ''" class="pb">
+          <h3>Payee actions</h3>
+          <div class="row">
+            <button
+              class="btn"
+              type="button"
+              data-on:click="$formState = 'edit'; $errors = {name: '', description: ''}"
+            >
+              Edit Payee
+            </button>
+            <button
+              class="btn"
+              type="button"
+              data-attr:disabled="$formState !== ''"
+              data-on:click="if (window.confirm('Delete this payee?')) { @delete('/payee/{{.Payee.ID}}') }"
+            >
+              Delete Payee
+            </button>
+          </div>
+        </div>
 
-      <h2>Entries</h2>
-      <table class="table">
-        <thead>
-          <tr>
-            <th>Title</th>
-            <th>Time</th>
-            <th>Description</th>
-            <th>Entry Amount</th>
-            <th>Cut</th>
-            <th>Expense</th>
-            <th>Total</th>
-          </tr>
-        </thead>
-        <tbody>
-          {{range .Entries}}
-          <tr>
-            <td><a href="/entry/{{.ID}}">{{.Title}}</a></td>
-            <td>{{.Time}}</td>
-            <td>{{.Description}}</td>
-            <td class="text-right">{{printf "%d" .Amount}}</td>
-            <td class="text-right">{{printf "%d" .ParticipantAmount}}</td>
-            <td class="text-right">{{printf "%d" .ParticipantExpense}}</td>
-            <td class="text-right">{{printf "%d" (add .ParticipantAmount .ParticipantExpense)}}</td>
-          </tr>
-          {{else}}
-          <tr>
-            <td colspan="7">no items</td>
-          </tr>
-          {{end}}
-        </tbody>
-      </table>
-    </main>
+        <div data-show="$formState === 'edit'" style="display: none" class="pb">
+          <h3>Edit Payee</h3>
+          <form class="form">
+            <div>
+              <label>Name</label>
+              <input type="text" data-bind="formData.name" />
+              <div data-show="$errors && $errors.name" class="color-error" data-text="$errors.name"></div>
+            </div>
+            <div>
+              <label>Description</label>
+              <textarea data-bind="formData.description" rows="3"></textarea>
+              <div data-show="$errors && $errors.description" class="color-error" data-text="$errors.description"></div>
+            </div>
+            <div class="row">
+              <button class="btn" type="button" data-on:click="@put('/payee/{{.Payee.ID}}')">Update Payee</button>
+              <button
+                class="btn"
+                type="button"
+                data-on:click="$formState = ''; $formData = {name: '{{.Payee.Name | js}}', description: '{{.Payee.Description | js}}'}; $errors = {name: '', description: ''}"
+              >
+                Cancel
+              </button>
+            </div>
+          </form>
+        </div>
+      </aside>
+    </div>
     {{end}}
   </body>
 </html>
