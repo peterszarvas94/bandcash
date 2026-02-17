@@ -31,3 +31,14 @@ templ Breadcrumbs(crumbs []utils.Crumb) {
 		}
 	</nav>
 }
+
+templ TwoCol(id string, main templ.Component, sidebar templ.Component) {
+	<div id={id} class="two-col">
+		<main id="app">
+			@main
+		</main>
+		<aside class="sidebar-panel">
+			@sidebar
+		</aside>
+	</div>
+}
