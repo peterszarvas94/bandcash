@@ -1,19 +1,25 @@
 package payee
 
-import (
-	"fmt"
-
-	"bandcash/internal/utils"
-)
-
-func payeeIndexSignals() string {
-	return "{mode: '', formState: '', editingId: 0, formData: {name: '', description: ''}}"
+func payeeIndexSignals() map[string]any {
+	return map[string]any{
+		"mode":      "",
+		"formState": "",
+		"editingId": 0,
+		"formData":  map[string]any{"name": "", "description": ""},
+	}
 }
 
-func payeeShowSignals(data PayeeData) string {
-	return fmt.Sprintf(
-		"{mode: 'single', formState: '', formData: {name: %s, description: %s}}",
-		utils.JSString(data.Payee.Name),
-		utils.JSString(data.Payee.Description),
-	)
+func payeeShowSignals(data PayeeData) map[string]any {
+	return map[string]any{
+		"mode":      "single",
+		"formState": "",
+		"formData": map[string]any{
+			"name":        data.Payee.Name,
+			"description": data.Payee.Description,
+		},
+		"errors": map[string]any{
+			"name":        "",
+			"description": "",
+		},
+	}
 }

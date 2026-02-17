@@ -38,7 +38,7 @@ func Head(title string) templ.Component {
 		var templ_7745c5c3_Var2 string
 		templ_7745c5c3_Var2, templ_7745c5c3_Err = templ.JoinStringErrs(title)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/shared/templates/components.templ`, Line: 8, Col: 15}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/shared/components.templ`, Line: 8, Col: 15}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var2))
 		if templ_7745c5c3_Err != nil {
@@ -90,7 +90,7 @@ func Breadcrumbs(crumbs []utils.Crumb) templ.Component {
 				var templ_7745c5c3_Var4 templ.SafeURL
 				templ_7745c5c3_Var4, templ_7745c5c3_Err = templ.JoinURLErrs(crumb.Href)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/shared/templates/components.templ`, Line: 27, Col: 23}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/shared/components.templ`, Line: 27, Col: 23}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var4))
 				if templ_7745c5c3_Err != nil {
@@ -103,7 +103,7 @@ func Breadcrumbs(crumbs []utils.Crumb) templ.Component {
 				var templ_7745c5c3_Var5 string
 				templ_7745c5c3_Var5, templ_7745c5c3_Err = templ.JoinStringErrs(crumb.Label)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/shared/templates/components.templ`, Line: 27, Col: 37}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/shared/components.templ`, Line: 27, Col: 37}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var5))
 				if templ_7745c5c3_Err != nil {
@@ -121,7 +121,7 @@ func Breadcrumbs(crumbs []utils.Crumb) templ.Component {
 				var templ_7745c5c3_Var6 string
 				templ_7745c5c3_Var6, templ_7745c5c3_Err = templ.JoinStringErrs(crumb.Label)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/shared/templates/components.templ`, Line: 29, Col: 22}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/shared/components.templ`, Line: 29, Col: 22}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var6))
 				if templ_7745c5c3_Err != nil {
@@ -169,7 +169,7 @@ func TwoCol(id string, main templ.Component, sidebar templ.Component) templ.Comp
 		var templ_7745c5c3_Var8 string
 		templ_7745c5c3_Var8, templ_7745c5c3_Err = templ.JoinStringErrs(id)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/shared/templates/components.templ`, Line: 36, Col: 12}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/shared/components.templ`, Line: 36, Col: 12}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var8))
 		if templ_7745c5c3_Err != nil {

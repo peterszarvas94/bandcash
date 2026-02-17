@@ -8,7 +8,7 @@ package home
 import "github.com/a-h/templ"
 import templruntime "github.com/a-h/templ/runtime"
 
-import shared "bandcash/models/shared/templates"
+import shared "bandcash/models/shared"
 
 func HomeIndex(data HomeData) templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {

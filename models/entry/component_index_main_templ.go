@@ -11,7 +11,7 @@ import templruntime "github.com/a-h/templ/runtime"
 import (
 	"fmt"
 
-	shared "bandcash/models/shared/templates"
+	shared "bandcash/models/shared"
 )
 
 func EntryIndexMain(data EntriesData) templ.Component {

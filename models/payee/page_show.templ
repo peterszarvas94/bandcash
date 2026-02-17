@@ -1,13 +1,13 @@
 package payee
 
-import shared "bandcash/models/shared/templates"
+import shared "bandcash/models/shared"
 
 templ PayeeShow(data PayeeData) {
 	<!doctype html>
 	<html lang="en">
 		@shared.Head(data.Title)
 		<body>
-			<div data-signals={payeeShowSignals(data)} data-init="@get('/sse')"></div>
+			<div data-signals={templ.JSONString(payeeShowSignals(data))} data-init="@get('/sse')"></div>
 			@shared.TwoCol("payee-show", PayeeShowMain(data), PayeeShowSidebar(data))
 		</body>
 	</html>

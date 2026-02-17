@@ -1,13 +1,13 @@
 package entry
 
-import shared "bandcash/models/shared/templates"
+import shared "bandcash/models/shared"
 
 templ EntryIndex(data EntriesData) {
 	<!doctype html>
 	<html lang="en">
 		@shared.Head(data.Title)
 		<body>
-			<div data-signals={entryIndexSignals()} data-init="@get('/sse')"></div>
+			<div data-signals={templ.JSONString(entryIndexSignals())} data-init="@get('/sse')"></div>
 			@shared.TwoCol("entry-index", EntryIndexMain(data), EntryIndexSidebar(data))
 		</body>
 	</html>
