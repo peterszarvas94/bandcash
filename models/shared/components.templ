@@ -21,9 +21,9 @@ templ Head(title string) {
 templ Breadcrumbs(crumbs []utils.Crumb) {
 	<nav class="row pb">
 		<a href="/">Home</a>
-		for _, crumb := range crumbs {
+		for i, crumb := range crumbs {
 			<span>&gt;</span>
-			if crumb.Href != "" {
+			if crumb.Href != "" && i < len(crumbs)-1 {
 				<a href={crumb.Href}>{crumb.Label}</a>
 			} else {
 				<span>{crumb.Label}</span>
