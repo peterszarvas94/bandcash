@@ -6,7 +6,6 @@ import (
 
 	"bandcash/internal/db"
 	"bandcash/internal/utils"
-	payeeview "bandcash/models/payee/templates/view"
 )
 
 type Payees struct {
@@ -16,18 +15,18 @@ func New() *Payees {
 	return &Payees{}
 }
 
-func (p *Payees) GetShowData(ctx context.Context, id int) (payeeview.PayeeData, error) {
+func (p *Payees) GetShowData(ctx context.Context, id int) (PayeeData, error) {
 	payee, err := db.Qry.GetPayee(ctx, int64(id))
 	if err != nil {
-		return payeeview.PayeeData{}, err
+		return PayeeData{}, err
 	}
 
 	entries, err := db.Qry.ListParticipantsByPayee(ctx, int64(id))
 	if err != nil {
-		return payeeview.PayeeData{}, err
+		return PayeeData{}, err
 	}
 
-	return payeeview.PayeeData{
+	return PayeeData{
 		Title:   payee.Name,
 		Payee:   &payee,
 		Entries: entries,
@@ -38,12 +37,12 @@ func (p *Payees) GetShowData(ctx context.Context, id int) (payeeview.PayeeData, 
 	}, nil
 }
 
-func (p *Payees) GetIndexData(ctx context.Context) (payeeview.PayeesData, error) {
+func (p *Payees) GetIndexData(ctx context.Context) (PayeesData, error) {
 	payees, err := db.Qry.ListPayees(ctx)
 	if err != nil {
-		return payeeview.PayeesData{}, err
+		return PayeesData{}, err
 	}
-	return payeeview.PayeesData{
+	return PayeesData{
 		Title:  "Payees",
 		Payees: payees,
 		Breadcrumbs: []utils.Crumb{

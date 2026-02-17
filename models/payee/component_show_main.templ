@@ -1,0 +1,51 @@
+package payee
+
+import (
+	"fmt"
+
+	shared "bandcash/models/shared/templates"
+)
+
+templ PayeeShowMain(data PayeeData) {
+	<h1>{data.Title}</h1>
+	@shared.Breadcrumbs(data.Breadcrumbs)
+
+	<h2>Payee Details</h2>
+	<div class="entry-details">
+		<p><strong>Name:</strong> {data.Payee.Name}</p>
+		<p><strong>Description:</strong> {data.Payee.Description}</p>
+	</div>
+
+	<h2>Entries</h2>
+	<table class="table">
+		<thead>
+			<tr>
+				<th>Title</th>
+				<th>Time</th>
+				<th>Description</th>
+				<th>Entry Amount</th>
+				<th>Cut</th>
+				<th>Expense</th>
+				<th>Total</th>
+			</tr>
+		</thead>
+		<tbody>
+			for _, entry := range data.Entries {
+				<tr>
+					<td><a href={fmt.Sprintf("/entry/%d", entry.ID)}>{entry.Title}</a></td>
+					<td>{entry.Time}</td>
+					<td>{entry.Description}</td>
+					<td class="text-right">{fmt.Sprintf("%d", entry.Amount)}</td>
+					<td class="text-right">{fmt.Sprintf("%d", entry.ParticipantAmount)}</td>
+					<td class="text-right">{fmt.Sprintf("%d", entry.ParticipantExpense)}</td>
+					<td class="text-right">{fmt.Sprintf("%d", entry.ParticipantAmount+entry.ParticipantExpense)}</td>
+				</tr>
+			}
+			if len(data.Entries) == 0 {
+				<tr>
+					<td colspan="7">no items</td>
+				</tr>
+			}
+		</tbody>
+	</table>
+}

@@ -1,0 +1,165 @@
+package entry
+
+import "fmt"
+
+templ EntryShowSidebar(data EntryData) {
+	<div data-show="$entryFormState === '' && $formState === ''">
+		<div class="pb">
+			<h3>Entry Actions</h3>
+			<div class="row">
+				<button
+					class="btn"
+					type="button"
+					data-on:click="$entryFormState = 'edit'; $errors = {title: '', time: '', description: '', amount: ''}"
+				>
+					Edit Entry
+				</button>
+				<button
+					class="btn"
+					type="button"
+					data-on:click={fmt.Sprintf("if (window.confirm('Delete this entry?')) { @delete('/entry/%d') }", data.Entry.ID)}
+				>
+					Delete Entry
+				</button>
+			</div>
+		</div>
+		<div class="pb">
+			<h3>Add Participant</h3>
+			<div class="row">
+				<button
+					class="btn"
+					type="button"
+					data-on:click="$formState = 'add'; $editingId = 0; $calcPercent = 0; $formData = {payeeId: 0, payeeName: '', amount: 0, expense: 0}; $errors = {payeeId: '', amount: '', expense: ''}"
+				>
+					Add Participant
+				</button>
+			</div>
+		</div>
+	</div>
+
+	<div data-show="$entryFormState === 'edit'" style="display: none" class="pb">
+		<h3>Edit Entry</h3>
+		<form class="form">
+			<div class="form-row">
+				<div class="field">
+					<label>Title</label>
+					<input type="text" data-bind="entryFormData.title" />
+					<div data-show="$errors && $errors.title" class="color-error" data-text="$errors.title"></div>
+				</div>
+				<div class="field">
+					<label>Time</label>
+					<input type="datetime-local" data-bind="entryFormData.time" />
+					<div data-show="$errors && $errors.time" class="color-error" data-text="$errors.time"></div>
+				</div>
+			</div>
+			<div class="field">
+				<label>Description</label>
+				<textarea data-bind="entryFormData.description" rows="3"></textarea>
+				<div data-show="$errors && $errors.description" class="color-error" data-text="$errors.description"></div>
+			</div>
+			<div class="field">
+				<label>Amount</label>
+				<input type="number" data-bind="entryFormData.amount" step="1" />
+				<div data-show="$errors && $errors.amount" class="color-error" data-text="$errors.amount"></div>
+			</div>
+			<div class="row">
+				<button
+					class="btn"
+					type="button"
+					data-on:click={fmt.Sprintf("@put('/entry/%d')", data.Entry.ID)}
+				>
+					Update Entry
+				</button>
+				<button
+					class="btn"
+					type="button"
+					data-on:click={entryShowResetAction(data)}
+				>
+					Cancel
+				</button>
+			</div>
+		</form>
+	</div>
+
+	<div data-show="$formState !== '' && $entryFormState === ''" style="display: none" class="pb">
+		<h3 data-show="$formState === 'add'">New Participant</h3>
+		<h3 data-show="$formState === 'edit'">Edit Participant</h3>
+		<form class="form">
+			<div data-show="$formState === 'add'">
+				<label>Payee</label>
+				<select data-bind="formData.payeeId">
+					<option value="">Select payee</option>
+					for _, payee := range data.Payees {
+						<option value={fmt.Sprintf("%d", payee.ID)}>{payee.Name}</option>
+					}
+				</select>
+				<div data-show="$errors && $errors.payeeId" class="color-error" data-text="$errors.payeeId"></div>
+			</div>
+			<div data-show="$formState === 'edit'">
+				<label>Payee</label>
+				<input type="text" data-bind="formData.payeeName" disabled />
+			</div>
+			<div>
+				<label>Cut Amount</label>
+				<div class="row">
+					<input type="number" data-bind="formData.amount" step="1" style="flex: 1" />
+					<button
+						class="btn"
+						type="button"
+						data-on:click={fmt.Sprintf("$calcPercent = $formData.amount > 0 ? Math.round($formData.amount / %d * 10000) / 100 : 0", data.Entry.Amount)}
+					>
+						Calc %
+					</button>
+				</div>
+				<div data-show="$errors && $errors.amount" class="color-error" data-text="$errors.amount"></div>
+			</div>
+			<div>
+				<label>Quick Calc (% of entry)</label>
+				<div class="row">
+					<input type="number" data-bind="calcPercent" step="0.01" min="0" placeholder="e.g., 20" style="flex: 1" />
+					<button
+						class="btn"
+						type="button"
+						data-on:click={fmt.Sprintf("$formData.amount = Math.round(%d * $calcPercent / 100)", data.Entry.Amount)}
+					>
+						Calc Amount
+					</button>
+				</div>
+			</div>
+			<div>
+				<label>Expense</label>
+				<input type="number" data-bind="formData.expense" step="1" />
+				<div data-show="$errors && $errors.expense" class="color-error" data-text="$errors.expense"></div>
+			</div>
+			<div style="font-weight: bold; padding: 10px 0">
+				<strong>Total:</strong>
+				<span data-text="$formData.amount + $formData.expense"></span>
+			</div>
+			<div class="row">
+				<button
+					class="btn"
+					type="button"
+					data-show="$formState === 'add'"
+					data-on:click={fmt.Sprintf("@post('/entry/%d/participant')", data.Entry.ID)}
+				>
+					Add Participant
+				</button>
+				<button
+					class="btn"
+					type="button"
+					data-show="$formState === 'edit'"
+					data-on:click={fmt.Sprintf("@put('/entry/%d/participant/' + $editingId)", data.Entry.ID)}
+				>
+					Update Participant
+				</button>
+				<button
+					class="btn"
+					type="button"
+					data-on:click="$formState = ''; $editingId = 0; $calcPercent = 0; $formData = {payeeId: 0, payeeName: '', amount: 0, expense: 0}; $errors = {payeeId: '', amount: '', expense: ''}"
+				>
+					Cancel
+				</button>
+			</div>
+		</form>
+	</div>
+}

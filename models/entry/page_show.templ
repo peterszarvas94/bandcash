@@ -1,0 +1,14 @@
+package entry
+
+import shared "bandcash/models/shared/templates"
+
+templ EntryShow(data EntryData) {
+	<!doctype html>
+	<html lang="en">
+		@shared.Head(data.Title)
+		<body>
+			<div data-signals={entryShowSignals(data)} data-init="@get('/sse')"></div>
+			@shared.TwoCol("entry-show", EntryShowMain(data), EntryShowSidebar(data))
+		</body>
+	</html>
+}

@@ -1,0 +1,63 @@
+package entry
+
+import (
+	"fmt"
+
+	shared "bandcash/models/shared/templates"
+)
+
+templ EntryIndexMain(data EntriesData) {
+	<h1>{data.Title}</h1>
+	@shared.Breadcrumbs(data.Breadcrumbs)
+
+	<table class="table">
+		<thead>
+			<tr>
+				<th>Title</th>
+				<th>Time</th>
+				<th>Description</th>
+				<th>Amount</th>
+				<th>Actions</th>
+			</tr>
+		</thead>
+		<tbody>
+			for _, entry := range data.Entries {
+				<tr
+					data-entry-title={entry.Title}
+					data-entry-time={entry.Time}
+					data-entry-description={entry.Description}
+					data-entry-amount={fmt.Sprintf("%d", entry.Amount)}
+				>
+					<td><a href={fmt.Sprintf("/entry/%d", entry.ID)}>{entry.Title}</a></td>
+					<td>{entry.Time}</td>
+					<td>{entry.Description}</td>
+					<td class="text-right">{fmt.Sprintf("%d", entry.Amount)}</td>
+					<td>
+						<div class="row row-right">
+							<button
+								class="btn"
+								type="button"
+								data-attr:disabled="$formState !== ''"
+								data-on:click={fmt.Sprintf("$formState = 'edit'; $editingId = %d; $formData = {title: el.closest('tr').dataset.entryTitle, time: el.closest('tr').dataset.entryTime, description: el.closest('tr').dataset.entryDescription, amount: Number(el.closest('tr').dataset.entryAmount)}", entry.ID)}
+							>
+								Edit
+							</button>
+							<button
+								class="btn"
+								data-attr:disabled="$formState !== ''"
+								data-on:click={fmt.Sprintf("if (window.confirm('Delete this entry?')) { @delete('/entry/%d') }", entry.ID)}
+							>
+								Delete
+							</button>
+						</div>
+					</td>
+				</tr>
+			}
+			if len(data.Entries) == 0 {
+				<tr>
+					<td colspan="5">no items</td>
+				</tr>
+			}
+		</tbody>
+	</table>
+}

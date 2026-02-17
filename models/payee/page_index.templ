@@ -1,0 +1,14 @@
+package payee
+
+import shared "bandcash/models/shared/templates"
+
+templ PayeeIndex(data PayeesData) {
+	<!doctype html>
+	<html lang="en">
+		@shared.Head(data.Title)
+		<body>
+			<div data-signals={payeeIndexSignals()} data-init="@get('/sse')"></div>
+			@shared.TwoCol("payee-index", PayeeIndexMain(data), PayeeIndexSidebar(data))
+		</body>
+	</html>
+}

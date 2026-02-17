@@ -6,7 +6,6 @@ import (
 
 	"bandcash/internal/db"
 	"bandcash/internal/utils"
-	entryview "bandcash/models/entry/templates/view"
 )
 
 type Entries struct {
@@ -16,20 +15,20 @@ func New() *Entries {
 	return &Entries{}
 }
 
-func (e *Entries) GetShowData(ctx context.Context, id int) (entryview.EntryData, error) {
+func (e *Entries) GetShowData(ctx context.Context, id int) (EntryData, error) {
 	entry, err := db.Qry.GetEntry(ctx, int64(id))
 	if err != nil {
-		return entryview.EntryData{}, err
+		return EntryData{}, err
 	}
 
 	participants, err := db.Qry.ListParticipantsByEntry(ctx, int64(id))
 	if err != nil {
-		return entryview.EntryData{}, err
+		return EntryData{}, err
 	}
 
 	payees, err := db.Qry.ListPayees(ctx)
 	if err != nil {
-		return entryview.EntryData{}, err
+		return EntryData{}, err
 	}
 
 	payeeIDs := make(map[int64]bool, len(participants))
@@ -54,7 +53,7 @@ func (e *Entries) GetShowData(ctx context.Context, id int) (entryview.EntryData,
 
 	slog.Info("entry.show.data", "entry_id", id, "participants", len(participants), "payees_total", len(payees), "payees_filtered", len(filteredPayees), "leftover", leftover)
 
-	return entryview.EntryData{
+	return EntryData{
 		Title:            entry.Title,
 		Entry:            &entry,
 		Participants:     participants,
@@ -69,13 +68,13 @@ func (e *Entries) GetShowData(ctx context.Context, id int) (entryview.EntryData,
 	}, nil
 }
 
-func (e *Entries) GetIndexData(ctx context.Context) (entryview.EntriesData, error) {
+func (e *Entries) GetIndexData(ctx context.Context) (EntriesData, error) {
 	entries, err := db.Qry.ListEntries(ctx)
 	if err != nil {
-		return entryview.EntriesData{}, err
+		return EntriesData{}, err
 	}
 
-	return entryview.EntriesData{
+	return EntriesData{
 		Title:   "Entries",
 		Entries: entries,
 		Breadcrumbs: []utils.Crumb{
