@@ -1,8 +1,11 @@
-package home
+package homepages
 
-import "bandcash/models/shared"
+import (
+	homeview "bandcash/models/home/templates/view"
+	shared "bandcash/models/shared/templates"
+)
 
-templ HomeIndex(data HomeData) {
+templ HomeIndex(data homeview.HomeData) {
 	<!doctype html>
 	<html lang="en">
 		@shared.Head(data.Title)

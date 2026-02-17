@@ -1,0 +1,94 @@
+package entrycomponents
+
+import (
+	"fmt"
+
+	entryview "bandcash/models/entry/templates/view"
+	shared "bandcash/models/shared/templates"
+)
+
+templ EntryShowMain(data entryview.EntryData) {
+	<h1>{data.Title}</h1>
+	@shared.Breadcrumbs(data.Breadcrumbs)
+
+	<h2>Entry Details</h2>
+	<div class="entry-details">
+		<div class="form-row">
+			<div class="field">
+				<label>Title</label>
+				<p>{data.Entry.Title}</p>
+			</div>
+			<div class="field">
+				<label>Time</label>
+				<p>{data.Entry.Time}</p>
+			</div>
+		</div>
+		<div class="field">
+			<label>Description</label>
+			<p>{data.Entry.Description}</p>
+		</div>
+		<div class="field">
+			<label>Amount</label>
+			<p>{fmt.Sprintf("%d", data.Entry.Amount)}</p>
+		</div>
+		<div class="field">
+			<label>Leftover</label>
+			<p>{fmt.Sprintf("%d", data.Leftover)}</p>
+		</div>
+	</div>
+
+	<h2>Participants</h2>
+	<table class="table">
+		<thead>
+			<tr>
+				<th>Payee</th>
+				<th>Description</th>
+				<th>Cut</th>
+				<th>Expense</th>
+				<th>Total</th>
+				<th></th>
+			</tr>
+		</thead>
+		<tbody>
+			for _, participant := range data.Participants {
+				<tr
+					data-payee-id={fmt.Sprintf("%d", participant.ID)}
+					data-payee-name={participant.Name}
+					data-participant-amount={fmt.Sprintf("%d", participant.ParticipantAmount)}
+					data-participant-expense={fmt.Sprintf("%d", participant.ParticipantExpense)}
+				>
+					<td><a href={fmt.Sprintf("/payee/%d", participant.ID)}>{participant.Name}</a></td>
+					<td>{participant.Description}</td>
+					<td class="text-right">{fmt.Sprintf("%d", participant.ParticipantAmount)}</td>
+					<td class="text-right">{fmt.Sprintf("%d", participant.ParticipantExpense)}</td>
+					<td class="text-right">{fmt.Sprintf("%d", participant.ParticipantAmount+participant.ParticipantExpense)}</td>
+					<td class="text-right">
+						<div class="row">
+							<button
+								class="btn"
+								type="button"
+								data-attr:disabled="$formState !== '' || $entryFormState !== ''"
+								data-on:click={fmt.Sprintf("$formState = 'edit'; $editingId = %d; $formData = {payeeId: Number(el.closest('tr').dataset.payeeId), payeeName: el.closest('tr').dataset.payeeName, amount: Number(el.closest('tr').dataset.participantAmount), expense: Number(el.closest('tr').dataset.participantExpense)}", participant.ID)}
+							>
+								Edit
+							</button>
+							<button
+								class="btn"
+								type="button"
+								data-attr:disabled="$formState !== '' || $entryFormState !== ''"
+								data-on:click={fmt.Sprintf("if (window.confirm('Delete this participant?')) { @delete('/entry/%d/participant/%d') }", data.Entry.ID, participant.ID)}
+							>
+								Delete
+							</button>
+						</div>
+					</td>
+				</tr>
+			}
+			if len(data.Participants) == 0 {
+				<tr>
+					<td colspan="6">no items</td>
+				</tr>
+			}
+		</tbody>
+	</table>
+}

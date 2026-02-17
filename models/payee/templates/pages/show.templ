@@ -1,0 +1,18 @@
+package payeepages
+
+import (
+	payeecomponents "bandcash/models/payee/templates/components"
+	payeeview "bandcash/models/payee/templates/view"
+	shared "bandcash/models/shared/templates"
+)
+
+templ PayeeShow(data payeeview.PayeeData) {
+	<!doctype html>
+	<html lang="en">
+		@shared.Head(data.Title)
+		<body>
+			<div data-signals={payeeShowSignals(data)} data-init="@get('/sse')"></div>
+			@shared.TwoCol("payee-show", payeecomponents.PayeeShowMain(data), payeecomponents.PayeeShowSidebar(data))
+		</body>
+	</html>
+}

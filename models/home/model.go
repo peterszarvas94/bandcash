@@ -4,19 +4,15 @@ import (
 	"github.com/labstack/echo/v4"
 
 	"bandcash/internal/utils"
+	homeview "bandcash/models/home/templates/view"
 )
-
-type HomeData struct {
-	Title       string
-	Breadcrumbs []utils.Crumb
-}
 
 type Home struct {
 }
 
 // Data returns data for rendering.
-func (h *Home) Data() HomeData {
-	return HomeData{
+func (h *Home) Data() homeview.HomeData {
+	return homeview.HomeData{
 		Title:       "Bandcash",
 		Breadcrumbs: []utils.Crumb{},
 	}

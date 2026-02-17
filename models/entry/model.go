@@ -6,24 +6,8 @@ import (
 
 	"bandcash/internal/db"
 	"bandcash/internal/utils"
+	entryview "bandcash/models/entry/templates/view"
 )
-
-type EntryData struct {
-	Title            string
-	Entry            *db.Entry
-	Participants     []db.ListParticipantsByEntryRow
-	Payees           []db.Payee
-	PayeeIDs         map[int64]bool
-	Breadcrumbs      []utils.Crumb
-	Leftover         int64
-	TotalDistributed int64
-}
-
-type EntriesData struct {
-	Title       string
-	Entries     []db.Entry
-	Breadcrumbs []utils.Crumb
-}
 
 type Entries struct {
 }
@@ -32,20 +16,20 @@ func New() *Entries {
 	return &Entries{}
 }
 
-func (e *Entries) GetShowData(ctx context.Context, id int) (EntryData, error) {
+func (e *Entries) GetShowData(ctx context.Context, id int) (entryview.EntryData, error) {
 	entry, err := db.Qry.GetEntry(ctx, int64(id))
 	if err != nil {
-		return EntryData{}, err
+		return entryview.EntryData{}, err
 	}
 
 	participants, err := db.Qry.ListParticipantsByEntry(ctx, int64(id))
 	if err != nil {
-		return EntryData{}, err
+		return entryview.EntryData{}, err
 	}
 
 	payees, err := db.Qry.ListPayees(ctx)
 	if err != nil {
-		return EntryData{}, err
+		return entryview.EntryData{}, err
 	}
 
 	payeeIDs := make(map[int64]bool, len(participants))
@@ -70,7 +54,7 @@ func (e *Entries) GetShowData(ctx context.Context, id int) (EntryData, error) {
 
 	slog.Info("entry.show.data", "entry_id", id, "participants", len(participants), "payees_total", len(payees), "payees_filtered", len(filteredPayees), "leftover", leftover)
 
-	return EntryData{
+	return entryview.EntryData{
 		Title:            entry.Title,
 		Entry:            &entry,
 		Participants:     participants,
@@ -85,13 +69,13 @@ func (e *Entries) GetShowData(ctx context.Context, id int) (EntryData, error) {
 	}, nil
 }
 
-func (e *Entries) GetIndexData(ctx context.Context) (EntriesData, error) {
+func (e *Entries) GetIndexData(ctx context.Context) (entryview.EntriesData, error) {
 	entries, err := db.Qry.ListEntries(ctx)
 	if err != nil {
-		return EntriesData{}, err
+		return entryview.EntriesData{}, err
 	}
 
-	return EntriesData{
+	return entryview.EntriesData{
 		Title:   "Entries",
 		Entries: entries,
 		Breadcrumbs: []utils.Crumb{

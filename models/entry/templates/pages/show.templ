@@ -1,0 +1,18 @@
+package entrypages
+
+import (
+	entrycomponents "bandcash/models/entry/templates/components"
+	entryview "bandcash/models/entry/templates/view"
+	shared "bandcash/models/shared/templates"
+)
+
+templ EntryShow(data entryview.EntryData) {
+	<!doctype html>
+	<html lang="en">
+		@shared.Head(data.Title)
+		<body>
+			<div data-signals={entryShowSignals(data)} data-init="@get('/sse')"></div>
+			@shared.TwoCol("entry-show", entrycomponents.EntryShowMain(data), entrycomponents.EntryShowSidebar(data))
+		</body>
+	</html>
+}

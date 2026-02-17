@@ -9,6 +9,7 @@ import (
 
 	"bandcash/internal/db"
 	"bandcash/internal/utils"
+	payeepages "bandcash/models/payee/templates/pages"
 )
 
 type payeeParams struct {
@@ -46,7 +47,7 @@ func (p *Payees) Index(c echo.Context) error {
 	}
 
 	slog.Debug("payee.index", "payee_count", len(data.Payees))
-	return utils.RenderComponent(c, PayeeIndex(data))
+	return utils.RenderComponent(c, payeepages.PayeeIndex(data))
 }
 
 func (p *Payees) Show(c echo.Context) error {
@@ -64,7 +65,7 @@ func (p *Payees) Show(c echo.Context) error {
 		return c.NoContent(500)
 	}
 
-	return utils.RenderComponent(c, PayeeShow(data))
+	return utils.RenderComponent(c, payeepages.PayeeShow(data))
 }
 
 func (p *Payees) Create(c echo.Context) error {
@@ -98,7 +99,7 @@ func (p *Payees) Create(c echo.Context) error {
 		slog.Error("payee.create.table: failed to get data", "err", err)
 		return c.NoContent(500)
 	}
-	html, err := utils.RenderComponentString(c.Request().Context(), PayeeIndex(data))
+	html, err := utils.RenderComponentString(c.Request().Context(), payeepages.PayeeIndex(data))
 	if err != nil {
 		slog.Error("payee.create.table: failed to render", "err", err)
 		return c.NoContent(500)
@@ -155,7 +156,7 @@ func (p *Payees) Update(c echo.Context) error {
 		slog.Error("payee.update: failed to get data", "err", err)
 		return c.NoContent(500)
 	}
-	html, err := utils.RenderComponentString(c.Request().Context(), PayeeIndex(data))
+	html, err := utils.RenderComponentString(c.Request().Context(), payeepages.PayeeIndex(data))
 	if err != nil {
 		slog.Error("payee.update: failed to render", "err", err)
 		return c.NoContent(500)
@@ -202,7 +203,7 @@ func (p *Payees) Destroy(c echo.Context) error {
 		slog.Error("payee.destroy: failed to get data", "err", err)
 		return c.NoContent(500)
 	}
-	html, err := utils.RenderComponentString(c.Request().Context(), PayeeIndex(data))
+	html, err := utils.RenderComponentString(c.Request().Context(), payeepages.PayeeIndex(data))
 	if err != nil {
 		slog.Error("payee.destroy: failed to render", "err", err)
 		return c.NoContent(500)

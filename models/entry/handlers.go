@@ -9,6 +9,7 @@ import (
 
 	"bandcash/internal/db"
 	"bandcash/internal/utils"
+	entrypages "bandcash/models/entry/templates/pages"
 )
 
 type entryInlineParams struct {
@@ -72,7 +73,7 @@ func (e *Entries) Index(c echo.Context) error {
 	}
 
 	slog.Debug("entry.index", "entry_count", len(data.Entries))
-	return utils.RenderComponent(c, EntryIndex(data))
+	return utils.RenderComponent(c, entrypages.EntryIndex(data))
 }
 
 func (e *Entries) Show(c echo.Context) error {
@@ -90,7 +91,7 @@ func (e *Entries) Show(c echo.Context) error {
 		return c.NoContent(500)
 	}
 
-	return utils.RenderComponent(c, EntryShow(data))
+	return utils.RenderComponent(c, entrypages.EntryShow(data))
 }
 
 func (e *Entries) Create(c echo.Context) error {
@@ -130,7 +131,7 @@ func (e *Entries) Create(c echo.Context) error {
 		return c.NoContent(500)
 	}
 
-	html, err := utils.RenderComponentString(c.Request().Context(), EntryIndex(data))
+	html, err := utils.RenderComponentString(c.Request().Context(), entrypages.EntryIndex(data))
 	if err != nil {
 		slog.Error("entry.create.table: failed to render", "err", err)
 		return c.NoContent(500)
@@ -195,7 +196,7 @@ func (e *Entries) Update(c echo.Context) error {
 			slog.Error("entry.update: failed to get data", "err", err)
 			return c.NoContent(500)
 		}
-		html, err := utils.RenderComponentString(c.Request().Context(), EntryShow(data))
+		html, err := utils.RenderComponentString(c.Request().Context(), entrypages.EntryShow(data))
 		if err != nil {
 			slog.Error("entry.update: failed to render", "err", err)
 			return c.NoContent(500)
@@ -210,7 +211,7 @@ func (e *Entries) Update(c echo.Context) error {
 		slog.Error("entry.update: failed to get data", "err", err)
 		return c.NoContent(500)
 	}
-	html, err := utils.RenderComponentString(c.Request().Context(), EntryIndex(data))
+	html, err := utils.RenderComponentString(c.Request().Context(), entrypages.EntryIndex(data))
 	if err != nil {
 		slog.Error("entry.update: failed to render", "err", err)
 		return c.NoContent(500)
@@ -257,7 +258,7 @@ func (e *Entries) Destroy(c echo.Context) error {
 		slog.Error("entry.destroy: failed to get data", "err", err)
 		return c.NoContent(500)
 	}
-	html, err := utils.RenderComponentString(c.Request().Context(), EntryIndex(data))
+	html, err := utils.RenderComponentString(c.Request().Context(), entrypages.EntryIndex(data))
 	if err != nil {
 		slog.Error("entry.destroy: failed to render", "err", err)
 		return c.NoContent(500)
@@ -307,7 +308,7 @@ func (e *Entries) CreateParticipant(c echo.Context) error {
 		slog.Error("participant.create.table: failed to get data", "err", err)
 		return c.NoContent(500)
 	}
-	html, err := utils.RenderComponentString(c.Request().Context(), EntryShow(data))
+	html, err := utils.RenderComponentString(c.Request().Context(), entrypages.EntryShow(data))
 	if err != nil {
 		slog.Error("participant.create.table: failed to render", "err", err)
 		return c.NoContent(500)
@@ -366,7 +367,7 @@ func (e *Entries) UpdateParticipant(c echo.Context) error {
 		slog.Error("participant.update: failed to get data", "err", err)
 		return c.NoContent(500)
 	}
-	html, err := utils.RenderComponentString(c.Request().Context(), EntryShow(data))
+	html, err := utils.RenderComponentString(c.Request().Context(), entrypages.EntryShow(data))
 	if err != nil {
 		slog.Error("participant.update: failed to render", "err", err)
 		return c.NoContent(500)
@@ -405,7 +406,7 @@ func (e *Entries) DeleteParticipantTable(c echo.Context) error {
 		slog.Error("participant.delete: failed to get data", "err", err)
 		return c.NoContent(500)
 	}
-	html, err := utils.RenderComponentString(c.Request().Context(), EntryShow(data))
+	html, err := utils.RenderComponentString(c.Request().Context(), entrypages.EntryShow(data))
 	if err != nil {
 		slog.Error("participant.delete: failed to render", "err", err)
 		return c.NoContent(500)
