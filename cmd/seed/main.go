@@ -12,22 +12,22 @@ import (
 	_ "bandcash/internal/utils"
 )
 
-type seedEntry struct {
+type seedEvent struct {
 	Title       string
 	Time        string
 	Description string
 	Amount      int64
 }
 
-type seedPayee struct {
+type seedMember struct {
 	Name        string
 	Description string
 }
 
 type seedParticipant struct {
-	EntryIndex int
-	PayeeIndex int
-	Amount     int64
+	EventIndex  int
+	MemberIndex int
+	Amount      int64
 }
 
 func main() {
@@ -77,167 +77,167 @@ func main() {
 
 	ctx := context.Background()
 
-	// Gigs (entries) - band performances
-	entries := []seedEntry{
+	// Koncertek (events) - zenekari fellépések
+	events := []seedEvent{
 		{
-			Title:       "The Blue Note - Friday Night",
+			Title:       "Blue Note - Péntek este",
 			Time:        time.Now().Add(-240 * time.Hour).Format("2006-01-02T15:04"),
-			Description: "Weekend show at downtown jazz club",
+			Description: "Hétvégi fellépés a belvárosi jazz klubban",
 			Amount:      80000, // $800.00
 		},
 		{
-			Title:       "Summer Fest Main Stage",
+			Title:       "Nyári Fesztivál - Nagyszínpad",
 			Time:        time.Now().Add(-192 * time.Hour).Format("2006-01-02T15:04"),
-			Description: "Outdoor festival performance",
+			Description: "Szabadtéri fesztivál fellépés",
 			Amount:      250000, // $2500.00
 		},
 		{
-			Title:       "Private Wedding - Johnson",
+			Title:       "Privát esküvő - Johnson",
 			Time:        time.Now().Add(-144 * time.Hour).Format("2006-01-02T15:04"),
-			Description: "Private event, 3-hour set",
+			Description: "Privát rendezvény, 3 órás műsor",
 			Amount:      120000, // $1200.00
 		},
 		{
-			Title:       "Riverside Bar Gig",
+			Title:       "Riverside Bar koncert",
 			Time:        time.Now().Add(-96 * time.Hour).Format("2006-01-02T15:04"),
-			Description: "Acoustic Wednesday set",
+			Description: "Akusztikus szerda esti műsor",
 			Amount:      30000, // $300.00
 		},
 		{
-			Title:       "Corporate Event - TechCorp",
+			Title:       "Céges rendezvény - TechCorp",
 			Time:        time.Now().Add(-48 * time.Hour).Format("2006-01-02T15:04"),
-			Description: "Holiday party performance",
+			Description: "Év végi céges buli",
 			Amount:      150000, // $1500.00
 		},
 		{
-			Title:       "Battle of the Bands",
+			Title:       "Zenekarok csatája",
 			Time:        time.Now().Add(-24 * time.Hour).Format("2006-01-02T15:04"),
-			Description: "Competition, won 2nd place",
+			Description: "Verseny, 2. helyezés",
 			Amount:      50000, // $500.00 prize
 		},
 	}
 
-	// Band members and venues (payees)
-	payees := []seedPayee{
+	// Zenekari tagok és helyszínek (members)
+	members := []seedMember{
 		{
-			Name:        "Alex Rivera",
-			Description: "Lead vocals & rhythm guitar",
+			Name:        "Nagy Áron",
+			Description: "Ének, ritmusgitár",
 		},
 		{
-			Name:        "Jordan Chen",
-			Description: "Lead guitar & backing vocals",
+			Name:        "Kiss Zsófi",
+			Description: "Szólógitár, vokál",
 		},
 		{
-			Name:        "Morgan Blake",
-			Description: "Bass guitar",
+			Name:        "Tóth Márk",
+			Description: "Basszusgitár",
 		},
 		{
-			Name:        "Casey Martinez",
-			Description: "Drums & percussion",
+			Name:        "Varga Lilla",
+			Description: "Dob, ütőhangszerek",
 		},
 		{
-			Name:        "Taylor Kim",
-			Description: "Keyboards & synth",
+			Name:        "Fekete Bence",
+			Description: "Billentyűk, szinti",
 		},
 		{
-			Name:        "Riley Park",
-			Description: "Band manager (10% cut)",
+			Name:        "Szabó Réka",
+			Description: "Menedzser (10% részesedés)",
 		},
 	}
 
-	createdEntries := make([]db.Entry, 0, len(entries))
-	for _, entry := range entries {
-		created, err := db.Qry.CreateEntry(ctx, db.CreateEntryParams{
-			Title:       entry.Title,
-			Time:        entry.Time,
-			Description: entry.Description,
-			Amount:      entry.Amount,
+	createdEvents := make([]db.Event, 0, len(events))
+	for _, event := range events {
+		created, err := db.Qry.CreateEvent(ctx, db.CreateEventParams{
+			Title:       event.Title,
+			Time:        event.Time,
+			Description: event.Description,
+			Amount:      event.Amount,
 		})
 		if err != nil {
-			slog.Error("failed to insert seed entry", "title", entry.Title, "err", err)
+			slog.Error("failed to insert seed event", "title", event.Title, "err", err)
 			os.Exit(1)
 		}
-		createdEntries = append(createdEntries, created)
+		createdEvents = append(createdEvents, created)
 	}
 
-	createdPayees := make([]db.Payee, 0, len(payees))
-	for _, payee := range payees {
-		created, err := db.Qry.CreatePayee(ctx, db.CreatePayeeParams{
-			Name:        payee.Name,
-			Description: payee.Description,
+	createdMembers := make([]db.Member, 0, len(members))
+	for _, member := range members {
+		created, err := db.Qry.CreateMember(ctx, db.CreateMemberParams{
+			Name:        member.Name,
+			Description: member.Description,
 		})
 		if err != nil {
-			slog.Error("failed to insert seed payee", "name", payee.Name, "err", err)
+			slog.Error("failed to insert seed member", "name", member.Name, "err", err)
 			os.Exit(1)
 		}
-		createdPayees = append(createdPayees, created)
+		createdMembers = append(createdMembers, created)
 	}
 
-	// Participants - band members getting cuts from each gig
-	// Index mapping: 0=Alex, 1=Jordan, 2=Morgan, 3=Casey, 4=Taylor, 5=Riley (manager)
+	// Résztvevők - zenekari tagok részesedése koncertenként
+	// Index mapping: 0=Áron, 1=Zsófi, 2=Márk, 3=Lilla, 4=Bence, 5=Réka (menedzser)
 	participants := []seedParticipant{
-		// The Blue Note - $800 total
-		{EntryIndex: 0, PayeeIndex: 0, Amount: 18000}, // Alex: $180
-		{EntryIndex: 0, PayeeIndex: 1, Amount: 18000}, // Jordan: $180
-		{EntryIndex: 0, PayeeIndex: 2, Amount: 16000}, // Morgan: $160
-		{EntryIndex: 0, PayeeIndex: 3, Amount: 16000}, // Casey: $160
-		{EntryIndex: 0, PayeeIndex: 4, Amount: 8000},  // Taylor: $80
-		{EntryIndex: 0, PayeeIndex: 5, Amount: 4000},  // Riley (manager 10%): $40
+		// Blue Note - $800 total
+		{EventIndex: 0, MemberIndex: 0, Amount: 18000}, // Áron: $180
+		{EventIndex: 0, MemberIndex: 1, Amount: 18000}, // Zsófi: $180
+		{EventIndex: 0, MemberIndex: 2, Amount: 16000}, // Márk: $160
+		{EventIndex: 0, MemberIndex: 3, Amount: 16000}, // Lilla: $160
+		{EventIndex: 0, MemberIndex: 4, Amount: 8000},  // Bence: $80
+		{EventIndex: 0, MemberIndex: 5, Amount: 4000},  // Réka (menedzser 10%): $40
 
-		// Summer Fest - $2500 total
-		{EntryIndex: 1, PayeeIndex: 0, Amount: 56250}, // Alex: $562.50
-		{EntryIndex: 1, PayeeIndex: 1, Amount: 56250}, // Jordan: $562.50
-		{EntryIndex: 1, PayeeIndex: 2, Amount: 50000}, // Morgan: $500
-		{EntryIndex: 1, PayeeIndex: 3, Amount: 50000}, // Casey: $500
-		{EntryIndex: 1, PayeeIndex: 4, Amount: 25000}, // Taylor: $250
-		{EntryIndex: 1, PayeeIndex: 5, Amount: 12500}, // Riley (manager 10%): $125
+		// Nyári Fesztivál - $2500 total
+		{EventIndex: 1, MemberIndex: 0, Amount: 56250}, // Áron: $562.50
+		{EventIndex: 1, MemberIndex: 1, Amount: 56250}, // Zsófi: $562.50
+		{EventIndex: 1, MemberIndex: 2, Amount: 50000}, // Márk: $500
+		{EventIndex: 1, MemberIndex: 3, Amount: 50000}, // Lilla: $500
+		{EventIndex: 1, MemberIndex: 4, Amount: 25000}, // Bence: $250
+		{EventIndex: 1, MemberIndex: 5, Amount: 12500}, // Réka (menedzser 10%): $125
 
-		// Private Wedding - $1200 total
-		{EntryIndex: 2, PayeeIndex: 0, Amount: 27000}, // Alex: $270
-		{EntryIndex: 2, PayeeIndex: 1, Amount: 27000}, // Jordan: $270
-		{EntryIndex: 2, PayeeIndex: 2, Amount: 24000}, // Morgan: $240
-		{EntryIndex: 2, PayeeIndex: 3, Amount: 24000}, // Casey: $240
-		{EntryIndex: 2, PayeeIndex: 4, Amount: 12000}, // Taylor: $120
-		{EntryIndex: 2, PayeeIndex: 5, Amount: 6000},  // Riley (manager 10%): $60
+		// Privát esküvő - $1200 total
+		{EventIndex: 2, MemberIndex: 0, Amount: 27000}, // Áron: $270
+		{EventIndex: 2, MemberIndex: 1, Amount: 27000}, // Zsófi: $270
+		{EventIndex: 2, MemberIndex: 2, Amount: 24000}, // Márk: $240
+		{EventIndex: 2, MemberIndex: 3, Amount: 24000}, // Lilla: $240
+		{EventIndex: 2, MemberIndex: 4, Amount: 12000}, // Bence: $120
+		{EventIndex: 2, MemberIndex: 5, Amount: 6000},  // Réka (menedzser 10%): $60
 
-		// Riverside Bar - $300 total (smaller venue, smaller cuts)
-		{EntryIndex: 3, PayeeIndex: 0, Amount: 6750}, // Alex: $67.50
-		{EntryIndex: 3, PayeeIndex: 1, Amount: 6750}, // Jordan: $67.50
-		{EntryIndex: 3, PayeeIndex: 2, Amount: 6000}, // Morgan: $60
-		{EntryIndex: 3, PayeeIndex: 3, Amount: 6000}, // Casey: $60
-		{EntryIndex: 3, PayeeIndex: 4, Amount: 3000}, // Taylor: $30
-		{EntryIndex: 3, PayeeIndex: 5, Amount: 1500}, // Riley (manager 10%): $15
+		// Riverside Bar - $300 total (kisebb hely, kisebb részesedés)
+		{EventIndex: 3, MemberIndex: 0, Amount: 6750}, // Áron: $67.50
+		{EventIndex: 3, MemberIndex: 1, Amount: 6750}, // Zsófi: $67.50
+		{EventIndex: 3, MemberIndex: 2, Amount: 6000}, // Márk: $60
+		{EventIndex: 3, MemberIndex: 3, Amount: 6000}, // Lilla: $60
+		{EventIndex: 3, MemberIndex: 4, Amount: 3000}, // Bence: $30
+		{EventIndex: 3, MemberIndex: 5, Amount: 1500}, // Réka (menedzser 10%): $15
 
-		// Corporate Event - $1500 total
-		{EntryIndex: 4, PayeeIndex: 0, Amount: 33750}, // Alex: $337.50
-		{EntryIndex: 4, PayeeIndex: 1, Amount: 33750}, // Jordan: $337.50
-		{EntryIndex: 4, PayeeIndex: 2, Amount: 30000}, // Morgan: $300
-		{EntryIndex: 4, PayeeIndex: 3, Amount: 30000}, // Casey: $300
-		{EntryIndex: 4, PayeeIndex: 4, Amount: 15000}, // Taylor: $150
-		{EntryIndex: 4, PayeeIndex: 5, Amount: 7500},  // Riley (manager 10%): $75
+		// Céges rendezvény - $1500 total
+		{EventIndex: 4, MemberIndex: 0, Amount: 33750}, // Áron: $337.50
+		{EventIndex: 4, MemberIndex: 1, Amount: 33750}, // Zsófi: $337.50
+		{EventIndex: 4, MemberIndex: 2, Amount: 30000}, // Márk: $300
+		{EventIndex: 4, MemberIndex: 3, Amount: 30000}, // Lilla: $300
+		{EventIndex: 4, MemberIndex: 4, Amount: 15000}, // Bence: $150
+		{EventIndex: 4, MemberIndex: 5, Amount: 7500},  // Réka (menedzser 10%): $75
 
-		// Battle of the Bands - $500 prize
-		{EntryIndex: 5, PayeeIndex: 0, Amount: 11250}, // Alex: $112.50
-		{EntryIndex: 5, PayeeIndex: 1, Amount: 11250}, // Jordan: $112.50
-		{EntryIndex: 5, PayeeIndex: 2, Amount: 10000}, // Morgan: $100
-		{EntryIndex: 5, PayeeIndex: 3, Amount: 10000}, // Casey: $100
-		{EntryIndex: 5, PayeeIndex: 4, Amount: 5000},  // Taylor: $50
-		{EntryIndex: 5, PayeeIndex: 5, Amount: 2500},  // Riley (manager 10%): $25
+		// Zenekarok csatája - $500 prize
+		{EventIndex: 5, MemberIndex: 0, Amount: 11250}, // Áron: $112.50
+		{EventIndex: 5, MemberIndex: 1, Amount: 11250}, // Zsófi: $112.50
+		{EventIndex: 5, MemberIndex: 2, Amount: 10000}, // Márk: $100
+		{EventIndex: 5, MemberIndex: 3, Amount: 10000}, // Lilla: $100
+		{EventIndex: 5, MemberIndex: 4, Amount: 5000},  // Bence: $50
+		{EventIndex: 5, MemberIndex: 5, Amount: 2500},  // Réka (menedzser 10%): $25
 	}
 
 	for _, participant := range participants {
-		entry := createdEntries[participant.EntryIndex]
-		payee := createdPayees[participant.PayeeIndex]
+		event := createdEvents[participant.EventIndex]
+		member := createdMembers[participant.MemberIndex]
 		_, err := db.Qry.AddParticipant(ctx, db.AddParticipantParams{
-			EntryID: entry.ID,
-			PayeeID: payee.ID,
-			Amount:  participant.Amount,
+			EventID:  event.ID,
+			MemberID: member.ID,
+			Amount:   participant.Amount,
 		})
 		if err != nil {
-			slog.Error("failed to insert seed participant", "entry_id", entry.ID, "payee_id", payee.ID, "err", err)
+			slog.Error("failed to insert seed participant", "event_id", event.ID, "member_id", member.ID, "err", err)
 			os.Exit(1)
 		}
 	}
 
-	fmt.Printf("Seeded %d entries, %d payees, %d participants into %s\n", len(entries), len(payees), len(participants), dbPath)
+	fmt.Printf("Seeded %d events, %d members, %d participants into %s\n", len(events), len(members), len(participants), dbPath)
 }

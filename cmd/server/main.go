@@ -15,12 +15,14 @@ import (
 
 	"bandcash/internal/config"
 	"bandcash/internal/db"
+	"bandcash/internal/i18n"
 	"bandcash/internal/middleware"
 	"bandcash/internal/utils"
-	"bandcash/models/entry"
+	"bandcash/models/event"
 	"bandcash/models/health"
 	"bandcash/models/home"
-	"bandcash/models/payee"
+	"bandcash/models/member"
+	"bandcash/models/settings"
 	"bandcash/models/sse"
 )
 
@@ -34,6 +36,7 @@ func main() {
 
 	e.Use(middleware.Compression())
 	e.Use(middleware.RequestID())
+	e.Use(middleware.Locale())
 	e.Use(echoMiddleware.RequestLoggerWithConfig(echoMiddleware.RequestLoggerConfig{
 		LogStatus: true,
 		LogURI:    true,
@@ -48,8 +51,9 @@ func main() {
 
 	health.Register(e)
 	home.Register(e)
-	entry.Register(e)
-	payee.Register(e)
+	event.Register(e)
+	member.Register(e)
+	settings.Register(e)
 	sse.Register(e)
 
 	if *routesFlag {
@@ -59,8 +63,14 @@ func main() {
 
 	cfg := config.Load()
 
+	err := i18n.Load()
+	if err != nil {
+		slog.Error("failed to load locales", "err", err)
+		os.Exit(1)
+	}
+
 	// Initialize database
-	err := db.Init(cfg.DBPath)
+	err = db.Init(cfg.DBPath)
 	if err != nil {
 		slog.Error("failed to initialize database", "err", err)
 		os.Exit(1)

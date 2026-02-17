@@ -1,11 +1,13 @@
 package utils
 
 import (
+	"context"
 	"maps"
 	"reflect"
 	"strings"
 
 	"github.com/go-playground/validator/v10"
+	ctxi18n "github.com/invopop/ctxi18n/i18n"
 )
 
 var validate = func() *validator.Validate {
@@ -34,11 +36,31 @@ func MapErrors(err error) map[string]string {
 	return errors
 }
 
+// MapErrorsLocalized returns a map of field names to localized error messages.
+func MapErrorsLocalized(ctx context.Context, err error) map[string]string {
+	errors := make(map[string]string)
+	if validationErrors, ok := err.(validator.ValidationErrors); ok {
+		for _, e := range validationErrors {
+			errors[e.Field()] = validationMessage(ctx, e)
+		}
+	}
+	return errors
+}
+
 // Validate validates a struct and returns errors if any
 func Validate(s any) map[string]string {
 	err := validate.Struct(s)
 	if err != nil {
 		return MapErrors(err)
+	}
+	return nil
+}
+
+// ValidateWithLocale validates a struct and returns localized errors if any.
+func ValidateWithLocale(ctx context.Context, s any) map[string]string {
+	err := validate.Struct(s)
+	if err != nil {
+		return MapErrorsLocalized(ctx, err)
 	}
 	return nil
 }
@@ -57,4 +79,21 @@ func WithErrors(fields []string, actualErrors map[string]string) map[string]stri
 	errs := GetEmptyErrors(fields)
 	maps.Copy(errs, actualErrors)
 	return errs
+}
+
+func validationMessage(ctx context.Context, e validator.FieldError) string {
+	switch e.Tag() {
+	case "required":
+		return ctxi18n.T(ctx, "validation.required")
+	case "min":
+		return ctxi18n.T(ctx, "validation.min", e.Param())
+	case "max":
+		return ctxi18n.T(ctx, "validation.max", e.Param())
+	case "gt":
+		return ctxi18n.T(ctx, "validation.gt", e.Param())
+	case "gte":
+		return ctxi18n.T(ctx, "validation.gte", e.Param())
+	default:
+		return ctxi18n.T(ctx, "validation.required")
+	}
 }

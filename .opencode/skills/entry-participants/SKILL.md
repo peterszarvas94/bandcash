@@ -4,7 +4,7 @@ description: UI and handler conventions for entry participants (tables, add/remo
 ---
 
 ## What I do
-- Point to entry detail templates and participant table markup.
+- Point to event detail templates and participant table markup.
 - Describe where to add participant form actions in handlers.
 - Keep participant UI consistent with existing forms and tables.
 
@@ -12,8 +12,8 @@ description: UI and handler conventions for entry participants (tables, add/remo
 Use this when adding participant UI or wiring add/remove participant actions.
 
 ## Key paths
-- Entry detail template: `app/entry/templates/show.html`
-- Entry handlers: `app/entry/handlers.go`
+- Event detail template: `app/event/templates/show.html`
+- Event handlers: `app/event/handlers.go`
 - Participant queries: `internal/db/queries/participants.sql`
 - SSE hub: `internal/hub/store.go`
 

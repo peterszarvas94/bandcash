@@ -14,20 +14,6 @@
     justify-content: center;
   }
 
-  .form-row {
-    display: flex;
-    flex-direction: row;
-    align-items: flex-start;
-    gap: var(--space);
-    flex-wrap: wrap;
-  }
-
-  .field {
-    display: grid;
-    gap: calc(var(--space) * 0.5);
-    flex: 1 1 14rem;
-  }
-
   .text-right {
     text-align: right;
   }
@@ -44,99 +30,6 @@
     color: var(--error-color);
   }
 
-  .btn {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    padding: var(--space) calc(var(--space) * 2);
-    font: inherit;
-    font-size: 0.875rem;
-    line-height: 1.5;
-    text-decoration: none;
-    text-align: center;
-    white-space: nowrap;
-    cursor: pointer;
-    border: var(--border) solid var(--border-color);
-    border-radius: var(--border);
-    background: var(--page-bg);
-    color: var(--text-color);
-    min-width: 5ch;
-    min-height: 2.5rem;
-
-    &:not(:disabled):not([disabled]):hover {
-      background: var(--border-color);
-    }
-
-    &:focus-visible {
-      outline: 2px solid var(--link-color);
-      outline-offset: 2px;
-    }
-
-    &:disabled,
-    &[disabled] {
-      opacity: 0.55;
-      cursor: not-allowed;
-      background: var(--page-bg);
-    }
-  }
-
-  .btn-primary {
-    background: transparent;
-    border-color: color-mix(in srgb, var(--link-color) 60%, transparent);
-    color: var(--link-color);
-
-    &:not(:disabled):not([disabled]):hover {
-      background: color-mix(in srgb, var(--link-color) 10%, transparent);
-    }
-  }
-
-  .btn-danger {
-    background: transparent;
-    border-color: color-mix(in srgb, var(--error-color) 60%, transparent);
-    color: var(--error-color);
-
-    &:not(:disabled):not([disabled]):hover {
-      background: color-mix(in srgb, var(--error-color) 10%, transparent);
-    }
-  }
-
-  .two-col {
-    display: grid;
-    grid-template-columns: minmax(0, 1fr) var(--sidebar-width);
-    gap: calc(var(--space) * 2);
-    align-items: stretch;
-    max-width: var(--content-width);
-    margin: 0 auto;
-    padding: var(--space);
-    min-height: 100vh;
-
-    > main#app {
-      max-width: none;
-      margin: 0;
-      padding: 0;
-      min-width: 0;
-      align-self: stretch;
-    }
-
-    > aside {
-      min-width: 0;
-      border-left: var(--border) solid var(--border-color);
-      padding-left: calc(var(--space) * 2);
-      align-self: stretch;
-    }
-  }
-
-  .sidebar-panel {
-    display: grid;
-    gap: calc(var(--space) * 1.5);
-    align-content: start;
-  }
-
-  .single-col {
-    max-width: var(--content-width);
-    margin: 0 auto;
-    padding: var(--space);
-  }
 
   @media (max-width: 900px) {
     .two-col {

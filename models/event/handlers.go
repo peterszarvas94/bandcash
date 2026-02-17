@@ -1,0 +1,419 @@
+package event
+
+import (
+	"log/slog"
+	"strconv"
+
+	"github.com/labstack/echo/v4"
+	"github.com/starfederation/datastar-go/datastar"
+
+	"bandcash/internal/db"
+	"bandcash/internal/utils"
+)
+
+type eventInlineParams struct {
+	FormData      eventData `json:"formData"`
+	EventFormData eventData `json:"eventFormData"`
+	Mode          string    `json:"mode"`
+}
+
+type modeParams struct {
+	Mode string `json:"mode"`
+}
+
+type eventData struct {
+	Title       string `json:"title" validate:"required,min=1,max=255"`
+	Time        string `json:"time" validate:"required"`
+	Description string `json:"description" validate:"max=1000"`
+	Amount      int64  `json:"amount" validate:"required,gt=0"`
+}
+
+type participantParams struct {
+	ParticipantForm participantData `json:"participantForm"`
+}
+
+type participantData struct {
+	MemberID   int64  `json:"memberId" validate:"required,gt=0"`
+	MemberName string `json:"memberName"`
+	Amount     int64  `json:"amount" validate:"required,gte=0"`
+	Expense    int64  `json:"expense" validate:"gte=0"`
+}
+
+type participantTableParams struct {
+	FormData participantData `json:"formData"`
+}
+
+// Default signal states for resetting forms on success
+var (
+	defaultEventSignals = map[string]any{
+		"mode":      "",
+		"formState": "",
+		"editingId": 0,
+		"formData":  map[string]any{"title": "", "time": "", "description": "", "amount": 0},
+	}
+	defaultParticipantSignals = map[string]any{
+		"formState":   "",
+		"editingId":   0,
+		"calcPercent": 0,
+		"formData":    map[string]any{"memberId": 0, "memberName": "", "amount": 0, "expense": 0},
+	}
+	// Error field lists for validation
+	eventErrorFields       = []string{"title", "time", "description", "amount"}
+	participantErrorFields = []string{"memberId", "amount", "expense"}
+)
+
+func (e *Events) Index(c echo.Context) error {
+	utils.EnsureClientID(c)
+
+	data, err := e.GetIndexData(c.Request().Context())
+	if err != nil {
+		slog.Error("event.list: failed to get data", "err", err)
+		return c.NoContent(500)
+	}
+
+	slog.Debug("event.index", "event_count", len(data.Events))
+	return utils.RenderComponent(c, EventIndex(data))
+}
+
+func (e *Events) Show(c echo.Context) error {
+	utils.EnsureClientID(c)
+
+	id, err := strconv.Atoi(c.Param("id"))
+	if err != nil {
+		slog.Warn("event.show: invalid id", "err", err)
+		return c.NoContent(400)
+	}
+
+	data, err := e.GetShowData(c.Request().Context(), id)
+	if err != nil {
+		slog.Error("event.show: failed to get data", "err", err)
+		return c.NoContent(500)
+	}
+
+	return utils.RenderComponent(c, EventShow(data))
+}
+
+func (e *Events) Create(c echo.Context) error {
+	var signals eventInlineParams
+	err := datastar.ReadSignals(c.Request(), &signals)
+	if err != nil {
+		slog.Warn("event.create.table: failed to read signals", "err", err)
+		return c.NoContent(400)
+	}
+
+	slog.Debug("event.create.table: signals received", "formData", signals.FormData)
+
+	// Validate
+	if errs := utils.ValidateWithLocale(c.Request().Context(), signals.FormData); errs != nil {
+		slog.Debug("event.create.table: validation failed", "errors", errs)
+		utils.SSEHub.PatchSignals(c, map[string]any{"errors": utils.WithErrors(eventErrorFields, errs)})
+		return c.NoContent(422)
+	}
+
+	event, err := db.Qry.CreateEvent(c.Request().Context(), db.CreateEventParams{
+		Title:       signals.FormData.Title,
+		Time:        signals.FormData.Time,
+		Description: signals.FormData.Description,
+		Amount:      signals.FormData.Amount,
+	})
+	if err != nil {
+		slog.Error("event.create.table: failed to create event", "err", err)
+		return c.NoContent(500)
+	}
+
+	slog.Debug("event.create.table", "id", event.ID, "title", event.Title)
+
+	utils.SSEHub.PatchSignals(c, defaultEventSignals)
+	data, err := e.GetIndexData(c.Request().Context())
+	if err != nil {
+		slog.Error("event.create.table: failed to get data", "err", err)
+		return c.NoContent(500)
+	}
+
+	html, err := utils.RenderComponentString(c.Request().Context(), EventIndex(data))
+	if err != nil {
+		slog.Error("event.create.table: failed to render", "err", err)
+		return c.NoContent(500)
+	}
+
+	utils.SSEHub.PatchHTML(c, html)
+
+	return c.NoContent(200)
+}
+
+func (e *Events) Update(c echo.Context) error {
+	id, err := strconv.Atoi(c.Param("id"))
+	if err != nil {
+		slog.Warn("event.update: invalid id", "err", err)
+		return c.NoContent(400)
+	}
+
+	var signals eventInlineParams
+	err = datastar.ReadSignals(c.Request(), &signals)
+	if err != nil {
+		slog.Warn("event.update: failed to read signals", "err", err)
+		return c.NoContent(400)
+	}
+
+	eventForm := signals.FormData
+	if signals.EventFormData.Title != "" || signals.EventFormData.Time != "" || signals.EventFormData.Amount != 0 {
+		eventForm = signals.EventFormData
+	}
+
+	// Validate
+	if errs := utils.ValidateWithLocale(c.Request().Context(), eventForm); errs != nil {
+		utils.SSEHub.PatchSignals(c, map[string]any{"errors": utils.WithErrors(eventErrorFields, errs)})
+		return c.NoContent(422)
+	}
+
+	_, err = db.Qry.UpdateEvent(c.Request().Context(), db.UpdateEventParams{
+		Title:       eventForm.Title,
+		Time:        eventForm.Time,
+		Description: eventForm.Description,
+		Amount:      eventForm.Amount,
+		ID:          int64(id),
+	})
+	if err != nil {
+		slog.Error("event.update: failed to update event", "err", err)
+		return c.NoContent(500)
+	}
+
+	slog.Debug("event.update", "id", id)
+
+	if signals.Mode == "single" {
+		utils.SSEHub.PatchSignals(c, map[string]any{
+			"eventFormState": "",
+			"eventFormData": map[string]any{
+				"title":       eventForm.Title,
+				"time":        eventForm.Time,
+				"description": eventForm.Description,
+				"amount":      eventForm.Amount,
+			},
+		})
+		data, err := e.GetShowData(c.Request().Context(), id)
+		if err != nil {
+			slog.Error("event.update: failed to get data", "err", err)
+			return c.NoContent(500)
+		}
+		html, err := utils.RenderComponentString(c.Request().Context(), EventShow(data))
+		if err != nil {
+			slog.Error("event.update: failed to render", "err", err)
+			return c.NoContent(500)
+		}
+		utils.SSEHub.PatchHTML(c, html)
+		return c.NoContent(200)
+	}
+
+	utils.SSEHub.PatchSignals(c, defaultEventSignals)
+	data, err := e.GetIndexData(c.Request().Context())
+	if err != nil {
+		slog.Error("event.update: failed to get data", "err", err)
+		return c.NoContent(500)
+	}
+	html, err := utils.RenderComponentString(c.Request().Context(), EventIndex(data))
+	if err != nil {
+		slog.Error("event.update: failed to render", "err", err)
+		return c.NoContent(500)
+	}
+
+	utils.SSEHub.PatchHTML(c, html)
+
+	return c.NoContent(200)
+}
+
+func (e *Events) Destroy(c echo.Context) error {
+	id, err := strconv.Atoi(c.Param("id"))
+	if err != nil {
+		slog.Warn("event.destroy: invalid id", "err", err)
+		return c.NoContent(400)
+	}
+
+	var signals modeParams
+	err = datastar.ReadSignals(c.Request(), &signals)
+	if err != nil {
+		slog.Warn("event.destroy: failed to read signals", "err", err)
+		return c.NoContent(400)
+	}
+
+	err = db.Qry.DeleteEvent(c.Request().Context(), int64(id))
+	if err != nil {
+		slog.Error("event.destroy: failed to delete event", "err", err)
+		return c.NoContent(500)
+	}
+
+	slog.Debug("event.destroy", "id", id)
+
+	if signals.Mode == "single" {
+		err = utils.SSEHub.Redirect(c, "/event")
+		if err != nil {
+			slog.Warn("event.destroy: failed to redirect", "err", err)
+		}
+		return c.NoContent(200)
+	}
+
+	utils.SSEHub.PatchSignals(c, defaultEventSignals)
+	data, err := e.GetIndexData(c.Request().Context())
+	if err != nil {
+		slog.Error("event.destroy: failed to get data", "err", err)
+		return c.NoContent(500)
+	}
+	html, err := utils.RenderComponentString(c.Request().Context(), EventIndex(data))
+	if err != nil {
+		slog.Error("event.destroy: failed to render", "err", err)
+		return c.NoContent(500)
+	}
+
+	utils.SSEHub.PatchHTML(c, html)
+
+	return c.NoContent(200)
+}
+
+func (e *Events) CreateParticipant(c echo.Context) error {
+	id, err := strconv.Atoi(c.Param("id"))
+	if err != nil {
+		slog.Warn("participant.create.table: invalid event id", "err", err)
+		return c.NoContent(400)
+	}
+
+	var signals participantTableParams
+	err = datastar.ReadSignals(c.Request(), &signals)
+	if err != nil {
+		slog.Warn("participant.create.table: failed to read signals", "err", err)
+		return c.NoContent(400)
+	}
+
+	// Validate
+	if errs := utils.ValidateWithLocale(c.Request().Context(), signals.FormData); errs != nil {
+		utils.SSEHub.PatchSignals(c, map[string]any{"errors": utils.WithErrors(participantErrorFields, errs)})
+		return c.NoContent(422)
+	}
+
+	// Set default expense to 0 if not provided
+	expense := signals.FormData.Expense
+
+	_, err = db.Qry.AddParticipant(c.Request().Context(), db.AddParticipantParams{
+		EventID:  int64(id),
+		MemberID: signals.FormData.MemberID,
+		Amount:   signals.FormData.Amount,
+		Expense:  expense,
+	})
+	if err != nil {
+		slog.Error("participant.create.table: failed to add participant", "err", err)
+		return c.NoContent(500)
+	}
+
+	data, err := e.GetShowData(c.Request().Context(), id)
+	if err != nil {
+		slog.Error("participant.create.table: failed to get data", "err", err)
+		return c.NoContent(500)
+	}
+	html, err := utils.RenderComponentString(c.Request().Context(), EventShow(data))
+	if err != nil {
+		slog.Error("participant.create.table: failed to render", "err", err)
+		return c.NoContent(500)
+	}
+
+	utils.SSEHub.PatchHTML(c, html)
+	utils.SSEHub.PatchSignals(c, defaultParticipantSignals)
+
+	slog.Debug("participant.create.table", "event_id", id, "member_id", signals.FormData.MemberID)
+	return c.NoContent(200)
+}
+
+func (e *Events) UpdateParticipant(c echo.Context) error {
+	eventID, err := strconv.Atoi(c.Param("id"))
+	if err != nil {
+		slog.Warn("participant.update: invalid event id", "err", err)
+		return c.NoContent(400)
+	}
+
+	memberID, err := strconv.Atoi(c.Param("memberId"))
+	if err != nil {
+		slog.Warn("participant.update: invalid member id", "err", err)
+		return c.NoContent(400)
+	}
+
+	var signals participantTableParams
+	err = datastar.ReadSignals(c.Request(), &signals)
+	if err != nil {
+		slog.Warn("participant.update: failed to read signals", "err", err)
+		return c.NoContent(400)
+	}
+
+	// Validate
+	if errs := utils.ValidateWithLocale(c.Request().Context(), signals.FormData); errs != nil {
+		utils.SSEHub.PatchSignals(c, map[string]any{"errors": utils.WithErrors(participantErrorFields, errs)})
+		return c.NoContent(422)
+	}
+
+	// Set default expense to 0 if not provided
+	expense := signals.FormData.Expense
+
+	err = db.Qry.UpdateParticipant(c.Request().Context(), db.UpdateParticipantParams{
+		Amount:   signals.FormData.Amount,
+		Expense:  expense,
+		EventID:  int64(eventID),
+		MemberID: int64(memberID),
+	})
+	if err != nil {
+		slog.Error("participant.update: failed to update participant", "err", err)
+		return c.NoContent(500)
+	}
+
+	utils.SSEHub.PatchSignals(c, defaultParticipantSignals)
+	data, err := e.GetShowData(c.Request().Context(), eventID)
+	if err != nil {
+		slog.Error("participant.update: failed to get data", "err", err)
+		return c.NoContent(500)
+	}
+	html, err := utils.RenderComponentString(c.Request().Context(), EventShow(data))
+	if err != nil {
+		slog.Error("participant.update: failed to render", "err", err)
+		return c.NoContent(500)
+	}
+
+	utils.SSEHub.PatchHTML(c, html)
+
+	slog.Debug("participant.update", "event_id", eventID, "member_id", memberID)
+	return c.NoContent(200)
+}
+
+func (e *Events) DeleteParticipantTable(c echo.Context) error {
+	eventID, err := strconv.Atoi(c.Param("id"))
+	if err != nil {
+		slog.Warn("participant.delete: invalid event id", "err", err)
+		return c.NoContent(400)
+	}
+
+	memberID, err := strconv.Atoi(c.Param("memberId"))
+	if err != nil {
+		slog.Warn("participant.delete: invalid member id", "err", err)
+		return c.NoContent(400)
+	}
+
+	err = db.Qry.RemoveParticipant(c.Request().Context(), db.RemoveParticipantParams{
+		EventID:  int64(eventID),
+		MemberID: int64(memberID),
+	})
+	if err != nil {
+		slog.Error("participant.delete: failed to remove participant", "err", err)
+		return c.NoContent(500)
+	}
+
+	data, err := e.GetShowData(c.Request().Context(), eventID)
+	if err != nil {
+		slog.Error("participant.delete: failed to get data", "err", err)
+		return c.NoContent(500)
+	}
+	html, err := utils.RenderComponentString(c.Request().Context(), EventShow(data))
+	if err != nil {
+		slog.Error("participant.delete: failed to render", "err", err)
+		return c.NoContent(500)
+	}
+
+	utils.SSEHub.PatchHTML(c, html)
+	utils.SSEHub.PatchSignals(c, defaultParticipantSignals)
+
+	slog.Debug("participant.delete", "event_id", eventID, "member_id", memberID)
+	return c.NoContent(200)
+}

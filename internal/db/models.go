@@ -8,7 +8,7 @@ import (
 	"database/sql"
 )
 
-type Entry struct {
+type Event struct {
 	ID          int64        `json:"id"`
 	Title       string       `json:"title"`
 	Time        string       `json:"time"`
@@ -18,19 +18,19 @@ type Entry struct {
 	UpdatedAt   sql.NullTime `json:"updated_at"`
 }
 
-type Participant struct {
-	EntryID   int64        `json:"entry_id"`
-	PayeeID   int64        `json:"payee_id"`
-	Amount    int64        `json:"amount"`
-	CreatedAt sql.NullTime `json:"created_at"`
-	UpdatedAt sql.NullTime `json:"updated_at"`
-	Expense   int64        `json:"expense"`
-}
-
-type Payee struct {
+type Member struct {
 	ID          int64        `json:"id"`
 	Name        string       `json:"name"`
 	Description string       `json:"description"`
 	CreatedAt   sql.NullTime `json:"created_at"`
 	UpdatedAt   sql.NullTime `json:"updated_at"`
+}
+
+type Participant struct {
+	EventID   int64        `json:"event_id"`
+	MemberID  int64        `json:"member_id"`
+	Amount    int64        `json:"amount"`
+	CreatedAt sql.NullTime `json:"created_at"`
+	UpdatedAt sql.NullTime `json:"updated_at"`
+	Expense   int64        `json:"expense"`
 }

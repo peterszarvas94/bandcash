@@ -1,0 +1,4 @@
+- better ids: evt_1234567890..., mem_1234567890...
+- users with auth (email link, cookie) -> tables shuold have "group id", users are part of a group. user can be associated with payee. there is NO data shared between groups at all
+- expenses table: title, description, amount, date
+- mobile friendly

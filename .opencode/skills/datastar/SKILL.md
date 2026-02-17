@@ -21,14 +21,13 @@ Use this when implementing interactive UI behaviors with Datastar.
 ## SSE conventions in this repo
 
 - Global stream at `/sse`.
-- Client sends `view` signal matching the route (e.g. `/entry/1`).
 - Server patches `main#app` on updates.
 
 ## Common patterns
 
 - Toggle UI: `data-signals="{open: false}"` with `data-show="$open"` and `data-on:click`.
 - Form submit: `data-on:submit="@post('/path')"` to prevent default and send signals.
-- SSE connect: `data-signals="{view: '/entry/1'}" data-init="@get('/sse')"`.
+- SSE connect: `data-init="@get('/sse')"`.
 - Bind inputs: `data-bind="name"` on `input`, `select`, `textarea`.
 - Loading state: `data-indicator:fetching` + `data-attr:disabled="$fetching"`.
 

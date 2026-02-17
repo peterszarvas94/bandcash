@@ -1,0 +1,65 @@
+package event
+
+import (
+	"fmt"
+
+	ctxi18n "github.com/invopop/ctxi18n/i18n"
+
+	shared "bandcash/models/shared"
+)
+
+templ EventIndexMain(data EventsData) {
+	<h1>{data.Title}</h1>
+	@shared.Breadcrumbs(data.Breadcrumbs)
+
+	<table class="table">
+		<thead>
+			<tr>
+				<th>{ctxi18n.T(ctx, "fields.title")}</th>
+				<th>{ctxi18n.T(ctx, "fields.time")}</th>
+				<th>{ctxi18n.T(ctx, "fields.description")}</th>
+				<th>{ctxi18n.T(ctx, "fields.amount")}</th>
+				<th>{ctxi18n.T(ctx, "table.actions")}</th>
+			</tr>
+		</thead>
+		<tbody>
+			for _, event := range data.Events {
+				<tr
+					data-event-title={event.Title}
+					data-event-time={event.Time}
+					data-event-description={event.Description}
+					data-event-amount={fmt.Sprintf("%d", event.Amount)}
+				>
+					<td><a href={fmt.Sprintf("/event/%d", event.ID)}>{event.Title}</a></td>
+					<td>{event.Time}</td>
+					<td>{event.Description}</td>
+					<td class="text-right">{fmt.Sprintf("%d", event.Amount)}</td>
+					<td>
+						<div class="row row-right">
+							<button
+								class="btn"
+								type="button"
+								data-attr:disabled="$formState !== ''"
+								data-on:click={fmt.Sprintf("$formState = 'edit'; $editingId = %d; $formData = {title: el.closest('tr').dataset.eventTitle, time: el.closest('tr').dataset.eventTime, description: el.closest('tr').dataset.eventDescription, amount: Number(el.closest('tr').dataset.eventAmount)}", event.ID)}
+							>
+								{ctxi18n.T(ctx, "actions.edit")}
+							</button>
+							<button
+								class="btn btn-danger"
+								data-attr:disabled="$formState !== ''"
+							data-on:click={fmt.Sprintf("if (window.confirm(%q)) { @delete('/event/%d') }", ctxi18n.T(ctx, "events.delete_confirm"), event.ID)}
+							>
+								{ctxi18n.T(ctx, "actions.delete")}
+							</button>
+						</div>
+					</td>
+				</tr>
+			}
+			if len(data.Events) == 0 {
+				<tr>
+					<td colspan="5">{ctxi18n.T(ctx, "table.empty")}</td>
+				</tr>
+			}
+		</tbody>
+	</table>
+}

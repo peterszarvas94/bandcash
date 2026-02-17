@@ -1,27 +1,27 @@
 -- name: AddParticipant :one
-INSERT INTO participants (entry_id, payee_id, amount, expense)
+INSERT INTO participants (event_id, member_id, amount, expense)
 VALUES (?, ?, ?, ?)
 RETURNING *;
 
 -- name: RemoveParticipant :exec
 DELETE FROM participants
-WHERE entry_id = ? AND payee_id = ?;
+WHERE event_id = ? AND member_id = ?;
 
 -- name: UpdateParticipant :exec
 UPDATE participants
 SET amount = ?, expense = ?
-WHERE entry_id = ? AND payee_id = ?;
+WHERE event_id = ? AND member_id = ?;
 
--- name: ListParticipantsByEntry :many
-SELECT payees.*, participants.amount AS participant_amount, participants.expense AS participant_expense
-FROM payees
-JOIN participants ON participants.payee_id = payees.id
-WHERE participants.entry_id = ?
-ORDER BY payees.name ASC;
+-- name: ListParticipantsByEvent :many
+SELECT members.*, participants.amount AS participant_amount, participants.expense AS participant_expense
+FROM members
+JOIN participants ON participants.member_id = members.id
+WHERE participants.event_id = ?
+ORDER BY members.name ASC;
 
--- name: ListParticipantsByPayee :many
-SELECT entries.*, participants.amount AS participant_amount, participants.expense AS participant_expense
-FROM entries
-JOIN participants ON participants.entry_id = entries.id
-WHERE participants.payee_id = ?
-ORDER BY entries.created_at DESC;
+-- name: ListParticipantsByMember :many
+SELECT events.*, participants.amount AS participant_amount, participants.expense AS participant_expense
+FROM events
+JOIN participants ON participants.event_id = events.id
+WHERE participants.member_id = ?
+ORDER BY events.created_at DESC;

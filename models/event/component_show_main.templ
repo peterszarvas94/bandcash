@@ -1,0 +1,91 @@
+package event
+
+import (
+	"fmt"
+
+	ctxi18n "github.com/invopop/ctxi18n/i18n"
+
+	shared "bandcash/models/shared"
+)
+
+templ EventShowMain(data EventData) {
+	<h1>{ data.Title }</h1>
+	@shared.Breadcrumbs(data.Breadcrumbs)
+	<h2>{ ctxi18n.T(ctx, "events.details") }</h2>
+	<div class="event-details">
+		<div class="field">
+			<label>{ ctxi18n.T(ctx, "fields.title") }</label>
+			<p>{ data.Event.Title }</p>
+		</div>
+		<div class="field">
+			<label>{ ctxi18n.T(ctx, "fields.time") }</label>
+			<p>{ data.Event.Time }</p>
+		</div>
+		<div class="field">
+			<label>{ ctxi18n.T(ctx, "fields.description") }</label>
+			<p>{ data.Event.Description }</p>
+		</div>
+		<div class="field">
+			<label>{ ctxi18n.T(ctx, "fields.amount") }</label>
+			<p>{ fmt.Sprintf("%d", data.Event.Amount) }</p>
+		</div>
+		<div class="field">
+			<label>{ ctxi18n.T(ctx, "events.leftover") }</label>
+			<p>{ fmt.Sprintf("%d", data.Leftover) }</p>
+		</div>
+	</div>
+	<h2>{ ctxi18n.T(ctx, "events.participants") }</h2>
+	<table class="table">
+		<thead>
+			<tr>
+				<th>{ ctxi18n.T(ctx, "participants.member") }</th>
+				<th>{ ctxi18n.T(ctx, "fields.description") }</th>
+				<th>{ ctxi18n.T(ctx, "participants.cut") }</th>
+				<th>{ ctxi18n.T(ctx, "participants.expense") }</th>
+				<th>{ ctxi18n.T(ctx, "participants.total") }</th>
+				<th></th>
+			</tr>
+		</thead>
+		<tbody>
+			for _, participant := range data.Participants {
+				<tr
+					data-member-id={ fmt.Sprintf("%d", participant.ID) }
+					data-member-name={ participant.Name }
+					data-participant-amount={ fmt.Sprintf("%d", participant.ParticipantAmount) }
+					data-participant-expense={ fmt.Sprintf("%d", participant.ParticipantExpense) }
+				>
+					<td><a href={ fmt.Sprintf("/member/%d", participant.ID) }>{ participant.Name }</a></td>
+					<td>{ participant.Description }</td>
+					<td class="text-right">{ fmt.Sprintf("%d", participant.ParticipantAmount) }</td>
+					<td class="text-right">{ fmt.Sprintf("%d", participant.ParticipantExpense) }</td>
+					<td class="text-right">{ fmt.Sprintf("%d", participant.ParticipantAmount+participant.ParticipantExpense) }</td>
+					<td class="text-right">
+						<div class="row">
+							<button
+								class="btn"
+								type="button"
+								data-attr:disabled="$formState !== '' || $eventFormState !== ''"
+								data-on:click={ fmt.Sprintf("$formState = 'edit'; $editingId = %d; $formData = {memberId: Number(el.closest('tr').dataset.memberId), memberName: el.closest('tr').dataset.memberName, amount: Number(el.closest('tr').dataset.participantAmount), expense: Number(el.closest('tr').dataset.participantExpense)}", participant.ID) }
+							>
+								{ ctxi18n.T(ctx, "actions.edit") }
+							</button>
+							<button
+								class="btn btn-danger"
+								type="button"
+								data-attr:disabled="$formState !== '' || $eventFormState !== ''"
+								data-on:click={ fmt.Sprintf("if (window.confirm(%q)) { @delete('/event/%d/participant/%d') }", ctxi18n.T(ctx, "participants.delete_confirm"), data.Event.ID, participant.ID) }
+							>
+								{ ctxi18n.T(ctx, "actions.delete") }
+							</button>
+						</div>
+					</td>
+				</tr>
+			}
+			if len(data.Participants) == 0 {
+				<tr>
+					<td colspan="6">{ ctxi18n.T(ctx, "table.empty") }</td>
+				</tr>
+			}
+		</tbody>
+	</table>
+}

@@ -1,6 +1,10 @@
 package shared
 
-import "bandcash/internal/utils"
+import (
+	ctxi18n "github.com/invopop/ctxi18n/i18n"
+
+	"bandcash/internal/utils"
+)
 
 templ Head(title string) {
 	<head>
@@ -20,7 +24,7 @@ templ Head(title string) {
 
 templ Breadcrumbs(crumbs []utils.Crumb) {
 	<nav class="row pb">
-		<a href="/">Home</a>
+		<a href="/">{ctxi18n.T(ctx, "nav.home")}</a>
 		for i, crumb := range crumbs {
 			<span>&gt;</span>
 			if crumb.Href != "" && i < len(crumbs)-1 {

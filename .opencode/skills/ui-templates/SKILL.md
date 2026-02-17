@@ -12,8 +12,8 @@ description: HTML template and form conventions for UI changes.
 Use this for page layout, buttons, tables, and form changes.
 
 ## Template locations
-- Entry pages: `app/entry/templates/*.html`
-- Payee pages: `app/payee/templates/*.html`
+- Event pages: `app/event/templates/*.html`
+- Member pages: `app/member/templates/*.html`
 - Shared head: `web/templates/head.html`
 
 ## Form conventions

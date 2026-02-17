@@ -1,0 +1,17 @@
+package member
+
+import (
+	appi18n "bandcash/internal/i18n"
+	shared "bandcash/models/shared"
+)
+
+templ MemberIndex(data MembersData) {
+	<!doctype html>
+	<html lang={appi18n.LocaleCode(ctx)}>
+		@shared.Head(data.Title)
+		<body>
+			<div data-signals={templ.JSONString(memberIndexSignals())} data-init="@get('/sse')"></div>
+			@shared.TwoCol("member-index", MemberIndexMain(data), MemberIndexSidebar(data))
+		</body>
+	</html>
+}

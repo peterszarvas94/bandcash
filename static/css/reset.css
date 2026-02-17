@@ -10,8 +10,8 @@
     --border: 1px;
     --border-color: light-dark(#ccc, #4a4a4a);
 
-    --content-width: 80rem;
-    --sidebar-width: 22rem;
+    --content-width: 90rem;
+    --sidebar-width: 20rem;
 
     --link-color: light-dark(#1f3a5f, #7fb1ff);
     --page-bg: light-dark(#ffffff, #1b1d21);

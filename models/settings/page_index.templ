@@ -1,0 +1,33 @@
+package settings
+
+import (
+	ctxi18n "github.com/invopop/ctxi18n/i18n"
+
+	appi18n "bandcash/internal/i18n"
+	shared "bandcash/models/shared"
+)
+
+templ SettingsIndex(data SettingsData) {
+	<!doctype html>
+	<html lang={appi18n.LocaleCode(ctx)}>
+		@shared.Head(data.Title)
+		<body>
+			<main id="app" class="single-col">
+				<h1>{data.Title}</h1>
+				@shared.Breadcrumbs(data.Breadcrumbs)
+				<form class="form" method="post" action="/settings/language">
+					<div class="field">
+						<label for="lang">{ctxi18n.T(ctx, "settings.language")}</label>
+						<select id="lang" name="lang">
+							<option value="en" selected?={data.CurrentLang == "en"}>{ctxi18n.T(ctx, "language.en")}</option>
+							<option value="hu" selected?={data.CurrentLang == "hu"}>{ctxi18n.T(ctx, "language.hu")}</option>
+						</select>
+					</div>
+					<div class="row">
+						<button class="btn btn-primary" type="submit">{ctxi18n.T(ctx, "actions.save")}</button>
+					</div>
+				</form>
+			</main>
+		</body>
+	</html>
+}

@@ -1,19 +1,25 @@
 package home
 
-import shared "bandcash/models/shared"
+import (
+	ctxi18n "github.com/invopop/ctxi18n/i18n"
+
+	appi18n "bandcash/internal/i18n"
+	shared "bandcash/models/shared"
+)
 
 templ HomeIndex(data HomeData) {
 	<!doctype html>
-	<html lang="en">
+	<html lang={appi18n.LocaleCode(ctx)}>
 		@shared.Head(data.Title)
 		<body>
 			<main id="app" class="single-col">
 				<h1>{data.Title}</h1>
 				@shared.Breadcrumbs(data.Breadcrumbs)
-				<p>Where is my cut?</p>
+				<p>{ctxi18n.T(ctx, "home.tagline")}</p>
 				<div class="row">
-					<a class="btn" href="/entry">Entries</a>
-					<a class="btn" href="/payee">Payees</a>
+					<a class="btn" href="/event">{ctxi18n.T(ctx, "events.title")}</a>
+					<a class="btn" href="/member">{ctxi18n.T(ctx, "members.title")}</a>
+					<a class="btn" href="/settings">{ctxi18n.T(ctx, "settings.title")}</a>
 				</div>
 			</main>
 		</body>

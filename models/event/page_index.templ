@@ -1,0 +1,17 @@
+package event
+
+import (
+	appi18n "bandcash/internal/i18n"
+	shared "bandcash/models/shared"
+)
+
+templ EventIndex(data EventsData) {
+	<!doctype html>
+	<html lang={appi18n.LocaleCode(ctx)}>
+		@shared.Head(data.Title)
+		<body>
+			<div data-signals={templ.JSONString(eventIndexSignals())} data-init="@get('/sse')"></div>
+			@shared.TwoCol("event-index", EventIndexMain(data), EventIndexSidebar(data))
+		</body>
+	</html>
+}

@@ -5,7 +5,7 @@ Use this file as the default operating guide for agentic changes.
 
 ## Quick Orientation
 - Entry point: `cmd/server/main.go`.
-- Feature modules live in `models/` (entry, payee, home).
+- Feature modules live in `models/` (event, member, home).
 - Shared internals: `internal/` (config, db, logger, middleware, utils, view, hub, sse).
 - Templates live in `models/shared/templates/`; static assets in `static/`.
 
@@ -20,9 +20,9 @@ Use `mise` tasks where possible.
 
 ### Tests
 - `mise run test`       Run all tests (`go test -v ./...`).
-- Single package: `go test -v ./models/entry`.
-- Single test: `go test -v ./models/entry -run TestName`.
-- Single test exact: `go test -v ./models/entry -run '^TestName$'`.
+- Single package: `go test -v ./models/event`.
+- Single test: `go test -v ./models/event -run TestName`.
+- Single test exact: `go test -v ./models/event -run '^TestName$'`.
 - Short mode: `go test -short -v ./...`.
 
 ### Format, Lint, Vet
@@ -49,9 +49,9 @@ Follow existing patterns from `models/`, `internal/`, and `cmd/`.
 
 ### Types and Naming
 - REST handler methods use Rails-style names: `Index`, `New`, `Show`, `Edit`, `Create`, `Update`, `Destroy`.
-- Use data structs like `EntryData`, `EntriesData`, `PayeeData` for template rendering.
+- Use data structs like `EventData`, `EventsData`, `MemberData` for template rendering.
 - Use `int` for route params, convert to `int64` for database calls.
-- Prefer explicit names over abbreviations; `payeeID`, `entryID`, `clientID`.
+- Prefer explicit names over abbreviations; `memberID`, `eventID`, `clientID`.
 
 ### Error Handling and Responses
 - Handle errors early; log with context and return user-safe responses.
@@ -107,7 +107,7 @@ Follow existing patterns from `models/`, `internal/`, and `cmd/`.
 - No Copilot instructions found (`.github/copilot-instructions.md` not present).
 
 ## When Adding New Code
-- Match handler and model patterns in `models/entry` and `models/payee`.
+- Match handler and model patterns in `models/event` and `models/member`.
 - Keep handlers thin; prefer `GetXData` or `CreateX` helpers in the model.
 - Ensure signal names are consistent across handlers and templates.
 - Update breadcrumbs for new pages and include `utils.Crumb` data.

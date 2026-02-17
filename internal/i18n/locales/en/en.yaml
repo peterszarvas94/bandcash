@@ -1,0 +1,74 @@
+en:
+  app:
+    title: "Bandcash"
+  nav:
+    home: "Home"
+  home:
+    tagline: "Where is my cut?"
+  settings:
+    title: "Settings"
+    language: "Language"
+  language:
+    en: "English"
+    hu: "Hungarian"
+  table:
+    empty: "no items"
+    actions: "Actions"
+  fields:
+    title: "Title"
+    time: "Time"
+    description: "Description"
+    amount: "Amount"
+    name: "Name"
+  actions:
+    edit: "Edit"
+    delete: "Delete"
+    cancel: "Cancel"
+    save: "Save"
+  events:
+    title: "Events"
+    actions: "Event actions"
+    add: "Add Event"
+    new: "New Event"
+    edit: "Edit Event"
+    create: "Create Event"
+    update: "Update Event"
+    details: "Event Details"
+    leftover: "Leftover"
+    participants: "Participants"
+    delete_confirm: "Delete this event?"
+  members:
+    title: "Members"
+    actions: "Member actions"
+    add: "Add Member"
+    new: "New Member"
+    edit: "Edit Member"
+    create: "Create Member"
+    update: "Update Member"
+    details: "Member Details"
+    events: "Events"
+    delete_confirm: "Delete this member?"
+    table:
+      event_amount: "Event Amount"
+  participants:
+    add: "Add Participant"
+    new: "New Participant"
+    edit: "Edit Participant"
+    update: "Update Participant"
+    delete_confirm: "Delete this participant?"
+    member: "Member"
+    cut: "Cut"
+    cut_amount: "Cut Amount"
+    expense: "Expense"
+    total: "Total"
+    quick_calc: "Quick Calc (% of event)"
+    quick_calc_placeholder: "e.g., 20"
+    calc_percent: "Calc %"
+    calc_amount: "Calc Amount"
+    select_member: "Select member"
+  validation:
+    required: "Required"
+    min: "Minimum %s"
+    max: "Maximum %s"
+    gt: "Must be greater than %s"
+    gte: "Must be at least %s"

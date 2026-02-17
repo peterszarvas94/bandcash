@@ -1,0 +1,74 @@
+hu:
+  app:
+    title: "Bandcash"
+  nav:
+    home: "Kezdőlap"
+  home:
+    tagline: "Hol van a gázsim?"
+  settings:
+    title: "Beállítások"
+    language: "Nyelv"
+  language:
+    en: "Angol"
+    hu: "Magyar"
+  table:
+    empty: "nincs elem"
+    actions: "Műveletek"
+  fields:
+    title: "Cím"
+    time: "Idő"
+    description: "Leírás"
+    amount: "Összeg"
+    name: "Név"
+  actions:
+    edit: "Szerkesztés"
+    delete: "Törlés"
+    cancel: "Mégse"
+    save: "Mentés"
+  events:
+    title: "Események"
+    actions: "Esemény műveletek"
+    add: "Esemény hozzáadása"
+    new: "Új esemény"
+    edit: "Esemény szerkesztése"
+    create: "Esemény létrehozása"
+    update: "Esemény frissítése"
+    details: "Esemény részletei"
+    leftover: "Maradék"
+    participants: "Résztvevők"
+    delete_confirm: "Törlöd ezt az eseményt?"
+  members:
+    title: "Tagok"
+    actions: "Tag műveletek"
+    add: "Tag hozzáadása"
+    new: "Új tag"
+    edit: "Tag szerkesztése"
+    create: "Tag létrehozása"
+    update: "Tag frissítése"
+    details: "Tag részletei"
+    events: "Események"
+    delete_confirm: "Törlöd ezt a tagot?"
+    table:
+      event_amount: "Esemény összege"
+  participants:
+    add: "Résztvevő hozzáadása"
+    new: "Új résztvevő"
+    edit: "Résztvevő szerkesztése"
+    update: "Résztvevő frissítése"
+    delete_confirm: "Törlöd ezt a résztvevőt?"
+    member: "Tag"
+    cut: "Részesedés"
+    cut_amount: "Részesedés összege"
+    expense: "Költség"
+    total: "Összesen"
+    quick_calc: "Gyors számítás (az esemény %-a)"
+    quick_calc_placeholder: "pl. 20"
+    calc_percent: "Számolj %"
+    calc_amount: "Számolj összeget"
+    select_member: "Válassz tagot"
+  validation:
+    required: "Kötelező"
+    min: "Minimum %s"
+    max: "Maximum %s"
+    gt: "Nagyobb legyen, mint %s"
+    gte: "Legalább %s"

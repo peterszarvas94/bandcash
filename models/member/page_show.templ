@@ -1,0 +1,17 @@
+package member
+
+import (
+	appi18n "bandcash/internal/i18n"
+	shared "bandcash/models/shared"
+)
+
+templ MemberShow(data MemberData) {
+	<!doctype html>
+	<html lang={appi18n.LocaleCode(ctx)}>
+		@shared.Head(data.Title)
+		<body>
+			<div data-signals={templ.JSONString(memberShowSignals(data))} data-init="@get('/sse')"></div>
+			@shared.TwoCol("member-show", MemberShowMain(data), MemberShowSidebar(data))
+		</body>
+	</html>
+}

@@ -31,8 +31,9 @@ Open http://localhost:8080
 
 ```
 cmd/server/         # Application entrypoint
-models/             # Feature modules (entry, home)
-  entry/            # Entry REST handlers + templates
+models/             # Feature modules (event, member, home)
+  event/            # Event REST handlers + templates
+  member/           # Member REST handlers + templates
   shared/templates/ # Go HTML templates
 internal/
   config/           # Environment configuration
@@ -120,13 +121,13 @@ docker compose up --build
 
 1. Browser loads page and renders templates
 2. User actions trigger POST/PUT/DELETE requests
-3. Handlers read/write entries in SQLite via sqlc
+3. Handlers read/write events in SQLite via sqlc
 4. Responses re-render the requested pages
 
 ## Realtime (SSE)
 
 - The client opens a single SSE stream at `/sse`.
-- A `view` signal (matching the route, e.g. `/entry/1`) is sent on connect.
+- A `view` signal (matching the route, e.g. `/event/1`) is sent on connect.
 - The server renders the view and patches `main#app` via Datastar SSE events.
 - Handlers trigger updates by calling the hub (`hub.Hub.Render`) and can patch signals.
 

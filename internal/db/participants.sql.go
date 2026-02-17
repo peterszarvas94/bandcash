@@ -11,29 +11,29 @@ import (
 )
 
 const addParticipant = `-- name: AddParticipant :one
-INSERT INTO participants (entry_id, payee_id, amount, expense)
+INSERT INTO participants (event_id, member_id, amount, expense)
 VALUES (?, ?, ?, ?)
-RETURNING entry_id, payee_id, amount, created_at, updated_at, expense
+RETURNING event_id, member_id, amount, created_at, updated_at, expense
 `
 
 type AddParticipantParams struct {
-	EntryID int64 `json:"entry_id"`
-	PayeeID int64 `json:"payee_id"`
-	Amount  int64 `json:"amount"`
-	Expense int64 `json:"expense"`
+	EventID  int64 `json:"event_id"`
+	MemberID int64 `json:"member_id"`
+	Amount   int64 `json:"amount"`
+	Expense  int64 `json:"expense"`
 }
 
 func (q *Queries) AddParticipant(ctx context.Context, arg AddParticipantParams) (Participant, error) {
 	row := q.db.QueryRowContext(ctx, addParticipant,
-		arg.EntryID,
-		arg.PayeeID,
+		arg.EventID,
+		arg.MemberID,
 		arg.Amount,
 		arg.Expense,
 	)
 	var i Participant
 	err := row.Scan(
-		&i.EntryID,
-		&i.PayeeID,
+		&i.EventID,
+		&i.MemberID,
 		&i.Amount,
 		&i.CreatedAt,
 		&i.UpdatedAt,
@@ -42,15 +42,15 @@ func (q *Queries) AddParticipant(ctx context.Context, arg AddParticipantParams) 
 	return i, err
 }
 
-const listParticipantsByEntry = `-- name: ListParticipantsByEntry :many
-SELECT payees.id, payees.name, payees.description, payees.created_at, payees.updated_at, participants.amount AS participant_amount, participants.expense AS participant_expense
-FROM payees
-JOIN participants ON participants.payee_id = payees.id
-WHERE participants.entry_id = ?
-ORDER BY payees.name ASC
+const listParticipantsByEvent = `-- name: ListParticipantsByEvent :many
+SELECT members.id, members.name, members.description, members.created_at, members.updated_at, participants.amount AS participant_amount, participants.expense AS participant_expense
+FROM members
+JOIN participants ON participants.member_id = members.id
+WHERE participants.event_id = ?
+ORDER BY members.name ASC
 `
 
-type ListParticipantsByEntryRow struct {
+type ListParticipantsByEventRow struct {
 	ID                 int64        `json:"id"`
 	Name               string       `json:"name"`
 	Description        string       `json:"description"`
@@ -60,15 +60,15 @@ type ListParticipantsByEntryRow struct {
 	ParticipantExpense int64        `json:"participant_expense"`
 }
 
-func (q *Queries) ListParticipantsByEntry(ctx context.Context, entryID int64) ([]ListParticipantsByEntryRow, error) {
-	rows, err := q.db.QueryContext(ctx, listParticipantsByEntry, entryID)
+func (q *Queries) ListParticipantsByEvent(ctx context.Context, eventID int64) ([]ListParticipantsByEventRow, error) {
+	rows, err := q.db.QueryContext(ctx, listParticipantsByEvent, eventID)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
-	items := []ListParticipantsByEntryRow{}
+	items := []ListParticipantsByEventRow{}
 	for rows.Next() {
-		var i ListParticipantsByEntryRow
+		var i ListParticipantsByEventRow
 		if err := rows.Scan(
 			&i.ID,
 			&i.Name,
@@ -91,15 +91,15 @@ func (q *Queries) ListParticipantsByEntry(ctx context.Context, entryID int64) ([
 	return items, nil
 }
 
-const listParticipantsByPayee = `-- name: ListParticipantsByPayee :many
-SELECT entries.id, entries.title, entries.time, entries.description, entries.amount, entries.created_at, entries.updated_at, participants.amount AS participant_amount, participants.expense AS participant_expense
-FROM entries
-JOIN participants ON participants.entry_id = entries.id
-WHERE participants.payee_id = ?
-ORDER BY entries.created_at DESC
+const listParticipantsByMember = `-- name: ListParticipantsByMember :many
+SELECT events.id, events.title, events.time, events.description, events.amount, events.created_at, events.updated_at, participants.amount AS participant_amount, participants.expense AS participant_expense
+FROM events
+JOIN participants ON participants.event_id = events.id
+WHERE participants.member_id = ?
+ORDER BY events.created_at DESC
 `
 
-type ListParticipantsByPayeeRow struct {
+type ListParticipantsByMemberRow struct {
 	ID                 int64        `json:"id"`
 	Title              string       `json:"title"`
 	Time               string       `json:"time"`
@@ -111,15 +111,15 @@ type ListParticipantsByPayeeRow struct {
 	ParticipantExpense int64        `json:"participant_expense"`
 }
 
-func (q *Queries) ListParticipantsByPayee(ctx context.Context, payeeID int64) ([]ListParticipantsByPayeeRow, error) {
-	rows, err := q.db.QueryContext(ctx, listParticipantsByPayee, payeeID)
+func (q *Queries) ListParticipantsByMember(ctx context.Context, memberID int64) ([]ListParticipantsByMemberRow, error) {
+	rows, err := q.db.QueryContext(ctx, listParticipantsByMember, memberID)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
-	items := []ListParticipantsByPayeeRow{}
+	items := []ListParticipantsByMemberRow{}
 	for rows.Next() {
-		var i ListParticipantsByPayeeRow
+		var i ListParticipantsByMemberRow
 		if err := rows.Scan(
 			&i.ID,
 			&i.Title,
@@ -146,38 +146,38 @@ func (q *Queries) ListParticipantsByPayee(ctx context.Context, payeeID int64) ([
 
 const removeParticipant = `-- name: RemoveParticipant :exec
 DELETE FROM participants
-WHERE entry_id = ? AND payee_id = ?
+WHERE event_id = ? AND member_id = ?
 `
 
 type RemoveParticipantParams struct {
-	EntryID int64 `json:"entry_id"`
-	PayeeID int64 `json:"payee_id"`
+	EventID  int64 `json:"event_id"`
+	MemberID int64 `json:"member_id"`
 }
 
 func (q *Queries) RemoveParticipant(ctx context.Context, arg RemoveParticipantParams) error {
-	_, err := q.db.ExecContext(ctx, removeParticipant, arg.EntryID, arg.PayeeID)
+	_, err := q.db.ExecContext(ctx, removeParticipant, arg.EventID, arg.MemberID)
 	return err
 }
 
 const updateParticipant = `-- name: UpdateParticipant :exec
 UPDATE participants
 SET amount = ?, expense = ?
-WHERE entry_id = ? AND payee_id = ?
+WHERE event_id = ? AND member_id = ?
 `
 
 type UpdateParticipantParams struct {
-	Amount  int64 `json:"amount"`
-	Expense int64 `json:"expense"`
-	EntryID int64 `json:"entry_id"`
-	PayeeID int64 `json:"payee_id"`
+	Amount   int64 `json:"amount"`
+	Expense  int64 `json:"expense"`
+	EventID  int64 `json:"event_id"`
+	MemberID int64 `json:"member_id"`
 }
 
 func (q *Queries) UpdateParticipant(ctx context.Context, arg UpdateParticipantParams) error {
 	_, err := q.db.ExecContext(ctx, updateParticipant,
 		arg.Amount,
 		arg.Expense,
-		arg.EntryID,
-		arg.PayeeID,
+		arg.EventID,
+		arg.MemberID,
 	)
 	return err
 }

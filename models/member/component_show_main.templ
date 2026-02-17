@@ -1,0 +1,53 @@
+package member
+
+import (
+	"fmt"
+
+	ctxi18n "github.com/invopop/ctxi18n/i18n"
+
+	shared "bandcash/models/shared"
+)
+
+templ MemberShowMain(data MemberData) {
+	<h1>{data.Title}</h1>
+	@shared.Breadcrumbs(data.Breadcrumbs)
+
+	<h2>{ctxi18n.T(ctx, "members.details")}</h2>
+	<div class="entry-details">
+		<p><strong>{ctxi18n.T(ctx, "fields.name")}:</strong> {data.Member.Name}</p>
+		<p><strong>{ctxi18n.T(ctx, "fields.description")}:</strong> {data.Member.Description}</p>
+	</div>
+
+	<h2>{ctxi18n.T(ctx, "members.events")}</h2>
+	<table class="table">
+		<thead>
+			<tr>
+				<th>{ctxi18n.T(ctx, "fields.title")}</th>
+				<th>{ctxi18n.T(ctx, "fields.time")}</th>
+				<th>{ctxi18n.T(ctx, "fields.description")}</th>
+				<th>{ctxi18n.T(ctx, "members.table.event_amount")}</th>
+				<th>{ctxi18n.T(ctx, "participants.cut")}</th>
+				<th>{ctxi18n.T(ctx, "participants.expense")}</th>
+				<th>{ctxi18n.T(ctx, "participants.total")}</th>
+			</tr>
+		</thead>
+		<tbody>
+			for _, event := range data.Events {
+				<tr>
+					<td><a href={fmt.Sprintf("/event/%d", event.ID)}>{event.Title}</a></td>
+					<td>{event.Time}</td>
+					<td>{event.Description}</td>
+					<td class="text-right">{fmt.Sprintf("%d", event.Amount)}</td>
+					<td class="text-right">{fmt.Sprintf("%d", event.ParticipantAmount)}</td>
+					<td class="text-right">{fmt.Sprintf("%d", event.ParticipantExpense)}</td>
+					<td class="text-right">{fmt.Sprintf("%d", event.ParticipantAmount+event.ParticipantExpense)}</td>
+				</tr>
+			}
+			if len(data.Events) == 0 {
+				<tr>
+					<td colspan="7">{ctxi18n.T(ctx, "table.empty")}</td>
+				</tr>
+			}
+		</tbody>
+	</table>
+}
