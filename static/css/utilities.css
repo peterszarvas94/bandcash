@@ -6,6 +6,10 @@
     gap: var(--space);
   }
 
+  .row-wrap {
+    flex-wrap: wrap;
+  }
+
   .row-right {
     justify-content: flex-end;
   }
