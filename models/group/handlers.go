@@ -96,6 +96,58 @@ func (g *Group) GroupsPage(c echo.Context) error {
 	return c.HTML(http.StatusOK, renderGroupsPage(adminGroups, filteredReaders))
 }
 
+// LeaveGroup removes viewer access for the current user.
+func (g *Group) LeaveGroup(c echo.Context) error {
+	groupID := middleware.GetGroupID(c)
+	userID := middleware.GetUserID(c)
+	if userID == "" {
+		return c.Redirect(http.StatusFound, "/auth/login")
+	}
+
+	group, err := db.Qry.GetGroupByID(c.Request().Context(), groupID)
+	if err != nil {
+		return c.Redirect(http.StatusFound, "/groups?error=Group%20not%20found")
+	}
+	if group.AdminUserID == userID {
+		return c.Redirect(http.StatusFound, "/groups?error=Admin%20cannot%20leave%20group")
+	}
+
+	err = db.Qry.RemoveGroupReader(c.Request().Context(), db.RemoveGroupReaderParams{
+		UserID:  userID,
+		GroupID: groupID,
+	})
+	if err != nil {
+		slog.Warn("group: failed to leave", "err", err)
+		return c.Redirect(http.StatusFound, "/groups?error=Failed%20to%20leave")
+	}
+
+	return c.Redirect(http.StatusFound, "/groups?msg=Left%20group")
+}
+
+// DeleteGroup removes the group and all data (admin only).
+func (g *Group) DeleteGroup(c echo.Context) error {
+	groupID := middleware.GetGroupID(c)
+	userID := middleware.GetUserID(c)
+	if userID == "" {
+		return c.Redirect(http.StatusFound, "/auth/login")
+	}
+
+	group, err := db.Qry.GetGroupByID(c.Request().Context(), groupID)
+	if err != nil {
+		return c.Redirect(http.StatusFound, "/groups?error=Group%20not%20found")
+	}
+	if group.AdminUserID != userID {
+		return c.Redirect(http.StatusFound, "/groups?error=Admin%20required")
+	}
+
+	if err := db.Qry.DeleteGroup(c.Request().Context(), groupID); err != nil {
+		slog.Error("group: failed to delete", "err", err)
+		return c.Redirect(http.StatusFound, "/groups?error=Failed%20to%20delete")
+	}
+
+	return c.Redirect(http.StatusFound, "/groups?msg=Group%20deleted")
+}
+
 // ViewersPage shows the current viewers and invite form
 func (g *Group) ViewersPage(c echo.Context) error {
 	groupID := middleware.GetGroupID(c)
@@ -225,8 +277,16 @@ func renderGroupsPage(adminGroups, readerGroups []db.Group) string {
 	} else {
 		for _, group := range adminGroups {
 			adminRows += fmt.Sprintf(
-				`<tr><td>%s</td><td><a class="btn" href="/groups/%s/events">Open</a></td></tr>`,
+				`<tr><td>%s</td><td>
+				<a class="btn" href="/groups/%s/events">Open</a>
+				<a class="btn" href="/groups/%s/viewers">Viewers</a>
+				<form method="POST" action="/groups/%s/delete" style="display:inline" onsubmit="return window.confirm('Delete this group? This cannot be undone.')">
+					<button type="submit" class="btn btn-danger">Delete</button>
+				</form>
+				</td></tr>`,
 				html.EscapeString(group.Name),
+				html.EscapeString(group.ID),
+				html.EscapeString(group.ID),
 				html.EscapeString(group.ID),
 			)
 		}
@@ -238,8 +298,14 @@ func renderGroupsPage(adminGroups, readerGroups []db.Group) string {
 	} else {
 		for _, group := range readerGroups {
 			readerRows += fmt.Sprintf(
-				`<tr><td>%s</td><td><a class="btn" href="/groups/%s/events">Open</a></td></tr>`,
+				`<tr><td>%s</td><td>
+				<a class="btn" href="/groups/%s/events">Open</a>
+				<form method="POST" action="/groups/%s/leave" style="display:inline" onsubmit="return window.confirm('Leave this group?')">
+					<button type="submit" class="btn">Leave</button>
+				</form>
+				</td></tr>`,
 				html.EscapeString(group.Name),
+				html.EscapeString(group.ID),
 				html.EscapeString(group.ID),
 			)
 		}
@@ -254,6 +320,7 @@ func renderGroupsPage(adminGroups, readerGroups []db.Group) string {
 <body>
     <div class="container">
         <h1>Your Groups</h1>
+        <p class="text-muted">Admin groups can edit; viewer groups are read-only.</p>
         <p><a class="btn btn-primary" href="/groups/new">Create New Group</a></p>
 
         <h2>Admin Groups</h2>

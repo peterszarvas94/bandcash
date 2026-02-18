@@ -2,3 +2,5 @@
 - expenses table: title, description, amount, date
 - mobile friendly
 - real-time collaborative editing: notify other users viewing a page when data changes (show snackbar "Updated by another user [Refresh]")
+- viewer pages: live update when admin changes viewer list (broadcast SSE)
+- make auth/group pages match app styling

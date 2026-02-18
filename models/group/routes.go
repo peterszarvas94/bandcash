@@ -9,16 +9,21 @@ import (
 func Register(e *echo.Echo) *Group {
 	grp := New()
 
-	// Group creation (requires auth but no existing group)
+	// Group creation (requires auth)
 	e.GET("/groups", grp.GroupsPage, middleware.RequireAuth())
 	e.GET("/groups/new", grp.NewGroupPage, middleware.RequireAuth())
 	e.POST("/groups", grp.CreateGroup, middleware.RequireAuth())
+
+	// Leave group (readers)
+	leave := e.Group("/groups/:groupId", middleware.RequireAuth(), middleware.RequireGroup())
+	leave.POST("/leave", grp.LeaveGroup)
 
 	// Viewer management (admin only)
 	g := e.Group("/groups/:groupId", middleware.RequireAuth(), middleware.RequireGroup(), middleware.RequireAdmin())
 	g.GET("/viewers", grp.ViewersPage)
 	g.POST("/viewers", grp.AddViewer)
 	g.POST("/viewers/:userId/remove", grp.RemoveViewer)
+	g.POST("/delete", grp.DeleteGroup)
 
 	return grp
 }
