@@ -3,6 +3,7 @@ hu:
     title: "Bandcash"
   nav:
     home: "Kezdőlap"
+    logged_in_as: "Bejelentkezve mint"
   home:
     tagline: "Hol van a gázsim?"
   settings:
@@ -72,3 +73,7 @@ hu:
     max: "Maximum %s"
     gt: "Nagyobb legyen, mint %s"
     gte: "Legalább %s"
+  groups:
+    title: "Csoportok"
+    viewers: "Nézők"
+    read_only: "Csak olvasható"

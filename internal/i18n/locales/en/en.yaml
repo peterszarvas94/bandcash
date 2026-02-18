@@ -3,6 +3,7 @@ en:
     title: "Bandcash"
   nav:
     home: "Home"
+    logged_in_as: "Logged in as"
   home:
     tagline: "Where is my cut?"
   settings:
@@ -72,3 +73,7 @@ en:
     max: "Maximum %s"
     gt: "Must be greater than %s"
     gte: "Must be at least %s"
+  groups:
+    title: "Groups"
+    viewers: "Viewers"
+    read_only: "Read-only access"

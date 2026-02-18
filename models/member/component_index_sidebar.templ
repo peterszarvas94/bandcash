@@ -20,7 +20,7 @@ templ MemberIndexSidebar(data MembersData) {
 				</button>
 			</div>
 			<div class="row" style="margin-top: 8px">
-				<a class="btn" href={fmt.Sprintf("/groups/%s/viewers", data.GroupID)}>Viewers</a>
+				<a class="btn" href={fmt.Sprintf("/groups/%s/viewers", data.GroupID)}>{ctxi18n.T(ctx, "groups.viewers")}</a>
 			</div>
 		</div>
 
@@ -66,6 +66,6 @@ templ MemberIndexSidebar(data MembersData) {
 			</form>
 		</div>
 	} else {
-		<p class="text-muted">Read-only access</p>
+		<p class="text-muted">{ctxi18n.T(ctx, "groups.read_only")}</p>
 	}
 }
