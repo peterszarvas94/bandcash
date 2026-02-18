@@ -30,7 +30,7 @@ templ EventIndexMain(data EventsData) {
 					data-event-description={event.Description}
 					data-event-amount={fmt.Sprintf("%d", event.Amount)}
 				>
-					<td><a href={fmt.Sprintf("/event/%s", event.ID)}>{event.Title}</a></td>
+					<td><a href={fmt.Sprintf("/groups/%s/events/%s", data.GroupID, event.ID)}>{event.Title}</a></td>
 					<td>{event.Time}</td>
 					<td>{event.Description}</td>
 					<td class="text-right">{fmt.Sprintf("%d", event.Amount)}</td>
@@ -47,7 +47,7 @@ templ EventIndexMain(data EventsData) {
 							<button
 								class="btn btn-danger"
 								data-attr:disabled="$formState !== ''"
-							data-on:click={fmt.Sprintf("if (window.confirm(%q)) { @delete('/event/%s') }", ctxi18n.T(ctx, "events.delete_confirm"), event.ID)}
+							data-on:click={fmt.Sprintf("if (window.confirm(%q)) { @delete('/groups/%s/events/%s') }", ctxi18n.T(ctx, "events.delete_confirm"), data.GroupID, event.ID)}
 							>
 								{ctxi18n.T(ctx, "actions.delete")}
 							</button>

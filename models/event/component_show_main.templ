@@ -54,7 +54,7 @@ templ EventShowMain(data EventData) {
 					data-participant-amount={ fmt.Sprintf("%d", participant.ParticipantAmount) }
 					data-participant-expense={ fmt.Sprintf("%d", participant.ParticipantExpense) }
 				>
-					<td><a href={ fmt.Sprintf("/member/%s", participant.ID) }>{ participant.Name }</a></td>
+					<td><a href={ fmt.Sprintf("/groups/%s/members/%s", data.GroupID, participant.ID) }>{ participant.Name }</a></td>
 					<td>{ participant.Description }</td>
 					<td class="text-right">{ fmt.Sprintf("%d", participant.ParticipantAmount) }</td>
 					<td class="text-right">{ fmt.Sprintf("%d", participant.ParticipantExpense) }</td>
@@ -73,7 +73,7 @@ templ EventShowMain(data EventData) {
 								class="btn btn-danger"
 								type="button"
 								data-attr:disabled="$formState !== '' || $eventFormState !== ''"
-								data-on:click={ fmt.Sprintf("if (window.confirm(%q)) { @delete('/event/%s/participant/%s') }", ctxi18n.T(ctx, "participants.delete_confirm"), data.Event.ID, participant.ID) }
+								data-on:click={ fmt.Sprintf("if (window.confirm(%q)) { @delete('/groups/%s/events/%s/participants/%s') }", ctxi18n.T(ctx, "participants.delete_confirm"), data.GroupID, data.Event.ID, participant.ID) }
 							>
 								{ ctxi18n.T(ctx, "actions.delete") }
 							</button>

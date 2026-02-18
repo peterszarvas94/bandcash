@@ -23,7 +23,7 @@ templ MemberShowSidebar(data MemberData) {
 				class="btn btn-danger"
 				type="button"
 				data-attr:disabled="$formState !== ''"
-			data-on:click={fmt.Sprintf("if (window.confirm(%q)) { @delete('/member/%s') }", ctxi18n.T(ctx, "members.delete_confirm"), data.Member.ID)}
+			data-on:click={fmt.Sprintf("if (window.confirm(%q)) { @delete('/groups/%s/members/%s') }", ctxi18n.T(ctx, "members.delete_confirm"), data.GroupID, data.Member.ID)}
 		>
 			{ctxi18n.T(ctx, "actions.delete")}
 		</button>
@@ -44,7 +44,7 @@ templ MemberShowSidebar(data MemberData) {
 				<div data-show="$errors && $errors.description" class="color-error" data-text="$errors.description"></div>
 			</div>
 			<div class="row">
-			<button class="btn btn-primary" type="button" data-on:click={fmt.Sprintf("@put('/member/%s')", data.Member.ID)}>{ctxi18n.T(ctx, "members.update")}</button>
+			<button class="btn btn-primary" type="button" data-on:click={fmt.Sprintf("@put('/groups/%s/members/%s')", data.GroupID, data.Member.ID)}>{ctxi18n.T(ctx, "members.update")}</button>
 				<button
 					class="btn"
 					type="button"
