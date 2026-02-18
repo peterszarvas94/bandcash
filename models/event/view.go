@@ -15,6 +15,7 @@ type EventData struct {
 	Leftover         int64
 	TotalDistributed int64
 	GroupID          string
+	IsAdmin          bool
 }
 
 type EventsData struct {
@@ -22,4 +23,5 @@ type EventsData struct {
 	Events      []db.Event
 	Breadcrumbs []utils.Crumb
 	GroupID     string
+	IsAdmin     bool
 }

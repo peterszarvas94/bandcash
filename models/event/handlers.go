@@ -71,6 +71,7 @@ func (e *Events) Index(c echo.Context) error {
 		slog.Error("event.list: failed to get data", "err", err)
 		return c.NoContent(500)
 	}
+	data.IsAdmin = middleware.IsAdmin(c)
 
 	slog.Debug("event.index", "event_count", len(data.Events))
 	return utils.RenderComponent(c, EventIndex(data))
@@ -91,6 +92,7 @@ func (e *Events) Show(c echo.Context) error {
 		slog.Error("event.show: failed to get data", "err", err)
 		return c.NoContent(500)
 	}
+	data.IsAdmin = middleware.IsAdmin(c)
 
 	return utils.RenderComponent(c, EventShow(data))
 }
@@ -135,6 +137,7 @@ func (e *Events) Create(c echo.Context) error {
 		slog.Error("event.create.table: failed to get data", "err", err)
 		return c.NoContent(500)
 	}
+	data.IsAdmin = middleware.IsAdmin(c)
 
 	html, err := utils.RenderComponentString(c.Request().Context(), EventIndex(data))
 	if err != nil {
@@ -204,6 +207,7 @@ func (e *Events) Update(c echo.Context) error {
 			slog.Error("event.update: failed to get data", "err", err)
 			return c.NoContent(500)
 		}
+		data.IsAdmin = middleware.IsAdmin(c)
 		html, err := utils.RenderComponentString(c.Request().Context(), EventShow(data))
 		if err != nil {
 			slog.Error("event.update: failed to render", "err", err)
@@ -219,6 +223,7 @@ func (e *Events) Update(c echo.Context) error {
 		slog.Error("event.update: failed to get data", "err", err)
 		return c.NoContent(500)
 	}
+	data.IsAdmin = middleware.IsAdmin(c)
 	html, err := utils.RenderComponentString(c.Request().Context(), EventIndex(data))
 	if err != nil {
 		slog.Error("event.update: failed to render", "err", err)
@@ -271,6 +276,7 @@ func (e *Events) Destroy(c echo.Context) error {
 		slog.Error("event.destroy: failed to get data", "err", err)
 		return c.NoContent(500)
 	}
+	data.IsAdmin = middleware.IsAdmin(c)
 	html, err := utils.RenderComponentString(c.Request().Context(), EventIndex(data))
 	if err != nil {
 		slog.Error("event.destroy: failed to render", "err", err)
@@ -324,6 +330,7 @@ func (e *Events) CreateParticipant(c echo.Context) error {
 		slog.Error("participant.create.table: failed to get data", "err", err)
 		return c.NoContent(500)
 	}
+	data.IsAdmin = middleware.IsAdmin(c)
 	html, err := utils.RenderComponentString(c.Request().Context(), EventShow(data))
 	if err != nil {
 		slog.Error("participant.create.table: failed to render", "err", err)
@@ -386,6 +393,7 @@ func (e *Events) UpdateParticipant(c echo.Context) error {
 		slog.Error("participant.update: failed to get data", "err", err)
 		return c.NoContent(500)
 	}
+	data.IsAdmin = middleware.IsAdmin(c)
 	html, err := utils.RenderComponentString(c.Request().Context(), EventShow(data))
 	if err != nil {
 		slog.Error("participant.update: failed to render", "err", err)
@@ -428,6 +436,7 @@ func (e *Events) DeleteParticipantTable(c echo.Context) error {
 		slog.Error("participant.delete: failed to get data", "err", err)
 		return c.NoContent(500)
 	}
+	data.IsAdmin = middleware.IsAdmin(c)
 	html, err := utils.RenderComponentString(c.Request().Context(), EventShow(data))
 	if err != nil {
 		slog.Error("participant.delete: failed to render", "err", err)

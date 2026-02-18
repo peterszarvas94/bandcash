@@ -260,6 +260,77 @@ func (q *Queries) IsGroupReader(ctx context.Context, arg IsGroupReaderParams) (i
 	return count, err
 }
 
+const listGroupsByAdmin = `-- name: ListGroupsByAdmin :many
+SELECT id, name, admin_user_id, created_at
+FROM groups
+WHERE admin_user_id = ?
+ORDER BY created_at DESC
+`
+
+func (q *Queries) ListGroupsByAdmin(ctx context.Context, adminUserID string) ([]Group, error) {
+	rows, err := q.db.QueryContext(ctx, listGroupsByAdmin, adminUserID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []Group{}
+	for rows.Next() {
+		var i Group
+		if err := rows.Scan(
+			&i.ID,
+			&i.Name,
+			&i.AdminUserID,
+			&i.CreatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const listGroupsByReader = `-- name: ListGroupsByReader :many
+SELECT g.id, g.name, g.admin_user_id, g.created_at
+FROM groups g
+JOIN group_readers gr ON gr.group_id = g.id
+WHERE gr.user_id = ?
+ORDER BY g.created_at DESC
+`
+
+func (q *Queries) ListGroupsByReader(ctx context.Context, userID string) ([]Group, error) {
+	rows, err := q.db.QueryContext(ctx, listGroupsByReader, userID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []Group{}
+	for rows.Next() {
+		var i Group
+		if err := rows.Scan(
+			&i.ID,
+			&i.Name,
+			&i.AdminUserID,
+			&i.CreatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const removeGroupReader = `-- name: RemoveGroupReader :exec
 DELETE FROM group_readers
 WHERE user_id = ? AND group_id = ?

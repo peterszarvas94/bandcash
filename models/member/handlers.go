@@ -49,6 +49,7 @@ func (p *Members) Index(c echo.Context) error {
 		slog.Error("member.list: failed to get data", "err", err)
 		return c.NoContent(500)
 	}
+	data.IsAdmin = middleware.IsAdmin(c)
 
 	slog.Debug("member.index", "member_count", len(data.Members))
 	return utils.RenderComponent(c, MemberIndex(data))
@@ -69,6 +70,7 @@ func (p *Members) Show(c echo.Context) error {
 		slog.Error("member.show: failed to get data", "err", err)
 		return c.NoContent(500)
 	}
+	data.IsAdmin = middleware.IsAdmin(c)
 
 	return utils.RenderComponent(c, MemberShow(data))
 }
@@ -108,6 +110,7 @@ func (p *Members) Create(c echo.Context) error {
 		slog.Error("member.create.table: failed to get data", "err", err)
 		return c.NoContent(500)
 	}
+	data.IsAdmin = middleware.IsAdmin(c)
 	html, err := utils.RenderComponentString(c.Request().Context(), MemberIndex(data))
 	if err != nil {
 		slog.Error("member.create.table: failed to render", "err", err)
@@ -168,6 +171,7 @@ func (p *Members) Update(c echo.Context) error {
 		slog.Error("member.update: failed to get data", "err", err)
 		return c.NoContent(500)
 	}
+	data.IsAdmin = middleware.IsAdmin(c)
 	html, err := utils.RenderComponentString(c.Request().Context(), MemberIndex(data))
 	if err != nil {
 		slog.Error("member.update: failed to render", "err", err)
@@ -220,6 +224,7 @@ func (p *Members) Destroy(c echo.Context) error {
 		slog.Error("member.destroy: failed to get data", "err", err)
 		return c.NoContent(500)
 	}
+	data.IsAdmin = middleware.IsAdmin(c)
 	html, err := utils.RenderComponentString(c.Request().Context(), MemberIndex(data))
 	if err != nil {
 		slog.Error("member.destroy: failed to render", "err", err)

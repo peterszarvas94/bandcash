@@ -53,6 +53,41 @@ func (g *Group) CreateGroup(c echo.Context) error {
 	return c.Redirect(http.StatusFound, "/groups/"+group.ID+"/events")
 }
 
+// GroupsPage lists groups the user can access
+func (g *Group) GroupsPage(c echo.Context) error {
+	userID := middleware.GetUserID(c)
+	if userID == "" {
+		return c.Redirect(http.StatusFound, "/auth/login")
+	}
+
+	adminGroups, err := db.Qry.ListGroupsByAdmin(c.Request().Context(), userID)
+	if err != nil {
+		slog.Error("group: failed to load admin groups", "err", err)
+		return c.String(http.StatusInternalServerError, "Failed to load groups")
+	}
+
+	readerGroups, err := db.Qry.ListGroupsByReader(c.Request().Context(), userID)
+	if err != nil {
+		slog.Error("group: failed to load reader groups", "err", err)
+		return c.String(http.StatusInternalServerError, "Failed to load groups")
+	}
+
+	// Remove any reader groups where user is admin
+	adminMap := make(map[string]bool, len(adminGroups))
+	for _, group := range adminGroups {
+		adminMap[group.ID] = true
+	}
+	filteredReaders := make([]db.Group, 0, len(readerGroups))
+	for _, group := range readerGroups {
+		if adminMap[group.ID] {
+			continue
+		}
+		filteredReaders = append(filteredReaders, group)
+	}
+
+	return c.HTML(http.StatusOK, renderGroupsPage(adminGroups, filteredReaders))
+}
+
 // ViewersPage shows the current viewers and invite form
 func (g *Group) ViewersPage(c echo.Context) error {
 	groupID := middleware.GetGroupID(c)
@@ -141,6 +176,65 @@ var newGroupPageHTML = `<!DOCTYPE html>
     </div>
 </body>
 </html>`
+
+func renderGroupsPage(adminGroups, readerGroups []db.Group) string {
+	adminRows := ""
+	if len(adminGroups) == 0 {
+		adminRows = `<tr><td colspan="2">No groups yet.</td></tr>`
+	} else {
+		for _, group := range adminGroups {
+			adminRows += fmt.Sprintf(
+				`<tr><td>%s</td><td><a class="btn" href="/groups/%s/events">Open</a></td></tr>`,
+				html.EscapeString(group.Name),
+				html.EscapeString(group.ID),
+			)
+		}
+	}
+
+	readerRows := ""
+	if len(readerGroups) == 0 {
+		readerRows = `<tr><td colspan="2">No viewer access.</td></tr>`
+	} else {
+		for _, group := range readerGroups {
+			readerRows += fmt.Sprintf(
+				`<tr><td>%s</td><td><a class="btn" href="/groups/%s/events">Open</a></td></tr>`,
+				html.EscapeString(group.Name),
+				html.EscapeString(group.ID),
+			)
+		}
+	}
+
+	return fmt.Sprintf(`<!DOCTYPE html>
+<html>
+<head>
+    <title>Your Groups - BandCash</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Your Groups</h1>
+        <p><a class="btn btn-primary" href="/groups/new">Create New Group</a></p>
+
+        <h2>Admin Groups</h2>
+        <table class="table">
+            <thead><tr><th>Name</th><th></th></tr></thead>
+            <tbody>%s</tbody>
+        </table>
+
+        <h2>Viewer Groups</h2>
+        <table class="table">
+            <thead><tr><th>Name</th><th></th></tr></thead>
+            <tbody>%s</tbody>
+        </table>
+
+        <p><a href="/auth/logout">Logout</a></p>
+    </div>
+</body>
+</html>`,
+		adminRows,
+		readerRows,
+	)
+}
 
 func renderViewersPage(group db.Group, viewers []db.User, msg, errMsg string) string {
 	messageHTML := ""

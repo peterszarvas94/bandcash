@@ -9,161 +9,168 @@ import (
 )
 
 templ EventShowSidebar(data EventData) {
-	<div data-show="$eventFormState === '' && $formState === ''">
-		<div class="pb">
-		<h3>{ctxi18n.T(ctx, "events.actions")}</h3>
-			<div class="row">
-				<button
-					class="btn"
-					type="button"
-					data-on:click="$eventFormState = 'edit'; $errors = {title: '', time: '', description: '', amount: ''}"
-				>
-				{ctxi18n.T(ctx, "events.edit")}
-				</button>
-				<button
-					class="btn btn-danger"
-					type="button"
-			data-on:click={ fmt.Sprintf("if (window.confirm(%q)) { @delete('/groups/%s/events/%s') }", ctxi18n.T(ctx, "events.delete_confirm"), data.GroupID, data.Event.ID) }
-			>
-				{ctxi18n.T(ctx, "actions.delete")}
-			</button>
-			</div>
-		</div>
-		<div class="pb">
-			<h3>{ctxi18n.T(ctx, "participants.add")}</h3>
-			<div class="row">
-				<button
-					class="btn"
-					type="button"
-				data-on:click="$formState = 'add'; $editingId = ''; $calcPercent = 0; $formData = {memberId: '', memberName: '', amount: 0, expense: 0}; $errors = {memberId: '', amount: '', expense: ''}"
-				>
-				{ctxi18n.T(ctx, "participants.add")}
-				</button>
-			</div>
-		</div>
-	</div>
-	<div data-show="$eventFormState === 'edit'" style="display: none" class="pb">
-	<h3>{ctxi18n.T(ctx, "events.edit")}</h3>
-		<form class="form">
-			<div class="form-row">
-				<div class="field">
-					<label>{ctxi18n.T(ctx, "fields.title")}</label>
-					<input type="text" data-bind="eventFormData.title"/>
-					<div data-show="$errors && $errors.title" class="color-error" data-text="$errors.title"></div>
-				</div>
-				<div class="field">
-					<label>{ctxi18n.T(ctx, "fields.time")}</label>
-					<input type="datetime-local" data-bind="eventFormData.time"/>
-					<div data-show="$errors && $errors.time" class="color-error" data-text="$errors.time"></div>
-				</div>
-			</div>
-			<div class="field">
-			<label>{ctxi18n.T(ctx, "fields.description")}</label>
-				<textarea data-bind="eventFormData.description" rows="3"></textarea>
-				<div data-show="$errors && $errors.description" class="color-error" data-text="$errors.description"></div>
-			</div>
-			<div class="field">
-			<label>{ctxi18n.T(ctx, "fields.amount")}</label>
-				<input type="number" data-bind="eventFormData.amount" step="1"/>
-				<div data-show="$errors && $errors.amount" class="color-error" data-text="$errors.amount"></div>
-			</div>
-			<div class="row">
-				<button
-					class="btn btn-primary"
-					type="button"
-					data-on:click={ fmt.Sprintf("@put('/groups/%s/events/%s')", data.GroupID, data.Event.ID) }
-				>
-				{ctxi18n.T(ctx, "events.update")}
-				</button>
-				<button
-					class="btn"
-					type="button"
-				data-on:click={"$eventFormState = ''; $eventFormData = {title: " + utils.JSONString(data.Event.Title) + ", time: " + utils.JSONString(data.Event.Time) + ", description: " + utils.JSONString(data.Event.Description) + ", amount: " + fmt.Sprintf("%d", data.Event.Amount) + "}; $errors = {title: '', time: '', description: '', amount: ''}"}
-				>
-				{ctxi18n.T(ctx, "actions.cancel")}
-				</button>
-			</div>
-		</form>
-	</div>
-	<div data-show="$formState !== '' && $eventFormState === ''" style="display: none" class="pb">
-		<h3 data-show="$formState === 'add'">{ctxi18n.T(ctx, "participants.new")}</h3>
-		<h3 data-show="$formState === 'edit'">{ctxi18n.T(ctx, "participants.edit")}</h3>
-		<form class="form">
-			<div data-show="$formState === 'add'">
-			<label>{ctxi18n.T(ctx, "participants.member")}</label>
-			<select data-bind="formData.memberId">
-				<option value="">{ctxi18n.T(ctx, "participants.select_member")}</option>
-				for _, member := range data.Members {
-					<option value={ fmt.Sprintf("%s", member.ID) }>{ member.Name }</option>
-				}
-			</select>
-			<div data-show="$errors && $errors.memberId" class="color-error" data-text="$errors.memberId"></div>
-		</div>
-		<div data-show="$formState === 'edit'">
-			<label>{ctxi18n.T(ctx, "participants.member")}</label>
-			<input type="text" data-bind="formData.memberName" disabled/>
-		</div>
-			<div>
-			<label>{ctxi18n.T(ctx, "participants.cut_amount")}</label>
+	if data.IsAdmin {
+		<div data-show="$eventFormState === '' && $formState === ''">
+			<div class="pb">
+			<h3>{ctxi18n.T(ctx, "events.actions")}</h3>
 				<div class="row">
-					<input type="number" data-bind="formData.amount" step="1" style="flex: 1"/>
 					<button
 						class="btn"
 						type="button"
-						data-on:click={ fmt.Sprintf("$calcPercent = $formData.amount > 0 ? Math.round($formData.amount / %d * 10000) / 100 : 0", data.Event.Amount) }
+						data-on:click="$eventFormState = 'edit'; $errors = {title: '', time: '', description: '', amount: ''}"
 					>
-						{ctxi18n.T(ctx, "participants.calc_percent")}
+					{ctxi18n.T(ctx, "events.edit")}
 					</button>
+					<button
+						class="btn btn-danger"
+						type="button"
+				data-on:click={ fmt.Sprintf("if (window.confirm(%q)) { @delete('/groups/%s/events/%s') }", ctxi18n.T(ctx, "events.delete_confirm"), data.GroupID, data.Event.ID) }
+				>
+					{ctxi18n.T(ctx, "actions.delete")}
+				</button>
 				</div>
-				<div data-show="$errors && $errors.amount" class="color-error" data-text="$errors.amount"></div>
+				<div class="row" style="margin-top: 8px">
+					<a class="btn" href={fmt.Sprintf("/groups/%s/viewers", data.GroupID)}>Viewers</a>
+				</div>
 			</div>
-			<div>
-			<label>{ctxi18n.T(ctx, "participants.quick_calc")}</label>
+			<div class="pb">
+				<h3>{ctxi18n.T(ctx, "participants.add")}</h3>
 				<div class="row">
-				<input type="number" data-bind="calcPercent" step="0.01" min="0" placeholder={ctxi18n.T(ctx, "participants.quick_calc_placeholder")} style="flex: 1"/>
 					<button
 						class="btn"
 						type="button"
-						data-on:click={ fmt.Sprintf("$formData.amount = Math.round(%d * $calcPercent / 100)", data.Event.Amount) }
+					data-on:click="$formState = 'add'; $editingId = ''; $calcPercent = 0; $formData = {memberId: '', memberName: '', amount: 0, expense: 0}; $errors = {memberId: '', amount: '', expense: ''}"
 					>
-						{ctxi18n.T(ctx, "participants.calc_amount")}
+					{ctxi18n.T(ctx, "participants.add")}
 					</button>
 				</div>
 			</div>
-			<div>
-			<label>{ctxi18n.T(ctx, "participants.expense")}</label>
-				<input type="number" data-bind="formData.expense" step="1"/>
-				<div data-show="$errors && $errors.expense" class="color-error" data-text="$errors.expense"></div>
+		</div>
+		<div data-show="$eventFormState === 'edit'" style="display: none" class="pb">
+		<h3>{ctxi18n.T(ctx, "events.edit")}</h3>
+			<form class="form">
+				<div class="form-row">
+					<div class="field">
+						<label>{ctxi18n.T(ctx, "fields.title")}</label>
+						<input type="text" data-bind="eventFormData.title"/>
+						<div data-show="$errors && $errors.title" class="color-error" data-text="$errors.title"></div>
+					</div>
+					<div class="field">
+						<label>{ctxi18n.T(ctx, "fields.time")}</label>
+						<input type="datetime-local" data-bind="eventFormData.time"/>
+						<div data-show="$errors && $errors.time" class="color-error" data-text="$errors.time"></div>
+					</div>
+				</div>
+				<div class="field">
+				<label>{ctxi18n.T(ctx, "fields.description")}</label>
+					<textarea data-bind="eventFormData.description" rows="3"></textarea>
+					<div data-show="$errors && $errors.description" class="color-error" data-text="$errors.description"></div>
+				</div>
+				<div class="field">
+				<label>{ctxi18n.T(ctx, "fields.amount")}</label>
+					<input type="number" data-bind="eventFormData.amount" step="1"/>
+					<div data-show="$errors && $errors.amount" class="color-error" data-text="$errors.amount"></div>
+				</div>
+				<div class="row">
+					<button
+						class="btn btn-primary"
+						type="button"
+						data-on:click={ fmt.Sprintf("@put('/groups/%s/events/%s')", data.GroupID, data.Event.ID) }
+					>
+					{ctxi18n.T(ctx, "events.update")}
+					</button>
+					<button
+						class="btn"
+						type="button"
+					data-on:click={"$eventFormState = ''; $eventFormData = {title: " + utils.JSONString(data.Event.Title) + ", time: " + utils.JSONString(data.Event.Time) + ", description: " + utils.JSONString(data.Event.Description) + ", amount: " + fmt.Sprintf("%d", data.Event.Amount) + "}; $errors = {title: '', time: '', description: '', amount: ''}"}
+					>
+					{ctxi18n.T(ctx, "actions.cancel")}
+					</button>
+				</div>
+			</form>
+		</div>
+		<div data-show="$formState !== '' && $eventFormState === ''" style="display: none" class="pb">
+			<h3 data-show="$formState === 'add'">{ctxi18n.T(ctx, "participants.new")}</h3>
+			<h3 data-show="$formState === 'edit'">{ctxi18n.T(ctx, "participants.edit")}</h3>
+			<form class="form">
+				<div data-show="$formState === 'add'">
+				<label>{ctxi18n.T(ctx, "participants.member")}</label>
+				<select data-bind="formData.memberId">
+					<option value="">{ctxi18n.T(ctx, "participants.select_member")}</option>
+					for _, member := range data.Members {
+						<option value={ fmt.Sprintf("%s", member.ID) }>{ member.Name }</option>
+					}
+				</select>
+				<div data-show="$errors && $errors.memberId" class="color-error" data-text="$errors.memberId"></div>
 			</div>
-			<div style="font-weight: bold; padding: 10px 0">
-			<strong>{ctxi18n.T(ctx, "participants.total")}:</strong>
-				<span data-text="$formData.amount + $formData.expense"></span>
+			<div data-show="$formState === 'edit'">
+				<label>{ctxi18n.T(ctx, "participants.member")}</label>
+				<input type="text" data-bind="formData.memberName" disabled/>
 			</div>
-			<div class="row">
-				<button
-					class="btn btn-primary"
-					type="button"
-					data-show="$formState === 'add'"
-					data-on:click={ fmt.Sprintf("@post('/groups/%s/events/%s/participants')", data.GroupID, data.Event.ID) }
-				>
-				{ctxi18n.T(ctx, "participants.add")}
-				</button>
-				<button
-					class="btn btn-primary"
-					type="button"
-					data-show="$formState === 'edit'"
-					data-on:click={ fmt.Sprintf("@put('/groups/%s/events/%s/participants/' + $editingId)", data.GroupID, data.Event.ID) }
-				>
-				{ctxi18n.T(ctx, "participants.update")}
-				</button>
-				<button
-					class="btn"
-					type="button"
-				data-on:click="$formState = ''; $editingId = ''; $calcPercent = 0; $formData = {memberId: '', memberName: '', amount: 0, expense: 0}; $errors = {memberId: '', amount: '', expense: ''}"
-				>
-				{ctxi18n.T(ctx, "actions.cancel")}
-				</button>
-			</div>
-		</form>
-	</div>
+				<div>
+				<label>{ctxi18n.T(ctx, "participants.cut_amount")}</label>
+					<div class="row">
+						<input type="number" data-bind="formData.amount" step="1" style="flex: 1"/>
+						<button
+							class="btn"
+							type="button"
+							data-on:click={ fmt.Sprintf("$calcPercent = $formData.amount > 0 ? Math.round($formData.amount / %d * 10000) / 100 : 0", data.Event.Amount) }
+						>
+							{ctxi18n.T(ctx, "participants.calc_percent")}
+						</button>
+					</div>
+					<div data-show="$errors && $errors.amount" class="color-error" data-text="$errors.amount"></div>
+				</div>
+				<div>
+				<label>{ctxi18n.T(ctx, "participants.quick_calc")}</label>
+					<div class="row">
+					<input type="number" data-bind="calcPercent" step="0.01" min="0" placeholder={ctxi18n.T(ctx, "participants.quick_calc_placeholder")} style="flex: 1"/>
+						<button
+							class="btn"
+							type="button"
+							data-on:click={ fmt.Sprintf("$formData.amount = Math.round(%d * $calcPercent / 100)", data.Event.Amount) }
+						>
+							{ctxi18n.T(ctx, "participants.calc_amount")}
+						</button>
+					</div>
+				</div>
+				<div>
+				<label>{ctxi18n.T(ctx, "participants.expense")}</label>
+					<input type="number" data-bind="formData.expense" step="1"/>
+					<div data-show="$errors && $errors.expense" class="color-error" data-text="$errors.expense"></div>
+				</div>
+				<div style="font-weight: bold; padding: 10px 0">
+				<strong>{ctxi18n.T(ctx, "participants.total")}:</strong>
+					<span data-text="$formData.amount + $formData.expense"></span>
+				</div>
+				<div class="row">
+					<button
+						class="btn btn-primary"
+						type="button"
+						data-show="$formState === 'add'"
+						data-on:click={ fmt.Sprintf("@post('/groups/%s/events/%s/participants')", data.GroupID, data.Event.ID) }
+					>
+					{ctxi18n.T(ctx, "participants.add")}
+					</button>
+					<button
+						class="btn btn-primary"
+						type="button"
+						data-show="$formState === 'edit'"
+						data-on:click={ fmt.Sprintf("@put('/groups/%s/events/%s/participants/' + $editingId)", data.GroupID, data.Event.ID) }
+					>
+					{ctxi18n.T(ctx, "participants.update")}
+					</button>
+					<button
+						class="btn"
+						type="button"
+					data-on:click="$formState = ''; $editingId = ''; $calcPercent = 0; $formData = {memberId: '', memberName: '', amount: 0, expense: 0}; $errors = {memberId: '', amount: '', expense: ''}"
+					>
+					{ctxi18n.T(ctx, "actions.cancel")}
+					</button>
+				</div>
+			</form>
+		</div>
+	} else {
+		<p class="text-muted">Read-only access</p>
+	}
 }

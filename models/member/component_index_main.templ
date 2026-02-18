@@ -16,7 +16,9 @@ templ MemberIndexMain(data MembersData) {
 			<tr>
 				<th>{ctxi18n.T(ctx, "fields.name")}</th>
 				<th>{ctxi18n.T(ctx, "fields.description")}</th>
-				<th>{ctxi18n.T(ctx, "table.actions")}</th>
+				if data.IsAdmin {
+					<th>{ctxi18n.T(ctx, "table.actions")}</th>
+				}
 			</tr>
 		</thead>
 		<tbody>
@@ -24,30 +26,36 @@ templ MemberIndexMain(data MembersData) {
 				<tr data-member-name={member.Name} data-member-description={member.Description}>
 					<td><a href={fmt.Sprintf("/groups/%s/members/%s", data.GroupID, member.ID)}>{member.Name}</a></td>
 					<td>{member.Description}</td>
-					<td>
-						<div class="row">
+					if data.IsAdmin {
+						<td>
+							<div class="row">
+								<button
+									class="btn"
+									type="button"
+									data-attr:disabled="$formState !== ''"
+									data-on:click={fmt.Sprintf("$formState = 'edit'; $editingId = %q; $formData = {name: el.closest('tr').dataset.memberName, description: el.closest('tr').dataset.memberDescription}", member.ID)}
+								>
+								{ctxi18n.T(ctx, "actions.edit")}
+							</button>
 							<button
-								class="btn"
-								type="button"
+								class="btn btn-danger"
 								data-attr:disabled="$formState !== ''"
-								data-on:click={fmt.Sprintf("$formState = 'edit'; $editingId = %q; $formData = {name: el.closest('tr').dataset.memberName, description: el.closest('tr').dataset.memberDescription}", member.ID)}
+								data-on:click={fmt.Sprintf("if (window.confirm(%q)) { @delete('/groups/%s/members/%s') }", ctxi18n.T(ctx, "members.delete_confirm"), data.GroupID, member.ID)}
 							>
-							{ctxi18n.T(ctx, "actions.edit")}
-						</button>
-						<button
-							class="btn btn-danger"
-							data-attr:disabled="$formState !== ''"
-							data-on:click={fmt.Sprintf("if (window.confirm(%q)) { @delete('/groups/%s/members/%s') }", ctxi18n.T(ctx, "members.delete_confirm"), data.GroupID, member.ID)}
-						>
-							{ctxi18n.T(ctx, "actions.delete")}
-						</button>
-						</div>
-					</td>
+								{ctxi18n.T(ctx, "actions.delete")}
+							</button>
+							</div>
+						</td>
+					}
 				</tr>
 			}
 			if len(data.Members) == 0 {
 				<tr>
-					<td colspan="3">{ctxi18n.T(ctx, "table.empty")}</td>
+					if data.IsAdmin {
+						<td colspan="3">{ctxi18n.T(ctx, "table.empty")}</td>
+					} else {
+						<td colspan="2">{ctxi18n.T(ctx, "table.empty")}</td>
+					}
 				</tr>
 			}
 		</tbody>

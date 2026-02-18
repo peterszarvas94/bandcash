@@ -11,6 +11,7 @@ type MemberData struct {
 	Events      []db.ListParticipantsByMemberRow
 	Breadcrumbs []utils.Crumb
 	GroupID     string
+	IsAdmin     bool
 }
 
 type MembersData struct {
@@ -18,4 +19,5 @@ type MembersData struct {
 	Members     []db.Member
 	Breadcrumbs []utils.Crumb
 	GroupID     string
+	IsAdmin     bool
 }

@@ -43,7 +43,9 @@ templ EventShowMain(data EventData) {
 				<th>{ ctxi18n.T(ctx, "participants.cut") }</th>
 				<th>{ ctxi18n.T(ctx, "participants.expense") }</th>
 				<th>{ ctxi18n.T(ctx, "participants.total") }</th>
-				<th></th>
+				if data.IsAdmin {
+					<th></th>
+				}
 			</tr>
 		</thead>
 		<tbody>
@@ -59,31 +61,37 @@ templ EventShowMain(data EventData) {
 					<td class="text-right">{ fmt.Sprintf("%d", participant.ParticipantAmount) }</td>
 					<td class="text-right">{ fmt.Sprintf("%d", participant.ParticipantExpense) }</td>
 					<td class="text-right">{ fmt.Sprintf("%d", participant.ParticipantAmount+participant.ParticipantExpense) }</td>
-					<td class="text-right">
-						<div class="row">
-							<button
-								class="btn"
-								type="button"
-								data-attr:disabled="$formState !== '' || $eventFormState !== ''"
-								data-on:click={ fmt.Sprintf("$formState = 'edit'; $editingId = %q; $formData = {memberId: el.closest('tr').dataset.memberId, memberName: el.closest('tr').dataset.memberName, amount: Number(el.closest('tr').dataset.participantAmount), expense: Number(el.closest('tr').dataset.participantExpense)}", participant.ID) }
-							>
-								{ ctxi18n.T(ctx, "actions.edit") }
-							</button>
-							<button
-								class="btn btn-danger"
-								type="button"
-								data-attr:disabled="$formState !== '' || $eventFormState !== ''"
-								data-on:click={ fmt.Sprintf("if (window.confirm(%q)) { @delete('/groups/%s/events/%s/participants/%s') }", ctxi18n.T(ctx, "participants.delete_confirm"), data.GroupID, data.Event.ID, participant.ID) }
-							>
-								{ ctxi18n.T(ctx, "actions.delete") }
-							</button>
-						</div>
-					</td>
+					if data.IsAdmin {
+						<td class="text-right">
+							<div class="row">
+								<button
+									class="btn"
+									type="button"
+									data-attr:disabled="$formState !== '' || $eventFormState !== ''"
+									data-on:click={ fmt.Sprintf("$formState = 'edit'; $editingId = %q; $formData = {memberId: el.closest('tr').dataset.memberId, memberName: el.closest('tr').dataset.memberName, amount: Number(el.closest('tr').dataset.participantAmount), expense: Number(el.closest('tr').dataset.participantExpense)}", participant.ID) }
+								>
+									{ ctxi18n.T(ctx, "actions.edit") }
+								</button>
+								<button
+									class="btn btn-danger"
+									type="button"
+									data-attr:disabled="$formState !== '' || $eventFormState !== ''"
+									data-on:click={ fmt.Sprintf("if (window.confirm(%q)) { @delete('/groups/%s/events/%s/participants/%s') }", ctxi18n.T(ctx, "participants.delete_confirm"), data.GroupID, data.Event.ID, participant.ID) }
+								>
+									{ ctxi18n.T(ctx, "actions.delete") }
+								</button>
+							</div>
+						</td>
+					}
 				</tr>
 			}
 			if len(data.Participants) == 0 {
 				<tr>
-					<td colspan="6">{ ctxi18n.T(ctx, "table.empty") }</td>
+					if data.IsAdmin {
+						<td colspan="6">{ ctxi18n.T(ctx, "table.empty") }</td>
+					} else {
+						<td colspan="5">{ ctxi18n.T(ctx, "table.empty") }</td>
+					}
 				</tr>
 			}
 		</tbody>

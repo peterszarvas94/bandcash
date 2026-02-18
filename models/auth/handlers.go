@@ -189,15 +189,8 @@ func (a *Auth) VerifyMagicLink(c echo.Context) error {
 		SameSite: http.SameSiteStrictMode,
 	})
 
-	// Redirect based on whether user has a group
-	group, _ := db.Qry.GetGroupByAdmin(c.Request().Context(), user.ID)
-	if group.ID != "" {
-		return c.Redirect(http.StatusFound, "/groups/"+group.ID+"/events")
-	}
-
-	// Check if user is a reader in any group
-	// For now, redirect to create group page
-	return c.Redirect(http.StatusFound, "/groups/new")
+	// Redirect to group dashboard
+	return c.Redirect(http.StatusFound, "/groups")
 }
 
 // Logout clears the session
@@ -216,15 +209,41 @@ func (a *Auth) Logout(c echo.Context) error {
 func (a *Auth) Dashboard(c echo.Context) error {
 	userID := middleware.GetUserID(c)
 
-	// Check if user is admin of a group
-	group, err := db.Qry.GetGroupByAdmin(c.Request().Context(), userID)
-	if err == nil && group.ID != "" {
-		return c.Redirect(http.StatusFound, "/groups/"+group.ID+"/events")
+	adminGroups, err := db.Qry.ListGroupsByAdmin(c.Request().Context(), userID)
+	if err != nil {
+		slog.Error("auth: failed to load admin groups", "err", err)
+		return c.Redirect(http.StatusFound, "/groups/new")
 	}
 
-	// Check if user is reader in any groups
-	// TODO: implement list of groups where user is reader
+	readerGroups, err := db.Qry.ListGroupsByReader(c.Request().Context(), userID)
+	if err != nil {
+		slog.Error("auth: failed to load reader groups", "err", err)
+		return c.Redirect(http.StatusFound, "/groups/new")
+	}
 
-	// Show create group page
-	return c.Redirect(http.StatusFound, "/groups/new")
+	// Dedupe reader groups where user is admin
+	adminMap := make(map[string]bool, len(adminGroups))
+	for _, group := range adminGroups {
+		adminMap[group.ID] = true
+	}
+	filteredReaders := make([]db.Group, 0, len(readerGroups))
+	for _, group := range readerGroups {
+		if adminMap[group.ID] {
+			continue
+		}
+		filteredReaders = append(filteredReaders, group)
+	}
+
+	if len(adminGroups)+len(filteredReaders) == 0 {
+		return c.Redirect(http.StatusFound, "/groups/new")
+	}
+
+	if len(adminGroups)+len(filteredReaders) == 1 {
+		if len(adminGroups) == 1 {
+			return c.Redirect(http.StatusFound, "/groups/"+adminGroups[0].ID+"/events")
+		}
+		return c.Redirect(http.StatusFound, "/groups/"+filteredReaders[0].ID+"/events")
+	}
+
+	return c.Redirect(http.StatusFound, "/groups")
 }
