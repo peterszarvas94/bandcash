@@ -20,6 +20,7 @@ import (
 	"bandcash/internal/utils"
 	"bandcash/models/auth"
 	"bandcash/models/event"
+	"bandcash/models/group"
 	"bandcash/models/health"
 	"bandcash/models/home"
 	"bandcash/models/member"
@@ -52,6 +53,7 @@ func main() {
 
 	health.Register(e)
 	auth.Register(e)
+	group.Register(e)
 	home.Register(e)
 	event.Register(e)
 	member.Register(e)
