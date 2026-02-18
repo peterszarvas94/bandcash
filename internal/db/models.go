@@ -9,7 +9,7 @@ import (
 )
 
 type Event struct {
-	ID          int64        `json:"id"`
+	ID          string       `json:"id"`
 	Title       string       `json:"title"`
 	Time        string       `json:"time"`
 	Description string       `json:"description"`
@@ -19,7 +19,7 @@ type Event struct {
 }
 
 type Member struct {
-	ID          int64        `json:"id"`
+	ID          string       `json:"id"`
 	Name        string       `json:"name"`
 	Description string       `json:"description"`
 	CreatedAt   sql.NullTime `json:"created_at"`
@@ -27,10 +27,10 @@ type Member struct {
 }
 
 type Participant struct {
-	EventID   int64        `json:"event_id"`
-	MemberID  int64        `json:"member_id"`
+	EventID   string       `json:"event_id"`
+	MemberID  string       `json:"member_id"`
 	Amount    int64        `json:"amount"`
+	Expense   int64        `json:"expense"`
 	CreatedAt sql.NullTime `json:"created_at"`
 	UpdatedAt sql.NullTime `json:"updated_at"`
-	Expense   int64        `json:"expense"`
 }

@@ -2,7 +2,6 @@ package member
 
 import (
 	"context"
-	"strconv"
 
 	ctxi18n "github.com/invopop/ctxi18n/i18n"
 
@@ -17,13 +16,13 @@ func New() *Members {
 	return &Members{}
 }
 
-func (p *Members) GetShowData(ctx context.Context, id int) (MemberData, error) {
-	member, err := db.Qry.GetMember(ctx, int64(id))
+func (p *Members) GetShowData(ctx context.Context, id string) (MemberData, error) {
+	member, err := db.Qry.GetMember(ctx, id)
 	if err != nil {
 		return MemberData{}, err
 	}
 
-	events, err := db.Qry.ListParticipantsByMember(ctx, int64(id))
+	events, err := db.Qry.ListParticipantsByMember(ctx, id)
 	if err != nil {
 		return MemberData{}, err
 	}
@@ -34,7 +33,7 @@ func (p *Members) GetShowData(ctx context.Context, id int) (MemberData, error) {
 		Events: events,
 		Breadcrumbs: []utils.Crumb{
 			{Label: ctxi18n.T(ctx, "members.title"), Href: "/member"},
-			{Label: member.Name, Href: "/member/" + strconv.Itoa(id)},
+			{Label: member.Name, Href: "/member/" + id},
 		},
 	}, nil
 }

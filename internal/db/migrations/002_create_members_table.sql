@@ -1,6 +1,6 @@
 -- +goose Up
-CREATE TABLE IF NOT EXISTS payees (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
+CREATE TABLE IF NOT EXISTS members (
+    id TEXT PRIMARY KEY,
     name TEXT NOT NULL,
     description TEXT NOT NULL,
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
@@ -8,4 +8,4 @@ CREATE TABLE IF NOT EXISTS payees (
 );
 
 -- +goose Down
-DROP TABLE IF EXISTS payees;
+DROP TABLE IF EXISTS members;

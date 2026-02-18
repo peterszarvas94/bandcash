@@ -1,6 +1,6 @@
 -- name: CreateEvent :one
-INSERT INTO events (title, time, description, amount)
-VALUES (?, ?, ?, ?)
+INSERT INTO events (id, title, time, description, amount)
+VALUES (?, ?, ?, ?, ?)
 RETURNING *;
 
 -- name: GetEvent :one

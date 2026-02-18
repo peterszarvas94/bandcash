@@ -13,14 +13,14 @@ import (
 const addParticipant = `-- name: AddParticipant :one
 INSERT INTO participants (event_id, member_id, amount, expense)
 VALUES (?, ?, ?, ?)
-RETURNING event_id, member_id, amount, created_at, updated_at, expense
+RETURNING event_id, member_id, amount, expense, created_at, updated_at
 `
 
 type AddParticipantParams struct {
-	EventID  int64 `json:"event_id"`
-	MemberID int64 `json:"member_id"`
-	Amount   int64 `json:"amount"`
-	Expense  int64 `json:"expense"`
+	EventID  string `json:"event_id"`
+	MemberID string `json:"member_id"`
+	Amount   int64  `json:"amount"`
+	Expense  int64  `json:"expense"`
 }
 
 func (q *Queries) AddParticipant(ctx context.Context, arg AddParticipantParams) (Participant, error) {
@@ -35,9 +35,9 @@ func (q *Queries) AddParticipant(ctx context.Context, arg AddParticipantParams) 
 		&i.EventID,
 		&i.MemberID,
 		&i.Amount,
+		&i.Expense,
 		&i.CreatedAt,
 		&i.UpdatedAt,
-		&i.Expense,
 	)
 	return i, err
 }
@@ -51,7 +51,7 @@ ORDER BY members.name ASC
 `
 
 type ListParticipantsByEventRow struct {
-	ID                 int64        `json:"id"`
+	ID                 string       `json:"id"`
 	Name               string       `json:"name"`
 	Description        string       `json:"description"`
 	CreatedAt          sql.NullTime `json:"created_at"`
@@ -60,7 +60,7 @@ type ListParticipantsByEventRow struct {
 	ParticipantExpense int64        `json:"participant_expense"`
 }
 
-func (q *Queries) ListParticipantsByEvent(ctx context.Context, eventID int64) ([]ListParticipantsByEventRow, error) {
+func (q *Queries) ListParticipantsByEvent(ctx context.Context, eventID string) ([]ListParticipantsByEventRow, error) {
 	rows, err := q.db.QueryContext(ctx, listParticipantsByEvent, eventID)
 	if err != nil {
 		return nil, err
@@ -100,7 +100,7 @@ ORDER BY events.created_at DESC
 `
 
 type ListParticipantsByMemberRow struct {
-	ID                 int64        `json:"id"`
+	ID                 string       `json:"id"`
 	Title              string       `json:"title"`
 	Time               string       `json:"time"`
 	Description        string       `json:"description"`
@@ -111,7 +111,7 @@ type ListParticipantsByMemberRow struct {
 	ParticipantExpense int64        `json:"participant_expense"`
 }
 
-func (q *Queries) ListParticipantsByMember(ctx context.Context, memberID int64) ([]ListParticipantsByMemberRow, error) {
+func (q *Queries) ListParticipantsByMember(ctx context.Context, memberID string) ([]ListParticipantsByMemberRow, error) {
 	rows, err := q.db.QueryContext(ctx, listParticipantsByMember, memberID)
 	if err != nil {
 		return nil, err
@@ -150,8 +150,8 @@ WHERE event_id = ? AND member_id = ?
 `
 
 type RemoveParticipantParams struct {
-	EventID  int64 `json:"event_id"`
-	MemberID int64 `json:"member_id"`
+	EventID  string `json:"event_id"`
+	MemberID string `json:"member_id"`
 }
 
 func (q *Queries) RemoveParticipant(ctx context.Context, arg RemoveParticipantParams) error {
@@ -166,10 +166,10 @@ WHERE event_id = ? AND member_id = ?
 `
 
 type UpdateParticipantParams struct {
-	Amount   int64 `json:"amount"`
-	Expense  int64 `json:"expense"`
-	EventID  int64 `json:"event_id"`
-	MemberID int64 `json:"member_id"`
+	Amount   int64  `json:"amount"`
+	Expense  int64  `json:"expense"`
+	EventID  string `json:"event_id"`
+	MemberID string `json:"member_id"`
 }
 
 func (q *Queries) UpdateParticipant(ctx context.Context, arg UpdateParticipantParams) error {

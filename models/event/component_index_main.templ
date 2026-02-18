@@ -30,7 +30,7 @@ templ EventIndexMain(data EventsData) {
 					data-event-description={event.Description}
 					data-event-amount={fmt.Sprintf("%d", event.Amount)}
 				>
-					<td><a href={fmt.Sprintf("/event/%d", event.ID)}>{event.Title}</a></td>
+					<td><a href={fmt.Sprintf("/event/%s", event.ID)}>{event.Title}</a></td>
 					<td>{event.Time}</td>
 					<td>{event.Description}</td>
 					<td class="text-right">{fmt.Sprintf("%d", event.Amount)}</td>
@@ -40,14 +40,14 @@ templ EventIndexMain(data EventsData) {
 								class="btn"
 								type="button"
 								data-attr:disabled="$formState !== ''"
-								data-on:click={fmt.Sprintf("$formState = 'edit'; $editingId = %d; $formData = {title: el.closest('tr').dataset.eventTitle, time: el.closest('tr').dataset.eventTime, description: el.closest('tr').dataset.eventDescription, amount: Number(el.closest('tr').dataset.eventAmount)}", event.ID)}
+								data-on:click={fmt.Sprintf("$formState = 'edit'; $editingId = %q; $formData = {title: el.closest('tr').dataset.eventTitle, time: el.closest('tr').dataset.eventTime, description: el.closest('tr').dataset.eventDescription, amount: Number(el.closest('tr').dataset.eventAmount)}", event.ID)}
 							>
 								{ctxi18n.T(ctx, "actions.edit")}
 							</button>
 							<button
 								class="btn btn-danger"
 								data-attr:disabled="$formState !== ''"
-							data-on:click={fmt.Sprintf("if (window.confirm(%q)) { @delete('/event/%d') }", ctxi18n.T(ctx, "events.delete_confirm"), event.ID)}
+							data-on:click={fmt.Sprintf("if (window.confirm(%q)) { @delete('/event/%s') }", ctxi18n.T(ctx, "events.delete_confirm"), event.ID)}
 							>
 								{ctxi18n.T(ctx, "actions.delete")}
 							</button>

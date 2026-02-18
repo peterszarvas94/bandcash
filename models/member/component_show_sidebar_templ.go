@@ -68,7 +68,7 @@ func MemberShowSidebar(data MemberData) templ.Component {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var4 string
-		templ_7745c5c3_Var4, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("if (window.confirm(%q)) { @delete('/member/%d') }", ctxi18n.T(ctx, "members.delete_confirm"), data.Member.ID))
+		templ_7745c5c3_Var4, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("if (window.confirm(%q)) { @delete('/member/%s') }", ctxi18n.T(ctx, "members.delete_confirm"), data.Member.ID))
 		if templ_7745c5c3_Err != nil {
 			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/member/component_show_sidebar.templ`, Line: 26, Col: 140}
 		}
@@ -133,7 +133,7 @@ func MemberShowSidebar(data MemberData) templ.Component {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var9 string
-		templ_7745c5c3_Var9, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("@put('/member/%d')", data.Member.ID))
+		templ_7745c5c3_Var9, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("@put('/member/%s')", data.Member.ID))
 		if templ_7745c5c3_Err != nil {
 			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/member/component_show_sidebar.templ`, Line: 47, Col: 113}
 		}

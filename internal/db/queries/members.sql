@@ -1,6 +1,6 @@
 -- name: CreateMember :one
-INSERT INTO members (name, description)
-VALUES (?, ?)
+INSERT INTO members (id, name, description)
+VALUES (?, ?, ?)
 RETURNING *;
 
 -- name: GetMember :one

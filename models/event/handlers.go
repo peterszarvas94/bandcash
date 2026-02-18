@@ -2,7 +2,6 @@ package event
 
 import (
 	"log/slog"
-	"strconv"
 
 	"github.com/labstack/echo/v4"
 	"github.com/starfederation/datastar-go/datastar"
@@ -28,12 +27,8 @@ type eventData struct {
 	Amount      int64  `json:"amount" validate:"required,gt=0"`
 }
 
-type participantParams struct {
-	ParticipantForm participantData `json:"participantForm"`
-}
-
 type participantData struct {
-	MemberID   int64  `json:"memberId" validate:"required,gt=0"`
+	MemberID   string `json:"memberId" validate:"required"`
 	MemberName string `json:"memberName"`
 	Amount     int64  `json:"amount" validate:"required,gte=0"`
 	Expense    int64  `json:"expense" validate:"gte=0"`
@@ -48,14 +43,14 @@ var (
 	defaultEventSignals = map[string]any{
 		"mode":      "",
 		"formState": "",
-		"editingId": 0,
+		"editingId": "",
 		"formData":  map[string]any{"title": "", "time": "", "description": "", "amount": 0},
 	}
 	defaultParticipantSignals = map[string]any{
 		"formState":   "",
-		"editingId":   0,
+		"editingId":   "",
 		"calcPercent": 0,
-		"formData":    map[string]any{"memberId": 0, "memberName": "", "amount": 0, "expense": 0},
+		"formData":    map[string]any{"memberId": "", "memberName": "", "amount": 0, "expense": 0},
 	}
 	// Error field lists for validation
 	eventErrorFields       = []string{"title", "time", "description", "amount"}
@@ -78,9 +73,9 @@ func (e *Events) Index(c echo.Context) error {
 func (e *Events) Show(c echo.Context) error {
 	utils.EnsureClientID(c)
 
-	id, err := strconv.Atoi(c.Param("id"))
-	if err != nil {
-		slog.Warn("event.show: invalid id", "err", err)
+	id := c.Param("id")
+	if id == "" {
+		slog.Warn("event.show: invalid id")
 		return c.NoContent(400)
 	}
 
@@ -111,6 +106,7 @@ func (e *Events) Create(c echo.Context) error {
 	}
 
 	event, err := db.Qry.CreateEvent(c.Request().Context(), db.CreateEventParams{
+		ID:          utils.GenerateID(utils.PrefixEvent),
 		Title:       signals.FormData.Title,
 		Time:        signals.FormData.Time,
 		Description: signals.FormData.Description,
@@ -142,14 +138,14 @@ func (e *Events) Create(c echo.Context) error {
 }
 
 func (e *Events) Update(c echo.Context) error {
-	id, err := strconv.Atoi(c.Param("id"))
-	if err != nil {
-		slog.Warn("event.update: invalid id", "err", err)
+	id := c.Param("id")
+	if id == "" {
+		slog.Warn("event.update: invalid id")
 		return c.NoContent(400)
 	}
 
 	var signals eventInlineParams
-	err = datastar.ReadSignals(c.Request(), &signals)
+	err := datastar.ReadSignals(c.Request(), &signals)
 	if err != nil {
 		slog.Warn("event.update: failed to read signals", "err", err)
 		return c.NoContent(400)
@@ -171,7 +167,7 @@ func (e *Events) Update(c echo.Context) error {
 		Time:        eventForm.Time,
 		Description: eventForm.Description,
 		Amount:      eventForm.Amount,
-		ID:          int64(id),
+		ID:          id,
 	})
 	if err != nil {
 		slog.Error("event.update: failed to update event", "err", err)
@@ -222,20 +218,20 @@ func (e *Events) Update(c echo.Context) error {
 }
 
 func (e *Events) Destroy(c echo.Context) error {
-	id, err := strconv.Atoi(c.Param("id"))
-	if err != nil {
-		slog.Warn("event.destroy: invalid id", "err", err)
+	id := c.Param("id")
+	if id == "" {
+		slog.Warn("event.destroy: invalid id")
 		return c.NoContent(400)
 	}
 
 	var signals modeParams
-	err = datastar.ReadSignals(c.Request(), &signals)
+	err := datastar.ReadSignals(c.Request(), &signals)
 	if err != nil {
 		slog.Warn("event.destroy: failed to read signals", "err", err)
 		return c.NoContent(400)
 	}
 
-	err = db.Qry.DeleteEvent(c.Request().Context(), int64(id))
+	err = db.Qry.DeleteEvent(c.Request().Context(), id)
 	if err != nil {
 		slog.Error("event.destroy: failed to delete event", "err", err)
 		return c.NoContent(500)
@@ -269,14 +265,14 @@ func (e *Events) Destroy(c echo.Context) error {
 }
 
 func (e *Events) CreateParticipant(c echo.Context) error {
-	id, err := strconv.Atoi(c.Param("id"))
-	if err != nil {
-		slog.Warn("participant.create.table: invalid event id", "err", err)
+	id := c.Param("id")
+	if id == "" {
+		slog.Warn("participant.create.table: invalid event id")
 		return c.NoContent(400)
 	}
 
 	var signals participantTableParams
-	err = datastar.ReadSignals(c.Request(), &signals)
+	err := datastar.ReadSignals(c.Request(), &signals)
 	if err != nil {
 		slog.Warn("participant.create.table: failed to read signals", "err", err)
 		return c.NoContent(400)
@@ -292,7 +288,7 @@ func (e *Events) CreateParticipant(c echo.Context) error {
 	expense := signals.FormData.Expense
 
 	_, err = db.Qry.AddParticipant(c.Request().Context(), db.AddParticipantParams{
-		EventID:  int64(id),
+		EventID:  id,
 		MemberID: signals.FormData.MemberID,
 		Amount:   signals.FormData.Amount,
 		Expense:  expense,
@@ -321,20 +317,20 @@ func (e *Events) CreateParticipant(c echo.Context) error {
 }
 
 func (e *Events) UpdateParticipant(c echo.Context) error {
-	eventID, err := strconv.Atoi(c.Param("id"))
-	if err != nil {
-		slog.Warn("participant.update: invalid event id", "err", err)
+	eventID := c.Param("id")
+	if eventID == "" {
+		slog.Warn("participant.update: invalid event id")
 		return c.NoContent(400)
 	}
 
-	memberID, err := strconv.Atoi(c.Param("memberId"))
-	if err != nil {
-		slog.Warn("participant.update: invalid member id", "err", err)
+	memberID := c.Param("memberId")
+	if memberID == "" {
+		slog.Warn("participant.update: invalid member id")
 		return c.NoContent(400)
 	}
 
 	var signals participantTableParams
-	err = datastar.ReadSignals(c.Request(), &signals)
+	err := datastar.ReadSignals(c.Request(), &signals)
 	if err != nil {
 		slog.Warn("participant.update: failed to read signals", "err", err)
 		return c.NoContent(400)
@@ -352,8 +348,8 @@ func (e *Events) UpdateParticipant(c echo.Context) error {
 	err = db.Qry.UpdateParticipant(c.Request().Context(), db.UpdateParticipantParams{
 		Amount:   signals.FormData.Amount,
 		Expense:  expense,
-		EventID:  int64(eventID),
-		MemberID: int64(memberID),
+		EventID:  eventID,
+		MemberID: memberID,
 	})
 	if err != nil {
 		slog.Error("participant.update: failed to update participant", "err", err)
@@ -379,21 +375,21 @@ func (e *Events) UpdateParticipant(c echo.Context) error {
 }
 
 func (e *Events) DeleteParticipantTable(c echo.Context) error {
-	eventID, err := strconv.Atoi(c.Param("id"))
-	if err != nil {
-		slog.Warn("participant.delete: invalid event id", "err", err)
+	eventID := c.Param("id")
+	if eventID == "" {
+		slog.Warn("participant.delete: invalid event id")
 		return c.NoContent(400)
 	}
 
-	memberID, err := strconv.Atoi(c.Param("memberId"))
-	if err != nil {
-		slog.Warn("participant.delete: invalid member id", "err", err)
+	memberID := c.Param("memberId")
+	if memberID == "" {
+		slog.Warn("participant.delete: invalid member id")
 		return c.NoContent(400)
 	}
 
-	err = db.Qry.RemoveParticipant(c.Request().Context(), db.RemoveParticipantParams{
-		EventID:  int64(eventID),
-		MemberID: int64(memberID),
+	err := db.Qry.RemoveParticipant(c.Request().Context(), db.RemoveParticipantParams{
+		EventID:  eventID,
+		MemberID: memberID,
 	})
 	if err != nil {
 		slog.Error("participant.delete: failed to remove participant", "err", err)

@@ -9,7 +9,7 @@ import (
 	"time"
 
 	"bandcash/internal/db"
-	_ "bandcash/internal/utils"
+	"bandcash/internal/utils"
 )
 
 type seedEvent struct {
@@ -148,6 +148,7 @@ func main() {
 	createdEvents := make([]db.Event, 0, len(events))
 	for _, event := range events {
 		created, err := db.Qry.CreateEvent(ctx, db.CreateEventParams{
+			ID:          utils.GenerateID(utils.PrefixEvent),
 			Title:       event.Title,
 			Time:        event.Time,
 			Description: event.Description,
@@ -163,6 +164,7 @@ func main() {
 	createdMembers := make([]db.Member, 0, len(members))
 	for _, member := range members {
 		created, err := db.Qry.CreateMember(ctx, db.CreateMemberParams{
+			ID:          utils.GenerateID(utils.PrefixMember),
 			Name:        member.Name,
 			Description: member.Description,
 		})

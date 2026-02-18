@@ -2,7 +2,6 @@ package member
 
 import (
 	"log/slog"
-	"strconv"
 
 	"github.com/labstack/echo/v4"
 	"github.com/starfederation/datastar-go/datastar"
@@ -30,7 +29,7 @@ var (
 	defaultMemberSignals = map[string]any{
 		"mode":      "",
 		"formState": "",
-		"editingId": 0,
+		"editingId": "",
 		"formData":  map[string]any{"name": "", "description": ""},
 	}
 	memberErrorFields = []string{"name", "description"}
@@ -52,9 +51,9 @@ func (p *Members) Index(c echo.Context) error {
 func (p *Members) Show(c echo.Context) error {
 	utils.EnsureClientID(c)
 
-	id, err := strconv.Atoi(c.Param("id"))
-	if err != nil {
-		slog.Warn("member.show: invalid id", "err", err)
+	id := c.Param("id")
+	if id == "" {
+		slog.Warn("member.show: invalid id")
 		return c.NoContent(400)
 	}
 
@@ -82,6 +81,7 @@ func (p *Members) Create(c echo.Context) error {
 	}
 
 	member, err := db.Qry.CreateMember(c.Request().Context(), db.CreateMemberParams{
+		ID:          utils.GenerateID(utils.PrefixMember),
 		Name:        signals.FormData.Name,
 		Description: signals.FormData.Description,
 	})
@@ -110,14 +110,14 @@ func (p *Members) Create(c echo.Context) error {
 }
 
 func (p *Members) Update(c echo.Context) error {
-	id, err := strconv.Atoi(c.Param("id"))
-	if err != nil {
-		slog.Warn("member.update: invalid id", "err", err)
+	id := c.Param("id")
+	if id == "" {
+		slog.Warn("member.update: invalid id")
 		return c.NoContent(400)
 	}
 
 	var signals memberTableParams
-	err = datastar.ReadSignals(c.Request(), &signals)
+	err := datastar.ReadSignals(c.Request(), &signals)
 	if err != nil {
 		slog.Warn("member.update: failed to read signals", "err", err)
 		return c.NoContent(400)
@@ -132,7 +132,7 @@ func (p *Members) Update(c echo.Context) error {
 	_, err = db.Qry.UpdateMember(c.Request().Context(), db.UpdateMemberParams{
 		Name:        signals.FormData.Name,
 		Description: signals.FormData.Description,
-		ID:          int64(id),
+		ID:          id,
 	})
 	if err != nil {
 		slog.Error("member.update: failed to update member", "err", err)
@@ -142,7 +142,7 @@ func (p *Members) Update(c echo.Context) error {
 	slog.Debug("member.update", "id", id)
 
 	if signals.Mode == "single" {
-		err = utils.SSEHub.Redirect(c, "/member/"+strconv.Itoa(id))
+		err = utils.SSEHub.Redirect(c, "/member/"+id)
 		if err != nil {
 			slog.Warn("member.update: failed to redirect", "err", err)
 		}
@@ -167,20 +167,20 @@ func (p *Members) Update(c echo.Context) error {
 }
 
 func (p *Members) Destroy(c echo.Context) error {
-	id, err := strconv.Atoi(c.Param("id"))
-	if err != nil {
-		slog.Warn("member.destroy: invalid id", "err", err)
+	id := c.Param("id")
+	if id == "" {
+		slog.Warn("member.destroy: invalid id")
 		return c.NoContent(400)
 	}
 
 	var signals modeParams
-	err = datastar.ReadSignals(c.Request(), &signals)
+	err := datastar.ReadSignals(c.Request(), &signals)
 	if err != nil {
 		slog.Warn("member.destroy: failed to read signals", "err", err)
 		return c.NoContent(400)
 	}
 
-	err = db.Qry.DeleteMember(c.Request().Context(), int64(id))
+	err = db.Qry.DeleteMember(c.Request().Context(), id)
 	if err != nil {
 		slog.Error("member.destroy: failed to delete member", "err", err)
 		return c.NoContent(500)

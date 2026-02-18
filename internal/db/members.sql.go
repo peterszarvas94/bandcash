@@ -10,18 +10,19 @@ import (
 )
 
 const createMember = `-- name: CreateMember :one
-INSERT INTO members (name, description)
-VALUES (?, ?)
+INSERT INTO members (id, name, description)
+VALUES (?, ?, ?)
 RETURNING id, name, description, created_at, updated_at
 `
 
 type CreateMemberParams struct {
+	ID          string `json:"id"`
 	Name        string `json:"name"`
 	Description string `json:"description"`
 }
 
 func (q *Queries) CreateMember(ctx context.Context, arg CreateMemberParams) (Member, error) {
-	row := q.db.QueryRowContext(ctx, createMember, arg.Name, arg.Description)
+	row := q.db.QueryRowContext(ctx, createMember, arg.ID, arg.Name, arg.Description)
 	var i Member
 	err := row.Scan(
 		&i.ID,
@@ -38,7 +39,7 @@ DELETE FROM members
 WHERE id = ?
 `
 
-func (q *Queries) DeleteMember(ctx context.Context, id int64) error {
+func (q *Queries) DeleteMember(ctx context.Context, id string) error {
 	_, err := q.db.ExecContext(ctx, deleteMember, id)
 	return err
 }
@@ -48,7 +49,7 @@ SELECT id, name, description, created_at, updated_at FROM members
 WHERE id = ?
 `
 
-func (q *Queries) GetMember(ctx context.Context, id int64) (Member, error) {
+func (q *Queries) GetMember(ctx context.Context, id string) (Member, error) {
 	row := q.db.QueryRowContext(ctx, getMember, id)
 	var i Member
 	err := row.Scan(
@@ -105,7 +106,7 @@ RETURNING id, name, description, created_at, updated_at
 type UpdateMemberParams struct {
 	Name        string `json:"name"`
 	Description string `json:"description"`
-	ID          int64  `json:"id"`
+	ID          string `json:"id"`
 }
 
 func (q *Queries) UpdateMember(ctx context.Context, arg UpdateMemberParams) (Member, error) {

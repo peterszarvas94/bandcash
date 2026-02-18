@@ -34,7 +34,7 @@ templ MemberShowMain(data MemberData) {
 		<tbody>
 			for _, event := range data.Events {
 				<tr>
-					<td><a href={fmt.Sprintf("/event/%d", event.ID)}>{event.Title}</a></td>
+					<td><a href={fmt.Sprintf("/event/%s", event.ID)}>{event.Title}</a></td>
 					<td>{event.Time}</td>
 					<td>{event.Description}</td>
 					<td class="text-right">{fmt.Sprintf("%d", event.Amount)}</td>

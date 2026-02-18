@@ -17,13 +17,13 @@ func New() *Events {
 	return &Events{}
 }
 
-func (e *Events) GetShowData(ctx context.Context, id int) (EventData, error) {
-	event, err := db.Qry.GetEvent(ctx, int64(id))
+func (e *Events) GetShowData(ctx context.Context, id string) (EventData, error) {
+	event, err := db.Qry.GetEvent(ctx, id)
 	if err != nil {
 		return EventData{}, err
 	}
 
-	participants, err := db.Qry.ListParticipantsByEvent(ctx, int64(id))
+	participants, err := db.Qry.ListParticipantsByEvent(ctx, id)
 	if err != nil {
 		return EventData{}, err
 	}
@@ -33,7 +33,7 @@ func (e *Events) GetShowData(ctx context.Context, id int) (EventData, error) {
 		return EventData{}, err
 	}
 
-	memberIDs := make(map[int64]bool, len(participants))
+	memberIDs := make(map[string]bool, len(participants))
 	for _, participant := range participants {
 		memberIDs[participant.ID] = true
 	}

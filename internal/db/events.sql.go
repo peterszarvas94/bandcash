@@ -10,12 +10,13 @@ import (
 )
 
 const createEvent = `-- name: CreateEvent :one
-INSERT INTO events (title, time, description, amount)
-VALUES (?, ?, ?, ?)
+INSERT INTO events (id, title, time, description, amount)
+VALUES (?, ?, ?, ?, ?)
 RETURNING id, title, time, description, amount, created_at, updated_at
 `
 
 type CreateEventParams struct {
+	ID          string `json:"id"`
 	Title       string `json:"title"`
 	Time        string `json:"time"`
 	Description string `json:"description"`
@@ -24,6 +25,7 @@ type CreateEventParams struct {
 
 func (q *Queries) CreateEvent(ctx context.Context, arg CreateEventParams) (Event, error) {
 	row := q.db.QueryRowContext(ctx, createEvent,
+		arg.ID,
 		arg.Title,
 		arg.Time,
 		arg.Description,
@@ -56,7 +58,7 @@ DELETE FROM events
 WHERE id = ?
 `
 
-func (q *Queries) DeleteEvent(ctx context.Context, id int64) error {
+func (q *Queries) DeleteEvent(ctx context.Context, id string) error {
 	_, err := q.db.ExecContext(ctx, deleteEvent, id)
 	return err
 }
@@ -66,7 +68,7 @@ SELECT id, title, time, description, amount, created_at, updated_at FROM events
 WHERE id = ?
 `
 
-func (q *Queries) GetEvent(ctx context.Context, id int64) (Event, error) {
+func (q *Queries) GetEvent(ctx context.Context, id string) (Event, error) {
 	row := q.db.QueryRowContext(ctx, getEvent, id)
 	var i Event
 	err := row.Scan(
@@ -129,7 +131,7 @@ type UpdateEventParams struct {
 	Time        string `json:"time"`
 	Description string `json:"description"`
 	Amount      int64  `json:"amount"`
-	ID          int64  `json:"id"`
+	ID          string `json:"id"`
 }
 
 func (q *Queries) UpdateEvent(ctx context.Context, arg UpdateEventParams) (Event, error) {
