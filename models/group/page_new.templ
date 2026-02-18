@@ -8,22 +8,21 @@ import (
 )
 
 templ GroupNewPage(data NewGroupPageData) {
-	<!doctype html>
-	<html lang={appi18n.LocaleCode(ctx)}>
+	<!DOCTYPE html>
+	<html lang={ appi18n.LocaleCode(ctx) }>
 		@shared.Head(data.Title)
 		<body>
 			<main id="app" class="single-col">
-				<h1>{data.Title}</h1>
+				<h1>{ data.Title }</h1>
 				@shared.Breadcrumbs(data.Breadcrumbs, data.UserEmail)
-				<p>{ctxi18n.T(ctx, "groups.new_desc")}</p>
+				<p>{ ctxi18n.T(ctx, "groups.new_desc") }</p>
 				<form method="POST" action="/groups" class="form">
 					<div class="field">
-						<label>{ctxi18n.T(ctx, "groups.name")}</label>
-						<input type="text" name="name" required placeholder={ctxi18n.T(ctx, "groups.name_placeholder")} />
+						<label>{ ctxi18n.T(ctx, "groups.name") }</label>
+						<input type="text" name="name" required placeholder={ ctxi18n.T(ctx, "groups.name_placeholder") }/>
 					</div>
-					<button type="submit" class="btn btn-primary">{ctxi18n.T(ctx, "groups.create")}</button>
+					<button type="submit" class="btn btn-primary">{ ctxi18n.T(ctx, "groups.create") }</button>
 				</form>
-				<p><a href="/auth/logout">{ctxi18n.T(ctx, "auth.logout")}</a></p>
 			</main>
 		</body>
 	</html>

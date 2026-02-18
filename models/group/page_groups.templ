@@ -8,41 +8,40 @@ import (
 )
 
 templ GroupsPage(data GroupsPageData) {
-	<!doctype html>
-	<html lang={appi18n.LocaleCode(ctx)}>
+	<!DOCTYPE html>
+	<html lang={ appi18n.LocaleCode(ctx) }>
 		@shared.Head(data.Title)
 		<body>
 			<main id="app" class="single-col">
-				<h1>{data.Title}</h1>
+				<h1>{ data.Title }</h1>
 				@shared.Breadcrumbs(data.Breadcrumbs, data.UserEmail)
-				<p class="text-muted">{ctxi18n.T(ctx, "groups.subtitle")}</p>
+				<p class="text-muted">{ ctxi18n.T(ctx, "groups.subtitle") }</p>
 				<p>
-					<a class="btn btn-primary" href="/groups/new">{ctxi18n.T(ctx, "groups.create")}</a>
-					<a class="btn" href="/settings">{ctxi18n.T(ctx, "settings.title")}</a>
+					<a class="btn btn-primary" href="/groups/new">{ ctxi18n.T(ctx, "groups.create") }</a>
+					<a class="btn" href="/settings">{ ctxi18n.T(ctx, "settings.title") }</a>
 				</p>
 				if data.MessageKey != "" {
-					<p class="notice">{ctxi18n.T(ctx, data.MessageKey)}</p>
+					<p class="notice">{ ctxi18n.T(ctx, data.MessageKey) }</p>
 				}
 				if data.ErrorKey != "" {
-					<p class="error">{ctxi18n.T(ctx, data.ErrorKey)}</p>
+					<p class="error">{ ctxi18n.T(ctx, data.ErrorKey) }</p>
 				}
-
-				<h2>{ctxi18n.T(ctx, "groups.admin_list")}</h2>
+				<h2>{ ctxi18n.T(ctx, "groups.admin_list") }</h2>
 				<table class="table">
-					<thead><tr><th>{ctxi18n.T(ctx, "fields.name")}</th><th></th></tr></thead>
+					<thead><tr><th>{ ctxi18n.T(ctx, "fields.name") }</th><th></th></tr></thead>
 					<tbody>
 						if len(data.AdminGroups) == 0 {
-							<tr><td colspan="2">{ctxi18n.T(ctx, "groups.none")}</td></tr>
+							<tr><td colspan="2">{ ctxi18n.T(ctx, "groups.none") }</td></tr>
 						} else {
 							for _, group := range data.AdminGroups {
 								<tr>
-									<td>{group.Name}</td>
+									<td>{ group.Name }</td>
 									<td>
 										<div class="row row-right row-wrap">
-											<a class="btn" href={"/groups/" + group.ID + "/events"}>{ctxi18n.T(ctx, "groups.open")}</a>
-											<a class="btn" href={"/groups/" + group.ID + "/viewers"}>{ctxi18n.T(ctx, "groups.viewers")}</a>
-											<form method="POST" action={"/groups/" + group.ID + "/delete"} style="display:inline">
-												<button type="submit" class="btn btn-danger">{ctxi18n.T(ctx, "groups.delete")}</button>
+											<a class="btn" href={ "/groups/" + group.ID + "/events" }>{ ctxi18n.T(ctx, "groups.open") }</a>
+											<a class="btn" href={ "/groups/" + group.ID + "/viewers" }>{ ctxi18n.T(ctx, "groups.viewers") }</a>
+											<form method="POST" action={ "/groups/" + group.ID + "/delete" } style="display:inline">
+												<button type="submit" class="btn btn-danger">{ ctxi18n.T(ctx, "groups.delete") }</button>
 											</form>
 										</div>
 									</td>
@@ -51,22 +50,21 @@ templ GroupsPage(data GroupsPageData) {
 						}
 					</tbody>
 				</table>
-
-				<h2>{ctxi18n.T(ctx, "groups.viewer_list")}</h2>
+				<h2>{ ctxi18n.T(ctx, "groups.viewer_list") }</h2>
 				<table class="table">
-					<thead><tr><th>{ctxi18n.T(ctx, "fields.name")}</th><th></th></tr></thead>
+					<thead><tr><th>{ ctxi18n.T(ctx, "fields.name") }</th><th></th></tr></thead>
 					<tbody>
 						if len(data.ReaderGroups) == 0 {
-							<tr><td colspan="2">{ctxi18n.T(ctx, "groups.viewer_none")}</td></tr>
+							<tr><td colspan="2">{ ctxi18n.T(ctx, "groups.viewer_none") }</td></tr>
 						} else {
 							for _, group := range data.ReaderGroups {
 								<tr>
-									<td>{group.Name}</td>
+									<td>{ group.Name }</td>
 									<td>
 										<div class="row row-right row-wrap">
-											<a class="btn" href={"/groups/" + group.ID + "/events"}>{ctxi18n.T(ctx, "groups.open")}</a>
-											<form method="POST" action={"/groups/" + group.ID + "/leave"} style="display:inline">
-												<button type="submit" class="btn">{ctxi18n.T(ctx, "groups.leave")}</button>
+											<a class="btn" href={ "/groups/" + group.ID + "/events" }>{ ctxi18n.T(ctx, "groups.open") }</a>
+											<form method="POST" action={ "/groups/" + group.ID + "/leave" } style="display:inline">
+												<button type="submit" class="btn">{ ctxi18n.T(ctx, "groups.leave") }</button>
 											</form>
 										</div>
 									</td>
@@ -75,8 +73,6 @@ templ GroupsPage(data GroupsPageData) {
 						}
 					</tbody>
 				</table>
-
-				<p><a href="/auth/logout">{ctxi18n.T(ctx, "auth.logout")}</a></p>
 			</main>
 		</body>
 	</html>

@@ -8,22 +8,21 @@ import (
 )
 
 templ LoginPage(data AuthPageData) {
-	<!doctype html>
-	<html lang={appi18n.LocaleCode(ctx)}>
+	<!DOCTYPE html>
+	<html lang={ appi18n.LocaleCode(ctx) }>
 		@shared.Head(data.Title)
 		<body>
 			<main id="app" class="single-col">
-				<h1>{data.Title}</h1>
+				<h1>{ data.Title }</h1>
 				@shared.Breadcrumbs(data.Breadcrumbs, data.UserEmail)
 				<form method="POST" action="/auth/login" class="form">
 					<div class="field">
-						<label>{ctxi18n.T(ctx, "auth.email")}</label>
-						<input type="email" name="email" required placeholder={ctxi18n.T(ctx, "auth.email_placeholder")} />
+						<label>{ ctxi18n.T(ctx, "auth.email") }</label>
+						<input type="email" name="email" required placeholder={ ctxi18n.T(ctx, "auth.email_placeholder") }/>
 					</div>
-					<button type="submit" class="btn btn-primary">{ctxi18n.T(ctx, "auth.send_link")}</button>
+					<button type="submit" class="btn btn-primary">{ ctxi18n.T(ctx, "auth.send_link") }</button>
 				</form>
-				<p>{ctxi18n.T(ctx, "auth.no_account")} <a href="/auth/signup">{ctxi18n.T(ctx, "auth.signup")}</a></p>
-				<p><a href="/">{ctxi18n.T(ctx, "nav.home")}</a></p>
+				<p>{ ctxi18n.T(ctx, "auth.no_account") } <a href="/auth/signup">{ ctxi18n.T(ctx, "auth.signup") }</a></p>
 			</main>
 		</body>
 	</html>
