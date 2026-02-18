@@ -18,6 +18,7 @@ import (
 	"bandcash/internal/i18n"
 	"bandcash/internal/middleware"
 	"bandcash/internal/utils"
+	"bandcash/models/auth"
 	"bandcash/models/event"
 	"bandcash/models/health"
 	"bandcash/models/home"
@@ -50,6 +51,7 @@ func main() {
 	e.Static("/static", "static")
 
 	health.Register(e)
+	auth.Register(e)
 	home.Register(e)
 	event.Register(e)
 	member.Register(e)
