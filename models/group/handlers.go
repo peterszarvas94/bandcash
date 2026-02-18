@@ -261,8 +261,8 @@ func renderNewGroupPage(userEmail string) string {
 </head>
 <body>
     <main id="app" class="single-col">
-        %s
         <h1>Create Your Band Group</h1>
+        %s
         <p>Welcome! Let's set up your band's money management system.</p>
         <form method="POST" action="/groups">
             <div class="field">
@@ -326,10 +326,13 @@ func renderGroupsPage(adminGroups, readerGroups []db.Group, userEmail string) st
 </head>
 <body>
     <main id="app" class="single-col">
-        %s
         <h1>Your Groups</h1>
+        %s
         <p class="text-muted">Admin groups can edit; viewer groups are read-only.</p>
-        <p><a class="btn btn-primary" href="/groups/new">Create New Group</a></p>
+        <p>
+            <a class="btn btn-primary" href="/groups/new">Create New Group</a>
+            <a class="btn" href="/settings">Settings</a>
+        </p>
 
         <h2>Admin Groups</h2>
         <table class="table">
@@ -388,8 +391,8 @@ func renderViewersPage(group db.Group, viewers []db.User, msg, errMsg, userEmail
 </head>
 <body>
     <main id="app" class="single-col">
-        %s
         <h1>Viewers for %s</h1>
+        %s
         %s
 
         <h2>Invite Viewer</h2>

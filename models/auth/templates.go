@@ -8,8 +8,8 @@ var loginPageHTML = `<!DOCTYPE html>
 </head>
 <body>
     <main id="app" class="single-col">
-        <nav class="row pb"><a href="/">Home</a><span>&gt;</span><span>Login</span></nav>
         <h1>Login to BandCash</h1>
+        <nav class="row pb"><a href="/">Home</a><span>&gt;</span><span>Login</span></nav>
         <form method="POST" action="/auth/login">
             <div class="field">
                 <label>Email</label>
@@ -36,8 +36,8 @@ func signupPageHTML(email string) string {
 </head>
 <body>
     <main id="app" class="single-col">
-        <nav class="row pb"><a href="/">Home</a><span>&gt;</span><span>Sign Up</span></nav>
         <h1>Create Account</h1>
+        <nav class="row pb"><a href="/">Home</a><span>&gt;</span><span>Sign Up</span></nav>
         <form method="POST" action="/auth/signup">
             <div class="field">
                 <label>Email</label>
@@ -60,8 +60,8 @@ var loginSentPageHTML = `<!DOCTYPE html>
 </head>
 <body>
     <main id="app" class="single-col">
-        <nav class="row pb"><a href="/">Home</a><span>&gt;</span><span>Check Email</span></nav>
         <h1>Check Your Email</h1>
+        <nav class="row pb"><a href="/">Home</a><span>&gt;</span><span>Check Email</span></nav>
         <p>We've sent you a login link. Click the link in your email to access your account.</p>
         <p>The link will expire in 1 hour.</p>
         <p><a href="/">← Back to home</a></p>
