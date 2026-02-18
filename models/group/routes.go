@@ -13,5 +13,11 @@ func Register(e *echo.Echo) *Group {
 	e.GET("/groups/new", grp.NewGroupPage, middleware.RequireAuth())
 	e.POST("/groups", grp.CreateGroup, middleware.RequireAuth())
 
+	// Viewer management (admin only)
+	g := e.Group("/groups/:groupId", middleware.RequireAuth(), middleware.RequireGroup(), middleware.RequireAdmin())
+	g.GET("/viewers", grp.ViewersPage)
+	g.POST("/viewers", grp.AddViewer)
+	g.POST("/viewers/:userId/remove", grp.RemoveViewer)
+
 	return grp
 }
