@@ -10,13 +10,14 @@ import (
 )
 
 const createEvent = `-- name: CreateEvent :one
-INSERT INTO events (id, title, time, description, amount)
-VALUES (?, ?, ?, ?, ?)
-RETURNING id, title, time, description, amount, created_at, updated_at
+INSERT INTO events (id, group_id, title, time, description, amount)
+VALUES (?, ?, ?, ?, ?, ?)
+RETURNING id, group_id, title, time, description, amount, created_at, updated_at
 `
 
 type CreateEventParams struct {
 	ID          string `json:"id"`
+	GroupID     string `json:"group_id"`
 	Title       string `json:"title"`
 	Time        string `json:"time"`
 	Description string `json:"description"`
@@ -26,6 +27,7 @@ type CreateEventParams struct {
 func (q *Queries) CreateEvent(ctx context.Context, arg CreateEventParams) (Event, error) {
 	row := q.db.QueryRowContext(ctx, createEvent,
 		arg.ID,
+		arg.GroupID,
 		arg.Title,
 		arg.Time,
 		arg.Description,
@@ -34,6 +36,7 @@ func (q *Queries) CreateEvent(ctx context.Context, arg CreateEventParams) (Event
 	var i Event
 	err := row.Scan(
 		&i.ID,
+		&i.GroupID,
 		&i.Title,
 		&i.Time,
 		&i.Description,
@@ -55,24 +58,35 @@ func (q *Queries) DeleteAllEvents(ctx context.Context) error {
 
 const deleteEvent = `-- name: DeleteEvent :exec
 DELETE FROM events
-WHERE id = ?
+WHERE id = ? AND group_id = ?
 `
 
-func (q *Queries) DeleteEvent(ctx context.Context, id string) error {
-	_, err := q.db.ExecContext(ctx, deleteEvent, id)
+type DeleteEventParams struct {
+	ID      string `json:"id"`
+	GroupID string `json:"group_id"`
+}
+
+func (q *Queries) DeleteEvent(ctx context.Context, arg DeleteEventParams) error {
+	_, err := q.db.ExecContext(ctx, deleteEvent, arg.ID, arg.GroupID)
 	return err
 }
 
 const getEvent = `-- name: GetEvent :one
-SELECT id, title, time, description, amount, created_at, updated_at FROM events
-WHERE id = ?
+SELECT id, group_id, title, time, description, amount, created_at, updated_at FROM events
+WHERE id = ? AND group_id = ?
 `
 
-func (q *Queries) GetEvent(ctx context.Context, id string) (Event, error) {
-	row := q.db.QueryRowContext(ctx, getEvent, id)
+type GetEventParams struct {
+	ID      string `json:"id"`
+	GroupID string `json:"group_id"`
+}
+
+func (q *Queries) GetEvent(ctx context.Context, arg GetEventParams) (Event, error) {
+	row := q.db.QueryRowContext(ctx, getEvent, arg.ID, arg.GroupID)
 	var i Event
 	err := row.Scan(
 		&i.ID,
+		&i.GroupID,
 		&i.Title,
 		&i.Time,
 		&i.Description,
@@ -84,12 +98,13 @@ func (q *Queries) GetEvent(ctx context.Context, id string) (Event, error) {
 }
 
 const listEvents = `-- name: ListEvents :many
-SELECT id, title, time, description, amount, created_at, updated_at FROM events
+SELECT id, group_id, title, time, description, amount, created_at, updated_at FROM events
+WHERE group_id = ?
 ORDER BY time ASC
 `
 
-func (q *Queries) ListEvents(ctx context.Context) ([]Event, error) {
-	rows, err := q.db.QueryContext(ctx, listEvents)
+func (q *Queries) ListEvents(ctx context.Context, groupID string) ([]Event, error) {
+	rows, err := q.db.QueryContext(ctx, listEvents, groupID)
 	if err != nil {
 		return nil, err
 	}
@@ -99,6 +114,7 @@ func (q *Queries) ListEvents(ctx context.Context) ([]Event, error) {
 		var i Event
 		if err := rows.Scan(
 			&i.ID,
+			&i.GroupID,
 			&i.Title,
 			&i.Time,
 			&i.Description,
@@ -122,8 +138,8 @@ func (q *Queries) ListEvents(ctx context.Context) ([]Event, error) {
 const updateEvent = `-- name: UpdateEvent :one
 UPDATE events
 SET title = ?, time = ?, description = ?, amount = ?
-WHERE id = ?
-RETURNING id, title, time, description, amount, created_at, updated_at
+WHERE id = ? AND group_id = ?
+RETURNING id, group_id, title, time, description, amount, created_at, updated_at
 `
 
 type UpdateEventParams struct {
@@ -132,6 +148,7 @@ type UpdateEventParams struct {
 	Description string `json:"description"`
 	Amount      int64  `json:"amount"`
 	ID          string `json:"id"`
+	GroupID     string `json:"group_id"`
 }
 
 func (q *Queries) UpdateEvent(ctx context.Context, arg UpdateEventParams) (Event, error) {
@@ -141,10 +158,12 @@ func (q *Queries) UpdateEvent(ctx context.Context, arg UpdateEventParams) (Event
 		arg.Description,
 		arg.Amount,
 		arg.ID,
+		arg.GroupID,
 	)
 	var i Event
 	err := row.Scan(
 		&i.ID,
+		&i.GroupID,
 		&i.Title,
 		&i.Time,
 		&i.Description,

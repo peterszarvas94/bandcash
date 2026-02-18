@@ -1,0 +1,70 @@
+-- name: CreateUser :one
+INSERT INTO users (id, email)
+VALUES (?, ?)
+RETURNING *;
+
+-- name: GetUserByEmail :one
+SELECT * FROM users
+WHERE email = ?;
+
+-- name: GetUserByID :one
+SELECT * FROM users
+WHERE id = ?;
+
+-- name: CreateGroup :one
+INSERT INTO groups (id, name, admin_user_id)
+VALUES (?, ?, ?)
+RETURNING *;
+
+-- name: GetGroupByID :one
+SELECT * FROM groups
+WHERE id = ?;
+
+-- name: GetGroupByAdmin :one
+SELECT * FROM groups
+WHERE admin_user_id = ?;
+
+-- name: UpdateGroupAdmin :exec
+UPDATE groups
+SET admin_user_id = ?
+WHERE id = ?;
+
+-- name: DeleteGroup :exec
+DELETE FROM groups
+WHERE id = ?;
+
+-- name: CreateGroupReader :one
+INSERT INTO group_readers (id, user_id, group_id)
+VALUES (?, ?, ?)
+RETURNING *;
+
+-- name: GetGroupReaders :many
+SELECT users.* FROM users
+JOIN group_readers ON group_readers.user_id = users.id
+WHERE group_readers.group_id = ?;
+
+-- name: IsGroupReader :one
+SELECT COUNT(*) FROM group_readers
+WHERE user_id = ? AND group_id = ?;
+
+-- name: RemoveGroupReader :exec
+DELETE FROM group_readers
+WHERE user_id = ? AND group_id = ?;
+
+-- name: CreateMagicLink :one
+INSERT INTO magic_links (id, token, email, action, group_id, expires_at)
+VALUES (?, ?, ?, ?, ?, ?)
+RETURNING *;
+
+-- name: GetMagicLinkByToken :one
+SELECT * FROM magic_links
+WHERE token = ?;
+
+-- name: UseMagicLink :exec
+UPDATE magic_links
+SET used_at = CURRENT_TIMESTAMP
+WHERE id = ?;
+
+-- name: DeleteExpiredMagicLinks :exec
+DELETE FROM magic_links
+WHERE expires_at < CURRENT_TIMESTAMP AND used_at IS NULL;

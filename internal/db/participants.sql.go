@@ -11,12 +11,13 @@ import (
 )
 
 const addParticipant = `-- name: AddParticipant :one
-INSERT INTO participants (event_id, member_id, amount, expense)
-VALUES (?, ?, ?, ?)
-RETURNING event_id, member_id, amount, expense, created_at, updated_at
+INSERT INTO participants (group_id, event_id, member_id, amount, expense)
+VALUES (?, ?, ?, ?, ?)
+RETURNING group_id, event_id, member_id, amount, expense, created_at, updated_at
 `
 
 type AddParticipantParams struct {
+	GroupID  string `json:"group_id"`
 	EventID  string `json:"event_id"`
 	MemberID string `json:"member_id"`
 	Amount   int64  `json:"amount"`
@@ -25,6 +26,7 @@ type AddParticipantParams struct {
 
 func (q *Queries) AddParticipant(ctx context.Context, arg AddParticipantParams) (Participant, error) {
 	row := q.db.QueryRowContext(ctx, addParticipant,
+		arg.GroupID,
 		arg.EventID,
 		arg.MemberID,
 		arg.Amount,
@@ -32,6 +34,7 @@ func (q *Queries) AddParticipant(ctx context.Context, arg AddParticipantParams) 
 	)
 	var i Participant
 	err := row.Scan(
+		&i.GroupID,
 		&i.EventID,
 		&i.MemberID,
 		&i.Amount,
@@ -43,15 +46,21 @@ func (q *Queries) AddParticipant(ctx context.Context, arg AddParticipantParams) 
 }
 
 const listParticipantsByEvent = `-- name: ListParticipantsByEvent :many
-SELECT members.id, members.name, members.description, members.created_at, members.updated_at, participants.amount AS participant_amount, participants.expense AS participant_expense
+SELECT members.id, members.group_id, members.name, members.description, members.created_at, members.updated_at, participants.amount AS participant_amount, participants.expense AS participant_expense
 FROM members
 JOIN participants ON participants.member_id = members.id
-WHERE participants.event_id = ?
+WHERE participants.event_id = ? AND participants.group_id = ?
 ORDER BY members.name ASC
 `
 
+type ListParticipantsByEventParams struct {
+	EventID string `json:"event_id"`
+	GroupID string `json:"group_id"`
+}
+
 type ListParticipantsByEventRow struct {
 	ID                 string       `json:"id"`
+	GroupID            string       `json:"group_id"`
 	Name               string       `json:"name"`
 	Description        string       `json:"description"`
 	CreatedAt          sql.NullTime `json:"created_at"`
@@ -60,8 +69,8 @@ type ListParticipantsByEventRow struct {
 	ParticipantExpense int64        `json:"participant_expense"`
 }
 
-func (q *Queries) ListParticipantsByEvent(ctx context.Context, eventID string) ([]ListParticipantsByEventRow, error) {
-	rows, err := q.db.QueryContext(ctx, listParticipantsByEvent, eventID)
+func (q *Queries) ListParticipantsByEvent(ctx context.Context, arg ListParticipantsByEventParams) ([]ListParticipantsByEventRow, error) {
+	rows, err := q.db.QueryContext(ctx, listParticipantsByEvent, arg.EventID, arg.GroupID)
 	if err != nil {
 		return nil, err
 	}
@@ -71,6 +80,7 @@ func (q *Queries) ListParticipantsByEvent(ctx context.Context, eventID string) (
 		var i ListParticipantsByEventRow
 		if err := rows.Scan(
 			&i.ID,
+			&i.GroupID,
 			&i.Name,
 			&i.Description,
 			&i.CreatedAt,
@@ -92,15 +102,21 @@ func (q *Queries) ListParticipantsByEvent(ctx context.Context, eventID string) (
 }
 
 const listParticipantsByMember = `-- name: ListParticipantsByMember :many
-SELECT events.id, events.title, events.time, events.description, events.amount, events.created_at, events.updated_at, participants.amount AS participant_amount, participants.expense AS participant_expense
+SELECT events.id, events.group_id, events.title, events.time, events.description, events.amount, events.created_at, events.updated_at, participants.amount AS participant_amount, participants.expense AS participant_expense
 FROM events
 JOIN participants ON participants.event_id = events.id
-WHERE participants.member_id = ?
+WHERE participants.member_id = ? AND participants.group_id = ?
 ORDER BY events.created_at DESC
 `
 
+type ListParticipantsByMemberParams struct {
+	MemberID string `json:"member_id"`
+	GroupID  string `json:"group_id"`
+}
+
 type ListParticipantsByMemberRow struct {
 	ID                 string       `json:"id"`
+	GroupID            string       `json:"group_id"`
 	Title              string       `json:"title"`
 	Time               string       `json:"time"`
 	Description        string       `json:"description"`
@@ -111,8 +127,8 @@ type ListParticipantsByMemberRow struct {
 	ParticipantExpense int64        `json:"participant_expense"`
 }
 
-func (q *Queries) ListParticipantsByMember(ctx context.Context, memberID string) ([]ListParticipantsByMemberRow, error) {
-	rows, err := q.db.QueryContext(ctx, listParticipantsByMember, memberID)
+func (q *Queries) ListParticipantsByMember(ctx context.Context, arg ListParticipantsByMemberParams) ([]ListParticipantsByMemberRow, error) {
+	rows, err := q.db.QueryContext(ctx, listParticipantsByMember, arg.MemberID, arg.GroupID)
 	if err != nil {
 		return nil, err
 	}
@@ -122,6 +138,7 @@ func (q *Queries) ListParticipantsByMember(ctx context.Context, memberID string)
 		var i ListParticipantsByMemberRow
 		if err := rows.Scan(
 			&i.ID,
+			&i.GroupID,
 			&i.Title,
 			&i.Time,
 			&i.Description,
@@ -146,23 +163,24 @@ func (q *Queries) ListParticipantsByMember(ctx context.Context, memberID string)
 
 const removeParticipant = `-- name: RemoveParticipant :exec
 DELETE FROM participants
-WHERE event_id = ? AND member_id = ?
+WHERE event_id = ? AND member_id = ? AND group_id = ?
 `
 
 type RemoveParticipantParams struct {
 	EventID  string `json:"event_id"`
 	MemberID string `json:"member_id"`
+	GroupID  string `json:"group_id"`
 }
 
 func (q *Queries) RemoveParticipant(ctx context.Context, arg RemoveParticipantParams) error {
-	_, err := q.db.ExecContext(ctx, removeParticipant, arg.EventID, arg.MemberID)
+	_, err := q.db.ExecContext(ctx, removeParticipant, arg.EventID, arg.MemberID, arg.GroupID)
 	return err
 }
 
 const updateParticipant = `-- name: UpdateParticipant :exec
 UPDATE participants
 SET amount = ?, expense = ?
-WHERE event_id = ? AND member_id = ?
+WHERE event_id = ? AND member_id = ? AND group_id = ?
 `
 
 type UpdateParticipantParams struct {
@@ -170,6 +188,7 @@ type UpdateParticipantParams struct {
 	Expense  int64  `json:"expense"`
 	EventID  string `json:"event_id"`
 	MemberID string `json:"member_id"`
+	GroupID  string `json:"group_id"`
 }
 
 func (q *Queries) UpdateParticipant(ctx context.Context, arg UpdateParticipantParams) error {
@@ -178,6 +197,7 @@ func (q *Queries) UpdateParticipant(ctx context.Context, arg UpdateParticipantPa
 		arg.Expense,
 		arg.EventID,
 		arg.MemberID,
+		arg.GroupID,
 	)
 	return err
 }

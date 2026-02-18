@@ -17,18 +17,24 @@ func New() *Events {
 	return &Events{}
 }
 
-func (e *Events) GetShowData(ctx context.Context, id string) (EventData, error) {
-	event, err := db.Qry.GetEvent(ctx, id)
+func (e *Events) GetShowData(ctx context.Context, groupID, id string) (EventData, error) {
+	event, err := db.Qry.GetEvent(ctx, db.GetEventParams{
+		ID:      id,
+		GroupID: groupID,
+	})
 	if err != nil {
 		return EventData{}, err
 	}
 
-	participants, err := db.Qry.ListParticipantsByEvent(ctx, id)
+	participants, err := db.Qry.ListParticipantsByEvent(ctx, db.ListParticipantsByEventParams{
+		EventID: eventID,
+		GroupID: groupID,
+	})
 	if err != nil {
 		return EventData{}, err
 	}
 
-	members, err := db.Qry.ListMembers(ctx)
+	members, err := db.Qry.ListMembers(ctx, groupID)
 	if err != nil {
 		return EventData{}, err
 	}
@@ -70,8 +76,8 @@ func (e *Events) GetShowData(ctx context.Context, id string) (EventData, error) 
 	}, nil
 }
 
-func (e *Events) GetIndexData(ctx context.Context) (EventsData, error) {
-	events, err := db.Qry.ListEvents(ctx)
+func (e *Events) GetIndexData(ctx context.Context, groupID string) (EventsData, error) {
+	events, err := db.Qry.ListEvents(ctx, groupID)
 	if err != nil {
 		return EventsData{}, err
 	}

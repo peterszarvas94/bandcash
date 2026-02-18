@@ -77,6 +77,31 @@ func main() {
 
 	ctx := context.Background()
 
+	// 1. Create admin user
+	adminUser, err := db.Qry.CreateUser(ctx, db.CreateUserParams{
+		ID:    utils.GenerateID("usr"),
+		Email: "admin@bandcash.local",
+	})
+	if err != nil {
+		slog.Error("failed to create admin user", "err", err)
+		os.Exit(1)
+	}
+	slog.Info("created admin user", "id", adminUser.ID, "email", adminUser.Email)
+
+	// 2. Create group
+	group, err := db.Qry.CreateGroup(ctx, db.CreateGroupParams{
+		ID:          utils.GenerateID("grp"),
+		Name:        "My Band",
+		AdminUserID: adminUser.ID,
+	})
+	if err != nil {
+		slog.Error("failed to create group", "err", err)
+		os.Exit(1)
+	}
+	slog.Info("created group", "id", group.ID, "name", group.Name)
+
+	groupID := group.ID
+
 	// Koncertek (events) - zenekari fellépések
 	events := []seedEvent{
 		{
@@ -149,6 +174,7 @@ func main() {
 	for _, event := range events {
 		created, err := db.Qry.CreateEvent(ctx, db.CreateEventParams{
 			ID:          utils.GenerateID(utils.PrefixEvent),
+			GroupID:     groupID,
 			Title:       event.Title,
 			Time:        event.Time,
 			Description: event.Description,
@@ -165,6 +191,7 @@ func main() {
 	for _, member := range members {
 		created, err := db.Qry.CreateMember(ctx, db.CreateMemberParams{
 			ID:          utils.GenerateID(utils.PrefixMember),
+			GroupID:     groupID,
 			Name:        member.Name,
 			Description: member.Description,
 		})
@@ -231,6 +258,7 @@ func main() {
 		event := createdEvents[participant.EventIndex]
 		member := createdMembers[participant.MemberIndex]
 		_, err := db.Qry.AddParticipant(ctx, db.AddParticipantParams{
+			GroupID:  groupID,
 			EventID:  event.ID,
 			MemberID: member.ID,
 			Amount:   participant.Amount,
@@ -241,5 +269,6 @@ func main() {
 		}
 	}
 
-	fmt.Printf("Seeded %d events, %d members, %d participants into %s\n", len(events), len(members), len(participants), dbPath)
+	fmt.Printf("Seeded 1 user, 1 group, %d events, %d members, %d participants into %s\n", len(events), len(members), len(participants), dbPath)
+	fmt.Printf("Login: admin@bandcash.local\n")
 }

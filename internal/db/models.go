@@ -6,10 +6,12 @@ package db
 
 import (
 	"database/sql"
+	"time"
 )
 
 type Event struct {
 	ID          string       `json:"id"`
+	GroupID     string       `json:"group_id"`
 	Title       string       `json:"title"`
 	Time        string       `json:"time"`
 	Description string       `json:"description"`
@@ -18,8 +20,34 @@ type Event struct {
 	UpdatedAt   sql.NullTime `json:"updated_at"`
 }
 
+type Group struct {
+	ID          string       `json:"id"`
+	Name        string       `json:"name"`
+	AdminUserID string       `json:"admin_user_id"`
+	CreatedAt   sql.NullTime `json:"created_at"`
+}
+
+type GroupReader struct {
+	ID        string       `json:"id"`
+	UserID    string       `json:"user_id"`
+	GroupID   string       `json:"group_id"`
+	CreatedAt sql.NullTime `json:"created_at"`
+}
+
+type MagicLink struct {
+	ID        string         `json:"id"`
+	Token     string         `json:"token"`
+	Email     string         `json:"email"`
+	Action    string         `json:"action"`
+	GroupID   sql.NullString `json:"group_id"`
+	ExpiresAt time.Time      `json:"expires_at"`
+	UsedAt    sql.NullTime   `json:"used_at"`
+	CreatedAt sql.NullTime   `json:"created_at"`
+}
+
 type Member struct {
 	ID          string       `json:"id"`
+	GroupID     string       `json:"group_id"`
 	Name        string       `json:"name"`
 	Description string       `json:"description"`
 	CreatedAt   sql.NullTime `json:"created_at"`
@@ -27,10 +55,17 @@ type Member struct {
 }
 
 type Participant struct {
+	GroupID   string       `json:"group_id"`
 	EventID   string       `json:"event_id"`
 	MemberID  string       `json:"member_id"`
 	Amount    int64        `json:"amount"`
 	Expense   int64        `json:"expense"`
 	CreatedAt sql.NullTime `json:"created_at"`
 	UpdatedAt sql.NullTime `json:"updated_at"`
+}
+
+type User struct {
+	ID        string       `json:"id"`
+	Email     string       `json:"email"`
+	CreatedAt sql.NullTime `json:"created_at"`
 }

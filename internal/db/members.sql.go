@@ -10,22 +10,29 @@ import (
 )
 
 const createMember = `-- name: CreateMember :one
-INSERT INTO members (id, name, description)
-VALUES (?, ?, ?)
-RETURNING id, name, description, created_at, updated_at
+INSERT INTO members (id, group_id, name, description)
+VALUES (?, ?, ?, ?)
+RETURNING id, group_id, name, description, created_at, updated_at
 `
 
 type CreateMemberParams struct {
 	ID          string `json:"id"`
+	GroupID     string `json:"group_id"`
 	Name        string `json:"name"`
 	Description string `json:"description"`
 }
 
 func (q *Queries) CreateMember(ctx context.Context, arg CreateMemberParams) (Member, error) {
-	row := q.db.QueryRowContext(ctx, createMember, arg.ID, arg.Name, arg.Description)
+	row := q.db.QueryRowContext(ctx, createMember,
+		arg.ID,
+		arg.GroupID,
+		arg.Name,
+		arg.Description,
+	)
 	var i Member
 	err := row.Scan(
 		&i.ID,
+		&i.GroupID,
 		&i.Name,
 		&i.Description,
 		&i.CreatedAt,
@@ -36,24 +43,35 @@ func (q *Queries) CreateMember(ctx context.Context, arg CreateMemberParams) (Mem
 
 const deleteMember = `-- name: DeleteMember :exec
 DELETE FROM members
-WHERE id = ?
+WHERE id = ? AND group_id = ?
 `
 
-func (q *Queries) DeleteMember(ctx context.Context, id string) error {
-	_, err := q.db.ExecContext(ctx, deleteMember, id)
+type DeleteMemberParams struct {
+	ID      string `json:"id"`
+	GroupID string `json:"group_id"`
+}
+
+func (q *Queries) DeleteMember(ctx context.Context, arg DeleteMemberParams) error {
+	_, err := q.db.ExecContext(ctx, deleteMember, arg.ID, arg.GroupID)
 	return err
 }
 
 const getMember = `-- name: GetMember :one
-SELECT id, name, description, created_at, updated_at FROM members
-WHERE id = ?
+SELECT id, group_id, name, description, created_at, updated_at FROM members
+WHERE id = ? AND group_id = ?
 `
 
-func (q *Queries) GetMember(ctx context.Context, id string) (Member, error) {
-	row := q.db.QueryRowContext(ctx, getMember, id)
+type GetMemberParams struct {
+	ID      string `json:"id"`
+	GroupID string `json:"group_id"`
+}
+
+func (q *Queries) GetMember(ctx context.Context, arg GetMemberParams) (Member, error) {
+	row := q.db.QueryRowContext(ctx, getMember, arg.ID, arg.GroupID)
 	var i Member
 	err := row.Scan(
 		&i.ID,
+		&i.GroupID,
 		&i.Name,
 		&i.Description,
 		&i.CreatedAt,
@@ -63,12 +81,13 @@ func (q *Queries) GetMember(ctx context.Context, id string) (Member, error) {
 }
 
 const listMembers = `-- name: ListMembers :many
-SELECT id, name, description, created_at, updated_at FROM members
+SELECT id, group_id, name, description, created_at, updated_at FROM members
+WHERE group_id = ?
 ORDER BY created_at DESC
 `
 
-func (q *Queries) ListMembers(ctx context.Context) ([]Member, error) {
-	rows, err := q.db.QueryContext(ctx, listMembers)
+func (q *Queries) ListMembers(ctx context.Context, groupID string) ([]Member, error) {
+	rows, err := q.db.QueryContext(ctx, listMembers, groupID)
 	if err != nil {
 		return nil, err
 	}
@@ -78,6 +97,7 @@ func (q *Queries) ListMembers(ctx context.Context) ([]Member, error) {
 		var i Member
 		if err := rows.Scan(
 			&i.ID,
+			&i.GroupID,
 			&i.Name,
 			&i.Description,
 			&i.CreatedAt,
@@ -99,21 +119,28 @@ func (q *Queries) ListMembers(ctx context.Context) ([]Member, error) {
 const updateMember = `-- name: UpdateMember :one
 UPDATE members
 SET name = ?, description = ?
-WHERE id = ?
-RETURNING id, name, description, created_at, updated_at
+WHERE id = ? AND group_id = ?
+RETURNING id, group_id, name, description, created_at, updated_at
 `
 
 type UpdateMemberParams struct {
 	Name        string `json:"name"`
 	Description string `json:"description"`
 	ID          string `json:"id"`
+	GroupID     string `json:"group_id"`
 }
 
 func (q *Queries) UpdateMember(ctx context.Context, arg UpdateMemberParams) (Member, error) {
-	row := q.db.QueryRowContext(ctx, updateMember, arg.Name, arg.Description, arg.ID)
+	row := q.db.QueryRowContext(ctx, updateMember,
+		arg.Name,
+		arg.Description,
+		arg.ID,
+		arg.GroupID,
+	)
 	var i Member
 	err := row.Scan(
 		&i.ID,
+		&i.GroupID,
 		&i.Name,
 		&i.Description,
 		&i.CreatedAt,
