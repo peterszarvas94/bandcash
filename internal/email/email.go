@@ -15,7 +15,6 @@ type Config struct {
 	Username string
 	Password string
 	From     string
-	DevMode  bool
 }
 
 type Service struct {
@@ -28,8 +27,6 @@ func NewFromEnv() *Service {
 		port = 587
 	}
 
-	devMode := os.Getenv("EMAIL_DEV_MODE") == "true"
-
 	return &Service{
 		config: Config{
 			Host:     os.Getenv("SMTP_HOST"),
@@ -37,21 +34,11 @@ func NewFromEnv() *Service {
 			Username: os.Getenv("SMTP_USERNAME"),
 			Password: os.Getenv("SMTP_PASSWORD"),
 			From:     os.Getenv("EMAIL_FROM"),
-			DevMode:  devMode,
 		},
 	}
 }
 
 func (s *Service) Send(to, subject, body string) error {
-	if s.config.DevMode {
-		slog.Info("[DEV EMAIL] Would send email",
-			"to", to,
-			"subject", subject,
-			"body_preview", body[:min(len(body), 200)],
-		)
-		return nil
-	}
-
 	if s.config.Host == "" {
 		return fmt.Errorf("SMTP host not configured")
 	}
@@ -108,11 +95,4 @@ If you didn't expect this invitation, you can safely ignore this email.
 `, groupName, link)
 
 	return s.Send(to, subject, body)
-}
-
-func min(a, b int) int {
-	if a < b {
-		return a
-	}
-	return b
 }
