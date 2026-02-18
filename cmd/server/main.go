@@ -36,6 +36,10 @@ func main() {
 	if err := godotenv.Load(); err != nil {
 		slog.Info("env: no .env file loaded", "err", err)
 	}
+	if err := utils.ValidateEmailEnv(); err != nil {
+		slog.Error("env: invalid email configuration", "err", err)
+		os.Exit(1)
+	}
 
 	e := echo.New()
 	e.HideBanner = true
