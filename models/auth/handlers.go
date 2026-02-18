@@ -6,6 +6,7 @@ import (
 	"os"
 	"time"
 
+	ctxi18n "github.com/invopop/ctxi18n/i18n"
 	"github.com/labstack/echo/v4"
 
 	"bandcash/internal/db"
@@ -26,7 +27,11 @@ func New() *Auth {
 
 // LoginPage shows the login form
 func (a *Auth) LoginPage(c echo.Context) error {
-	return c.HTML(http.StatusOK, loginPageHTML)
+	data := AuthPageData{
+		Title:       ctxi18n.T(c.Request().Context(), "auth.login_title"),
+		Breadcrumbs: []utils.Crumb{{Label: ctxi18n.T(c.Request().Context(), "auth.login")}},
+	}
+	return utils.RenderComponent(c, LoginPage(data))
 }
 
 // LoginRequest handles login form submission (sends magic link)
@@ -77,7 +82,12 @@ func (a *Auth) LoginRequest(c echo.Context) error {
 // SignupPage shows the signup form
 func (a *Auth) SignupPage(c echo.Context) error {
 	email := c.QueryParam("email")
-	return c.HTML(http.StatusOK, signupPageHTML(email))
+	data := AuthPageData{
+		Title:       ctxi18n.T(c.Request().Context(), "auth.signup_title"),
+		Breadcrumbs: []utils.Crumb{{Label: ctxi18n.T(c.Request().Context(), "auth.signup")}},
+		Email:       email,
+	}
+	return utils.RenderComponent(c, SignupPage(data))
 }
 
 // SignupRequest handles signup form submission
@@ -138,7 +148,11 @@ func (a *Auth) SignupRequest(c echo.Context) error {
 
 // LoginSentPage shows confirmation that email was sent
 func (a *Auth) LoginSentPage(c echo.Context) error {
-	return c.HTML(http.StatusOK, loginSentPageHTML)
+	data := AuthPageData{
+		Title:       ctxi18n.T(c.Request().Context(), "auth.check_email_title"),
+		Breadcrumbs: []utils.Crumb{{Label: ctxi18n.T(c.Request().Context(), "auth.check_email")}},
+	}
+	return utils.RenderComponent(c, LoginSentPage(data))
 }
 
 // VerifyMagicLink handles the magic link verification

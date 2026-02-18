@@ -1,0 +1,30 @@
+package auth
+
+import (
+	ctxi18n "github.com/invopop/ctxi18n/i18n"
+
+	appi18n "bandcash/internal/i18n"
+	shared "bandcash/models/shared"
+)
+
+templ SignupPage(data AuthPageData) {
+	<!doctype html>
+	<html lang={appi18n.LocaleCode(ctx)}>
+		@shared.Head(data.Title)
+		<body>
+			<main id="app" class="single-col">
+				<h1>{data.Title}</h1>
+				@shared.Breadcrumbs(data.Breadcrumbs, data.UserEmail)
+				<form method="POST" action="/auth/signup" class="form">
+					<div class="field">
+						<label>{ctxi18n.T(ctx, "auth.email")}</label>
+						<input type="email" name="email" required placeholder={ctxi18n.T(ctx, "auth.email_placeholder")} value={data.Email} />
+					</div>
+					<button type="submit" class="btn btn-primary">{ctxi18n.T(ctx, "auth.create_account")}</button>
+				</form>
+				<p>{ctxi18n.T(ctx, "auth.have_account")} <a href="/auth/login">{ctxi18n.T(ctx, "auth.login")}</a></p>
+				<p><a href="/">{ctxi18n.T(ctx, "nav.home")}</a></p>
+			</main>
+		</body>
+	</html>
+}

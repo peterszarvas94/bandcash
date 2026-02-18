@@ -1,0 +1,60 @@
+package group
+
+import (
+	ctxi18n "github.com/invopop/ctxi18n/i18n"
+
+	appi18n "bandcash/internal/i18n"
+	shared "bandcash/models/shared"
+)
+
+templ GroupViewersPage(data ViewersPageData) {
+	<!doctype html>
+	<html lang={appi18n.LocaleCode(ctx)}>
+		@shared.Head(data.Title)
+		<body>
+			<main id="app" class="single-col">
+				<h1>{ctxi18n.T(ctx, "groups.viewers_for", data.Group.Name)}</h1>
+				@shared.Breadcrumbs(data.Breadcrumbs, data.UserEmail)
+				if data.MessageKey != "" {
+					<p class="notice">{ctxi18n.T(ctx, data.MessageKey)}</p>
+				}
+				if data.ErrorKey != "" {
+					<p class="error">{ctxi18n.T(ctx, data.ErrorKey)}</p>
+				}
+
+				<h2>{ctxi18n.T(ctx, "groups.invite_viewer")}</h2>
+				<form method="POST" action={"/groups/" + data.Group.ID + "/viewers"} class="form">
+					<div class="field">
+						<label>{ctxi18n.T(ctx, "auth.email")}</label>
+						<input type="email" name="email" required placeholder={ctxi18n.T(ctx, "groups.viewer_email_placeholder")} />
+					</div>
+					<button type="submit" class="btn btn-primary">{ctxi18n.T(ctx, "groups.add_viewer")}</button>
+				</form>
+
+				<h2>{ctxi18n.T(ctx, "groups.current_viewers")}</h2>
+				<table class="table">
+					<thead>
+						<tr><th>{ctxi18n.T(ctx, "auth.email")}</th><th>{ctxi18n.T(ctx, "table.actions")}</th></tr>
+					</thead>
+					<tbody>
+						if len(data.Viewers) == 0 {
+							<tr><td colspan="2">{ctxi18n.T(ctx, "groups.viewer_none")}</td></tr>
+						} else {
+							for _, viewer := range data.Viewers {
+								<tr>
+									<td>{viewer.Email}</td>
+									<td>
+					<form method="POST" action={"/groups/" + data.Group.ID + "/viewers/" + viewer.ID + "/remove"} style="display:inline">
+											<button type="submit" class="btn btn-danger">{ctxi18n.T(ctx, "actions.delete")}</button>
+										</form>
+									</td>
+								</tr>
+							}
+						}
+					</tbody>
+				</table>
+				<p><a href={"/groups/" + data.Group.ID + "/events"}>{ctxi18n.T(ctx, "groups.back_to_events")}</a></p>
+			</main>
+		</body>
+	</html>
+}

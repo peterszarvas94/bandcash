@@ -1,4 +1,4 @@
-package home
+package auth
 
 import (
 	ctxi18n "github.com/invopop/ctxi18n/i18n"
@@ -7,7 +7,7 @@ import (
 	shared "bandcash/models/shared"
 )
 
-templ HomeIndex(data HomeData) {
+templ LoginSentPage(data AuthPageData) {
 	<!doctype html>
 	<html lang={appi18n.LocaleCode(ctx)}>
 		@shared.Head(data.Title)
@@ -15,12 +15,9 @@ templ HomeIndex(data HomeData) {
 			<main id="app" class="single-col">
 				<h1>{data.Title}</h1>
 				@shared.Breadcrumbs(data.Breadcrumbs, data.UserEmail)
-				<p>{ctxi18n.T(ctx, "home.tagline")}</p>
-				<div class="row">
-					<a class="btn" href="/auth/login">{ctxi18n.T(ctx, "auth.login")}</a>
-					<a class="btn" href="/auth/signup">{ctxi18n.T(ctx, "auth.signup")}</a>
-					<a class="btn" href="/settings">{ctxi18n.T(ctx, "settings.title")}</a>
-				</div>
+				<p>{ctxi18n.T(ctx, "auth.check_email_body")}</p>
+				<p>{ctxi18n.T(ctx, "auth.link_expiry")}</p>
+				<p><a href="/">{ctxi18n.T(ctx, "nav.home")}</a></p>
 			</main>
 		</body>
 	</html>
