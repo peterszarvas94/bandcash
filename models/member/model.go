@@ -16,36 +16,44 @@ func New() *Members {
 	return &Members{}
 }
 
-func (p *Members) GetShowData(ctx context.Context, id string) (MemberData, error) {
-	member, err := db.Qry.GetMember(ctx, id)
+func (p *Members) GetShowData(ctx context.Context, groupID, memberID string) (MemberData, error) {
+	member, err := db.Qry.GetMember(ctx, db.GetMemberParams{
+		ID:      memberID,
+		GroupID: groupID,
+	})
 	if err != nil {
 		return MemberData{}, err
 	}
 
-	events, err := db.Qry.ListParticipantsByMember(ctx, id)
+	events, err := db.Qry.ListParticipantsByMember(ctx, db.ListParticipantsByMemberParams{
+		MemberID: memberID,
+		GroupID:  groupID,
+	})
 	if err != nil {
 		return MemberData{}, err
 	}
 
 	return MemberData{
-		Title:  member.Name,
-		Member: &member,
-		Events: events,
+		Title:   member.Name,
+		Member:  &member,
+		Events:  events,
+		GroupID: groupID,
 		Breadcrumbs: []utils.Crumb{
-			{Label: ctxi18n.T(ctx, "members.title"), Href: "/member"},
-			{Label: member.Name, Href: "/member/" + id},
+			{Label: ctxi18n.T(ctx, "members.title"), Href: "/groups/" + groupID + "/members"},
+			{Label: member.Name, Href: "/groups/" + groupID + "/members/" + memberID},
 		},
 	}, nil
 }
 
-func (p *Members) GetIndexData(ctx context.Context) (MembersData, error) {
-	members, err := db.Qry.ListMembers(ctx)
+func (p *Members) GetIndexData(ctx context.Context, groupID string) (MembersData, error) {
+	members, err := db.Qry.ListMembers(ctx, groupID)
 	if err != nil {
 		return MembersData{}, err
 	}
 	return MembersData{
 		Title:   ctxi18n.T(ctx, "members.title"),
 		Members: members,
+		GroupID: groupID,
 		Breadcrumbs: []utils.Crumb{
 			{Label: ctxi18n.T(ctx, "members.title")},
 		},

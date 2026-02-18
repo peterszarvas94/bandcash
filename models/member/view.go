@@ -10,10 +10,12 @@ type MemberData struct {
 	Member      *db.Member
 	Events      []db.ListParticipantsByMemberRow
 	Breadcrumbs []utils.Crumb
+	GroupID     string
 }
 
 type MembersData struct {
 	Title       string
 	Members     []db.Member
 	Breadcrumbs []utils.Crumb
+	GroupID     string
 }

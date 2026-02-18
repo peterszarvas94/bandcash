@@ -7,6 +7,7 @@ import (
 	"github.com/starfederation/datastar-go/datastar"
 
 	"bandcash/internal/db"
+	"bandcash/internal/middleware"
 	"bandcash/internal/utils"
 )
 
@@ -35,10 +36,15 @@ var (
 	memberErrorFields = []string{"name", "description"}
 )
 
+func getGroupID(c echo.Context) string {
+	return middleware.GetGroupID(c)
+}
+
 func (p *Members) Index(c echo.Context) error {
 	utils.EnsureClientID(c)
+	groupID := getGroupID(c)
 
-	data, err := p.GetIndexData(c.Request().Context())
+	data, err := p.GetIndexData(c.Request().Context(), groupID)
 	if err != nil {
 		slog.Error("member.list: failed to get data", "err", err)
 		return c.NoContent(500)
@@ -50,6 +56,7 @@ func (p *Members) Index(c echo.Context) error {
 
 func (p *Members) Show(c echo.Context) error {
 	utils.EnsureClientID(c)
+	groupID := getGroupID(c)
 
 	id := c.Param("id")
 	if id == "" {
@@ -57,7 +64,7 @@ func (p *Members) Show(c echo.Context) error {
 		return c.NoContent(400)
 	}
 
-	data, err := p.GetShowData(c.Request().Context(), id)
+	data, err := p.GetShowData(c.Request().Context(), groupID, id)
 	if err != nil {
 		slog.Error("member.show: failed to get data", "err", err)
 		return c.NoContent(500)
@@ -67,6 +74,8 @@ func (p *Members) Show(c echo.Context) error {
 }
 
 func (p *Members) Create(c echo.Context) error {
+	groupID := getGroupID(c)
+
 	var signals memberTableParams
 	err := datastar.ReadSignals(c.Request(), &signals)
 	if err != nil {
@@ -82,6 +91,7 @@ func (p *Members) Create(c echo.Context) error {
 
 	member, err := db.Qry.CreateMember(c.Request().Context(), db.CreateMemberParams{
 		ID:          utils.GenerateID(utils.PrefixMember),
+		GroupID:     groupID,
 		Name:        signals.FormData.Name,
 		Description: signals.FormData.Description,
 	})
@@ -93,7 +103,7 @@ func (p *Members) Create(c echo.Context) error {
 	slog.Debug("member.create.table", "id", member.ID, "name", member.Name)
 
 	utils.SSEHub.PatchSignals(c, defaultMemberSignals)
-	data, err := p.GetIndexData(c.Request().Context())
+	data, err := p.GetIndexData(c.Request().Context(), groupID)
 	if err != nil {
 		slog.Error("member.create.table: failed to get data", "err", err)
 		return c.NoContent(500)
@@ -110,6 +120,8 @@ func (p *Members) Create(c echo.Context) error {
 }
 
 func (p *Members) Update(c echo.Context) error {
+	groupID := getGroupID(c)
+
 	id := c.Param("id")
 	if id == "" {
 		slog.Warn("member.update: invalid id")
@@ -133,6 +145,7 @@ func (p *Members) Update(c echo.Context) error {
 		Name:        signals.FormData.Name,
 		Description: signals.FormData.Description,
 		ID:          id,
+		GroupID:     groupID,
 	})
 	if err != nil {
 		slog.Error("member.update: failed to update member", "err", err)
@@ -142,7 +155,7 @@ func (p *Members) Update(c echo.Context) error {
 	slog.Debug("member.update", "id", id)
 
 	if signals.Mode == "single" {
-		err = utils.SSEHub.Redirect(c, "/member/"+id)
+		err = utils.SSEHub.Redirect(c, "/groups/"+groupID+"/members/"+id)
 		if err != nil {
 			slog.Warn("member.update: failed to redirect", "err", err)
 		}
@@ -150,7 +163,7 @@ func (p *Members) Update(c echo.Context) error {
 	}
 
 	utils.SSEHub.PatchSignals(c, defaultMemberSignals)
-	data, err := p.GetIndexData(c.Request().Context())
+	data, err := p.GetIndexData(c.Request().Context(), groupID)
 	if err != nil {
 		slog.Error("member.update: failed to get data", "err", err)
 		return c.NoContent(500)
@@ -167,6 +180,8 @@ func (p *Members) Update(c echo.Context) error {
 }
 
 func (p *Members) Destroy(c echo.Context) error {
+	groupID := getGroupID(c)
+
 	id := c.Param("id")
 	if id == "" {
 		slog.Warn("member.destroy: invalid id")
@@ -180,7 +195,10 @@ func (p *Members) Destroy(c echo.Context) error {
 		return c.NoContent(400)
 	}
 
-	err = db.Qry.DeleteMember(c.Request().Context(), id)
+	err = db.Qry.DeleteMember(c.Request().Context(), db.DeleteMemberParams{
+		ID:      id,
+		GroupID: groupID,
+	})
 	if err != nil {
 		slog.Error("member.destroy: failed to delete member", "err", err)
 		return c.NoContent(500)
@@ -189,7 +207,7 @@ func (p *Members) Destroy(c echo.Context) error {
 	slog.Debug("member.destroy", "id", id)
 
 	if signals.Mode == "single" {
-		err = utils.SSEHub.Redirect(c, "/member")
+		err = utils.SSEHub.Redirect(c, "/groups/"+groupID+"/members")
 		if err != nil {
 			slog.Warn("member.destroy: failed to redirect", "err", err)
 		}
@@ -197,7 +215,7 @@ func (p *Members) Destroy(c echo.Context) error {
 	}
 
 	utils.SSEHub.PatchSignals(c, defaultMemberSignals)
-	data, err := p.GetIndexData(c.Request().Context())
+	data, err := p.GetIndexData(c.Request().Context(), groupID)
 	if err != nil {
 		slog.Error("member.destroy: failed to get data", "err", err)
 		return c.NoContent(500)

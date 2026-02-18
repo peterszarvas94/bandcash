@@ -17,9 +17,9 @@ func New() *Events {
 	return &Events{}
 }
 
-func (e *Events) GetShowData(ctx context.Context, groupID, id string) (EventData, error) {
+func (e *Events) GetShowData(ctx context.Context, groupID, eventID string) (EventData, error) {
 	event, err := db.Qry.GetEvent(ctx, db.GetEventParams{
-		ID:      id,
+		ID:      eventID,
 		GroupID: groupID,
 	})
 	if err != nil {
@@ -59,7 +59,7 @@ func (e *Events) GetShowData(ctx context.Context, groupID, id string) (EventData
 	}
 	leftover := event.Amount - totalDistributed
 
-	slog.Info("event.show.data", "event_id", id, "participants", len(participants), "members_total", len(members), "members_filtered", len(filteredMembers), "leftover", leftover)
+	slog.Info("event.show.data", "event_id", eventID, "participants", len(participants), "members_total", len(members), "members_filtered", len(filteredMembers), "leftover", leftover)
 
 	return EventData{
 		Title:            event.Title,
@@ -69,8 +69,9 @@ func (e *Events) GetShowData(ctx context.Context, groupID, id string) (EventData
 		MemberIDs:        memberIDs,
 		Leftover:         leftover,
 		TotalDistributed: totalDistributed,
+		GroupID:          groupID,
 		Breadcrumbs: []utils.Crumb{
-			{Label: ctxi18n.T(ctx, "events.title"), Href: "/event"},
+			{Label: ctxi18n.T(ctx, "events.title"), Href: "/groups/" + groupID + "/events"},
 			{Label: event.Title},
 		},
 	}, nil
@@ -83,8 +84,9 @@ func (e *Events) GetIndexData(ctx context.Context, groupID string) (EventsData, 
 	}
 
 	return EventsData{
-		Title:  ctxi18n.T(ctx, "events.title"),
-		Events: events,
+		Title:   ctxi18n.T(ctx, "events.title"),
+		Events:  events,
+		GroupID: groupID,
 		Breadcrumbs: []utils.Crumb{
 			{Label: ctxi18n.T(ctx, "events.title")},
 		},

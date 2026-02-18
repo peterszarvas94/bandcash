@@ -14,10 +14,12 @@ type EventData struct {
 	Breadcrumbs      []utils.Crumb
 	Leftover         int64
 	TotalDistributed int64
+	GroupID          string
 }
 
 type EventsData struct {
 	Title       string
 	Events      []db.Event
 	Breadcrumbs []utils.Crumb
+	GroupID     string
 }

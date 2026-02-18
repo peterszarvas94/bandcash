@@ -7,6 +7,7 @@ import (
 	"github.com/starfederation/datastar-go/datastar"
 
 	"bandcash/internal/db"
+	"bandcash/internal/middleware"
 	"bandcash/internal/utils"
 )
 
@@ -57,10 +58,15 @@ var (
 	participantErrorFields = []string{"memberId", "amount", "expense"}
 )
 
+func getGroupID(c echo.Context) string {
+	return middleware.GetGroupID(c)
+}
+
 func (e *Events) Index(c echo.Context) error {
 	utils.EnsureClientID(c)
+	groupID := getGroupID(c)
 
-	data, err := e.GetIndexData(c.Request().Context())
+	data, err := e.GetIndexData(c.Request().Context(), groupID)
 	if err != nil {
 		slog.Error("event.list: failed to get data", "err", err)
 		return c.NoContent(500)
@@ -72,6 +78,7 @@ func (e *Events) Index(c echo.Context) error {
 
 func (e *Events) Show(c echo.Context) error {
 	utils.EnsureClientID(c)
+	groupID := getGroupID(c)
 
 	id := c.Param("id")
 	if id == "" {
@@ -79,7 +86,7 @@ func (e *Events) Show(c echo.Context) error {
 		return c.NoContent(400)
 	}
 
-	data, err := e.GetShowData(c.Request().Context(), id)
+	data, err := e.GetShowData(c.Request().Context(), groupID, id)
 	if err != nil {
 		slog.Error("event.show: failed to get data", "err", err)
 		return c.NoContent(500)
@@ -89,6 +96,8 @@ func (e *Events) Show(c echo.Context) error {
 }
 
 func (e *Events) Create(c echo.Context) error {
+	groupID := getGroupID(c)
+
 	var signals eventInlineParams
 	err := datastar.ReadSignals(c.Request(), &signals)
 	if err != nil {
@@ -107,6 +116,7 @@ func (e *Events) Create(c echo.Context) error {
 
 	event, err := db.Qry.CreateEvent(c.Request().Context(), db.CreateEventParams{
 		ID:          utils.GenerateID(utils.PrefixEvent),
+		GroupID:     groupID,
 		Title:       signals.FormData.Title,
 		Time:        signals.FormData.Time,
 		Description: signals.FormData.Description,
@@ -120,7 +130,7 @@ func (e *Events) Create(c echo.Context) error {
 	slog.Debug("event.create.table", "id", event.ID, "title", event.Title)
 
 	utils.SSEHub.PatchSignals(c, defaultEventSignals)
-	data, err := e.GetIndexData(c.Request().Context())
+	data, err := e.GetIndexData(c.Request().Context(), groupID)
 	if err != nil {
 		slog.Error("event.create.table: failed to get data", "err", err)
 		return c.NoContent(500)
@@ -138,6 +148,8 @@ func (e *Events) Create(c echo.Context) error {
 }
 
 func (e *Events) Update(c echo.Context) error {
+	groupID := getGroupID(c)
+
 	id := c.Param("id")
 	if id == "" {
 		slog.Warn("event.update: invalid id")
@@ -168,6 +180,7 @@ func (e *Events) Update(c echo.Context) error {
 		Description: eventForm.Description,
 		Amount:      eventForm.Amount,
 		ID:          id,
+		GroupID:     groupID,
 	})
 	if err != nil {
 		slog.Error("event.update: failed to update event", "err", err)
@@ -186,7 +199,7 @@ func (e *Events) Update(c echo.Context) error {
 				"amount":      eventForm.Amount,
 			},
 		})
-		data, err := e.GetShowData(c.Request().Context(), id)
+		data, err := e.GetShowData(c.Request().Context(), groupID, id)
 		if err != nil {
 			slog.Error("event.update: failed to get data", "err", err)
 			return c.NoContent(500)
@@ -201,7 +214,7 @@ func (e *Events) Update(c echo.Context) error {
 	}
 
 	utils.SSEHub.PatchSignals(c, defaultEventSignals)
-	data, err := e.GetIndexData(c.Request().Context())
+	data, err := e.GetIndexData(c.Request().Context(), groupID)
 	if err != nil {
 		slog.Error("event.update: failed to get data", "err", err)
 		return c.NoContent(500)
@@ -218,6 +231,8 @@ func (e *Events) Update(c echo.Context) error {
 }
 
 func (e *Events) Destroy(c echo.Context) error {
+	groupID := getGroupID(c)
+
 	id := c.Param("id")
 	if id == "" {
 		slog.Warn("event.destroy: invalid id")
@@ -231,7 +246,10 @@ func (e *Events) Destroy(c echo.Context) error {
 		return c.NoContent(400)
 	}
 
-	err = db.Qry.DeleteEvent(c.Request().Context(), id)
+	err = db.Qry.DeleteEvent(c.Request().Context(), db.DeleteEventParams{
+		ID:      id,
+		GroupID: groupID,
+	})
 	if err != nil {
 		slog.Error("event.destroy: failed to delete event", "err", err)
 		return c.NoContent(500)
@@ -240,7 +258,7 @@ func (e *Events) Destroy(c echo.Context) error {
 	slog.Debug("event.destroy", "id", id)
 
 	if signals.Mode == "single" {
-		err = utils.SSEHub.Redirect(c, "/event")
+		err = utils.SSEHub.Redirect(c, "/groups/"+groupID+"/events")
 		if err != nil {
 			slog.Warn("event.destroy: failed to redirect", "err", err)
 		}
@@ -248,7 +266,7 @@ func (e *Events) Destroy(c echo.Context) error {
 	}
 
 	utils.SSEHub.PatchSignals(c, defaultEventSignals)
-	data, err := e.GetIndexData(c.Request().Context())
+	data, err := e.GetIndexData(c.Request().Context(), groupID)
 	if err != nil {
 		slog.Error("event.destroy: failed to get data", "err", err)
 		return c.NoContent(500)
@@ -265,6 +283,8 @@ func (e *Events) Destroy(c echo.Context) error {
 }
 
 func (e *Events) CreateParticipant(c echo.Context) error {
+	groupID := getGroupID(c)
+
 	id := c.Param("id")
 	if id == "" {
 		slog.Warn("participant.create.table: invalid event id")
@@ -288,6 +308,7 @@ func (e *Events) CreateParticipant(c echo.Context) error {
 	expense := signals.FormData.Expense
 
 	_, err = db.Qry.AddParticipant(c.Request().Context(), db.AddParticipantParams{
+		GroupID:  groupID,
 		EventID:  id,
 		MemberID: signals.FormData.MemberID,
 		Amount:   signals.FormData.Amount,
@@ -298,7 +319,7 @@ func (e *Events) CreateParticipant(c echo.Context) error {
 		return c.NoContent(500)
 	}
 
-	data, err := e.GetShowData(c.Request().Context(), id)
+	data, err := e.GetShowData(c.Request().Context(), groupID, id)
 	if err != nil {
 		slog.Error("participant.create.table: failed to get data", "err", err)
 		return c.NoContent(500)
@@ -317,6 +338,8 @@ func (e *Events) CreateParticipant(c echo.Context) error {
 }
 
 func (e *Events) UpdateParticipant(c echo.Context) error {
+	groupID := getGroupID(c)
+
 	eventID := c.Param("id")
 	if eventID == "" {
 		slog.Warn("participant.update: invalid event id")
@@ -350,6 +373,7 @@ func (e *Events) UpdateParticipant(c echo.Context) error {
 		Expense:  expense,
 		EventID:  eventID,
 		MemberID: memberID,
+		GroupID:  groupID,
 	})
 	if err != nil {
 		slog.Error("participant.update: failed to update participant", "err", err)
@@ -357,7 +381,7 @@ func (e *Events) UpdateParticipant(c echo.Context) error {
 	}
 
 	utils.SSEHub.PatchSignals(c, defaultParticipantSignals)
-	data, err := e.GetShowData(c.Request().Context(), eventID)
+	data, err := e.GetShowData(c.Request().Context(), groupID, eventID)
 	if err != nil {
 		slog.Error("participant.update: failed to get data", "err", err)
 		return c.NoContent(500)
@@ -375,6 +399,8 @@ func (e *Events) UpdateParticipant(c echo.Context) error {
 }
 
 func (e *Events) DeleteParticipantTable(c echo.Context) error {
+	groupID := getGroupID(c)
+
 	eventID := c.Param("id")
 	if eventID == "" {
 		slog.Warn("participant.delete: invalid event id")
@@ -390,13 +416,14 @@ func (e *Events) DeleteParticipantTable(c echo.Context) error {
 	err := db.Qry.RemoveParticipant(c.Request().Context(), db.RemoveParticipantParams{
 		EventID:  eventID,
 		MemberID: memberID,
+		GroupID:  groupID,
 	})
 	if err != nil {
 		slog.Error("participant.delete: failed to remove participant", "err", err)
 		return c.NoContent(500)
 	}
 
-	data, err := e.GetShowData(c.Request().Context(), eventID)
+	data, err := e.GetShowData(c.Request().Context(), groupID, eventID)
 	if err != nil {
 		slog.Error("participant.delete: failed to get data", "err", err)
 		return c.NoContent(500)
