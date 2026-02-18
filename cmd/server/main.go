@@ -10,6 +10,7 @@ import (
 	"syscall"
 	"time"
 
+	"github.com/joho/godotenv"
 	"github.com/labstack/echo/v4"
 	echoMiddleware "github.com/labstack/echo/v4/middleware"
 
@@ -31,6 +32,10 @@ import (
 func main() {
 	routesFlag := flag.Bool("routes", false, "Print routes and exit")
 	flag.Parse()
+
+	if err := godotenv.Load(); err != nil {
+		slog.Info("env: no .env file loaded", "err", err)
+	}
 
 	e := echo.New()
 	e.HideBanner = true
