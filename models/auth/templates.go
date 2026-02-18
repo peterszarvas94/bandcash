@@ -4,10 +4,10 @@ var loginPageHTML = `<!DOCTYPE html>
 <html>
 <head>
     <title>Login - BandCash</title>
-    <link rel="stylesheet" href="/static/style.css">
+    <link rel="stylesheet" href="/static/css/style.css">
 </head>
 <body>
-    <div class="container">
+    <main id="app" class="single-col">
         <nav class="row pb"><a href="/">Home</a><span>&gt;</span><span>Login</span></nav>
         <h1>Login to BandCash</h1>
         <form method="POST" action="/auth/login">
@@ -19,7 +19,7 @@ var loginPageHTML = `<!DOCTYPE html>
         </form>
         <p>Don't have an account? <a href="/auth/signup">Sign up</a></p>
         <p><a href="/">← Back to home</a></p>
-    </div>
+    </main>
 </body>
 </html>`
 
@@ -32,10 +32,10 @@ func signupPageHTML(email string) string {
 <html>
 <head>
     <title>Sign Up - BandCash</title>
-    <link rel="stylesheet" href="/static/style.css">
+    <link rel="stylesheet" href="/static/css/style.css">
 </head>
 <body>
-    <div class="container">
+    <main id="app" class="single-col">
         <nav class="row pb"><a href="/">Home</a><span>&gt;</span><span>Sign Up</span></nav>
         <h1>Create Account</h1>
         <form method="POST" action="/auth/signup">
@@ -47,7 +47,7 @@ func signupPageHTML(email string) string {
         </form>
         <p>Already have an account? <a href="/auth/login">Login</a></p>
         <p><a href="/">← Back to home</a></p>
-    </div>
+    </main>
 </body>
 </html>`
 }
@@ -56,15 +56,15 @@ var loginSentPageHTML = `<!DOCTYPE html>
 <html>
 <head>
     <title>Check Your Email - BandCash</title>
-    <link rel="stylesheet" href="/static/style.css">
+    <link rel="stylesheet" href="/static/css/style.css">
 </head>
 <body>
-    <div class="container">
+    <main id="app" class="single-col">
         <nav class="row pb"><a href="/">Home</a><span>&gt;</span><span>Check Email</span></nav>
         <h1>Check Your Email</h1>
         <p>We've sent you a login link. Click the link in your email to access your account.</p>
         <p>The link will expire in 1 hour.</p>
         <p><a href="/">← Back to home</a></p>
-    </div>
+    </main>
 </body>
 </html>`

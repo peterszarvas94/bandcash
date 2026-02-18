@@ -257,10 +257,10 @@ func renderNewGroupPage(userEmail string) string {
 <html>
 <head>
     <title>Create Group - BandCash</title>
-    <link rel="stylesheet" href="/static/style.css">
+    <link rel="stylesheet" href="/static/css/style.css">
 </head>
 <body>
-    <div class="container">
+    <main id="app" class="single-col">
         %s
         <h1>Create Your Band Group</h1>
         <p>Welcome! Let's set up your band's money management system.</p>
@@ -272,7 +272,7 @@ func renderNewGroupPage(userEmail string) string {
             <button type="submit" class="btn btn-primary">Create Group</button>
         </form>
         <p><a href="/auth/logout">Logout</a></p>
-    </div>
+    </main>
 </body>
 </html>`, breadcrumbs)
 }
@@ -322,10 +322,10 @@ func renderGroupsPage(adminGroups, readerGroups []db.Group, userEmail string) st
 <html>
 <head>
     <title>Your Groups - BandCash</title>
-    <link rel="stylesheet" href="/static/style.css">
+    <link rel="stylesheet" href="/static/css/style.css">
 </head>
 <body>
-    <div class="container">
+    <main id="app" class="single-col">
         %s
         <h1>Your Groups</h1>
         <p class="text-muted">Admin groups can edit; viewer groups are read-only.</p>
@@ -344,7 +344,7 @@ func renderGroupsPage(adminGroups, readerGroups []db.Group, userEmail string) st
         </table>
 
         <p><a href="/auth/logout">Logout</a></p>
-    </div>
+    </main>
 </body>
 </html>`,
 		renderBreadcrumbs([]utils.Crumb{{Label: "Groups"}}, userEmail),
@@ -384,10 +384,10 @@ func renderViewersPage(group db.Group, viewers []db.User, msg, errMsg, userEmail
 <html>
 <head>
     <title>Viewers - %s</title>
-    <link rel="stylesheet" href="/static/style.css">
+    <link rel="stylesheet" href="/static/css/style.css">
 </head>
 <body>
-    <div class="container">
+    <main id="app" class="single-col">
         %s
         <h1>Viewers for %s</h1>
         %s
@@ -410,7 +410,7 @@ func renderViewersPage(group db.Group, viewers []db.User, msg, errMsg, userEmail
         </table>
 
         <p><a href="/groups/%s/events">Back to Events</a></p>
-    </div>
+    </main>
 </body>
 </html>`,
 		html.EscapeString(group.Name),
