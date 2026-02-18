@@ -174,8 +174,15 @@ func (a *Auth) VerifyMagicLink(c echo.Context) error {
 	// Get user
 	user, err := db.Qry.GetUserByEmail(c.Request().Context(), magicLink.Email)
 	if err != nil {
-		slog.Error("auth: user not found for email", "email", magicLink.Email)
-		return c.String(http.StatusNotFound, "User not found")
+		// Create user on invite accept
+		user, err = db.Qry.CreateUser(c.Request().Context(), db.CreateUserParams{
+			ID:    utils.GenerateID("usr"),
+			Email: magicLink.Email,
+		})
+		if err != nil {
+			slog.Error("auth: failed to create user", "err", err)
+			return c.String(http.StatusInternalServerError, "Failed to create user")
+		}
 	}
 
 	// Create session cookie
@@ -188,6 +195,30 @@ func (a *Auth) VerifyMagicLink(c echo.Context) error {
 		Secure:   os.Getenv("APP_ENV") == "production",
 		SameSite: http.SameSiteStrictMode,
 	})
+
+	// If invite, add viewer access
+	if magicLink.Action == "invite" {
+		if !magicLink.GroupID.Valid {
+			return c.String(http.StatusBadRequest, "Invalid invitation")
+		}
+
+		groupID := magicLink.GroupID.String
+		group, err := db.Qry.GetGroupByID(c.Request().Context(), groupID)
+		if err == nil && group.AdminUserID == user.ID {
+			return c.Redirect(http.StatusFound, "/groups/"+groupID+"/events")
+		}
+
+		_, err = db.Qry.CreateGroupReader(c.Request().Context(), db.CreateGroupReaderParams{
+			ID:      utils.GenerateID("grd"),
+			UserID:  user.ID,
+			GroupID: groupID,
+		})
+		if err != nil {
+			slog.Warn("auth: failed to add group reader", "err", err)
+		}
+
+		return c.Redirect(http.StatusFound, "/groups/"+groupID+"/events")
+	}
 
 	// Redirect to group dashboard
 	return c.Redirect(http.StatusFound, "/groups")

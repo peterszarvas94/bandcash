@@ -1,60 +1,71 @@
 package member
 
-import ctxi18n "github.com/invopop/ctxi18n/i18n"
+import (
+	"fmt"
+
+	ctxi18n "github.com/invopop/ctxi18n/i18n"
+)
 
 templ MemberIndexSidebar(data MembersData) {
-	<div data-show="$formState === ''" class="pb">
-		<h3>{ctxi18n.T(ctx, "members.actions")}</h3>
-		<div class="row">
-			<button
-				class="btn"
-				type="button"
-				data-on:click="$formState = 'add'; $editingId = 0; $formData = {name: '', description: ''}; $errors = {name: '', description: ''}"
-			>
-				{ctxi18n.T(ctx, "members.add")}
-			</button>
-		</div>
-	</div>
-
-	<div data-show="$formState !== ''" style="display: none" class="pb">
-		<h3 data-show="$formState === 'add'">{ctxi18n.T(ctx, "members.new")}</h3>
-		<h3 data-show="$formState === 'edit'">{ctxi18n.T(ctx, "members.edit")}</h3>
-		<form class="form">
-			<div>
-				<label>{ctxi18n.T(ctx, "fields.name")}</label>
-				<input type="text" name="name" data-bind="formData.name" />
-				<div data-show="$errors && $errors.name" class="color-error" data-text="$errors.name"></div>
-			</div>
-			<div>
-				<label>{ctxi18n.T(ctx, "fields.description")}</label>
-				<input type="text" name="description" data-bind="formData.description" />
-				<div data-show="$errors && $errors.description" class="color-error" data-text="$errors.description"></div>
-			</div>
+	if data.IsAdmin {
+		<div data-show="$formState === ''" class="pb">
+			<h3>{ctxi18n.T(ctx, "members.actions")}</h3>
 			<div class="row">
-			<button
-				class="btn btn-primary"
-				type="button"
-				data-show="$formState === 'add'"
-				data-on:click="@post('/member')"
-			>
-				{ctxi18n.T(ctx, "members.create")}
-				</button>
-			<button
-				class="btn btn-primary"
-				type="button"
-				data-show="$formState === 'edit'"
-				data-on:click="@put('/member/' + $editingId)"
-			>
-				{ctxi18n.T(ctx, "members.update")}
-				</button>
 				<button
 					class="btn"
 					type="button"
-					data-on:click="$formState = ''; $editingId = 0; $formData = {name: '', description: ''}; $errors = {name: '', description: ''}"
+					data-on:click="$formState = 'add'; $editingId = 0; $formData = {name: '', description: ''}; $errors = {name: '', description: ''}"
 				>
-				{ctxi18n.T(ctx, "actions.cancel")}
+					{ctxi18n.T(ctx, "members.add")}
 				</button>
 			</div>
-		</form>
-	</div>
+			<div class="row" style="margin-top: 8px">
+				<a class="btn" href={fmt.Sprintf("/groups/%s/viewers", data.GroupID)}>Viewers</a>
+			</div>
+		</div>
+
+		<div data-show="$formState !== ''" style="display: none" class="pb">
+			<h3 data-show="$formState === 'add'">{ctxi18n.T(ctx, "members.new")}</h3>
+			<h3 data-show="$formState === 'edit'">{ctxi18n.T(ctx, "members.edit")}</h3>
+			<form class="form">
+				<div>
+					<label>{ctxi18n.T(ctx, "fields.name")}</label>
+					<input type="text" name="name" data-bind="formData.name" />
+					<div data-show="$errors && $errors.name" class="color-error" data-text="$errors.name"></div>
+				</div>
+				<div>
+					<label>{ctxi18n.T(ctx, "fields.description")}</label>
+					<input type="text" name="description" data-bind="formData.description" />
+					<div data-show="$errors && $errors.description" class="color-error" data-text="$errors.description"></div>
+				</div>
+				<div class="row">
+				<button
+					class="btn btn-primary"
+					type="button"
+					data-show="$formState === 'add'"
+					data-on:click={fmt.Sprintf("@post('/groups/%s/members')", data.GroupID)}
+				>
+					{ctxi18n.T(ctx, "members.create")}
+					</button>
+				<button
+					class="btn btn-primary"
+					type="button"
+					data-show="$formState === 'edit'"
+					data-on:click={fmt.Sprintf("@put('/groups/%s/members/' + $editingId)", data.GroupID)}
+				>
+					{ctxi18n.T(ctx, "members.update")}
+					</button>
+					<button
+						class="btn"
+						type="button"
+						data-on:click="$formState = ''; $editingId = 0; $formData = {name: '', description: ''}; $errors = {name: '', description: ''}"
+					>
+					{ctxi18n.T(ctx, "actions.cancel")}
+					</button>
+				</div>
+			</form>
+		</div>
+	} else {
+		<p class="text-muted">Read-only access</p>
+	}
 }

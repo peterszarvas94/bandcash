@@ -1,22 +1,30 @@
 package group
 
 import (
+	"database/sql"
 	"fmt"
 	"html"
 	"log/slog"
 	"net/http"
+	"os"
+	"time"
 
 	"github.com/labstack/echo/v4"
 
 	"bandcash/internal/db"
+	"bandcash/internal/email"
 	"bandcash/internal/middleware"
 	"bandcash/internal/utils"
 )
 
-type Group struct{}
+type Group struct {
+	emailService *email.Service
+}
 
 func New() *Group {
-	return &Group{}
+	return &Group{
+		emailService: email.NewFromEnv(),
+	}
 }
 
 // NewGroupPage shows the form to create a new group
@@ -117,22 +125,55 @@ func (g *Group) AddViewer(c echo.Context) error {
 		return c.Redirect(http.StatusFound, "/groups/"+groupID+"/viewers?error=Email%20required")
 	}
 
-	user, err := db.Qry.GetUserByEmail(c.Request().Context(), email)
+	group, err := db.Qry.GetGroupByID(c.Request().Context(), groupID)
 	if err != nil {
-		return c.Redirect(http.StatusFound, "/groups/"+groupID+"/viewers?error=User%20not%20found")
+		return c.Redirect(http.StatusFound, "/groups/"+groupID+"/viewers?error=Group%20not%20found")
 	}
 
-	_, err = db.Qry.CreateGroupReader(c.Request().Context(), db.CreateGroupReaderParams{
-		ID:      utils.GenerateID("grd"),
-		UserID:  user.ID,
-		GroupID: groupID,
+	// If user exists and already has access, short-circuit
+	user, err := db.Qry.GetUserByEmail(c.Request().Context(), email)
+	if err == nil {
+		if group.AdminUserID == user.ID {
+			return c.Redirect(http.StatusFound, "/groups/"+groupID+"/viewers?msg=User%20is%20already%20admin")
+		}
+		count, err := db.Qry.IsGroupReader(c.Request().Context(), db.IsGroupReaderParams{
+			UserID:  user.ID,
+			GroupID: groupID,
+		})
+		if err == nil && count > 0 {
+			return c.Redirect(http.StatusFound, "/groups/"+groupID+"/viewers?msg=User%20already%20viewer")
+		}
+	}
+
+	// Create invite magic link
+	token := utils.GenerateID("tok")
+	expiresAt := time.Now().Add(1 * time.Hour)
+
+	_, err = db.Qry.CreateMagicLink(c.Request().Context(), db.CreateMagicLinkParams{
+		ID:        utils.GenerateID("mag"),
+		Token:     token,
+		Email:     email,
+		Action:    "invite",
+		GroupID:   sql.NullString{String: groupID, Valid: true},
+		ExpiresAt: expiresAt,
 	})
 	if err != nil {
-		slog.Warn("group: failed to add viewer", "err", err)
-		return c.Redirect(http.StatusFound, "/groups/"+groupID+"/viewers?error=User%20already%20viewer")
+		slog.Error("group: failed to create invite link", "err", err)
+		return c.Redirect(http.StatusFound, "/groups/"+groupID+"/viewers?error=Failed%20to%20create%20invite")
 	}
 
-	return c.Redirect(http.StatusFound, "/groups/"+groupID+"/viewers?msg=Viewer%20added")
+	baseURL := os.Getenv("APP_BASE_URL")
+	if baseURL == "" {
+		baseURL = "http://localhost:8080"
+	}
+
+	err = g.emailService.SendGroupInvitation(email, group.Name, token, baseURL)
+	if err != nil {
+		slog.Error("group: failed to send invite email", "err", err)
+		return c.Redirect(http.StatusFound, "/groups/"+groupID+"/viewers?error=Failed%20to%20send%20email")
+	}
+
+	return c.Redirect(http.StatusFound, "/groups/"+groupID+"/viewers?msg=Invite%20sent")
 }
 
 // RemoveViewer removes a reader from the group
