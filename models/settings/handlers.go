@@ -5,13 +5,20 @@ import (
 
 	"github.com/labstack/echo/v4"
 
+	"bandcash/internal/db"
 	appi18n "bandcash/internal/i18n"
 	"bandcash/internal/utils"
 )
 
 func (s *Settings) Index(c echo.Context) error {
 	utils.EnsureClientID(c)
-	return utils.RenderComponent(c, SettingsIndex(s.Data(c.Request().Context())))
+	data := s.Data(c.Request().Context())
+	if cookie, err := c.Cookie("session"); err == nil && cookie.Value != "" {
+		if user, err := db.Qry.GetUserByID(c.Request().Context(), cookie.Value); err == nil {
+			data.UserEmail = user.Email
+		}
+	}
+	return utils.RenderComponent(c, SettingsIndex(data))
 }
 
 func (s *Settings) UpdateLanguage(c echo.Context) error {

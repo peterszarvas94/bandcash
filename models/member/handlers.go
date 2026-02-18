@@ -40,9 +40,22 @@ func getGroupID(c echo.Context) string {
 	return middleware.GetGroupID(c)
 }
 
+func getUserEmail(c echo.Context) string {
+	userID := middleware.GetUserID(c)
+	if userID == "" {
+		return ""
+	}
+	user, err := db.Qry.GetUserByID(c.Request().Context(), userID)
+	if err != nil {
+		return ""
+	}
+	return user.Email
+}
+
 func (p *Members) Index(c echo.Context) error {
 	utils.EnsureClientID(c)
 	groupID := getGroupID(c)
+	userEmail := getUserEmail(c)
 
 	data, err := p.GetIndexData(c.Request().Context(), groupID)
 	if err != nil {
@@ -50,6 +63,7 @@ func (p *Members) Index(c echo.Context) error {
 		return c.NoContent(500)
 	}
 	data.IsAdmin = middleware.IsAdmin(c)
+	data.UserEmail = userEmail
 
 	slog.Debug("member.index", "member_count", len(data.Members))
 	return utils.RenderComponent(c, MemberIndex(data))
@@ -58,6 +72,7 @@ func (p *Members) Index(c echo.Context) error {
 func (p *Members) Show(c echo.Context) error {
 	utils.EnsureClientID(c)
 	groupID := getGroupID(c)
+	userEmail := getUserEmail(c)
 
 	id := c.Param("id")
 	if id == "" {
@@ -71,12 +86,14 @@ func (p *Members) Show(c echo.Context) error {
 		return c.NoContent(500)
 	}
 	data.IsAdmin = middleware.IsAdmin(c)
+	data.UserEmail = userEmail
 
 	return utils.RenderComponent(c, MemberShow(data))
 }
 
 func (p *Members) Create(c echo.Context) error {
 	groupID := getGroupID(c)
+	userEmail := getUserEmail(c)
 
 	var signals memberTableParams
 	err := datastar.ReadSignals(c.Request(), &signals)
@@ -111,6 +128,7 @@ func (p *Members) Create(c echo.Context) error {
 		return c.NoContent(500)
 	}
 	data.IsAdmin = middleware.IsAdmin(c)
+	data.UserEmail = userEmail
 	html, err := utils.RenderComponentString(c.Request().Context(), MemberIndex(data))
 	if err != nil {
 		slog.Error("member.create.table: failed to render", "err", err)
@@ -124,6 +142,7 @@ func (p *Members) Create(c echo.Context) error {
 
 func (p *Members) Update(c echo.Context) error {
 	groupID := getGroupID(c)
+	userEmail := getUserEmail(c)
 
 	id := c.Param("id")
 	if id == "" {
@@ -172,6 +191,7 @@ func (p *Members) Update(c echo.Context) error {
 		return c.NoContent(500)
 	}
 	data.IsAdmin = middleware.IsAdmin(c)
+	data.UserEmail = userEmail
 	html, err := utils.RenderComponentString(c.Request().Context(), MemberIndex(data))
 	if err != nil {
 		slog.Error("member.update: failed to render", "err", err)
@@ -185,6 +205,7 @@ func (p *Members) Update(c echo.Context) error {
 
 func (p *Members) Destroy(c echo.Context) error {
 	groupID := getGroupID(c)
+	userEmail := getUserEmail(c)
 
 	id := c.Param("id")
 	if id == "" {
@@ -225,6 +246,7 @@ func (p *Members) Destroy(c echo.Context) error {
 		return c.NoContent(500)
 	}
 	data.IsAdmin = middleware.IsAdmin(c)
+	data.UserEmail = userEmail
 	html, err := utils.RenderComponentString(c.Request().Context(), MemberIndex(data))
 	if err != nil {
 		slog.Error("member.destroy: failed to render", "err", err)

@@ -1,6 +1,6 @@
-- users with auth (email link, cookie) -> tables shuold have "group id", users are part of a group. user can be associated with payee. there is NO data shared between groups at all. should have group admin role(s) as well
+- make auth/group pages match app styling
+- notifications
 - expenses table: title, description, amount, date
 - mobile friendly
 - real-time collaborative editing: notify other users viewing a page when data changes (show snackbar "Updated by another user [Refresh]")
 - viewer pages: live update when admin changes viewer list (broadcast SSE)
-- make auth/group pages match app styling

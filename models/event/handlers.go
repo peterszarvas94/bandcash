@@ -62,9 +62,22 @@ func getGroupID(c echo.Context) string {
 	return middleware.GetGroupID(c)
 }
 
+func getUserEmail(c echo.Context) string {
+	userID := middleware.GetUserID(c)
+	if userID == "" {
+		return ""
+	}
+	user, err := db.Qry.GetUserByID(c.Request().Context(), userID)
+	if err != nil {
+		return ""
+	}
+	return user.Email
+}
+
 func (e *Events) Index(c echo.Context) error {
 	utils.EnsureClientID(c)
 	groupID := getGroupID(c)
+	userEmail := getUserEmail(c)
 
 	data, err := e.GetIndexData(c.Request().Context(), groupID)
 	if err != nil {
@@ -72,6 +85,7 @@ func (e *Events) Index(c echo.Context) error {
 		return c.NoContent(500)
 	}
 	data.IsAdmin = middleware.IsAdmin(c)
+	data.UserEmail = userEmail
 
 	slog.Debug("event.index", "event_count", len(data.Events))
 	return utils.RenderComponent(c, EventIndex(data))
@@ -80,6 +94,7 @@ func (e *Events) Index(c echo.Context) error {
 func (e *Events) Show(c echo.Context) error {
 	utils.EnsureClientID(c)
 	groupID := getGroupID(c)
+	userEmail := getUserEmail(c)
 
 	id := c.Param("id")
 	if id == "" {
@@ -93,12 +108,14 @@ func (e *Events) Show(c echo.Context) error {
 		return c.NoContent(500)
 	}
 	data.IsAdmin = middleware.IsAdmin(c)
+	data.UserEmail = userEmail
 
 	return utils.RenderComponent(c, EventShow(data))
 }
 
 func (e *Events) Create(c echo.Context) error {
 	groupID := getGroupID(c)
+	userEmail := getUserEmail(c)
 
 	var signals eventInlineParams
 	err := datastar.ReadSignals(c.Request(), &signals)
@@ -138,6 +155,7 @@ func (e *Events) Create(c echo.Context) error {
 		return c.NoContent(500)
 	}
 	data.IsAdmin = middleware.IsAdmin(c)
+	data.UserEmail = userEmail
 
 	html, err := utils.RenderComponentString(c.Request().Context(), EventIndex(data))
 	if err != nil {
@@ -152,6 +170,7 @@ func (e *Events) Create(c echo.Context) error {
 
 func (e *Events) Update(c echo.Context) error {
 	groupID := getGroupID(c)
+	userEmail := getUserEmail(c)
 
 	id := c.Param("id")
 	if id == "" {
@@ -208,6 +227,7 @@ func (e *Events) Update(c echo.Context) error {
 			return c.NoContent(500)
 		}
 		data.IsAdmin = middleware.IsAdmin(c)
+		data.UserEmail = userEmail
 		html, err := utils.RenderComponentString(c.Request().Context(), EventShow(data))
 		if err != nil {
 			slog.Error("event.update: failed to render", "err", err)
@@ -224,6 +244,7 @@ func (e *Events) Update(c echo.Context) error {
 		return c.NoContent(500)
 	}
 	data.IsAdmin = middleware.IsAdmin(c)
+	data.UserEmail = userEmail
 	html, err := utils.RenderComponentString(c.Request().Context(), EventIndex(data))
 	if err != nil {
 		slog.Error("event.update: failed to render", "err", err)
@@ -237,6 +258,7 @@ func (e *Events) Update(c echo.Context) error {
 
 func (e *Events) Destroy(c echo.Context) error {
 	groupID := getGroupID(c)
+	userEmail := getUserEmail(c)
 
 	id := c.Param("id")
 	if id == "" {
@@ -277,6 +299,7 @@ func (e *Events) Destroy(c echo.Context) error {
 		return c.NoContent(500)
 	}
 	data.IsAdmin = middleware.IsAdmin(c)
+	data.UserEmail = userEmail
 	html, err := utils.RenderComponentString(c.Request().Context(), EventIndex(data))
 	if err != nil {
 		slog.Error("event.destroy: failed to render", "err", err)
@@ -290,6 +313,7 @@ func (e *Events) Destroy(c echo.Context) error {
 
 func (e *Events) CreateParticipant(c echo.Context) error {
 	groupID := getGroupID(c)
+	userEmail := getUserEmail(c)
 
 	id := c.Param("id")
 	if id == "" {
@@ -331,6 +355,7 @@ func (e *Events) CreateParticipant(c echo.Context) error {
 		return c.NoContent(500)
 	}
 	data.IsAdmin = middleware.IsAdmin(c)
+	data.UserEmail = userEmail
 	html, err := utils.RenderComponentString(c.Request().Context(), EventShow(data))
 	if err != nil {
 		slog.Error("participant.create.table: failed to render", "err", err)
@@ -346,6 +371,7 @@ func (e *Events) CreateParticipant(c echo.Context) error {
 
 func (e *Events) UpdateParticipant(c echo.Context) error {
 	groupID := getGroupID(c)
+	userEmail := getUserEmail(c)
 
 	eventID := c.Param("id")
 	if eventID == "" {
@@ -394,6 +420,7 @@ func (e *Events) UpdateParticipant(c echo.Context) error {
 		return c.NoContent(500)
 	}
 	data.IsAdmin = middleware.IsAdmin(c)
+	data.UserEmail = userEmail
 	html, err := utils.RenderComponentString(c.Request().Context(), EventShow(data))
 	if err != nil {
 		slog.Error("participant.update: failed to render", "err", err)
@@ -408,6 +435,7 @@ func (e *Events) UpdateParticipant(c echo.Context) error {
 
 func (e *Events) DeleteParticipantTable(c echo.Context) error {
 	groupID := getGroupID(c)
+	userEmail := getUserEmail(c)
 
 	eventID := c.Param("id")
 	if eventID == "" {
@@ -437,6 +465,7 @@ func (e *Events) DeleteParticipantTable(c echo.Context) error {
 		return c.NoContent(500)
 	}
 	data.IsAdmin = middleware.IsAdmin(c)
+	data.UserEmail = userEmail
 	html, err := utils.RenderComponentString(c.Request().Context(), EventShow(data))
 	if err != nil {
 		slog.Error("participant.delete: failed to render", "err", err)

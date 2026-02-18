@@ -14,7 +14,7 @@ templ HomeIndex(data HomeData) {
 		<body>
 			<main id="app" class="single-col">
 				<h1>{data.Title}</h1>
-				@shared.Breadcrumbs(data.Breadcrumbs)
+				@shared.Breadcrumbs(data.Breadcrumbs, data.UserEmail)
 				<p>{ctxi18n.T(ctx, "home.tagline")}</p>
 				<div class="row">
 					<a class="btn" href="/auth/login">Login</a>

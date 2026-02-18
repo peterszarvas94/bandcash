@@ -10,7 +10,7 @@ import (
 
 templ EventShowMain(data EventData) {
 	<h1>{ data.Title }</h1>
-	@shared.Breadcrumbs(data.Breadcrumbs)
+	@shared.Breadcrumbs(data.Breadcrumbs, data.UserEmail)
 	<h2>{ ctxi18n.T(ctx, "events.details") }</h2>
 	<div class="event-details">
 		<div class="field">

@@ -12,6 +12,7 @@ type MemberData struct {
 	Breadcrumbs []utils.Crumb
 	GroupID     string
 	IsAdmin     bool
+	UserEmail   string
 }
 
 type MembersData struct {
@@ -20,4 +21,5 @@ type MembersData struct {
 	Breadcrumbs []utils.Crumb
 	GroupID     string
 	IsAdmin     bool
+	UserEmail   string
 }

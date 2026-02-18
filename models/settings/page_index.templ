@@ -14,7 +14,7 @@ templ SettingsIndex(data SettingsData) {
 		<body>
 			<main id="app" class="single-col">
 				<h1>{data.Title}</h1>
-				@shared.Breadcrumbs(data.Breadcrumbs)
+				@shared.Breadcrumbs(data.Breadcrumbs, data.UserEmail)
 				<form class="form" method="post" action="/settings/language">
 					<div class="field">
 						<label for="lang">{ctxi18n.T(ctx, "settings.language")}</label>

@@ -10,7 +10,7 @@ import (
 
 templ EventIndexMain(data EventsData) {
 	<h1>{data.Title}</h1>
-	@shared.Breadcrumbs(data.Breadcrumbs)
+	@shared.Breadcrumbs(data.Breadcrumbs, data.UserEmail)
 
 	<table class="table">
 		<thead>

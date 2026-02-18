@@ -22,16 +22,21 @@ templ Head(title string) {
 	</head>
 }
 
-templ Breadcrumbs(crumbs []utils.Crumb) {
-	<nav class="row pb">
-		<a href="/">{ctxi18n.T(ctx, "nav.home")}</a>
-		for i, crumb := range crumbs {
-			<span>&gt;</span>
-			if crumb.Href != "" && i < len(crumbs)-1 {
-				<a href={crumb.Href}>{crumb.Label}</a>
-			} else {
-				<span>{crumb.Label}</span>
+templ Breadcrumbs(crumbs []utils.Crumb, userEmail string) {
+	<nav class="row pb" style="align-items: center">
+		<div class="row" style="gap: 6px; flex-wrap: wrap">
+			<a href="/">{ctxi18n.T(ctx, "nav.home")}</a>
+			for i, crumb := range crumbs {
+				<span>&gt;</span>
+				if crumb.Href != "" && i < len(crumbs)-1 {
+					<a href={crumb.Href}>{crumb.Label}</a>
+				} else {
+					<span>{crumb.Label}</span>
+				}
 			}
+		</div>
+		if userEmail != "" {
+			<span style="margin-left: auto" class="text-muted">Logged in as {userEmail}</span>
 		}
 	</nav>
 }

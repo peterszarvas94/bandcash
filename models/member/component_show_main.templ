@@ -10,7 +10,7 @@ import (
 
 templ MemberShowMain(data MemberData) {
 	<h1>{data.Title}</h1>
-	@shared.Breadcrumbs(data.Breadcrumbs)
+	@shared.Breadcrumbs(data.Breadcrumbs, data.UserEmail)
 
 	<h2>{ctxi18n.T(ctx, "members.details")}</h2>
 	<div class="entry-details">

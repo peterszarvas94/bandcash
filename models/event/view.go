@@ -16,6 +16,7 @@ type EventData struct {
 	TotalDistributed int64
 	GroupID          string
 	IsAdmin          bool
+	UserEmail        string
 }
 
 type EventsData struct {
@@ -24,4 +25,5 @@ type EventsData struct {
 	Breadcrumbs []utils.Crumb
 	GroupID     string
 	IsAdmin     bool
+	UserEmail   string
 }

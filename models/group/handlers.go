@@ -29,7 +29,8 @@ func New() *Group {
 
 // NewGroupPage shows the form to create a new group
 func (g *Group) NewGroupPage(c echo.Context) error {
-	return c.HTML(http.StatusOK, newGroupPageHTML)
+	userEmail := getUserEmail(c)
+	return c.HTML(http.StatusOK, renderNewGroupPage(userEmail))
 }
 
 // CreateGroup handles group creation
@@ -64,6 +65,7 @@ func (g *Group) CreateGroup(c echo.Context) error {
 // GroupsPage lists groups the user can access
 func (g *Group) GroupsPage(c echo.Context) error {
 	userID := middleware.GetUserID(c)
+	userEmail := getUserEmail(c)
 	if userID == "" {
 		return c.Redirect(http.StatusFound, "/auth/login")
 	}
@@ -93,7 +95,7 @@ func (g *Group) GroupsPage(c echo.Context) error {
 		filteredReaders = append(filteredReaders, group)
 	}
 
-	return c.HTML(http.StatusOK, renderGroupsPage(adminGroups, filteredReaders))
+	return c.HTML(http.StatusOK, renderGroupsPage(adminGroups, filteredReaders, userEmail))
 }
 
 // LeaveGroup removes viewer access for the current user.
@@ -151,6 +153,7 @@ func (g *Group) DeleteGroup(c echo.Context) error {
 // ViewersPage shows the current viewers and invite form
 func (g *Group) ViewersPage(c echo.Context) error {
 	groupID := middleware.GetGroupID(c)
+	userEmail := getUserEmail(c)
 
 	group, err := db.Qry.GetGroupByID(c.Request().Context(), groupID)
 	if err != nil {
@@ -166,7 +169,7 @@ func (g *Group) ViewersPage(c echo.Context) error {
 	msg := c.QueryParam("msg")
 	errMsg := c.QueryParam("error")
 
-	return c.HTML(http.StatusOK, renderViewersPage(group, viewers, msg, errMsg))
+	return c.HTML(http.StatusOK, renderViewersPage(group, viewers, msg, errMsg, userEmail))
 }
 
 // AddViewer adds an existing user as a group reader
@@ -248,7 +251,9 @@ func (g *Group) RemoveViewer(c echo.Context) error {
 	return c.Redirect(http.StatusFound, "/groups/"+groupID+"/viewers?msg=Viewer%20removed")
 }
 
-var newGroupPageHTML = `<!DOCTYPE html>
+func renderNewGroupPage(userEmail string) string {
+	breadcrumbs := renderBreadcrumbs([]utils.Crumb{{Label: "Groups", Href: "/groups"}, {Label: "New"}}, userEmail)
+	return fmt.Sprintf(`<!DOCTYPE html>
 <html>
 <head>
     <title>Create Group - BandCash</title>
@@ -256,6 +261,7 @@ var newGroupPageHTML = `<!DOCTYPE html>
 </head>
 <body>
     <div class="container">
+        %s
         <h1>Create Your Band Group</h1>
         <p>Welcome! Let's set up your band's money management system.</p>
         <form method="POST" action="/groups">
@@ -268,9 +274,10 @@ var newGroupPageHTML = `<!DOCTYPE html>
         <p><a href="/auth/logout">Logout</a></p>
     </div>
 </body>
-</html>`
+</html>`, breadcrumbs)
+}
 
-func renderGroupsPage(adminGroups, readerGroups []db.Group) string {
+func renderGroupsPage(adminGroups, readerGroups []db.Group, userEmail string) string {
 	adminRows := ""
 	if len(adminGroups) == 0 {
 		adminRows = `<tr><td colspan="2">No groups yet.</td></tr>`
@@ -319,6 +326,7 @@ func renderGroupsPage(adminGroups, readerGroups []db.Group) string {
 </head>
 <body>
     <div class="container">
+        %s
         <h1>Your Groups</h1>
         <p class="text-muted">Admin groups can edit; viewer groups are read-only.</p>
         <p><a class="btn btn-primary" href="/groups/new">Create New Group</a></p>
@@ -339,12 +347,13 @@ func renderGroupsPage(adminGroups, readerGroups []db.Group) string {
     </div>
 </body>
 </html>`,
+		renderBreadcrumbs([]utils.Crumb{{Label: "Groups"}}, userEmail),
 		adminRows,
 		readerRows,
 	)
 }
 
-func renderViewersPage(group db.Group, viewers []db.User, msg, errMsg string) string {
+func renderViewersPage(group db.Group, viewers []db.User, msg, errMsg, userEmail string) string {
 	messageHTML := ""
 	if msg != "" {
 		messageHTML = `<p class="notice">` + html.EscapeString(msg) + `</p>`
@@ -379,6 +388,7 @@ func renderViewersPage(group db.Group, viewers []db.User, msg, errMsg string) st
 </head>
 <body>
     <div class="container">
+        %s
         <h1>Viewers for %s</h1>
         %s
 
@@ -404,10 +414,42 @@ func renderViewersPage(group db.Group, viewers []db.User, msg, errMsg string) st
 </body>
 </html>`,
 		html.EscapeString(group.Name),
+		renderBreadcrumbs([]utils.Crumb{{Label: "Groups", Href: "/groups"}, {Label: group.Name, Href: "/groups/" + group.ID + "/events"}, {Label: "Viewers"}}, userEmail),
 		html.EscapeString(group.Name),
 		messageHTML,
 		html.EscapeString(group.ID),
 		rows,
 		html.EscapeString(group.ID),
 	)
+}
+
+func renderBreadcrumbs(crumbs []utils.Crumb, userEmail string) string {
+	parts := `<nav class="row pb" style="align-items: center"><div class="row" style="gap: 6px; flex-wrap: wrap">`
+	parts += `<a href="/">Home</a>`
+	for i, crumb := range crumbs {
+		parts += `<span>&gt;</span>`
+		if crumb.Href != "" && i < len(crumbs)-1 {
+			parts += `<a href="` + html.EscapeString(crumb.Href) + `">` + html.EscapeString(crumb.Label) + `</a>`
+		} else {
+			parts += `<span>` + html.EscapeString(crumb.Label) + `</span>`
+		}
+	}
+	parts += `</div>`
+	if userEmail != "" {
+		parts += `<span style="margin-left: auto" class="text-muted">Logged in as ` + html.EscapeString(userEmail) + `</span>`
+	}
+	parts += `</nav>`
+	return parts
+}
+
+func getUserEmail(c echo.Context) string {
+	userID := middleware.GetUserID(c)
+	if userID == "" {
+		return ""
+	}
+	user, err := db.Qry.GetUserByID(c.Request().Context(), userID)
+	if err != nil {
+		return ""
+	}
+	return user.Email
 }
