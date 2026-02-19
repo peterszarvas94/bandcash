@@ -12,15 +12,17 @@ description: HTML template and form conventions for UI changes.
 Use this for page layout, buttons, tables, and form changes.
 
 ## Template locations
-- Event pages: `app/event/templates/*.html`
-- Member pages: `app/member/templates/*.html`
-- Shared head: `web/templates/head.html`
+- Feature templates: `models/**/**/*.templ`
+- Shared layout/components: `models/shared/*.templ` and `models/shared/*.go`
+- Static assets: `static/css/*`, `static/js/*`
 
 ## Form conventions
 - Forms use `class="form"` and `data-on:submit` handlers.
 - Inputs use `data-bind` for Datastar signals.
 - Numeric inputs use `type="number"` and `step="0.01"`.
-- SSE views use `data-signals` + `data-init="@get('/sse')"`.
+- Interactive pages include root `data-signals` + `data-init="@get('/sse')"`.
+- Unsafe actions must have `csrf` present in root signals.
+- Logout is POST-only (`/auth/logout`) and should be triggered by Datastar form/button.
 
 ## Table conventions
 - Use `.table` class for tables.
@@ -28,3 +30,4 @@ Use this for page layout, buttons, tables, and form changes.
 
 ## Notes
 - Keep markup in existing sections; do not introduce new layout wrappers unless needed.
+- Run `mise run templ` after template updates.

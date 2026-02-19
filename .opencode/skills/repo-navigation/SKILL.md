@@ -12,17 +12,17 @@ description: Quick path map and scoped search rules for this repo.
 Use this when you need to locate where to make changes without scanning the whole repo.
 
 ## Key paths
-- Routes and handlers: `app/**/routes.go`, `app/**/handlers.go`
-- Models and data access: `app/**/model.go`, `internal/db/**`
-- SSE hub: `internal/hub/store.go`, `internal/sse/sse.go`
-- HTML templates: `app/**/templates/*.html`
-- Shared templates: `web/templates/*.html`
-- CSS: `web/static/css/*.css`
-- JS: `web/static/js/*.js`
+- Routes and handlers: `models/**/routes.go`, `models/**/handlers.go`
+- View/data structs: `models/**/view.go`, `models/**/model.go`, `models/**/signals.go`
+- SSE + helpers: `internal/utils/hub.go`, `models/sse/**`
+- Middleware: `internal/middleware/*.go`
+- Templates: `models/**/*.templ` (+ generated `*_templ.go`)
+- Database: `internal/db/queries/*.sql`, `internal/db/migrations/*.sql`, generated `internal/db/*.sql.go`
+- Assets: `static/css/*.css`, `static/js/*.js`
 
 ## Scoped search rules
-- Start with `app/<area>/templates/*.html` when UI is mentioned.
-- Use `app/<area>/handlers.go` for request logic.
+- Start with `models/<area>/*.templ` when UI is mentioned.
+- Use `models/<area>/handlers.go` for request logic.
 - Use `internal/db/queries/*.sql` for query changes, then run sqlc.
 - Use `Glob` with narrow patterns before `Grep`.
 

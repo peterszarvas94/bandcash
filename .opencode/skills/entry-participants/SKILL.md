@@ -12,10 +12,10 @@ description: UI and handler conventions for entry participants (tables, add/remo
 Use this when adding participant UI or wiring add/remove participant actions.
 
 ## Key paths
-- Event detail template: `app/event/templates/show.html`
-- Event handlers: `app/event/handlers.go`
+- Event detail template: `models/event/page_show.templ` and `models/event/component_show_*.templ`
+- Event handlers: `models/event/handlers.go`
 - Participant queries: `internal/db/queries/participants.sql`
-- SSE hub: `internal/hub/store.go`
+- SSE hub: `internal/utils/hub.go`
 
 ## UI conventions
 - Tables use `.table` and numeric values use `.text-right`.
@@ -23,5 +23,6 @@ Use this when adding participant UI or wiring add/remove participant actions.
 - Number inputs use `type="number"` and `step="0.01"`.
 
 ## SSE update pattern
-- Use `hub.Hub.Render(clientID)` to trigger re-render.
-- Optionally `hub.Hub.PatchSignals(clientID, ...)` for UI state.
+- Use `utils.SSEHub.PatchHTML(c, html)` to patch full view markup.
+- Use `utils.SSEHub.PatchSignals(c, ...)` for form/UI state updates.
+- Use `utils.SSEHub.Redirect(c, url)` after successful mutations.

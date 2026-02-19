@@ -7,7 +7,7 @@ description: Datastar attribute usage and patterns, based on official docs and e
 
 - Provide Datastar attribute conventions and safe defaults for this repo.
 - Map common UI behaviors to Datastar attributes.
-- Point to official references when needed.
+- Include current CSRF + security expectations for Datastar mutations.
 
 ## When to use me
 
@@ -21,14 +21,17 @@ Use this when implementing interactive UI behaviors with Datastar.
 ## SSE conventions in this repo
 
 - Global stream at `/sse`.
-- Server patches `main#app` on updates.
+- Pages initialize signals with `data-signals` and connect with `data-init="@get('/sse')"`.
+- Server updates UI through `utils.SSEHub` patch/redirect helpers.
 
 ## Common patterns
 
 - Toggle UI: `data-signals="{open: false}"` with `data-show="$open"` and `data-on:click`.
-- Form submit: `data-on:submit="@post('/path')"` to prevent default and send signals.
-- SSE connect: `data-init="@get('/sse')"`.
-- Bind inputs: `data-bind="name"` on `input`, `select`, `textarea`.
+- Form submit: `data-on:submit="@post('/path')"`.
+- Mutation buttons: `data-on:click="@put('/path')"`, `@delete`, `@post`.
+- Bind inputs/signals: `data-bind="name"` on `input`, `select`, `textarea`, and hidden fields.
+- CSRF signal: include `csrf` in root `data-signals` on interactive pages.
+- Logout action: use Datastar POST (`@post('/auth/logout')`) with bound `csrf` signal.
 - Loading state: `data-indicator:fetching` + `data-attr:disabled="$fetching"`.
 
 ## Example: active search
@@ -41,3 +44,4 @@ Use this when implementing interactive UI behaviors with Datastar.
 
 - Prefer `data-show` with `class="display: none;"` to avoid flicker.
 - Keep signal names camelCase when possible.
+- Assume `csrf` signal is sent on unsafe methods and validated server-side.

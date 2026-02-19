@@ -16,7 +16,7 @@ Use this when changing database schema or queries, or when you need to regenerat
 - Migrations live in `internal/db/migrations` and use goose `Up/Down` blocks.
 - Queries live in `internal/db/queries` and are compiled by sqlc.
 - sqlc config is `sqlc.yaml` and outputs Go code into `internal/db`.
-- App startup runs goose via `db.Migrate()` in `internal/db/init.go`.
+- App startup does not run migrations automatically.
 - Tooling is installed via `mise.toml`; use `goose` and `sqlc` directly after `mise install`.
 
 ## Common commands
@@ -53,5 +53,5 @@ mise run sqlc
 
 ## Notes
 - Generated files in `internal/db/*.go` should not be edited manually.
-- After changing SQL queries, always run `sqlc generate`.
+- After changing SQL queries, run `mise run sqlc`.
 - If `goose` or `sqlc` is missing, ensure your shell is activated for mise (e.g. `eval "$(mise activate zsh)"`).
