@@ -17,6 +17,11 @@ func New() *Members {
 }
 
 func (p *Members) GetShowData(ctx context.Context, groupID, memberID string) (MemberData, error) {
+	group, err := db.Qry.GetGroupByID(ctx, groupID)
+	if err != nil {
+		return MemberData{}, err
+	}
+
 	member, err := db.Qry.GetMember(ctx, db.GetMemberParams{
 		ID:      memberID,
 		GroupID: groupID,
@@ -39,6 +44,8 @@ func (p *Members) GetShowData(ctx context.Context, groupID, memberID string) (Me
 		Events:  events,
 		GroupID: groupID,
 		Breadcrumbs: []utils.Crumb{
+			{Label: ctxi18n.T(ctx, "groups.title"), Href: "/dashboard"},
+			{Label: group.Name, Href: "/groups/" + groupID + "/events"},
 			{Label: ctxi18n.T(ctx, "members.title"), Href: "/groups/" + groupID + "/members"},
 			{Label: member.Name, Href: "/groups/" + groupID + "/members/" + memberID},
 		},
@@ -46,6 +53,11 @@ func (p *Members) GetShowData(ctx context.Context, groupID, memberID string) (Me
 }
 
 func (p *Members) GetIndexData(ctx context.Context, groupID string) (MembersData, error) {
+	group, err := db.Qry.GetGroupByID(ctx, groupID)
+	if err != nil {
+		return MembersData{}, err
+	}
+
 	members, err := db.Qry.ListMembers(ctx, groupID)
 	if err != nil {
 		return MembersData{}, err
@@ -55,6 +67,8 @@ func (p *Members) GetIndexData(ctx context.Context, groupID string) (MembersData
 		Members: members,
 		GroupID: groupID,
 		Breadcrumbs: []utils.Crumb{
+			{Label: ctxi18n.T(ctx, "groups.title"), Href: "/dashboard"},
+			{Label: group.Name, Href: "/groups/" + groupID + "/members"},
 			{Label: ctxi18n.T(ctx, "members.title")},
 		},
 	}, nil

@@ -18,6 +18,11 @@ func New() *Events {
 }
 
 func (e *Events) GetShowData(ctx context.Context, groupID, eventID string) (EventData, error) {
+	group, err := db.Qry.GetGroupByID(ctx, groupID)
+	if err != nil {
+		return EventData{}, err
+	}
+
 	event, err := db.Qry.GetEvent(ctx, db.GetEventParams{
 		ID:      eventID,
 		GroupID: groupID,
@@ -71,6 +76,8 @@ func (e *Events) GetShowData(ctx context.Context, groupID, eventID string) (Even
 		TotalDistributed: totalDistributed,
 		GroupID:          groupID,
 		Breadcrumbs: []utils.Crumb{
+			{Label: ctxi18n.T(ctx, "groups.title"), Href: "/dashboard"},
+			{Label: group.Name, Href: "/groups/" + groupID + "/events"},
 			{Label: ctxi18n.T(ctx, "events.title"), Href: "/groups/" + groupID + "/events"},
 			{Label: event.Title},
 		},
@@ -78,6 +85,11 @@ func (e *Events) GetShowData(ctx context.Context, groupID, eventID string) (Even
 }
 
 func (e *Events) GetIndexData(ctx context.Context, groupID string) (EventsData, error) {
+	group, err := db.Qry.GetGroupByID(ctx, groupID)
+	if err != nil {
+		return EventsData{}, err
+	}
+
 	events, err := db.Qry.ListEvents(ctx, groupID)
 	if err != nil {
 		return EventsData{}, err
@@ -88,6 +100,8 @@ func (e *Events) GetIndexData(ctx context.Context, groupID string) (EventsData, 
 		Events:  events,
 		GroupID: groupID,
 		Breadcrumbs: []utils.Crumb{
+			{Label: ctxi18n.T(ctx, "groups.title"), Href: "/dashboard"},
+			{Label: group.Name, Href: "/groups/" + groupID + "/events"},
 			{Label: ctxi18n.T(ctx, "events.title")},
 		},
 	}, nil

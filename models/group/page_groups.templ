@@ -66,9 +66,11 @@ templ GroupsPage(data GroupsPageData) {
 									<td>
 										<div class="row row-right row-wrap">
 											<a class="btn" href={ "/groups/" + group.ID + "/events" }>{ ctxi18n.T(ctx, "groups.open") }</a>
-											<form data-on:submit={ fmt.Sprintf("@post('/groups/%s/leave')", group.ID) } style="display:inline">
-												<button type="submit" class="btn">{ ctxi18n.T(ctx, "groups.leave") }</button>
-											</form>
+											<button
+												type="button"
+												class="btn btn-danger"
+												data-on:click={ fmt.Sprintf("if (window.confirm(%q)) { @post('/groups/%s/leave') }", ctxi18n.T(ctx, "groups.leave_confirm"), group.ID) }
+											>{ ctxi18n.T(ctx, "groups.leave") }</button>
 										</div>
 									</td>
 								</tr>

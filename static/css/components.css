@@ -39,7 +39,7 @@
     min-height: 2.5rem;
 
     &:not(:disabled):not([disabled]):hover {
-      background: var(--border-color);
+      background: color-mix(in srgb, var(--text-color) 6%, transparent);
     }
 
     &:focus-visible {
@@ -55,12 +55,16 @@
     }
 
     &.btn-primary {
-      background: transparent;
-      border-color: color-mix(in srgb, var(--link-color) 60%, transparent);
-      color: var(--link-color);
+      background: color-mix(in srgb, var(--link-color) 88%, black 12%);
+      border-color: color-mix(in srgb, var(--link-color) 80%, black 20%);
+      color: white;
 
       &:not(:disabled):not([disabled]):hover {
-        background: color-mix(in srgb, var(--link-color) 10%, transparent);
+        background: color-mix(in srgb, var(--link-color) 78%, black 22%);
+      }
+
+      &:focus-visible {
+        outline-color: color-mix(in srgb, var(--link-color) 70%, white 30%);
       }
     }
 
@@ -70,7 +74,11 @@
       color: var(--error-color);
 
       &:not(:disabled):not([disabled]):hover {
-        background: color-mix(in srgb, var(--error-color) 10%, transparent);
+        background: color-mix(in srgb, var(--error-color) 16%, transparent);
+      }
+
+      &:focus-visible {
+        outline-color: color-mix(in srgb, var(--error-color) 70%, white 30%);
       }
     }
   }
