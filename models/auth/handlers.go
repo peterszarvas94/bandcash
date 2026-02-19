@@ -237,7 +237,7 @@ func (a *Auth) VerifyMagicLink(c echo.Context) error {
 		MaxAge:   86400 * 30, // 30 days
 		HttpOnly: true,
 		Secure:   os.Getenv("APP_ENV") == "production",
-		SameSite: http.SameSiteStrictMode,
+		SameSite: http.SameSiteLaxMode,
 	})
 
 	// If invite, add viewer access
@@ -277,7 +277,13 @@ func (a *Auth) Logout(c echo.Context) error {
 		MaxAge:   -1,
 		HttpOnly: true,
 	})
-	return c.Redirect(http.StatusFound, "/")
+
+	err := utils.SSEHub.Redirect(c, "/")
+	if err != nil {
+		return c.Redirect(http.StatusFound, "/")
+	}
+
+	return c.NoContent(http.StatusOK)
 }
 
 // Dashboard shows user's groups or create group page

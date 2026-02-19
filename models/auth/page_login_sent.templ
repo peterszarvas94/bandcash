@@ -4,6 +4,7 @@ import (
 	ctxi18n "github.com/invopop/ctxi18n/i18n"
 
 	appi18n "bandcash/internal/i18n"
+	"bandcash/internal/utils"
 	shared "bandcash/models/shared"
 )
 
@@ -12,6 +13,7 @@ templ LoginSentPage(data AuthPageData) {
 	<html lang={appi18n.LocaleCode(ctx)}>
 		@shared.Head(data.Title)
 		<body>
+			<div data-signals={templ.JSONString(map[string]any{"csrf": utils.CSRFToken(ctx)})}></div>
 			<main id="app" class="single-col">
 				<h1>{data.Title}</h1>
 				@shared.Breadcrumbs(data.Breadcrumbs, data.UserEmail)

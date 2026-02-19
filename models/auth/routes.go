@@ -12,7 +12,7 @@ func Register(e *echo.Echo) *Auth {
 	e.POST("/auth/signup", auth.SignupRequest)
 	e.GET("/auth/login-sent", auth.LoginSentPage)
 	e.GET("/auth/verify", auth.VerifyMagicLink)
-	e.GET("/auth/logout", auth.Logout)
+	e.POST("/auth/logout", auth.Logout)
 
 	return auth
 }

@@ -1,7 +1,8 @@
 package event
 
-func eventIndexSignals() map[string]any {
+func eventIndexSignals(csrfToken string) map[string]any {
 	return map[string]any{
+		"csrf":           csrfToken,
 		"mode":           "",
 		"formState":      "",
 		"editingId":      0,
@@ -10,8 +11,9 @@ func eventIndexSignals() map[string]any {
 	}
 }
 
-func eventShowSignals(data EventData) map[string]any {
+func eventShowSignals(data EventData, csrfToken string) map[string]any {
 	return map[string]any{
+		"csrf":           csrfToken,
 		"mode":           "single",
 		"eventFormState": "",
 		"eventFormData": map[string]any{

@@ -2,6 +2,7 @@ package event
 
 import (
 	appi18n "bandcash/internal/i18n"
+	"bandcash/internal/utils"
 	shared "bandcash/models/shared"
 )
 
@@ -10,7 +11,7 @@ templ EventShow(data EventData) {
 	<html lang={appi18n.LocaleCode(ctx)}>
 		@shared.Head(data.Title)
 		<body>
-			<div data-signals={templ.JSONString(eventShowSignals(data))} data-init="@get('/sse')"></div>
+			<div data-signals={templ.JSONString(eventShowSignals(data, utils.CSRFToken(ctx)))} data-init="@get('/sse')"></div>
 			@shared.TwoCol("event-show", EventShowMain(data), EventShowSidebar(data))
 		</body>
 	</html>

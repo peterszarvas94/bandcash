@@ -1,7 +1,8 @@
 package member
 
-func memberIndexSignals() map[string]any {
+func memberIndexSignals(csrfToken string) map[string]any {
 	return map[string]any{
+		"csrf":      csrfToken,
 		"mode":      "",
 		"formState": "",
 		"editingId": 0,
@@ -9,8 +10,9 @@ func memberIndexSignals() map[string]any {
 	}
 }
 
-func memberShowSignals(data MemberData) map[string]any {
+func memberShowSignals(data MemberData, csrfToken string) map[string]any {
 	return map[string]any{
+		"csrf":      csrfToken,
 		"mode":      "single",
 		"formState": "",
 		"formData": map[string]any{
