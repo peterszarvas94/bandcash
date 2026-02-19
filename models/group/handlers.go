@@ -10,6 +10,7 @@ import (
 
 	ctxi18n "github.com/invopop/ctxi18n/i18n"
 	"github.com/labstack/echo/v4"
+	"github.com/starfederation/datastar-go/datastar"
 
 	"bandcash/internal/db"
 	"bandcash/internal/email"
@@ -21,6 +22,18 @@ type Group struct {
 	emailService *email.Service
 }
 
+type createGroupSignals struct {
+	FormData struct {
+		Name string `json:"name"`
+	} `json:"formData"`
+}
+
+type addViewerSignals struct {
+	FormData struct {
+		Email string `json:"email"`
+	} `json:"formData"`
+}
+
 func New() *Group {
 	return &Group{
 		emailService: email.NewFromEnv(),
@@ -29,10 +42,11 @@ func New() *Group {
 
 // NewGroupPage shows the form to create a new group
 func (g *Group) NewGroupPage(c echo.Context) error {
+	utils.EnsureClientID(c)
 	userEmail := getUserEmail(c)
 	data := NewGroupPageData{
 		Title:       ctxi18n.T(c.Request().Context(), "groups.new"),
-		Breadcrumbs: []utils.Crumb{{Label: ctxi18n.T(c.Request().Context(), "groups.title"), Href: "/groups"}, {Label: ctxi18n.T(c.Request().Context(), "groups.new")}},
+		Breadcrumbs: []utils.Crumb{{Label: ctxi18n.T(c.Request().Context(), "groups.title"), Href: "/dashboard"}, {Label: ctxi18n.T(c.Request().Context(), "groups.new")}},
 		UserEmail:   userEmail,
 	}
 	return utils.RenderComponent(c, GroupNewPage(data))
@@ -42,12 +56,21 @@ func (g *Group) NewGroupPage(c echo.Context) error {
 func (g *Group) CreateGroup(c echo.Context) error {
 	userID := middleware.GetUserID(c)
 	if userID == "" {
-		return c.Redirect(http.StatusFound, "/auth/login")
+		err := utils.SSEHub.Redirect(c, "/auth/login")
+		if err != nil {
+			return c.NoContent(http.StatusInternalServerError)
+		}
+		return c.NoContent(http.StatusOK)
 	}
 
-	name := c.FormValue("name")
+	signals := createGroupSignals{}
+	if err := datastar.ReadSignals(c.Request(), &signals); err != nil {
+		return c.NoContent(http.StatusBadRequest)
+	}
+
+	name := signals.FormData.Name
 	if name == "" {
-		return c.String(http.StatusBadRequest, "Group name required")
+		return c.NoContent(http.StatusBadRequest)
 	}
 
 	// Create group
@@ -64,11 +87,16 @@ func (g *Group) CreateGroup(c echo.Context) error {
 	slog.Info("group: created", "group_id", group.ID, "name", group.Name, "admin", userID)
 
 	// Redirect to events
-	return c.Redirect(http.StatusFound, "/groups/"+group.ID+"/events")
+	err = utils.SSEHub.Redirect(c, "/groups/"+group.ID+"/events")
+	if err != nil {
+		return c.NoContent(http.StatusInternalServerError)
+	}
+	return c.NoContent(http.StatusOK)
 }
 
 // GroupsPage lists groups the user can access
 func (g *Group) GroupsPage(c echo.Context) error {
+	utils.EnsureClientID(c)
 	userID := middleware.GetUserID(c)
 	userEmail := getUserEmail(c)
 	if userID == "" {
@@ -116,16 +144,29 @@ func (g *Group) GroupsPage(c echo.Context) error {
 func (g *Group) LeaveGroup(c echo.Context) error {
 	groupID := middleware.GetGroupID(c)
 	userID := middleware.GetUserID(c)
+	var err error
 	if userID == "" {
-		return c.Redirect(http.StatusFound, "/auth/login")
+		err = utils.SSEHub.Redirect(c, "/auth/login")
+		if err != nil {
+			return c.NoContent(http.StatusInternalServerError)
+		}
+		return c.NoContent(http.StatusOK)
 	}
 
 	group, err := db.Qry.GetGroupByID(c.Request().Context(), groupID)
 	if err != nil {
-		return c.Redirect(http.StatusFound, "/groups?error="+url.QueryEscape("groups.errors.group_not_found"))
+		err = utils.SSEHub.Redirect(c, "/dashboard?error="+url.QueryEscape("groups.errors.group_not_found"))
+		if err != nil {
+			return c.NoContent(http.StatusInternalServerError)
+		}
+		return c.NoContent(http.StatusOK)
 	}
 	if group.AdminUserID == userID {
-		return c.Redirect(http.StatusFound, "/groups?error="+url.QueryEscape("groups.errors.admin_cannot_leave"))
+		err = utils.SSEHub.Redirect(c, "/dashboard?error="+url.QueryEscape("groups.errors.admin_cannot_leave"))
+		if err != nil {
+			return c.NoContent(http.StatusInternalServerError)
+		}
+		return c.NoContent(http.StatusOK)
 	}
 
 	err = db.Qry.RemoveGroupReader(c.Request().Context(), db.RemoveGroupReaderParams{
@@ -134,38 +175,68 @@ func (g *Group) LeaveGroup(c echo.Context) error {
 	})
 	if err != nil {
 		slog.Warn("group: failed to leave", "err", err)
-		return c.Redirect(http.StatusFound, "/groups?error="+url.QueryEscape("groups.errors.leave_failed"))
+		err = utils.SSEHub.Redirect(c, "/dashboard?error="+url.QueryEscape("groups.errors.leave_failed"))
+		if err != nil {
+			return c.NoContent(http.StatusInternalServerError)
+		}
+		return c.NoContent(http.StatusOK)
 	}
 
-	return c.Redirect(http.StatusFound, "/groups?msg="+url.QueryEscape("groups.messages.left"))
+	err = utils.SSEHub.Redirect(c, "/dashboard?msg="+url.QueryEscape("groups.messages.left"))
+	if err != nil {
+		return c.NoContent(http.StatusInternalServerError)
+	}
+	return c.NoContent(http.StatusOK)
 }
 
 // DeleteGroup removes the group and all data (admin only).
 func (g *Group) DeleteGroup(c echo.Context) error {
 	groupID := middleware.GetGroupID(c)
 	userID := middleware.GetUserID(c)
+	var err error
 	if userID == "" {
-		return c.Redirect(http.StatusFound, "/auth/login")
+		err = utils.SSEHub.Redirect(c, "/auth/login")
+		if err != nil {
+			return c.NoContent(http.StatusInternalServerError)
+		}
+		return c.NoContent(http.StatusOK)
 	}
 
 	group, err := db.Qry.GetGroupByID(c.Request().Context(), groupID)
 	if err != nil {
-		return c.Redirect(http.StatusFound, "/groups?error="+url.QueryEscape("groups.errors.group_not_found"))
+		err = utils.SSEHub.Redirect(c, "/dashboard?error="+url.QueryEscape("groups.errors.group_not_found"))
+		if err != nil {
+			return c.NoContent(http.StatusInternalServerError)
+		}
+		return c.NoContent(http.StatusOK)
 	}
 	if group.AdminUserID != userID {
-		return c.Redirect(http.StatusFound, "/groups?error="+url.QueryEscape("groups.errors.admin_required"))
+		err = utils.SSEHub.Redirect(c, "/dashboard?error="+url.QueryEscape("groups.errors.admin_required"))
+		if err != nil {
+			return c.NoContent(http.StatusInternalServerError)
+		}
+		return c.NoContent(http.StatusOK)
 	}
 
 	if err := db.Qry.DeleteGroup(c.Request().Context(), groupID); err != nil {
 		slog.Error("group: failed to delete", "err", err)
-		return c.Redirect(http.StatusFound, "/groups?error="+url.QueryEscape("groups.errors.delete_failed"))
+		err = utils.SSEHub.Redirect(c, "/dashboard?error="+url.QueryEscape("groups.errors.delete_failed"))
+		if err != nil {
+			return c.NoContent(http.StatusInternalServerError)
+		}
+		return c.NoContent(http.StatusOK)
 	}
 
-	return c.Redirect(http.StatusFound, "/groups?msg="+url.QueryEscape("groups.messages.deleted"))
+	err = utils.SSEHub.Redirect(c, "/dashboard?msg="+url.QueryEscape("groups.messages.deleted"))
+	if err != nil {
+		return c.NoContent(http.StatusInternalServerError)
+	}
+	return c.NoContent(http.StatusOK)
 }
 
 // ViewersPage shows the current viewers and invite form
 func (g *Group) ViewersPage(c echo.Context) error {
+	utils.EnsureClientID(c)
 	groupID := middleware.GetGroupID(c)
 	userEmail := getUserEmail(c)
 
@@ -182,7 +253,7 @@ func (g *Group) ViewersPage(c echo.Context) error {
 
 	data := ViewersPageData{
 		Title:       ctxi18n.T(c.Request().Context(), "groups.viewers"),
-		Breadcrumbs: []utils.Crumb{{Label: ctxi18n.T(c.Request().Context(), "groups.title"), Href: "/groups"}, {Label: group.Name, Href: "/groups/" + group.ID + "/events"}, {Label: ctxi18n.T(c.Request().Context(), "groups.viewers")}},
+		Breadcrumbs: []utils.Crumb{{Label: ctxi18n.T(c.Request().Context(), "groups.title"), Href: "/dashboard"}, {Label: group.Name, Href: "/groups/" + group.ID + "/events"}, {Label: ctxi18n.T(c.Request().Context(), "groups.viewers")}},
 		UserEmail:   userEmail,
 		Group:       group,
 		Viewers:     viewers,
@@ -196,28 +267,49 @@ func (g *Group) ViewersPage(c echo.Context) error {
 // AddViewer adds an existing user as a group reader
 func (g *Group) AddViewer(c echo.Context) error {
 	groupID := middleware.GetGroupID(c)
-	email := c.FormValue("email")
+	signals := addViewerSignals{}
+	if err := datastar.ReadSignals(c.Request(), &signals); err != nil {
+		return c.NoContent(http.StatusBadRequest)
+	}
+	email := signals.FormData.Email
+	var err error
 	if email == "" {
-		return c.Redirect(http.StatusFound, "/groups/"+groupID+"/viewers?error="+url.QueryEscape("groups.errors.email_required"))
+		err = utils.SSEHub.Redirect(c, "/groups/"+groupID+"/viewers?error="+url.QueryEscape("groups.errors.email_required"))
+		if err != nil {
+			return c.NoContent(http.StatusInternalServerError)
+		}
+		return c.NoContent(http.StatusOK)
 	}
 
 	group, err := db.Qry.GetGroupByID(c.Request().Context(), groupID)
 	if err != nil {
-		return c.Redirect(http.StatusFound, "/groups/"+groupID+"/viewers?error="+url.QueryEscape("groups.errors.group_not_found"))
+		err = utils.SSEHub.Redirect(c, "/groups/"+groupID+"/viewers?error="+url.QueryEscape("groups.errors.group_not_found"))
+		if err != nil {
+			return c.NoContent(http.StatusInternalServerError)
+		}
+		return c.NoContent(http.StatusOK)
 	}
 
 	// If user exists and already has access, short-circuit
 	user, err := db.Qry.GetUserByEmail(c.Request().Context(), email)
 	if err == nil {
 		if group.AdminUserID == user.ID {
-			return c.Redirect(http.StatusFound, "/groups/"+groupID+"/viewers?msg="+url.QueryEscape("groups.messages.already_admin"))
+			err = utils.SSEHub.Redirect(c, "/groups/"+groupID+"/viewers?msg="+url.QueryEscape("groups.messages.already_admin"))
+			if err != nil {
+				return c.NoContent(http.StatusInternalServerError)
+			}
+			return c.NoContent(http.StatusOK)
 		}
 		count, err := db.Qry.IsGroupReader(c.Request().Context(), db.IsGroupReaderParams{
 			UserID:  user.ID,
 			GroupID: groupID,
 		})
 		if err == nil && count > 0 {
-			return c.Redirect(http.StatusFound, "/groups/"+groupID+"/viewers?msg="+url.QueryEscape("groups.messages.already_viewer"))
+			err = utils.SSEHub.Redirect(c, "/groups/"+groupID+"/viewers?msg="+url.QueryEscape("groups.messages.already_viewer"))
+			if err != nil {
+				return c.NoContent(http.StatusInternalServerError)
+			}
+			return c.NoContent(http.StatusOK)
 		}
 	}
 
@@ -235,7 +327,11 @@ func (g *Group) AddViewer(c echo.Context) error {
 	})
 	if err != nil {
 		slog.Error("group: failed to create invite link", "err", err)
-		return c.Redirect(http.StatusFound, "/groups/"+groupID+"/viewers?error="+url.QueryEscape("groups.errors.invite_failed"))
+		err = utils.SSEHub.Redirect(c, "/groups/"+groupID+"/viewers?error="+url.QueryEscape("groups.errors.invite_failed"))
+		if err != nil {
+			return c.NoContent(http.StatusInternalServerError)
+		}
+		return c.NoContent(http.StatusOK)
 	}
 
 	baseURL := os.Getenv("APP_BASE_URL")
@@ -246,30 +342,51 @@ func (g *Group) AddViewer(c echo.Context) error {
 	err = g.emailService.SendGroupInvitation(email, group.Name, token, baseURL)
 	if err != nil {
 		slog.Error("group: failed to send invite email", "err", err)
-		return c.Redirect(http.StatusFound, "/groups/"+groupID+"/viewers?error="+url.QueryEscape("groups.errors.send_failed"))
+		err = utils.SSEHub.Redirect(c, "/groups/"+groupID+"/viewers?error="+url.QueryEscape("groups.errors.send_failed"))
+		if err != nil {
+			return c.NoContent(http.StatusInternalServerError)
+		}
+		return c.NoContent(http.StatusOK)
 	}
 
-	return c.Redirect(http.StatusFound, "/groups/"+groupID+"/viewers?msg="+url.QueryEscape("groups.messages.invite_sent"))
+	err = utils.SSEHub.Redirect(c, "/groups/"+groupID+"/viewers?msg="+url.QueryEscape("groups.messages.invite_sent"))
+	if err != nil {
+		return c.NoContent(http.StatusInternalServerError)
+	}
+	return c.NoContent(http.StatusOK)
 }
 
 // RemoveViewer removes a reader from the group
 func (g *Group) RemoveViewer(c echo.Context) error {
 	groupID := middleware.GetGroupID(c)
 	userID := c.Param("userId")
+	var err error
 	if userID == "" {
-		return c.Redirect(http.StatusFound, "/groups/"+groupID+"/viewers?error="+url.QueryEscape("groups.errors.invalid_user"))
+		err = utils.SSEHub.Redirect(c, "/groups/"+groupID+"/viewers?error="+url.QueryEscape("groups.errors.invalid_user"))
+		if err != nil {
+			return c.NoContent(http.StatusInternalServerError)
+		}
+		return c.NoContent(http.StatusOK)
 	}
 
-	err := db.Qry.RemoveGroupReader(c.Request().Context(), db.RemoveGroupReaderParams{
+	err = db.Qry.RemoveGroupReader(c.Request().Context(), db.RemoveGroupReaderParams{
 		UserID:  userID,
 		GroupID: groupID,
 	})
 	if err != nil {
 		slog.Warn("group: failed to remove viewer", "err", err)
-		return c.Redirect(http.StatusFound, "/groups/"+groupID+"/viewers?error="+url.QueryEscape("groups.errors.remove_failed"))
+		err = utils.SSEHub.Redirect(c, "/groups/"+groupID+"/viewers?error="+url.QueryEscape("groups.errors.remove_failed"))
+		if err != nil {
+			return c.NoContent(http.StatusInternalServerError)
+		}
+		return c.NoContent(http.StatusOK)
 	}
 
-	return c.Redirect(http.StatusFound, "/groups/"+groupID+"/viewers?msg="+url.QueryEscape("groups.messages.viewer_removed"))
+	err = utils.SSEHub.Redirect(c, "/groups/"+groupID+"/viewers?msg="+url.QueryEscape("groups.messages.viewer_removed"))
+	if err != nil {
+		return c.NoContent(http.StatusInternalServerError)
+	}
+	return c.NoContent(http.StatusOK)
 }
 
 func getUserEmail(c echo.Context) string {

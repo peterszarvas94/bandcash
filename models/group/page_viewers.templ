@@ -1,6 +1,8 @@
 package group
 
 import (
+	"fmt"
+
 	ctxi18n "github.com/invopop/ctxi18n/i18n"
 
 	appi18n "bandcash/internal/i18n"
@@ -12,6 +14,7 @@ templ GroupViewersPage(data ViewersPageData) {
 	<html lang={appi18n.LocaleCode(ctx)}>
 		@shared.Head(data.Title)
 		<body>
+			<div data-signals={templ.JSONString(map[string]any{"formData": map[string]any{"email": ""}})} data-init="@get('/sse')"></div>
 			<main id="app" class="single-col">
 				<h1>{ctxi18n.T(ctx, "groups.viewers_for", data.Group.Name)}</h1>
 				@shared.Breadcrumbs(data.Breadcrumbs, data.UserEmail)
@@ -23,10 +26,10 @@ templ GroupViewersPage(data ViewersPageData) {
 				}
 
 				<h2>{ctxi18n.T(ctx, "groups.invite_viewer")}</h2>
-				<form method="POST" action={"/groups/" + data.Group.ID + "/viewers"} class="form">
+				<form class="form" data-on:submit={fmt.Sprintf("@post('/groups/%s/viewers')", data.Group.ID)}>
 					<div class="field">
 						<label>{ctxi18n.T(ctx, "auth.email")}</label>
-						<input type="email" name="email" required placeholder={ctxi18n.T(ctx, "groups.viewer_email_placeholder")} />
+						<input type="email" data-bind="formData.email" required placeholder={ctxi18n.T(ctx, "groups.viewer_email_placeholder")} />
 					</div>
 					<button type="submit" class="btn btn-primary">{ctxi18n.T(ctx, "groups.add_viewer")}</button>
 				</form>
@@ -44,7 +47,7 @@ templ GroupViewersPage(data ViewersPageData) {
 								<tr>
 									<td>{viewer.Email}</td>
 									<td>
-					<form method="POST" action={"/groups/" + data.Group.ID + "/viewers/" + viewer.ID + "/remove"} style="display:inline">
+					<form data-on:submit={fmt.Sprintf("@post('/groups/%s/viewers/%s/remove')", data.Group.ID, viewer.ID)} style="display:inline">
 											<button type="submit" class="btn btn-danger">{ctxi18n.T(ctx, "actions.delete")}</button>
 										</form>
 									</td>

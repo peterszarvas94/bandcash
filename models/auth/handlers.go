@@ -3,11 +3,13 @@ package auth
 import (
 	"log/slog"
 	"net/http"
+	"net/url"
 	"os"
 	"time"
 
 	ctxi18n "github.com/invopop/ctxi18n/i18n"
 	"github.com/labstack/echo/v4"
+	"github.com/starfederation/datastar-go/datastar"
 
 	"bandcash/internal/db"
 	"bandcash/internal/email"
@@ -19,6 +21,12 @@ type Auth struct {
 	emailService *email.Service
 }
 
+type authSignals struct {
+	FormData struct {
+		Email string `json:"email"`
+	} `json:"formData"`
+}
+
 func New() *Auth {
 	return &Auth{
 		emailService: email.NewFromEnv(),
@@ -27,6 +35,7 @@ func New() *Auth {
 
 // LoginPage shows the login form
 func (a *Auth) LoginPage(c echo.Context) error {
+	utils.EnsureClientID(c)
 	data := AuthPageData{
 		Title:       ctxi18n.T(c.Request().Context(), "auth.login_title"),
 		Breadcrumbs: []utils.Crumb{{Label: ctxi18n.T(c.Request().Context(), "auth.login")}},
@@ -36,16 +45,24 @@ func (a *Auth) LoginPage(c echo.Context) error {
 
 // LoginRequest handles login form submission (sends magic link)
 func (a *Auth) LoginRequest(c echo.Context) error {
-	email := c.FormValue("email")
+	signals := authSignals{}
+	if err := datastar.ReadSignals(c.Request(), &signals); err != nil {
+		return c.NoContent(http.StatusBadRequest)
+	}
+	email := signals.FormData.Email
 	if email == "" {
-		return c.String(http.StatusBadRequest, "Email required")
+		return c.NoContent(http.StatusBadRequest)
 	}
 
 	// Check if user exists
 	_, err := db.Qry.GetUserByEmail(c.Request().Context(), email)
 	if err != nil {
 		// User doesn't exist - offer to sign up instead
-		return c.Redirect(http.StatusFound, "/auth/signup?email="+email)
+		err = utils.SSEHub.Redirect(c, "/auth/signup?email="+url.QueryEscape(email))
+		if err != nil {
+			return c.NoContent(http.StatusInternalServerError)
+		}
+		return c.NoContent(http.StatusOK)
 	}
 
 	// Create magic link
@@ -76,11 +93,16 @@ func (a *Auth) LoginRequest(c echo.Context) error {
 		return c.String(http.StatusInternalServerError, "Failed to send email")
 	}
 
-	return c.Redirect(http.StatusFound, "/auth/login-sent")
+	err = utils.SSEHub.Redirect(c, "/auth/login-sent")
+	if err != nil {
+		return c.NoContent(http.StatusInternalServerError)
+	}
+	return c.NoContent(http.StatusOK)
 }
 
 // SignupPage shows the signup form
 func (a *Auth) SignupPage(c echo.Context) error {
+	utils.EnsureClientID(c)
 	email := c.QueryParam("email")
 	data := AuthPageData{
 		Title:       ctxi18n.T(c.Request().Context(), "auth.signup_title"),
@@ -92,9 +114,13 @@ func (a *Auth) SignupPage(c echo.Context) error {
 
 // SignupRequest handles signup form submission
 func (a *Auth) SignupRequest(c echo.Context) error {
-	email := c.FormValue("email")
+	signals := authSignals{}
+	if err := datastar.ReadSignals(c.Request(), &signals); err != nil {
+		return c.NoContent(http.StatusBadRequest)
+	}
+	email := signals.FormData.Email
 	if email == "" {
-		return c.String(http.StatusBadRequest, "Email required")
+		return c.NoContent(http.StatusBadRequest)
 	}
 
 	// Check if user already exists
@@ -143,7 +169,11 @@ func (a *Auth) SignupRequest(c echo.Context) error {
 		return c.String(http.StatusInternalServerError, "Failed to send email")
 	}
 
-	return c.Redirect(http.StatusFound, "/auth/login-sent")
+	err = utils.SSEHub.Redirect(c, "/auth/login-sent")
+	if err != nil {
+		return c.NoContent(http.StatusInternalServerError)
+	}
+	return c.NoContent(http.StatusOK)
 }
 
 // LoginSentPage shows confirmation that email was sent
@@ -235,7 +265,7 @@ func (a *Auth) VerifyMagicLink(c echo.Context) error {
 	}
 
 	// Redirect to group dashboard
-	return c.Redirect(http.StatusFound, "/groups")
+	return c.Redirect(http.StatusFound, "/dashboard")
 }
 
 // Logout clears the session
@@ -290,5 +320,5 @@ func (a *Auth) Dashboard(c echo.Context) error {
 		return c.Redirect(http.StatusFound, "/groups/"+filteredReaders[0].ID+"/events")
 	}
 
-	return c.Redirect(http.StatusFound, "/groups")
+	return c.Redirect(http.StatusFound, "/dashboard")
 }

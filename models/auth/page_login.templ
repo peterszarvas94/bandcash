@@ -12,13 +12,14 @@ templ LoginPage(data AuthPageData) {
 	<html lang={ appi18n.LocaleCode(ctx) }>
 		@shared.Head(data.Title)
 		<body>
+			<div data-signals={templ.JSONString(map[string]any{"formData": map[string]any{"email": ""}})} data-init="@get('/sse')"></div>
 			<main id="app" class="single-col">
 				<h1>{ data.Title }</h1>
 				@shared.Breadcrumbs(data.Breadcrumbs, data.UserEmail)
-				<form method="POST" action="/auth/login" class="form">
+				<form class="form" data-on:submit="@post('/auth/login')">
 					<div class="field">
 						<label>{ ctxi18n.T(ctx, "auth.email") }</label>
-						<input type="email" name="email" required placeholder={ ctxi18n.T(ctx, "auth.email_placeholder") }/>
+						<input type="email" data-bind="formData.email" required placeholder={ ctxi18n.T(ctx, "auth.email_placeholder") }/>
 					</div>
 					<button type="submit" class="btn btn-primary">{ ctxi18n.T(ctx, "auth.send_link") }</button>
 				</form>

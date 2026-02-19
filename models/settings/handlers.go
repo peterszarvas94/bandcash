@@ -4,11 +4,18 @@ import (
 	"net/http"
 
 	"github.com/labstack/echo/v4"
+	"github.com/starfederation/datastar-go/datastar"
 
 	"bandcash/internal/db"
 	appi18n "bandcash/internal/i18n"
 	"bandcash/internal/utils"
 )
+
+type settingsSignals struct {
+	FormData struct {
+		Lang string `json:"lang"`
+	} `json:"formData"`
+}
 
 func (s *Settings) Index(c echo.Context) error {
 	utils.EnsureClientID(c)
@@ -22,7 +29,12 @@ func (s *Settings) Index(c echo.Context) error {
 }
 
 func (s *Settings) UpdateLanguage(c echo.Context) error {
-	locale := appi18n.NormalizeLocale(c.FormValue(appi18n.CookieName))
+	signals := settingsSignals{}
+	if err := datastar.ReadSignals(c.Request(), &signals); err != nil {
+		return c.NoContent(http.StatusBadRequest)
+	}
+
+	locale := appi18n.NormalizeLocale(signals.FormData.Lang)
 	c.SetCookie(&http.Cookie{
 		Name:     appi18n.CookieName,
 		Value:    locale,
@@ -31,5 +43,9 @@ func (s *Settings) UpdateLanguage(c echo.Context) error {
 		SameSite: http.SameSiteLaxMode,
 		HttpOnly: true,
 	})
-	return c.Redirect(http.StatusSeeOther, "/settings")
+	err := utils.SSEHub.Redirect(c, "/settings")
+	if err != nil {
+		return c.NoContent(http.StatusInternalServerError)
+	}
+	return c.NoContent(http.StatusOK)
 }

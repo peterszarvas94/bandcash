@@ -12,14 +12,15 @@ templ GroupNewPage(data NewGroupPageData) {
 	<html lang={ appi18n.LocaleCode(ctx) }>
 		@shared.Head(data.Title)
 		<body>
+			<div data-signals={templ.JSONString(map[string]any{"formData": map[string]any{"name": ""}})} data-init="@get('/sse')"></div>
 			<main id="app" class="single-col">
 				<h1>{ data.Title }</h1>
 				@shared.Breadcrumbs(data.Breadcrumbs, data.UserEmail)
 				<p>{ ctxi18n.T(ctx, "groups.new_desc") }</p>
-				<form method="POST" action="/groups" class="form">
+				<form class="form" data-on:submit="@post('/groups')">
 					<div class="field">
 						<label>{ ctxi18n.T(ctx, "groups.name") }</label>
-						<input type="text" name="name" required placeholder={ ctxi18n.T(ctx, "groups.name_placeholder") }/>
+						<input type="text" data-bind="formData.name" required placeholder={ ctxi18n.T(ctx, "groups.name_placeholder") }/>
 					</div>
 					<button type="submit" class="btn btn-primary">{ ctxi18n.T(ctx, "groups.create") }</button>
 				</form>

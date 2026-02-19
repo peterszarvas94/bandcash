@@ -10,7 +10,7 @@ func Register(e *echo.Echo) *Group {
 	grp := New()
 
 	// Group creation (requires auth)
-	e.GET("/groups", grp.GroupsPage, middleware.RequireAuth())
+	e.GET("/dashboard", grp.GroupsPage, middleware.RequireAuth())
 	e.GET("/groups/new", grp.NewGroupPage, middleware.RequireAuth())
 	e.POST("/groups", grp.CreateGroup, middleware.RequireAuth())
 

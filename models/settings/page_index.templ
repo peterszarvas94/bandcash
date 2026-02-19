@@ -12,13 +12,14 @@ templ SettingsIndex(data SettingsData) {
 	<html lang={appi18n.LocaleCode(ctx)}>
 		@shared.Head(data.Title)
 		<body>
+			<div data-signals={templ.JSONString(map[string]any{"formData": map[string]any{"lang": data.CurrentLang}})} data-init="@get('/sse')"></div>
 			<main id="app" class="single-col">
 				<h1>{data.Title}</h1>
 				@shared.Breadcrumbs(data.Breadcrumbs, data.UserEmail)
-				<form class="form" method="post" action="/settings/language">
+				<form class="form" data-on:submit="@post('/settings/language')">
 					<div class="field">
 						<label for="lang">{ctxi18n.T(ctx, "settings.language")}</label>
-						<select id="lang" name="lang">
+						<select id="lang" data-bind="formData.lang">
 							<option value="en" selected?={data.CurrentLang == "en"}>{ctxi18n.T(ctx, "language.en")}</option>
 							<option value="hu" selected?={data.CurrentLang == "hu"}>{ctxi18n.T(ctx, "language.hu")}</option>
 						</select>

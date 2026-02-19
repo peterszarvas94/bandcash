@@ -45,7 +45,7 @@ templ MemberShowSidebar(data MemberData) {
 					<div data-show="$errors && $errors.description" class="color-error" data-text="$errors.description"></div>
 				</div>
 				<div class="row">
-				<button class="btn btn-primary" type="button" data-on:click={fmt.Sprintf("@put('/groups/%s/members/%s')", data.GroupID, data.Member.ID)}>{ctxi18n.T(ctx, "members.update")}</button>
+			<button class="btn btn-primary" type="button" data-on:click={fmt.Sprintf("@put('/groups/%s/members/%s')", data.GroupID, data.Member.ID)}>{ctxi18n.T(ctx, "members.update")}</button>
 					<button
 						class="btn"
 						type="button"

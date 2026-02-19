@@ -45,7 +45,7 @@ templ MemberIndexMain(data MembersData) {
 							<button
 								class="btn btn-danger"
 								data-attr:disabled="$formState !== ''"
-								data-on:click={fmt.Sprintf("if (window.confirm(%q)) { @delete('/groups/%s/members/%s') }", ctxi18n.T(ctx, "members.delete_confirm"), data.GroupID, member.ID)}
+							data-on:click={fmt.Sprintf("if (window.confirm(%q)) { @delete('/groups/%s/members/%s') }", ctxi18n.T(ctx, "members.delete_confirm"), data.GroupID, member.ID)}
 							>
 								{ctxi18n.T(ctx, "actions.delete")}
 							</button>

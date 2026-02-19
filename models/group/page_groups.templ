@@ -1,6 +1,8 @@
 package group
 
 import (
+	"fmt"
+
 	ctxi18n "github.com/invopop/ctxi18n/i18n"
 
 	appi18n "bandcash/internal/i18n"
@@ -12,6 +14,7 @@ templ GroupsPage(data GroupsPageData) {
 	<html lang={ appi18n.LocaleCode(ctx) }>
 		@shared.Head(data.Title)
 		<body>
+			<div data-init="@get('/sse')"></div>
 			<main id="app" class="single-col">
 				<h1>{ data.Title }</h1>
 				@shared.Breadcrumbs(data.Breadcrumbs, data.UserEmail)
@@ -40,7 +43,7 @@ templ GroupsPage(data GroupsPageData) {
 										<div class="row row-right row-wrap">
 											<a class="btn" href={ "/groups/" + group.ID + "/events" }>{ ctxi18n.T(ctx, "groups.open") }</a>
 											<a class="btn" href={ "/groups/" + group.ID + "/viewers" }>{ ctxi18n.T(ctx, "groups.viewers") }</a>
-											<form method="POST" action={ "/groups/" + group.ID + "/delete" } style="display:inline">
+											<form data-on:submit={ fmt.Sprintf("@post('/groups/%s/delete')", group.ID) } style="display:inline">
 												<button type="submit" class="btn btn-danger">{ ctxi18n.T(ctx, "groups.delete") }</button>
 											</form>
 										</div>
@@ -63,7 +66,7 @@ templ GroupsPage(data GroupsPageData) {
 									<td>
 										<div class="row row-right row-wrap">
 											<a class="btn" href={ "/groups/" + group.ID + "/events" }>{ ctxi18n.T(ctx, "groups.open") }</a>
-											<form method="POST" action={ "/groups/" + group.ID + "/leave" } style="display:inline">
+											<form data-on:submit={ fmt.Sprintf("@post('/groups/%s/leave')", group.ID) } style="display:inline">
 												<button type="submit" class="btn">{ ctxi18n.T(ctx, "groups.leave") }</button>
 											</form>
 										</div>
