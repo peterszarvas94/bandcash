@@ -3,6 +3,7 @@ hu:
     title: "Bandcash"
   nav:
     home: "Kezdőlap"
+    dashboard: "Vezérlőpult"
     logged_in_as: "Bejelentkezve mint"
   auth:
     login: "Belépés"

@@ -3,6 +3,7 @@ en:
     title: "Bandcash"
   nav:
     home: "Home"
+    dashboard: "Dashboard"
     logged_in_as: "Logged in as"
   auth:
     login: "Login"

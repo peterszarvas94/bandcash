@@ -17,8 +17,12 @@ templ HomeIndex(data HomeData) {
 				@shared.Breadcrumbs(data.Breadcrumbs, data.UserEmail)
 				<p>{ctxi18n.T(ctx, "home.tagline")}</p>
 				<div class="row">
-					<a class="btn" href="/auth/login">{ctxi18n.T(ctx, "auth.login")}</a>
-					<a class="btn" href="/auth/signup">{ctxi18n.T(ctx, "auth.signup")}</a>
+					if data.UserLoggedIn {
+						<a class="btn" href="/dashboard">{ctxi18n.T(ctx, "nav.dashboard")}</a>
+					} else {
+						<a class="btn" href="/auth/login">{ctxi18n.T(ctx, "auth.login")}</a>
+						<a class="btn" href="/auth/signup">{ctxi18n.T(ctx, "auth.signup")}</a>
+					}
 					<a class="btn" href="/settings">{ctxi18n.T(ctx, "settings.title")}</a>
 				</div>
 			</main>
