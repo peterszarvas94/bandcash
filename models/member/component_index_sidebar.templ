@@ -19,9 +19,6 @@ templ MemberIndexSidebar(data MembersData) {
 					{ctxi18n.T(ctx, "members.add")}
 				</button>
 			</div>
-			<div class="row" style="margin-top: 8px">
-				<a class="btn" href={fmt.Sprintf("/groups/%s/viewers", data.GroupID)}>{ctxi18n.T(ctx, "groups.viewers")}</a>
-			</div>
 		</div>
 
 		<div data-show="$formState !== ''" style="display: none" class="pb">

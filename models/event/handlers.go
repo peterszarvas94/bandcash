@@ -285,7 +285,7 @@ func (e *Events) Destroy(c echo.Context) error {
 	slog.Debug("event.destroy", "id", id)
 
 	if signals.Mode == "single" {
-		err = utils.SSEHub.Redirect(c, "/groups/"+groupID+"/events")
+		err = utils.SSEHub.Redirect(c, "/groups/"+groupID)
 		if err != nil {
 			slog.Warn("event.destroy: failed to redirect", "err", err)
 		}

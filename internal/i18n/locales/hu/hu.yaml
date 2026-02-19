@@ -92,6 +92,7 @@ hu:
     gte: "Legalább %s"
   groups:
     title: "Csoportok"
+    actions: "Csoport műveletek"
     viewers: "Nézők"
     read_only: "Csak olvasható"
     new: "Új csoport"

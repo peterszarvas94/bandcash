@@ -14,50 +14,65 @@ templ GroupViewersPage(data ViewersPageData) {
 	<html lang={appi18n.LocaleCode(ctx)}>
 		@shared.Head(data.Title)
 		<body>
-			<div data-signals={templ.JSONString(map[string]any{"formData": map[string]any{"email": ""}})} data-init="@get('/sse')"></div>
-			<main id="app" class="single-col">
-				<h1>{ctxi18n.T(ctx, "groups.viewers_for", data.Group.Name)}</h1>
-				@shared.Breadcrumbs(data.Breadcrumbs, data.UserEmail)
-				if data.MessageKey != "" {
-					<p class="notice">{ctxi18n.T(ctx, data.MessageKey)}</p>
-				}
-				if data.ErrorKey != "" {
-					<p class="error">{ctxi18n.T(ctx, data.ErrorKey)}</p>
-				}
-
-				<h2>{ctxi18n.T(ctx, "groups.invite_viewer")}</h2>
-				<form class="form" data-on:submit={fmt.Sprintf("@post('/groups/%s/viewers')", data.Group.ID)}>
-					<div class="field">
-						<label>{ctxi18n.T(ctx, "auth.email")}</label>
-						<input type="email" data-bind="formData.email" required placeholder={ctxi18n.T(ctx, "groups.viewer_email_placeholder")} />
-					</div>
-					<button type="submit" class="btn btn-primary">{ctxi18n.T(ctx, "groups.add_viewer")}</button>
-				</form>
-
-				<h2>{ctxi18n.T(ctx, "groups.current_viewers")}</h2>
-				<table class="table">
-					<thead>
-						<tr><th>{ctxi18n.T(ctx, "auth.email")}</th><th>{ctxi18n.T(ctx, "table.actions")}</th></tr>
-					</thead>
-					<tbody>
-						if len(data.Viewers) == 0 {
-							<tr><td colspan="2">{ctxi18n.T(ctx, "groups.viewer_none")}</td></tr>
-						} else {
-							for _, viewer := range data.Viewers {
-								<tr>
-									<td>{viewer.Email}</td>
-									<td>
-					<form data-on:submit={fmt.Sprintf("@post('/groups/%s/viewers/%s/remove')", data.Group.ID, viewer.ID)} style="display:inline">
-											<button type="submit" class="btn btn-danger">{ctxi18n.T(ctx, "actions.delete")}</button>
-										</form>
-									</td>
-								</tr>
-							}
-						}
-					</tbody>
-				</table>
-				<p><a href={"/groups/" + data.Group.ID + "/events"}>{ctxi18n.T(ctx, "groups.back_to_events")}</a></p>
-			</main>
+			<div data-signals={templ.JSONString(map[string]any{"formState": "", "formData": map[string]any{"email": ""}})} data-init="@get('/sse')"></div>
+			@shared.TwoCol("group-viewers", GroupViewersMain(data), GroupViewersSidebar(data))
 		</body>
 	</html>
+}
+
+templ GroupViewersMain(data ViewersPageData) {
+	<h1>{ctxi18n.T(ctx, "groups.viewers_for", data.Group.Name)}</h1>
+	@shared.Breadcrumbs(data.Breadcrumbs, data.UserEmail)
+	if data.MessageKey != "" {
+		<p class="notice">{ctxi18n.T(ctx, data.MessageKey)}</p>
+	}
+	if data.ErrorKey != "" {
+		<p class="error">{ctxi18n.T(ctx, data.ErrorKey)}</p>
+	}
+
+	<h2>{ctxi18n.T(ctx, "groups.current_viewers")}</h2>
+	<table class="table">
+		<thead>
+			<tr><th>{ctxi18n.T(ctx, "auth.email")}</th><th>{ctxi18n.T(ctx, "table.actions")}</th></tr>
+		</thead>
+		<tbody>
+			if len(data.Viewers) == 0 {
+				<tr><td colspan="2">{ctxi18n.T(ctx, "groups.viewer_none")}</td></tr>
+			} else {
+				for _, viewer := range data.Viewers {
+					<tr>
+						<td>{viewer.Email}</td>
+						<td>
+							<form data-on:submit={fmt.Sprintf("@post('/groups/%s/viewers/%s/remove')", data.Group.ID, viewer.ID)} style="display:inline">
+								<button type="submit" class="btn btn-danger">{ctxi18n.T(ctx, "actions.delete")}</button>
+							</form>
+						</td>
+					</tr>
+				}
+			}
+		</tbody>
+	</table>
+}
+
+templ GroupViewersSidebar(data ViewersPageData) {
+	<div data-show="$formState === ''" class="pb">
+		<h3>{ctxi18n.T(ctx, "groups.actions")}</h3>
+		<div class="row">
+			<button class="btn" type="button" data-on:click="$formState = 'add'; $formData = {email: ''}">{ctxi18n.T(ctx, "groups.add_viewer")}</button>
+		</div>
+	</div>
+
+	<div data-show="$formState !== ''" style="display: none" class="pb">
+		<h3>{ctxi18n.T(ctx, "groups.invite_viewer")}</h3>
+		<form class="form" data-on:submit={fmt.Sprintf("@post('/groups/%s/viewers')", data.Group.ID)}>
+			<div class="field">
+				<label>{ctxi18n.T(ctx, "auth.email")}</label>
+				<input type="email" data-bind="formData.email" required placeholder={ctxi18n.T(ctx, "groups.viewer_email_placeholder")} />
+			</div>
+			<div class="row">
+				<button type="submit" class="btn btn-primary">{ctxi18n.T(ctx, "groups.add_viewer")}</button>
+				<button class="btn" type="button" data-on:click="$formState = ''; $formData = {email: ''}">{ctxi18n.T(ctx, "actions.cancel")}</button>
+			</div>
+		</form>
+	</div>
 }

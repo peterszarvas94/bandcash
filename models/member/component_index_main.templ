@@ -11,11 +11,6 @@ import (
 templ MemberIndexMain(data MembersData) {
 	<h1>{data.Title}</h1>
 	@shared.Breadcrumbs(data.Breadcrumbs, data.UserEmail)
-	if data.IsAdmin {
-		<div class="row" style="margin-bottom: 12px">
-			<a class="btn" href={fmt.Sprintf("/groups/%s/viewers", data.GroupID)}>Viewers</a>
-		</div>
-	}
 	<table class="table">
 		<thead>
 			<tr>

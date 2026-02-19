@@ -249,7 +249,7 @@ func (a *Auth) VerifyMagicLink(c echo.Context) error {
 		groupID := magicLink.GroupID.String
 		group, err := db.Qry.GetGroupByID(c.Request().Context(), groupID)
 		if err == nil && group.AdminUserID == user.ID {
-			return c.Redirect(http.StatusFound, "/groups/"+groupID+"/events")
+			return c.Redirect(http.StatusFound, "/groups/"+groupID)
 		}
 
 		_, err = db.Qry.CreateGroupReader(c.Request().Context(), db.CreateGroupReaderParams{
@@ -261,7 +261,7 @@ func (a *Auth) VerifyMagicLink(c echo.Context) error {
 			slog.Warn("auth: failed to add group reader", "err", err)
 		}
 
-		return c.Redirect(http.StatusFound, "/groups/"+groupID+"/events")
+		return c.Redirect(http.StatusFound, "/groups/"+groupID)
 	}
 
 	// Redirect to group dashboard
@@ -315,9 +315,9 @@ func (a *Auth) Dashboard(c echo.Context) error {
 
 	if len(adminGroups)+len(filteredReaders) == 1 {
 		if len(adminGroups) == 1 {
-			return c.Redirect(http.StatusFound, "/groups/"+adminGroups[0].ID+"/events")
+			return c.Redirect(http.StatusFound, "/groups/"+adminGroups[0].ID)
 		}
-		return c.Redirect(http.StatusFound, "/groups/"+filteredReaders[0].ID+"/events")
+		return c.Redirect(http.StatusFound, "/groups/"+filteredReaders[0].ID)
 	}
 
 	return c.Redirect(http.StatusFound, "/dashboard")

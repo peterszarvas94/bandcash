@@ -20,6 +20,9 @@ templ EventIndexSidebar(data EventsData) {
 				</button>
 			</div>
 			<div class="row" style="margin-top: 8px">
+				<a class="btn" href={fmt.Sprintf("/groups/%s/members", data.GroupID)}>{ctxi18n.T(ctx, "members.title")}</a>
+			</div>
+			<div class="row" style="margin-top: 8px">
 				<a class="btn" href={fmt.Sprintf("/groups/%s/viewers", data.GroupID)}>{ctxi18n.T(ctx, "groups.viewers")}</a>
 			</div>
 		</div>

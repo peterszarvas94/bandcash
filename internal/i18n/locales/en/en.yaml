@@ -92,6 +92,7 @@ en:
     gte: "Must be at least %s"
   groups:
     title: "Groups"
+    actions: "Group actions"
     viewers: "Viewers"
     read_only: "Read-only access"
     new: "New Group"

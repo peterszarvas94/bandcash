@@ -38,11 +38,9 @@ templ GroupsPage(data GroupsPageData) {
 						} else {
 							for _, group := range data.AdminGroups {
 								<tr>
-									<td>{ group.Name }</td>
+									<td><a href={ "/groups/" + group.ID }>{ group.Name }</a></td>
 									<td>
 										<div class="row row-right row-wrap">
-											<a class="btn" href={ "/groups/" + group.ID + "/events" }>{ ctxi18n.T(ctx, "groups.open") }</a>
-											<a class="btn" href={ "/groups/" + group.ID + "/viewers" }>{ ctxi18n.T(ctx, "groups.viewers") }</a>
 											<form data-on:submit={ fmt.Sprintf("@post('/groups/%s/delete')", group.ID) } style="display:inline">
 												<button type="submit" class="btn btn-danger">{ ctxi18n.T(ctx, "groups.delete") }</button>
 											</form>
@@ -62,10 +60,9 @@ templ GroupsPage(data GroupsPageData) {
 						} else {
 							for _, group := range data.ReaderGroups {
 								<tr>
-									<td>{ group.Name }</td>
+									<td><a href={ "/groups/" + group.ID }>{ group.Name }</a></td>
 									<td>
 										<div class="row row-right row-wrap">
-											<a class="btn" href={ "/groups/" + group.ID + "/events" }>{ ctxi18n.T(ctx, "groups.open") }</a>
 											<button
 												type="button"
 												class="btn btn-danger"
