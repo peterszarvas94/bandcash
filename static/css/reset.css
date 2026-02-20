@@ -21,6 +21,9 @@
 
     --content-width: 90rem;
     --sidebar-width: 20rem;
+    --page-padding-inline: var(--space);
+    --page-padding-top: calc(var(--space) * 2);
+    --page-padding-bottom: var(--space);
 
     /* Semantic aliases used by existing styles */
     --link-color: var(--color-primary);

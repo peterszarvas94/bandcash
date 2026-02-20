@@ -34,10 +34,15 @@ templ GroupsPage(data GroupsPageData) {
 						} else {
 							for _, group := range data.AdminGroups {
 								<tr>
-									<td><a href={ "/groups/" + group.ID }>{ group.Name }</a></td>
+									<td>
+										<a href={ "/groups/" + group.Group.ID }>{ group.Group.Name }</a>
+										<div class="text-muted">
+											<a href={ "/groups/" + group.Group.ID + "/viewers" }>{ ctxi18n.T(ctx, "groups.access_count", group.ViewerCount + 1) }</a>
+										</div>
+									</td>
 									<td>
 										<div class="row row-right row-wrap">
-											<form data-on:submit={ fmt.Sprintf("@post('/groups/%s/delete')", group.ID) } style="display:inline">
+											<form data-on:submit={ fmt.Sprintf("@post('/groups/%s/delete')", group.Group.ID) } style="display:inline">
 												<button type="submit" class="btn btn-danger">{ ctxi18n.T(ctx, "groups.delete") }</button>
 											</form>
 										</div>
@@ -56,13 +61,21 @@ templ GroupsPage(data GroupsPageData) {
 						} else {
 							for _, group := range data.ReaderGroups {
 								<tr>
-									<td><a href={ "/groups/" + group.ID }>{ group.Name }</a></td>
+									<td>
+										<a href={ "/groups/" + group.Group.ID }>{ group.Group.Name }</a>
+										<div class="text-muted">
+											<a href={ "/groups/" + group.Group.ID + "/viewers" }>{ ctxi18n.T(ctx, "groups.access_count", group.ViewerCount + 1) }</a>
+											if group.AdminEmail != "" {
+												<span> · { ctxi18n.T(ctx, "groups.admin_email", group.AdminEmail) }</span>
+											}
+										</div>
+									</td>
 									<td>
 										<div class="row row-right row-wrap">
 											<button
 												type="button"
 												class="btn btn-danger"
-												data-on:click={ fmt.Sprintf("if (window.confirm(%q)) { @post('/groups/%s/leave') }", ctxi18n.T(ctx, "groups.leave_confirm"), group.ID) }
+												data-on:click={ fmt.Sprintf("if (window.confirm(%q)) { @post('/groups/%s/leave') }", ctxi18n.T(ctx, "groups.leave_confirm"), group.Group.ID) }
 											>{ ctxi18n.T(ctx, "groups.leave") }</button>
 										</div>
 									</td>

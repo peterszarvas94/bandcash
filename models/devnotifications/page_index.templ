@@ -15,6 +15,7 @@ templ Index() {
 			@shared.Notifications()
 			<main id="app" class="single-col">
 				<h1>Dev: Notifications + Inline Errors</h1>
+				@shared.Breadcrumbs([]utils.Crumb{{Label: "Dev Notifications"}}, "")
 				<p>Rule check: form validation errors are inline; all other outcomes are notifications.</p>
 				<h2>Inline Error Test</h2>
 				<form class="form" data-on:submit="@post('/dev/notifications/inline')">

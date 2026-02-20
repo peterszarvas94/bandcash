@@ -77,7 +77,15 @@ func Index() templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 5, "<main id=\"app\" class=\"single-col\"><h1>Dev: Notifications + Inline Errors</h1><p>Rule check: form validation errors are inline; all other outcomes are notifications.</p><h2>Inline Error Test</h2><form class=\"form\" data-on:submit=\"@post('/dev/notifications/inline')\"><div class=\"field\"><label>Required field</label> <input type=\"text\" data-bind=\"formData.name\" placeholder=\"Type anything\"><div data-show=\"$errors && $errors.name\" class=\"color-error\" data-text=\"$errors.name\"></div></div><div class=\"row\"><button type=\"submit\" class=\"btn btn-primary\">Submit inline test</button></div></form><h2>Notification Tests</h2><div class=\"row row-wrap\"><button type=\"button\" class=\"btn btn-info\" data-on:click=\"@post('/dev/notifications/info')\">Info notification</button> <button type=\"button\" class=\"btn btn-success\" data-on:click=\"@post('/dev/notifications/success')\">Success notification</button> <button type=\"button\" class=\"btn btn-warning\" data-on:click=\"@post('/dev/notifications/warning')\">Warning notification</button> <button type=\"button\" class=\"btn btn-danger\" data-on:click=\"@post('/dev/notifications/error')\">Error notification</button></div></main></body></html>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 5, "<main id=\"app\" class=\"single-col\"><h1>Dev: Notifications + Inline Errors</h1>")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Err = shared.Breadcrumbs([]utils.Crumb{{Label: "Dev Notifications"}}, "").Render(ctx, templ_7745c5c3_Buffer)
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 6, "<p>Rule check: form validation errors are inline; all other outcomes are notifications.</p><h2>Inline Error Test</h2><form class=\"form\" data-on:submit=\"@post('/dev/notifications/inline')\"><div class=\"field\"><label>Required field</label> <input type=\"text\" data-bind=\"formData.name\" placeholder=\"Type anything\"><div data-show=\"$errors && $errors.name\" class=\"color-error\" data-text=\"$errors.name\"></div></div><div class=\"row\"><button type=\"submit\" class=\"btn btn-primary\">Submit inline test</button></div></form><h2>Notification Tests</h2><div class=\"row row-wrap\"><button type=\"button\" class=\"btn btn-info\" data-on:click=\"@post('/dev/notifications/info')\">Info notification</button> <button type=\"button\" class=\"btn btn-success\" data-on:click=\"@post('/dev/notifications/success')\">Success notification</button> <button type=\"button\" class=\"btn btn-warning\" data-on:click=\"@post('/dev/notifications/warning')\">Warning notification</button> <button type=\"button\" class=\"btn btn-danger\" data-on:click=\"@post('/dev/notifications/error')\">Error notification</button></div></main></body></html>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

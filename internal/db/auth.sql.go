@@ -135,6 +135,24 @@ func (q *Queries) DeleteGroup(ctx context.Context, id string) error {
 	return err
 }
 
+const deleteGroupPendingInvite = `-- name: DeleteGroupPendingInvite :exec
+DELETE FROM magic_links
+WHERE id = ?
+  AND action = 'invite'
+  AND group_id = ?
+  AND used_at IS NULL
+`
+
+type DeleteGroupPendingInviteParams struct {
+	ID      string         `json:"id"`
+	GroupID sql.NullString `json:"group_id"`
+}
+
+func (q *Queries) DeleteGroupPendingInvite(ctx context.Context, arg DeleteGroupPendingInviteParams) error {
+	_, err := q.db.ExecContext(ctx, deleteGroupPendingInvite, arg.ID, arg.GroupID)
+	return err
+}
+
 const getGroupByAdmin = `-- name: GetGroupByAdmin :one
 SELECT id, name, admin_user_id, created_at FROM groups
 WHERE admin_user_id = ?
@@ -258,6 +276,47 @@ func (q *Queries) IsGroupReader(ctx context.Context, arg IsGroupReaderParams) (i
 	var count int64
 	err := row.Scan(&count)
 	return count, err
+}
+
+const listGroupPendingInvites = `-- name: ListGroupPendingInvites :many
+SELECT id, token, email, "action", group_id, expires_at, used_at, created_at FROM magic_links
+WHERE action = 'invite'
+  AND group_id = ?
+  AND used_at IS NULL
+  AND expires_at >= CURRENT_TIMESTAMP
+ORDER BY created_at DESC
+`
+
+func (q *Queries) ListGroupPendingInvites(ctx context.Context, groupID sql.NullString) ([]MagicLink, error) {
+	rows, err := q.db.QueryContext(ctx, listGroupPendingInvites, groupID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []MagicLink{}
+	for rows.Next() {
+		var i MagicLink
+		if err := rows.Scan(
+			&i.ID,
+			&i.Token,
+			&i.Email,
+			&i.Action,
+			&i.GroupID,
+			&i.ExpiresAt,
+			&i.UsedAt,
+			&i.CreatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
 }
 
 const listGroupsByAdmin = `-- name: ListGroupsByAdmin :many

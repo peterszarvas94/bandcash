@@ -172,7 +172,10 @@
     align-items: stretch;
     max-width: var(--content-width);
     margin: 0 auto;
-    padding: var(--space);
+    padding-top: var(--page-padding-top);
+    padding-right: var(--page-padding-inline);
+    padding-bottom: var(--page-padding-bottom);
+    padding-left: var(--page-padding-inline);
     min-height: 100vh;
 
     > main#app {
@@ -200,7 +203,10 @@
   .single-col {
     max-width: var(--content-width);
     margin: 0 auto;
-    padding: var(--space);
+    padding-top: var(--page-padding-top);
+    padding-right: var(--page-padding-inline);
+    padding-bottom: var(--page-padding-bottom);
+    padding-left: var(--page-padding-inline);
   }
 
   .notifications-popover {

@@ -32,6 +32,10 @@ templ GroupViewersMain(data ViewersPageData) {
 			<tr><th>{ctxi18n.T(ctx, "auth.email")}</th><th>{ctxi18n.T(ctx, "table.actions")}</th></tr>
 		</thead>
 		<tbody>
+			<tr>
+				<td>{data.Admin.Email} <span class="text-muted">({ctxi18n.T(ctx, "groups.admin")})</span></td>
+				<td></td>
+			</tr>
 			if len(data.Viewers) == 0 {
 				<tr><td colspan="2">{ctxi18n.T(ctx, "groups.viewer_none")}</td></tr>
 			} else {
@@ -39,9 +43,37 @@ templ GroupViewersMain(data ViewersPageData) {
 					<tr>
 						<td>{viewer.Email}</td>
 						<td>
-							<form data-on:submit={fmt.Sprintf("@post('/groups/%s/viewers/%s/remove')", data.Group.ID, viewer.ID)} style="display:inline">
-								<button type="submit" class="btn btn-danger">{ctxi18n.T(ctx, "actions.delete")}</button>
-							</form>
+							if data.IsAdmin {
+								<form data-on:submit={fmt.Sprintf("@post('/groups/%s/viewers/%s/remove')", data.Group.ID, viewer.ID)} style="display:inline">
+									<button type="submit" class="btn btn-danger">{ctxi18n.T(ctx, "actions.delete")}</button>
+								</form>
+							}
+						</td>
+					</tr>
+				}
+			}
+		</tbody>
+	</table>
+
+	<h2>{ctxi18n.T(ctx, "groups.pending_invitations")}</h2>
+	<table class="table">
+		<thead>
+			<tr><th>{ctxi18n.T(ctx, "auth.email")}</th><th>{ctxi18n.T(ctx, "groups.invite_expires")}</th><th>{ctxi18n.T(ctx, "table.actions")}</th></tr>
+		</thead>
+		<tbody>
+			if len(data.Invites) == 0 {
+				<tr><td colspan="3">{ctxi18n.T(ctx, "groups.no_pending_invitations")}</td></tr>
+			} else {
+				for _, invite := range data.Invites {
+					<tr>
+						<td>{invite.Email}</td>
+						<td>{invite.ExpiresAt.Format("2006-01-02 15:04")}</td>
+						<td>
+							if data.IsAdmin {
+								<form data-on:submit={fmt.Sprintf("@post('/groups/%s/invites/%s/remove')", data.Group.ID, invite.ID)} style="display:inline">
+									<button type="submit" class="btn btn-danger">{ctxi18n.T(ctx, "actions.delete")}</button>
+								</form>
+							}
 						</td>
 					</tr>
 				}
@@ -51,14 +83,15 @@ templ GroupViewersMain(data ViewersPageData) {
 }
 
 templ GroupViewersSidebar(data ViewersPageData) {
-	<div data-show="$formState === ''" class="pb">
+	if data.IsAdmin {
+		<div data-show="$formState === ''" class="pb">
 		<h3>{ctxi18n.T(ctx, "groups.actions")}</h3>
 		<div class="row">
 			<button class="btn" type="button" data-on:click="$formState = 'add'; $formData = {email: ''}">{ctxi18n.T(ctx, "groups.add_viewer")}</button>
 		</div>
-	</div>
+		</div>
 
-	<div data-show="$formState !== ''" style="display: none" class="pb">
+		<div data-show="$formState !== ''" style="display: none" class="pb">
 		<h3>{ctxi18n.T(ctx, "groups.invite_viewer")}</h3>
 		<form class="form" data-on:submit={fmt.Sprintf("@post('/groups/%s/viewers')", data.Group.ID)}>
 			<div class="field">
@@ -70,5 +103,6 @@ templ GroupViewersSidebar(data ViewersPageData) {
 				<button class="btn" type="button" data-on:click="$formState = ''; $formData = {email: ''}">{ctxi18n.T(ctx, "actions.cancel")}</button>
 			</div>
 		</form>
-	</div>
+		</div>
+	}
 }

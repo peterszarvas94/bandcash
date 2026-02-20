@@ -128,8 +128,8 @@ func (g *Group) GroupsPage(c echo.Context) error {
 		Title:        ctxi18n.T(c.Request().Context(), "groups.title"),
 		Breadcrumbs:  []utils.Crumb{{Label: ctxi18n.T(c.Request().Context(), "groups.title")}},
 		UserEmail:    userEmail,
-		AdminGroups:  adminGroups,
-		ReaderGroups: filteredReaders,
+		AdminGroups:  g.groupSummaries(c, adminGroups),
+		ReaderGroups: g.groupSummaries(c, filteredReaders),
 	}
 	return utils.RenderComponent(c, GroupsPage(data))
 }
@@ -253,12 +253,27 @@ func (g *Group) ViewersPage(c echo.Context) error {
 		return c.String(http.StatusInternalServerError, "Failed to load viewers")
 	}
 
+	invites, err := db.Qry.ListGroupPendingInvites(c.Request().Context(), sql.NullString{String: groupID, Valid: true})
+	if err != nil {
+		slog.Error("group: failed to load pending invites", "err", err)
+		return c.String(http.StatusInternalServerError, "Failed to load group access")
+	}
+
+	admin, err := db.Qry.GetUserByID(c.Request().Context(), group.AdminUserID)
+	if err != nil {
+		slog.Error("group: failed to load group admin", "err", err)
+		return c.String(http.StatusInternalServerError, "Failed to load group access")
+	}
+
 	data := ViewersPageData{
 		Title:       ctxi18n.T(c.Request().Context(), "groups.viewers"),
 		Breadcrumbs: []utils.Crumb{{Label: ctxi18n.T(c.Request().Context(), "groups.title"), Href: "/dashboard"}, {Label: group.Name, Href: "/groups/" + group.ID}, {Label: ctxi18n.T(c.Request().Context(), "groups.viewers")}},
 		UserEmail:   userEmail,
 		Group:       group,
+		Admin:       admin,
 		Viewers:     viewers,
+		Invites:     invites,
+		IsAdmin:     middleware.IsAdmin(c),
 	}
 
 	return utils.RenderComponent(c, GroupViewersPage(data))
@@ -284,12 +299,27 @@ func (g *Group) patchViewersPage(c echo.Context, groupID, messageKey, errorKey s
 		return c.NoContent(http.StatusInternalServerError)
 	}
 
+	invites, err := db.Qry.ListGroupPendingInvites(c.Request().Context(), sql.NullString{String: groupID, Valid: true})
+	if err != nil {
+		slog.Error("group: failed to load pending invites for patch", "err", err)
+		return c.NoContent(http.StatusInternalServerError)
+	}
+
+	admin, err := db.Qry.GetUserByID(c.Request().Context(), group.AdminUserID)
+	if err != nil {
+		slog.Error("group: failed to load admin for patch", "err", err)
+		return c.NoContent(http.StatusInternalServerError)
+	}
+
 	data := ViewersPageData{
 		Title:       ctxi18n.T(c.Request().Context(), "groups.viewers"),
 		Breadcrumbs: []utils.Crumb{{Label: ctxi18n.T(c.Request().Context(), "groups.title"), Href: "/dashboard"}, {Label: group.Name, Href: "/groups/" + group.ID}, {Label: ctxi18n.T(c.Request().Context(), "groups.viewers")}},
 		UserEmail:   getUserEmail(c),
 		Group:       group,
+		Admin:       admin,
 		Viewers:     viewers,
+		Invites:     invites,
+		IsAdmin:     middleware.IsAdmin(c),
 	}
 
 	html, err := utils.RenderComponentStringFor(c, GroupViewersPage(data))
@@ -382,6 +412,26 @@ func (g *Group) RemoveViewer(c echo.Context) error {
 	return g.patchViewersPage(c, groupID, "groups.messages.viewer_removed", "")
 }
 
+// CancelInvite removes a pending invitation from the group.
+func (g *Group) CancelInvite(c echo.Context) error {
+	groupID := middleware.GetGroupID(c)
+	inviteID := c.Param("inviteId")
+	if inviteID == "" {
+		return g.patchViewersPage(c, groupID, "", "groups.errors.invalid_invite")
+	}
+
+	err := db.Qry.DeleteGroupPendingInvite(c.Request().Context(), db.DeleteGroupPendingInviteParams{
+		ID:      inviteID,
+		GroupID: sql.NullString{String: groupID, Valid: true},
+	})
+	if err != nil {
+		slog.Warn("group: failed to cancel invite", "err", err)
+		return g.patchViewersPage(c, groupID, "", "groups.errors.invite_cancel_failed")
+	}
+
+	return g.patchViewersPage(c, groupID, "groups.messages.invite_cancelled", "")
+}
+
 func getUserEmail(c echo.Context) string {
 	userID := middleware.GetUserID(c)
 	if userID == "" {
@@ -392,4 +442,27 @@ func getUserEmail(c echo.Context) string {
 		return ""
 	}
 	return user.Email
+}
+
+func (g *Group) groupSummaries(c echo.Context, groups []db.Group) []GroupSummary {
+	summaries := make([]GroupSummary, 0, len(groups))
+	for _, group := range groups {
+		viewers, err := db.Qry.GetGroupReaders(c.Request().Context(), group.ID)
+		if err != nil {
+			slog.Warn("group: failed to load viewer count", "group_id", group.ID, "err", err)
+			continue
+		}
+
+		adminEmail := ""
+		if admin, err := db.Qry.GetUserByID(c.Request().Context(), group.AdminUserID); err == nil {
+			adminEmail = admin.Email
+		}
+
+		summaries = append(summaries, GroupSummary{
+			Group:       group,
+			ViewerCount: len(viewers),
+			AdminEmail:  adminEmail,
+		})
+	}
+	return summaries
 }

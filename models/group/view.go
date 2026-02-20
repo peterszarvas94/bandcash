@@ -15,8 +15,14 @@ type GroupsPageData struct {
 	Title        string
 	Breadcrumbs  []utils.Crumb
 	UserEmail    string
-	AdminGroups  []db.Group
-	ReaderGroups []db.Group
+	AdminGroups  []GroupSummary
+	ReaderGroups []GroupSummary
+}
+
+type GroupSummary struct {
+	Group       db.Group
+	ViewerCount int
+	AdminEmail  string
 }
 
 type ViewersPageData struct {
@@ -24,5 +30,8 @@ type ViewersPageData struct {
 	Breadcrumbs []utils.Crumb
 	UserEmail   string
 	Group       db.Group
+	Admin       db.User
 	Viewers     []db.User
+	Invites     []db.MagicLink
+	IsAdmin     bool
 }

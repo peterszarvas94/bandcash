@@ -81,3 +81,18 @@ WHERE id = ?;
 -- name: DeleteExpiredMagicLinks :exec
 DELETE FROM magic_links
 WHERE expires_at < CURRENT_TIMESTAMP AND used_at IS NULL;
+
+-- name: ListGroupPendingInvites :many
+SELECT * FROM magic_links
+WHERE action = 'invite'
+  AND group_id = ?
+  AND used_at IS NULL
+  AND expires_at >= CURRENT_TIMESTAMP
+ORDER BY created_at DESC;
+
+-- name: DeleteGroupPendingInvite :exec
+DELETE FROM magic_links
+WHERE id = ?
+  AND action = 'invite'
+  AND group_id = ?
+  AND used_at IS NULL;
