@@ -11,7 +11,6 @@ import (
 	"github.com/labstack/echo/v4"
 	"github.com/starfederation/datastar-go/datastar"
 
-	"bandcash/internal/config"
 	"bandcash/internal/db"
 	"bandcash/internal/email"
 	"bandcash/internal/middleware"
@@ -36,7 +35,7 @@ type addViewerSignals struct {
 }
 
 func New() *Group {
-	cfg := config.Load()
+	cfg := utils.Env()
 	return &Group{
 		emailService: email.NewFromEnv(),
 		appBaseURL:   cfg.URL,

@@ -11,7 +11,6 @@ import (
 	"github.com/labstack/echo/v4"
 	"github.com/starfederation/datastar-go/datastar"
 
-	"bandcash/internal/config"
 	"bandcash/internal/db"
 	"bandcash/internal/email"
 	"bandcash/internal/middleware"
@@ -30,7 +29,7 @@ type authSignals struct {
 }
 
 func New() *Auth {
-	cfg := config.Load()
+	cfg := utils.Env()
 	return &Auth{
 		emailService: email.NewFromEnv(),
 		appBaseURL:   cfg.URL,

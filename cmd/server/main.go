@@ -14,7 +14,6 @@ import (
 	"github.com/labstack/echo/v4"
 	echoMiddleware "github.com/labstack/echo/v4/middleware"
 
-	"bandcash/internal/config"
 	"bandcash/internal/db"
 	"bandcash/internal/i18n"
 	"bandcash/internal/middleware"
@@ -37,10 +36,6 @@ func main() {
 		slog.Info("env: no .env file loaded", "err", err)
 	}
 	utils.SetupLogger()
-	if err := utils.ValidateEmailEnv(); err != nil {
-		slog.Error("env: invalid email configuration", "err", err)
-		os.Exit(1)
-	}
 
 	e := echo.New()
 	e.HideBanner = true
@@ -79,7 +74,7 @@ func main() {
 		return
 	}
 
-	cfg := config.Load()
+	cfg := utils.Env()
 
 	err := i18n.Load()
 	if err != nil {

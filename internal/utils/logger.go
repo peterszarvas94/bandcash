@@ -9,8 +9,6 @@ import (
 	"path/filepath"
 	"strings"
 	"time"
-
-	"bandcash/internal/config"
 )
 
 // ANSI color codes
@@ -138,7 +136,7 @@ func New(logFile io.Writer, level slog.Level) *slog.Logger {
 }
 
 func SetupLogger() {
-	cfg := config.Load()
+	cfg := Env()
 	logFilePath := filepath.Join(cfg.LogFolder, fmt.Sprintf("%s.log", cfg.LogPrefix))
 
 	err := os.MkdirAll(filepath.Dir(logFilePath), 0755)
