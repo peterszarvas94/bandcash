@@ -17,8 +17,6 @@ type GroupsPageData struct {
 	UserEmail    string
 	AdminGroups  []db.Group
 	ReaderGroups []db.Group
-	MessageKey   string
-	ErrorKey     string
 }
 
 type ViewersPageData struct {
@@ -27,6 +25,4 @@ type ViewersPageData struct {
 	UserEmail   string
 	Group       db.Group
 	Viewers     []db.User
-	MessageKey  string
-	ErrorKey    string
 }

@@ -19,6 +19,7 @@ import (
 	"bandcash/internal/middleware"
 	"bandcash/internal/utils"
 	"bandcash/models/auth"
+	"bandcash/models/devnotifications"
 	"bandcash/models/event"
 	"bandcash/models/group"
 	"bandcash/models/health"
@@ -68,6 +69,7 @@ func main() {
 	member.Register(e)
 	settings.Register(e)
 	sse.Register(e)
+	devnotifications.Register(e)
 
 	if *routesFlag {
 		utils.PrintRoutes(e)

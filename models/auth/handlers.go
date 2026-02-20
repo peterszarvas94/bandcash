@@ -74,15 +74,18 @@ func (a *Auth) LoginRequest(c echo.Context) error {
 	})
 	if err != nil {
 		slog.Error("auth: failed to create magic link", "err", err)
-		return c.String(http.StatusInternalServerError, "Failed to create login link")
+		utils.Notify(c, "error", ctxi18n.T(c.Request().Context(), "auth.notifications.create_link_failed"))
+		return c.NoContent(http.StatusInternalServerError)
 	}
 
 	// Send email
 	err = email.Email().SendMagicLink(c.Request().Context(), emailAdress, token, utils.Env().URL)
 	if err != nil {
 		slog.Error("auth: failed to send email", "err", err)
-		return c.String(http.StatusInternalServerError, "Failed to send email")
+		utils.Notify(c, "error", ctxi18n.T(c.Request().Context(), "auth.notifications.send_email_failed"))
+		return c.NoContent(http.StatusInternalServerError)
 	}
+	utils.Notify(c, "info", ctxi18n.T(c.Request().Context(), "auth.notifications.link_sent"))
 
 	err = utils.SSEHub.Redirect(c, "/auth/login-sent")
 	if err != nil {
@@ -133,7 +136,8 @@ func (a *Auth) SignupRequest(c echo.Context) error {
 	})
 	if err != nil {
 		slog.Error("auth: failed to create user", "err", err)
-		return c.String(http.StatusInternalServerError, "Failed to create user")
+		utils.Notify(c, "error", ctxi18n.T(c.Request().Context(), "auth.notifications.create_user_failed"))
+		return c.NoContent(http.StatusInternalServerError)
 	}
 
 	// Create magic link for login
@@ -149,7 +153,8 @@ func (a *Auth) SignupRequest(c echo.Context) error {
 	})
 	if err != nil {
 		slog.Error("auth: failed to create magic link", "err", err)
-		return c.String(http.StatusInternalServerError, "Failed to create login link")
+		utils.Notify(c, "error", ctxi18n.T(c.Request().Context(), "auth.notifications.create_link_failed"))
+		return c.NoContent(http.StatusInternalServerError)
 	}
 
 	slog.Info("auth: created user and magic link", "user_id", user.ID, "email", emailAdress)
@@ -158,8 +163,10 @@ func (a *Auth) SignupRequest(c echo.Context) error {
 	err = email.Email().SendMagicLink(c.Request().Context(), emailAdress, token, utils.Env().URL)
 	if err != nil {
 		slog.Error("auth: failed to send email", "err", err)
-		return c.String(http.StatusInternalServerError, "Failed to send email")
+		utils.Notify(c, "error", ctxi18n.T(c.Request().Context(), "auth.notifications.send_email_failed"))
+		return c.NoContent(http.StatusInternalServerError)
 	}
+	utils.Notify(c, "success", ctxi18n.T(c.Request().Context(), "auth.notifications.account_created"))
 
 	err = utils.SSEHub.Redirect(c, "/auth/login-sent")
 	if err != nil {

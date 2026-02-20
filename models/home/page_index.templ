@@ -13,7 +13,7 @@ templ HomeIndex(data HomeData) {
 	<html lang={appi18n.LocaleCode(ctx)}>
 		@shared.Head(data.Title)
 		<body>
-			<div data-signals={templ.JSONString(map[string]any{"csrf": utils.CSRFToken(ctx)})}></div>
+			<div data-signals={templ.JSONString(map[string]any{"csrf": utils.CSRFToken(ctx)})} data-init="@get('/sse')"></div>
 			@shared.Notifications()
 			<main id="app" class="single-col">
 				<h1>{data.Title}</h1>
@@ -27,6 +27,9 @@ templ HomeIndex(data HomeData) {
 						<a class="btn" href="/auth/signup">{ctxi18n.T(ctx, "auth.signup")}</a>
 					}
 					<a class="btn" href="/settings">{ctxi18n.T(ctx, "settings.title")}</a>
+					if utils.Env().AppEnv == "development" {
+						<a class="btn" href="/dev/notifications">Dev Notifications</a>
+					}
 				</div>
 			</main>
 		</body>

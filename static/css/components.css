@@ -55,16 +55,16 @@
     }
 
     &.btn-primary {
-      background: color-mix(in srgb, var(--link-color) 88%, black 12%);
-      border-color: color-mix(in srgb, var(--link-color) 80%, black 20%);
-      color: white;
+      background: color-mix(in srgb, var(--link-color) 88%, var(--text-color) 12%);
+      border-color: color-mix(in srgb, var(--link-color) 80%, var(--text-color) 20%);
+      color: var(--page-bg);
 
       &:not(:disabled):not([disabled]):hover {
-        background: color-mix(in srgb, var(--link-color) 78%, black 22%);
+        background: color-mix(in srgb, var(--link-color) 78%, var(--text-color) 22%);
       }
 
       &:focus-visible {
-        outline-color: color-mix(in srgb, var(--link-color) 70%, white 30%);
+        outline-color: color-mix(in srgb, var(--link-color) 70%, var(--page-bg) 30%);
       }
     }
 
@@ -78,7 +78,49 @@
       }
 
       &:focus-visible {
-        outline-color: color-mix(in srgb, var(--error-color) 70%, white 30%);
+        outline-color: color-mix(in srgb, var(--error-color) 70%, var(--page-bg) 30%);
+      }
+    }
+
+    &.btn-success {
+      background: transparent;
+      border-color: color-mix(in srgb, var(--color-success) 60%, transparent);
+      color: var(--color-success);
+
+      &:not(:disabled):not([disabled]):hover {
+        background: color-mix(in srgb, var(--color-success) 16%, transparent);
+      }
+
+      &:focus-visible {
+        outline-color: color-mix(in srgb, var(--color-success) 70%, var(--page-bg) 30%);
+      }
+    }
+
+    &.btn-info {
+      background: transparent;
+      border-color: color-mix(in srgb, var(--color-info) 60%, transparent);
+      color: var(--color-info);
+
+      &:not(:disabled):not([disabled]):hover {
+        background: color-mix(in srgb, var(--color-info) 16%, transparent);
+      }
+
+      &:focus-visible {
+        outline-color: color-mix(in srgb, var(--color-info) 70%, var(--page-bg) 30%);
+      }
+    }
+
+    &.btn-warning {
+      background: transparent;
+      border-color: color-mix(in srgb, var(--color-warning) 60%, transparent);
+      color: var(--color-warning);
+
+      &:not(:disabled):not([disabled]):hover {
+        background: color-mix(in srgb, var(--color-warning) 16%, transparent);
+      }
+
+      &:focus-visible {
+        outline-color: color-mix(in srgb, var(--color-warning) 70%, var(--page-bg) 30%);
       }
     }
   }
@@ -187,7 +229,7 @@
     border: var(--border) solid var(--border-color);
     border-left-width: calc(var(--border) * 3);
     border-radius: var(--border);
-    background: color-mix(in srgb, var(--page-bg) 88%, white 12%);
+    background: color-mix(in srgb, var(--page-bg) 88%, var(--text-color) 12%);
     padding: calc(var(--space) * 0.75) var(--space);
 
     > p {
@@ -196,15 +238,19 @@
   }
 
   .notification-success {
-    border-left-color: color-mix(in srgb, var(--link-color) 70%, black 30%);
+    border-left-color: var(--color-success);
   }
 
   .notification-error {
-    border-left-color: var(--error-color);
+    border-left-color: var(--color-danger);
   }
 
   .notification-info {
-    border-left-color: var(--link-color);
+    border-left-color: var(--color-info);
+  }
+
+  .notification-warning {
+    border-left-color: var(--color-warning);
   }
 
   .event-details {

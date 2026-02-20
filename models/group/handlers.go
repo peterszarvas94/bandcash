@@ -4,7 +4,6 @@ import (
 	"database/sql"
 	"log/slog"
 	"net/http"
-	"net/url"
 	"time"
 
 	ctxi18n "github.com/invopop/ctxi18n/i18n"
@@ -81,6 +80,7 @@ func (g *Group) CreateGroup(c echo.Context) error {
 	}
 
 	slog.Info("group: created", "group_id", group.ID, "name", group.Name, "admin", userID)
+	utils.Notify(c, "success", ctxi18n.T(c.Request().Context(), "groups.messages.created"))
 
 	// Redirect to events
 	err = utils.SSEHub.Redirect(c, "/groups/"+group.ID)
@@ -130,8 +130,6 @@ func (g *Group) GroupsPage(c echo.Context) error {
 		UserEmail:    userEmail,
 		AdminGroups:  adminGroups,
 		ReaderGroups: filteredReaders,
-		MessageKey:   c.QueryParam("msg"),
-		ErrorKey:     c.QueryParam("error"),
 	}
 	return utils.RenderComponent(c, GroupsPage(data))
 }
@@ -151,14 +149,16 @@ func (g *Group) LeaveGroup(c echo.Context) error {
 
 	group, err := db.Qry.GetGroupByID(c.Request().Context(), groupID)
 	if err != nil {
-		err = utils.SSEHub.Redirect(c, "/dashboard?error="+url.QueryEscape("groups.errors.group_not_found"))
+		utils.Notify(c, "error", ctxi18n.T(c.Request().Context(), "groups.errors.group_not_found"))
+		err = utils.SSEHub.Redirect(c, "/dashboard")
 		if err != nil {
 			return c.NoContent(http.StatusInternalServerError)
 		}
 		return c.NoContent(http.StatusOK)
 	}
 	if group.AdminUserID == userID {
-		err = utils.SSEHub.Redirect(c, "/dashboard?error="+url.QueryEscape("groups.errors.admin_cannot_leave"))
+		utils.Notify(c, "error", ctxi18n.T(c.Request().Context(), "groups.errors.admin_cannot_leave"))
+		err = utils.SSEHub.Redirect(c, "/dashboard")
 		if err != nil {
 			return c.NoContent(http.StatusInternalServerError)
 		}
@@ -171,14 +171,16 @@ func (g *Group) LeaveGroup(c echo.Context) error {
 	})
 	if err != nil {
 		slog.Warn("group: failed to leave", "err", err)
-		err = utils.SSEHub.Redirect(c, "/dashboard?error="+url.QueryEscape("groups.errors.leave_failed"))
+		utils.Notify(c, "error", ctxi18n.T(c.Request().Context(), "groups.errors.leave_failed"))
+		err = utils.SSEHub.Redirect(c, "/dashboard")
 		if err != nil {
 			return c.NoContent(http.StatusInternalServerError)
 		}
 		return c.NoContent(http.StatusOK)
 	}
 
-	err = utils.SSEHub.Redirect(c, "/dashboard?msg="+url.QueryEscape("groups.messages.left"))
+	utils.Notify(c, "success", ctxi18n.T(c.Request().Context(), "groups.messages.left"))
+	err = utils.SSEHub.Redirect(c, "/dashboard")
 	if err != nil {
 		return c.NoContent(http.StatusInternalServerError)
 	}
@@ -200,14 +202,16 @@ func (g *Group) DeleteGroup(c echo.Context) error {
 
 	group, err := db.Qry.GetGroupByID(c.Request().Context(), groupID)
 	if err != nil {
-		err = utils.SSEHub.Redirect(c, "/dashboard?error="+url.QueryEscape("groups.errors.group_not_found"))
+		utils.Notify(c, "error", ctxi18n.T(c.Request().Context(), "groups.errors.group_not_found"))
+		err = utils.SSEHub.Redirect(c, "/dashboard")
 		if err != nil {
 			return c.NoContent(http.StatusInternalServerError)
 		}
 		return c.NoContent(http.StatusOK)
 	}
 	if group.AdminUserID != userID {
-		err = utils.SSEHub.Redirect(c, "/dashboard?error="+url.QueryEscape("groups.errors.admin_required"))
+		utils.Notify(c, "error", ctxi18n.T(c.Request().Context(), "groups.errors.admin_required"))
+		err = utils.SSEHub.Redirect(c, "/dashboard")
 		if err != nil {
 			return c.NoContent(http.StatusInternalServerError)
 		}
@@ -216,14 +220,16 @@ func (g *Group) DeleteGroup(c echo.Context) error {
 
 	if err := db.Qry.DeleteGroup(c.Request().Context(), groupID); err != nil {
 		slog.Error("group: failed to delete", "err", err)
-		err = utils.SSEHub.Redirect(c, "/dashboard?error="+url.QueryEscape("groups.errors.delete_failed"))
+		utils.Notify(c, "error", ctxi18n.T(c.Request().Context(), "groups.errors.delete_failed"))
+		err = utils.SSEHub.Redirect(c, "/dashboard")
 		if err != nil {
 			return c.NoContent(http.StatusInternalServerError)
 		}
 		return c.NoContent(http.StatusOK)
 	}
 
-	err = utils.SSEHub.Redirect(c, "/dashboard?msg="+url.QueryEscape("groups.messages.deleted"))
+	utils.Notify(c, "success", ctxi18n.T(c.Request().Context(), "groups.messages.deleted"))
+	err = utils.SSEHub.Redirect(c, "/dashboard")
 	if err != nil {
 		return c.NoContent(http.StatusInternalServerError)
 	}
@@ -253,8 +259,6 @@ func (g *Group) ViewersPage(c echo.Context) error {
 		UserEmail:   userEmail,
 		Group:       group,
 		Viewers:     viewers,
-		MessageKey:  c.QueryParam("msg"),
-		ErrorKey:    c.QueryParam("error"),
 	}
 
 	return utils.RenderComponent(c, GroupViewersPage(data))
@@ -286,8 +290,6 @@ func (g *Group) patchViewersPage(c echo.Context, groupID, messageKey, errorKey s
 		UserEmail:   getUserEmail(c),
 		Group:       group,
 		Viewers:     viewers,
-		MessageKey:  messageKey,
-		ErrorKey:    errorKey,
 	}
 
 	html, err := utils.RenderComponentStringFor(c, GroupViewersPage(data))

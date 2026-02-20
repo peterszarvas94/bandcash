@@ -3,6 +3,7 @@ package member
 import (
 	"log/slog"
 
+	ctxi18n "github.com/invopop/ctxi18n/i18n"
 	"github.com/labstack/echo/v4"
 	"github.com/starfederation/datastar-go/datastar"
 
@@ -32,6 +33,7 @@ var (
 		"formState": "",
 		"editingId": "",
 		"formData":  map[string]any{"name": "", "description": ""},
+		"errors":    map[string]any{"name": "", "description": ""},
 	}
 	memberErrorFields = []string{"name", "description"}
 )
@@ -116,10 +118,12 @@ func (p *Members) Create(c echo.Context) error {
 	})
 	if err != nil {
 		slog.Error("member.create.table: failed to create member", "err", err)
+		utils.Notify(c, "error", ctxi18n.T(c.Request().Context(), "members.notifications.create_failed"))
 		return c.NoContent(500)
 	}
 
 	slog.Debug("member.create.table", "id", member.ID, "name", member.Name)
+	utils.Notify(c, "success", ctxi18n.T(c.Request().Context(), "members.notifications.created"))
 
 	utils.SSEHub.PatchSignals(c, defaultMemberSignals)
 	data, err := p.GetIndexData(c.Request().Context(), groupID)
@@ -171,10 +175,12 @@ func (p *Members) Update(c echo.Context) error {
 	})
 	if err != nil {
 		slog.Error("member.update: failed to update member", "err", err)
+		utils.Notify(c, "error", ctxi18n.T(c.Request().Context(), "members.notifications.update_failed"))
 		return c.NoContent(500)
 	}
 
 	slog.Debug("member.update", "id", id)
+	utils.Notify(c, "success", ctxi18n.T(c.Request().Context(), "members.notifications.updated"))
 
 	if signals.Mode == "single" {
 		err = utils.SSEHub.Redirect(c, "/groups/"+groupID+"/members/"+id)
@@ -226,10 +232,12 @@ func (p *Members) Destroy(c echo.Context) error {
 	})
 	if err != nil {
 		slog.Error("member.destroy: failed to delete member", "err", err)
+		utils.Notify(c, "error", ctxi18n.T(c.Request().Context(), "members.notifications.delete_failed"))
 		return c.NoContent(500)
 	}
 
 	slog.Debug("member.destroy", "id", id)
+	utils.Notify(c, "success", ctxi18n.T(c.Request().Context(), "members.notifications.deleted"))
 
 	if signals.Mode == "single" {
 		err = utils.SSEHub.Redirect(c, "/groups/"+groupID+"/members")

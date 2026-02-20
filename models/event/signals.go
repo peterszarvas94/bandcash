@@ -8,6 +8,7 @@ func eventIndexSignals(csrfToken string) map[string]any {
 		"editingId":      0,
 		"formData":       map[string]any{"title": "", "time": "", "description": "", "amount": 0},
 		"eventFormState": "",
+		"errors":         map[string]any{"title": "", "time": "", "description": "", "amount": "", "memberId": "", "expense": ""},
 	}
 }
 
@@ -36,6 +37,8 @@ func eventShowSignals(data EventData, csrfToken string) map[string]any {
 			"time":        "",
 			"description": "",
 			"amount":      "",
+			"memberId":    "",
+			"expense":     "",
 		},
 	}
 }

@@ -8,15 +8,26 @@
     --space: 0.5rem;
 
     --border: 1px;
-    --border-color: light-dark(#ccc, #4a4a4a);
+
+    /* Basic palette */
+    --color-bg: light-dark(#ffffff, #1b1d21);
+    --color-text: light-dark(#1a1a1a, #e9e9e9);
+    --color-border: light-dark(#cccccc, #4a4a4a);
+    --color-primary: light-dark(#1f3a5f, #7fb1ff);
+    --color-success: light-dark(#1e8e3e, #59c37a);
+    --color-danger: light-dark(#d93025, #ff7b72);
+    --color-info: light-dark(#1a73e8, #7fb1ff);
+    --color-warning: light-dark(#f9ab00, #ffd166);
 
     --content-width: 90rem;
     --sidebar-width: 20rem;
 
-    --link-color: light-dark(#1f3a5f, #7fb1ff);
-    --page-bg: light-dark(#ffffff, #1b1d21);
-    --text-color: light-dark(#1a1a1a, #e9e9e9);
-    --error-color: light-dark(#e74c3c, #ff6161);
+    /* Semantic aliases used by existing styles */
+    --link-color: var(--color-primary);
+    --page-bg: var(--color-bg);
+    --text-color: var(--color-text);
+    --error-color: var(--color-danger);
+    --border-color: var(--color-border);
 
     color-scheme: light dark;
     interpolate-size: allow-keywords;

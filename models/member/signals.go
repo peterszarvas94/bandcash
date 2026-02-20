@@ -7,6 +7,7 @@ func memberIndexSignals(csrfToken string) map[string]any {
 		"formState": "",
 		"editingId": 0,
 		"formData":  map[string]any{"name": "", "description": ""},
+		"errors":    map[string]any{"name": "", "description": ""},
 	}
 }
 

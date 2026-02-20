@@ -22,6 +22,12 @@ hu:
     have_account: "Már van fiókod?"
     no_account: "Nincs még fiókod?"
     email_in_use: "Ez az email már használatban van. Kérlek lépj be."
+    notifications:
+      create_link_failed: "Nem sikerült belépési linket létrehozni. Próbáld újra."
+      send_email_failed: "Nem sikerült emailt küldeni. Próbáld újra."
+      create_user_failed: "Nem sikerült fiókot létrehozni. Próbáld újra."
+      link_sent: "Belépési link elküldve. Ellenőrizd az emailed."
+      account_created: "Fiók létrehozva. Ellenőrizd az emailed a belépési linkért."
   email:
     magic_link:
       subject: "Belépés a BandCash-be"
@@ -57,6 +63,8 @@ hu:
   settings:
     title: "Beállítások"
     language: "Nyelv"
+    notifications:
+      language_saved: "Nyelv mentve."
   language:
     en: "Angol"
     hu: "Magyar"
@@ -86,6 +94,13 @@ hu:
     leftover: "Maradék"
     participants: "Résztvevők"
     delete_confirm: "Törlöd ezt az eseményt?"
+    notifications:
+      created: "Esemény létrehozva."
+      updated: "Esemény frissítve."
+      deleted: "Esemény törölve."
+      create_failed: "Nem sikerült eseményt létrehozni. Próbáld újra."
+      update_failed: "Nem sikerült eseményt frissíteni. Próbáld újra."
+      delete_failed: "Nem sikerült eseményt törölni. Próbáld újra."
   members:
     title: "Tagok"
     actions: "Tag műveletek"
@@ -97,6 +112,13 @@ hu:
     details: "Tag részletei"
     events: "Események"
     delete_confirm: "Törlöd ezt a tagot?"
+    notifications:
+      created: "Tag létrehozva."
+      updated: "Tag frissítve."
+      deleted: "Tag törölve."
+      create_failed: "Nem sikerült tagot létrehozni. Próbáld újra."
+      update_failed: "Nem sikerült tagot frissíteni. Próbáld újra."
+      delete_failed: "Nem sikerült tagot törölni. Próbáld újra."
     table:
       event_amount: "Esemény összege"
   participants:
@@ -115,6 +137,13 @@ hu:
     calc_percent: "Számolj %"
     calc_amount: "Számolj összeget"
     select_member: "Válassz tagot"
+    notifications:
+      added: "Résztvevő hozzáadva."
+      updated: "Résztvevő frissítve."
+      deleted: "Résztvevő eltávolítva."
+      add_failed: "Nem sikerült résztvevőt hozzáadni. Próbáld újra."
+      update_failed: "Nem sikerült résztvevőt frissíteni. Próbáld újra."
+      delete_failed: "Nem sikerült résztvevőt eltávolítani. Próbáld újra."
   validation:
     required: "Kötelező"
     min: "Minimum %s"
@@ -148,6 +177,7 @@ hu:
     viewer_email_placeholder: "nezo@email.com"
     back_to_events: "Vissza az eseményekhez"
     messages:
+      created: "Csoport létrehozva"
       invite_sent: "Meghívó elküldve"
       viewer_removed: "Néző eltávolítva"
       already_admin: "A felhasználó már admin"

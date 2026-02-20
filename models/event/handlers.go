@@ -3,6 +3,7 @@ package event
 import (
 	"log/slog"
 
+	ctxi18n "github.com/invopop/ctxi18n/i18n"
 	"github.com/labstack/echo/v4"
 	"github.com/starfederation/datastar-go/datastar"
 
@@ -46,12 +47,14 @@ var (
 		"formState": "",
 		"editingId": "",
 		"formData":  map[string]any{"title": "", "time": "", "description": "", "amount": 0},
+		"errors":    map[string]any{"title": "", "time": "", "description": "", "amount": ""},
 	}
 	defaultParticipantSignals = map[string]any{
 		"formState":   "",
 		"editingId":   "",
 		"calcPercent": 0,
 		"formData":    map[string]any{"memberId": "", "memberName": "", "amount": 0, "expense": 0},
+		"errors":      map[string]any{"memberId": "", "amount": "", "expense": ""},
 	}
 	// Error field lists for validation
 	eventErrorFields       = []string{"title", "time", "description", "amount"}
@@ -143,10 +146,12 @@ func (e *Events) Create(c echo.Context) error {
 	})
 	if err != nil {
 		slog.Error("event.create.table: failed to create event", "err", err)
+		utils.Notify(c, "error", ctxi18n.T(c.Request().Context(), "events.notifications.create_failed"))
 		return c.NoContent(500)
 	}
 
 	slog.Debug("event.create.table", "id", event.ID, "title", event.Title)
+	utils.Notify(c, "success", ctxi18n.T(c.Request().Context(), "events.notifications.created"))
 
 	utils.SSEHub.PatchSignals(c, defaultEventSignals)
 	data, err := e.GetIndexData(c.Request().Context(), groupID)
@@ -206,10 +211,12 @@ func (e *Events) Update(c echo.Context) error {
 	})
 	if err != nil {
 		slog.Error("event.update: failed to update event", "err", err)
+		utils.Notify(c, "error", ctxi18n.T(c.Request().Context(), "events.notifications.update_failed"))
 		return c.NoContent(500)
 	}
 
 	slog.Debug("event.update", "id", id)
+	utils.Notify(c, "success", ctxi18n.T(c.Request().Context(), "events.notifications.updated"))
 
 	if signals.Mode == "single" {
 		utils.SSEHub.PatchSignals(c, map[string]any{
@@ -220,6 +227,7 @@ func (e *Events) Update(c echo.Context) error {
 				"description": eventForm.Description,
 				"amount":      eventForm.Amount,
 			},
+			"errors": map[string]any{"title": "", "time": "", "description": "", "amount": ""},
 		})
 		data, err := e.GetShowData(c.Request().Context(), groupID, id)
 		if err != nil {
@@ -279,10 +287,12 @@ func (e *Events) Destroy(c echo.Context) error {
 	})
 	if err != nil {
 		slog.Error("event.destroy: failed to delete event", "err", err)
+		utils.Notify(c, "error", ctxi18n.T(c.Request().Context(), "events.notifications.delete_failed"))
 		return c.NoContent(500)
 	}
 
 	slog.Debug("event.destroy", "id", id)
+	utils.Notify(c, "success", ctxi18n.T(c.Request().Context(), "events.notifications.deleted"))
 
 	if signals.Mode == "single" {
 		err = utils.SSEHub.Redirect(c, "/groups/"+groupID)
@@ -346,8 +356,10 @@ func (e *Events) CreateParticipant(c echo.Context) error {
 	})
 	if err != nil {
 		slog.Error("participant.create.table: failed to add participant", "err", err)
+		utils.Notify(c, "error", ctxi18n.T(c.Request().Context(), "participants.notifications.add_failed"))
 		return c.NoContent(500)
 	}
+	utils.Notify(c, "success", ctxi18n.T(c.Request().Context(), "participants.notifications.added"))
 
 	data, err := e.GetShowData(c.Request().Context(), groupID, id)
 	if err != nil {
@@ -410,8 +422,10 @@ func (e *Events) UpdateParticipant(c echo.Context) error {
 	})
 	if err != nil {
 		slog.Error("participant.update: failed to update participant", "err", err)
+		utils.Notify(c, "error", ctxi18n.T(c.Request().Context(), "participants.notifications.update_failed"))
 		return c.NoContent(500)
 	}
+	utils.Notify(c, "success", ctxi18n.T(c.Request().Context(), "participants.notifications.updated"))
 
 	utils.SSEHub.PatchSignals(c, defaultParticipantSignals)
 	data, err := e.GetShowData(c.Request().Context(), groupID, eventID)
@@ -456,8 +470,10 @@ func (e *Events) DeleteParticipantTable(c echo.Context) error {
 	})
 	if err != nil {
 		slog.Error("participant.delete: failed to remove participant", "err", err)
+		utils.Notify(c, "error", ctxi18n.T(c.Request().Context(), "participants.notifications.delete_failed"))
 		return c.NoContent(500)
 	}
+	utils.Notify(c, "success", ctxi18n.T(c.Request().Context(), "participants.notifications.deleted"))
 
 	data, err := e.GetShowData(c.Request().Context(), groupID, eventID)
 	if err != nil {

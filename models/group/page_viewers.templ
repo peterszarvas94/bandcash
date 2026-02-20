@@ -25,12 +25,6 @@ templ GroupViewersPage(data ViewersPageData) {
 templ GroupViewersMain(data ViewersPageData) {
 	<h1>{ctxi18n.T(ctx, "groups.viewers_for", data.Group.Name)}</h1>
 	@shared.Breadcrumbs(data.Breadcrumbs, data.UserEmail)
-	if data.MessageKey != "" {
-		<p class="notice">{ctxi18n.T(ctx, data.MessageKey)}</p>
-	}
-	if data.ErrorKey != "" {
-		<p class="error">{ctxi18n.T(ctx, data.ErrorKey)}</p>
-	}
 
 	<h2>{ctxi18n.T(ctx, "groups.current_viewers")}</h2>
 	<table class="table">

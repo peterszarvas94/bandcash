@@ -25,12 +25,6 @@ templ GroupsPage(data GroupsPageData) {
 					<a class="btn btn-primary" href="/groups/new">{ ctxi18n.T(ctx, "groups.create") }</a>
 					<a class="btn" href="/settings">{ ctxi18n.T(ctx, "settings.title") }</a>
 				</p>
-				if data.MessageKey != "" {
-					<p class="notice">{ ctxi18n.T(ctx, data.MessageKey) }</p>
-				}
-				if data.ErrorKey != "" {
-					<p class="error">{ ctxi18n.T(ctx, data.ErrorKey) }</p>
-				}
 				<h2>{ ctxi18n.T(ctx, "groups.admin_list") }</h2>
 				<table class="table">
 					<thead><tr><th>{ ctxi18n.T(ctx, "fields.name") }</th><th></th></tr></thead>

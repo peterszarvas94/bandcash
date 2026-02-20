@@ -35,6 +35,7 @@ templ Notifications() {
 	if len(utils.NotificationsFromContext(ctx)) > 0 {
 		<script>
 			(() => {
+				const timeoutMs = 5000;
 				const popover = document.getElementById("notifications-popover");
 				if (!popover || typeof popover.showPopover !== "function") {
 					return;
@@ -44,6 +45,18 @@ templ Notifications() {
 				} catch (_) {
 					// Already open.
 				}
+				if (window.__bandcashNotificationsTimer) {
+					window.clearTimeout(window.__bandcashNotificationsTimer);
+				}
+				window.__bandcashNotificationsTimer = window.setTimeout(() => {
+					if (typeof popover.hidePopover === "function") {
+						try {
+							popover.hidePopover();
+						} catch (_) {
+							// Popover may already be closed.
+						}
+					}
+				}, timeoutMs);
 			})();
 		</script>
 	}

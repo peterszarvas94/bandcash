@@ -1,0 +1,40 @@
+package devnotifications
+
+import (
+	appi18n "bandcash/internal/i18n"
+	"bandcash/internal/utils"
+	shared "bandcash/models/shared"
+)
+
+templ Index() {
+	<!DOCTYPE html>
+	<html lang={ appi18n.LocaleCode(ctx) }>
+		@shared.Head("Dev Notifications")
+		<body>
+			<div data-signals={ templ.JSONString(map[string]any{"csrf": utils.CSRFToken(ctx), "errors": map[string]any{}, "formData": map[string]any{"name": ""}}) } data-init="@get('/sse')"></div>
+			@shared.Notifications()
+			<main id="app" class="single-col">
+				<h1>Dev: Notifications + Inline Errors</h1>
+				<p>Rule check: form validation errors are inline; all other outcomes are notifications.</p>
+				<h2>Inline Error Test</h2>
+				<form class="form" data-on:submit="@post('/dev/notifications/inline')">
+					<div class="field">
+						<label>Required field</label>
+						<input type="text" data-bind="formData.name" data-on:input="$errors = {}" placeholder="Type anything"/>
+						<div data-show="$errors && $errors.name" class="color-error" data-text="$errors.name"></div>
+					</div>
+					<div class="row">
+						<button type="submit" class="btn btn-primary">Submit inline test</button>
+					</div>
+				</form>
+				<h2>Notification Tests</h2>
+				<div class="row row-wrap">
+					<button type="button" class="btn btn-info" data-on:click="@post('/dev/notifications/info')">Info notification</button>
+					<button type="button" class="btn btn-success" data-on:click="@post('/dev/notifications/success')">Success notification</button>
+					<button type="button" class="btn btn-warning" data-on:click="@post('/dev/notifications/warning')">Warning notification</button>
+					<button type="button" class="btn btn-danger" data-on:click="@post('/dev/notifications/error')">Error notification</button>
+				</div>
+			</main>
+		</body>
+	</html>
+}

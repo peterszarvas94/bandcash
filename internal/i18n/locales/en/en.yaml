@@ -22,6 +22,12 @@ en:
     have_account: "Already have an account?"
     no_account: "Don't have an account?"
     email_in_use: "This email is already in use. Please log in."
+    notifications:
+      create_link_failed: "Could not create login link. Please try again."
+      send_email_failed: "Could not send email. Please try again."
+      create_user_failed: "Could not create account. Please try again."
+      link_sent: "Login link sent. Check your email."
+      account_created: "Account created. Check your email for the login link."
   email:
     magic_link:
       subject: "Login to BandCash"
@@ -57,6 +63,8 @@ en:
   settings:
     title: "Settings"
     language: "Language"
+    notifications:
+      language_saved: "Language saved."
   language:
     en: "English"
     hu: "Hungarian"
@@ -86,6 +94,13 @@ en:
     leftover: "Leftover"
     participants: "Participants"
     delete_confirm: "Delete this event?"
+    notifications:
+      created: "Event created."
+      updated: "Event updated."
+      deleted: "Event deleted."
+      create_failed: "Could not create event. Please try again."
+      update_failed: "Could not update event. Please try again."
+      delete_failed: "Could not delete event. Please try again."
   members:
     title: "Members"
     actions: "Member actions"
@@ -97,6 +112,13 @@ en:
     details: "Member Details"
     events: "Events"
     delete_confirm: "Delete this member?"
+    notifications:
+      created: "Member created."
+      updated: "Member updated."
+      deleted: "Member deleted."
+      create_failed: "Could not create member. Please try again."
+      update_failed: "Could not update member. Please try again."
+      delete_failed: "Could not delete member. Please try again."
     table:
       event_amount: "Event Amount"
   participants:
@@ -115,6 +137,13 @@ en:
     calc_percent: "Calc %"
     calc_amount: "Calc Amount"
     select_member: "Select member"
+    notifications:
+      added: "Participant added."
+      updated: "Participant updated."
+      deleted: "Participant removed."
+      add_failed: "Could not add participant. Please try again."
+      update_failed: "Could not update participant. Please try again."
+      delete_failed: "Could not remove participant. Please try again."
   validation:
     required: "Required"
     min: "Minimum %s"
@@ -148,6 +177,7 @@ en:
     viewer_email_placeholder: "viewer@email.com"
     back_to_events: "Back to Events"
     messages:
+      created: "Group created"
       invite_sent: "Invite sent"
       viewer_removed: "Viewer removed"
       already_admin: "User is already admin"

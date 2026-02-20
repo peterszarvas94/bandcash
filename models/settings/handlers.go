@@ -3,6 +3,7 @@ package settings
 import (
 	"net/http"
 
+	ctxi18n "github.com/invopop/ctxi18n/i18n"
 	"github.com/labstack/echo/v4"
 	"github.com/starfederation/datastar-go/datastar"
 
@@ -43,6 +44,7 @@ func (s *Settings) UpdateLanguage(c echo.Context) error {
 		SameSite: http.SameSiteLaxMode,
 		HttpOnly: true,
 	})
+	utils.Notify(c, "success", ctxi18n.T(c.Request().Context(), "settings.notifications.language_saved"))
 	err := utils.SSEHub.Redirect(c, "/settings")
 	if err != nil {
 		return c.NoContent(http.StatusInternalServerError)
