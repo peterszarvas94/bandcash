@@ -35,14 +35,14 @@ templ GroupsPage(data GroupsPageData) {
 							for _, group := range data.AdminGroups {
 								<tr>
 									<td>
-										<a href={ "/groups/" + group.Group.ID }>{ group.Group.Name }</a>
+										<a href={ "/groups/" + group.Group.ID + "/events" }>{ group.Group.Name }</a>
 										<div class="text-muted">
 											<a href={ "/groups/" + group.Group.ID + "/viewers" }>{ ctxi18n.T(ctx, "groups.access_count", group.ViewerCount + 1) }</a>
 										</div>
 									</td>
 									<td>
 										<div class="row row-right row-wrap">
-											<form data-on:submit={ fmt.Sprintf("@post('/groups/%s/delete')", group.Group.ID) } style="display:inline">
+											<form data-on:submit={ fmt.Sprintf("@post('/groups/%s/delete')", group.Group.ID) } data-sure-title={ ctxi18n.T(ctx, "groups.delete_confirm") } data-sure-message={ ctxi18n.T(ctx, "confirm.destructive_message") } data-sure-submit={ ctxi18n.T(ctx, "groups.delete") } style="display:inline">
 												<button type="submit" class="btn btn-danger">{ ctxi18n.T(ctx, "groups.delete") }</button>
 											</form>
 										</div>
@@ -62,7 +62,7 @@ templ GroupsPage(data GroupsPageData) {
 							for _, group := range data.ReaderGroups {
 								<tr>
 									<td>
-										<a href={ "/groups/" + group.Group.ID }>{ group.Group.Name }</a>
+										<a href={ "/groups/" + group.Group.ID + "/events" }>{ group.Group.Name }</a>
 										<div class="text-muted">
 											<a href={ "/groups/" + group.Group.ID + "/viewers" }>{ ctxi18n.T(ctx, "groups.access_count", group.ViewerCount + 1) }</a>
 											if group.AdminEmail != "" {
@@ -75,7 +75,10 @@ templ GroupsPage(data GroupsPageData) {
 											<button
 												type="button"
 												class="btn btn-danger"
-												data-on:click={ fmt.Sprintf("if (window.confirm(%q)) { @post('/groups/%s/leave') }", ctxi18n.T(ctx, "groups.leave_confirm"), group.Group.ID) }
+												data-sure-title={ ctxi18n.T(ctx, "groups.leave_confirm") }
+												data-sure-message={ ctxi18n.T(ctx, "confirm.leave_message") }
+												data-sure-submit={ ctxi18n.T(ctx, "groups.leave") }
+												data-on:click={ fmt.Sprintf("@post('/groups/%s/leave')", group.Group.ID) }
 											>{ ctxi18n.T(ctx, "groups.leave") }</button>
 										</div>
 									</td>

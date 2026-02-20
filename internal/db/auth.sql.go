@@ -421,6 +421,30 @@ func (q *Queries) UpdateGroupAdmin(ctx context.Context, arg UpdateGroupAdminPara
 	return err
 }
 
+const updateGroupName = `-- name: UpdateGroupName :one
+UPDATE groups
+SET name = ?
+WHERE id = ?
+RETURNING id, name, admin_user_id, created_at
+`
+
+type UpdateGroupNameParams struct {
+	Name string `json:"name"`
+	ID   string `json:"id"`
+}
+
+func (q *Queries) UpdateGroupName(ctx context.Context, arg UpdateGroupNameParams) (Group, error) {
+	row := q.db.QueryRowContext(ctx, updateGroupName, arg.Name, arg.ID)
+	var i Group
+	err := row.Scan(
+		&i.ID,
+		&i.Name,
+		&i.AdminUserID,
+		&i.CreatedAt,
+	)
+	return i, err
+}
+
 const useMagicLink = `-- name: UseMagicLink :exec
 UPDATE magic_links
 SET used_at = CURRENT_TIMESTAMP

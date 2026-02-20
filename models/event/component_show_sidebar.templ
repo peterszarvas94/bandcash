@@ -6,10 +6,13 @@ import (
 	ctxi18n "github.com/invopop/ctxi18n/i18n"
 
 	"bandcash/internal/utils"
+	shared "bandcash/models/shared"
 )
 
 templ EventShowSidebar(data EventData) {
 	if data.IsAdmin {
+		@shared.GroupReadNav(data.GroupID)
+
 		<div data-show="$eventFormState === '' && $formState === ''">
 			<div class="pb">
 			<h3>{ctxi18n.T(ctx, "events.actions")}</h3>
@@ -21,16 +24,16 @@ templ EventShowSidebar(data EventData) {
 					>
 					{ctxi18n.T(ctx, "events.edit")}
 					</button>
-					<button
-						class="btn btn-danger"
-						type="button"
-				data-on:click={ fmt.Sprintf("if (window.confirm(%q)) { @delete('/groups/%s/events/%s') }", ctxi18n.T(ctx, "events.delete_confirm"), data.GroupID, data.Event.ID) }
-				>
+				<button
+					class="btn btn-danger"
+					type="button"
+					data-sure-title={ ctxi18n.T(ctx, "events.delete_confirm") }
+					data-sure-message={ ctxi18n.T(ctx, "confirm.destructive_message") }
+					data-sure-submit={ ctxi18n.T(ctx, "actions.delete") }
+			data-on:click={ fmt.Sprintf("@delete('/groups/%s/events/%s')", data.GroupID, data.Event.ID) }
+			>
 					{ctxi18n.T(ctx, "actions.delete")}
 				</button>
-				</div>
-				<div class="row" style="margin-top: 8px">
-					<a class="btn" href={fmt.Sprintf("/groups/%s/viewers", data.GroupID)}>{ctxi18n.T(ctx, "groups.viewers")}</a>
 				</div>
 			</div>
 			<div class="pb">
@@ -171,6 +174,6 @@ templ EventShowSidebar(data EventData) {
 			</form>
 		</div>
 	} else {
-		<p class="text-muted">{ctxi18n.T(ctx, "groups.read_only")}</p>
+		@shared.GroupReadNav(data.GroupID)
 	}
 }

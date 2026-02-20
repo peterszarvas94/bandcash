@@ -83,7 +83,7 @@ func (g *Group) CreateGroup(c echo.Context) error {
 	utils.Notify(c, "success", ctxi18n.T(c.Request().Context(), "groups.messages.created"))
 
 	// Redirect to events
-	err = utils.SSEHub.Redirect(c, "/groups/"+group.ID)
+	err = utils.SSEHub.Redirect(c, "/groups/"+group.ID+"/events")
 	if err != nil {
 		return c.NoContent(http.StatusInternalServerError)
 	}
@@ -267,7 +267,7 @@ func (g *Group) ViewersPage(c echo.Context) error {
 
 	data := ViewersPageData{
 		Title:       ctxi18n.T(c.Request().Context(), "groups.viewers"),
-		Breadcrumbs: []utils.Crumb{{Label: ctxi18n.T(c.Request().Context(), "groups.title"), Href: "/dashboard"}, {Label: group.Name, Href: "/groups/" + group.ID}, {Label: ctxi18n.T(c.Request().Context(), "groups.viewers")}},
+		Breadcrumbs: []utils.Crumb{{Label: ctxi18n.T(c.Request().Context(), "groups.title"), Href: "/dashboard"}, {Label: group.Name, Href: "/groups/" + group.ID + "/events"}, {Label: ctxi18n.T(c.Request().Context(), "groups.viewers")}},
 		UserEmail:   userEmail,
 		Group:       group,
 		Admin:       admin,
@@ -313,7 +313,7 @@ func (g *Group) patchViewersPage(c echo.Context, groupID, messageKey, errorKey s
 
 	data := ViewersPageData{
 		Title:       ctxi18n.T(c.Request().Context(), "groups.viewers"),
-		Breadcrumbs: []utils.Crumb{{Label: ctxi18n.T(c.Request().Context(), "groups.title"), Href: "/dashboard"}, {Label: group.Name, Href: "/groups/" + group.ID}, {Label: ctxi18n.T(c.Request().Context(), "groups.viewers")}},
+		Breadcrumbs: []utils.Crumb{{Label: ctxi18n.T(c.Request().Context(), "groups.title"), Href: "/dashboard"}, {Label: group.Name, Href: "/groups/" + group.ID + "/events"}, {Label: ctxi18n.T(c.Request().Context(), "groups.viewers")}},
 		UserEmail:   getUserEmail(c),
 		Group:       group,
 		Admin:       admin,

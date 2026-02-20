@@ -4,11 +4,16 @@ import (
 	"fmt"
 
 	ctxi18n "github.com/invopop/ctxi18n/i18n"
+
+	"bandcash/internal/utils"
+	shared "bandcash/models/shared"
 )
 
 templ EventIndexSidebar(data EventsData) {
 	if data.IsAdmin {
-		<div data-show="$formState === ''" class="pb">
+		@shared.GroupReadNav(data.GroupID)
+
+		<div data-show="$formState === '' && $groupFormState === ''" class="pb">
 			<h3>{ctxi18n.T(ctx, "events.actions")}</h3>
 			<div class="row">
 				<button
@@ -20,11 +25,29 @@ templ EventIndexSidebar(data EventsData) {
 				</button>
 			</div>
 			<div class="row" style="margin-top: 8px">
-				<a class="btn" href={fmt.Sprintf("/groups/%s/members", data.GroupID)}>{ctxi18n.T(ctx, "members.title")}</a>
+				<button
+					class="btn"
+					type="button"
+					data-on:click="$groupFormState = 'edit'; $groupErrors = {name: ''}"
+				>
+					{ctxi18n.T(ctx, "groups.edit")}
+				</button>
 			</div>
-			<div class="row" style="margin-top: 8px">
-				<a class="btn" href={fmt.Sprintf("/groups/%s/viewers", data.GroupID)}>{ctxi18n.T(ctx, "groups.viewers")}</a>
-			</div>
+		</div>
+
+		<div data-show="$groupFormState === 'edit' && $formState === ''" style="display: none" class="pb">
+			<h3>{ctxi18n.T(ctx, "groups.edit")}</h3>
+			<form class="form">
+				<div class="field">
+					<label>{ctxi18n.T(ctx, "groups.name")}</label>
+					<input type="text" data-bind="groupFormData.name" placeholder={ctxi18n.T(ctx, "groups.name_placeholder")} />
+					<div data-show="$groupErrors && $groupErrors.name" class="color-error" data-text="$groupErrors.name"></div>
+				</div>
+				<div class="row">
+					<button class="btn btn-primary" type="button" data-on:click={fmt.Sprintf("@put('/groups/%s')", data.GroupID)}>{ctxi18n.T(ctx, "groups.update")}</button>
+					<button class="btn" type="button" data-on:click={"$groupFormState = ''; $groupFormData = {name: " + utils.JSONString(data.GroupName) + "}; $groupErrors = {name: ''}"}>{ctxi18n.T(ctx, "actions.cancel")}</button>
+				</div>
+			</form>
 		</div>
 
 		<div data-show="$formState !== ''" style="display: none" class="pb">
@@ -81,6 +104,6 @@ templ EventIndexSidebar(data EventsData) {
 			</form>
 		</div>
 	} else {
-		<p class="text-muted">{ctxi18n.T(ctx, "groups.read_only")}</p>
+		@shared.GroupReadNav(data.GroupID)
 	}
 }

@@ -47,11 +47,14 @@ templ EventIndexMain(data EventsData) {
 								>
 									{ctxi18n.T(ctx, "actions.edit")}
 								</button>
-								<button
-									class="btn btn-danger"
-									data-attr:disabled="$formState !== ''"
-								data-on:click={fmt.Sprintf("if (window.confirm(%q)) { @delete('/groups/%s/events/%s') }", ctxi18n.T(ctx, "events.delete_confirm"), data.GroupID, event.ID)}
-								>
+							<button
+								class="btn btn-danger"
+								data-attr:disabled="$formState !== ''"
+								data-sure-title={ ctxi18n.T(ctx, "events.delete_confirm") }
+								data-sure-message={ ctxi18n.T(ctx, "confirm.destructive_message") }
+								data-sure-submit={ ctxi18n.T(ctx, "actions.delete") }
+							data-on:click={fmt.Sprintf("@delete('/groups/%s/events/%s')", data.GroupID, event.ID)}
+							>
 									{ctxi18n.T(ctx, "actions.delete")}
 								</button>
 							</div>

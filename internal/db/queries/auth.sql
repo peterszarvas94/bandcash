@@ -42,6 +42,12 @@ UPDATE groups
 SET admin_user_id = ?
 WHERE id = ?;
 
+-- name: UpdateGroupName :one
+UPDATE groups
+SET name = ?
+WHERE id = ?
+RETURNING *;
+
 -- name: DeleteGroup :exec
 DELETE FROM groups
 WHERE id = ?;

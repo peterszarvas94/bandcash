@@ -6,10 +6,13 @@ import (
 	ctxi18n "github.com/invopop/ctxi18n/i18n"
 
 	"bandcash/internal/utils"
+	shared "bandcash/models/shared"
 )
 
 templ MemberShowSidebar(data MemberData) {
 	if data.IsAdmin {
+		@shared.GroupReadNav(data.GroupID)
+
 		<div data-show="$formState === ''" class="pb">
 			<h3>{ctxi18n.T(ctx, "members.actions")}</h3>
 			<div class="row">
@@ -24,7 +27,10 @@ templ MemberShowSidebar(data MemberData) {
 					class="btn btn-danger"
 					type="button"
 					data-attr:disabled="$formState !== ''"
-				data-on:click={fmt.Sprintf("if (window.confirm(%q)) { @delete('/groups/%s/members/%s') }", ctxi18n.T(ctx, "members.delete_confirm"), data.GroupID, data.Member.ID)}
+					data-sure-title={ ctxi18n.T(ctx, "members.delete_confirm") }
+					data-sure-message={ ctxi18n.T(ctx, "confirm.destructive_message") }
+					data-sure-submit={ ctxi18n.T(ctx, "actions.delete") }
+			data-on:click={fmt.Sprintf("@delete('/groups/%s/members/%s')", data.GroupID, data.Member.ID)}
 				>
 					{ctxi18n.T(ctx, "actions.delete")}
 				</button>
@@ -57,6 +63,6 @@ templ MemberShowSidebar(data MemberData) {
 			</form>
 		</div>
 	} else {
-		<p class="text-muted">{ctxi18n.T(ctx, "groups.read_only")}</p>
+		@shared.GroupReadNav(data.GroupID)
 	}
 }

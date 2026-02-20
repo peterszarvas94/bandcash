@@ -11,7 +11,7 @@ templ EventIndex(data EventsData) {
 	<html lang={appi18n.LocaleCode(ctx)}>
 		@shared.Head(data.Title)
 		<body>
-			<div data-signals={templ.JSONString(eventIndexSignals(utils.CSRFToken(ctx)))} data-init="@get('/sse')"></div>
+			<div data-signals={templ.JSONString(eventIndexSignals(utils.CSRFToken(ctx), data.GroupName))} data-init="@get('/sse')"></div>
 			@shared.Notifications()
 			@shared.TwoCol("event-index", EventIndexMain(data), EventIndexSidebar(data))
 		</body>

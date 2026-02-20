@@ -32,6 +32,23 @@ templ Notifications() {
 			}
 		</ul>
 	</div>
+	<div
+		id="sure-popover"
+		popover="manual"
+		class="sure-popover"
+		data-default-title={ ctxi18n.T(ctx, "actions.confirm") }
+		data-default-submit={ ctxi18n.T(ctx, "actions.confirm") }
+		data-default-cancel={ ctxi18n.T(ctx, "actions.cancel") }
+	>
+		<section class="sure-dialog" role="dialog" aria-modal="true" aria-labelledby="sure-title" aria-describedby="sure-message">
+			<h3 id="sure-title"></h3>
+			<p id="sure-message"></p>
+			<div class="row row-right row-wrap">
+				<button id="sure-cancel" type="button" class="btn"></button>
+				<button id="sure-submit" type="button" class="btn btn-danger"></button>
+			</div>
+		</section>
+	</div>
 }
 
 templ Breadcrumbs(crumbs []utils.Crumb, userEmail string) {
@@ -67,5 +84,20 @@ templ TwoCol(id string, main templ.Component, sidebar templ.Component) {
 		<aside class="sidebar-panel">
 			@sidebar
 		</aside>
+	</div>
+}
+
+templ GroupReadNav(groupID string) {
+	<div class="pb">
+		<h3>{ ctxi18n.T(ctx, "groups.actions") }</h3>
+		<div class="row" style="margin-top: 8px">
+			<a class="btn" href={ "/groups/" + groupID + "/events" }>{ ctxi18n.T(ctx, "events.title") }</a>
+		</div>
+		<div class="row" style="margin-top: 8px">
+			<a class="btn" href={ "/groups/" + groupID + "/members" }>{ ctxi18n.T(ctx, "members.title") }</a>
+		</div>
+		<div class="row" style="margin-top: 8px">
+			<a class="btn" href={ "/groups/" + groupID + "/viewers" }>{ ctxi18n.T(ctx, "groups.viewers") }</a>
+		</div>
 	</div>
 }
