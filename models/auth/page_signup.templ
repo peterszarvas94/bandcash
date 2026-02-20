@@ -21,7 +21,7 @@ templ SignupPage(data AuthPageData) {
 				<form class="form" data-on:submit="@post('/auth/signup')">
 					<div class="field">
 						<label>{ctxi18n.T(ctx, "auth.email")}</label>
-						<input type="email" data-bind="formData.email" data-on:input="$authError = ''" required placeholder={ctxi18n.T(ctx, "auth.email_placeholder")} />
+					<input type="email" data-bind="formData.email" required placeholder={ctxi18n.T(ctx, "auth.email_placeholder")} />
 						<div data-show="$authError !== ''" class="color-error" data-text="$authError"></div>
 					</div>
 					<button type="submit" class="btn btn-primary">{ctxi18n.T(ctx, "auth.create_account")}</button>

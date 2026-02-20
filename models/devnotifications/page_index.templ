@@ -11,7 +11,7 @@ templ Index() {
 	<html lang={ appi18n.LocaleCode(ctx) }>
 		@shared.Head("Dev Notifications")
 		<body>
-			<div data-signals={ templ.JSONString(map[string]any{"csrf": utils.CSRFToken(ctx), "errors": map[string]any{}, "formData": map[string]any{"name": ""}}) } data-init="@get('/sse')"></div>
+			<div data-signals={ templ.JSONString(map[string]any{"csrf": utils.CSRFToken(ctx), "errors": map[string]any{"name": ""}, "formData": map[string]any{"name": ""}}) } data-init="@get('/sse')"></div>
 			@shared.Notifications()
 			<main id="app" class="single-col">
 				<h1>Dev: Notifications + Inline Errors</h1>
@@ -20,7 +20,7 @@ templ Index() {
 				<form class="form" data-on:submit="@post('/dev/notifications/inline')">
 					<div class="field">
 						<label>Required field</label>
-						<input type="text" data-bind="formData.name" data-on:input="$errors = {}" placeholder="Type anything"/>
+						<input type="text" data-bind="formData.name" placeholder="Type anything"/>
 						<div data-show="$errors && $errors.name" class="color-error" data-text="$errors.name"></div>
 					</div>
 					<div class="row">

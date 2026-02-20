@@ -204,17 +204,17 @@
   }
 
   .notifications-popover {
+    position: fixed;
+    top: 1rem;
+    right: 1rem;
+    z-index: 1000;
+    display: none;
     margin: 0;
     padding: 0;
     border: 0;
     background: transparent;
     color: inherit;
     max-width: min(26rem, calc(100vw - 2rem));
-    inset: 1rem 1rem auto auto;
-
-    &::backdrop {
-      background: transparent;
-    }
   }
 
   .notifications-list {

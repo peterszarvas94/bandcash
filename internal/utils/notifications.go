@@ -3,6 +3,7 @@ package utils
 import (
 	"context"
 	"sync"
+	"time"
 
 	"github.com/labstack/echo/v4"
 )
@@ -11,32 +12,75 @@ type Notification struct {
 	ID      string
 	Kind    string
 	Message string
+	Created time.Time
+}
+
+type clientNotifications struct {
+	queued []Notification
+	active []Notification
 }
 
 type notificationStore struct {
 	mu      sync.Mutex
-	clients map[string][]Notification
+	clients map[string]clientNotifications
 }
 
-var Notifications = &notificationStore{clients: map[string][]Notification{}}
+const notificationLifetime = 5 * time.Second
+
+var Notifications = &notificationStore{clients: map[string]clientNotifications{}}
 
 type notificationsContextKey struct{}
 
 func (s *notificationStore) Add(clientID string, n Notification) {
 	s.mu.Lock()
 	defer s.mu.Unlock()
-	s.clients[clientID] = append(s.clients[clientID], n)
+	state := s.clients[clientID]
+	state.queued = append(state.queued, n)
+	s.clients[clientID] = state
 }
 
 func (s *notificationStore) Drain(clientID string) []Notification {
+	return s.DrainForRender(clientID, false)
+}
+
+func (s *notificationStore) DrainForRender(clientID string, includeActive bool) []Notification {
 	s.mu.Lock()
 	defer s.mu.Unlock()
-	items := s.clients[clientID]
-	if len(items) == 0 {
+	state, ok := s.clients[clientID]
+	if !ok {
 		return nil
 	}
-	delete(s.clients, clientID)
-	return items
+
+	now := time.Now()
+	active := make([]Notification, 0, len(state.active))
+	for _, item := range state.active {
+		if now.Sub(item.Created) < notificationLifetime {
+			active = append(active, item)
+		}
+	}
+
+	items := make([]Notification, 0, len(active)+len(state.queued))
+	if includeActive {
+		items = append(items, active...)
+	}
+	for _, item := range state.queued {
+		if now.Sub(item.Created) < notificationLifetime {
+			items = append(items, item)
+		}
+	}
+
+	if len(items) == 0 {
+		delete(s.clients, clientID)
+		return nil
+	}
+
+	state.active = items
+	state.queued = nil
+	s.clients[clientID] = state
+
+	result := make([]Notification, len(items))
+	copy(result, items)
+	return result
 }
 
 func Notify(c echo.Context, kind, message string) {
@@ -48,6 +92,7 @@ func Notify(c echo.Context, kind, message string) {
 		ID:      GenerateID("ntf"),
 		Kind:    kind,
 		Message: message,
+		Created: time.Now(),
 	})
 }
 

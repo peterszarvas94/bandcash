@@ -11,7 +11,8 @@ import (
 func renderContext(c echo.Context) context.Context {
 	ctx := c.Request().Context()
 	clientID := EnsureClientID(c)
-	items := Notifications.Drain(clientID)
+	includeActive := c.Request().Method != echo.GET
+	items := Notifications.DrainForRender(clientID, includeActive)
 	return WithNotifications(ctx, items)
 }
 

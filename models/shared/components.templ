@@ -23,43 +23,15 @@ templ Head(title string) {
 }
 
 templ Notifications() {
-	<div id="notifications-popover" popover="manual" class="notifications-popover">
+	<div id="notifications-popover" class="notifications-popover">
 		<ul class="notifications-list">
 			for _, item := range utils.NotificationsFromContext(ctx) {
-				<li class={ "notification notification-" + item.Kind }>
+				<li id={ "notification-item-" + item.ID } class={ "notification notification-" + item.Kind } data-notification-id={ item.ID } data-created-at-ms={ item.Created.UnixMilli() }>
 					<p>{ item.Message }</p>
 				</li>
 			}
 		</ul>
 	</div>
-	if len(utils.NotificationsFromContext(ctx)) > 0 {
-		<script>
-			(() => {
-				const timeoutMs = 5000;
-				const popover = document.getElementById("notifications-popover");
-				if (!popover || typeof popover.showPopover !== "function") {
-					return;
-				}
-				try {
-					popover.showPopover();
-				} catch (_) {
-					// Already open.
-				}
-				if (window.__bandcashNotificationsTimer) {
-					window.clearTimeout(window.__bandcashNotificationsTimer);
-				}
-				window.__bandcashNotificationsTimer = window.setTimeout(() => {
-					if (typeof popover.hidePopover === "function") {
-						try {
-							popover.hidePopover();
-						} catch (_) {
-							// Popover may already be closed.
-						}
-					}
-				}, timeoutMs);
-			})();
-		</script>
-	}
 }
 
 templ Breadcrumbs(crumbs []utils.Crumb, userEmail string) {
