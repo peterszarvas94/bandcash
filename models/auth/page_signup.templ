@@ -13,14 +13,15 @@ templ SignupPage(data AuthPageData) {
 	<html lang={appi18n.LocaleCode(ctx)}>
 		@shared.Head(data.Title)
 		<body>
-			<div data-signals={templ.JSONString(map[string]any{"csrf": utils.CSRFToken(ctx), "formData": map[string]any{"email": data.Email}})} data-init="@get('/sse')"></div>
+			<div data-signals={templ.JSONString(map[string]any{"csrf": utils.CSRFToken(ctx), "authError": "", "formData": map[string]any{"email": data.Email}})} data-init="@get('/sse')"></div>
 			<main id="app" class="single-col">
 				<h1>{data.Title}</h1>
 				@shared.Breadcrumbs(data.Breadcrumbs, data.UserEmail)
 				<form class="form" data-on:submit="@post('/auth/signup')">
 					<div class="field">
 						<label>{ctxi18n.T(ctx, "auth.email")}</label>
-						<input type="email" data-bind="formData.email" required placeholder={ctxi18n.T(ctx, "auth.email_placeholder")} />
+						<input type="email" data-bind="formData.email" data-on:input="$authError = ''" required placeholder={ctxi18n.T(ctx, "auth.email_placeholder")} />
+						<div data-show="$authError !== ''" class="color-error" data-text="$authError"></div>
 					</div>
 					<button type="submit" class="btn btn-primary">{ctxi18n.T(ctx, "auth.create_account")}</button>
 				</form>

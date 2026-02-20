@@ -21,6 +21,7 @@ en:
     create_account: "Create Account"
     have_account: "Already have an account?"
     no_account: "Don't have an account?"
+    email_in_use: "This email is already in use. Please log in."
   home:
     tagline: "Where is my cut?"
   settings:

@@ -38,7 +38,7 @@ func Env() *EnvConfig {
 			LogPrefix: getEnvString("LOG_PREFIX"),
 			DBPath:    getEnvString("DB_PATH"),
 			URL:       getEnvString("URL"),
-			AppEnv:    getEnvString("APP_ENV"),
+			AppEnv:    getAppEnv("APP_ENV"),
 			SMTPHost:  getEnvString("SMTP_HOST"),
 			SMTPPort:  getEnvInt("SMTP_PORT"),
 			SMTPUser:  getEnvString("SMTP_USERNAME"),
@@ -52,7 +52,7 @@ func Env() *EnvConfig {
 func getEnvString(key string) string {
 	v := strings.TrimSpace(os.Getenv(key))
 	if v == "" {
-		panic(fmt.Sprintf("missing required env var: %s", key))
+		panic(fmt.Sprintf("Missing required %s env var: %s", key, key))
 	}
 	return v
 }
@@ -61,7 +61,7 @@ func getEnvInt(key string) int {
 	v := getEnvString(key)
 	i, err := strconv.Atoi(v)
 	if err != nil {
-		panic(fmt.Sprintf("invalid integer env var %s: %q", key, v))
+		panic(fmt.Sprintf("Invalid %s env var %s: %q. Must be an integer.", key, key, v))
 	}
 	return i
 }
@@ -78,6 +78,19 @@ func getEnvLogLevel(key string) slog.Level {
 	case "error", "ERROR":
 		return slog.LevelError
 	default:
-		panic(fmt.Sprintf("invalid log level env var %s: %q", key, v))
+		panic(fmt.Sprintf("Invalid env var %s: %q. Allowed values: debug, info, warn, error", key, v))
 	}
+}
+
+func getAppEnv(key string) string {
+	e := getEnvString(key)
+	switch e {
+	case "development", "DEVELOPMENT":
+		return "development"
+	case "production", "PRODUCTION":
+		return "production"
+	default:
+		panic(fmt.Sprintf("Invalid env var %s: %q. Allowed values: development, production", key, e))
+	}
+
 }

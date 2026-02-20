@@ -21,6 +21,7 @@ hu:
     create_account: "Fiók létrehozása"
     have_account: "Már van fiókod?"
     no_account: "Nincs még fiókod?"
+    email_in_use: "Ez az email már használatban van. Kérlek lépj be."
   home:
     tagline: "Hol van a gázsim?"
   settings:

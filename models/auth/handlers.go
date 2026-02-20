@@ -117,7 +117,13 @@ func (a *Auth) SignupRequest(c echo.Context) error {
 	// Check if user already exists
 	_, err := db.Qry.GetUserByEmail(c.Request().Context(), email)
 	if err == nil {
-		return c.String(http.StatusConflict, "User already exists. Please login instead.")
+		err = utils.SSEHub.PatchSignals(c, map[string]any{
+			"authError": ctxi18n.T(c.Request().Context(), "auth.email_in_use"),
+		})
+		if err != nil {
+			return c.NoContent(http.StatusInternalServerError)
+		}
+		return c.NoContent(http.StatusOK)
 	}
 
 	// Create user
