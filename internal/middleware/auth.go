@@ -4,9 +4,11 @@ import (
 	"log/slog"
 	"net/http"
 
+	ctxi18n "github.com/invopop/ctxi18n/i18n"
 	"github.com/labstack/echo/v4"
 
 	"bandcash/internal/db"
+	"bandcash/internal/utils"
 )
 
 const (
@@ -63,7 +65,8 @@ func RequireGroup() echo.MiddlewareFunc {
 				GroupID: groupID,
 			})
 			if err != nil || readerCount == 0 {
-				return c.String(http.StatusForbidden, "Access denied")
+				utils.Notify(c, "warning", ctxi18n.T(c.Request().Context(), "groups.errors.access_denied"))
+				return c.Redirect(http.StatusFound, "/dashboard")
 			}
 
 			c.Set(string(GroupIDKey), groupID)

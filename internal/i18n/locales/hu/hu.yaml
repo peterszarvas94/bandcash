@@ -187,6 +187,7 @@ hu:
     errors:
       email_required: "Email megadása kötelező"
       group_not_found: "Csoport nem található"
+      access_denied: "Nincs hozzáférésed ehhez a csoporthoz"
       admin_required: "Admin jogosultság szükséges"
       admin_cannot_leave: "Az admin nem léphet ki"
       invite_failed: "Meghívó létrehozása sikertelen"

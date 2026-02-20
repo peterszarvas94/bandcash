@@ -187,6 +187,7 @@ en:
     errors:
       email_required: "Email required"
       group_not_found: "Group not found"
+      access_denied: "You do not have access to this group"
       admin_required: "Admin required"
       admin_cannot_leave: "Admin cannot leave group"
       invite_failed: "Failed to create invite"
