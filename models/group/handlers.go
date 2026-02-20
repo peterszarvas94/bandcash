@@ -5,13 +5,13 @@ import (
 	"log/slog"
 	"net/http"
 	"net/url"
-	"os"
 	"time"
 
 	ctxi18n "github.com/invopop/ctxi18n/i18n"
 	"github.com/labstack/echo/v4"
 	"github.com/starfederation/datastar-go/datastar"
 
+	"bandcash/internal/config"
 	"bandcash/internal/db"
 	"bandcash/internal/email"
 	"bandcash/internal/middleware"
@@ -20,6 +20,7 @@ import (
 
 type Group struct {
 	emailService *email.Service
+	appBaseURL   string
 }
 
 type createGroupSignals struct {
@@ -35,8 +36,10 @@ type addViewerSignals struct {
 }
 
 func New() *Group {
+	cfg := config.Load()
 	return &Group{
 		emailService: email.NewFromEnv(),
+		appBaseURL:   cfg.URL,
 	}
 }
 
@@ -347,12 +350,7 @@ func (g *Group) AddViewer(c echo.Context) error {
 		return g.patchViewersPage(c, groupID, "", "groups.errors.invite_failed")
 	}
 
-	baseURL := os.Getenv("APP_BASE_URL")
-	if baseURL == "" {
-		baseURL = "http://localhost:8080"
-	}
-
-	err = g.emailService.SendGroupInvitation(email, group.Name, token, baseURL)
+	err = g.emailService.SendGroupInvitation(email, group.Name, token, g.appBaseURL)
 	if err != nil {
 		slog.Error("group: failed to send invite email", "err", err)
 		return g.patchViewersPage(c, groupID, "", "groups.errors.send_failed")

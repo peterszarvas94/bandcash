@@ -7,18 +7,22 @@ import (
 )
 
 type Config struct {
-	Port     int
-	LogLevel slog.Level
-	LogFile  string
-	DBPath   string
+	Port      int
+	LogLevel  slog.Level
+	LogFolder string
+	LogPrefix string
+	DBPath    string
+	URL       string
 }
 
 func Load() *Config {
 	return &Config{
-		Port:     getEnvInt("PORT", 8080),
-		LogLevel: getEnvLogLevel("LOG_LEVEL", slog.LevelDebug),
-		LogFile:  getEnv("LOG_FILE", "logs/app.log"),
-		DBPath:   getEnv("DB_PATH", "sqlite.db"),
+		Port:      getEnvInt("PORT", 8080),
+		LogLevel:  getEnvLogLevel("LOG_LEVEL", slog.LevelDebug),
+		LogFolder: getEnv("LOG_FOLDER", "logs"),
+		LogPrefix: getEnv("LOG_PREFIX", "bandcash"),
+		DBPath:    getEnv("DB_PATH", "sqlite.db"),
+		URL:       getEnv("URL", "http://localhost:8080"),
 	}
 }
 

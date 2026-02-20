@@ -139,17 +139,19 @@ func New(logFile io.Writer, level slog.Level) *slog.Logger {
 
 func SetupLogger() {
 	cfg := config.Load()
+	logFilePath := filepath.Join(cfg.LogFolder, fmt.Sprintf("%s.log", cfg.LogPrefix))
 
-	err := os.MkdirAll(filepath.Dir(cfg.LogFile), 0755)
+	err := os.MkdirAll(filepath.Dir(logFilePath), 0755)
 	if err != nil {
 		slog.Error("failed to create logs directory", "err", err)
 		os.Exit(1)
 	}
 
-	timestamp := time.Now().Format("2006-01-02_150405")
-	ext := filepath.Ext(cfg.LogFile)
-	base := strings.TrimSuffix(cfg.LogFile, ext)
+	timestamp := time.Now().Format("2006_01_02_150405")
+	ext := filepath.Ext(logFilePath)
+	base := strings.TrimSuffix(logFilePath, ext)
 	timestampedLogFile := fmt.Sprintf("%s_%s%s", base, timestamp, ext)
+	_, _ = fmt.Fprintf(os.Stdout, "writing to log file: %s\n", timestampedLogFile)
 
 	logFile, err := os.OpenFile(timestampedLogFile, os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0644)
 	if err != nil {

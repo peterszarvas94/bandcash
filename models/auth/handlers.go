@@ -11,6 +11,7 @@ import (
 	"github.com/labstack/echo/v4"
 	"github.com/starfederation/datastar-go/datastar"
 
+	"bandcash/internal/config"
 	"bandcash/internal/db"
 	"bandcash/internal/email"
 	"bandcash/internal/middleware"
@@ -19,6 +20,7 @@ import (
 
 type Auth struct {
 	emailService *email.Service
+	appBaseURL   string
 }
 
 type authSignals struct {
@@ -28,8 +30,10 @@ type authSignals struct {
 }
 
 func New() *Auth {
+	cfg := config.Load()
 	return &Auth{
 		emailService: email.NewFromEnv(),
+		appBaseURL:   cfg.URL,
 	}
 }
 
@@ -82,12 +86,7 @@ func (a *Auth) LoginRequest(c echo.Context) error {
 	}
 
 	// Send email
-	baseURL := os.Getenv("APP_BASE_URL")
-	if baseURL == "" {
-		baseURL = "http://localhost:8080"
-	}
-
-	err = a.emailService.SendMagicLink(email, token, baseURL)
+	err = a.emailService.SendMagicLink(email, token, a.appBaseURL)
 	if err != nil {
 		slog.Error("auth: failed to send email", "err", err)
 		return c.String(http.StatusInternalServerError, "Failed to send email")
@@ -158,12 +157,7 @@ func (a *Auth) SignupRequest(c echo.Context) error {
 	slog.Info("auth: created user and magic link", "user_id", user.ID, "email", email)
 
 	// Send welcome/login email
-	baseURL := os.Getenv("APP_BASE_URL")
-	if baseURL == "" {
-		baseURL = "http://localhost:8080"
-	}
-
-	err = a.emailService.SendMagicLink(email, token, baseURL)
+	err = a.emailService.SendMagicLink(email, token, a.appBaseURL)
 	if err != nil {
 		slog.Error("auth: failed to send email", "err", err)
 		return c.String(http.StatusInternalServerError, "Failed to send email")
