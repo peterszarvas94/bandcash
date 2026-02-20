@@ -261,6 +261,13 @@ func (g *Group) ViewersPage(c echo.Context) error {
 }
 
 func (g *Group) patchViewersPage(c echo.Context, groupID, messageKey, errorKey string) error {
+	if messageKey != "" {
+		utils.Notify(c, "success", ctxi18n.T(c.Request().Context(), messageKey))
+	}
+	if errorKey != "" {
+		utils.Notify(c, "error", ctxi18n.T(c.Request().Context(), errorKey))
+	}
+
 	group, err := db.Qry.GetGroupByID(c.Request().Context(), groupID)
 	if err != nil {
 		slog.Error("group: failed to load group for viewers patch", "err", err)
@@ -283,7 +290,7 @@ func (g *Group) patchViewersPage(c echo.Context, groupID, messageKey, errorKey s
 		ErrorKey:    errorKey,
 	}
 
-	html, err := utils.RenderComponentString(c.Request().Context(), GroupViewersPage(data))
+	html, err := utils.RenderComponentStringFor(c, GroupViewersPage(data))
 	if err != nil {
 		slog.Error("group: failed to render viewers page", "err", err)
 		return c.NoContent(http.StatusInternalServerError)
@@ -343,7 +350,7 @@ func (g *Group) AddViewer(c echo.Context) error {
 		return g.patchViewersPage(c, groupID, "", "groups.errors.invite_failed")
 	}
 
-	err = email.Email().SendGroupInvitation(emailAdress, group.Name, token, utils.Env().URL)
+	err = email.Email().SendGroupInvitation(c.Request().Context(), emailAdress, group.Name, token, utils.Env().URL)
 	if err != nil {
 		slog.Error("group: failed to send invite email", "err", err)
 		return g.patchViewersPage(c, groupID, "", "groups.errors.send_failed")

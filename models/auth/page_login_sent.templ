@@ -14,6 +14,7 @@ templ LoginSentPage(data AuthPageData) {
 		@shared.Head(data.Title)
 		<body>
 			<div data-signals={templ.JSONString(map[string]any{"csrf": utils.CSRFToken(ctx)})}></div>
+			@shared.Notifications()
 			<main id="app" class="single-col">
 				<h1>{data.Title}</h1>
 				@shared.Breadcrumbs(data.Breadcrumbs, data.UserEmail)

@@ -12,6 +12,7 @@ templ EventIndex(data EventsData) {
 		@shared.Head(data.Title)
 		<body>
 			<div data-signals={templ.JSONString(eventIndexSignals(utils.CSRFToken(ctx)))} data-init="@get('/sse')"></div>
+			@shared.Notifications()
 			@shared.TwoCol("event-index", EventIndexMain(data), EventIndexSidebar(data))
 		</body>
 	</html>

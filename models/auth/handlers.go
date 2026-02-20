@@ -11,7 +11,7 @@ import (
 	"github.com/starfederation/datastar-go/datastar"
 
 	"bandcash/internal/db"
-	appemail "bandcash/internal/email"
+	"bandcash/internal/email"
 	"bandcash/internal/middleware"
 	"bandcash/internal/utils"
 )
@@ -45,16 +45,16 @@ func (a *Auth) LoginRequest(c echo.Context) error {
 	if err := datastar.ReadSignals(c.Request(), &signals); err != nil {
 		return c.NoContent(http.StatusBadRequest)
 	}
-	email := signals.FormData.Email
-	if email == "" {
+	emailAdress := signals.FormData.Email
+	if emailAdress == "" {
 		return c.NoContent(http.StatusBadRequest)
 	}
 
 	// Check if user exists
-	_, err := db.Qry.GetUserByEmail(c.Request().Context(), email)
+	_, err := db.Qry.GetUserByEmail(c.Request().Context(), emailAdress)
 	if err != nil {
 		// User doesn't exist - offer to sign up instead
-		err = utils.SSEHub.Redirect(c, "/auth/signup?email="+url.QueryEscape(email))
+		err = utils.SSEHub.Redirect(c, "/auth/signup?email="+url.QueryEscape(emailAdress))
 		if err != nil {
 			return c.NoContent(http.StatusInternalServerError)
 		}
@@ -68,7 +68,7 @@ func (a *Auth) LoginRequest(c echo.Context) error {
 	_, err = db.Qry.CreateMagicLink(c.Request().Context(), db.CreateMagicLinkParams{
 		ID:        utils.GenerateID("mag"),
 		Token:     token,
-		Email:     email,
+		Email:     emailAdress,
 		Action:    "login",
 		ExpiresAt: expiresAt,
 	})
@@ -78,7 +78,7 @@ func (a *Auth) LoginRequest(c echo.Context) error {
 	}
 
 	// Send email
-	err = appemail.Email().SendMagicLink(email, token, utils.Env().URL)
+	err = email.Email().SendMagicLink(c.Request().Context(), emailAdress, token, utils.Env().URL)
 	if err != nil {
 		slog.Error("auth: failed to send email", "err", err)
 		return c.String(http.StatusInternalServerError, "Failed to send email")
@@ -94,11 +94,11 @@ func (a *Auth) LoginRequest(c echo.Context) error {
 // SignupPage shows the signup form
 func (a *Auth) SignupPage(c echo.Context) error {
 	utils.EnsureClientID(c)
-	email := c.QueryParam("email")
+	emailAdress := c.QueryParam("email")
 	data := AuthPageData{
 		Title:       ctxi18n.T(c.Request().Context(), "auth.signup_title"),
 		Breadcrumbs: []utils.Crumb{{Label: ctxi18n.T(c.Request().Context(), "auth.signup")}},
-		Email:       email,
+		Email:       emailAdress,
 	}
 	return utils.RenderComponent(c, SignupPage(data))
 }
@@ -109,13 +109,13 @@ func (a *Auth) SignupRequest(c echo.Context) error {
 	if err := datastar.ReadSignals(c.Request(), &signals); err != nil {
 		return c.NoContent(http.StatusBadRequest)
 	}
-	email := signals.FormData.Email
-	if email == "" {
+	emailAdress := signals.FormData.Email
+	if emailAdress == "" {
 		return c.NoContent(http.StatusBadRequest)
 	}
 
 	// Check if user already exists
-	_, err := db.Qry.GetUserByEmail(c.Request().Context(), email)
+	_, err := db.Qry.GetUserByEmail(c.Request().Context(), emailAdress)
 	if err == nil {
 		err = utils.SSEHub.PatchSignals(c, map[string]any{
 			"authError": ctxi18n.T(c.Request().Context(), "auth.email_in_use"),
@@ -129,7 +129,7 @@ func (a *Auth) SignupRequest(c echo.Context) error {
 	// Create user
 	user, err := db.Qry.CreateUser(c.Request().Context(), db.CreateUserParams{
 		ID:    utils.GenerateID("usr"),
-		Email: email,
+		Email: emailAdress,
 	})
 	if err != nil {
 		slog.Error("auth: failed to create user", "err", err)
@@ -143,7 +143,7 @@ func (a *Auth) SignupRequest(c echo.Context) error {
 	_, err = db.Qry.CreateMagicLink(c.Request().Context(), db.CreateMagicLinkParams{
 		ID:        utils.GenerateID("mag"),
 		Token:     token,
-		Email:     email,
+		Email:     emailAdress,
 		Action:    "login",
 		ExpiresAt: expiresAt,
 	})
@@ -152,10 +152,10 @@ func (a *Auth) SignupRequest(c echo.Context) error {
 		return c.String(http.StatusInternalServerError, "Failed to create login link")
 	}
 
-	slog.Info("auth: created user and magic link", "user_id", user.ID, "email", email)
+	slog.Info("auth: created user and magic link", "user_id", user.ID, "email", emailAdress)
 
 	// Send welcome/login email
-	err = appemail.Email().SendMagicLink(email, token, utils.Env().URL)
+	err = email.Email().SendMagicLink(c.Request().Context(), emailAdress, token, utils.Env().URL)
 	if err != nil {
 		slog.Error("auth: failed to send email", "err", err)
 		return c.String(http.StatusInternalServerError, "Failed to send email")

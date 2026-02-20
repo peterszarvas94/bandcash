@@ -16,6 +16,7 @@ templ GroupViewersPage(data ViewersPageData) {
 		@shared.Head(data.Title)
 		<body>
 			<div data-signals={templ.JSONString(map[string]any{"csrf": utils.CSRFToken(ctx), "formState": "", "formData": map[string]any{"email": ""}})} data-init="@get('/sse')"></div>
+			@shared.Notifications()
 			@shared.TwoCol("group-viewers", GroupViewersMain(data), GroupViewersSidebar(data))
 		</body>
 	</html>

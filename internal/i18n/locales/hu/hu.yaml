@@ -22,6 +22,36 @@ hu:
     have_account: "Már van fiókod?"
     no_account: "Nincs még fiókod?"
     email_in_use: "Ez az email már használatban van. Kérlek lépj be."
+  email:
+    magic_link:
+      subject: "Belépés a BandCash-be"
+      text:
+        greeting: "Szia!"
+        intro: "Kattints az alábbi linkre a BandCash-be történő belépéshez:"
+        expiry: "Ez a link 1 órán belül lejár."
+        ignore: "Ha nem te kérted ezt, nyugodtan figyelmen kívül hagyhatod ezt az emailt."
+      html:
+        title: "Belépés a BandCash-be"
+        intro: "Kattints az alábbi gombra a belépéshez:"
+        cta: "Belépés a BandCash-be"
+        copy_link: "Vagy másold be ezt a linket a böngésződbe:"
+        expiry: "Ez a link 1 órán belül lejár."
+        ignore: "Ha nem te kérted ezt, nyugodtan figyelmen kívül hagyhatod ezt az emailt."
+    invite:
+      subject: "Meghívtak a(z) %s csoportba a BandCash-ben"
+      text:
+        greeting: "Szia!"
+        intro: "Meghívtak, hogy csatlakozz a(z) \"%s\" csoporthoz a BandCash-ben."
+        accept: "Kattints az alábbi linkre a meghívás elfogadásához:"
+        expiry: "Ez a link 1 órán belül lejár."
+        ignore: "Ha nem erre a meghívásra számítottál, nyugodtan figyelmen kívül hagyhatod ezt az emailt."
+      html:
+        title: "Meghívás a BandCash-be"
+        intro: "Meghívtak, hogy csatlakozz a(z) %s csoporthoz."
+        cta: "Meghívás elfogadása"
+        copy_link: "Vagy másold be ezt a linket a böngésződbe:"
+        expiry: "Ez a link 1 órán belül lejár."
+        ignore: "Ha nem erre a meghívásra számítottál, nyugodtan figyelmen kívül hagyhatod ezt az emailt."
   home:
     tagline: "Hol van a gázsim?"
   settings:

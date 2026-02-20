@@ -157,7 +157,7 @@ func (e *Events) Create(c echo.Context) error {
 	data.IsAdmin = middleware.IsAdmin(c)
 	data.UserEmail = userEmail
 
-	html, err := utils.RenderComponentString(c.Request().Context(), EventIndex(data))
+	html, err := utils.RenderComponentStringFor(c, EventIndex(data))
 	if err != nil {
 		slog.Error("event.create.table: failed to render", "err", err)
 		return c.NoContent(500)
@@ -228,7 +228,7 @@ func (e *Events) Update(c echo.Context) error {
 		}
 		data.IsAdmin = middleware.IsAdmin(c)
 		data.UserEmail = userEmail
-		html, err := utils.RenderComponentString(c.Request().Context(), EventShow(data))
+		html, err := utils.RenderComponentStringFor(c, EventShow(data))
 		if err != nil {
 			slog.Error("event.update: failed to render", "err", err)
 			return c.NoContent(500)
@@ -245,7 +245,7 @@ func (e *Events) Update(c echo.Context) error {
 	}
 	data.IsAdmin = middleware.IsAdmin(c)
 	data.UserEmail = userEmail
-	html, err := utils.RenderComponentString(c.Request().Context(), EventIndex(data))
+	html, err := utils.RenderComponentStringFor(c, EventIndex(data))
 	if err != nil {
 		slog.Error("event.update: failed to render", "err", err)
 		return c.NoContent(500)
@@ -300,7 +300,7 @@ func (e *Events) Destroy(c echo.Context) error {
 	}
 	data.IsAdmin = middleware.IsAdmin(c)
 	data.UserEmail = userEmail
-	html, err := utils.RenderComponentString(c.Request().Context(), EventIndex(data))
+	html, err := utils.RenderComponentStringFor(c, EventIndex(data))
 	if err != nil {
 		slog.Error("event.destroy: failed to render", "err", err)
 		return c.NoContent(500)
@@ -356,7 +356,7 @@ func (e *Events) CreateParticipant(c echo.Context) error {
 	}
 	data.IsAdmin = middleware.IsAdmin(c)
 	data.UserEmail = userEmail
-	html, err := utils.RenderComponentString(c.Request().Context(), EventShow(data))
+	html, err := utils.RenderComponentStringFor(c, EventShow(data))
 	if err != nil {
 		slog.Error("participant.create.table: failed to render", "err", err)
 		return c.NoContent(500)
@@ -421,7 +421,7 @@ func (e *Events) UpdateParticipant(c echo.Context) error {
 	}
 	data.IsAdmin = middleware.IsAdmin(c)
 	data.UserEmail = userEmail
-	html, err := utils.RenderComponentString(c.Request().Context(), EventShow(data))
+	html, err := utils.RenderComponentStringFor(c, EventShow(data))
 	if err != nil {
 		slog.Error("participant.update: failed to render", "err", err)
 		return c.NoContent(500)
@@ -466,7 +466,7 @@ func (e *Events) DeleteParticipantTable(c echo.Context) error {
 	}
 	data.IsAdmin = middleware.IsAdmin(c)
 	data.UserEmail = userEmail
-	html, err := utils.RenderComponentString(c.Request().Context(), EventShow(data))
+	html, err := utils.RenderComponentStringFor(c, EventShow(data))
 	if err != nil {
 		slog.Error("participant.delete: failed to render", "err", err)
 		return c.NoContent(500)

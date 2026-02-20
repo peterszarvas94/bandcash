@@ -22,6 +22,36 @@ en:
     have_account: "Already have an account?"
     no_account: "Don't have an account?"
     email_in_use: "This email is already in use. Please log in."
+  email:
+    magic_link:
+      subject: "Login to BandCash"
+      text:
+        greeting: "Hello!"
+        intro: "Click the link below to login to BandCash:"
+        expiry: "This link will expire in 1 hour."
+        ignore: "If you didn't request this, you can safely ignore this email."
+      html:
+        title: "Login to BandCash"
+        intro: "Click the button below to sign in:"
+        cta: "Sign in to BandCash"
+        copy_link: "Or copy and paste this link into your browser:"
+        expiry: "This link will expire in 1 hour."
+        ignore: "If you didn't request this, you can safely ignore this email."
+    invite:
+      subject: "You've been invited to %s on BandCash"
+      text:
+        greeting: "Hello!"
+        intro: "You've been invited to join \"%s\" on BandCash."
+        accept: "Click the link below to accept the invitation:"
+        expiry: "This link will expire in 1 hour."
+        ignore: "If you didn't expect this invitation, you can safely ignore this email."
+      html:
+        title: "You're invited to BandCash"
+        intro: "You've been invited to join %s."
+        cta: "Accept invitation"
+        copy_link: "Or copy and paste this link into your browser:"
+        expiry: "This link will expire in 1 hour."
+        ignore: "If you didn't expect this invitation, you can safely ignore this email."
   home:
     tagline: "Where is my cut?"
   settings:

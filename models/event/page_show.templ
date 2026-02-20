@@ -12,6 +12,7 @@ templ EventShow(data EventData) {
 		@shared.Head(data.Title)
 		<body>
 			<div data-signals={templ.JSONString(eventShowSignals(data, utils.CSRFToken(ctx)))} data-init="@get('/sse')"></div>
+			@shared.Notifications()
 			@shared.TwoCol("event-show", EventShowMain(data), EventShowSidebar(data))
 		</body>
 	</html>

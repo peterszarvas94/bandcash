@@ -161,6 +161,52 @@
     padding: var(--space);
   }
 
+  .notifications-popover {
+    margin: 0;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    color: inherit;
+    max-width: min(26rem, calc(100vw - 2rem));
+    inset: 1rem 1rem auto auto;
+
+    &::backdrop {
+      background: transparent;
+    }
+  }
+
+  .notifications-list {
+    list-style: none;
+    display: grid;
+    gap: calc(var(--space) * 0.75);
+    margin: 0;
+    padding: 0;
+  }
+
+  .notification {
+    border: var(--border) solid var(--border-color);
+    border-left-width: calc(var(--border) * 3);
+    border-radius: var(--border);
+    background: color-mix(in srgb, var(--page-bg) 88%, white 12%);
+    padding: calc(var(--space) * 0.75) var(--space);
+
+    > p {
+      margin: 0;
+    }
+  }
+
+  .notification-success {
+    border-left-color: color-mix(in srgb, var(--link-color) 70%, black 30%);
+  }
+
+  .notification-error {
+    border-left-color: var(--error-color);
+  }
+
+  .notification-info {
+    border-left-color: var(--link-color);
+  }
+
   .event-details {
     display: grid;
     gap: var(--space);

@@ -129,7 +129,7 @@ func (p *Members) Create(c echo.Context) error {
 	}
 	data.IsAdmin = middleware.IsAdmin(c)
 	data.UserEmail = userEmail
-	html, err := utils.RenderComponentString(c.Request().Context(), MemberIndex(data))
+	html, err := utils.RenderComponentStringFor(c, MemberIndex(data))
 	if err != nil {
 		slog.Error("member.create.table: failed to render", "err", err)
 		return c.NoContent(500)
@@ -192,7 +192,7 @@ func (p *Members) Update(c echo.Context) error {
 	}
 	data.IsAdmin = middleware.IsAdmin(c)
 	data.UserEmail = userEmail
-	html, err := utils.RenderComponentString(c.Request().Context(), MemberIndex(data))
+	html, err := utils.RenderComponentStringFor(c, MemberIndex(data))
 	if err != nil {
 		slog.Error("member.update: failed to render", "err", err)
 		return c.NoContent(500)
@@ -247,7 +247,7 @@ func (p *Members) Destroy(c echo.Context) error {
 	}
 	data.IsAdmin = middleware.IsAdmin(c)
 	data.UserEmail = userEmail
-	html, err := utils.RenderComponentString(c.Request().Context(), MemberIndex(data))
+	html, err := utils.RenderComponentStringFor(c, MemberIndex(data))
 	if err != nil {
 		slog.Error("member.destroy: failed to render", "err", err)
 		return c.NoContent(500)
