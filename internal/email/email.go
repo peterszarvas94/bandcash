@@ -4,8 +4,9 @@ import (
 	"fmt"
 	"html"
 	"log/slog"
-	"os"
-	"strconv"
+	"sync"
+
+	"bandcash/internal/utils"
 
 	"gopkg.in/gomail.v2"
 )
@@ -22,21 +23,30 @@ type Service struct {
 	config Config
 }
 
+var (
+	serviceOnce sync.Once
+	serviceInst *Service
+)
+
 func NewFromEnv() *Service {
-	port, _ := strconv.Atoi(os.Getenv("SMTP_PORT"))
-	if port == 0 {
-		port = 587
-	}
+	env := utils.Env()
 
 	return &Service{
 		config: Config{
-			Host:     os.Getenv("SMTP_HOST"),
-			Port:     port,
-			Username: os.Getenv("SMTP_USERNAME"),
-			Password: os.Getenv("SMTP_PASSWORD"),
-			From:     os.Getenv("EMAIL_FROM"),
+			Host:     env.SMTPHost,
+			Port:     env.SMTPPort,
+			Username: env.SMTPUser,
+			Password: env.SMTPPass,
+			From:     env.EmailFrom,
 		},
 	}
+}
+
+func Email() *Service {
+	serviceOnce.Do(func() {
+		serviceInst = NewFromEnv()
+	})
+	return serviceInst
 }
 
 func (s *Service) Send(to, subject, textBody, htmlBody string) error {

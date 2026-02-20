@@ -18,8 +18,6 @@ import (
 )
 
 type Group struct {
-	emailService *email.Service
-	appBaseURL   string
 }
 
 type createGroupSignals struct {
@@ -35,11 +33,7 @@ type addViewerSignals struct {
 }
 
 func New() *Group {
-	cfg := utils.Env()
-	return &Group{
-		emailService: email.NewFromEnv(),
-		appBaseURL:   cfg.URL,
-	}
+	return &Group{}
 }
 
 // NewGroupPage shows the form to create a new group
@@ -306,9 +300,9 @@ func (g *Group) AddViewer(c echo.Context) error {
 	if err := datastar.ReadSignals(c.Request(), &signals); err != nil {
 		return c.NoContent(http.StatusBadRequest)
 	}
-	email := signals.FormData.Email
+	emailAdress := signals.FormData.Email
 	var err error
-	if email == "" {
+	if emailAdress == "" {
 		return g.patchViewersPage(c, groupID, "", "groups.errors.email_required")
 	}
 
@@ -318,7 +312,7 @@ func (g *Group) AddViewer(c echo.Context) error {
 	}
 
 	// If user exists and already has access, short-circuit
-	user, err := db.Qry.GetUserByEmail(c.Request().Context(), email)
+	user, err := db.Qry.GetUserByEmail(c.Request().Context(), emailAdress)
 	if err == nil {
 		if group.AdminUserID == user.ID {
 			return g.patchViewersPage(c, groupID, "groups.messages.already_admin", "")
@@ -339,7 +333,7 @@ func (g *Group) AddViewer(c echo.Context) error {
 	_, err = db.Qry.CreateMagicLink(c.Request().Context(), db.CreateMagicLinkParams{
 		ID:        utils.GenerateID("mag"),
 		Token:     token,
-		Email:     email,
+		Email:     emailAdress,
 		Action:    "invite",
 		GroupID:   sql.NullString{String: groupID, Valid: true},
 		ExpiresAt: expiresAt,
@@ -349,7 +343,7 @@ func (g *Group) AddViewer(c echo.Context) error {
 		return g.patchViewersPage(c, groupID, "", "groups.errors.invite_failed")
 	}
 
-	err = g.emailService.SendGroupInvitation(email, group.Name, token, g.appBaseURL)
+	err = email.Email().SendGroupInvitation(emailAdress, group.Name, token, utils.Env().URL)
 	if err != nil {
 		slog.Error("group: failed to send invite email", "err", err)
 		return g.patchViewersPage(c, groupID, "", "groups.errors.send_failed")

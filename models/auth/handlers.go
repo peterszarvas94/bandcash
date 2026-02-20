@@ -4,7 +4,6 @@ import (
 	"log/slog"
 	"net/http"
 	"net/url"
-	"os"
 	"time"
 
 	ctxi18n "github.com/invopop/ctxi18n/i18n"
@@ -12,14 +11,12 @@ import (
 	"github.com/starfederation/datastar-go/datastar"
 
 	"bandcash/internal/db"
-	"bandcash/internal/email"
+	appemail "bandcash/internal/email"
 	"bandcash/internal/middleware"
 	"bandcash/internal/utils"
 )
 
 type Auth struct {
-	emailService *email.Service
-	appBaseURL   string
 }
 
 type authSignals struct {
@@ -29,11 +26,7 @@ type authSignals struct {
 }
 
 func New() *Auth {
-	cfg := utils.Env()
-	return &Auth{
-		emailService: email.NewFromEnv(),
-		appBaseURL:   cfg.URL,
-	}
+	return &Auth{}
 }
 
 // LoginPage shows the login form
@@ -85,7 +78,7 @@ func (a *Auth) LoginRequest(c echo.Context) error {
 	}
 
 	// Send email
-	err = a.emailService.SendMagicLink(email, token, a.appBaseURL)
+	err = appemail.Email().SendMagicLink(email, token, utils.Env().URL)
 	if err != nil {
 		slog.Error("auth: failed to send email", "err", err)
 		return c.String(http.StatusInternalServerError, "Failed to send email")
@@ -156,7 +149,7 @@ func (a *Auth) SignupRequest(c echo.Context) error {
 	slog.Info("auth: created user and magic link", "user_id", user.ID, "email", email)
 
 	// Send welcome/login email
-	err = a.emailService.SendMagicLink(email, token, a.appBaseURL)
+	err = appemail.Email().SendMagicLink(email, token, utils.Env().URL)
 	if err != nil {
 		slog.Error("auth: failed to send email", "err", err)
 		return c.String(http.StatusInternalServerError, "Failed to send email")
@@ -223,13 +216,14 @@ func (a *Auth) VerifyMagicLink(c echo.Context) error {
 	}
 
 	// Create session cookie
+	env := utils.Env()
 	c.SetCookie(&http.Cookie{
 		Name:     "session",
 		Value:    user.ID,
 		Path:     "/",
 		MaxAge:   86400 * 30, // 30 days
 		HttpOnly: true,
-		Secure:   os.Getenv("APP_ENV") == "production",
+		Secure:   env.AppEnv == "production",
 		SameSite: http.SameSiteLaxMode,
 	})
 

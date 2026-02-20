@@ -16,6 +16,12 @@ type EnvConfig struct {
 	LogPrefix string
 	DBPath    string
 	URL       string
+	AppEnv    string
+	SMTPHost  string
+	SMTPPort  int
+	SMTPUser  string
+	SMTPPass  string
+	EmailFrom string
 }
 
 var (
@@ -32,6 +38,12 @@ func Env() *EnvConfig {
 			LogPrefix: getEnvString("LOG_PREFIX"),
 			DBPath:    getEnvString("DB_PATH"),
 			URL:       getEnvString("URL"),
+			AppEnv:    getEnvString("APP_ENV"),
+			SMTPHost:  getEnvString("SMTP_HOST"),
+			SMTPPort:  getEnvInt("SMTP_PORT"),
+			SMTPUser:  getEnvString("SMTP_USERNAME"),
+			SMTPPass:  getEnvString("SMTP_PASSWORD"),
+			EmailFrom: getEnvString("EMAIL_FROM"),
 		}
 	})
 	return envCfg

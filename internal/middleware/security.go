@@ -7,7 +7,6 @@ import (
 	"io"
 	"net/http"
 	"net/url"
-	"os"
 	"strings"
 
 	"github.com/labstack/echo/v4"
@@ -68,6 +67,7 @@ func CSRFToken() echo.MiddlewareFunc {
 			}
 
 			if token == "" {
+				env := utils.Env()
 				token, err = utils.NewCSRFToken()
 				if err != nil {
 					return c.NoContent(http.StatusInternalServerError)
@@ -79,7 +79,7 @@ func CSRFToken() echo.MiddlewareFunc {
 					Path:     "/",
 					MaxAge:   86400 * 30,
 					HttpOnly: true,
-					Secure:   os.Getenv("APP_ENV") == "production",
+					Secure:   env.AppEnv == "production",
 					SameSite: http.SameSiteLaxMode,
 				})
 			}

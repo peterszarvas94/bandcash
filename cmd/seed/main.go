@@ -44,10 +44,7 @@ func main() {
 		slog.Info("env: no .env file loaded", "err", err)
 	}
 
-	dbPath := os.Getenv("DB_PATH")
-	if dbPath == "" {
-		dbPath = "sqlite.db"
-	}
+	dbPath := utils.Env().DBPath
 	if *flagDBPath != "" {
 		dbPath = *flagDBPath
 	}
