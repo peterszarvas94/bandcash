@@ -24,8 +24,8 @@ templ HomeIndex(data HomeData) {
 					} else {
 						<a class="btn" href="/auth/login">{ctxi18n.T(ctx, "auth.login")}</a>
 						<a class="btn" href="/auth/signup">{ctxi18n.T(ctx, "auth.signup")}</a>
+						<a class="btn" href="/settings">{ctxi18n.T(ctx, "settings.title")}</a>
 					}
-					<a class="btn" href="/settings">{ctxi18n.T(ctx, "settings.title")}</a>
 					if utils.Env().AppEnv == "development" {
 						<a class="btn" href="/dev/notifications">Dev Notifications</a>
 					}

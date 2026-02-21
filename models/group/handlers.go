@@ -88,8 +88,8 @@ func (g *Group) CreateGroup(c echo.Context) error {
 	slog.Info("group: created", "group_id", group.ID, "name", group.Name, "admin", userID)
 	utils.Notify(c, "success", ctxi18n.T(c.Request().Context(), "groups.messages.created"))
 
-	// Redirect to events
-	err = utils.SSEHub.Redirect(c, "/groups/"+group.ID+"/events")
+	// Redirect to group overview
+	err = utils.SSEHub.Redirect(c, "/groups/"+group.ID)
 	if err != nil {
 		return c.NoContent(http.StatusInternalServerError)
 	}

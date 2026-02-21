@@ -24,6 +24,10 @@ func (s *Settings) Index(c echo.Context) error {
 	if cookie, err := c.Cookie("session"); err == nil && cookie.Value != "" {
 		if user, err := db.Qry.GetUserByID(c.Request().Context(), cookie.Value); err == nil {
 			data.UserEmail = user.Email
+			data.Breadcrumbs = []utils.Crumb{
+				{Label: ctxi18n.T(c.Request().Context(), "groups.title"), Href: "/dashboard"},
+				{Label: ctxi18n.T(c.Request().Context(), "settings.title")},
+			}
 		}
 	}
 	return utils.RenderComponent(c, SettingsIndex(data))
