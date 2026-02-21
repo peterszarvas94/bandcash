@@ -7,3 +7,11 @@
 - expenses table: title, description, amount, date
 - real-time collaborative editing: notify other users viewing a page when data changes (show snackbar "Updated by another user [Refresh]")
 - viewer pages: live update when admin changes viewer list (broadcast SSE)
+
+- production hardening:
+  - add rate limiting (global + stricter auth endpoints)
+  - enforce request body size limits
+  - normalize + strictly validate all inputs server-side
+  - auth abuse protection (cooldown/throttle by ip + email)
+  - enable security checks in ci (`govulncheck`, dependency updates)
+  - add monitoring + alerting for `/health`
