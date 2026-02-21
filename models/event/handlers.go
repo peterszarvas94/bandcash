@@ -40,14 +40,6 @@ type participantTableParams struct {
 	FormData participantData `json:"formData"`
 }
 
-type groupInlineParams struct {
-	GroupFormData groupData `json:"groupFormData"`
-}
-
-type groupData struct {
-	Name string `json:"name" validate:"required,min=1,max=255"`
-}
-
 // Default signal states for resetting forms on success
 var (
 	defaultEventSignals = map[string]any{
@@ -67,7 +59,6 @@ var (
 	// Error field lists for validation
 	eventErrorFields       = []string{"title", "time", "description", "amount"}
 	participantErrorFields = []string{"memberId", "amount", "expense"}
-	groupErrorFields       = []string{"name"}
 )
 
 func getGroupID(c echo.Context) string {
@@ -101,11 +92,6 @@ func (e *Events) Index(c echo.Context) error {
 
 	slog.Debug("event.index", "event_count", len(data.Events))
 	return utils.RenderComponent(c, EventIndex(data))
-}
-
-func (e *Events) RedirectIndex(c echo.Context) error {
-	groupID := getGroupID(c)
-	return c.Redirect(302, "/groups/"+groupID+"/events")
 }
 
 func (e *Events) Show(c echo.Context) error {
@@ -332,57 +318,6 @@ func (e *Events) Destroy(c echo.Context) error {
 
 	utils.SSEHub.PatchHTML(c, html)
 
-	return c.NoContent(200)
-}
-
-func (e *Events) UpdateGroup(c echo.Context) error {
-	groupID := getGroupID(c)
-	userEmail := getUserEmail(c)
-
-	var signals groupInlineParams
-	err := datastar.ReadSignals(c.Request(), &signals)
-	if err != nil {
-		slog.Warn("group.update: failed to read signals", "err", err)
-		return c.NoContent(400)
-	}
-
-	if errs := utils.ValidateWithLocale(c.Request().Context(), signals.GroupFormData); errs != nil {
-		utils.SSEHub.PatchSignals(c, map[string]any{"groupErrors": utils.WithErrors(groupErrorFields, errs)})
-		return c.NoContent(422)
-	}
-
-	_, err = db.Qry.UpdateGroupName(c.Request().Context(), db.UpdateGroupNameParams{
-		Name: signals.GroupFormData.Name,
-		ID:   groupID,
-	})
-	if err != nil {
-		slog.Error("group.update: failed to update group", "err", err)
-		utils.Notify(c, "error", ctxi18n.T(c.Request().Context(), "groups.errors.update_failed"))
-		return c.NoContent(500)
-	}
-
-	utils.Notify(c, "success", ctxi18n.T(c.Request().Context(), "groups.messages.updated"))
-	utils.SSEHub.PatchSignals(c, map[string]any{
-		"groupFormState": "",
-		"groupFormData":  map[string]any{"name": signals.GroupFormData.Name},
-		"groupErrors":    map[string]any{"name": ""},
-	})
-
-	data, err := e.GetIndexData(c.Request().Context(), groupID)
-	if err != nil {
-		slog.Error("group.update: failed to load events index", "err", err)
-		return c.NoContent(500)
-	}
-	data.IsAdmin = middleware.IsAdmin(c)
-	data.UserEmail = userEmail
-
-	html, err := utils.RenderComponentStringFor(c, EventIndex(data))
-	if err != nil {
-		slog.Error("group.update: failed to render events index", "err", err)
-		return c.NoContent(500)
-	}
-
-	utils.SSEHub.PatchHTML(c, html)
 	return c.NoContent(200)
 }
 

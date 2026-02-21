@@ -11,11 +11,11 @@ import (
 )
 
 templ GroupViewersPage(data ViewersPageData) {
-	<!doctype html>
-	<html lang={appi18n.LocaleCode(ctx)}>
+	<!DOCTYPE html>
+	<html lang={ appi18n.LocaleCode(ctx) }>
 		@shared.Head(data.Title)
 		<body>
-			<div data-signals={templ.JSONString(map[string]any{"csrf": utils.CSRFToken(ctx), "formState": "", "formData": map[string]any{"email": ""}})} data-init="@get('/sse')"></div>
+			<div data-signals={ templ.JSONString(map[string]any{"csrf": utils.CSRFToken(ctx), "formState": "", "formData": map[string]any{"email": ""}}) } data-init="@get('/sse')"></div>
 			@shared.Notifications()
 			@shared.TwoCol("group-viewers", GroupViewersMain(data), GroupViewersSidebar(data))
 		</body>
@@ -23,88 +23,65 @@ templ GroupViewersPage(data ViewersPageData) {
 }
 
 templ GroupViewersMain(data ViewersPageData) {
-	<h1>{ctxi18n.T(ctx, "groups.viewers_for", data.Group.Name)}</h1>
 	@shared.Breadcrumbs(data.Breadcrumbs, data.UserEmail)
-
-	<h2>{ctxi18n.T(ctx, "groups.current_viewers")}</h2>
-	<table class="table">
+	@shared.GroupTabs(data.Group.ID, "viewers")
+	<table class="table pt">
 		<thead>
-			<tr><th>{ctxi18n.T(ctx, "auth.email")}</th><th>{ctxi18n.T(ctx, "table.actions")}</th></tr>
+			<tr><th>{ ctxi18n.T(ctx, "auth.email") }</th><th>{ ctxi18n.T(ctx, "table.actions") }</th></tr>
 		</thead>
 		<tbody>
 			<tr>
-				<td>{data.Admin.Email} <span class="text-muted">({ctxi18n.T(ctx, "groups.admin")})</span></td>
+				<td>{ data.Admin.Email } <span class="text-muted">({ ctxi18n.T(ctx, "groups.admin") })</span></td>
 				<td></td>
 			</tr>
-			if len(data.Viewers) == 0 {
-				<tr><td colspan="2">{ctxi18n.T(ctx, "groups.viewer_none")}</td></tr>
-			} else {
-				for _, viewer := range data.Viewers {
-					<tr>
-						<td>{viewer.Email}</td>
-						<td>
-							if data.IsAdmin {
-								<form data-on:submit={fmt.Sprintf("@post('/groups/%s/viewers/%s/remove')", data.Group.ID, viewer.ID)} data-sure-title={ ctxi18n.T(ctx, "groups.remove_viewer_confirm") } data-sure-message={ ctxi18n.T(ctx, "confirm.destructive_message") } data-sure-submit={ ctxi18n.T(ctx, "actions.delete") } style="display:inline">
-									<button type="submit" class="btn btn-danger">{ctxi18n.T(ctx, "actions.delete")}</button>
-								</form>
-							}
-						</td>
-					</tr>
-				}
+			for _, viewer := range data.Viewers {
+				<tr>
+					<td>{ viewer.Email }</td>
+					<td>
+						if data.IsAdmin {
+							<form data-on:submit={ fmt.Sprintf("@post('/groups/%s/viewers/%s/remove')", data.Group.ID, viewer.ID) } data-sure-title={ ctxi18n.T(ctx, "groups.remove_viewer_confirm") } data-sure-message={ ctxi18n.T(ctx, "confirm.destructive_message") } data-sure-submit={ ctxi18n.T(ctx, "actions.delete") } style="display:inline">
+								<button type="submit" class="btn btn-danger">{ ctxi18n.T(ctx, "actions.delete") }</button>
+							</form>
+						}
+					</td>
+				</tr>
 			}
-		</tbody>
-	</table>
-
-	<h2>{ctxi18n.T(ctx, "groups.pending_invitations")}</h2>
-	<table class="table">
-		<thead>
-			<tr><th>{ctxi18n.T(ctx, "auth.email")}</th><th>{ctxi18n.T(ctx, "groups.invite_expires")}</th><th>{ctxi18n.T(ctx, "table.actions")}</th></tr>
-		</thead>
-		<tbody>
-			if len(data.Invites) == 0 {
-				<tr><td colspan="3">{ctxi18n.T(ctx, "groups.no_pending_invitations")}</td></tr>
-			} else {
-				for _, invite := range data.Invites {
-					<tr>
-						<td>{invite.Email}</td>
-						<td>{invite.ExpiresAt.Format("2006-01-02 15:04")}</td>
-						<td>
-							if data.IsAdmin {
-								<form data-on:submit={fmt.Sprintf("@post('/groups/%s/invites/%s/remove')", data.Group.ID, invite.ID)} data-sure-title={ ctxi18n.T(ctx, "groups.cancel_invite_confirm") } data-sure-message={ ctxi18n.T(ctx, "confirm.destructive_message") } data-sure-submit={ ctxi18n.T(ctx, "actions.delete") } style="display:inline">
-									<button type="submit" class="btn btn-danger">{ctxi18n.T(ctx, "actions.delete")}</button>
-								</form>
-							}
-						</td>
-					</tr>
-				}
+			for _, invite := range data.Invites {
+				<tr>
+					<td>{ invite.Email } <span class="text-muted">(pending)</span></td>
+					<td>
+						if data.IsAdmin {
+							<form data-on:submit={ fmt.Sprintf("@post('/groups/%s/invites/%s/remove')", data.Group.ID, invite.ID) } data-sure-title={ ctxi18n.T(ctx, "groups.cancel_invite_confirm") } data-sure-message={ ctxi18n.T(ctx, "confirm.destructive_message") } data-sure-submit={ ctxi18n.T(ctx, "actions.delete") } style="display:inline">
+								<button type="submit" class="btn btn-danger">{ ctxi18n.T(ctx, "actions.delete") }</button>
+							</form>
+						}
+					</td>
+				</tr>
 			}
 		</tbody>
 	</table>
 }
 
 templ GroupViewersSidebar(data ViewersPageData) {
-	@shared.GroupReadNav(data.Group.ID)
-
 	if data.IsAdmin {
 		<div data-show="$formState === ''" class="pb">
-		<h3>{ctxi18n.T(ctx, "groups.actions")}</h3>
-		<div class="row">
-			<button class="btn" type="button" data-on:click="$formState = 'add'; $formData = {email: ''}">{ctxi18n.T(ctx, "groups.add_viewer")}</button>
-		</div>
-		</div>
-
-		<div data-show="$formState !== ''" style="display: none" class="pb">
-		<h3>{ctxi18n.T(ctx, "groups.invite_viewer")}</h3>
-		<form class="form" data-on:submit={fmt.Sprintf("@post('/groups/%s/viewers')", data.Group.ID)}>
-			<div class="field">
-				<label>{ctxi18n.T(ctx, "auth.email")}</label>
-				<input type="email" data-bind="formData.email" required placeholder={ctxi18n.T(ctx, "groups.viewer_email_placeholder")} />
-			</div>
+			<h3>{ ctxi18n.T(ctx, "groups.actions") }</h3>
 			<div class="row">
-				<button type="submit" class="btn btn-primary">{ctxi18n.T(ctx, "groups.add_viewer")}</button>
-				<button class="btn" type="button" data-on:click="$formState = ''; $formData = {email: ''}">{ctxi18n.T(ctx, "actions.cancel")}</button>
+				<button class="btn" type="button" data-on:click="$formState = 'add'; $formData = {email: ''}">{ ctxi18n.T(ctx, "groups.add_viewer") }</button>
 			</div>
-		</form>
+		</div>
+		<div data-show="$formState !== ''" style="display: none" class="pb">
+			<h3>{ ctxi18n.T(ctx, "groups.invite_viewer") }</h3>
+			<form class="form" data-on:submit={ fmt.Sprintf("@post('/groups/%s/viewers')", data.Group.ID) }>
+				<div class="field">
+					<label>{ ctxi18n.T(ctx, "auth.email") }</label>
+					<input type="email" data-bind="formData.email" required placeholder={ ctxi18n.T(ctx, "groups.viewer_email_placeholder") }/>
+				</div>
+				<div class="row">
+					<button type="submit" class="btn btn-primary">{ ctxi18n.T(ctx, "groups.add_viewer") }</button>
+					<button class="btn" type="button" data-on:click="$formState = ''; $formData = {email: ''}">{ ctxi18n.T(ctx, "actions.cancel") }</button>
+				</div>
+			</form>
 		</div>
 	}
 }

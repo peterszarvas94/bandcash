@@ -1,0 +1,75 @@
+package group
+
+import (
+	"fmt"
+
+	ctxi18n "github.com/invopop/ctxi18n/i18n"
+
+	appi18n "bandcash/internal/i18n"
+	"bandcash/internal/utils"
+	shared "bandcash/models/shared"
+)
+
+templ GroupPage(data GroupPageData) {
+	<!doctype html>
+	<html lang={ appi18n.LocaleCode(ctx) }>
+		@shared.Head(data.Title)
+		<body>
+			<div data-signals={ templ.JSONString(map[string]any{"csrf": utils.CSRFToken(ctx), "formState": "", "formData": map[string]any{"name": data.Group.Name}, "errors": map[string]any{"name": ""}}) } data-init="@get('/sse')"></div>
+			@shared.Notifications()
+			@shared.TwoCol("group-show", GroupMain(data), GroupSidebar(data))
+		</body>
+	</html>
+}
+
+templ GroupMain(data GroupPageData) {
+	@shared.Breadcrumbs(data.Breadcrumbs, data.UserEmail)
+	@shared.GroupTabs(data.Group.ID, "overview")
+
+	<div class="event-details pt">
+		<div class="field">
+			<label>{ ctxi18n.T(ctx, "groups.admin") }</label>
+			<p>{ data.Admin.Email }</p>
+		</div>
+		<div class="field">
+			<label>{ "Created" }</label>
+			<p>
+				if data.Group.CreatedAt.Valid {
+					{ data.Group.CreatedAt.Time.Format("2006-01-02 15:04") }
+				} else {
+					{ "-" }
+				}
+			</p>
+		</div>
+		<div class="field">
+			<label>{ "Total amount" }</label>
+			<p>{ fmt.Sprintf("%d", data.TotalAmount) }</p>
+		</div>
+	</div>
+}
+
+templ GroupSidebar(data GroupPageData) {
+	if data.IsAdmin {
+		<div data-show="$formState === ''" class="pb">
+			<h3>{ ctxi18n.T(ctx, "groups.edit") }</h3>
+			<div class="row">
+				<button class="btn" type="button" data-on:click="$formState = 'edit'; $errors = {name: ''}">{ ctxi18n.T(ctx, "groups.edit") }</button>
+			</div>
+		</div>
+
+		<div data-show="$formState === 'edit'" style="display: none" class="pb">
+			<h3>{ ctxi18n.T(ctx, "groups.edit") }</h3>
+			<form class="form" data-on:submit={ fmt.Sprintf("@put('/groups/%s')", data.Group.ID) }>
+				<div class="field">
+					<label>{ ctxi18n.T(ctx, "groups.name") }</label>
+					<input type="text" data-bind="formData.name" placeholder={ ctxi18n.T(ctx, "groups.name_placeholder") }/>
+					<div data-show="$errors && $errors.name" class="color-error" data-text="$errors.name"></div>
+				</div>
+				<div class="row">
+					<button class="btn btn-primary" type="submit">{ ctxi18n.T(ctx, "groups.update") }</button>
+					<button class="btn" type="button" data-on:click={ "$formState = ''; $formData = {name: " + utils.JSONString(data.Group.Name) + "}; $errors = {name: ''}" }>{ ctxi18n.T(ctx, "actions.cancel") }</button>
+				</div>
+			</form>
+		</div>
+	}
+}

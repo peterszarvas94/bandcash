@@ -32,6 +32,34 @@
     --error-color: var(--color-danger);
     --border-color: var(--color-border);
 
+    /* Derived UI colors */
+    --surface-hover: color-mix(in srgb, var(--page-bg) 94%, var(--text-color) 6%);
+    --overlay-backdrop: color-mix(in srgb, var(--text-color) 24%, transparent);
+
+    --btn-primary-bg: color-mix(in srgb, var(--link-color) 88%, var(--text-color) 12%);
+    --btn-primary-border: color-mix(in srgb, var(--link-color) 80%, var(--text-color) 20%);
+    --btn-primary-hover-bg: color-mix(in srgb, var(--link-color) 78%, var(--text-color) 22%);
+    --btn-primary-focus: color-mix(in srgb, var(--link-color) 70%, var(--page-bg) 30%);
+
+    --btn-danger-border: color-mix(in srgb, var(--page-bg) 40%, var(--error-color) 60%);
+    --btn-danger-hover-bg: color-mix(in srgb, var(--page-bg) 84%, var(--error-color) 16%);
+    --btn-danger-focus: color-mix(in srgb, var(--error-color) 70%, var(--page-bg) 30%);
+
+    --btn-success-border: color-mix(in srgb, var(--page-bg) 40%, var(--color-success) 60%);
+    --btn-success-hover-bg: color-mix(in srgb, var(--page-bg) 84%, var(--color-success) 16%);
+    --btn-success-focus: color-mix(in srgb, var(--color-success) 70%, var(--page-bg) 30%);
+
+    --btn-info-border: color-mix(in srgb, var(--page-bg) 40%, var(--color-info) 60%);
+    --btn-info-hover-bg: color-mix(in srgb, var(--page-bg) 84%, var(--color-info) 16%);
+    --btn-info-focus: color-mix(in srgb, var(--color-info) 70%, var(--page-bg) 30%);
+
+    --btn-warning-border: color-mix(in srgb, var(--page-bg) 40%, var(--color-warning) 60%);
+    --btn-warning-hover-bg: color-mix(in srgb, var(--page-bg) 84%, var(--color-warning) 16%);
+    --btn-warning-focus: color-mix(in srgb, var(--color-warning) 70%, var(--page-bg) 30%);
+
+    --notification-bg: color-mix(in srgb, var(--page-bg) 88%, var(--text-color) 12%);
+    --muted-text-color: color-mix(in srgb, var(--text-color) 70%, var(--page-bg) 30%);
+
     color-scheme: light dark;
     interpolate-size: allow-keywords;
   }

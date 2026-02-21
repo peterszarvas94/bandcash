@@ -16,7 +16,6 @@ templ GroupNewPage(data NewGroupPageData) {
 			<div data-signals={templ.JSONString(map[string]any{"csrf": utils.CSRFToken(ctx), "formData": map[string]any{"name": ""}})} data-init="@get('/sse')"></div>
 			@shared.Notifications()
 			<main id="app" class="single-col">
-				<h1>{ data.Title }</h1>
 				@shared.Breadcrumbs(data.Breadcrumbs, data.UserEmail)
 				<p>{ ctxi18n.T(ctx, "groups.new_desc") }</p>
 				<form class="form" data-on:submit="@post('/groups')">

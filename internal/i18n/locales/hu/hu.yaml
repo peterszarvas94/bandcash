@@ -1,8 +1,8 @@
 hu:
   app:
-    title: "Bandcash"
+    title: "BandCash"
   nav:
-    home: "Kezdőlap"
+    home: "BandCash"
     dashboard: "Vezérlőpult"
     logged_in_as: "Bejelentkezve mint"
   auth:
@@ -11,7 +11,7 @@ hu:
     logout: "Kijelentkezés"
     email: "Email"
     email_placeholder: "te@email.com"
-    login_title: "Belépés a Bandcash-be"
+    login_title: "Belépés a BandCash-be"
     signup_title: "Fiók létrehozása"
     check_email: "Email ellenőrzése"
     check_email_title: "Ellenőrizd az emailed"

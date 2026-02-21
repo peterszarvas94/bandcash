@@ -18,7 +18,6 @@ templ GroupsPage(data GroupsPageData) {
 			<div data-signals={templ.JSONString(map[string]any{"csrf": utils.CSRFToken(ctx)})} data-init="@get('/sse')"></div>
 			@shared.Notifications()
 			<main id="app" class="single-col">
-				<h1>{ data.Title }</h1>
 				@shared.Breadcrumbs(data.Breadcrumbs, data.UserEmail)
 				<p class="text-muted">{ ctxi18n.T(ctx, "groups.subtitle") }</p>
 				<p>
@@ -35,11 +34,8 @@ templ GroupsPage(data GroupsPageData) {
 							for _, group := range data.AdminGroups {
 								<tr>
 									<td>
-										<a href={ "/groups/" + group.Group.ID + "/events" }>{ group.Group.Name }</a>
-										<div class="text-muted">
-											<a href={ "/groups/" + group.Group.ID + "/viewers" }>{ ctxi18n.T(ctx, "groups.access_count", group.ViewerCount + 1) }</a>
-										</div>
-									</td>
+									<a href={ "/groups/" + group.Group.ID }>{ group.Group.Name }</a>
+								</td>
 									<td>
 										<div class="row row-right row-wrap">
 											<form data-on:submit={ fmt.Sprintf("@post('/groups/%s/delete')", group.Group.ID) } data-sure-title={ ctxi18n.T(ctx, "groups.delete_confirm") } data-sure-message={ ctxi18n.T(ctx, "confirm.destructive_message") } data-sure-submit={ ctxi18n.T(ctx, "groups.delete") } style="display:inline">
@@ -62,14 +58,8 @@ templ GroupsPage(data GroupsPageData) {
 							for _, group := range data.ReaderGroups {
 								<tr>
 									<td>
-										<a href={ "/groups/" + group.Group.ID + "/events" }>{ group.Group.Name }</a>
-										<div class="text-muted">
-											<a href={ "/groups/" + group.Group.ID + "/viewers" }>{ ctxi18n.T(ctx, "groups.access_count", group.ViewerCount + 1) }</a>
-											if group.AdminEmail != "" {
-												<span> · { ctxi18n.T(ctx, "groups.admin_email", group.AdminEmail) }</span>
-											}
-										</div>
-									</td>
+									<a href={ "/groups/" + group.Group.ID }>{ group.Group.Name }</a>
+								</td>
 									<td>
 										<div class="row row-right row-wrap">
 											<button

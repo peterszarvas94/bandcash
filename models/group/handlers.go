@@ -31,6 +31,12 @@ type addViewerSignals struct {
 	} `json:"formData"`
 }
 
+type updateGroupSignals struct {
+	FormData struct {
+		Name string `json:"name" validate:"required,min=1,max=255"`
+	} `json:"formData"`
+}
+
 func New() *Group {
 	return &Group{}
 }
@@ -132,6 +138,52 @@ func (g *Group) GroupsPage(c echo.Context) error {
 		ReaderGroups: g.groupSummaries(c, filteredReaders),
 	}
 	return utils.RenderComponent(c, GroupsPage(data))
+}
+
+// GroupPage shows group details and admin actions.
+func (g *Group) GroupPage(c echo.Context) error {
+	utils.EnsureClientID(c)
+	groupID := middleware.GetGroupID(c)
+	data, err := g.groupPageData(c, groupID)
+	if err != nil {
+		slog.Error("group.page: failed to load data", "group_id", groupID, "err", err)
+		return c.String(http.StatusInternalServerError, "Failed to load group")
+	}
+
+	return utils.RenderComponent(c, GroupPage(data))
+}
+
+// UpdateGroup updates group name (admin only).
+func (g *Group) UpdateGroup(c echo.Context) error {
+	groupID := middleware.GetGroupID(c)
+
+	signals := updateGroupSignals{}
+	if err := datastar.ReadSignals(c.Request(), &signals); err != nil {
+		return c.NoContent(http.StatusBadRequest)
+	}
+
+	if errs := utils.ValidateWithLocale(c.Request().Context(), signals.FormData); errs != nil {
+		utils.SSEHub.PatchSignals(c, map[string]any{"errors": utils.WithErrors([]string{"name"}, errs)})
+		return c.NoContent(http.StatusUnprocessableEntity)
+	}
+
+	_, err := db.Qry.UpdateGroupName(c.Request().Context(), db.UpdateGroupNameParams{
+		Name: signals.FormData.Name,
+		ID:   groupID,
+	})
+	if err != nil {
+		slog.Error("group.update: failed to update group", "group_id", groupID, "err", err)
+		utils.Notify(c, "error", ctxi18n.T(c.Request().Context(), "groups.errors.update_failed"))
+		return c.NoContent(http.StatusInternalServerError)
+	}
+
+	utils.Notify(c, "success", ctxi18n.T(c.Request().Context(), "groups.messages.updated"))
+	err = utils.SSEHub.Redirect(c, "/groups/"+groupID)
+	if err != nil {
+		return c.NoContent(http.StatusInternalServerError)
+	}
+
+	return c.NoContent(http.StatusOK)
 }
 
 // LeaveGroup removes viewer access for the current user.
@@ -267,7 +319,7 @@ func (g *Group) ViewersPage(c echo.Context) error {
 
 	data := ViewersPageData{
 		Title:       ctxi18n.T(c.Request().Context(), "groups.viewers"),
-		Breadcrumbs: []utils.Crumb{{Label: ctxi18n.T(c.Request().Context(), "groups.title"), Href: "/dashboard"}, {Label: group.Name, Href: "/groups/" + group.ID + "/events"}, {Label: ctxi18n.T(c.Request().Context(), "groups.viewers")}},
+		Breadcrumbs: []utils.Crumb{{Label: ctxi18n.T(c.Request().Context(), "groups.title"), Href: "/dashboard"}, {Label: group.Name, Href: "/groups/" + group.ID}, {Label: ctxi18n.T(c.Request().Context(), "groups.viewers")}},
 		UserEmail:   userEmail,
 		Group:       group,
 		Admin:       admin,
@@ -313,7 +365,7 @@ func (g *Group) patchViewersPage(c echo.Context, groupID, messageKey, errorKey s
 
 	data := ViewersPageData{
 		Title:       ctxi18n.T(c.Request().Context(), "groups.viewers"),
-		Breadcrumbs: []utils.Crumb{{Label: ctxi18n.T(c.Request().Context(), "groups.title"), Href: "/dashboard"}, {Label: group.Name, Href: "/groups/" + group.ID + "/events"}, {Label: ctxi18n.T(c.Request().Context(), "groups.viewers")}},
+		Breadcrumbs: []utils.Crumb{{Label: ctxi18n.T(c.Request().Context(), "groups.title"), Href: "/dashboard"}, {Label: group.Name, Href: "/groups/" + group.ID}, {Label: ctxi18n.T(c.Request().Context(), "groups.viewers")}},
 		UserEmail:   getUserEmail(c),
 		Group:       group,
 		Admin:       admin,
@@ -442,6 +494,39 @@ func getUserEmail(c echo.Context) string {
 		return ""
 	}
 	return user.Email
+}
+
+func (g *Group) groupPageData(c echo.Context, groupID string) (GroupPageData, error) {
+	ctx := c.Request().Context()
+	group, err := db.Qry.GetGroupByID(ctx, groupID)
+	if err != nil {
+		return GroupPageData{}, err
+	}
+
+	admin, err := db.Qry.GetUserByID(ctx, group.AdminUserID)
+	if err != nil {
+		return GroupPageData{}, err
+	}
+
+	events, err := db.Qry.ListEvents(ctx, groupID)
+	if err != nil {
+		return GroupPageData{}, err
+	}
+
+	var totalAmount int64
+	for _, event := range events {
+		totalAmount += event.Amount
+	}
+
+	return GroupPageData{
+		Title:       group.Name,
+		Breadcrumbs: []utils.Crumb{{Label: ctxi18n.T(ctx, "groups.title"), Href: "/dashboard"}, {Label: group.Name, Href: "/groups/" + groupID}, {Label: "Overview"}},
+		UserEmail:   getUserEmail(c),
+		Group:       group,
+		Admin:       admin,
+		TotalAmount: totalAmount,
+		IsAdmin:     middleware.IsAdmin(c),
+	}, nil
 }
 
 func (g *Group) groupSummaries(c echo.Context, groups []db.Group) []GroupSummary {

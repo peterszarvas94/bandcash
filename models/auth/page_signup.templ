@@ -16,7 +16,6 @@ templ SignupPage(data AuthPageData) {
 			<div data-signals={templ.JSONString(map[string]any{"csrf": utils.CSRFToken(ctx), "authError": "", "formData": map[string]any{"email": data.Email}})} data-init="@get('/sse')"></div>
 			@shared.Notifications()
 			<main id="app" class="single-col">
-				<h1>{data.Title}</h1>
 				@shared.Breadcrumbs(data.Breadcrumbs, data.UserEmail)
 				<form class="form" data-on:submit="@post('/auth/signup')">
 					<div class="field">

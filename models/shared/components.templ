@@ -76,6 +76,31 @@ templ Breadcrumbs(crumbs []utils.Crumb, userEmail string) {
 	</nav>
 }
 
+templ GroupTabs(groupID string, activeTab string) {
+	<nav class="tabs" aria-label={ ctxi18n.T(ctx, "groups.actions") }>
+		if activeTab == "overview" {
+			<a class="tab tab-active" href={ "/groups/" + groupID }>{ "Overview" }</a>
+		} else {
+			<a class="tab" href={ "/groups/" + groupID }>{ "Overview" }</a>
+		}
+		if activeTab == "events" {
+			<a class="tab tab-active" href={ "/groups/" + groupID + "/events" }>{ ctxi18n.T(ctx, "events.title") }</a>
+		} else {
+			<a class="tab" href={ "/groups/" + groupID + "/events" }>{ ctxi18n.T(ctx, "events.title") }</a>
+		}
+		if activeTab == "members" {
+			<a class="tab tab-active" href={ "/groups/" + groupID + "/members" }>{ ctxi18n.T(ctx, "members.title") }</a>
+		} else {
+			<a class="tab" href={ "/groups/" + groupID + "/members" }>{ ctxi18n.T(ctx, "members.title") }</a>
+		}
+		if activeTab == "viewers" {
+			<a class="tab tab-active" href={ "/groups/" + groupID + "/viewers" }>{ ctxi18n.T(ctx, "groups.viewers") }</a>
+		} else {
+			<a class="tab" href={ "/groups/" + groupID + "/viewers" }>{ ctxi18n.T(ctx, "groups.viewers") }</a>
+		}
+	</nav>
+}
+
 templ TwoCol(id string, main templ.Component, sidebar templ.Component) {
 	<div id={ id } class="two-col">
 		<main id="app">
@@ -84,20 +109,5 @@ templ TwoCol(id string, main templ.Component, sidebar templ.Component) {
 		<aside class="sidebar-panel">
 			@sidebar
 		</aside>
-	</div>
-}
-
-templ GroupReadNav(groupID string) {
-	<div class="pb">
-		<h3>{ ctxi18n.T(ctx, "groups.actions") }</h3>
-		<div class="row" style="margin-top: 8px">
-			<a class="btn" href={ "/groups/" + groupID + "/events" }>{ ctxi18n.T(ctx, "events.title") }</a>
-		</div>
-		<div class="row" style="margin-top: 8px">
-			<a class="btn" href={ "/groups/" + groupID + "/members" }>{ ctxi18n.T(ctx, "members.title") }</a>
-		</div>
-		<div class="row" style="margin-top: 8px">
-			<a class="btn" href={ "/groups/" + groupID + "/viewers" }>{ ctxi18n.T(ctx, "groups.viewers") }</a>
-		</div>
 	</div>
 }

@@ -1,8 +1,12 @@
 @layer components {
   .table {
     width: 100%;
-    border-collapse: collapse;
-    table-layout: fixed;
+    max-width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    table-layout: auto;
+    display: block;
+    overflow-x: auto;
 
     th,
     td {
@@ -10,11 +14,12 @@
       padding: var(--space) calc(var(--space) * 2);
       text-align: left;
       word-break: break-word;
+      vertical-align: middle;
     }
 
     & th:last-child,
     & td:last-child {
-      width: 16rem;
+      width: 1%;
       white-space: nowrap;
     }
   }
@@ -39,7 +44,7 @@
     min-height: 2.5rem;
 
     &:not(:disabled):not([disabled]):hover {
-      background: color-mix(in srgb, var(--text-color) 6%, transparent);
+      background: var(--surface-hover);
     }
 
     &:focus-visible {
@@ -55,74 +60,127 @@
     }
 
     &.btn-primary {
-      background: color-mix(in srgb, var(--link-color) 88%, var(--text-color) 12%);
-      border-color: color-mix(in srgb, var(--link-color) 80%, var(--text-color) 20%);
+      background: var(--btn-primary-bg);
+      border-color: var(--btn-primary-border);
       color: var(--page-bg);
 
       &:not(:disabled):not([disabled]):hover {
-        background: color-mix(in srgb, var(--link-color) 78%, var(--text-color) 22%);
+        background: var(--btn-primary-hover-bg);
       }
 
       &:focus-visible {
-        outline-color: color-mix(in srgb, var(--link-color) 70%, var(--page-bg) 30%);
+        outline-color: var(--btn-primary-focus);
       }
     }
 
     &.btn-danger {
       background: transparent;
-      border-color: color-mix(in srgb, var(--error-color) 60%, transparent);
+      border-color: var(--btn-danger-border);
       color: var(--error-color);
 
       &:not(:disabled):not([disabled]):hover {
-        background: color-mix(in srgb, var(--error-color) 16%, transparent);
+        background: var(--btn-danger-hover-bg);
       }
 
       &:focus-visible {
-        outline-color: color-mix(in srgb, var(--error-color) 70%, var(--page-bg) 30%);
+        outline-color: var(--btn-danger-focus);
       }
     }
 
     &.btn-success {
       background: transparent;
-      border-color: color-mix(in srgb, var(--color-success) 60%, transparent);
+      border-color: var(--btn-success-border);
       color: var(--color-success);
 
       &:not(:disabled):not([disabled]):hover {
-        background: color-mix(in srgb, var(--color-success) 16%, transparent);
+        background: var(--btn-success-hover-bg);
       }
 
       &:focus-visible {
-        outline-color: color-mix(in srgb, var(--color-success) 70%, var(--page-bg) 30%);
+        outline-color: var(--btn-success-focus);
       }
     }
 
     &.btn-info {
       background: transparent;
-      border-color: color-mix(in srgb, var(--color-info) 60%, transparent);
+      border-color: var(--btn-info-border);
       color: var(--color-info);
 
       &:not(:disabled):not([disabled]):hover {
-        background: color-mix(in srgb, var(--color-info) 16%, transparent);
+        background: var(--btn-info-hover-bg);
       }
 
       &:focus-visible {
-        outline-color: color-mix(in srgb, var(--color-info) 70%, var(--page-bg) 30%);
+        outline-color: var(--btn-info-focus);
       }
     }
 
     &.btn-warning {
       background: transparent;
-      border-color: color-mix(in srgb, var(--color-warning) 60%, transparent);
+      border-color: var(--btn-warning-border);
       color: var(--color-warning);
 
       &:not(:disabled):not([disabled]):hover {
-        background: color-mix(in srgb, var(--color-warning) 16%, transparent);
+        background: var(--btn-warning-hover-bg);
       }
 
       &:focus-visible {
-        outline-color: color-mix(in srgb, var(--color-warning) 70%, var(--page-bg) 30%);
+        outline-color: var(--btn-warning-focus);
       }
     }
+  }
+
+  .tabs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space);
+    border-bottom: var(--border) solid var(--border-color);
+    padding-bottom: 0;
+  }
+
+  .tab {
+    --tab-hover-bg: var(--surface-hover);
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 2.5rem;
+    min-width: 5ch;
+    padding: var(--space) calc(var(--space) * 2);
+    font: inherit;
+    font-size: 0.875rem;
+    line-height: 1.5;
+    text-align: center;
+    white-space: nowrap;
+    cursor: pointer;
+    border: var(--border) solid var(--border-color);
+    border-radius: var(--border);
+    background: var(--page-bg);
+    color: var(--text-color);
+    text-decoration: none;
+    transform: translateY(var(--border));
+    transition:
+      background-color 120ms ease,
+      border-color 120ms ease,
+      color 120ms ease;
+
+    &:hover {
+      background: var(--tab-hover-bg);
+      color: var(--text-color);
+      border-bottom-color: var(--tab-hover-bg);
+    }
+
+    &:focus-visible {
+      outline: 2px solid var(--link-color);
+      outline-offset: 2px;
+    }
+  }
+
+  .tab-active {
+    background: var(--page-bg);
+    border-color: var(--border-color);
+    border-bottom: 0;
+    color: var(--text-color);
   }
 
   .form {
@@ -232,7 +290,7 @@
     color: inherit;
 
     &::backdrop {
-      background: color-mix(in srgb, var(--text-color) 24%, transparent);
+      background: var(--overlay-backdrop);
       backdrop-filter: blur(2px);
     }
   }
@@ -278,7 +336,7 @@
     border: var(--border) solid var(--border-color);
     border-left-width: calc(var(--border) * 3);
     border-radius: var(--border);
-    background: color-mix(in srgb, var(--page-bg) 88%, var(--text-color) 12%);
+    background: var(--notification-bg);
     padding: calc(var(--space) * 0.75) var(--space);
 
     > p {
@@ -310,7 +368,7 @@
       padding: 0 0 var(--space) 0;
 
       label {
-        color: color-mix(in srgb, var(--text-color) 70%, transparent);
+        color: var(--muted-text-color);
       }
 
       p {

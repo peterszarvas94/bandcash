@@ -16,7 +16,6 @@ templ LoginSentPage(data AuthPageData) {
 			<div data-signals={templ.JSONString(map[string]any{"csrf": utils.CSRFToken(ctx)})} data-init="@get('/sse')"></div>
 			@shared.Notifications()
 			<main id="app" class="single-col">
-				<h1>{data.Title}</h1>
 				@shared.Breadcrumbs(data.Breadcrumbs, data.UserEmail)
 				<p>{ctxi18n.T(ctx, "auth.check_email_body")}</p>
 				<p>{ctxi18n.T(ctx, "auth.link_expiry")}</p>

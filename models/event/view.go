@@ -24,7 +24,6 @@ type EventsData struct {
 	Events      []db.Event
 	Breadcrumbs []utils.Crumb
 	GroupID     string
-	GroupName   string
 	IsAdmin     bool
 	UserEmail   string
 }

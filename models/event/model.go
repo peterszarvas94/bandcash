@@ -77,7 +77,7 @@ func (e *Events) GetShowData(ctx context.Context, groupID, eventID string) (Even
 		GroupID:          groupID,
 		Breadcrumbs: []utils.Crumb{
 			{Label: ctxi18n.T(ctx, "groups.title"), Href: "/dashboard"},
-			{Label: group.Name, Href: "/groups/" + groupID + "/events"},
+			{Label: group.Name, Href: "/groups/" + groupID},
 			{Label: event.Title},
 		},
 	}, nil
@@ -95,13 +95,12 @@ func (e *Events) GetIndexData(ctx context.Context, groupID string) (EventsData, 
 	}
 
 	return EventsData{
-		Title:     ctxi18n.T(ctx, "events.title"),
-		Events:    events,
-		GroupID:   groupID,
-		GroupName: group.Name,
+		Title:   ctxi18n.T(ctx, "events.title"),
+		Events:  events,
+		GroupID: groupID,
 		Breadcrumbs: []utils.Crumb{
 			{Label: ctxi18n.T(ctx, "groups.title"), Href: "/dashboard"},
-			{Label: group.Name, Href: "/groups/" + groupID + "/events"},
+			{Label: group.Name, Href: "/groups/" + groupID},
 			{Label: ctxi18n.T(ctx, "events.title")},
 		},
 	}, nil

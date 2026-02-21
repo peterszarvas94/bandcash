@@ -6,13 +6,10 @@ import (
 	ctxi18n "github.com/invopop/ctxi18n/i18n"
 
 	"bandcash/internal/utils"
-	shared "bandcash/models/shared"
 )
 
 templ EventShowSidebar(data EventData) {
 	if data.IsAdmin {
-		@shared.GroupReadNav(data.GroupID)
-
 		<div data-show="$eventFormState === '' && $formState === ''">
 			<div class="pb">
 			<h3>{ctxi18n.T(ctx, "events.actions")}</h3>
@@ -173,7 +170,5 @@ templ EventShowSidebar(data EventData) {
 				</div>
 			</form>
 		</div>
-	} else {
-		@shared.GroupReadNav(data.GroupID)
 	}
 }

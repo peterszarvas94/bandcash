@@ -35,3 +35,13 @@ type ViewersPageData struct {
 	Invites     []db.MagicLink
 	IsAdmin     bool
 }
+
+type GroupPageData struct {
+	Title       string
+	Breadcrumbs []utils.Crumb
+	UserEmail   string
+	Group       db.Group
+	Admin       db.User
+	TotalAmount int64
+	IsAdmin     bool
+}

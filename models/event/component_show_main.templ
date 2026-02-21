@@ -9,9 +9,9 @@ import (
 )
 
 templ EventShowMain(data EventData) {
-	<h1>{ data.Title }</h1>
 	@shared.Breadcrumbs(data.Breadcrumbs, data.UserEmail)
-	<h2>{ ctxi18n.T(ctx, "events.details") }</h2>
+	@shared.GroupTabs(data.GroupID, "events")
+	<h2 class="pt">{ ctxi18n.T(ctx, "events.details") }</h2>
 	<div class="event-details">
 		<div class="field">
 			<label>{ ctxi18n.T(ctx, "fields.title") }</label>
@@ -72,15 +72,15 @@ templ EventShowMain(data EventData) {
 								>
 									{ ctxi18n.T(ctx, "actions.edit") }
 								</button>
-							<button
-								class="btn btn-danger"
-								type="button"
-								data-attr:disabled="$formState !== '' || $eventFormState !== ''"
-								data-sure-title={ ctxi18n.T(ctx, "participants.delete_confirm") }
-								data-sure-message={ ctxi18n.T(ctx, "confirm.destructive_message") }
-								data-sure-submit={ ctxi18n.T(ctx, "actions.delete") }
-								data-on:click={ fmt.Sprintf("@delete('/groups/%s/events/%s/participants/%s')", data.GroupID, data.Event.ID, participant.ID) }
-							>
+								<button
+									class="btn btn-danger"
+									type="button"
+									data-attr:disabled="$formState !== '' || $eventFormState !== ''"
+									data-sure-title={ ctxi18n.T(ctx, "participants.delete_confirm") }
+									data-sure-message={ ctxi18n.T(ctx, "confirm.destructive_message") }
+									data-sure-submit={ ctxi18n.T(ctx, "actions.delete") }
+									data-on:click={ fmt.Sprintf("@delete('/groups/%s/events/%s/participants/%s')", data.GroupID, data.Event.ID, participant.ID) }
+								>
 									{ ctxi18n.T(ctx, "actions.delete") }
 								</button>
 							</div>

@@ -9,23 +9,23 @@ import (
 )
 
 templ MemberIndexMain(data MembersData) {
-	<h1>{data.Title}</h1>
 	@shared.Breadcrumbs(data.Breadcrumbs, data.UserEmail)
-	<table class="table">
+	@shared.GroupTabs(data.GroupID, "members")
+	<table class="table pt">
 		<thead>
 			<tr>
-				<th>{ctxi18n.T(ctx, "fields.name")}</th>
-				<th>{ctxi18n.T(ctx, "fields.description")}</th>
+				<th>{ ctxi18n.T(ctx, "fields.name") }</th>
+				<th>{ ctxi18n.T(ctx, "fields.description") }</th>
 				if data.IsAdmin {
-					<th>{ctxi18n.T(ctx, "table.actions")}</th>
+					<th>{ ctxi18n.T(ctx, "table.actions") }</th>
 				}
 			</tr>
 		</thead>
 		<tbody>
 			for _, member := range data.Members {
-				<tr data-member-name={member.Name} data-member-description={member.Description}>
-					<td><a href={fmt.Sprintf("/groups/%s/members/%s", data.GroupID, member.ID)}>{member.Name}</a></td>
-					<td>{member.Description}</td>
+				<tr data-member-name={ member.Name } data-member-description={ member.Description }>
+					<td><a href={ fmt.Sprintf("/groups/%s/members/%s", data.GroupID, member.ID) }>{ member.Name }</a></td>
+					<td>{ member.Description }</td>
 					if data.IsAdmin {
 						<td>
 							<div class="row">
@@ -33,20 +33,20 @@ templ MemberIndexMain(data MembersData) {
 									class="btn"
 									type="button"
 									data-attr:disabled="$formState !== ''"
-									data-on:click={fmt.Sprintf("$formState = 'edit'; $editingId = %q; $formData = {name: el.closest('tr').dataset.memberName, description: el.closest('tr').dataset.memberDescription}", member.ID)}
+									data-on:click={ fmt.Sprintf("$formState = 'edit'; $editingId = %q; $formData = {name: el.closest('tr').dataset.memberName, description: el.closest('tr').dataset.memberDescription}", member.ID) }
 								>
-								{ctxi18n.T(ctx, "actions.edit")}
-							</button>
-							<button
-								class="btn btn-danger"
-								data-attr:disabled="$formState !== ''"
-								data-sure-title={ ctxi18n.T(ctx, "members.delete_confirm") }
-								data-sure-message={ ctxi18n.T(ctx, "confirm.destructive_message") }
-								data-sure-submit={ ctxi18n.T(ctx, "actions.delete") }
-							data-on:click={fmt.Sprintf("@delete('/groups/%s/members/%s')", data.GroupID, member.ID)}
-							>
-								{ctxi18n.T(ctx, "actions.delete")}
-							</button>
+									{ ctxi18n.T(ctx, "actions.edit") }
+								</button>
+								<button
+									class="btn btn-danger"
+									data-attr:disabled="$formState !== ''"
+									data-sure-title={ ctxi18n.T(ctx, "members.delete_confirm") }
+									data-sure-message={ ctxi18n.T(ctx, "confirm.destructive_message") }
+									data-sure-submit={ ctxi18n.T(ctx, "actions.delete") }
+									data-on:click={ fmt.Sprintf("@delete('/groups/%s/members/%s')", data.GroupID, member.ID) }
+								>
+									{ ctxi18n.T(ctx, "actions.delete") }
+								</button>
 							</div>
 						</td>
 					}
@@ -55,9 +55,9 @@ templ MemberIndexMain(data MembersData) {
 			if len(data.Members) == 0 {
 				<tr>
 					if data.IsAdmin {
-						<td colspan="3">{ctxi18n.T(ctx, "table.empty")}</td>
+						<td colspan="3">{ ctxi18n.T(ctx, "table.empty") }</td>
 					} else {
-						<td colspan="2">{ctxi18n.T(ctx, "table.empty")}</td>
+						<td colspan="2">{ ctxi18n.T(ctx, "table.empty") }</td>
 					}
 				</tr>
 			}

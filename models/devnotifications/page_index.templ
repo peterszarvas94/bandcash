@@ -14,7 +14,6 @@ templ Index() {
 			<div data-signals={ templ.JSONString(map[string]any{"csrf": utils.CSRFToken(ctx), "errors": map[string]any{"name": ""}, "formData": map[string]any{"name": ""}}) } data-init="@get('/sse')"></div>
 			@shared.Notifications()
 			<main id="app" class="single-col">
-				<h1>Dev: Notifications + Inline Errors</h1>
 				@shared.Breadcrumbs([]utils.Crumb{{Label: "Dev Notifications"}}, "")
 				<p>Rule check: form validation errors are inline; all other outcomes are notifications.</p>
 				<h2>Inline Error Test</h2>

@@ -1,118 +1,164 @@
-# Agent Guide for bandcash
+# AGENTS Guide for `bandcash`
 
-This repo is a Go + Echo + Datastar app with SQLite, sqlc, and goose.
-Use this file as the default operating guide for agentic changes.
+This document is for coding agents working in this repository.
+Treat it as the default operational guide for build/test/lint and code style.
 
-## Quick Orientation
-- Entry point: `cmd/server/main.go`.
-- Feature modules live in `models/` (event, member, home).
-- Shared internals: `internal/` (config, db, logger, middleware, utils, view, hub, sse).
-- Templates live in `models/shared/templates/`; static assets in `static/`.
+## Project Snapshot
 
-## Build, Lint, and Test Commands
-Use `mise` tasks where possible.
+- Stack: Go 1.26 + Echo + Datastar + templ + SQLite + sqlc + goose.
+- Entrypoint: `cmd/server/main.go`.
+- Main app areas are in `models/` (`event`, `member`, `group`, `auth`, `settings`, etc.).
+- Shared internals are in `internal/` (`db`, `middleware`, `utils`, `i18n`, `email`).
+- Templ source files are `*.templ`; generated files are `*_templ.go`.
+- Sqlc query files are under `internal/db/queries/*.sql`; generated Go is `internal/db/*.sql.go`.
 
-### Build and Run
-- `mise run dev`        Hot reload server via air.
-- `mise run build`      Build binary to `tmp/server`.
-- `mise run start`      Run the built binary.
-- `mise run run`        Run the server directly.
+## Repository Layout (High Value Paths)
+
+- `cmd/server/main.go`: server wiring, middleware chain, route registration, shutdown.
+- `cmd/seed/main.go`: local/dev data seed command.
+- `models/*/routes.go`: feature route registration and middleware boundaries.
+- `models/*/handlers.go`: Echo handlers + Datastar signal parsing and SSE patching.
+- `models/*/model.go`: DB access orchestration and page/view data composition.
+- `internal/middleware/*.go`: auth, group/admin guards, locale, CSRF, compression.
+- `internal/utils/*.go`: rendering, validation, IDs, notifications, JSON/signal helpers.
+- `internal/db/migrations`: goose migration files.
+
+## Build / Run / Lint / Test Commands
+
+Prefer `mise` tasks first, then direct Go commands when needed.
+
+### Dev and Run
+
+- `mise run dev` - start with hot reload (`air`).
+- `mise run run` - run server directly (`go run ./cmd/server/main.go`).
+- `mise run build` - build binary at `tmp/server`.
+- `mise run start` - run built binary.
+- `mise run routes` - print registered routes and exit.
+
+### Formatting and Static Checks
+
+- `mise run format` - run `go fmt ./...`.
+- `mise run vet` - run `go vet ./...`.
+- `mise run lint` - run `golangci-lint run`.
+- `mise run lsp` - run `gopls check` on tracked Go files, excluding generated DB files.
+- `mise run check` - currently broken in this repo (`fmt` task referenced but not defined).
+- Recommended replacement for `check`: `mise run format && mise run vet && mise run test`.
 
 ### Tests
-- `mise run test`       Run all tests (`go test -v ./...`).
+
+- `mise run test` - run all tests (`go test -v ./...`).
 - Single package: `go test -v ./models/event`.
-- Single test: `go test -v ./models/event -run TestName`.
-- Single test exact: `go test -v ./models/event -run '^TestName$'`.
-- Short mode: `go test -short -v ./...`.
+- Single file (by package + regex): `go test -v ./models/event -run TestHandlerCreate`.
+- Single test exact match: `go test -v ./models/event -run '^TestHandlerCreate$'`.
+- Multiple tests by pattern: `go test -v ./models/event -run 'TestCreate|TestUpdate'`.
+- With race detector: `go test -race ./...`.
+- With coverage profile: `go test -coverprofile=coverage.out ./...`.
 
-### Format, Lint, Vet
-- `mise run fmt`        Format Go code (`go fmt ./...`).
-- `mise run vet`        Run `go vet`.
-- `mise run lint`       Run `golangci-lint`.
-- `mise run lsp`        Run `gopls check` (excludes generated sqlc files).
-- `mise run check`      Run fmt + vet + test.
+Notes:
+- There are currently no `*_test.go` files in this repo, but the commands above are the expected patterns.
+- For sqlc-dependent packages, ensure DB-facing code compiles after query changes.
 
-### Database and Codegen
-- `mise run goose-up`       Run migrations.
-- `mise run goose-status`   Show migration status.
-- `mise run goose-create name=add_new_column`  Create migration.
-- `mise run sqlc`           Regenerate sqlc code.
-- `mise run seed`           Seed database.
+### Database / Codegen / Templates
 
-## Code Style Guidelines
-Follow existing patterns from `models/`, `internal/`, and `cmd/`.
+- `mise run goose-up` - apply migrations to `sqlite.db`.
+- `mise run goose-status` - migration status.
+- `mise run goose-create name=add_new_table` - create migration scaffold.
+- `mise run sqlc` - regenerate sqlc code from SQL queries.
+- `mise run templ` - regenerate templ components.
+- `mise run seed` - seed local data.
 
-### Formatting and Imports
-- Run `gofmt` (via `mise run fmt`) before final changes.
-- Imports are grouped: stdlib, third-party, local (`bandcash/...`) with blank lines.
-- Use import aliases when common (`appmw` for `internal/middleware`).
+## Mandatory Generated-File Rules
 
-### Types and Naming
-- REST handler methods use Rails-style names: `Index`, `New`, `Show`, `Edit`, `Create`, `Update`, `Destroy`.
-- Use data structs like `EventData`, `EventsData`, `MemberData` for template rendering.
-- Use `int` for route params, convert to `int64` for database calls.
-- Prefer explicit names over abbreviations; `memberID`, `eventID`, `clientID`.
+- Do not manually edit `internal/db/*.sql.go` (sqlc output).
+- Do not manually edit `*_templ.go` (templ output).
+- Modify sources (`*.sql`, `*.templ`) and regenerate with `mise run sqlc` / `mise run templ`.
 
-### Error Handling and Responses
-- Handle errors early; log with context and return user-safe responses.
-- Pattern for handlers:
-  - Parse/validate inputs.
-  - Call model/db helpers.
-  - Log failures: `log.Error("area.action: message", "err", err)`.
-  - Return `c.String(500, "Internal Server Error")` on server errors.
-  - Use `c.NoContent(400)` for bad signals or invalid payloads.
-  - Use `c.Redirect(303, ...)` after create/update/delete.
-- Use `utils.ParseRawInt64` when signals arrive as `json.RawMessage`.
+## Code Style and Conventions
+
+### Language and Formatting
+
+- Keep code `gofmt`-clean; run `mise run format` before finishing.
+- Prefer small functions and early returns for invalid input/error paths.
+- Avoid large inline anonymous structs when a named type improves reuse/readability.
+
+### Imports
+
+- Use standard Go grouping: stdlib, third-party, local module (`bandcash/...`) with blank lines.
+- Keep import aliases only when needed for clarity/conflict (`ctxi18n`, `echoMiddleware`, etc.).
+- Remove unused imports; do not keep speculative imports.
+
+### Types and Data Modeling
+
+- Prefer concrete structs for Datastar signals (`...Signals`, `...Params`) near the handler.
+- Use JSON tags matching frontend signal keys (mostly lower camelCase).
+- IDs are string-based in routes and DB layer (e.g., `grp_*`, `evt_*`, `mem_*`, `tok_*`).
+- Use `int64` for money/amount fields; do not introduce floating point for currency math.
+- Pass `context.Context` from request down into model/db calls.
+
+### Naming
+
+- Exported handlers follow Echo conventions with action names like `Index`, `Show`, `Create`, `Update`, `Destroy`.
+- Non-REST screens may use explicit page names (`GroupsPage`, `NewGroupPage`, `ViewersPage`).
+- Use descriptive variable names: `groupID`, `userEmail`, `memberID`, `signals`, `data`.
+- Error field lists are named `<entity>ErrorFields`; default signal maps use `default<Entity>Signals`.
+
+### Handler Patterns
+
+- In view handlers, call `utils.EnsureClientID(c)` before rendering.
+- Parse route params/signals first; validate; then perform DB mutation/read.
+- Use `utils.ValidateWithLocale` for payload validation and return validation errors via SSE signals.
+- On Datastar signal parse failure, return `c.NoContent(400)`.
+- For validation failures, return `c.NoContent(422)` and patch `errors` state.
+- After successful mutations, notify via `utils.Notify` and patch HTML/signals via `utils.SSEHub`.
+
+### Error Handling
+
+- Follow fail-fast style with early `if err != nil` blocks.
+- Log internal errors with `slog` and structured key/value pairs (`"err", err`).
+- Return user-safe HTTP responses; avoid exposing raw DB/internal errors.
+- For guarded routes, use middleware redirects (`/auth/login`, `/dashboard`) consistent with existing code.
 
 ### Logging
-- Use request logger from middleware: `log := appmw.Logger(c)`.
-- Use `slog` directly for app startup/shutdown and non-request contexts.
-- Log keys are short, stable, and structured (no printf strings).
 
-### HTTP and Handlers
-- Call `utils.EnsureClientID(c)` early in view handlers.
-- Use `datastar.ReadSignals` for form submissions; keep signal structs near handlers.
-- Keep route parsing and validations in handler; DB work in model methods.
+- Use `log/slog` consistently.
+- Message format convention is `domain.action: detail` (for example: `event.update: failed to render`).
+- Include stable keys (`group_id`, `event_id`, `member_id`, `err`), not printf interpolation.
 
-### Templates and UI
-- Templates follow `index/new/show/edit` naming.
-- Use the shared breadcrumbs partial `models/shared/templates/breadcrumbs.html`.
-- View data includes `Breadcrumbs []utils.Crumb` when applicable.
+### Routing and Middleware
 
-### Datastar + SSE
-- Single SSE stream at `/sse` and a `view` signal drives rendering.
-- After mutations, use `hub.Hub.Render(clientID)` and `hub.Hub.PatchSignals`.
-- Signal names are lower camelCase and match template usage.
+- Group-scoped routes live under `/groups/:groupId` and use:
+  - `middleware.RequireAuth()`
+  - `middleware.RequireGroup()`
+  - `middleware.RequireAdmin()` for mutations requiring admin access.
+- Preserve current middleware chain order in `cmd/server/main.go` unless intentionally changing security behavior.
 
-### Database and sqlc
-- SQL queries live in `internal/db/queries/*.sql`.
-- Generated code is in `internal/db/*.sql.go` and should not be edited manually.
-- After changing queries or migrations, run `mise run sqlc`.
-- Migrations live in `internal/db/migrations/` and are managed by goose.
-- The server does not auto-run migrations; use `mise run goose-up` explicitly.
+### Frontend / Templ / Datastar
 
-## Conventions by Example
-- Parsing params: `id, err := strconv.Atoi(c.Param("id"))`.
-- On invalid ID: `return c.String(400, "Invalid ID")`.
-- On signal read error: `return c.NoContent(400)` with warning log.
-- On success: `return c.NoContent(200)` or redirect.
+- Keep signal names and payload shapes aligned between `*.templ` and handler structs.
+- Reuse existing page/component composition patterns (`EventIndex`, `EventShow`, `MemberIndex`, etc.).
+- Prefer patching via `utils.SSEHub.PatchHTML` + `PatchSignals` rather than ad-hoc response shapes.
+- Keep notification usage consistent (`utils.Notify(c, "success"|"error"|"warning", message)`).
 
-## Tooling Notes
-- Go version is specified in `go.mod` (currently 1.24.0).
-- Mise tasks are defined in `mise.toml`.
-- `golangci-lint` is available via `mise`.
+### i18n and User-Facing Strings
 
-## Cursor / Copilot Rules
-- No Cursor rules found (`.cursor/rules/` or `.cursorrules` not present).
-- No Copilot instructions found (`.github/copilot-instructions.md` not present).
+- Use `ctxi18n.T(ctx, key, args...)` for user-visible text where localized keys already exist.
+- Avoid introducing hard-coded user-facing strings in handlers when a translation key pattern is available.
 
-## When Adding New Code
-- Match handler and model patterns in `models/event` and `models/member`.
-- Keep handlers thin; prefer `GetXData` or `CreateX` helpers in the model.
-- Ensure signal names are consistent across handlers and templates.
-- Update breadcrumbs for new pages and include `utils.Crumb` data.
+## Operational Expectations for Agents
 
-## Things to Avoid
-- Do not edit generated sqlc files in `internal/db/*.sql.go`.
-- Avoid adding new logging styles; stick to `slog` + `appmw.Logger`.
-- Avoid changing existing routes without updating SSE view handling.
+- Make minimal, targeted changes; avoid broad refactors unless requested.
+- Keep handlers thin; put reusable data assembly in model/helper methods.
+- Respect existing conventions before introducing new abstractions.
+- If migrations or queries change, regenerate sqlc and ensure code compiles.
+- If templ files change, regenerate templ output and ensure build/test still pass.
+
+## Cursor / Copilot Rule Audit
+
+Checked paths:
+- `.cursor/rules/`
+- `.cursorrules`
+- `.github/copilot-instructions.md`
+
+Result in this repository:
+- No Cursor rules found.
+- No Copilot instruction file found.

@@ -9,33 +9,32 @@ import (
 )
 
 templ EventIndexMain(data EventsData) {
-	<h1>{data.Title}</h1>
 	@shared.Breadcrumbs(data.Breadcrumbs, data.UserEmail)
-
-	<table class="table">
+	@shared.GroupTabs(data.GroupID, "events")
+	<table class="table pt">
 		<thead>
 			<tr>
-				<th>{ctxi18n.T(ctx, "fields.title")}</th>
-				<th>{ctxi18n.T(ctx, "fields.time")}</th>
-				<th>{ctxi18n.T(ctx, "fields.description")}</th>
-				<th>{ctxi18n.T(ctx, "fields.amount")}</th>
+				<th>{ ctxi18n.T(ctx, "fields.title") }</th>
+				<th>{ ctxi18n.T(ctx, "fields.time") }</th>
+				<th>{ ctxi18n.T(ctx, "fields.description") }</th>
+				<th>{ ctxi18n.T(ctx, "fields.amount") }</th>
 				if data.IsAdmin {
-					<th>{ctxi18n.T(ctx, "table.actions")}</th>
+					<th>{ ctxi18n.T(ctx, "table.actions") }</th>
 				}
 			</tr>
 		</thead>
 		<tbody>
 			for _, event := range data.Events {
 				<tr
-					data-event-title={event.Title}
-					data-event-time={event.Time}
-					data-event-description={event.Description}
-					data-event-amount={fmt.Sprintf("%d", event.Amount)}
+					data-event-title={ event.Title }
+					data-event-time={ event.Time }
+					data-event-description={ event.Description }
+					data-event-amount={ fmt.Sprintf("%d", event.Amount) }
 				>
-					<td><a href={fmt.Sprintf("/groups/%s/events/%s", data.GroupID, event.ID)}>{event.Title}</a></td>
-					<td>{event.Time}</td>
-					<td>{event.Description}</td>
-					<td class="text-right">{fmt.Sprintf("%d", event.Amount)}</td>
+					<td><a href={ fmt.Sprintf("/groups/%s/events/%s", data.GroupID, event.ID) }>{ event.Title }</a></td>
+					<td>{ event.Time }</td>
+					<td>{ event.Description }</td>
+					<td class="text-right">{ fmt.Sprintf("%d", event.Amount) }</td>
 					if data.IsAdmin {
 						<td>
 							<div class="row row-right">
@@ -43,19 +42,19 @@ templ EventIndexMain(data EventsData) {
 									class="btn"
 									type="button"
 									data-attr:disabled="$formState !== ''"
-									data-on:click={fmt.Sprintf("$formState = 'edit'; $editingId = %q; $formData = {title: el.closest('tr').dataset.eventTitle, time: el.closest('tr').dataset.eventTime, description: el.closest('tr').dataset.eventDescription, amount: Number(el.closest('tr').dataset.eventAmount)}", event.ID)}
+									data-on:click={ fmt.Sprintf("$formState = 'edit'; $editingId = %q; $formData = {title: el.closest('tr').dataset.eventTitle, time: el.closest('tr').dataset.eventTime, description: el.closest('tr').dataset.eventDescription, amount: Number(el.closest('tr').dataset.eventAmount)}", event.ID) }
 								>
-									{ctxi18n.T(ctx, "actions.edit")}
+									{ ctxi18n.T(ctx, "actions.edit") }
 								</button>
-							<button
-								class="btn btn-danger"
-								data-attr:disabled="$formState !== ''"
-								data-sure-title={ ctxi18n.T(ctx, "events.delete_confirm") }
-								data-sure-message={ ctxi18n.T(ctx, "confirm.destructive_message") }
-								data-sure-submit={ ctxi18n.T(ctx, "actions.delete") }
-							data-on:click={fmt.Sprintf("@delete('/groups/%s/events/%s')", data.GroupID, event.ID)}
-							>
-									{ctxi18n.T(ctx, "actions.delete")}
+								<button
+									class="btn btn-danger"
+									data-attr:disabled="$formState !== ''"
+									data-sure-title={ ctxi18n.T(ctx, "events.delete_confirm") }
+									data-sure-message={ ctxi18n.T(ctx, "confirm.destructive_message") }
+									data-sure-submit={ ctxi18n.T(ctx, "actions.delete") }
+									data-on:click={ fmt.Sprintf("@delete('/groups/%s/events/%s')", data.GroupID, event.ID) }
+								>
+									{ ctxi18n.T(ctx, "actions.delete") }
 								</button>
 							</div>
 						</td>
@@ -65,9 +64,9 @@ templ EventIndexMain(data EventsData) {
 			if len(data.Events) == 0 {
 				<tr>
 					if data.IsAdmin {
-						<td colspan="5">{ctxi18n.T(ctx, "table.empty")}</td>
+						<td colspan="5">{ ctxi18n.T(ctx, "table.empty") }</td>
 					} else {
-						<td colspan="4">{ctxi18n.T(ctx, "table.empty")}</td>
+						<td colspan="4">{ ctxi18n.T(ctx, "table.empty") }</td>
 					}
 				</tr>
 			}

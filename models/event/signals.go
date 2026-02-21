@@ -1,15 +1,12 @@
 package event
 
-func eventIndexSignals(csrfToken, groupName string) map[string]any {
+func eventIndexSignals(csrfToken string) map[string]any {
 	return map[string]any{
 		"csrf":           csrfToken,
 		"mode":           "",
 		"formState":      "",
-		"groupFormState": "",
 		"editingId":      0,
 		"formData":       map[string]any{"title": "", "time": "", "description": "", "amount": 0},
-		"groupFormData":  map[string]any{"name": groupName},
-		"groupErrors":    map[string]any{"name": ""},
 		"eventFormState": "",
 		"errors":         map[string]any{"title": "", "time": "", "description": "", "amount": "", "memberId": "", "expense": ""},
 	}

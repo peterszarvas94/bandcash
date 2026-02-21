@@ -1,8 +1,8 @@
 en:
   app:
-    title: "Bandcash"
+    title: "BandCash"
   nav:
-    home: "Home"
+    home: "BandCash"
     dashboard: "Dashboard"
     logged_in_as: "Logged in as"
   auth:
