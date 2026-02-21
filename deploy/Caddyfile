@@ -1,0 +1,11 @@
+bandcash.app {
+  encode zstd gzip
+
+  reverse_proxy 127.0.0.1:2222
+
+  header {
+    X-Content-Type-Options nosniff
+    X-Frame-Options SAMEORIGIN
+    Referrer-Policy strict-origin-when-cross-origin
+  }
+}
