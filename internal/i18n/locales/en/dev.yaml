@@ -1,0 +1,21 @@
+en:
+  dev:
+    title: "Dev"
+    notifications:
+      title: "Dev Notifications"
+      rule: "Rule check: form validation errors are inline; all other outcomes are notifications."
+      inline_test: "Inline Error Test"
+      required_field: "Required field"
+      type_anything: "Type anything"
+      submit_inline: "Submit inline test"
+      notification_tests: "Notification Tests"
+      info: "Info notification"
+      success: "Success notification"
+      warning: "Warning notification"
+      error: "Error notification"
+      field_required: "Field is required."
+      inline_passed: "Inline validation passed."
+      success_test: "Success notification test."
+      error_test: "Error notification test."
+      info_test: "Info notification test."
+      warning_test: "Warning notification test."

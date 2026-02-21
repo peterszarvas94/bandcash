@@ -102,6 +102,16 @@ templ GroupTabs(groupID string, activeTab string) {
 	</nav>
 }
 
+templ DevTabs(activeTab string) {
+	<nav class="tabs" aria-label={ ctxi18n.T(ctx, "dev.title") }>
+		if activeTab == "notifications" {
+			<a class="tab tab-active" href="/dev/notifications">{ ctxi18n.T(ctx, "dev.notifications.title") }</a>
+		} else {
+			<a class="tab" href="/dev/notifications">{ ctxi18n.T(ctx, "dev.notifications.title") }</a>
+		}
+	</nav>
+}
+
 templ TwoCol(id string, main templ.Component, sidebar templ.Component) {
 	<div id={ id } class="two-col">
 		<main id="app">

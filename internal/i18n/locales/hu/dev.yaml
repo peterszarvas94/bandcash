@@ -1,0 +1,21 @@
+hu:
+  dev:
+    title: "Fejlesztő"
+    notifications:
+      title: "Fejlesztői értesítések"
+      rule: "Szabály ellenőrzés: az űrlap validációs hibák inline jelennek meg, minden más értesítésként."
+      inline_test: "Inline hiba teszt"
+      required_field: "Kötelező mező"
+      type_anything: "Írj be bármit"
+      submit_inline: "Inline teszt küldése"
+      notification_tests: "Értesítés tesztek"
+      info: "Infó értesítés"
+      success: "Siker értesítés"
+      warning: "Figyelmeztetés értesítés"
+      error: "Hiba értesítés"
+      field_required: "A mező kitöltése kötelező."
+      inline_passed: "Inline validáció sikeres."
+      success_test: "Siker értesítés teszt."
+      error_test: "Hiba értesítés teszt."
+      info_test: "Infó értesítés teszt."
+      warning_test: "Figyelmeztetés értesítés teszt."

@@ -14,6 +14,7 @@ func Register(e *echo.Echo) {
 	}
 
 	h := &DevNotifications{}
+	e.GET("/dev", h.Redirect)
 	e.GET("/dev/notifications", h.Index)
 	e.POST("/dev/notifications/inline", h.TestInline)
 	e.POST("/dev/notifications/success", h.TestSuccess)

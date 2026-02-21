@@ -27,7 +27,7 @@ templ HomeIndex(data HomeData) {
 						<a class="btn" href="/settings">{ctxi18n.T(ctx, "settings.title")}</a>
 					}
 					if utils.Env().AppEnv == "development" {
-						<a class="btn" href="/dev/notifications">Dev Notifications</a>
+						<a class="btn" href="/dev">{ctxi18n.T(ctx, "dev.title")}</a>
 					}
 				</div>
 			</main>

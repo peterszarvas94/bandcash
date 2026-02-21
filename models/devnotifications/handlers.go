@@ -4,6 +4,7 @@ import (
 	"net/http"
 	"strings"
 
+	ctxi18n "github.com/invopop/ctxi18n/i18n"
 	"github.com/labstack/echo/v4"
 	"github.com/starfederation/datastar-go/datastar"
 
@@ -24,6 +25,10 @@ func (h *DevNotifications) Index(c echo.Context) error {
 	return utils.RenderComponent(c, Index())
 }
 
+func (h *DevNotifications) Redirect(c echo.Context) error {
+	return c.Redirect(http.StatusFound, "/dev/notifications")
+}
+
 func (h *DevNotifications) TestInline(c echo.Context) error {
 	signals := devSignals{}
 	if err := datastar.ReadSignals(c.Request(), &signals); err != nil {
@@ -32,7 +37,7 @@ func (h *DevNotifications) TestInline(c echo.Context) error {
 
 	if strings.TrimSpace(signals.FormData.Name) == "" {
 		utils.SSEHub.PatchSignals(c, map[string]any{
-			"errors": utils.WithErrors(devErrorFields, map[string]string{"name": "Field is required."}),
+			"errors": utils.WithErrors(devErrorFields, map[string]string{"name": ctxi18n.T(c.Request().Context(), "dev.notifications.field_required")}),
 		})
 		return c.NoContent(http.StatusUnprocessableEntity)
 	}
@@ -41,7 +46,7 @@ func (h *DevNotifications) TestInline(c echo.Context) error {
 		"errors":   utils.GetEmptyErrors(devErrorFields),
 		"formData": map[string]any{"name": ""},
 	})
-	utils.Notify(c, "success", "Inline validation passed.")
+	utils.Notify(c, "success", ctxi18n.T(c.Request().Context(), "dev.notifications.inline_passed"))
 	if err := h.patchNotifications(c); err != nil {
 		return c.NoContent(http.StatusInternalServerError)
 	}
@@ -50,7 +55,7 @@ func (h *DevNotifications) TestInline(c echo.Context) error {
 }
 
 func (h *DevNotifications) TestSuccess(c echo.Context) error {
-	utils.Notify(c, "success", "Success notification test.")
+	utils.Notify(c, "success", ctxi18n.T(c.Request().Context(), "dev.notifications.success_test"))
 	if err := h.patchNotifications(c); err != nil {
 		return c.NoContent(http.StatusInternalServerError)
 	}
@@ -58,7 +63,7 @@ func (h *DevNotifications) TestSuccess(c echo.Context) error {
 }
 
 func (h *DevNotifications) TestError(c echo.Context) error {
-	utils.Notify(c, "error", "Error notification test.")
+	utils.Notify(c, "error", ctxi18n.T(c.Request().Context(), "dev.notifications.error_test"))
 	if err := h.patchNotifications(c); err != nil {
 		return c.NoContent(http.StatusInternalServerError)
 	}
@@ -66,7 +71,7 @@ func (h *DevNotifications) TestError(c echo.Context) error {
 }
 
 func (h *DevNotifications) TestInfo(c echo.Context) error {
-	utils.Notify(c, "info", "Info notification test.")
+	utils.Notify(c, "info", ctxi18n.T(c.Request().Context(), "dev.notifications.info_test"))
 	if err := h.patchNotifications(c); err != nil {
 		return c.NoContent(http.StatusInternalServerError)
 	}
@@ -74,7 +79,7 @@ func (h *DevNotifications) TestInfo(c echo.Context) error {
 }
 
 func (h *DevNotifications) TestWarning(c echo.Context) error {
-	utils.Notify(c, "warning", "Warning notification test.")
+	utils.Notify(c, "warning", ctxi18n.T(c.Request().Context(), "dev.notifications.warning_test"))
 	if err := h.patchNotifications(c); err != nil {
 		return c.NoContent(http.StatusInternalServerError)
 	}
