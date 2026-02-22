@@ -41,12 +41,20 @@ func Env() *EnvConfig {
 			AppEnv:    getAppEnv("APP_ENV"),
 			SMTPHost:  getEnvString("SMTP_HOST"),
 			SMTPPort:  getEnvInt("SMTP_PORT"),
-			SMTPUser:  getEnvString("SMTP_USERNAME"),
-			SMTPPass:  getEnvString("SMTP_PASSWORD"),
+			SMTPUser:  getDevOptionalEnvString("SMTP_USERNAME", "APP_ENV"),
+			SMTPPass:  getDevOptionalEnvString("SMTP_PASSWORD", "APP_ENV"),
 			EmailFrom: getEnvString("EMAIL_FROM"),
 		}
 	})
 	return envCfg
+}
+
+func getDevOptionalEnvString(key string, appEnvKey string) string {
+	appEnv := getAppEnv(appEnvKey)
+	if appEnv == "development" {
+		return strings.TrimSpace(os.Getenv(key))
+	}
+	return getEnvString(key)
 }
 
 func getEnvString(key string) string {
