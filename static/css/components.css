@@ -223,6 +223,11 @@
     flex: 1 1 14rem;
   }
 
+  .required-mark {
+    color: var(--error-color);
+    margin-left: 0.125rem;
+  }
+
   .two-col {
     display: grid;
     grid-template-columns: minmax(0, 1fr) var(--sidebar-width);

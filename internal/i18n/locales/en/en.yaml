@@ -154,6 +154,7 @@ en:
     max: "Maximum %s"
     gt: "Must be greater than %s"
     gte: "Must be at least %s"
+    email: "Invalid email address"
   groups:
     title: "Groups"
     actions: "Group actions"

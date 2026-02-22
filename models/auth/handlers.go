@@ -21,7 +21,7 @@ type Auth struct {
 
 type authSignals struct {
 	FormData struct {
-		Email string `json:"email"`
+		Email string `json:"email" validate:"required,email,max=320"`
 	} `json:"formData"`
 }
 
@@ -45,16 +45,18 @@ func (a *Auth) LoginRequest(c echo.Context) error {
 	if err := datastar.ReadSignals(c.Request(), &signals); err != nil {
 		return c.NoContent(http.StatusBadRequest)
 	}
-	emailAdress := signals.FormData.Email
-	if emailAdress == "" {
-		return c.NoContent(http.StatusBadRequest)
+	signals.FormData.Email = utils.NormalizeEmail(signals.FormData.Email)
+	if errs := utils.ValidateWithLocale(c.Request().Context(), signals.FormData); errs != nil {
+		_ = utils.SSEHub.PatchSignals(c, map[string]any{"authError": errs["email"]})
+		return c.NoContent(http.StatusUnprocessableEntity)
 	}
+	emailAddress := signals.FormData.Email
 
 	// Check if user exists
-	_, err := db.Qry.GetUserByEmail(c.Request().Context(), emailAdress)
+	_, err := db.Qry.GetUserByEmail(c.Request().Context(), emailAddress)
 	if err != nil {
 		// User doesn't exist - offer to sign up instead
-		err = utils.SSEHub.Redirect(c, "/auth/signup?email="+url.QueryEscape(emailAdress))
+		err = utils.SSEHub.Redirect(c, "/auth/signup?email="+url.QueryEscape(emailAddress))
 		if err != nil {
 			return c.NoContent(http.StatusInternalServerError)
 		}
@@ -68,7 +70,7 @@ func (a *Auth) LoginRequest(c echo.Context) error {
 	_, err = db.Qry.CreateMagicLink(c.Request().Context(), db.CreateMagicLinkParams{
 		ID:        utils.GenerateID("mag"),
 		Token:     token,
-		Email:     emailAdress,
+		Email:     emailAddress,
 		Action:    "login",
 		ExpiresAt: expiresAt,
 	})
@@ -79,7 +81,7 @@ func (a *Auth) LoginRequest(c echo.Context) error {
 	}
 
 	// Send email
-	err = email.Email().SendMagicLink(c.Request().Context(), emailAdress, token, utils.Env().URL)
+	err = email.Email().SendMagicLink(c.Request().Context(), emailAddress, token, utils.Env().URL)
 	if err != nil {
 		slog.Error("auth: failed to send email", "err", err)
 		utils.Notify(c, "error", ctxi18n.T(c.Request().Context(), "auth.notifications.send_email_failed"))
@@ -97,11 +99,11 @@ func (a *Auth) LoginRequest(c echo.Context) error {
 // SignupPage shows the signup form
 func (a *Auth) SignupPage(c echo.Context) error {
 	utils.EnsureClientID(c)
-	emailAdress := c.QueryParam("email")
+	emailAddress := utils.NormalizeEmail(c.QueryParam("email"))
 	data := AuthPageData{
 		Title:       ctxi18n.T(c.Request().Context(), "auth.signup_title"),
 		Breadcrumbs: []utils.Crumb{{Label: ctxi18n.T(c.Request().Context(), "auth.signup")}},
-		Email:       emailAdress,
+		Email:       emailAddress,
 	}
 	return utils.RenderComponent(c, SignupPage(data))
 }
@@ -112,13 +114,15 @@ func (a *Auth) SignupRequest(c echo.Context) error {
 	if err := datastar.ReadSignals(c.Request(), &signals); err != nil {
 		return c.NoContent(http.StatusBadRequest)
 	}
-	emailAdress := signals.FormData.Email
-	if emailAdress == "" {
-		return c.NoContent(http.StatusBadRequest)
+	signals.FormData.Email = utils.NormalizeEmail(signals.FormData.Email)
+	if errs := utils.ValidateWithLocale(c.Request().Context(), signals.FormData); errs != nil {
+		_ = utils.SSEHub.PatchSignals(c, map[string]any{"authError": errs["email"]})
+		return c.NoContent(http.StatusUnprocessableEntity)
 	}
+	emailAddress := signals.FormData.Email
 
 	// Check if user already exists
-	_, err := db.Qry.GetUserByEmail(c.Request().Context(), emailAdress)
+	_, err := db.Qry.GetUserByEmail(c.Request().Context(), emailAddress)
 	if err == nil {
 		err = utils.SSEHub.PatchSignals(c, map[string]any{
 			"authError": ctxi18n.T(c.Request().Context(), "auth.email_in_use"),
@@ -132,7 +136,7 @@ func (a *Auth) SignupRequest(c echo.Context) error {
 	// Create user
 	user, err := db.Qry.CreateUser(c.Request().Context(), db.CreateUserParams{
 		ID:    utils.GenerateID("usr"),
-		Email: emailAdress,
+		Email: emailAddress,
 	})
 	if err != nil {
 		slog.Error("auth: failed to create user", "err", err)
@@ -147,7 +151,7 @@ func (a *Auth) SignupRequest(c echo.Context) error {
 	_, err = db.Qry.CreateMagicLink(c.Request().Context(), db.CreateMagicLinkParams{
 		ID:        utils.GenerateID("mag"),
 		Token:     token,
-		Email:     emailAdress,
+		Email:     emailAddress,
 		Action:    "login",
 		ExpiresAt: expiresAt,
 	})
@@ -157,10 +161,10 @@ func (a *Auth) SignupRequest(c echo.Context) error {
 		return c.NoContent(http.StatusInternalServerError)
 	}
 
-	slog.Info("auth: created user and magic link", "user_id", user.ID, "email", emailAdress)
+	slog.Info("auth: created user and magic link", "user_id", user.ID, "email", emailAddress)
 
 	// Send welcome/login email
-	err = email.Email().SendMagicLink(c.Request().Context(), emailAdress, token, utils.Env().URL)
+	err = email.Email().SendMagicLink(c.Request().Context(), emailAddress, token, utils.Env().URL)
 	if err != nil {
 		slog.Error("auth: failed to send email", "err", err)
 		utils.Notify(c, "error", ctxi18n.T(c.Request().Context(), "auth.notifications.send_email_failed"))
@@ -187,7 +191,7 @@ func (a *Auth) LoginSentPage(c echo.Context) error {
 // VerifyMagicLink handles the magic link verification
 func (a *Auth) VerifyMagicLink(c echo.Context) error {
 	token := c.QueryParam("token")
-	if token == "" {
+	if !utils.IsValidID(token, "tok") {
 		return c.String(http.StatusBadRequest, "Invalid token")
 	}
 

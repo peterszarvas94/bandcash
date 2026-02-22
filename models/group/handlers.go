@@ -21,13 +21,13 @@ type Group struct {
 
 type createGroupSignals struct {
 	FormData struct {
-		Name string `json:"name"`
+		Name string `json:"name" validate:"required,min=1,max=255"`
 	} `json:"formData"`
 }
 
 type addViewerSignals struct {
 	FormData struct {
-		Email string `json:"email"`
+		Email string `json:"email" validate:"required,email,max=320"`
 	} `json:"formData"`
 }
 
@@ -68,11 +68,13 @@ func (g *Group) CreateGroup(c echo.Context) error {
 	if err := datastar.ReadSignals(c.Request(), &signals); err != nil {
 		return c.NoContent(http.StatusBadRequest)
 	}
+	signals.FormData.Name = utils.NormalizeText(signals.FormData.Name)
+	if errs := utils.ValidateWithLocale(c.Request().Context(), signals.FormData); errs != nil {
+		utils.Notify(c, "error", errs["name"])
+		return c.NoContent(http.StatusUnprocessableEntity)
+	}
 
 	name := signals.FormData.Name
-	if name == "" {
-		return c.NoContent(http.StatusBadRequest)
-	}
 
 	// Create group
 	group, err := db.Qry.CreateGroup(c.Request().Context(), db.CreateGroupParams{
@@ -391,11 +393,13 @@ func (g *Group) AddViewer(c echo.Context) error {
 	if err := datastar.ReadSignals(c.Request(), &signals); err != nil {
 		return c.NoContent(http.StatusBadRequest)
 	}
+	signals.FormData.Email = utils.NormalizeEmail(signals.FormData.Email)
+	if errs := utils.ValidateWithLocale(c.Request().Context(), signals.FormData); errs != nil {
+		utils.Notify(c, "error", errs["email"])
+		return g.patchViewersPage(c, groupID, "", "")
+	}
 	emailAdress := signals.FormData.Email
 	var err error
-	if emailAdress == "" {
-		return g.patchViewersPage(c, groupID, "", "groups.errors.email_required")
-	}
 
 	group, err := db.Qry.GetGroupByID(c.Request().Context(), groupID)
 	if err != nil {
@@ -448,7 +452,7 @@ func (g *Group) AddViewer(c echo.Context) error {
 func (g *Group) RemoveViewer(c echo.Context) error {
 	groupID := middleware.GetGroupID(c)
 	userID := c.Param("userId")
-	if userID == "" {
+	if !utils.IsValidID(userID, "usr") {
 		return g.patchViewersPage(c, groupID, "", "groups.errors.invalid_user")
 	}
 
@@ -468,7 +472,7 @@ func (g *Group) RemoveViewer(c echo.Context) error {
 func (g *Group) CancelInvite(c echo.Context) error {
 	groupID := middleware.GetGroupID(c)
 	inviteID := c.Param("inviteId")
-	if inviteID == "" {
+	if !utils.IsValidID(inviteID, "mag") {
 		return g.patchViewersPage(c, groupID, "", "groups.errors.invalid_invite")
 	}
 

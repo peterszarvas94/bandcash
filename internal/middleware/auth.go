@@ -47,8 +47,8 @@ func RequireGroup() echo.MiddlewareFunc {
 			userID := c.Get(string(UserIDKey)).(string)
 			groupID := c.Param("groupId")
 
-			if groupID == "" {
-				return c.String(http.StatusBadRequest, "Group ID required")
+			if !utils.IsValidID(groupID, "grp") {
+				return c.String(http.StatusBadRequest, "Invalid group ID")
 			}
 
 			// Check if admin

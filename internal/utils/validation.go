@@ -93,6 +93,8 @@ func validationMessage(ctx context.Context, e validator.FieldError) string {
 		return ctxi18n.T(ctx, "validation.gt", e.Param())
 	case "gte":
 		return ctxi18n.T(ctx, "validation.gte", e.Param())
+	case "email":
+		return ctxi18n.T(ctx, "validation.email")
 	default:
 		return ctxi18n.T(ctx, "validation.required")
 	}

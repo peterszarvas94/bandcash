@@ -94,8 +94,8 @@ templ GroupsSidebar() {
 		<p>{ ctxi18n.T(ctx, "groups.new_desc") }</p>
 		<form class="form" data-on:submit="@post('/groups')">
 			<div class="field">
-				<label>{ ctxi18n.T(ctx, "groups.name") }</label>
-				<input type="text" data-bind="formData.name" required placeholder={ ctxi18n.T(ctx, "groups.name_placeholder") }/>
+				<label>{ ctxi18n.T(ctx, "groups.name") } <span class="required-mark">*</span></label>
+				<input type="text" data-bind="formData.name" placeholder={ ctxi18n.T(ctx, "groups.name_placeholder") }/>
 			</div>
 			<div class="row">
 				<button type="submit" class="btn btn-primary">{ ctxi18n.T(ctx, "groups.create") }</button>

@@ -78,7 +78,7 @@ func (p *Members) Show(c echo.Context) error {
 	userEmail := getUserEmail(c)
 
 	id := c.Param("id")
-	if id == "" {
+	if !utils.IsValidID(id, utils.PrefixMember) {
 		slog.Warn("member.show: invalid id")
 		return c.NoContent(http.StatusBadRequest)
 	}
@@ -104,6 +104,8 @@ func (p *Members) Create(c echo.Context) error {
 		slog.Warn("member.create.table: failed to read signals", "err", err)
 		return c.NoContent(http.StatusBadRequest)
 	}
+	signals.FormData.Name = utils.NormalizeText(signals.FormData.Name)
+	signals.FormData.Description = utils.NormalizeText(signals.FormData.Description)
 
 	// Validate
 	if errs := utils.ValidateWithLocale(c.Request().Context(), signals.FormData); errs != nil {
@@ -150,7 +152,7 @@ func (p *Members) Update(c echo.Context) error {
 	userEmail := getUserEmail(c)
 
 	id := c.Param("id")
-	if id == "" {
+	if !utils.IsValidID(id, utils.PrefixMember) {
 		slog.Warn("member.update: invalid id")
 		return c.NoContent(http.StatusBadRequest)
 	}
@@ -161,6 +163,8 @@ func (p *Members) Update(c echo.Context) error {
 		slog.Warn("member.update: failed to read signals", "err", err)
 		return c.NoContent(http.StatusBadRequest)
 	}
+	signals.FormData.Name = utils.NormalizeText(signals.FormData.Name)
+	signals.FormData.Description = utils.NormalizeText(signals.FormData.Description)
 
 	// Validate
 	if errs := utils.ValidateWithLocale(c.Request().Context(), signals.FormData); errs != nil {
@@ -215,7 +219,7 @@ func (p *Members) Destroy(c echo.Context) error {
 	userEmail := getUserEmail(c)
 
 	id := c.Param("id")
-	if id == "" {
+	if !utils.IsValidID(id, utils.PrefixMember) {
 		slog.Warn("member.destroy: invalid id")
 		return c.NoContent(http.StatusBadRequest)
 	}

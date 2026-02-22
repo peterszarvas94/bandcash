@@ -154,6 +154,7 @@ hu:
     max: "Maximum %s"
     gt: "Nagyobb legyen, mint %s"
     gte: "Legalább %s"
+    email: "Érvénytelen email cím"
   groups:
     title: "Csoportok"
     actions: "Csoport műveletek"

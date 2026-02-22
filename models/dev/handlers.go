@@ -2,7 +2,6 @@ package dev
 
 import (
 	"net/http"
-	"strings"
 
 	ctxi18n "github.com/invopop/ctxi18n/i18n"
 	"github.com/labstack/echo/v4"
@@ -14,7 +13,7 @@ import (
 
 type devSignals struct {
 	FormData struct {
-		Name string `json:"name"`
+		Name string `json:"name" validate:"required,min=1,max=255"`
 	} `json:"formData"`
 }
 
@@ -44,10 +43,11 @@ func (h *DevNotifications) TestInline(c echo.Context) error {
 	if err := datastar.ReadSignals(c.Request(), &signals); err != nil {
 		return c.NoContent(http.StatusBadRequest)
 	}
+	signals.FormData.Name = utils.NormalizeText(signals.FormData.Name)
 
-	if strings.TrimSpace(signals.FormData.Name) == "" {
+	if errs := utils.ValidateWithLocale(c.Request().Context(), signals.FormData); errs != nil {
 		utils.SSEHub.PatchSignals(c, map[string]any{
-			"errors": utils.WithErrors(devErrorFields, map[string]string{"name": ctxi18n.T(c.Request().Context(), "dev.notifications.field_required")}),
+			"errors": utils.WithErrors(devErrorFields, errs),
 		})
 		return c.NoContent(http.StatusUnprocessableEntity)
 	}

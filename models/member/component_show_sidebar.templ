@@ -38,7 +38,7 @@ templ MemberShowSidebar(data MemberData) {
 		<h3>{ctxi18n.T(ctx, "members.edit")}</h3>
 		<form class="form">
 			<div>
-				<label>{ctxi18n.T(ctx, "fields.name")}</label>
+				<label>{ctxi18n.T(ctx, "fields.name")} <span class="required-mark">*</span></label>
 					<input type="text" data-bind="formData.name" />
 					<div data-show="$errors && $errors.name" class="color-error" data-text="$errors.name"></div>
 				</div>

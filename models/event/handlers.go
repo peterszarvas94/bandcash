@@ -101,7 +101,7 @@ func (e *Events) Show(c echo.Context) error {
 	userEmail := getUserEmail(c)
 
 	id := c.Param("id")
-	if id == "" {
+	if !utils.IsValidID(id, utils.PrefixEvent) {
 		slog.Warn("event.show: invalid id")
 		return c.NoContent(http.StatusBadRequest)
 	}
@@ -127,6 +127,9 @@ func (e *Events) Create(c echo.Context) error {
 		slog.Warn("event.create.table: failed to read signals", "err", err)
 		return c.NoContent(http.StatusBadRequest)
 	}
+	signals.FormData.Title = utils.NormalizeText(signals.FormData.Title)
+	signals.FormData.Time = utils.NormalizeText(signals.FormData.Time)
+	signals.FormData.Description = utils.NormalizeText(signals.FormData.Description)
 
 	slog.Debug("event.create.table: signals received", "formData", signals.FormData)
 
@@ -179,7 +182,7 @@ func (e *Events) Update(c echo.Context) error {
 	userEmail := getUserEmail(c)
 
 	id := c.Param("id")
-	if id == "" {
+	if !utils.IsValidID(id, utils.PrefixEvent) {
 		slog.Warn("event.update: invalid id")
 		return c.NoContent(http.StatusBadRequest)
 	}
@@ -190,6 +193,12 @@ func (e *Events) Update(c echo.Context) error {
 		slog.Warn("event.update: failed to read signals", "err", err)
 		return c.NoContent(http.StatusBadRequest)
 	}
+	signals.FormData.Title = utils.NormalizeText(signals.FormData.Title)
+	signals.FormData.Time = utils.NormalizeText(signals.FormData.Time)
+	signals.FormData.Description = utils.NormalizeText(signals.FormData.Description)
+	signals.EventFormData.Title = utils.NormalizeText(signals.EventFormData.Title)
+	signals.EventFormData.Time = utils.NormalizeText(signals.EventFormData.Time)
+	signals.EventFormData.Description = utils.NormalizeText(signals.EventFormData.Description)
 
 	eventForm := signals.FormData
 	if signals.EventFormData.Title != "" || signals.EventFormData.Time != "" || signals.EventFormData.Amount != 0 {
@@ -270,7 +279,7 @@ func (e *Events) Destroy(c echo.Context) error {
 	userEmail := getUserEmail(c)
 
 	id := c.Param("id")
-	if id == "" {
+	if !utils.IsValidID(id, utils.PrefixEvent) {
 		slog.Warn("event.destroy: invalid id")
 		return c.NoContent(http.StatusBadRequest)
 	}
@@ -327,7 +336,7 @@ func (e *Events) CreateParticipant(c echo.Context) error {
 	userEmail := getUserEmail(c)
 
 	id := c.Param("id")
-	if id == "" {
+	if !utils.IsValidID(id, utils.PrefixEvent) {
 		slog.Warn("participant.create.table: invalid event id")
 		return c.NoContent(http.StatusBadRequest)
 	}
@@ -338,6 +347,8 @@ func (e *Events) CreateParticipant(c echo.Context) error {
 		slog.Warn("participant.create.table: failed to read signals", "err", err)
 		return c.NoContent(http.StatusBadRequest)
 	}
+	signals.FormData.MemberID = utils.NormalizeText(signals.FormData.MemberID)
+	signals.FormData.MemberName = utils.NormalizeText(signals.FormData.MemberName)
 
 	// Validate
 	if errs := utils.ValidateWithLocale(c.Request().Context(), signals.FormData); errs != nil {
@@ -387,13 +398,13 @@ func (e *Events) UpdateParticipant(c echo.Context) error {
 	userEmail := getUserEmail(c)
 
 	eventID := c.Param("id")
-	if eventID == "" {
+	if !utils.IsValidID(eventID, utils.PrefixEvent) {
 		slog.Warn("participant.update: invalid event id")
 		return c.NoContent(http.StatusBadRequest)
 	}
 
 	memberID := c.Param("memberId")
-	if memberID == "" {
+	if !utils.IsValidID(memberID, utils.PrefixMember) {
 		slog.Warn("participant.update: invalid member id")
 		return c.NoContent(http.StatusBadRequest)
 	}
@@ -404,6 +415,8 @@ func (e *Events) UpdateParticipant(c echo.Context) error {
 		slog.Warn("participant.update: failed to read signals", "err", err)
 		return c.NoContent(http.StatusBadRequest)
 	}
+	signals.FormData.MemberID = utils.NormalizeText(signals.FormData.MemberID)
+	signals.FormData.MemberName = utils.NormalizeText(signals.FormData.MemberName)
 
 	// Validate
 	if errs := utils.ValidateWithLocale(c.Request().Context(), signals.FormData); errs != nil {
@@ -453,13 +466,13 @@ func (e *Events) DeleteParticipantTable(c echo.Context) error {
 	userEmail := getUserEmail(c)
 
 	eventID := c.Param("id")
-	if eventID == "" {
+	if !utils.IsValidID(eventID, utils.PrefixEvent) {
 		slog.Warn("participant.delete: invalid event id")
 		return c.NoContent(http.StatusBadRequest)
 	}
 
 	memberID := c.Param("memberId")
-	if memberID == "" {
+	if !utils.IsValidID(memberID, utils.PrefixMember) {
 		slog.Warn("participant.delete: invalid member id")
 		return c.NoContent(http.StatusBadRequest)
 	}

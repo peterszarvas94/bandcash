@@ -74,8 +74,8 @@ templ GroupViewersSidebar(data ViewersPageData) {
 			<h3>{ ctxi18n.T(ctx, "groups.invite_viewer") }</h3>
 			<form class="form" data-on:submit={ fmt.Sprintf("@post('/groups/%s/viewers')", data.Group.ID) }>
 				<div class="field">
-					<label>{ ctxi18n.T(ctx, "auth.email") }</label>
-					<input type="email" data-bind="formData.email" required placeholder={ ctxi18n.T(ctx, "groups.viewer_email_placeholder") }/>
+					<label>{ ctxi18n.T(ctx, "auth.email") } <span class="required-mark">*</span></label>
+					<input type="email" data-bind="formData.email" placeholder={ ctxi18n.T(ctx, "groups.viewer_email_placeholder") }/>
 				</div>
 				<div class="row">
 					<button type="submit" class="btn btn-primary">{ ctxi18n.T(ctx, "groups.add_viewer") }</button>

@@ -27,7 +27,7 @@ templ MemberIndexSidebar(data MembersData) {
 			<h3 data-show="$formState === 'edit'">{ctxi18n.T(ctx, "members.edit")}</h3>
 			<form class="form">
 				<div>
-					<label>{ctxi18n.T(ctx, "fields.name")}</label>
+					<label>{ctxi18n.T(ctx, "fields.name")} <span class="required-mark">*</span></label>
 					<input type="text" name="name" data-bind="formData.name" />
 					<div data-show="$errors && $errors.name" class="color-error" data-text="$errors.name"></div>
 				</div>

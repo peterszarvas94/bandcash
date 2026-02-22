@@ -19,8 +19,8 @@ templ SignupPage(data AuthPageData) {
 				@shared.Breadcrumbs(data.Breadcrumbs, data.UserEmail)
 				<form class="form" data-on:submit="@post('/auth/signup')">
 					<div class="field">
-						<label>{ctxi18n.T(ctx, "auth.email")}</label>
-					<input type="email" data-bind="formData.email" required placeholder={ctxi18n.T(ctx, "auth.email_placeholder")} />
+						<label>{ctxi18n.T(ctx, "auth.email")} <span class="required-mark">*</span></label>
+					<input type="email" data-bind="formData.email" placeholder={ctxi18n.T(ctx, "auth.email_placeholder")} />
 						<div data-show="$authError !== ''" class="color-error" data-text="$authError"></div>
 					</div>
 					<button type="submit" class="btn btn-primary">{ctxi18n.T(ctx, "auth.create_account")}</button>

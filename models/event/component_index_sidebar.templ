@@ -27,12 +27,12 @@ templ EventIndexSidebar(data EventsData) {
 			<form class="form">
 				<div class="form-row">
 					<div class="field">
-						<label>{ctxi18n.T(ctx, "fields.title")}</label>
+						<label>{ctxi18n.T(ctx, "fields.title")} <span class="required-mark">*</span></label>
 						<input type="text" data-bind="formData.title" />
 						<div data-show="$errors && $errors.title" class="color-error" data-text="$errors.title"></div>
 					</div>
 					<div class="field">
-						<label>{ctxi18n.T(ctx, "fields.time")}</label>
+						<label>{ctxi18n.T(ctx, "fields.time")} <span class="required-mark">*</span></label>
 						<input type="datetime-local" data-bind="formData.time" />
 						<div data-show="$errors && $errors.time" class="color-error" data-text="$errors.time"></div>
 					</div>
@@ -43,7 +43,7 @@ templ EventIndexSidebar(data EventsData) {
 					<div data-show="$errors && $errors.description" class="color-error" data-text="$errors.description"></div>
 				</div>
 				<div class="field">
-					<label>{ctxi18n.T(ctx, "fields.amount")}</label>
+					<label>{ctxi18n.T(ctx, "fields.amount")} <span class="required-mark">*</span></label>
 					<input type="number" data-bind="formData.amount" step="1" />
 					<div data-show="$errors && $errors.amount" class="color-error" data-text="$errors.amount"></div>
 				</div>

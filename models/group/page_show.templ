@@ -61,7 +61,7 @@ templ GroupSidebar(data GroupPageData) {
 			<h3>{ ctxi18n.T(ctx, "groups.edit") }</h3>
 			<form class="form" data-on:submit={ fmt.Sprintf("@put('/groups/%s')", data.Group.ID) }>
 				<div class="field">
-					<label>{ ctxi18n.T(ctx, "groups.name") }</label>
+					<label>{ ctxi18n.T(ctx, "groups.name") } <span class="required-mark">*</span></label>
 					<input type="text" data-bind="formData.name" placeholder={ ctxi18n.T(ctx, "groups.name_placeholder") }/>
 					<div data-show="$errors && $errors.name" class="color-error" data-text="$errors.name"></div>
 				</div>

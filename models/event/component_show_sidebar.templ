@@ -51,12 +51,12 @@ templ EventShowSidebar(data EventData) {
 			<form class="form">
 				<div class="form-row">
 					<div class="field">
-						<label>{ctxi18n.T(ctx, "fields.title")}</label>
+						<label>{ctxi18n.T(ctx, "fields.title")} <span class="required-mark">*</span></label>
 						<input type="text" data-bind="eventFormData.title"/>
 						<div data-show="$errors && $errors.title" class="color-error" data-text="$errors.title"></div>
 					</div>
 					<div class="field">
-						<label>{ctxi18n.T(ctx, "fields.time")}</label>
+						<label>{ctxi18n.T(ctx, "fields.time")} <span class="required-mark">*</span></label>
 						<input type="datetime-local" data-bind="eventFormData.time"/>
 						<div data-show="$errors && $errors.time" class="color-error" data-text="$errors.time"></div>
 					</div>
@@ -67,7 +67,7 @@ templ EventShowSidebar(data EventData) {
 					<div data-show="$errors && $errors.description" class="color-error" data-text="$errors.description"></div>
 				</div>
 				<div class="field">
-				<label>{ctxi18n.T(ctx, "fields.amount")}</label>
+				<label>{ctxi18n.T(ctx, "fields.amount")} <span class="required-mark">*</span></label>
 					<input type="number" data-bind="eventFormData.amount" step="1"/>
 					<div data-show="$errors && $errors.amount" class="color-error" data-text="$errors.amount"></div>
 				</div>
@@ -94,7 +94,7 @@ templ EventShowSidebar(data EventData) {
 			<h3 data-show="$formState === 'edit'">{ctxi18n.T(ctx, "participants.edit")}</h3>
 			<form class="form">
 				<div data-show="$formState === 'add'">
-				<label>{ctxi18n.T(ctx, "participants.member")}</label>
+				<label>{ctxi18n.T(ctx, "participants.member")} <span class="required-mark">*</span></label>
 				<select data-bind="formData.memberId">
 					<option value="">{ctxi18n.T(ctx, "participants.select_member")}</option>
 					for _, member := range data.Members {
@@ -107,8 +107,8 @@ templ EventShowSidebar(data EventData) {
 				<label>{ctxi18n.T(ctx, "participants.member")}</label>
 				<input type="text" data-bind="formData.memberName" disabled/>
 			</div>
-				<div>
-				<label>{ctxi18n.T(ctx, "participants.cut_amount")}</label>
+			<div>
+				<label>{ctxi18n.T(ctx, "participants.cut_amount")} <span class="required-mark">*</span></label>
 					<div class="row">
 						<input type="number" data-bind="formData.amount" step="1" style="flex: 1"/>
 						<button

@@ -2,7 +2,7 @@
 
 - [x] add rate limiting (global + stricter auth endpoints)
 - [x] enforce request body size limits
-- [ ] normalize + strictly validate all inputs server-side
+- [x] normalize + strictly validate all inputs server-side
 - [ ] add auth abuse protection (cooldown/throttle by IP + email)
 - [ ] enable security checks in CI (`govulncheck`, dependency updates)
 - [ ] add monitoring + alerting for `/health`
