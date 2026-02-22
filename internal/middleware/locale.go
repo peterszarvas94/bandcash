@@ -2,6 +2,7 @@ package middleware
 
 import (
 	"log/slog"
+	"net/http"
 
 	"github.com/invopop/ctxi18n"
 	"github.com/labstack/echo/v4"
@@ -22,7 +23,7 @@ func Locale() echo.MiddlewareFunc {
 			ctx, err := ctxi18n.WithLocale(c.Request().Context(), locale)
 			if err != nil {
 				slog.Error("i18n.locale: failed to set locale", "err", err)
-				return c.NoContent(500)
+				return c.NoContent(http.StatusInternalServerError)
 			}
 			c.SetRequest(c.Request().WithContext(ctx))
 			return next(c)

@@ -3,6 +3,7 @@ package sse
 import (
 	"bandcash/internal/utils"
 	"log/slog"
+	"net/http"
 
 	"github.com/labstack/echo/v4"
 	"github.com/starfederation/datastar-go/datastar"
@@ -17,7 +18,7 @@ func SSEHandler() echo.HandlerFunc {
 		clientID, err := utils.GetClientID(c)
 		if err != nil {
 			log.Warn("sse: no client_id cookie")
-			return c.NoContent(400)
+			return c.NoContent(http.StatusBadRequest)
 		}
 
 		sseConn := datastar.NewSSE(w, r)

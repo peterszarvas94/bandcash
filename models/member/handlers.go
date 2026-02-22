@@ -2,6 +2,7 @@ package member
 
 import (
 	"log/slog"
+	"net/http"
 
 	ctxi18n "github.com/invopop/ctxi18n/i18n"
 	"github.com/labstack/echo/v4"
@@ -62,7 +63,7 @@ func (p *Members) Index(c echo.Context) error {
 	data, err := p.GetIndexData(c.Request().Context(), groupID)
 	if err != nil {
 		slog.Error("member.list: failed to get data", "err", err)
-		return c.NoContent(500)
+		return c.NoContent(http.StatusInternalServerError)
 	}
 	data.IsAdmin = middleware.IsAdmin(c)
 	data.UserEmail = userEmail
@@ -79,13 +80,13 @@ func (p *Members) Show(c echo.Context) error {
 	id := c.Param("id")
 	if id == "" {
 		slog.Warn("member.show: invalid id")
-		return c.NoContent(400)
+		return c.NoContent(http.StatusBadRequest)
 	}
 
 	data, err := p.GetShowData(c.Request().Context(), groupID, id)
 	if err != nil {
 		slog.Error("member.show: failed to get data", "err", err)
-		return c.NoContent(500)
+		return c.NoContent(http.StatusInternalServerError)
 	}
 	data.IsAdmin = middleware.IsAdmin(c)
 	data.UserEmail = userEmail
@@ -101,13 +102,13 @@ func (p *Members) Create(c echo.Context) error {
 	err := datastar.ReadSignals(c.Request(), &signals)
 	if err != nil {
 		slog.Warn("member.create.table: failed to read signals", "err", err)
-		return c.NoContent(400)
+		return c.NoContent(http.StatusBadRequest)
 	}
 
 	// Validate
 	if errs := utils.ValidateWithLocale(c.Request().Context(), signals.FormData); errs != nil {
 		utils.SSEHub.PatchSignals(c, map[string]any{"errors": utils.WithErrors(memberErrorFields, errs)})
-		return c.NoContent(422)
+		return c.NoContent(http.StatusUnprocessableEntity)
 	}
 
 	member, err := db.Qry.CreateMember(c.Request().Context(), db.CreateMemberParams{
@@ -119,7 +120,7 @@ func (p *Members) Create(c echo.Context) error {
 	if err != nil {
 		slog.Error("member.create.table: failed to create member", "err", err)
 		utils.Notify(c, "error", ctxi18n.T(c.Request().Context(), "members.notifications.create_failed"))
-		return c.NoContent(500)
+		return c.NoContent(http.StatusInternalServerError)
 	}
 
 	slog.Debug("member.create.table", "id", member.ID, "name", member.Name)
@@ -129,19 +130,19 @@ func (p *Members) Create(c echo.Context) error {
 	data, err := p.GetIndexData(c.Request().Context(), groupID)
 	if err != nil {
 		slog.Error("member.create.table: failed to get data", "err", err)
-		return c.NoContent(500)
+		return c.NoContent(http.StatusInternalServerError)
 	}
 	data.IsAdmin = middleware.IsAdmin(c)
 	data.UserEmail = userEmail
 	html, err := utils.RenderComponentStringFor(c, MemberIndex(data))
 	if err != nil {
 		slog.Error("member.create.table: failed to render", "err", err)
-		return c.NoContent(500)
+		return c.NoContent(http.StatusInternalServerError)
 	}
 
 	utils.SSEHub.PatchHTML(c, html)
 
-	return c.NoContent(200)
+	return c.NoContent(http.StatusOK)
 }
 
 func (p *Members) Update(c echo.Context) error {
@@ -151,20 +152,20 @@ func (p *Members) Update(c echo.Context) error {
 	id := c.Param("id")
 	if id == "" {
 		slog.Warn("member.update: invalid id")
-		return c.NoContent(400)
+		return c.NoContent(http.StatusBadRequest)
 	}
 
 	var signals memberTableParams
 	err := datastar.ReadSignals(c.Request(), &signals)
 	if err != nil {
 		slog.Warn("member.update: failed to read signals", "err", err)
-		return c.NoContent(400)
+		return c.NoContent(http.StatusBadRequest)
 	}
 
 	// Validate
 	if errs := utils.ValidateWithLocale(c.Request().Context(), signals.FormData); errs != nil {
 		utils.SSEHub.PatchSignals(c, map[string]any{"errors": utils.WithErrors(memberErrorFields, errs)})
-		return c.NoContent(422)
+		return c.NoContent(http.StatusUnprocessableEntity)
 	}
 
 	_, err = db.Qry.UpdateMember(c.Request().Context(), db.UpdateMemberParams{
@@ -176,7 +177,7 @@ func (p *Members) Update(c echo.Context) error {
 	if err != nil {
 		slog.Error("member.update: failed to update member", "err", err)
 		utils.Notify(c, "error", ctxi18n.T(c.Request().Context(), "members.notifications.update_failed"))
-		return c.NoContent(500)
+		return c.NoContent(http.StatusInternalServerError)
 	}
 
 	slog.Debug("member.update", "id", id)
@@ -187,26 +188,26 @@ func (p *Members) Update(c echo.Context) error {
 		if err != nil {
 			slog.Warn("member.update: failed to redirect", "err", err)
 		}
-		return c.NoContent(200)
+		return c.NoContent(http.StatusOK)
 	}
 
 	utils.SSEHub.PatchSignals(c, defaultMemberSignals)
 	data, err := p.GetIndexData(c.Request().Context(), groupID)
 	if err != nil {
 		slog.Error("member.update: failed to get data", "err", err)
-		return c.NoContent(500)
+		return c.NoContent(http.StatusInternalServerError)
 	}
 	data.IsAdmin = middleware.IsAdmin(c)
 	data.UserEmail = userEmail
 	html, err := utils.RenderComponentStringFor(c, MemberIndex(data))
 	if err != nil {
 		slog.Error("member.update: failed to render", "err", err)
-		return c.NoContent(500)
+		return c.NoContent(http.StatusInternalServerError)
 	}
 
 	utils.SSEHub.PatchHTML(c, html)
 
-	return c.NoContent(200)
+	return c.NoContent(http.StatusOK)
 }
 
 func (p *Members) Destroy(c echo.Context) error {
@@ -216,14 +217,14 @@ func (p *Members) Destroy(c echo.Context) error {
 	id := c.Param("id")
 	if id == "" {
 		slog.Warn("member.destroy: invalid id")
-		return c.NoContent(400)
+		return c.NoContent(http.StatusBadRequest)
 	}
 
 	var signals modeParams
 	err := datastar.ReadSignals(c.Request(), &signals)
 	if err != nil {
 		slog.Warn("member.destroy: failed to read signals", "err", err)
-		return c.NoContent(400)
+		return c.NoContent(http.StatusBadRequest)
 	}
 
 	err = db.Qry.DeleteMember(c.Request().Context(), db.DeleteMemberParams{
@@ -233,7 +234,7 @@ func (p *Members) Destroy(c echo.Context) error {
 	if err != nil {
 		slog.Error("member.destroy: failed to delete member", "err", err)
 		utils.Notify(c, "error", ctxi18n.T(c.Request().Context(), "members.notifications.delete_failed"))
-		return c.NoContent(500)
+		return c.NoContent(http.StatusInternalServerError)
 	}
 
 	slog.Debug("member.destroy", "id", id)
@@ -244,24 +245,24 @@ func (p *Members) Destroy(c echo.Context) error {
 		if err != nil {
 			slog.Warn("member.destroy: failed to redirect", "err", err)
 		}
-		return c.NoContent(200)
+		return c.NoContent(http.StatusOK)
 	}
 
 	utils.SSEHub.PatchSignals(c, defaultMemberSignals)
 	data, err := p.GetIndexData(c.Request().Context(), groupID)
 	if err != nil {
 		slog.Error("member.destroy: failed to get data", "err", err)
-		return c.NoContent(500)
+		return c.NoContent(http.StatusInternalServerError)
 	}
 	data.IsAdmin = middleware.IsAdmin(c)
 	data.UserEmail = userEmail
 	html, err := utils.RenderComponentStringFor(c, MemberIndex(data))
 	if err != nil {
 		slog.Error("member.destroy: failed to render", "err", err)
-		return c.NoContent(500)
+		return c.NoContent(http.StatusInternalServerError)
 	}
 
 	utils.SSEHub.PatchHTML(c, html)
 
-	return c.NoContent(200)
+	return c.NoContent(http.StatusOK)
 }

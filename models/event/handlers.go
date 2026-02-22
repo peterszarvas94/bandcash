@@ -2,6 +2,7 @@ package event
 
 import (
 	"log/slog"
+	"net/http"
 
 	ctxi18n "github.com/invopop/ctxi18n/i18n"
 	"github.com/labstack/echo/v4"
@@ -85,7 +86,7 @@ func (e *Events) Index(c echo.Context) error {
 	data, err := e.GetIndexData(c.Request().Context(), groupID)
 	if err != nil {
 		slog.Error("event.list: failed to get data", "err", err)
-		return c.NoContent(500)
+		return c.NoContent(http.StatusInternalServerError)
 	}
 	data.IsAdmin = middleware.IsAdmin(c)
 	data.UserEmail = userEmail
@@ -102,13 +103,13 @@ func (e *Events) Show(c echo.Context) error {
 	id := c.Param("id")
 	if id == "" {
 		slog.Warn("event.show: invalid id")
-		return c.NoContent(400)
+		return c.NoContent(http.StatusBadRequest)
 	}
 
 	data, err := e.GetShowData(c.Request().Context(), groupID, id)
 	if err != nil {
 		slog.Error("event.show: failed to get data", "err", err)
-		return c.NoContent(500)
+		return c.NoContent(http.StatusInternalServerError)
 	}
 	data.IsAdmin = middleware.IsAdmin(c)
 	data.UserEmail = userEmail
@@ -124,7 +125,7 @@ func (e *Events) Create(c echo.Context) error {
 	err := datastar.ReadSignals(c.Request(), &signals)
 	if err != nil {
 		slog.Warn("event.create.table: failed to read signals", "err", err)
-		return c.NoContent(400)
+		return c.NoContent(http.StatusBadRequest)
 	}
 
 	slog.Debug("event.create.table: signals received", "formData", signals.FormData)
@@ -133,7 +134,7 @@ func (e *Events) Create(c echo.Context) error {
 	if errs := utils.ValidateWithLocale(c.Request().Context(), signals.FormData); errs != nil {
 		slog.Debug("event.create.table: validation failed", "errors", errs)
 		utils.SSEHub.PatchSignals(c, map[string]any{"errors": utils.WithErrors(eventErrorFields, errs)})
-		return c.NoContent(422)
+		return c.NoContent(http.StatusUnprocessableEntity)
 	}
 
 	event, err := db.Qry.CreateEvent(c.Request().Context(), db.CreateEventParams{
@@ -147,7 +148,7 @@ func (e *Events) Create(c echo.Context) error {
 	if err != nil {
 		slog.Error("event.create.table: failed to create event", "err", err)
 		utils.Notify(c, "error", ctxi18n.T(c.Request().Context(), "events.notifications.create_failed"))
-		return c.NoContent(500)
+		return c.NoContent(http.StatusInternalServerError)
 	}
 
 	slog.Debug("event.create.table", "id", event.ID, "title", event.Title)
@@ -157,7 +158,7 @@ func (e *Events) Create(c echo.Context) error {
 	data, err := e.GetIndexData(c.Request().Context(), groupID)
 	if err != nil {
 		slog.Error("event.create.table: failed to get data", "err", err)
-		return c.NoContent(500)
+		return c.NoContent(http.StatusInternalServerError)
 	}
 	data.IsAdmin = middleware.IsAdmin(c)
 	data.UserEmail = userEmail
@@ -165,12 +166,12 @@ func (e *Events) Create(c echo.Context) error {
 	html, err := utils.RenderComponentStringFor(c, EventIndex(data))
 	if err != nil {
 		slog.Error("event.create.table: failed to render", "err", err)
-		return c.NoContent(500)
+		return c.NoContent(http.StatusInternalServerError)
 	}
 
 	utils.SSEHub.PatchHTML(c, html)
 
-	return c.NoContent(200)
+	return c.NoContent(http.StatusOK)
 }
 
 func (e *Events) Update(c echo.Context) error {
@@ -180,14 +181,14 @@ func (e *Events) Update(c echo.Context) error {
 	id := c.Param("id")
 	if id == "" {
 		slog.Warn("event.update: invalid id")
-		return c.NoContent(400)
+		return c.NoContent(http.StatusBadRequest)
 	}
 
 	var signals eventInlineParams
 	err := datastar.ReadSignals(c.Request(), &signals)
 	if err != nil {
 		slog.Warn("event.update: failed to read signals", "err", err)
-		return c.NoContent(400)
+		return c.NoContent(http.StatusBadRequest)
 	}
 
 	eventForm := signals.FormData
@@ -198,7 +199,7 @@ func (e *Events) Update(c echo.Context) error {
 	// Validate
 	if errs := utils.ValidateWithLocale(c.Request().Context(), eventForm); errs != nil {
 		utils.SSEHub.PatchSignals(c, map[string]any{"errors": utils.WithErrors(eventErrorFields, errs)})
-		return c.NoContent(422)
+		return c.NoContent(http.StatusUnprocessableEntity)
 	}
 
 	_, err = db.Qry.UpdateEvent(c.Request().Context(), db.UpdateEventParams{
@@ -212,7 +213,7 @@ func (e *Events) Update(c echo.Context) error {
 	if err != nil {
 		slog.Error("event.update: failed to update event", "err", err)
 		utils.Notify(c, "error", ctxi18n.T(c.Request().Context(), "events.notifications.update_failed"))
-		return c.NoContent(500)
+		return c.NoContent(http.StatusInternalServerError)
 	}
 
 	slog.Debug("event.update", "id", id)
@@ -232,36 +233,36 @@ func (e *Events) Update(c echo.Context) error {
 		data, err := e.GetShowData(c.Request().Context(), groupID, id)
 		if err != nil {
 			slog.Error("event.update: failed to get data", "err", err)
-			return c.NoContent(500)
+			return c.NoContent(http.StatusInternalServerError)
 		}
 		data.IsAdmin = middleware.IsAdmin(c)
 		data.UserEmail = userEmail
 		html, err := utils.RenderComponentStringFor(c, EventShow(data))
 		if err != nil {
 			slog.Error("event.update: failed to render", "err", err)
-			return c.NoContent(500)
+			return c.NoContent(http.StatusInternalServerError)
 		}
 		utils.SSEHub.PatchHTML(c, html)
-		return c.NoContent(200)
+		return c.NoContent(http.StatusOK)
 	}
 
 	utils.SSEHub.PatchSignals(c, defaultEventSignals)
 	data, err := e.GetIndexData(c.Request().Context(), groupID)
 	if err != nil {
 		slog.Error("event.update: failed to get data", "err", err)
-		return c.NoContent(500)
+		return c.NoContent(http.StatusInternalServerError)
 	}
 	data.IsAdmin = middleware.IsAdmin(c)
 	data.UserEmail = userEmail
 	html, err := utils.RenderComponentStringFor(c, EventIndex(data))
 	if err != nil {
 		slog.Error("event.update: failed to render", "err", err)
-		return c.NoContent(500)
+		return c.NoContent(http.StatusInternalServerError)
 	}
 
 	utils.SSEHub.PatchHTML(c, html)
 
-	return c.NoContent(200)
+	return c.NoContent(http.StatusOK)
 }
 
 func (e *Events) Destroy(c echo.Context) error {
@@ -271,14 +272,14 @@ func (e *Events) Destroy(c echo.Context) error {
 	id := c.Param("id")
 	if id == "" {
 		slog.Warn("event.destroy: invalid id")
-		return c.NoContent(400)
+		return c.NoContent(http.StatusBadRequest)
 	}
 
 	var signals modeParams
 	err := datastar.ReadSignals(c.Request(), &signals)
 	if err != nil {
 		slog.Warn("event.destroy: failed to read signals", "err", err)
-		return c.NoContent(400)
+		return c.NoContent(http.StatusBadRequest)
 	}
 
 	err = db.Qry.DeleteEvent(c.Request().Context(), db.DeleteEventParams{
@@ -288,7 +289,7 @@ func (e *Events) Destroy(c echo.Context) error {
 	if err != nil {
 		slog.Error("event.destroy: failed to delete event", "err", err)
 		utils.Notify(c, "error", ctxi18n.T(c.Request().Context(), "events.notifications.delete_failed"))
-		return c.NoContent(500)
+		return c.NoContent(http.StatusInternalServerError)
 	}
 
 	slog.Debug("event.destroy", "id", id)
@@ -299,26 +300,26 @@ func (e *Events) Destroy(c echo.Context) error {
 		if err != nil {
 			slog.Warn("event.destroy: failed to redirect", "err", err)
 		}
-		return c.NoContent(200)
+		return c.NoContent(http.StatusOK)
 	}
 
 	utils.SSEHub.PatchSignals(c, defaultEventSignals)
 	data, err := e.GetIndexData(c.Request().Context(), groupID)
 	if err != nil {
 		slog.Error("event.destroy: failed to get data", "err", err)
-		return c.NoContent(500)
+		return c.NoContent(http.StatusInternalServerError)
 	}
 	data.IsAdmin = middleware.IsAdmin(c)
 	data.UserEmail = userEmail
 	html, err := utils.RenderComponentStringFor(c, EventIndex(data))
 	if err != nil {
 		slog.Error("event.destroy: failed to render", "err", err)
-		return c.NoContent(500)
+		return c.NoContent(http.StatusInternalServerError)
 	}
 
 	utils.SSEHub.PatchHTML(c, html)
 
-	return c.NoContent(200)
+	return c.NoContent(http.StatusOK)
 }
 
 func (e *Events) CreateParticipant(c echo.Context) error {
@@ -328,20 +329,20 @@ func (e *Events) CreateParticipant(c echo.Context) error {
 	id := c.Param("id")
 	if id == "" {
 		slog.Warn("participant.create.table: invalid event id")
-		return c.NoContent(400)
+		return c.NoContent(http.StatusBadRequest)
 	}
 
 	var signals participantTableParams
 	err := datastar.ReadSignals(c.Request(), &signals)
 	if err != nil {
 		slog.Warn("participant.create.table: failed to read signals", "err", err)
-		return c.NoContent(400)
+		return c.NoContent(http.StatusBadRequest)
 	}
 
 	// Validate
 	if errs := utils.ValidateWithLocale(c.Request().Context(), signals.FormData); errs != nil {
 		utils.SSEHub.PatchSignals(c, map[string]any{"errors": utils.WithErrors(participantErrorFields, errs)})
-		return c.NoContent(422)
+		return c.NoContent(http.StatusUnprocessableEntity)
 	}
 
 	// Set default expense to 0 if not provided
@@ -357,28 +358,28 @@ func (e *Events) CreateParticipant(c echo.Context) error {
 	if err != nil {
 		slog.Error("participant.create.table: failed to add participant", "err", err)
 		utils.Notify(c, "error", ctxi18n.T(c.Request().Context(), "participants.notifications.add_failed"))
-		return c.NoContent(500)
+		return c.NoContent(http.StatusInternalServerError)
 	}
 	utils.Notify(c, "success", ctxi18n.T(c.Request().Context(), "participants.notifications.added"))
 
 	data, err := e.GetShowData(c.Request().Context(), groupID, id)
 	if err != nil {
 		slog.Error("participant.create.table: failed to get data", "err", err)
-		return c.NoContent(500)
+		return c.NoContent(http.StatusInternalServerError)
 	}
 	data.IsAdmin = middleware.IsAdmin(c)
 	data.UserEmail = userEmail
 	html, err := utils.RenderComponentStringFor(c, EventShow(data))
 	if err != nil {
 		slog.Error("participant.create.table: failed to render", "err", err)
-		return c.NoContent(500)
+		return c.NoContent(http.StatusInternalServerError)
 	}
 
 	utils.SSEHub.PatchHTML(c, html)
 	utils.SSEHub.PatchSignals(c, defaultParticipantSignals)
 
 	slog.Debug("participant.create.table", "event_id", id, "member_id", signals.FormData.MemberID)
-	return c.NoContent(200)
+	return c.NoContent(http.StatusOK)
 }
 
 func (e *Events) UpdateParticipant(c echo.Context) error {
@@ -388,26 +389,26 @@ func (e *Events) UpdateParticipant(c echo.Context) error {
 	eventID := c.Param("id")
 	if eventID == "" {
 		slog.Warn("participant.update: invalid event id")
-		return c.NoContent(400)
+		return c.NoContent(http.StatusBadRequest)
 	}
 
 	memberID := c.Param("memberId")
 	if memberID == "" {
 		slog.Warn("participant.update: invalid member id")
-		return c.NoContent(400)
+		return c.NoContent(http.StatusBadRequest)
 	}
 
 	var signals participantTableParams
 	err := datastar.ReadSignals(c.Request(), &signals)
 	if err != nil {
 		slog.Warn("participant.update: failed to read signals", "err", err)
-		return c.NoContent(400)
+		return c.NoContent(http.StatusBadRequest)
 	}
 
 	// Validate
 	if errs := utils.ValidateWithLocale(c.Request().Context(), signals.FormData); errs != nil {
 		utils.SSEHub.PatchSignals(c, map[string]any{"errors": utils.WithErrors(participantErrorFields, errs)})
-		return c.NoContent(422)
+		return c.NoContent(http.StatusUnprocessableEntity)
 	}
 
 	// Set default expense to 0 if not provided
@@ -423,7 +424,7 @@ func (e *Events) UpdateParticipant(c echo.Context) error {
 	if err != nil {
 		slog.Error("participant.update: failed to update participant", "err", err)
 		utils.Notify(c, "error", ctxi18n.T(c.Request().Context(), "participants.notifications.update_failed"))
-		return c.NoContent(500)
+		return c.NoContent(http.StatusInternalServerError)
 	}
 	utils.Notify(c, "success", ctxi18n.T(c.Request().Context(), "participants.notifications.updated"))
 
@@ -431,20 +432,20 @@ func (e *Events) UpdateParticipant(c echo.Context) error {
 	data, err := e.GetShowData(c.Request().Context(), groupID, eventID)
 	if err != nil {
 		slog.Error("participant.update: failed to get data", "err", err)
-		return c.NoContent(500)
+		return c.NoContent(http.StatusInternalServerError)
 	}
 	data.IsAdmin = middleware.IsAdmin(c)
 	data.UserEmail = userEmail
 	html, err := utils.RenderComponentStringFor(c, EventShow(data))
 	if err != nil {
 		slog.Error("participant.update: failed to render", "err", err)
-		return c.NoContent(500)
+		return c.NoContent(http.StatusInternalServerError)
 	}
 
 	utils.SSEHub.PatchHTML(c, html)
 
 	slog.Debug("participant.update", "event_id", eventID, "member_id", memberID)
-	return c.NoContent(200)
+	return c.NoContent(http.StatusOK)
 }
 
 func (e *Events) DeleteParticipantTable(c echo.Context) error {
@@ -454,13 +455,13 @@ func (e *Events) DeleteParticipantTable(c echo.Context) error {
 	eventID := c.Param("id")
 	if eventID == "" {
 		slog.Warn("participant.delete: invalid event id")
-		return c.NoContent(400)
+		return c.NoContent(http.StatusBadRequest)
 	}
 
 	memberID := c.Param("memberId")
 	if memberID == "" {
 		slog.Warn("participant.delete: invalid member id")
-		return c.NoContent(400)
+		return c.NoContent(http.StatusBadRequest)
 	}
 
 	err := db.Qry.RemoveParticipant(c.Request().Context(), db.RemoveParticipantParams{
@@ -471,26 +472,26 @@ func (e *Events) DeleteParticipantTable(c echo.Context) error {
 	if err != nil {
 		slog.Error("participant.delete: failed to remove participant", "err", err)
 		utils.Notify(c, "error", ctxi18n.T(c.Request().Context(), "participants.notifications.delete_failed"))
-		return c.NoContent(500)
+		return c.NoContent(http.StatusInternalServerError)
 	}
 	utils.Notify(c, "success", ctxi18n.T(c.Request().Context(), "participants.notifications.deleted"))
 
 	data, err := e.GetShowData(c.Request().Context(), groupID, eventID)
 	if err != nil {
 		slog.Error("participant.delete: failed to get data", "err", err)
-		return c.NoContent(500)
+		return c.NoContent(http.StatusInternalServerError)
 	}
 	data.IsAdmin = middleware.IsAdmin(c)
 	data.UserEmail = userEmail
 	html, err := utils.RenderComponentStringFor(c, EventShow(data))
 	if err != nil {
 		slog.Error("participant.delete: failed to render", "err", err)
-		return c.NoContent(500)
+		return c.NoContent(http.StatusInternalServerError)
 	}
 
 	utils.SSEHub.PatchHTML(c, html)
 	utils.SSEHub.PatchSignals(c, defaultParticipantSignals)
 
 	slog.Debug("participant.delete", "event_id", eventID, "member_id", memberID)
-	return c.NoContent(200)
+	return c.NoContent(http.StatusOK)
 }
