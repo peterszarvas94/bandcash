@@ -52,7 +52,7 @@ else
 fi
 
 echo "[bootstrap] Installing deploy script"
-install -m 0755 "$APP_DIR/deploy/deploy.sh" "$APP_DIR/deploy/deploy.sh"
+chmod 0755 "$APP_DIR/deploy/deploy.sh"
 chown "$DEPLOY_USER:$DEPLOY_USER" "$APP_DIR/deploy/deploy.sh"
 
 echo "[bootstrap] Installing systemd service"

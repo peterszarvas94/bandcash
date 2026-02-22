@@ -1,5 +1,15 @@
 # Production TODO
 
+## Local One-Shot Bootstrap
+
+Run this from your local machine to provision a target server in one command:
+
+```bash
+SSH_HOST=<server-ip> DOMAIN=bandcash.app ./deploy/setup_target_server.sh
+```
+
+Optional overrides: `SSH_USER`, `SSH_PORT`, `REPO_URL`, `DEPLOY_USER`, `APP_ROOT`, `APP_PORT`, `PUBLIC_URL`.
+
 ## Server Command Runbook
 
 Run these on the new Ubuntu server (keep your current SSH session open while hardening SSH):
