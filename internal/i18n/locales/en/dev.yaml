@@ -1,6 +1,19 @@
 en:
   dev:
     title: "Dev"
+    bodylimit:
+      title: "Body Limit"
+      description: "Test request body size limits with small and oversized payloads."
+      global_ok: "Global small payload"
+      global_big: "Global oversized payload"
+      auth_ok: "Auth small payload"
+      auth_big: "Auth oversized payload"
+      ready: "Ready. Click a test button."
+      msg_global_ok: "global ok"
+      msg_global_big: "global too big"
+      msg_auth_ok: "auth ok"
+      msg_auth_big: "auth too big"
+      msg_result: "status"
     ratelimit:
       title: "Rate Limit"
       description: "Use these buttons to send bursts of requests and verify 429 responses locally."

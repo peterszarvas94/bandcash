@@ -1,4 +1,4 @@
-package devnotifications
+package dev
 
 import (
 	"net/http"
@@ -28,6 +28,11 @@ func (h *DevNotifications) Index(c echo.Context) error {
 func (h *DevNotifications) RateLimitPage(c echo.Context) error {
 	utils.EnsureClientID(c)
 	return utils.RenderComponent(c, RateLimit())
+}
+
+func (h *DevNotifications) BodyLimitPage(c echo.Context) error {
+	utils.EnsureClientID(c)
+	return utils.RenderComponent(c, BodyLimit())
 }
 
 func (h *DevNotifications) Redirect(c echo.Context) error {
@@ -88,6 +93,14 @@ func (h *DevNotifications) TestWarning(c echo.Context) error {
 	if err := h.patchNotifications(c); err != nil {
 		return c.NoContent(http.StatusInternalServerError)
 	}
+	return c.NoContent(http.StatusOK)
+}
+
+func (h *DevNotifications) BodyLimitGlobalTest(c echo.Context) error {
+	return c.NoContent(http.StatusOK)
+}
+
+func (h *DevNotifications) BodyLimitAuthTest(c echo.Context) error {
 	return c.NoContent(http.StatusOK)
 }
 

@@ -20,8 +20,8 @@ func (h *Home) Data(ctx context.Context) HomeData {
 	}
 }
 
-// Register registers home routes.
-func Register(e *echo.Echo) {
+// RegisterRoutes registers home routes.
+func RegisterRoutes(e *echo.Echo) {
 	h := &Home{}
 	e.GET("/", h.Index)
 }

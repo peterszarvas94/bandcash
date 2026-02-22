@@ -6,7 +6,7 @@ import (
 	"bandcash/internal/middleware"
 )
 
-func Register(e *echo.Echo) *Members {
+func RegisterRoutes(e *echo.Echo) *Members {
 	members := New()
 
 	// Group routes under /groups/:groupId with auth middleware

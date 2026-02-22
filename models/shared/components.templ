@@ -18,7 +18,8 @@ templ Head(title string) {
 					"bandcash/utils": "/static/js/utils.js",
 					"bandcash/notifications": "/static/js/notifications.js",
 					"bandcash/sure": "/static/js/sure.js",
-					"bandcash/rate-limit-tester": "/static/js/rate_limit_tester.js"
+					"bandcash/rate-limit-tester": "/static/js/rate_limit_tester.js",
+					"bandcash/body-limit-tester": "/static/js/body_limit_tester.js"
 				}
 			}
 		</script>
@@ -117,6 +118,11 @@ templ DevTabs(activeTab string) {
 			<a class="tab tab-active" href="/dev/rate-limit">{ ctxi18n.T(ctx, "dev.ratelimit.title") }</a>
 		} else {
 			<a class="tab" href="/dev/rate-limit">{ ctxi18n.T(ctx, "dev.ratelimit.title") }</a>
+		}
+		if activeTab == "body-limit" {
+			<a class="tab tab-active" href="/dev/body-limit">{ ctxi18n.T(ctx, "dev.bodylimit.title") }</a>
+		} else {
+			<a class="tab" href="/dev/body-limit">{ ctxi18n.T(ctx, "dev.bodylimit.title") }</a>
 		}
 	</nav>
 }

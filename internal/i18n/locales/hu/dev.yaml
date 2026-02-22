@@ -1,6 +1,19 @@
 hu:
   dev:
     title: "Fejlesztő"
+    bodylimit:
+      title: "Body limit"
+      description: "Kis és túl nagy payloadokkal tesztelheted a kérésméret limiteket."
+      global_ok: "Global kis payload"
+      global_big: "Global túl nagy payload"
+      auth_ok: "Auth kis payload"
+      auth_big: "Auth túl nagy payload"
+      ready: "Kész. Kattints egy teszt gombra."
+      msg_global_ok: "global ok"
+      msg_global_big: "global túl nagy"
+      msg_auth_ok: "auth ok"
+      msg_auth_big: "auth túl nagy"
+      msg_result: "státusz"
     ratelimit:
       title: "Rate limit"
       description: "Ezek a gombok egyszerre sok kérést küldenek, hogy helyben ellenőrizd a 429 válaszokat."

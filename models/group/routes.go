@@ -6,7 +6,7 @@ import (
 	"bandcash/internal/middleware"
 )
 
-func Register(e *echo.Echo) *Group {
+func RegisterRoutes(e *echo.Echo) *Group {
 	grp := New()
 
 	// Group creation (requires auth)

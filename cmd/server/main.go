@@ -19,7 +19,7 @@ import (
 	"bandcash/internal/middleware"
 	"bandcash/internal/utils"
 	"bandcash/models/auth"
-	"bandcash/models/devnotifications"
+	"bandcash/models/dev"
 	"bandcash/models/event"
 	"bandcash/models/group"
 	"bandcash/models/health"
@@ -46,6 +46,7 @@ func main() {
 	e.Use(middleware.RequestID())
 	e.Use(middleware.Locale())
 	e.Use(middleware.GlobalRateLimit())
+	e.Use(middleware.GlobalBodyLimit())
 	e.Use(middleware.FetchSiteProtection())
 	e.Use(middleware.OriginProtection())
 	e.Use(middleware.CSRFToken())
@@ -62,15 +63,15 @@ func main() {
 	// Routes
 	e.Static("/static", "static")
 
-	health.Register(e)
-	auth.Register(e)
-	group.Register(e)
-	home.Register(e)
-	event.Register(e)
-	member.Register(e)
-	settings.Register(e)
-	sse.Register(e)
-	devnotifications.Register(e)
+	health.RegisterRoutes(e)
+	auth.RegisterRoutes(e)
+	group.RegisterRoutes(e)
+	home.RegisterRoutes(e)
+	event.RegisterRoutes(e)
+	member.RegisterRoutes(e)
+	settings.RegisterRoutes(e)
+	sse.RegisterRoutes(e)
+	dev.RegisterRoutes(e)
 
 	if *routesFlag {
 		utils.PrintRoutes(e)
