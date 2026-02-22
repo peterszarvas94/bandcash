@@ -1,138 +1,56 @@
 # Bandcash
 
-Go + Echo + Datastar app with SQLite, sqlc, and goose migrations.
+Bandcash is a Go web app for shared group expenses.
 
-## Setup
-
-```bash
-# Clone and setup
-cp .env.example .env
-
-# Trust this repo's mise config
-mise trust
-
-# Install toolchain
-mise install
-```
+- Stack: Go, Echo, Datastar, templ, SQLite, sqlc, goose
+- Entrypoint: `cmd/server/main.go`
 
 ## Quick Start
 
 ```bash
-# Run migrations
+cp .env.example .env
+mise trust
+mise install
 mise run goose-up
-
-# Development with hot reload
 mise run dev
 ```
 
-Open http://localhost:8080
+Open `http://localhost:8080`.
 
-## Project Structure
-
-```
-cmd/server/         # Application entrypoint
-models/             # Feature modules (event, member, home)
-  event/            # Event REST handlers + templates
-  member/           # Member REST handlers + templates
-  shared/templates/ # Go HTML templates
-internal/
-  config/           # Environment configuration
-  db/               # Database init, sqlc output, migrations, queries
-  logger/           # Colored slog handler + JSON file logging
-  middleware/       # Request ID middleware
-  utils/            # Shared utilities
-static/
-  js/               # JavaScript (Datastar vendored)
-  css/              # Layered CSS (reset/base/components/utilities)
-```
-
-## Configuration
-
-Environment variables (see `.env.example`):
-
-| Variable    | Default        | Description                          |
-| ----------- | -------------- | ------------------------------------ |
-| `PORT`      | `8080`         | Server port                          |
-| `LOG_LEVEL` | `debug`        | Log level (debug, info, warn, error) |
-| `LOG_FILE`  | `logs/app.log` | JSON log file path                   |
-| `DB_PATH`   | `sqlite.db`    | SQLite database path                 |
-
-## Mise Tasks
+## Common Commands
 
 ```bash
-mise run dev                              # Hot reload development
-mise run build                            # Build binary to tmp/server
-mise run start                            # Run built binary
-mise run run                              # Run server directly
-mise run test                             # Run tests
-mise run fmt                              # Format code
-mise run vet                              # Vet code
-mise run check                            # fmt + vet + test
-mise run sqlc                             # Generate sqlc code
-mise run goose-up                         # Run migrations
-mise run goose-status                     # Migration status
-mise run goose-create name=add_new_table  # Create migration
-mise run seed                             # Seed database
+mise run dev          # hot reload
+mise run run          # run server directly
+mise run build        # build binary (tmp/server)
+mise run test         # go test -v ./...
+mise run format       # go fmt ./...
+mise run vet          # go vet ./...
+mise run lint         # golangci-lint run
+mise run templ        # regenerate *_templ.go
+mise run sqlc         # regenerate sqlc output
+mise run goose-up     # apply migrations
+mise run goose-status # migration status
+mise run seed         # seed local data
+mise run mailpit      # local SMTP catch-all UI (http://localhost:8025)
 ```
 
-## Database
+## Project Layout
 
-Migrations are handled by goose, and queries are compiled by sqlc.
+- `cmd/server/` - app bootstrap and route wiring
+- `models/` - feature modules (`auth`, `group`, `event`, `member`, `settings`, `dev`)
+- `internal/` - shared packages (`db`, `middleware`, `utils`, `i18n`, `email`)
+- `internal/db/migrations/` - goose migrations
+- `internal/db/queries/` - sqlc query sources
+- `static/` - CSS and JS assets
 
-The server does not auto-run migrations; use `mise run goose-up` explicitly.
+## Notes
 
-Run migrations:
-
-```bash
-mise run goose-up
-```
-
-Create a new migration:
-
-```bash
-mise run goose-create name=add_new_column
-```
-
-Regenerate sqlc code:
-
-```bash
-mise run sqlc
-```
-
-## Naming Conventions
-
-Rails-style conventions are used where it makes sense:
-
-- REST handlers follow `index`, `new`, `show`, `edit`, `create`, `update`, `destroy`.
-- Templates use `index.html`, `new.html`, `show.html`, `edit.html`.
-
-## Docker
-
-```bash
-# Or manually
-docker build -t bandcash .
-docker run -p 8080:8080 bandcash
-
-# Or with docker compose
-docker compose up --build
-```
-
-## How It Works
-
-1. Browser loads page and renders templates
-2. User actions trigger POST/PUT/DELETE requests
-3. Handlers read/write events in SQLite via sqlc
-4. Responses re-render the requested pages
-
-## Realtime (SSE)
-
-- The client opens a single SSE stream at `/sse`.
-- A `view` signal (matching the route, e.g. `/event/1`) is sent on connect.
-- The server renders the view and patches `main#app` via Datastar SSE events.
-- Handlers trigger updates by calling the hub (`hub.Hub.Render`) and can patch signals.
+- Do not edit generated files directly:
+  - `*_templ.go` (generated by `mise run templ`)
+  - `internal/db/*.sql.go` (generated by `mise run sqlc`)
+- Agent-specific implementation guidance lives in `AGENTS.md`.
 
 ## License
 
-[O’Saasy](https://osaasy.dev/) © 2026 Peter Szarvas
-
-See `LICENSE.md`
+[O’Saasy](https://osaasy.dev/) © 2026 Peter Szarvas. See `LICENSE.md`.
