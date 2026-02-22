@@ -1,6 +1,16 @@
 hu:
   dev:
     title: "Fejlesztő"
+    ratelimit:
+      title: "Rate limit"
+      description: "Ezek a gombok egyszerre sok kérést küldenek, hogy helyben ellenőrizd a 429 válaszokat."
+      spam_health: "Spam /health"
+      spam_auth: "Spam /auth/login"
+      ready: "Kész. Kattints egy gombra a kezdéshez."
+      start_health: "health spam indítása"
+      done_health: "health kész"
+      start_auth: "auth spam indítása"
+      done_auth: "auth kész"
     notifications:
       title: "Fejlesztői értesítések"
       rule: "Szabály ellenőrzés: az űrlap validációs hibák inline jelennek meg, minden más értesítésként."

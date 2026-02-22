@@ -25,6 +25,11 @@ func (h *DevNotifications) Index(c echo.Context) error {
 	return utils.RenderComponent(c, Index())
 }
 
+func (h *DevNotifications) RateLimitPage(c echo.Context) error {
+	utils.EnsureClientID(c)
+	return utils.RenderComponent(c, RateLimit())
+}
+
 func (h *DevNotifications) Redirect(c echo.Context) error {
 	return c.Redirect(http.StatusFound, "/dev/notifications")
 }

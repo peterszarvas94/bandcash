@@ -1,6 +1,6 @@
 # P0
 
-- [ ] add rate limiting (global + stricter auth endpoints)
+- [x] add rate limiting (global + stricter auth endpoints)
 - [ ] enforce request body size limits
 - [ ] normalize + strictly validate all inputs server-side
 - [ ] add auth abuse protection (cooldown/throttle by IP + email)

@@ -45,6 +45,7 @@ func main() {
 	e.Use(middleware.Compression())
 	e.Use(middleware.RequestID())
 	e.Use(middleware.Locale())
+	e.Use(middleware.GlobalRateLimit())
 	e.Use(middleware.FetchSiteProtection())
 	e.Use(middleware.OriginProtection())
 	e.Use(middleware.CSRFToken())

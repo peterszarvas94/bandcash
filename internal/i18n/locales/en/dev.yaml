@@ -1,6 +1,16 @@
 en:
   dev:
     title: "Dev"
+    ratelimit:
+      title: "Rate Limit"
+      description: "Use these buttons to send bursts of requests and verify 429 responses locally."
+      spam_health: "Spam /health"
+      spam_auth: "Spam /auth/login"
+      ready: "Ready. Click a button to start."
+      start_health: "start health spam"
+      done_health: "health done"
+      start_auth: "start auth spam"
+      done_auth: "auth done"
     notifications:
       title: "Dev Notifications"
       rule: "Rule check: form validation errors are inline; all other outcomes are notifications."

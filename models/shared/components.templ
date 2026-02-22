@@ -14,7 +14,11 @@ templ Head(title string) {
 		<script type="importmap">
 			{
 				"imports": {
-					"datastar": "/static/js/vendor/datastar.js"
+					"datastar": "/static/js/vendor/datastar.js",
+					"bandcash/utils": "/static/js/utils.js",
+					"bandcash/notifications": "/static/js/notifications.js",
+					"bandcash/sure": "/static/js/sure.js",
+					"bandcash/rate-limit-tester": "/static/js/rate_limit_tester.js"
 				}
 			}
 		</script>
@@ -108,6 +112,11 @@ templ DevTabs(activeTab string) {
 			<a class="tab tab-active" href="/dev/notifications">{ ctxi18n.T(ctx, "dev.notifications.title") }</a>
 		} else {
 			<a class="tab" href="/dev/notifications">{ ctxi18n.T(ctx, "dev.notifications.title") }</a>
+		}
+		if activeTab == "rate-limit" {
+			<a class="tab tab-active" href="/dev/rate-limit">{ ctxi18n.T(ctx, "dev.ratelimit.title") }</a>
+		} else {
+			<a class="tab" href="/dev/rate-limit">{ ctxi18n.T(ctx, "dev.ratelimit.title") }</a>
 		}
 	</nav>
 }
