@@ -1,0 +1,47 @@
+service: bandcash
+image: peterszarvas94/bandcash
+
+servers:
+  - bandcash
+
+proxy:
+  host: bandcash.app
+  app_port: 2222
+  ssl: true
+  healthcheck:
+    path: /health
+    interval: 3
+    timeout: 5
+
+registry:
+  server: ghcr.io
+  username:
+    - KAMAL_REGISTRY_USERNAME
+  password:
+    - KAMAL_REGISTRY_PASSWORD
+
+builder:
+  arch:
+    - amd64
+
+ssh:
+  user: deploy
+
+volumes:
+  - bandcash_data:/storage
+
+env:
+  clear:
+    APP_ENV: production
+    PORT: "2222"
+    URL: https://bandcash.app
+    DB_PATH: /storage/sqlite.db
+    LOG_LEVEL: info
+    LOG_FOLDER: /storage/logs
+    LOG_PREFIX: bandcash
+    SMTP_HOST: smtp.example.com
+    SMTP_PORT: "587"
+    EMAIL_FROM: BandCash <noreply@bandcash.app>
+  secret:
+    - SMTP_USERNAME
+    - SMTP_PASSWORD
