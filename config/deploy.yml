@@ -39,9 +39,9 @@ env:
     LOG_LEVEL: info
     LOG_FOLDER: /storage/logs
     LOG_PREFIX: bandcash
-    SMTP_HOST: smtp.example.com
-    SMTP_PORT: "587"
-    EMAIL_FROM: BandCash <noreply@bandcash.app>
   secret:
+    - SMTP_HOST
+    - SMTP_PORT
     - SMTP_USERNAME
     - SMTP_PASSWORD
+    - EMAIL_FROM

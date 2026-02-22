@@ -44,8 +44,11 @@ Fill `.kamal/secrets-common` locally:
 
 - `KAMAL_REGISTRY_USERNAME`
 - `KAMAL_REGISTRY_PASSWORD`
+- `SMTP_HOST`
+- `SMTP_PORT`
 - `SMTP_USERNAME`
 - `SMTP_PASSWORD`
+- `EMAIL_FROM`
 
 Notes:
 

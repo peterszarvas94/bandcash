@@ -7,4 +7,3 @@ bin/
 sqlite.db
 sqlite.db-*
 .kamal/secrets
-.kamal/secrets.*
