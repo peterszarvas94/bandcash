@@ -53,9 +53,15 @@ func main() {
 	e.Use(middleware.CSRFProtection())
 	e.Use(echoMiddleware.RequestLoggerWithConfig(echoMiddleware.RequestLoggerConfig{
 		LogStatus: true,
-		LogURI:    true,
+		LogURI:    false,
 		LogValuesFunc: func(c echo.Context, v echoMiddleware.RequestLoggerValues) error {
-			slog.Info("http.request.completed", "uri", v.URI, "method", c.Request().Method, "status", v.Status)
+			req := c.Request()
+			slog.Info("http.request.completed",
+				"path", req.URL.Path,
+				"query", req.URL.RawQuery,
+				"method", req.Method,
+				"status", v.Status,
+			)
 			return nil
 		},
 	}))
