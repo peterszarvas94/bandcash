@@ -39,7 +39,7 @@ set -euo pipefail
 export DEBIAN_FRONTEND=noninteractive
 apt-get update
 apt-get -y upgrade
-apt-get install -y sudo ufw fail2ban docker.io curl git
+apt-get install -y sudo ufw fail2ban docker.io docker-compose-v2 curl git
 systemctl enable --now docker
 
 if ! command -v mise >/dev/null 2>&1; then
