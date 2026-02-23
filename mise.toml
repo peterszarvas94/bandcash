@@ -6,6 +6,8 @@ go = "1.26.0"
 "github:pressly/goose" = "3.26.0"
 "github:axllent/mailpit" = "v1.27.8"
 golangci-lint = "2.9.0"
+ruby = "3.3.10"
+"gem:kamal" = "2.10.1"
 
 [tasks]
 dev = "air"
@@ -27,3 +29,4 @@ goose-create = "goose -dir internal/db/migrations create ${name} sql"
 seed = "go run ./cmd/seed/main.go"
 mailpit = "mailpit"
 check-versions = "go run ./cmd/checkversions"
+kamal = "mise exec gem:kamal@2.10.1 -- kamal"

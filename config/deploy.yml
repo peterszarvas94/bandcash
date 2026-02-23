@@ -1,5 +1,5 @@
 service: bandcash
-image: peterszarvas94/bandcash
+image: peterszarvashu/bandcash
 
 servers:
   - bandcash
@@ -14,18 +14,18 @@ proxy:
     timeout: 5
 
 registry:
-  server: ghcr.io
   username:
     - KAMAL_REGISTRY_USERNAME
   password:
     - KAMAL_REGISTRY_PASSWORD
 
 builder:
-  arch:
-    - amd64
+  arch: amd64
+  remote: ssh://peti@bandcash
+  local: false
 
 ssh:
-  user: deploy
+  user: peti
 
 volumes:
   - bandcash_data:/storage

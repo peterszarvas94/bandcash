@@ -16,6 +16,7 @@
 
 # P2
 
+- [ ] evaluate 1Password-backed Kamal secrets (`op`/`kamal secrets`) instead of static `.kamal/secrets`
 - [ ] add real-time collaborative editing notice ("Updated by another user [Refresh]")
 - [ ] add expenses table (title, description, amount, date)
 - [ ] support multiple admins per group (user->admin, admin->user, admin kick admin rules)

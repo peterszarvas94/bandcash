@@ -1,46 +1,21 @@
-# Production (Kamal)
+# Production (Kamal) — Remaining Steps
 
-This repo now uses Kamal for deployment. Legacy GitHub SSH/systemd deploy files were removed.
+## 1) Prepare server runtime
 
-## 0) If server is partially configured from old setup
+If you use `./scripts/secure_server_bootstrap.sh`, Docker/runtime packages are installed there.
 
-Run from local machine:
+Then logout/login so docker group is active for the admin user.
 
-```bash
-SSH_HOST=bandcash FORCE=1 ./deploy/reset_partial_server.sh
-```
-
-If you also want to replace Caddy config with a simple placeholder while resetting:
+## 2) Confirm local prerequisites
 
 ```bash
-SSH_HOST=bandcash FORCE=1 RESET_CADDY=1 ./deploy/reset_partial_server.sh
+mise install
+ssh peti@bandcash
 ```
 
-## 1) Local prerequisites
+## 3) Fill Kamal secrets
 
-- Install Kamal (`gem install kamal`).
-- Ensure Docker can build locally.
-- Ensure SSH works: `ssh deploy@bandcash`.
-
-## 2) Server prerequisites (no app deploy yet)
-
-On server (`bandcash`):
-
-```bash
-sudo apt-get update
-sudo apt-get -y upgrade
-sudo apt-get install -y docker.io curl git
-sudo usermod -aG docker deploy
-```
-
-Then re-login so docker group is active for `deploy`.
-
-## 3) Configure Kamal files in repo
-
-- Main config: `config/deploy.yml`
-- Secrets template: `.kamal/secrets-common`
-
-Fill `.kamal/secrets-common` locally:
+Set these in `.kamal/secrets` (local only):
 
 - `KAMAL_REGISTRY_USERNAME`
 - `KAMAL_REGISTRY_PASSWORD`
@@ -50,37 +25,26 @@ Fill `.kamal/secrets-common` locally:
 - `SMTP_PASSWORD`
 - `EMAIL_FROM`
 
+## 4) First deploy
+
+```bash
+mise run kamal setup
+```
+
 Notes:
 
-- App data is persisted via volume: `bandcash_data:/storage`
-- SQLite path in container: `/storage/sqlite.db`
-- Healthcheck path: `/health`
+- Builds are configured to run on the remote server builder (`ssh://peti@bandcash`) to avoid local macOS cross-arch builds.
 
-## 4) First-time Kamal setup
-
-From repo root (local machine):
-
-```bash
-kamal setup
-```
-
-This installs/boots kamal-proxy and prepares first app release.
-
-## 5) Subsequent deploys
-
-```bash
-kamal deploy
-```
-
-## 6) Verify
+## 5) Verify
 
 ```bash
 curl -i https://bandcash.app/health
-kamal app details
-kamal app logs
+mise run kamal app details
+mise run kamal app logs
 ```
 
-## 7) Rollback / cleanup helpers
+## 6) Ongoing commands
 
-- Rollback: `kamal rollback`
-- Remove old containers/images: `kamal prune all`
+- Deploy updates: `mise run kamal deploy`
+- Rollback: `mise run kamal rollback`
+- Prune old artifacts: `mise run kamal prune all`
