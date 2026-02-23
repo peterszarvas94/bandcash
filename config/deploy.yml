@@ -36,7 +36,7 @@ env:
     PORT: "2222"
     URL: https://bandcash.app
     DB_PATH: /storage/sqlite.db
-    LOG_LEVEL: info
+    LOG_LEVEL: debug
     LOG_FOLDER: /storage/logs
     LOG_PREFIX: bandcash
   secret:

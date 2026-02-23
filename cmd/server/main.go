@@ -55,7 +55,7 @@ func main() {
 		LogStatus: true,
 		LogURI:    true,
 		LogValuesFunc: func(c echo.Context, v echoMiddleware.RequestLoggerValues) error {
-			slog.Info("request", "uri", v.URI, "method", c.Request().Method, "status", v.Status)
+			slog.Info("http.request.completed", "uri", v.URI, "method", c.Request().Method, "status", v.Status)
 			return nil
 		},
 	}))

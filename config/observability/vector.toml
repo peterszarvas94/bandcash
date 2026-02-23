@@ -15,6 +15,10 @@ if err == null && is_object(parsed) {
   . = {"message": string!(.message)}
 }
 
+if !exists(.message) && exists(.msg) {
+  .message = del(.msg)
+}
+
 .app = "bandcash"
 '''
 
