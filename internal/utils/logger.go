@@ -133,7 +133,15 @@ func New(logFile io.Writer) *slog.Logger {
 	level := cfg.LogLevel
 	stdoutHandler := NewColoredHandler(os.Stdout, level)
 
-	jsonFileHandler := slog.NewJSONHandler(logFile, &slog.HandlerOptions{Level: level})
+	jsonFileHandler := slog.NewJSONHandler(logFile, &slog.HandlerOptions{
+		Level: level,
+		ReplaceAttr: func(_ []string, a slog.Attr) slog.Attr {
+			if a.Key == slog.MessageKey {
+				a.Key = "message"
+			}
+			return a
+		},
+	})
 	return slog.New(&MultiHandler{handlers: []slog.Handler{stdoutHandler, jsonFileHandler}})
 }
 
