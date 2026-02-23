@@ -79,7 +79,7 @@ func (p *Members) Show(c echo.Context) error {
 
 	id := c.Param("id")
 	if !utils.IsValidID(id, utils.PrefixMember) {
-		slog.Warn("member.show: invalid id")
+		slog.Info("member.show: invalid id")
 		return c.NoContent(http.StatusBadRequest)
 	}
 
@@ -101,7 +101,7 @@ func (p *Members) Create(c echo.Context) error {
 	var signals memberTableParams
 	err := datastar.ReadSignals(c.Request(), &signals)
 	if err != nil {
-		slog.Warn("member.create.table: failed to read signals", "err", err)
+		slog.Info("member.create.table: failed to read signals", "err", err)
 		return c.NoContent(http.StatusBadRequest)
 	}
 	signals.FormData.Name = utils.NormalizeText(signals.FormData.Name)
@@ -153,14 +153,14 @@ func (p *Members) Update(c echo.Context) error {
 
 	id := c.Param("id")
 	if !utils.IsValidID(id, utils.PrefixMember) {
-		slog.Warn("member.update: invalid id")
+		slog.Info("member.update: invalid id")
 		return c.NoContent(http.StatusBadRequest)
 	}
 
 	var signals memberTableParams
 	err := datastar.ReadSignals(c.Request(), &signals)
 	if err != nil {
-		slog.Warn("member.update: failed to read signals", "err", err)
+		slog.Info("member.update: failed to read signals", "err", err)
 		return c.NoContent(http.StatusBadRequest)
 	}
 	signals.FormData.Name = utils.NormalizeText(signals.FormData.Name)
@@ -220,14 +220,14 @@ func (p *Members) Destroy(c echo.Context) error {
 
 	id := c.Param("id")
 	if !utils.IsValidID(id, utils.PrefixMember) {
-		slog.Warn("member.destroy: invalid id")
+		slog.Info("member.destroy: invalid id")
 		return c.NoContent(http.StatusBadRequest)
 	}
 
 	var signals modeParams
 	err := datastar.ReadSignals(c.Request(), &signals)
 	if err != nil {
-		slog.Warn("member.destroy: failed to read signals", "err", err)
+		slog.Info("member.destroy: failed to read signals", "err", err)
 		return c.NoContent(http.StatusBadRequest)
 	}
 

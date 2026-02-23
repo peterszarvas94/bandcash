@@ -224,7 +224,7 @@ func (g *Group) LeaveGroup(c echo.Context) error {
 		GroupID: groupID,
 	})
 	if err != nil {
-		slog.Warn("group: failed to leave", "err", err)
+		slog.Error("group: failed to leave", "err", err)
 		utils.Notify(c, "error", ctxi18n.T(c.Request().Context(), "groups.errors.leave_failed"))
 		err = utils.SSEHub.Redirect(c, "/dashboard")
 		if err != nil {
@@ -461,7 +461,7 @@ func (g *Group) RemoveViewer(c echo.Context) error {
 		GroupID: groupID,
 	})
 	if err != nil {
-		slog.Warn("group: failed to remove viewer", "err", err)
+		slog.Error("group: failed to remove viewer", "err", err)
 		return g.patchViewersPage(c, groupID, "", "groups.errors.remove_failed")
 	}
 
@@ -481,7 +481,7 @@ func (g *Group) CancelInvite(c echo.Context) error {
 		GroupID: sql.NullString{String: groupID, Valid: true},
 	})
 	if err != nil {
-		slog.Warn("group: failed to cancel invite", "err", err)
+		slog.Error("group: failed to cancel invite", "err", err)
 		return g.patchViewersPage(c, groupID, "", "groups.errors.invite_cancel_failed")
 	}
 

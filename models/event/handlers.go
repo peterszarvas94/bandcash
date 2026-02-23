@@ -102,7 +102,7 @@ func (e *Events) Show(c echo.Context) error {
 
 	id := c.Param("id")
 	if !utils.IsValidID(id, utils.PrefixEvent) {
-		slog.Warn("event.show: invalid id")
+		slog.Info("event.show: invalid id")
 		return c.NoContent(http.StatusBadRequest)
 	}
 
@@ -124,7 +124,7 @@ func (e *Events) Create(c echo.Context) error {
 	var signals eventInlineParams
 	err := datastar.ReadSignals(c.Request(), &signals)
 	if err != nil {
-		slog.Warn("event.create.table: failed to read signals", "err", err)
+		slog.Info("event.create.table: failed to read signals", "err", err)
 		return c.NoContent(http.StatusBadRequest)
 	}
 	signals.FormData.Title = utils.NormalizeText(signals.FormData.Title)
@@ -183,14 +183,14 @@ func (e *Events) Update(c echo.Context) error {
 
 	id := c.Param("id")
 	if !utils.IsValidID(id, utils.PrefixEvent) {
-		slog.Warn("event.update: invalid id")
+		slog.Info("event.update: invalid id")
 		return c.NoContent(http.StatusBadRequest)
 	}
 
 	var signals eventInlineParams
 	err := datastar.ReadSignals(c.Request(), &signals)
 	if err != nil {
-		slog.Warn("event.update: failed to read signals", "err", err)
+		slog.Info("event.update: failed to read signals", "err", err)
 		return c.NoContent(http.StatusBadRequest)
 	}
 	signals.FormData.Title = utils.NormalizeText(signals.FormData.Title)
@@ -280,14 +280,14 @@ func (e *Events) Destroy(c echo.Context) error {
 
 	id := c.Param("id")
 	if !utils.IsValidID(id, utils.PrefixEvent) {
-		slog.Warn("event.destroy: invalid id")
+		slog.Info("event.destroy: invalid id")
 		return c.NoContent(http.StatusBadRequest)
 	}
 
 	var signals modeParams
 	err := datastar.ReadSignals(c.Request(), &signals)
 	if err != nil {
-		slog.Warn("event.destroy: failed to read signals", "err", err)
+		slog.Info("event.destroy: failed to read signals", "err", err)
 		return c.NoContent(http.StatusBadRequest)
 	}
 
@@ -337,14 +337,14 @@ func (e *Events) CreateParticipant(c echo.Context) error {
 
 	id := c.Param("id")
 	if !utils.IsValidID(id, utils.PrefixEvent) {
-		slog.Warn("participant.create.table: invalid event id")
+		slog.Info("participant.create.table: invalid event id")
 		return c.NoContent(http.StatusBadRequest)
 	}
 
 	var signals participantTableParams
 	err := datastar.ReadSignals(c.Request(), &signals)
 	if err != nil {
-		slog.Warn("participant.create.table: failed to read signals", "err", err)
+		slog.Info("participant.create.table: failed to read signals", "err", err)
 		return c.NoContent(http.StatusBadRequest)
 	}
 	signals.FormData.MemberID = utils.NormalizeText(signals.FormData.MemberID)
@@ -399,20 +399,20 @@ func (e *Events) UpdateParticipant(c echo.Context) error {
 
 	eventID := c.Param("id")
 	if !utils.IsValidID(eventID, utils.PrefixEvent) {
-		slog.Warn("participant.update: invalid event id")
+		slog.Info("participant.update: invalid event id")
 		return c.NoContent(http.StatusBadRequest)
 	}
 
 	memberID := c.Param("memberId")
 	if !utils.IsValidID(memberID, utils.PrefixMember) {
-		slog.Warn("participant.update: invalid member id")
+		slog.Info("participant.update: invalid member id")
 		return c.NoContent(http.StatusBadRequest)
 	}
 
 	var signals participantTableParams
 	err := datastar.ReadSignals(c.Request(), &signals)
 	if err != nil {
-		slog.Warn("participant.update: failed to read signals", "err", err)
+		slog.Info("participant.update: failed to read signals", "err", err)
 		return c.NoContent(http.StatusBadRequest)
 	}
 	signals.FormData.MemberID = utils.NormalizeText(signals.FormData.MemberID)
@@ -467,13 +467,13 @@ func (e *Events) DeleteParticipantTable(c echo.Context) error {
 
 	eventID := c.Param("id")
 	if !utils.IsValidID(eventID, utils.PrefixEvent) {
-		slog.Warn("participant.delete: invalid event id")
+		slog.Info("participant.delete: invalid event id")
 		return c.NoContent(http.StatusBadRequest)
 	}
 
 	memberID := c.Param("memberId")
 	if !utils.IsValidID(memberID, utils.PrefixMember) {
-		slog.Warn("participant.delete: invalid member id")
+		slog.Info("participant.delete: invalid member id")
 		return c.NoContent(http.StatusBadRequest)
 	}
 
