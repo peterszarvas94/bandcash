@@ -2,7 +2,7 @@
 
 ## 1) Prepare server runtime
 
-If you use `./scripts/secure_server_bootstrap.sh`, Docker/runtime packages are installed there.
+If you use `./scripts/secure_server_bootstrap.sh`, Docker/runtime packages and `mise` are installed there.
 
 Then logout/login so docker group is active for the admin user.
 
@@ -34,6 +34,7 @@ mise run kamal setup
 Notes:
 
 - Builds are configured to run on the remote server builder (`ssh://peti@bandcash`) to avoid local macOS cross-arch builds.
+- DB migrations run automatically on app startup (every deploy) from embedded migration files.
 
 ## 5) Verify
 

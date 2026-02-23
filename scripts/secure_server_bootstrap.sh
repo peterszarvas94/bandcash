@@ -42,6 +42,13 @@ apt-get -y upgrade
 apt-get install -y sudo ufw fail2ban docker.io curl git
 systemctl enable --now docker
 
+if ! command -v mise >/dev/null 2>&1; then
+  curl https://mise.run | sh
+  if [ -x /root/.local/bin/mise ]; then
+    install -m 0755 /root/.local/bin/mise /usr/local/bin/mise
+  fi
+fi
+
 if ! id -u "$ADMIN_USER" >/dev/null 2>&1; then
   useradd -m -s /bin/bash "$ADMIN_USER"
 fi

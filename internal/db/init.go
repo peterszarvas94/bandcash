@@ -2,6 +2,7 @@ package db
 
 import (
 	"database/sql"
+	"embed"
 	"fmt"
 	"log/slog"
 	"os"
@@ -15,6 +16,9 @@ var (
 	DB  *sql.DB
 	Qry *Queries
 )
+
+//go:embed migrations/*.sql
+var migrationsFS embed.FS
 
 func Init(dbPath string) error {
 	// Ensure directory exists
@@ -68,7 +72,9 @@ func Migrate() error {
 		return fmt.Errorf("failed to set goose dialect: %w", err)
 	}
 
-	err = goose.Up(DB, "internal/db/migrations")
+	goose.SetBaseFS(migrationsFS)
+
+	err = goose.Up(DB, "migrations")
 	if err != nil {
 		return fmt.Errorf("failed to run migrations: %w", err)
 	}

@@ -94,6 +94,12 @@ func main() {
 	}
 	defer db.Close()
 
+	err = db.Migrate()
+	if err != nil {
+		slog.Error("failed to run database migrations", "err", err)
+		os.Exit(1)
+	}
+
 	// Graceful shutdown
 	go func() {
 		slog.Info("server starting", "port", cfg.Port)
