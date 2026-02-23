@@ -127,18 +127,11 @@ type MultiHandler struct {
 }
 
 // New creates a multi-handler logger.
-// - development: colored stdout + JSON file
-// - production: JSON stdout + JSON file
+// - all environments: colored stdout + JSON file
 func New(logFile io.Writer) *slog.Logger {
 	cfg := Env()
 	level := cfg.LogLevel
-	appEnv := cfg.AppEnv
-	var stdoutHandler slog.Handler
-	if appEnv == "production" {
-		stdoutHandler = slog.NewJSONHandler(os.Stdout, &slog.HandlerOptions{Level: level})
-	} else {
-		stdoutHandler = NewColoredHandler(os.Stdout, level)
-	}
+	stdoutHandler := NewColoredHandler(os.Stdout, level)
 
 	jsonFileHandler := slog.NewJSONHandler(logFile, &slog.HandlerOptions{Level: level})
 	return slog.New(&MultiHandler{handlers: []slog.Handler{stdoutHandler, jsonFileHandler}})

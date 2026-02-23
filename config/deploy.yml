@@ -57,7 +57,7 @@ accessories:
     directories:
       - better-stack-data:/var/lib/vector
     volumes:
-      - /var/lib/docker/containers:/var/lib/docker/containers:ro
+      - bandcash_data:/storage:ro
     env:
       secret:
         - BETTER_STACK_SOURCE_TOKEN
