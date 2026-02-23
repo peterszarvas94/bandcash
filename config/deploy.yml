@@ -45,3 +45,16 @@ env:
     - SMTP_USERNAME
     - SMTP_PASSWORD
     - EMAIL_FROM
+
+accessories:
+  dozzle:
+    service: dozzle
+    image: amir20/dozzle:v8.14.8
+    host: bandcash
+    port: "127.0.0.1:8088:8080"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    env:
+      clear:
+        DOZZLE_LEVEL: info
+        DOZZLE_NO_ANALYTICS: "true"
