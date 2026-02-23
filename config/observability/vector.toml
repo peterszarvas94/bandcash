@@ -8,14 +8,14 @@ read_from = "end"
 type = "remap"
 inputs = ["bandcash_json_logs"]
 source = '''
-.app = "bandcash"
-
 parsed, err = parse_json(string!(.message))
 if err == null && is_object(parsed) {
-  . = merge!(., parsed)
+  . = parsed
 } else {
-  .message = string!(.message)
+  . = {"message": string!(.message)}
 }
+
+.app = "bandcash"
 '''
 
 [sinks.better_stack]
