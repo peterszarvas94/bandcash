@@ -1,0 +1,32 @@
+[sources.docker_json_logs]
+type = "file"
+include = ["/var/lib/docker/containers/*/*-json.log"]
+ignore_older_secs = 86400
+read_from = "end"
+
+[transforms.parse_docker_json]
+type = "remap"
+inputs = ["docker_json_logs"]
+source = '''
+. = parse_json!(string!(.message))
+raw_log = del(.log)
+
+parsed_log, err = parse_json(raw_log)
+if err == null && is_object(parsed_log) {
+  . = merge!(., parsed_log)
+} else {
+  .message = raw_log
+}
+
+.app = "bandcash"
+'''
+
+[sinks.better_stack]
+type = "http"
+inputs = ["parse_docker_json"]
+uri = "https://s1758045.eu-fsn-3.betterstackdata.com/"
+method = "post"
+compression = "gzip"
+auth.strategy = "bearer"
+auth.token = "${BETTER_STACK_SOURCE_TOKEN}"
+encoding.codec = "json"

@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-for accessory in loki promtail grafana; do
+for accessory in better-stack; do
   if kamal accessory details "$accessory" >/dev/null 2>&1; then
     kamal accessory reboot "$accessory"
   else

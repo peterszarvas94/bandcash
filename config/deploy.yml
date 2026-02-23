@@ -47,44 +47,17 @@ env:
     - EMAIL_FROM
 
 accessories:
-  loki:
-    service: loki
-    image: grafana/loki:3.0.0
+  better-stack:
+    service: better-stack
+    image: timberio/vector:0.42.0-debian
     host: bandcash
-    cmd: "-config.file=/etc/loki/config.yml"
-    port: "127.0.0.1:3100:3100"
+    cmd: "--config /etc/vector/vector.toml"
     files:
-      - config/observability/loki.yml:/etc/loki/config.yml:ro
+      - config/observability/vector.toml:/etc/vector/vector.toml:ro
     directories:
-      - loki-data:/loki
-    options:
-      user: "0"
-
-  promtail:
-    service: promtail
-    image: grafana/promtail:3.0.0
-    host: bandcash
-    cmd: "-config.file=/etc/promtail/config.yml"
-    files:
-      - config/observability/promtail.yml:/etc/promtail/config.yml:ro
-    directories:
-      - promtail-data:/tmp
+      - better-stack-data:/var/lib/vector
     volumes:
       - /var/lib/docker/containers:/var/lib/docker/containers:ro
-
-  grafana:
-    service: grafana
-    image: grafana/grafana:11.1.0
-    host: bandcash
-    port: "127.0.0.1:3000:3000"
-    files:
-      - config/observability/grafana-datasources.yml:/etc/grafana/provisioning/datasources/datasources.yml:ro
-    directories:
-      - grafana-data:/var/lib/grafana
-    options:
-      user: "0"
     env:
-      clear:
-        GF_SERVER_ROOT_URL: "http://localhost:3000"
-        GF_SECURITY_ADMIN_USER: "admin"
-        GF_SECURITY_ADMIN_PASSWORD: "admin"
+      secret:
+        - BETTER_STACK_SOURCE_TOKEN
