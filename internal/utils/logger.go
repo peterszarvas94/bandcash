@@ -126,13 +126,22 @@ type MultiHandler struct {
 	handlers []slog.Handler
 }
 
-// New creates a multi-handler logger with colored output to stdout and JSON to a file
-func New(logFile io.Writer, level slog.Level) *slog.Logger {
-	coloredHandler := NewColoredHandler(os.Stdout, level)
-	jsonHandler := slog.NewJSONHandler(logFile, &slog.HandlerOptions{
-		Level: level,
-	})
-	return slog.New(&MultiHandler{handlers: []slog.Handler{coloredHandler, jsonHandler}})
+// New creates a multi-handler logger.
+// - development: colored stdout + JSON file
+// - production: JSON stdout + JSON file
+func New(logFile io.Writer) *slog.Logger {
+	cfg := Env()
+	level := cfg.LogLevel
+	appEnv := cfg.AppEnv
+	var stdoutHandler slog.Handler
+	if appEnv == "production" {
+		stdoutHandler = slog.NewJSONHandler(os.Stdout, &slog.HandlerOptions{Level: level})
+	} else {
+		stdoutHandler = NewColoredHandler(os.Stdout, level)
+	}
+
+	jsonFileHandler := slog.NewJSONHandler(logFile, &slog.HandlerOptions{Level: level})
+	return slog.New(&MultiHandler{handlers: []slog.Handler{stdoutHandler, jsonFileHandler}})
 }
 
 func SetupLogger() {
@@ -157,7 +166,7 @@ func SetupLogger() {
 		os.Exit(1)
 	}
 
-	log := New(logFile, cfg.LogLevel)
+	log := New(logFile)
 	slog.SetDefault(log)
 }
 

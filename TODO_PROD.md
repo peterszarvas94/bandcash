@@ -44,7 +44,18 @@ mise run kamal app details
 mise run kamal app logs
 ```
 
-## 6) Ongoing commands
+## 6) Better Stack setup (optional, simplified)
+
+In production, app stdout is JSON (for easier Better Stack ingestion).
+You can connect Better Stack directly to Docker/container logs.
+
+Fallback/history log download (JSON files from `/storage/logs` volume):
+
+```bash
+HOST=bandcash COUNT=3 mise run prod-download-logs
+```
+
+## 7) Ongoing commands
 
 - Deploy updates: `mise run kamal deploy`
 - Rollback: `mise run kamal rollback`
