@@ -55,6 +55,9 @@ fi
 
 usermod -aG sudo "$ADMIN_USER"
 usermod -aG docker "$ADMIN_USER"
+echo "$ADMIN_USER ALL=(ALL) NOPASSWD:ALL" >/etc/sudoers.d/99-$ADMIN_USER-nopasswd
+chmod 440 /etc/sudoers.d/99-$ADMIN_USER-nopasswd
+visudo -cf /etc/sudoers >/dev/null
 
 install -d -m 700 -o "$ADMIN_USER" -g "$ADMIN_USER" "/home/$ADMIN_USER/.ssh"
 touch "/home/$ADMIN_USER/.ssh/authorized_keys"

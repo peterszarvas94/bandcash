@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+for accessory in loki promtail grafana; do
+  if kamal accessory details "$accessory" >/dev/null 2>&1; then
+    kamal accessory reboot "$accessory"
+  else
+    kamal accessory boot "$accessory"
+  fi
+done
