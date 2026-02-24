@@ -23,9 +23,6 @@ templ HomeIndex(data HomeData) {
 						<a class="btn" href="/dashboard">{ctxi18n.T(ctx, "nav.dashboard")}</a>
 					} else {
 						<a class="btn" href="/auth/login">{ctxi18n.T(ctx, "auth.login")}</a>
-						if !utils.Env().DisableSignup {
-							<a class="btn" href="/auth/signup">{ctxi18n.T(ctx, "auth.signup")}</a>
-						}
 						<a class="btn" href="/settings">{ctxi18n.T(ctx, "settings.title")}</a>
 					}
 					if utils.Env().AppEnv == "development" {

@@ -13,7 +13,7 @@ templ LoginPage(data AuthPageData) {
 	<html lang={ appi18n.LocaleCode(ctx) }>
 		@shared.Head(data.Title)
 		<body>
-			<div data-signals={templ.JSONString(map[string]any{"csrf": utils.CSRFToken(ctx), "formData": map[string]any{"email": ""}})} data-init="@get('/sse')"></div>
+			<div data-signals={templ.JSONString(map[string]any{"csrf": utils.CSRFToken(ctx), "authError": "", "formData": map[string]any{"email": ""}})} data-init="@get('/sse')"></div>
 			@shared.Notifications()
 			<main id="app" class="single-col">
 				@shared.Breadcrumbs(data.Breadcrumbs, data.UserEmail)
@@ -21,12 +21,10 @@ templ LoginPage(data AuthPageData) {
 					<div class="field">
 						<label>{ ctxi18n.T(ctx, "auth.email") } <span class="required-mark">*</span></label>
 						<input type="email" data-bind="formData.email" placeholder={ ctxi18n.T(ctx, "auth.email_placeholder") }/>
+						<div data-show="$authError !== ''" class="color-error" data-text="$authError"></div>
 					</div>
 					<button type="submit" class="btn btn-primary">{ ctxi18n.T(ctx, "auth.send_link") }</button>
 				</form>
-				if !utils.Env().DisableSignup {
-					<p>{ ctxi18n.T(ctx, "auth.no_account") } <a href="/auth/signup">{ ctxi18n.T(ctx, "auth.signup") }</a></p>
-				}
 			</main>
 		</body>
 	</html>

@@ -1,9 +1,10 @@
 package auth
 
 import (
+	"database/sql"
+	"errors"
 	"log/slog"
 	"net/http"
-	"net/url"
 	"time"
 
 	ctxi18n "github.com/invopop/ctxi18n/i18n"
@@ -55,19 +56,28 @@ func (a *Auth) LoginRequest(c echo.Context) error {
 	// Check if user exists
 	_, err := db.Qry.GetUserByEmail(c.Request().Context(), emailAddress)
 	if err != nil {
+		if !errors.Is(err, sql.ErrNoRows) {
+			slog.Error("auth.login: failed to load user by email", "email", emailAddress, "err", err)
+			utils.Notify(c, "error", ctxi18n.T(c.Request().Context(), "auth.notifications.create_link_failed"))
+			return c.NoContent(http.StatusInternalServerError)
+		}
+
 		if utils.Env().DisableSignup {
 			_ = utils.SSEHub.PatchSignals(c, map[string]any{
-				"authError": ctxi18n.T(c.Request().Context(), "auth.signup_disabled"),
+				"authError": ctxi18n.T(c.Request().Context(), "auth.no_account_for_email"),
 			})
 			return c.NoContent(http.StatusUnprocessableEntity)
 		}
 
-		// User doesn't exist - offer to sign up instead
-		err = utils.SSEHub.Redirect(c, "/auth/signup?email="+url.QueryEscape(emailAddress))
+		_, err = db.Qry.CreateUser(c.Request().Context(), db.CreateUserParams{
+			ID:    utils.GenerateID("usr"),
+			Email: emailAddress,
+		})
 		if err != nil {
+			slog.Error("auth.login: failed to create user", "email", emailAddress, "err", err)
+			utils.Notify(c, "error", ctxi18n.T(c.Request().Context(), "auth.notifications.create_user_failed"))
 			return c.NoContent(http.StatusInternalServerError)
 		}
-		return c.NoContent(http.StatusOK)
 	}
 
 	// Create magic link
@@ -95,97 +105,6 @@ func (a *Auth) LoginRequest(c echo.Context) error {
 		return c.NoContent(http.StatusInternalServerError)
 	}
 	utils.Notify(c, "info", ctxi18n.T(c.Request().Context(), "auth.notifications.link_sent"))
-
-	err = utils.SSEHub.Redirect(c, "/auth/login-sent")
-	if err != nil {
-		return c.NoContent(http.StatusInternalServerError)
-	}
-	return c.NoContent(http.StatusOK)
-}
-
-// SignupPage shows the signup form
-func (a *Auth) SignupPage(c echo.Context) error {
-	if utils.Env().DisableSignup {
-		return c.NoContent(http.StatusNotFound)
-	}
-
-	utils.EnsureClientID(c)
-	emailAddress := utils.NormalizeEmail(c.QueryParam("email"))
-	data := AuthPageData{
-		Title:       ctxi18n.T(c.Request().Context(), "auth.signup_title"),
-		Breadcrumbs: []utils.Crumb{{Label: ctxi18n.T(c.Request().Context(), "auth.signup")}},
-		Email:       emailAddress,
-	}
-	return utils.RenderComponent(c, SignupPage(data))
-}
-
-// SignupRequest handles signup form submission
-func (a *Auth) SignupRequest(c echo.Context) error {
-	if utils.Env().DisableSignup {
-		return c.NoContent(http.StatusNotFound)
-	}
-
-	signals := authSignals{}
-	if err := datastar.ReadSignals(c.Request(), &signals); err != nil {
-		return c.NoContent(http.StatusBadRequest)
-	}
-	signals.FormData.Email = utils.NormalizeEmail(signals.FormData.Email)
-	if errs := utils.ValidateWithLocale(c.Request().Context(), signals.FormData); errs != nil {
-		_ = utils.SSEHub.PatchSignals(c, map[string]any{"authError": errs["email"]})
-		return c.NoContent(http.StatusUnprocessableEntity)
-	}
-	emailAddress := signals.FormData.Email
-
-	// Check if user already exists
-	_, err := db.Qry.GetUserByEmail(c.Request().Context(), emailAddress)
-	if err == nil {
-		err = utils.SSEHub.PatchSignals(c, map[string]any{
-			"authError": ctxi18n.T(c.Request().Context(), "auth.email_in_use"),
-		})
-		if err != nil {
-			return c.NoContent(http.StatusInternalServerError)
-		}
-		return c.NoContent(http.StatusOK)
-	}
-
-	// Create user
-	user, err := db.Qry.CreateUser(c.Request().Context(), db.CreateUserParams{
-		ID:    utils.GenerateID("usr"),
-		Email: emailAddress,
-	})
-	if err != nil {
-		slog.Error("auth: failed to create user", "err", err)
-		utils.Notify(c, "error", ctxi18n.T(c.Request().Context(), "auth.notifications.create_user_failed"))
-		return c.NoContent(http.StatusInternalServerError)
-	}
-
-	// Create magic link for login
-	token := utils.GenerateID("tok")
-	expiresAt := time.Now().Add(1 * time.Hour)
-
-	_, err = db.Qry.CreateMagicLink(c.Request().Context(), db.CreateMagicLinkParams{
-		ID:        utils.GenerateID("mag"),
-		Token:     token,
-		Email:     emailAddress,
-		Action:    "login",
-		ExpiresAt: expiresAt,
-	})
-	if err != nil {
-		slog.Error("auth: failed to create magic link", "err", err)
-		utils.Notify(c, "error", ctxi18n.T(c.Request().Context(), "auth.notifications.create_link_failed"))
-		return c.NoContent(http.StatusInternalServerError)
-	}
-
-	slog.Info("auth: created user and magic link", "user_id", user.ID, "email", emailAddress)
-
-	// Send welcome/login email
-	err = email.Email().SendMagicLink(c.Request().Context(), emailAddress, token, utils.Env().URL)
-	if err != nil {
-		slog.Error("auth: failed to send email", "err", err)
-		utils.Notify(c, "error", ctxi18n.T(c.Request().Context(), "auth.notifications.send_email_failed"))
-		return c.NoContent(http.StatusInternalServerError)
-	}
-	utils.Notify(c, "success", ctxi18n.T(c.Request().Context(), "auth.notifications.account_created"))
 
 	err = utils.SSEHub.Redirect(c, "/auth/login-sent")
 	if err != nil {

@@ -5,15 +5,11 @@ import (
 )
 
 templ MagicLinkText(link string) {
-{ ctxi18n.T(ctx, "email.magic_link.text.greeting") }
-
-{ ctxi18n.T(ctx, "email.magic_link.text.intro") }
-
-{ link }
-
-{ ctxi18n.T(ctx, "email.magic_link.text.expiry") }
-
-{ ctxi18n.T(ctx, "email.magic_link.text.ignore") }
+	{ ctxi18n.T(ctx, "email.magic_link.text.greeting") }
+	{ ctxi18n.T(ctx, "email.magic_link.text.intro") }
+	{ link }
+	{ ctxi18n.T(ctx, "email.magic_link.text.expiry") }
+	{ ctxi18n.T(ctx, "email.magic_link.text.ignore") }
 }
 
 templ MagicLinkHTML(link string) {
@@ -29,17 +25,12 @@ templ MagicLinkHTML(link string) {
 }
 
 templ GroupInvitationText(groupName, link string) {
-{ ctxi18n.T(ctx, "email.invite.text.greeting") }
-
-{ ctxi18n.T(ctx, "email.invite.text.intro", groupName) }
-
-{ ctxi18n.T(ctx, "email.invite.text.accept") }
-
-{ link }
-
-{ ctxi18n.T(ctx, "email.invite.text.expiry") }
-
-{ ctxi18n.T(ctx, "email.invite.text.ignore") }
+	{ ctxi18n.T(ctx, "email.invite.text.greeting") }
+	{ ctxi18n.T(ctx, "email.invite.text.intro", groupName) }
+	{ ctxi18n.T(ctx, "email.invite.text.accept") }
+	{ link }
+	{ ctxi18n.T(ctx, "email.invite.text.expiry") }
+	{ ctxi18n.T(ctx, "email.invite.text.ignore") }
 }
 
 templ GroupInvitationHTML(groupName, link string) {
@@ -56,7 +47,7 @@ templ GroupInvitationHTML(groupName, link string) {
 
 templ ActionEmailHTML(title, intro, cta, copyLink, expiry, ignore, link string) {
 	<div style="margin:0;padding:24px;background:#f7f8fa;">
-		<div style="max-width:560px;margin:0 auto;border:1px solid #cccccc;background:#ffffff;border-radius:8px;overflow:hidden;font-family:system-ui,-apple-system,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif;color:#1a1a1a;line-height:1.6;">
+		<div style="max-width:580px;margin:0 auto;border:1px solid #cccccc;background:#ffffff;border-radius:8px;overflow:hidden;font-family:system-ui,-apple-system,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif;color:#1a1a1a;line-height:1.6;">
 			<div style="padding:20px 20px 16px;border-bottom:1px solid #e6e6e6;background:#fdfdfd;">
 				<p style="margin:0 0 8px;font-size:12px;letter-spacing:0.08em;text-transform:uppercase;color:#5c6673;">BandCash</p>
 				<h2 style="margin:0;font-size:22px;line-height:1.3;color:#1a1a1a;">{ title }</h2>
