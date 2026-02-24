@@ -15,21 +15,21 @@ templ RateLimit() {
 		<body>
 			<div data-signals={ templ.JSONString(map[string]any{"csrf": utils.CSRFToken(ctx)}) } data-init="@get('/sse')"></div>
 			@shared.Notifications()
-			<main id="app" class="single-col">
-				@shared.Breadcrumbs([]utils.Crumb{{Label: ctxi18n.T(ctx, "dev.title"), Href: "/dev"}, {Label: ctxi18n.T(ctx, "dev.ratelimit.title")}}, "")
-				@shared.DevTabs("rate-limit")
-				<p>{ctxi18n.T(ctx, "dev.ratelimit.description")}</p>
-				<div class="row row-wrap">
-					<button id="spam-health" type="button" class="btn btn-info">{ctxi18n.T(ctx, "dev.ratelimit.spam_health")}</button>
-					<button id="spam-auth" type="button" class="btn btn-warning">{ctxi18n.T(ctx, "dev.ratelimit.spam_auth")}</button>
-				</div>
-				<input id="rate-limit-csrf" type="hidden" value={ utils.CSRFToken(ctx) }/>
-				<span id="rate-limit-msg-start-health" hidden>{ctxi18n.T(ctx, "dev.ratelimit.start_health")}</span>
-				<span id="rate-limit-msg-done-health" hidden>{ctxi18n.T(ctx, "dev.ratelimit.done_health")}</span>
-				<span id="rate-limit-msg-start-auth" hidden>{ctxi18n.T(ctx, "dev.ratelimit.start_auth")}</span>
-				<span id="rate-limit-msg-done-auth" hidden>{ctxi18n.T(ctx, "dev.ratelimit.done_auth")}</span>
-				<pre id="rate-limit-output">{ctxi18n.T(ctx, "dev.ratelimit.ready")}</pre>
-			</main>
+			@shared.AppShellMainOnly("dev-rate-limit", []utils.Crumb{{Label: ctxi18n.T(ctx, "dev.title"), Href: "/dev/notifications"}, {Label: ctxi18n.T(ctx, "dev.ratelimit.title")}}, "", shared.DevPrimaryNav("rate-limit"), RateLimitMain())
 		</body>
 	</html>
+}
+
+templ RateLimitMain() {
+	<p>{ctxi18n.T(ctx, "dev.ratelimit.description")}</p>
+	<div class="row row-wrap">
+		<button id="spam-health" type="button" class="btn btn-info">{ctxi18n.T(ctx, "dev.ratelimit.spam_health")}</button>
+		<button id="spam-auth" type="button" class="btn btn-warning">{ctxi18n.T(ctx, "dev.ratelimit.spam_auth")}</button>
+	</div>
+	<input id="rate-limit-csrf" type="hidden" value={ utils.CSRFToken(ctx) }/>
+	<span id="rate-limit-msg-start-health" hidden>{ctxi18n.T(ctx, "dev.ratelimit.start_health")}</span>
+	<span id="rate-limit-msg-done-health" hidden>{ctxi18n.T(ctx, "dev.ratelimit.done_health")}</span>
+	<span id="rate-limit-msg-start-auth" hidden>{ctxi18n.T(ctx, "dev.ratelimit.start_auth")}</span>
+	<span id="rate-limit-msg-done-auth" hidden>{ctxi18n.T(ctx, "dev.ratelimit.done_auth")}</span>
+	<pre id="rate-limit-output">{ctxi18n.T(ctx, "dev.ratelimit.ready")}</pre>
 }

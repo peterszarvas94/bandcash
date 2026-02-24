@@ -15,24 +15,24 @@ templ BodyLimit() {
 		<body>
 			<div data-signals={ templ.JSONString(map[string]any{"csrf": utils.CSRFToken(ctx)}) } data-init="@get('/sse')"></div>
 			@shared.Notifications()
-			<main id="app" class="single-col">
-				@shared.Breadcrumbs([]utils.Crumb{{Label: ctxi18n.T(ctx, "dev.title"), Href: "/dev"}, {Label: ctxi18n.T(ctx, "dev.bodylimit.title")}}, "")
-				@shared.DevTabs("body-limit")
-				<p>{ctxi18n.T(ctx, "dev.bodylimit.description")}</p>
-				<div class="row row-wrap">
-					<button id="body-limit-global-ok" type="button" class="btn btn-success">{ctxi18n.T(ctx, "dev.bodylimit.global_ok")}</button>
-					<button id="body-limit-global-big" type="button" class="btn btn-danger">{ctxi18n.T(ctx, "dev.bodylimit.global_big")}</button>
-					<button id="body-limit-auth-ok" type="button" class="btn btn-info">{ctxi18n.T(ctx, "dev.bodylimit.auth_ok")}</button>
-					<button id="body-limit-auth-big" type="button" class="btn btn-warning">{ctxi18n.T(ctx, "dev.bodylimit.auth_big")}</button>
-				</div>
-				<input id="body-limit-csrf" type="hidden" value={ utils.CSRFToken(ctx) }/>
-				<span id="body-limit-msg-global-ok" hidden>{ctxi18n.T(ctx, "dev.bodylimit.msg_global_ok")}</span>
-				<span id="body-limit-msg-global-big" hidden>{ctxi18n.T(ctx, "dev.bodylimit.msg_global_big")}</span>
-				<span id="body-limit-msg-auth-ok" hidden>{ctxi18n.T(ctx, "dev.bodylimit.msg_auth_ok")}</span>
-				<span id="body-limit-msg-auth-big" hidden>{ctxi18n.T(ctx, "dev.bodylimit.msg_auth_big")}</span>
-				<span id="body-limit-msg-result" hidden>{ctxi18n.T(ctx, "dev.bodylimit.msg_result")}</span>
-				<pre id="body-limit-output">{ctxi18n.T(ctx, "dev.bodylimit.ready")}</pre>
-			</main>
+			@shared.AppShellMainOnly("dev-body-limit", []utils.Crumb{{Label: ctxi18n.T(ctx, "dev.title"), Href: "/dev/notifications"}, {Label: ctxi18n.T(ctx, "dev.bodylimit.title")}}, "", shared.DevPrimaryNav("body-limit"), BodyLimitMain())
 		</body>
 	</html>
+}
+
+templ BodyLimitMain() {
+	<p>{ctxi18n.T(ctx, "dev.bodylimit.description")}</p>
+	<div class="row row-wrap">
+		<button id="body-limit-global-ok" type="button" class="btn btn-success">{ctxi18n.T(ctx, "dev.bodylimit.global_ok")}</button>
+		<button id="body-limit-global-big" type="button" class="btn btn-danger">{ctxi18n.T(ctx, "dev.bodylimit.global_big")}</button>
+		<button id="body-limit-auth-ok" type="button" class="btn btn-info">{ctxi18n.T(ctx, "dev.bodylimit.auth_ok")}</button>
+		<button id="body-limit-auth-big" type="button" class="btn btn-warning">{ctxi18n.T(ctx, "dev.bodylimit.auth_big")}</button>
+	</div>
+	<input id="body-limit-csrf" type="hidden" value={ utils.CSRFToken(ctx) }/>
+	<span id="body-limit-msg-global-ok" hidden>{ctxi18n.T(ctx, "dev.bodylimit.msg_global_ok")}</span>
+	<span id="body-limit-msg-global-big" hidden>{ctxi18n.T(ctx, "dev.bodylimit.msg_global_big")}</span>
+	<span id="body-limit-msg-auth-ok" hidden>{ctxi18n.T(ctx, "dev.bodylimit.msg_auth_ok")}</span>
+	<span id="body-limit-msg-auth-big" hidden>{ctxi18n.T(ctx, "dev.bodylimit.msg_auth_big")}</span>
+	<span id="body-limit-msg-result" hidden>{ctxi18n.T(ctx, "dev.bodylimit.msg_result")}</span>
+	<pre id="body-limit-output">{ctxi18n.T(ctx, "dev.bodylimit.ready")}</pre>
 }

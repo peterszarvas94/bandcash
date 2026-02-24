@@ -103,6 +103,62 @@ templ AppPrimaryNav(active string) {
 	</nav>
 }
 
+templ PublicPrimaryNav(active string) {
+	<nav class="app-nav" aria-label="Primary">
+		<div class="app-nav-primary">
+			if active == "home" {
+				<a class="btn app-nav-link active" href="/">{ ctxi18n.T(ctx, "nav.home") }</a>
+			} else {
+				<a class="btn app-nav-link" href="/">{ ctxi18n.T(ctx, "nav.home") }</a>
+			}
+			if active == "login" {
+				<a class="btn app-nav-link active" href="/auth/login">{ ctxi18n.T(ctx, "auth.login") }</a>
+			} else {
+				<a class="btn app-nav-link" href="/auth/login">{ ctxi18n.T(ctx, "auth.login") }</a>
+			}
+			if active == "language" {
+				<a class="btn app-nav-link active" href="/language">{ ctxi18n.T(ctx, "settings.language") }</a>
+			} else {
+				<a class="btn app-nav-link" href="/language">{ ctxi18n.T(ctx, "settings.language") }</a>
+			}
+			if utils.Env().AppEnv == "development" {
+				if active == "dev" {
+					<a class="btn app-nav-link active" href="/dev/notifications">{ ctxi18n.T(ctx, "dev.title") }</a>
+				} else {
+					<a class="btn app-nav-link" href="/dev/notifications">{ ctxi18n.T(ctx, "dev.title") }</a>
+				}
+			}
+		</div>
+	</nav>
+}
+
+templ DevPrimaryNav(active string) {
+	<nav class="app-nav" aria-label={ ctxi18n.T(ctx, "dev.title") }>
+		<div class="app-nav-primary">
+			<a class="btn app-nav-link" href="/">{ ctxi18n.T(ctx, "nav.home") }</a>
+			<a class="btn app-nav-link" href="/auth/login">{ ctxi18n.T(ctx, "auth.login") }</a>
+			<a class="btn app-nav-link" href="/language">{ ctxi18n.T(ctx, "settings.language") }</a>
+		</div>
+		<div class="app-nav-secondary">
+			if active == "notifications" {
+				<a class="btn app-nav-link active" href="/dev/notifications">{ ctxi18n.T(ctx, "dev.notifications.title") }</a>
+			} else {
+				<a class="btn app-nav-link" href="/dev/notifications">{ ctxi18n.T(ctx, "dev.notifications.title") }</a>
+			}
+			if active == "rate-limit" {
+				<a class="btn app-nav-link active" href="/dev/rate-limit">{ ctxi18n.T(ctx, "dev.ratelimit.title") }</a>
+			} else {
+				<a class="btn app-nav-link" href="/dev/rate-limit">{ ctxi18n.T(ctx, "dev.ratelimit.title") }</a>
+			}
+			if active == "body-limit" {
+				<a class="btn app-nav-link active" href="/dev/body-limit">{ ctxi18n.T(ctx, "dev.bodylimit.title") }</a>
+			} else {
+				<a class="btn app-nav-link" href="/dev/body-limit">{ ctxi18n.T(ctx, "dev.bodylimit.title") }</a>
+			}
+		</div>
+	</nav>
+}
+
 templ GroupPrimaryNav(groupID string, active string) {
 	<nav class="app-nav" aria-label={ ctxi18n.T(ctx, "groups.actions") }>
 		<div class="app-nav-primary">
