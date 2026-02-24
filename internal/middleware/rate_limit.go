@@ -8,9 +8,19 @@ import (
 	"golang.org/x/time/rate"
 
 	"github.com/labstack/echo/v4"
+
+	"bandcash/internal/utils"
 )
 
 func GlobalRateLimit() echo.MiddlewareFunc {
+	if utils.Env().DisableRateLimit {
+		return func(next echo.HandlerFunc) echo.HandlerFunc {
+			return func(c echo.Context) error {
+				return next(c)
+			}
+		}
+	}
+
 	store := echoMiddleware.NewRateLimiterMemoryStoreWithConfig(echoMiddleware.RateLimiterMemoryStoreConfig{
 		Rate:      rate.Limit(4),
 		Burst:     80,
@@ -25,6 +35,14 @@ func GlobalRateLimit() echo.MiddlewareFunc {
 }
 
 func AuthRateLimit() echo.MiddlewareFunc {
+	if utils.Env().DisableRateLimit {
+		return func(next echo.HandlerFunc) echo.HandlerFunc {
+			return func(c echo.Context) error {
+				return next(c)
+			}
+		}
+	}
+
 	store := echoMiddleware.NewRateLimiterMemoryStoreWithConfig(echoMiddleware.RateLimiterMemoryStoreConfig{
 		Rate:      rate.Limit(5.0 / 60.0),
 		Burst:     3,

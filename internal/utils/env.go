@@ -10,19 +10,20 @@ import (
 )
 
 type EnvConfig struct {
-	Port          int
-	LogLevel      slog.Level
-	LogFolder     string
-	LogPrefix     string
-	DBPath        string
-	URL           string
-	AppEnv        string
-	DisableSignup bool
-	SMTPHost      string
-	SMTPPort      int
-	SMTPUser      string
-	SMTPPass      string
-	EmailFrom     string
+	Port             int
+	LogLevel         slog.Level
+	LogFolder        string
+	LogPrefix        string
+	DBPath           string
+	URL              string
+	AppEnv           string
+	DisableSignup    bool
+	DisableRateLimit bool
+	SMTPHost         string
+	SMTPPort         int
+	SMTPUser         string
+	SMTPPass         string
+	EmailFrom        string
 }
 
 var (
@@ -33,19 +34,20 @@ var (
 func Env() *EnvConfig {
 	envOnce.Do(func() {
 		envCfg = &EnvConfig{
-			Port:          getEnvInt("PORT"),
-			LogLevel:      getEnvLogLevel("LOG_LEVEL"),
-			LogFolder:     getEnvString("LOG_FOLDER"),
-			LogPrefix:     getEnvString("LOG_PREFIX"),
-			DBPath:        getEnvString("DB_PATH"),
-			URL:           getEnvString("URL"),
-			AppEnv:        getAppEnv("APP_ENV"),
-			DisableSignup: getEnvBoolDefault("DISABLE_SIGNUP", false),
-			SMTPHost:      getEnvString("SMTP_HOST"),
-			SMTPPort:      getEnvInt("SMTP_PORT"),
-			SMTPUser:      getDevOptionalEnvString("SMTP_USERNAME", "APP_ENV"),
-			SMTPPass:      getDevOptionalEnvString("SMTP_PASSWORD", "APP_ENV"),
-			EmailFrom:     getEnvString("EMAIL_FROM"),
+			Port:             getEnvInt("PORT"),
+			LogLevel:         getEnvLogLevel("LOG_LEVEL"),
+			LogFolder:        getEnvString("LOG_FOLDER"),
+			LogPrefix:        getEnvString("LOG_PREFIX"),
+			DBPath:           getEnvString("DB_PATH"),
+			URL:              getEnvString("URL"),
+			AppEnv:           getAppEnv("APP_ENV"),
+			DisableSignup:    getEnvBoolDefault("DISABLE_SIGNUP", false),
+			DisableRateLimit: getEnvBoolDefault("DISABLE_RATE_LIMIT", false),
+			SMTPHost:         getEnvString("SMTP_HOST"),
+			SMTPPort:         getEnvInt("SMTP_PORT"),
+			SMTPUser:         getDevOptionalEnvString("SMTP_USERNAME", "APP_ENV"),
+			SMTPPass:         getDevOptionalEnvString("SMTP_PASSWORD", "APP_ENV"),
+			EmailFrom:        getEnvString("EMAIL_FROM"),
 		}
 	})
 	return envCfg

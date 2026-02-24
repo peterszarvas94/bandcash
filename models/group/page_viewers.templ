@@ -17,14 +17,12 @@ templ GroupViewersPage(data ViewersPageData) {
 		<body>
 			<div data-signals={ templ.JSONString(map[string]any{"csrf": utils.CSRFToken(ctx), "formState": "", "formData": map[string]any{"email": ""}}) } data-init="@get('/sse')"></div>
 			@shared.Notifications()
-			@shared.TwoCol("group-viewers", GroupViewersMain(data), GroupViewersSidebar(data))
+			@shared.AppShell("group-viewers", data.Breadcrumbs, data.UserEmail, shared.GroupPrimaryNav(data.Group.ID, "viewers"), GroupViewersMain(data), GroupViewersSidebar(data))
 		</body>
 	</html>
 }
 
 templ GroupViewersMain(data ViewersPageData) {
-	@shared.Breadcrumbs(data.Breadcrumbs, data.UserEmail)
-	@shared.GroupTabs(data.Group.ID, "viewers")
 	<table class="table pt">
 		<thead>
 			<tr><th>{ ctxi18n.T(ctx, "auth.email") }</th><th>{ ctxi18n.T(ctx, "table.actions") }</th></tr>

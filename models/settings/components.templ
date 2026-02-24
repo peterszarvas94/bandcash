@@ -1,0 +1,16 @@
+package settings
+
+import (
+	ctxi18n "github.com/invopop/ctxi18n/i18n"
+
+	shared "bandcash/models/shared"
+)
+
+templ LanguageForm(currentLang string) {
+	<form class="form" data-on:submit="@post('/settings/language')">
+		@shared.LanguageSelect("lang", currentLang)
+		<div class="row">
+			<button class="btn btn-primary" type="submit">{ctxi18n.T(ctx, "actions.save")}</button>
+		</div>
+	</form>
+}

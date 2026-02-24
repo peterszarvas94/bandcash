@@ -13,7 +13,7 @@ templ MemberShow(data MemberData) {
 		<body>
 			<div data-signals={templ.JSONString(memberShowSignals(data, utils.CSRFToken(ctx)))} data-init="@get('/sse')"></div>
 			@shared.Notifications()
-			@shared.TwoCol("member-show", MemberShowMain(data), MemberShowSidebar(data))
+			@shared.AppShell("member-show", data.Breadcrumbs, data.UserEmail, shared.GroupPrimaryNav(data.GroupID, "members"), MemberShowMain(data), MemberShowSidebar(data))
 		</body>
 	</html>
 }

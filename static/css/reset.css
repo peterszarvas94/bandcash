@@ -10,17 +10,19 @@
     --border: 1px;
 
     /* Basic palette */
-    --color-bg: light-dark(#ffffff, #1b1d21);
-    --color-text: light-dark(#1a1a1a, #e9e9e9);
-    --color-border: light-dark(#cccccc, #4a4a4a);
-    --color-primary: light-dark(#1f3a5f, #7fb1ff);
-    --color-success: light-dark(#1e8e3e, #59c37a);
-    --color-danger: light-dark(#d93025, #ff7b72);
-    --color-info: light-dark(#1a73e8, #7fb1ff);
-    --color-warning: light-dark(#f9ab00, #ffd166);
+    --color-bg: light-dark(#fcfcfb, #151618);
+    --color-text: light-dark(#1f2328, #e6e8eb);
+    --color-border: light-dark(#d7d9dc, #3a3d42);
+    --color-primary: light-dark(#2b4a6b, #8fb9e9);
+    --color-success: light-dark(#2f7a50, #6abf8d);
+    --color-danger: light-dark(#b44a3f, #e5877d);
+    --color-info: light-dark(#2f6ea6, #8fb9e9);
+    --color-warning: light-dark(#9a7a2f, #d4b067);
 
     --content-width: 90rem;
-    --sidebar-width: 20rem;
+    --nav-width: 14rem;
+    --sidebar-width: 22rem;
+    --mobile-drawer-width: min(20rem, calc(100vw - 3rem));
     --page-padding-inline: var(--space);
     --page-padding-top: calc(var(--space) * 2);
     --page-padding-bottom: var(--space);
@@ -75,18 +77,15 @@
     margin: 0;
 
     font-family:
-      system-ui,
-      -apple-system,
       "Segoe UI",
-      Roboto,
+      "SF Pro Text",
+      -apple-system,
       "Helvetica Neue",
       Arial,
-      "Noto Sans",
-      "Liberation Sans",
       sans-serif;
     background: var(--page-bg);
     color: var(--text-color);
-    letter-spacing: 0.02em;
+    letter-spacing: 0;
   }
 
   h1,
@@ -128,8 +127,21 @@
   }
 
   /* Links */
-  a,
-  a:visited {
+  a:not(.btn),
+  a:not(.btn):visited {
     color: var(--link-color);
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 0.14em;
+  }
+
+  a:not(.btn):hover {
+    color: color-mix(in srgb, var(--link-color) 82%, var(--text-color) 18%);
+  }
+
+  a:not(.btn):focus-visible {
+    outline: 2px solid var(--link-color);
+    outline-offset: 2px;
+    border-radius: calc(var(--border) * 2);
   }
 }

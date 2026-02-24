@@ -4,13 +4,9 @@ import (
 	"fmt"
 
 	ctxi18n "github.com/invopop/ctxi18n/i18n"
-
-	shared "bandcash/models/shared"
 )
 
 templ MemberShowMain(data MemberData) {
-	@shared.Breadcrumbs(data.Breadcrumbs, data.UserEmail)
-	@shared.GroupTabs(data.GroupID, "members")
 	<h2 class="pt">{ ctxi18n.T(ctx, "members.details") }</h2>
 	<div class="entry-details">
 		<p><strong>{ ctxi18n.T(ctx, "fields.name") }:</strong> { data.Member.Name }</p>

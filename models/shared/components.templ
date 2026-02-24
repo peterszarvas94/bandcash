@@ -57,37 +57,146 @@ templ Notifications() {
 }
 
 templ Breadcrumbs(crumbs []utils.Crumb, userEmail string) {
-	<nav class="row pb" style="align-items: center">
-		<div class="row" style="gap: 6px; flex-wrap: wrap">
-			<a href="/">{ ctxi18n.T(ctx, "nav.home") }</a>
-			for _, crumb := range crumbs {
-				<span>&gt;</span>
-				if crumb.Href != "" {
-					<a href={ crumb.Href }>{ crumb.Label }</a>
-				} else {
-					<span>{ crumb.Label }</span>
-				}
+	<header class="topbar pb">
+		@BreadcrumbTrail(crumbs)
+	</header>
+}
+
+templ BreadcrumbTrail(crumbs []utils.Crumb) {
+	<nav class="breadcrumbs" aria-label="Breadcrumb">
+		<a class="crumb" href="/">{ ctxi18n.T(ctx, "nav.home") }</a>
+		for _, crumb := range crumbs {
+			<span class="crumb-sep">/</span>
+			if crumb.Href != "" {
+				<a class="crumb" href={ crumb.Href }>{ crumb.Label }</a>
+			} else {
+				<span class="crumb current">{ crumb.Label }</span>
 			}
-		</div>
-		if userEmail != "" {
-			<span style="margin-left: auto" class="row" data-wrap="true">
-				<span class="text-muted">{ ctxi18n.T(ctx, "nav.logged_in_as") } { userEmail }</span>
-				<a class="btn" href="/settings">{ ctxi18n.T(ctx, "settings.title") }</a>
-				<form data-on:submit="@post('/auth/logout')" style="display:inline">
-					<input type="hidden" data-bind="csrf"/>
-					<button class="btn btn-danger" type="submit">{ ctxi18n.T(ctx, "auth.logout") }</button>
-				</form>
-			</span>
 		}
 	</nav>
+}
+
+templ LanguageSelect(id string, currentLang string) {
+	<div class="field">
+		<label for={ id }>{ ctxi18n.T(ctx, "settings.language") }</label>
+		<select id={ id } data-bind="formData.lang">
+			<option value="en" selected?={ currentLang == "en" }>{ ctxi18n.T(ctx, "language.en") }</option>
+			<option value="hu" selected?={ currentLang == "hu" }>{ ctxi18n.T(ctx, "language.hu") }</option>
+		</select>
+	</div>
+}
+
+templ AppPrimaryNav(active string) {
+	<nav class="app-nav" aria-label="Primary">
+		<div class="app-nav-primary">
+			if active == "dashboard" {
+				<a class="btn app-nav-link active" href="/dashboard">{ ctxi18n.T(ctx, "nav.dashboard") }</a>
+			} else {
+				<a class="btn app-nav-link" href="/dashboard">{ ctxi18n.T(ctx, "nav.dashboard") }</a>
+			}
+			if active == "settings" {
+				<a class="btn app-nav-link active" href="/settings">{ ctxi18n.T(ctx, "settings.title") }</a>
+			} else {
+				<a class="btn app-nav-link" href="/settings">{ ctxi18n.T(ctx, "settings.title") }</a>
+			}
+		</div>
+	</nav>
+}
+
+templ GroupPrimaryNav(groupID string, active string) {
+	<nav class="app-nav" aria-label={ ctxi18n.T(ctx, "groups.actions") }>
+		<div class="app-nav-primary">
+			<a class="btn app-nav-link" href="/dashboard">{ ctxi18n.T(ctx, "nav.dashboard") }</a>
+			if active == "settings" {
+				<a class="btn app-nav-link active" href="/settings">{ ctxi18n.T(ctx, "settings.title") }</a>
+			} else {
+				<a class="btn app-nav-link" href="/settings">{ ctxi18n.T(ctx, "settings.title") }</a>
+			}
+		</div>
+		<div class="app-nav-secondary">
+			if active == "overview" {
+				<a class="btn app-nav-link active" href={ "/groups/" + groupID }>{ ctxi18n.T(ctx, "nav.overview") }</a>
+			} else {
+				<a class="btn app-nav-link" href={ "/groups/" + groupID }>{ ctxi18n.T(ctx, "nav.overview") }</a>
+			}
+			if active == "events" {
+				<a class="btn app-nav-link active" href={ "/groups/" + groupID + "/events" }>{ ctxi18n.T(ctx, "events.title") }</a>
+			} else {
+				<a class="btn app-nav-link" href={ "/groups/" + groupID + "/events" }>{ ctxi18n.T(ctx, "events.title") }</a>
+			}
+			if active == "members" {
+				<a class="btn app-nav-link active" href={ "/groups/" + groupID + "/members" }>{ ctxi18n.T(ctx, "members.title") }</a>
+			} else {
+				<a class="btn app-nav-link" href={ "/groups/" + groupID + "/members" }>{ ctxi18n.T(ctx, "members.title") }</a>
+			}
+			if active == "viewers" {
+				<a class="btn app-nav-link active" href={ "/groups/" + groupID + "/viewers" }>{ ctxi18n.T(ctx, "groups.viewers") }</a>
+			} else {
+				<a class="btn app-nav-link" href={ "/groups/" + groupID + "/viewers" }>{ ctxi18n.T(ctx, "groups.viewers") }</a>
+			}
+		</div>
+	</nav>
+}
+
+templ AppShell(id string, crumbs []utils.Crumb, userEmail string, nav templ.Component, main templ.Component, sidebar templ.Component) {
+	<div id={ id } class="app-shell">
+		<input id={ id + "-nav-toggle" } class="shell-toggle" type="checkbox"/>
+		<input id={ id + "-panel-toggle" } class="shell-toggle" type="checkbox"/>
+
+		<header class="app-shell-top">
+			<div class="app-shell-mobile-toggles">
+				<label for={ id + "-nav-toggle" } class="btn">{ ctxi18n.T(ctx, "nav.menu") }</label>
+				<label for={ id + "-panel-toggle" } class="btn">{ ctxi18n.T(ctx, "nav.actions") }</label>
+			</div>
+			@BreadcrumbTrail(crumbs)
+		</header>
+
+		<aside class="app-shell-nav">
+			@nav
+		</aside>
+
+		<main id="app" class="app-shell-main">
+			@main
+		</main>
+
+		<aside class="app-shell-panel">
+			@sidebar
+		</aside>
+
+		<label for={ id + "-nav-toggle" } class="app-shell-backdrop app-shell-backdrop-nav"></label>
+		<label for={ id + "-panel-toggle" } class="app-shell-backdrop app-shell-backdrop-panel"></label>
+	</div>
+}
+
+templ AppShellMainOnly(id string, crumbs []utils.Crumb, userEmail string, nav templ.Component, main templ.Component) {
+	<div id={ id } class="app-shell-main-only">
+		<input id={ id + "-nav-toggle" } class="shell-toggle" type="checkbox"/>
+
+		<header class="app-shell-top">
+			<div class="app-shell-mobile-toggles">
+				<label for={ id + "-nav-toggle" } class="btn">{ ctxi18n.T(ctx, "nav.menu") }</label>
+			</div>
+			@BreadcrumbTrail(crumbs)
+		</header>
+
+		<aside class="app-shell-nav">
+			@nav
+		</aside>
+
+		<main id="app" class="app-shell-main">
+			@main
+		</main>
+
+		<label for={ id + "-nav-toggle" } class="app-shell-backdrop app-shell-backdrop-nav"></label>
+	</div>
 }
 
 templ GroupTabs(groupID string, activeTab string) {
 	<nav class="tabs" aria-label={ ctxi18n.T(ctx, "groups.actions") }>
 		if activeTab == "overview" {
-			<a class="tab tab-active" href={ "/groups/" + groupID }>{ "Overview" }</a>
+			<a class="tab tab-active" href={ "/groups/" + groupID }>{ ctxi18n.T(ctx, "nav.overview") }</a>
 		} else {
-			<a class="tab" href={ "/groups/" + groupID }>{ "Overview" }</a>
+			<a class="tab" href={ "/groups/" + groupID }>{ ctxi18n.T(ctx, "nav.overview") }</a>
 		}
 		if activeTab == "events" {
 			<a class="tab tab-active" href={ "/groups/" + groupID + "/events" }>{ ctxi18n.T(ctx, "events.title") }</a>

@@ -1,0 +1,34 @@
+package settings
+
+import (
+	ctxi18n "github.com/invopop/ctxi18n/i18n"
+
+	appi18n "bandcash/internal/i18n"
+	"bandcash/internal/utils"
+	shared "bandcash/models/shared"
+)
+
+templ LanguagePage(data SettingsData) {
+	<!DOCTYPE html>
+	<html lang={ appi18n.LocaleCode(ctx) }>
+		@shared.Head(data.Title)
+		<body>
+			<div data-signals={ templ.JSONString(map[string]any{"csrf": utils.CSRFToken(ctx), "formData": map[string]any{"lang": data.CurrentLang}}) } data-init="@get('/sse')"></div>
+			@shared.Notifications()
+			<main id="app" class="single-col">
+				<h1>{ ctxi18n.T(ctx, "settings.language") }</h1>
+				if data.UserEmail != "" {
+					<div class="row pb row-wrap">
+						<span class="text-muted">{ ctxi18n.T(ctx, "nav.logged_in_as") } { data.UserEmail }</span>
+						<form data-on:submit="@post('/auth/logout')">
+							<input type="hidden" data-bind="csrf"/>
+							<button class="btn" type="submit">{ ctxi18n.T(ctx, "auth.logout") }</button>
+						</form>
+					</div>
+				}
+				<p><a href="/">{ ctxi18n.T(ctx, "nav.home") }</a></p>
+				@LanguageForm(data.CurrentLang)
+			</main>
+		</body>
+	</html>
+}

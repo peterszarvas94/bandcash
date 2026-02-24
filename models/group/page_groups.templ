@@ -17,13 +17,12 @@ templ GroupsPage(data GroupsPageData) {
 		<body>
 			<div data-signals={templ.JSONString(map[string]any{"csrf": utils.CSRFToken(ctx), "formState": "", "formData": map[string]any{"name": ""}})} data-init="@get('/sse')"></div>
 			@shared.Notifications()
-			@shared.TwoCol("group-dashboard", GroupsMain(data), GroupsSidebar())
+			@shared.AppShell("group-dashboard", data.Breadcrumbs, data.UserEmail, shared.AppPrimaryNav("dashboard"), GroupsMain(data), GroupsSidebar())
 		</body>
 	</html>
 }
 
 templ GroupsMain(data GroupsPageData) {
-	@shared.Breadcrumbs(data.Breadcrumbs, data.UserEmail)
 	<p class="text-muted">{ ctxi18n.T(ctx, "groups.subtitle") }</p>
 	<h2>{ ctxi18n.T(ctx, "groups.admin_list") }</h2>
 	<table class="table">

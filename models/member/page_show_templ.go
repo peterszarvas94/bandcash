@@ -77,7 +77,7 @@ func MemberShow(data MemberData) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = shared.TwoCol("member-show", MemberShowMain(data), MemberShowSidebar(data)).Render(ctx, templ_7745c5c3_Buffer)
+		templ_7745c5c3_Err = shared.AppShell("member-show", data.Breadcrumbs, data.UserEmail, shared.GroupPrimaryNav(data.GroupID, "members"), MemberShowMain(data), MemberShowSidebar(data)).Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

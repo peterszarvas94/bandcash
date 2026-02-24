@@ -524,7 +524,7 @@ func (g *Group) groupPageData(c echo.Context, groupID string) (GroupPageData, er
 
 	return GroupPageData{
 		Title:       group.Name,
-		Breadcrumbs: []utils.Crumb{{Label: ctxi18n.T(ctx, "groups.title"), Href: "/dashboard"}, {Label: group.Name, Href: "/groups/" + groupID}, {Label: "Overview"}},
+		Breadcrumbs: []utils.Crumb{{Label: ctxi18n.T(ctx, "groups.title"), Href: "/dashboard"}, {Label: group.Name, Href: "/groups/" + groupID}, {Label: ctxi18n.T(ctx, "nav.overview")}},
 		UserEmail:   getUserEmail(c),
 		Group:       group,
 		Admin:       admin,

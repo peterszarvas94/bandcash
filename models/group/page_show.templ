@@ -17,22 +17,19 @@ templ GroupPage(data GroupPageData) {
 		<body>
 			<div data-signals={ templ.JSONString(map[string]any{"csrf": utils.CSRFToken(ctx), "formState": "", "formData": map[string]any{"name": data.Group.Name}, "errors": map[string]any{"name": ""}}) } data-init="@get('/sse')"></div>
 			@shared.Notifications()
-			@shared.TwoCol("group-show", GroupMain(data), GroupSidebar(data))
+			@shared.AppShell("group-show", data.Breadcrumbs, data.UserEmail, shared.GroupPrimaryNav(data.Group.ID, "overview"), GroupMain(data), GroupSidebar(data))
 		</body>
 	</html>
 }
 
 templ GroupMain(data GroupPageData) {
-	@shared.Breadcrumbs(data.Breadcrumbs, data.UserEmail)
-	@shared.GroupTabs(data.Group.ID, "overview")
-
 	<div class="event-details pt">
 		<div class="field">
 			<label>{ ctxi18n.T(ctx, "groups.admin") }</label>
 			<p>{ data.Admin.Email }</p>
 		</div>
 		<div class="field">
-			<label>{ "Created" }</label>
+			<label>{ ctxi18n.T(ctx, "groups.created") }</label>
 			<p>
 				if data.Group.CreatedAt.Valid {
 					{ data.Group.CreatedAt.Time.Format("2006-01-02 15:04") }
@@ -42,7 +39,7 @@ templ GroupMain(data GroupPageData) {
 			</p>
 		</div>
 		<div class="field">
-			<label>{ "Total amount" }</label>
+			<label>{ ctxi18n.T(ctx, "groups.total_amount") }</label>
 			<p>{ fmt.Sprintf("%d", data.TotalAmount) }</p>
 		</div>
 	</div>

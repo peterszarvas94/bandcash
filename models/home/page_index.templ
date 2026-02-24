@@ -23,8 +23,8 @@ templ HomeIndex(data HomeData) {
 						<a class="btn" href="/dashboard">{ctxi18n.T(ctx, "nav.dashboard")}</a>
 					} else {
 						<a class="btn" href="/auth/login">{ctxi18n.T(ctx, "auth.login")}</a>
-						<a class="btn" href="/settings">{ctxi18n.T(ctx, "settings.title")}</a>
 					}
+					<a class="btn" href="/language">{ctxi18n.T(ctx, "settings.language")}</a>
 					if utils.Env().AppEnv == "development" {
 						<a class="btn" href="/dev">{ctxi18n.T(ctx, "dev.title")}</a>
 					}

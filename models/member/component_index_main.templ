@@ -4,13 +4,9 @@ import (
 	"fmt"
 
 	ctxi18n "github.com/invopop/ctxi18n/i18n"
-
-	shared "bandcash/models/shared"
 )
 
 templ MemberIndexMain(data MembersData) {
-	@shared.Breadcrumbs(data.Breadcrumbs, data.UserEmail)
-	@shared.GroupTabs(data.GroupID, "members")
 	<table class="table pt">
 		<thead>
 			<tr>

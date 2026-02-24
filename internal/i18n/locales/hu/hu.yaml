@@ -4,6 +4,9 @@ hu:
   nav:
     home: "BandCash"
     dashboard: "Vezérlőpult"
+    overview: "Áttekintés"
+    menu: "Menü"
+    actions: "Műveletek"
     logged_in_as: "Bejelentkezve mint"
   auth:
     login: "Belépés"
@@ -155,6 +158,8 @@ hu:
     viewers: "Nézők"
     read_only: "Nézői hozzáférés"
     admin: "Admin"
+    created: "Létrehozva"
+    total_amount: "Teljes összeg"
     new: "Új csoport"
     edit: "Csoport szerkesztése"
     new_desc: "Üdv! Állítsuk be a csoportod pénzügyi rendszerét."

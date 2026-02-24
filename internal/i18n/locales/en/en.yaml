@@ -4,6 +4,9 @@ en:
   nav:
     home: "BandCash"
     dashboard: "Dashboard"
+    overview: "Overview"
+    menu: "Menu"
+    actions: "Actions"
     logged_in_as: "Logged in as"
   auth:
     login: "Login"
@@ -155,6 +158,8 @@ en:
     viewers: "Viewers"
     read_only: "Viewer access"
     admin: "Admin"
+    created: "Created"
+    total_amount: "Total amount"
     new: "New Group"
     edit: "Edit Group"
     new_desc: "Welcome! Let's set up your group's money management system."

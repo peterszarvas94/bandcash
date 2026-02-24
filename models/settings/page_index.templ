@@ -15,21 +15,22 @@ templ SettingsIndex(data SettingsData) {
 		<body>
 			<div data-signals={templ.JSONString(map[string]any{"csrf": utils.CSRFToken(ctx), "formData": map[string]any{"lang": data.CurrentLang}})} data-init="@get('/sse')"></div>
 			@shared.Notifications()
-			<main id="app" class="single-col">
-				@shared.Breadcrumbs(data.Breadcrumbs, data.UserEmail)
-				<form class="form" data-on:submit="@post('/settings/language')">
-					<div class="field">
-						<label for="lang">{ctxi18n.T(ctx, "settings.language")}</label>
-						<select id="lang" data-bind="formData.lang">
-							<option value="en" selected?={data.CurrentLang == "en"}>{ctxi18n.T(ctx, "language.en")}</option>
-							<option value="hu" selected?={data.CurrentLang == "hu"}>{ctxi18n.T(ctx, "language.hu")}</option>
-						</select>
-					</div>
-					<div class="row">
-						<button class="btn btn-primary" type="submit">{ctxi18n.T(ctx, "actions.save")}</button>
-					</div>
-				</form>
-			</main>
+			@shared.AppShellMainOnly("settings-index", data.Breadcrumbs, data.UserEmail, shared.AppPrimaryNav("settings"), SettingsMain(data))
 		</body>
 	</html>
+}
+
+templ SettingsMain(data SettingsData) {
+	if data.UserEmail != "" {
+		<div class="row pb row-wrap">
+			<span class="text-muted">{ctxi18n.T(ctx, "nav.logged_in_as")} {data.UserEmail}</span>
+		</div>
+	}
+	@LanguageForm(data.CurrentLang)
+	if data.UserEmail != "" {
+		<form class="pt" data-on:submit="@post('/auth/logout')">
+			<input type="hidden" data-bind="csrf"/>
+			<button class="btn" type="submit">{ctxi18n.T(ctx, "auth.logout")}</button>
+		</form>
+	}
 }

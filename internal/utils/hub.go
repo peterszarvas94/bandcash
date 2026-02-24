@@ -94,6 +94,20 @@ func (h *Hub) Redirect(c echo.Context, url string) error {
 	return client.SSE.Redirect(url)
 }
 
+func (h *Hub) ExecuteScript(c echo.Context, script string) error {
+	clientID, err := GetClientID(c)
+	if err != nil {
+		return err
+	}
+
+	client, err := h.GetClient(clientID)
+	if err != nil {
+		return err
+	}
+
+	return client.SSE.ExecuteScript(script)
+}
+
 func (h *Hub) Close() {
 	h.mu.Lock()
 	defer h.mu.Unlock()

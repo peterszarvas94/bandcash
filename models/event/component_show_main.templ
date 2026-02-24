@@ -4,13 +4,9 @@ import (
 	"fmt"
 
 	ctxi18n "github.com/invopop/ctxi18n/i18n"
-
-	shared "bandcash/models/shared"
 )
 
 templ EventShowMain(data EventData) {
-	@shared.Breadcrumbs(data.Breadcrumbs, data.UserEmail)
-	@shared.GroupTabs(data.GroupID, "events")
 	<h2 class="pt">{ ctxi18n.T(ctx, "events.details") }</h2>
 	<div class="event-details">
 		<div class="field">
