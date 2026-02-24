@@ -66,9 +66,9 @@ func GroupPage(data GroupPageData) templ.Component {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var3 string
-		templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.JoinStringErrs(templ.JSONString(map[string]any{"csrf": utils.CSRFToken(ctx), "formState": "", "formData": map[string]any{"name": data.Group.Name}, "errors": map[string]any{"name": ""}}))
+		templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.JoinStringErrs(templ.JSONString(map[string]any{"csrf": utils.CSRFToken(ctx), "formState": "", "eventFormState": "", "formData": map[string]any{"name": data.Group.Name}, "errors": map[string]any{"name": ""}}))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/group/page_show.templ`, Line: 19, Col: 193}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/group/page_show.templ`, Line: 19, Col: 215}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var3))
 		if templ_7745c5c3_Err != nil {
@@ -160,9 +160,9 @@ func GroupMain(data GroupPageData) templ.Component {
 		}
 		if data.Group.CreatedAt.Valid {
 			var templ_7745c5c3_Var8 string
-			templ_7745c5c3_Var8, templ_7745c5c3_Err = templ.JoinStringErrs(data.Group.CreatedAt.Time.Format("2006-01-02 15:04"))
+			templ_7745c5c3_Var8, templ_7745c5c3_Err = templ.JoinStringErrs(utils.FormatTimeLocalized(ctx, data.Group.CreatedAt.Time))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/group/page_show.templ`, Line: 36, Col: 59}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/group/page_show.templ`, Line: 36, Col: 64}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var8))
 			if templ_7745c5c3_Err != nil {

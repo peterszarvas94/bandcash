@@ -22,6 +22,50 @@ function focusFirst(container) {
   }
 }
 
+function isVisible(el) {
+  return Boolean(el && el.offsetParent !== null);
+}
+
+function findCancelButton(panel) {
+  if (!panel) {
+    return null;
+  }
+
+  const buttons = Array.from(panel.querySelectorAll("button"));
+  return (
+    buttons.find((button) => {
+      if (!isVisible(button) || button.disabled) {
+        return false;
+      }
+
+      const onClick = button.getAttribute("data-on:click") || "";
+      return (
+        onClick.includes("$formState = ''") ||
+        onClick.includes('$formState = ""') ||
+        onClick.includes("$eventFormState = ''") ||
+        onClick.includes('$eventFormState = ""')
+      );
+    }) || null
+  );
+}
+
+function closePanelLikeCancel(shell) {
+  const panel = shell.querySelector(".app-shell-panel");
+  const panelToggle = shell.querySelector('input[id$="-panel-toggle"]');
+  const cancelButton = findCancelButton(panel);
+
+  if (cancelButton) {
+    cancelButton.click();
+    return true;
+  }
+
+  if (panelToggle?.checked) {
+    panelToggle.checked = false;
+  }
+  applyState(shell);
+  return false;
+}
+
 function hasVisiblePanelContent(shell) {
   const panel = shell.querySelector(".app-shell-panel");
   if (!panel) {
@@ -108,6 +152,7 @@ function wireShell(shell) {
   const navToggle = shell.querySelector('input[id$="-nav-toggle"]');
   const panelToggle = shell.querySelector('input[id$="-panel-toggle"]');
   const panel = shell.querySelector(".app-shell-panel");
+  const panelBackdrop = shell.querySelector(".app-shell-backdrop-panel");
 
   const sync = () => applyState(shell);
 
@@ -119,10 +164,20 @@ function wireShell(shell) {
   });
 
   panelToggle?.addEventListener("change", () => {
+    if (isMobile() && !panelToggle.checked && hasVisiblePanelContent(shell)) {
+      closePanelLikeCancel(shell);
+      return;
+    }
+
     sync();
     if (panelToggle.checked) {
       focusFirst(panel);
     }
+  });
+
+  panelBackdrop?.addEventListener("click", (event) => {
+    event.preventDefault();
+    closePanelLikeCancel(shell);
   });
 
   if (panel) {
@@ -135,21 +190,12 @@ function wireShell(shell) {
     });
   }
 
-  shell.addEventListener("keydown", (event) => {
-    if (event.key === "Escape") {
-      if (navToggle?.checked) {
-        navToggle.checked = false;
+  shell.addEventListener(
+    "keydown",
+    (event) => {
+      if (event.key !== "Tab") {
+        return;
       }
-      if (panelToggle?.checked) {
-        panelToggle.checked = false;
-      }
-      sync();
-      return;
-    }
-
-    if (event.key !== "Tab") {
-      return;
-    }
 
     const drawer = activeDrawer(shell);
     if (!drawer) {
@@ -176,7 +222,9 @@ function wireShell(shell) {
       event.preventDefault();
       first.focus();
     }
-  });
+    },
+    true
+  );
 
   sync();
 }

@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	ctxi18n "github.com/invopop/ctxi18n/i18n"
+	"bandcash/internal/utils"
 	icons "bandcash/models/shared/icons"
 )
 
@@ -55,7 +56,7 @@ templ MemberShowMain(data MemberData) {
 			for _, event := range data.Events {
 				<tr>
 					<td><a href={ fmt.Sprintf("/groups/%s/events/%s", data.GroupID, event.ID) }>{ event.Title }</a></td>
-					<td>{ event.Time }</td>
+					<td>{ utils.FormatDateTimeLocalized(ctx, event.Time) }</td>
 					<td>{ event.Description }</td>
 					<td class="text-right">{ fmt.Sprintf("%d", event.Amount) }</td>
 					<td class="text-right">{ fmt.Sprintf("%d", event.ParticipantAmount) }</td>

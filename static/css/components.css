@@ -560,7 +560,8 @@
   }
 
   .app-nav-secondary {
-    margin-top: auto;
+    padding-top: 0;
+    border-top: 0;
   }
 
   .app-nav-link {
@@ -577,6 +578,10 @@
     border-color: var(--border-color);
     background: color-mix(in srgb, var(--page-bg) 92%, var(--text-color) 8%);
     font-weight: 600;
+  }
+
+  .app-shell-nav > .pb {
+    display: none;
   }
 
   .shell-toggle {
@@ -596,6 +601,22 @@
   }
 
   @media (max-width: 1020px) {
+    .table-sticky-actions th[data-actions-col],
+    .table-sticky-actions td[data-actions-col] {
+      padding-left: 0.25rem;
+      padding-right: 0.25rem;
+    }
+
+    .table-sticky-actions td[data-actions-col] .row {
+      gap: 0.25rem;
+    }
+
+    .table-sticky-actions .btn-icon {
+      min-width: 2rem;
+      min-height: 2rem;
+      width: 2rem;
+    }
+
     .app-shell {
       grid-template-columns: minmax(0, 1fr);
       grid-template-areas:
@@ -628,6 +649,10 @@
       overflow-y: auto;
       padding: calc(var(--space) * 2);
       border: 0;
+    }
+
+    .app-shell-nav > .pb {
+      display: block;
     }
 
     .app-shell-nav {

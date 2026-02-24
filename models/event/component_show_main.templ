@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	ctxi18n "github.com/invopop/ctxi18n/i18n"
+	"bandcash/internal/utils"
 	icons "bandcash/models/shared/icons"
 )
 
@@ -16,7 +17,7 @@ templ EventShowMain(data EventData) {
 		</div>
 		<div class="field">
 			<label>{ ctxi18n.T(ctx, "fields.time") }</label>
-			<p>{ data.Event.Time }</p>
+			<p>{ utils.FormatDateTimeLocalized(ctx, data.Event.Time) }</p>
 		</div>
 		<div class="field">
 			<label>{ ctxi18n.T(ctx, "fields.description") }</label>
@@ -61,10 +62,9 @@ templ EventShowMain(data EventData) {
 		<thead>
 			<tr>
 				<th>{ ctxi18n.T(ctx, "participants.member") }</th>
-				<th>{ ctxi18n.T(ctx, "fields.description") }</th>
+				<th>{ ctxi18n.T(ctx, "participants.total") }</th>
 				<th>{ ctxi18n.T(ctx, "participants.cut") }</th>
 				<th>{ ctxi18n.T(ctx, "participants.expense") }</th>
-				<th>{ ctxi18n.T(ctx, "participants.total") }</th>
 				if data.IsAdmin {
 					<th data-actions-col>
 						<div class="row row-right">
@@ -92,10 +92,9 @@ templ EventShowMain(data EventData) {
 					data-participant-expense={ fmt.Sprintf("%d", participant.ParticipantExpense) }
 				>
 					<td><a href={ fmt.Sprintf("/groups/%s/members/%s", data.GroupID, participant.ID) }>{ participant.Name }</a></td>
-					<td>{ participant.Description }</td>
+					<td class="text-right">{ fmt.Sprintf("%d", participant.ParticipantAmount+participant.ParticipantExpense) }</td>
 					<td class="text-right">{ fmt.Sprintf("%d", participant.ParticipantAmount) }</td>
 					<td class="text-right">{ fmt.Sprintf("%d", participant.ParticipantExpense) }</td>
-					<td class="text-right">{ fmt.Sprintf("%d", participant.ParticipantAmount+participant.ParticipantExpense) }</td>
 					if data.IsAdmin {
 						<td class="text-right" data-actions-col>
 							<div class="row">
@@ -130,9 +129,9 @@ templ EventShowMain(data EventData) {
 			if len(data.Participants) == 0 {
 				<tr>
 					if data.IsAdmin {
-						<td colspan="6">{ ctxi18n.T(ctx, "table.empty") }</td>
-					} else {
 						<td colspan="5">{ ctxi18n.T(ctx, "table.empty") }</td>
+					} else {
+						<td colspan="4">{ ctxi18n.T(ctx, "table.empty") }</td>
 					}
 				</tr>
 			}

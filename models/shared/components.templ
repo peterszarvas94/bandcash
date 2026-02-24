@@ -96,26 +96,38 @@ templ AppPrimaryNav(active string) {
 	<nav class="app-nav" aria-label="Primary">
 		<div class="app-nav-primary">
 			if active == "dashboard" {
-				<a class="btn app-nav-link active" href="/dashboard">@icons.LayoutDashboard(templ.Attributes{"class": "icon"})
-<span>{ ctxi18n.T(ctx, "nav.dashboard") }</span></a>
+				<a class="btn app-nav-link active" href="/dashboard">
+					@icons.LayoutDashboard(templ.Attributes{"class": "icon"})
+					<span>{ ctxi18n.T(ctx, "nav.dashboard") }</span>
+				</a>
 			} else {
-				<a class="btn app-nav-link" href="/dashboard">@icons.LayoutDashboard(templ.Attributes{"class": "icon"})
-<span>{ ctxi18n.T(ctx, "nav.dashboard") }</span></a>
+				<a class="btn app-nav-link" href="/dashboard">
+					@icons.LayoutDashboard(templ.Attributes{"class": "icon"})
+					<span>{ ctxi18n.T(ctx, "nav.dashboard") }</span>
+				</a>
 			}
 			if active == "settings" {
-				<a class="btn app-nav-link active" href="/settings">@icons.Settings(templ.Attributes{"class": "icon"})
-<span>{ ctxi18n.T(ctx, "settings.title") }</span></a>
+				<a class="btn app-nav-link active" href="/settings">
+					@icons.Settings(templ.Attributes{"class": "icon"})
+					<span>{ ctxi18n.T(ctx, "settings.title") }</span>
+				</a>
 			} else {
-				<a class="btn app-nav-link" href="/settings">@icons.Settings(templ.Attributes{"class": "icon"})
-<span>{ ctxi18n.T(ctx, "settings.title") }</span></a>
+				<a class="btn app-nav-link" href="/settings">
+					@icons.Settings(templ.Attributes{"class": "icon"})
+					<span>{ ctxi18n.T(ctx, "settings.title") }</span>
+				</a>
 			}
 			if utils.Env().AppEnv == "development" {
 				if active == "dev" {
-					<a class="btn app-nav-link active" href="/dev/notifications">@icons.Terminal(templ.Attributes{"class": "icon"})
-<span>{ ctxi18n.T(ctx, "dev.title") }</span></a>
+					<a class="btn app-nav-link active" href="/dev/notifications">
+						@icons.Terminal(templ.Attributes{"class": "icon"})
+						<span>{ ctxi18n.T(ctx, "dev.title") }</span>
+					</a>
 				} else {
-					<a class="btn app-nav-link" href="/dev/notifications">@icons.Terminal(templ.Attributes{"class": "icon"})
-<span>{ ctxi18n.T(ctx, "dev.title") }</span></a>
+					<a class="btn app-nav-link" href="/dev/notifications">
+						@icons.Terminal(templ.Attributes{"class": "icon"})
+						<span>{ ctxi18n.T(ctx, "dev.title") }</span>
+					</a>
 				}
 			}
 		</div>
@@ -126,19 +138,27 @@ templ PublicPrimaryNav(active string) {
 	<nav class="app-nav" aria-label="Primary">
 		<div class="app-nav-primary">
 			if active == "home" {
-				<a class="btn app-nav-link active" href="/">@icons.Landmark(templ.Attributes{"class": "icon"})
-<span>{ ctxi18n.T(ctx, "nav.home") }</span></a>
+				<a class="btn app-nav-link active" href="/">
+					@icons.Landmark(templ.Attributes{"class": "icon"})
+					<span>{ ctxi18n.T(ctx, "nav.home") }</span>
+				</a>
 			} else {
-				<a class="btn app-nav-link" href="/">@icons.Landmark(templ.Attributes{"class": "icon"})
-<span>{ ctxi18n.T(ctx, "nav.home") }</span></a>
+				<a class="btn app-nav-link" href="/">
+					@icons.Landmark(templ.Attributes{"class": "icon"})
+					<span>{ ctxi18n.T(ctx, "nav.home") }</span>
+				</a>
 			}
 			if utils.Env().AppEnv == "development" {
 				if active == "dev" {
-					<a class="btn app-nav-link active" href="/dev/notifications">@icons.Terminal(templ.Attributes{"class": "icon"})
-<span>{ ctxi18n.T(ctx, "dev.title") }</span></a>
+					<a class="btn app-nav-link active" href="/dev/notifications">
+						@icons.Terminal(templ.Attributes{"class": "icon"})
+						<span>{ ctxi18n.T(ctx, "dev.title") }</span>
+					</a>
 				} else {
-					<a class="btn app-nav-link" href="/dev/notifications">@icons.Terminal(templ.Attributes{"class": "icon"})
-<span>{ ctxi18n.T(ctx, "dev.title") }</span></a>
+					<a class="btn app-nav-link" href="/dev/notifications">
+						@icons.Terminal(templ.Attributes{"class": "icon"})
+						<span>{ ctxi18n.T(ctx, "dev.title") }</span>
+					</a>
 				}
 			}
 		</div>
@@ -148,28 +168,42 @@ templ PublicPrimaryNav(active string) {
 templ DevPrimaryNav(active string) {
 	<nav class="app-nav" aria-label={ ctxi18n.T(ctx, "dev.title") }>
 		<div class="app-nav-primary">
-			<a class="btn app-nav-link" href="/">@icons.Landmark(templ.Attributes{"class": "icon"})
-<span>{ ctxi18n.T(ctx, "nav.home") }</span></a>
+			<a class="btn app-nav-link" href="/">
+				@icons.Landmark(templ.Attributes{"class": "icon"})
+				<span>{ ctxi18n.T(ctx, "nav.home") }</span>
+			</a>
 			if active == "notifications" {
-				<a class="btn app-nav-link active" href="/dev/notifications">@icons.Bell(templ.Attributes{"class": "icon"})
-<span>{ ctxi18n.T(ctx, "dev.notifications.title") }</span></a>
+				<a class="btn app-nav-link active" href="/dev/notifications">
+					@icons.Bell(templ.Attributes{"class": "icon"})
+					<span>{ ctxi18n.T(ctx, "dev.notifications.title") }</span>
+				</a>
 			} else {
-				<a class="btn app-nav-link" href="/dev/notifications">@icons.Bell(templ.Attributes{"class": "icon"})
-<span>{ ctxi18n.T(ctx, "dev.notifications.title") }</span></a>
+				<a class="btn app-nav-link" href="/dev/notifications">
+					@icons.Bell(templ.Attributes{"class": "icon"})
+					<span>{ ctxi18n.T(ctx, "dev.notifications.title") }</span>
+				</a>
 			}
 			if active == "rate-limit" {
-				<a class="btn app-nav-link active" href="/dev/rate-limit">@icons.Triangle(templ.Attributes{"class": "icon"})
-<span>{ ctxi18n.T(ctx, "dev.ratelimit.title") }</span></a>
+				<a class="btn app-nav-link active" href="/dev/rate-limit">
+					@icons.Triangle(templ.Attributes{"class": "icon"})
+					<span>{ ctxi18n.T(ctx, "dev.ratelimit.title") }</span>
+				</a>
 			} else {
-				<a class="btn app-nav-link" href="/dev/rate-limit">@icons.Triangle(templ.Attributes{"class": "icon"})
-<span>{ ctxi18n.T(ctx, "dev.ratelimit.title") }</span></a>
+				<a class="btn app-nav-link" href="/dev/rate-limit">
+					@icons.Triangle(templ.Attributes{"class": "icon"})
+					<span>{ ctxi18n.T(ctx, "dev.ratelimit.title") }</span>
+				</a>
 			}
 			if active == "body-limit" {
-				<a class="btn app-nav-link active" href="/dev/body-limit">@icons.Shield(templ.Attributes{"class": "icon"})
-<span>{ ctxi18n.T(ctx, "dev.bodylimit.title") }</span></a>
+				<a class="btn app-nav-link active" href="/dev/body-limit">
+					@icons.Shield(templ.Attributes{"class": "icon"})
+					<span>{ ctxi18n.T(ctx, "dev.bodylimit.title") }</span>
+				</a>
 			} else {
-				<a class="btn app-nav-link" href="/dev/body-limit">@icons.Shield(templ.Attributes{"class": "icon"})
-<span>{ ctxi18n.T(ctx, "dev.bodylimit.title") }</span></a>
+				<a class="btn app-nav-link" href="/dev/body-limit">
+					@icons.Shield(templ.Attributes{"class": "icon"})
+					<span>{ ctxi18n.T(ctx, "dev.bodylimit.title") }</span>
+				</a>
 			}
 		</div>
 	</nav>
@@ -178,48 +212,72 @@ templ DevPrimaryNav(active string) {
 templ GroupPrimaryNav(groupID string, active string) {
 	<nav class="app-nav" aria-label={ ctxi18n.T(ctx, "groups.actions") }>
 		<div class="app-nav-primary">
-			<a class="btn app-nav-link" href="/dashboard">@icons.LayoutDashboard(templ.Attributes{"class": "icon"})
-<span>{ ctxi18n.T(ctx, "nav.dashboard") }</span></a>
+			<a class="btn app-nav-link" href="/dashboard">
+				@icons.LayoutDashboard(templ.Attributes{"class": "icon"})
+				<span>{ ctxi18n.T(ctx, "nav.dashboard") }</span>
+			</a>
 			if active == "settings" {
-				<a class="btn app-nav-link active" href="/settings">@icons.Settings(templ.Attributes{"class": "icon"})
-<span>{ ctxi18n.T(ctx, "settings.title") }</span></a>
+				<a class="btn app-nav-link active" href="/settings">
+					@icons.Settings(templ.Attributes{"class": "icon"})
+					<span>{ ctxi18n.T(ctx, "settings.title") }</span>
+				</a>
 			} else {
-				<a class="btn app-nav-link" href="/settings">@icons.Settings(templ.Attributes{"class": "icon"})
-<span>{ ctxi18n.T(ctx, "settings.title") }</span></a>
+				<a class="btn app-nav-link" href="/settings">
+					@icons.Settings(templ.Attributes{"class": "icon"})
+					<span>{ ctxi18n.T(ctx, "settings.title") }</span>
+				</a>
 			}
 			if utils.Env().AppEnv == "development" {
-				<a class="btn app-nav-link" href="/dev/notifications">@icons.Terminal(templ.Attributes{"class": "icon"})
-<span>{ ctxi18n.T(ctx, "dev.title") }</span></a>
+				<a class="btn app-nav-link" href="/dev/notifications">
+					@icons.Terminal(templ.Attributes{"class": "icon"})
+					<span>{ ctxi18n.T(ctx, "dev.title") }</span>
+				</a>
 			}
 		</div>
-		<div class="app-nav-secondary">
+		<div class="app-nav-secondary pt">
 			if active == "overview" {
-				<a class="btn app-nav-link active" href={ "/groups/" + groupID }>@icons.Info(templ.Attributes{"class": "icon"})
-<span>{ ctxi18n.T(ctx, "nav.overview") }</span></a>
+				<a class="btn app-nav-link active" href={ "/groups/" + groupID }>
+					@icons.Info(templ.Attributes{"class": "icon"})
+					<span>{ ctxi18n.T(ctx, "nav.overview") }</span>
+				</a>
 			} else {
-				<a class="btn app-nav-link" href={ "/groups/" + groupID }>@icons.Info(templ.Attributes{"class": "icon"})
-<span>{ ctxi18n.T(ctx, "nav.overview") }</span></a>
+				<a class="btn app-nav-link" href={ "/groups/" + groupID }>
+					@icons.Info(templ.Attributes{"class": "icon"})
+					<span>{ ctxi18n.T(ctx, "nav.overview") }</span>
+				</a>
 			}
 			if active == "events" {
-				<a class="btn app-nav-link active" href={ "/groups/" + groupID + "/events" }>@icons.Calendar(templ.Attributes{"class": "icon"})
-<span>{ ctxi18n.T(ctx, "events.title") }</span></a>
+				<a class="btn app-nav-link active" href={ "/groups/" + groupID + "/events" }>
+					@icons.Calendar(templ.Attributes{"class": "icon"})
+					<span>{ ctxi18n.T(ctx, "events.title") }</span>
+				</a>
 			} else {
-				<a class="btn app-nav-link" href={ "/groups/" + groupID + "/events" }>@icons.Calendar(templ.Attributes{"class": "icon"})
-<span>{ ctxi18n.T(ctx, "events.title") }</span></a>
+				<a class="btn app-nav-link" href={ "/groups/" + groupID + "/events" }>
+					@icons.Calendar(templ.Attributes{"class": "icon"})
+					<span>{ ctxi18n.T(ctx, "events.title") }</span>
+				</a>
 			}
 			if active == "members" {
-				<a class="btn app-nav-link active" href={ "/groups/" + groupID + "/members" }>@icons.Users(templ.Attributes{"class": "icon"})
-<span>{ ctxi18n.T(ctx, "members.title") }</span></a>
+				<a class="btn app-nav-link active" href={ "/groups/" + groupID + "/members" }>
+					@icons.Users(templ.Attributes{"class": "icon"})
+					<span>{ ctxi18n.T(ctx, "members.title") }</span>
+				</a>
 			} else {
-				<a class="btn app-nav-link" href={ "/groups/" + groupID + "/members" }>@icons.Users(templ.Attributes{"class": "icon"})
-<span>{ ctxi18n.T(ctx, "members.title") }</span></a>
+				<a class="btn app-nav-link" href={ "/groups/" + groupID + "/members" }>
+					@icons.Users(templ.Attributes{"class": "icon"})
+					<span>{ ctxi18n.T(ctx, "members.title") }</span>
+				</a>
 			}
 			if active == "viewers" {
-				<a class="btn app-nav-link active" href={ "/groups/" + groupID + "/viewers" }>@icons.Eye(templ.Attributes{"class": "icon"})
-<span>{ ctxi18n.T(ctx, "groups.viewers") }</span></a>
+				<a class="btn app-nav-link active" href={ "/groups/" + groupID + "/viewers" }>
+					@icons.Eye(templ.Attributes{"class": "icon"})
+					<span>{ ctxi18n.T(ctx, "groups.viewers") }</span>
+				</a>
 			} else {
-				<a class="btn app-nav-link" href={ "/groups/" + groupID + "/viewers" }>@icons.Eye(templ.Attributes{"class": "icon"})
-<span>{ ctxi18n.T(ctx, "groups.viewers") }</span></a>
+				<a class="btn app-nav-link" href={ "/groups/" + groupID + "/viewers" }>
+					@icons.Eye(templ.Attributes{"class": "icon"})
+					<span>{ ctxi18n.T(ctx, "groups.viewers") }</span>
+				</a>
 			}
 		</div>
 	</nav>
@@ -231,12 +289,20 @@ templ AppShell(id string, crumbs []utils.Crumb, userEmail string, nav templ.Comp
 		<input id={ id + "-panel-toggle" } class="shell-toggle" type="checkbox"/>
 		<header class="app-shell-top">
 			<div class="app-shell-mobile-toggles">
-				<label for={ id + "-nav-toggle" } class="btn">@icons.Menu(templ.Attributes{"class": "icon"})
-<span>{ ctxi18n.T(ctx, "nav.menu") }</span></label>
+				<label for={ id + "-nav-toggle" } class="btn">
+					@icons.Menu(templ.Attributes{"class": "icon"})
+					<span>{ ctxi18n.T(ctx, "nav.menu") }</span>
+				</label>
 			</div>
 			@BreadcrumbTrail(crumbs)
 		</header>
 		<aside class="app-shell-nav">
+			<div class="pb">
+				<label for={ id + "-nav-toggle" } class="btn app-nav-link">
+					@icons.X(templ.Attributes{"class": "icon"})
+					<span>{ ctxi18n.T(ctx, "nav.close") }</span>
+				</label>
+			</div>
 			@nav
 		</aside>
 		<main id="app" class="app-shell-main">
@@ -255,12 +321,20 @@ templ AppShellMainOnly(id string, crumbs []utils.Crumb, userEmail string, nav te
 		<input id={ id + "-nav-toggle" } class="shell-toggle" type="checkbox"/>
 		<header class="app-shell-top">
 			<div class="app-shell-mobile-toggles">
-				<label for={ id + "-nav-toggle" } class="btn">@icons.Menu(templ.Attributes{"class": "icon"})
-<span>{ ctxi18n.T(ctx, "nav.menu") }</span></label>
+				<label for={ id + "-nav-toggle" } class="btn">
+					@icons.Menu(templ.Attributes{"class": "icon"})
+					<span>{ ctxi18n.T(ctx, "nav.menu") }</span>
+				</label>
 			</div>
 			@BreadcrumbTrail(crumbs)
 		</header>
 		<aside class="app-shell-nav">
+			<div class="pb">
+				<label for={ id + "-nav-toggle" } class="btn app-nav-link">
+					@icons.X(templ.Attributes{"class": "icon"})
+					<span>{ ctxi18n.T(ctx, "nav.close") }</span>
+				</label>
+			</div>
 			@nav
 		</aside>
 		<main id="app" class="app-shell-main">

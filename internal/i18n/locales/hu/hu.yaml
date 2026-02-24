@@ -6,6 +6,7 @@ hu:
     dashboard: "Vezérlőpult"
     overview: "Áttekintés"
     menu: "Menü"
+    close: "Bezárás"
     actions: "Műveletek"
     logged_in_as: "Bejelentkezve mint"
   auth:

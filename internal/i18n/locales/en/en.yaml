@@ -6,6 +6,7 @@ en:
     dashboard: "Dashboard"
     overview: "Overview"
     menu: "Menu"
+    close: "Close"
     actions: "Actions"
     logged_in_as: "Logged in as"
   auth:

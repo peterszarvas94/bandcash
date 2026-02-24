@@ -16,7 +16,7 @@ templ GroupPage(data GroupPageData) {
 	<html lang={ appi18n.LocaleCode(ctx) }>
 		@shared.Head(data.Title)
 		<body>
-			<div data-signals={ templ.JSONString(map[string]any{"csrf": utils.CSRFToken(ctx), "formState": "", "formData": map[string]any{"name": data.Group.Name}, "errors": map[string]any{"name": ""}}) } data-init="@get('/sse')"></div>
+			<div data-signals={ templ.JSONString(map[string]any{"csrf": utils.CSRFToken(ctx), "formState": "", "eventFormState": "", "formData": map[string]any{"name": data.Group.Name}, "errors": map[string]any{"name": ""}}) } data-init="@get('/sse')"></div>
 			@shared.Notifications()
 			@shared.AppShell("group-show", data.Breadcrumbs, data.UserEmail, shared.GroupPrimaryNav(data.Group.ID, "overview"), GroupMain(data), GroupSidebar(data))
 		</body>
@@ -33,7 +33,7 @@ templ GroupMain(data GroupPageData) {
 			<label>{ ctxi18n.T(ctx, "groups.created") }</label>
 			<p>
 				if data.Group.CreatedAt.Valid {
-					{ data.Group.CreatedAt.Time.Format("2006-01-02 15:04") }
+					{ utils.FormatTimeLocalized(ctx, data.Group.CreatedAt.Time) }
 				} else {
 					{ "-" }
 				}
