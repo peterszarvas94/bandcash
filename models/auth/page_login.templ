@@ -24,7 +24,9 @@ templ LoginPage(data AuthPageData) {
 					</div>
 					<button type="submit" class="btn btn-primary">{ ctxi18n.T(ctx, "auth.send_link") }</button>
 				</form>
-				<p>{ ctxi18n.T(ctx, "auth.no_account") } <a href="/auth/signup">{ ctxi18n.T(ctx, "auth.signup") }</a></p>
+				if !utils.Env().DisableSignup {
+					<p>{ ctxi18n.T(ctx, "auth.no_account") } <a href="/auth/signup">{ ctxi18n.T(ctx, "auth.signup") }</a></p>
+				}
 			</main>
 		</body>
 	</html>
