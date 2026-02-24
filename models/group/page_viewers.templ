@@ -31,7 +31,7 @@ templ GroupViewersMain(data ViewersPageData) {
 				if data.IsAdmin {
 					<th data-actions-col>
 						<div class="row row-right">
-							<button class="btn" type="button" data-attr:disabled="$formState !== ''" data-on:click="$formState = 'add'; $formData = {email: ''}">@icons.Plus(templ.Attributes{"class": "icon"})<span>{ ctxi18n.T(ctx, "groups.add_viewer") }</span></button>
+							<button class="btn btn-icon" type="button" aria-label={ ctxi18n.T(ctx, "groups.add_viewer") } title={ ctxi18n.T(ctx, "groups.add_viewer") } data-attr:disabled="$formState !== ''" data-on:click="$formState = 'add'; $formData = {email: ''}">@icons.Plus(templ.Attributes{"class": "icon"})</button>
 						</div>
 					</th>
 				}

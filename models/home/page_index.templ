@@ -22,23 +22,18 @@ templ HomeIndex(data HomeData) {
 				<form class="form" data-on:change="@post('/settings/language')">
 					@shared.LanguageSelect("home-lang", data.CurrentLang)
 				</form>
-				if !data.UserLoggedIn {
-					<form class="form pt" data-on:submit="@post('/auth/login')">
-						<div class="field">
-							<label>{ ctxi18n.T(ctx, "auth.email") } <span class="required-mark">*</span></label>
-							<input type="email" class="w-fit" data-bind="formData.email" placeholder={ ctxi18n.T(ctx, "auth.email_placeholder") }/>
-							<div data-show="$authError !== ''" class="color-error" data-text="$authError"></div>
-						</div>
-						<button type="submit" class="btn btn-primary">
-							@icons.Send(templ.Attributes{"class": "icon"})
-							<span>{ ctxi18n.T(ctx, "auth.send_link") }</span>
-						</button>
-					</form>
-				}
+				<form class="form pt" data-on:submit="@post('/auth/login')">
+					<div class="field">
+						<label>{ ctxi18n.T(ctx, "auth.email") } <span class="required-mark">*</span></label>
+						<input type="email" class="w-fit" data-bind="formData.email" placeholder={ ctxi18n.T(ctx, "auth.email_placeholder") }/>
+						<div data-show="$authError !== ''" class="color-error" data-text="$authError"></div>
+					</div>
+					<button type="submit" class="btn btn-primary">
+						@icons.Send(templ.Attributes{"class": "icon"})
+						<span>{ ctxi18n.T(ctx, "auth.send_link") }</span>
+					</button>
+				</form>
 				<div class="row pt">
-					if data.UserLoggedIn {
-						<a class="btn" href="/dashboard">{ ctxi18n.T(ctx, "nav.dashboard") }</a>
-					}
 					if utils.Env().AppEnv == "development" {
 						<a class="btn" href="/dev">{ ctxi18n.T(ctx, "dev.title") }</a>
 					}

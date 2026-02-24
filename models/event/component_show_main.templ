@@ -69,13 +69,14 @@ templ EventShowMain(data EventData) {
 					<th data-actions-col>
 						<div class="row row-right">
 							<button
-								class="btn"
+								class="btn btn-icon"
 								type="button"
+								aria-label={ ctxi18n.T(ctx, "participants.add") }
+								title={ ctxi18n.T(ctx, "participants.add") }
 								data-attr:disabled="$formState !== '' || $eventFormState !== ''"
 								data-on:click="$formState = 'add'; $editingId = ''; $calcPercent = 0; $formData = {memberId: '', memberName: '', amount: 0, expense: 0}; $errors = {memberId: '', amount: '', expense: ''}"
 							>
 								@icons.Plus(templ.Attributes{"class": "icon"})
-								<span>{ ctxi18n.T(ctx, "participants.add") }</span>
 							</button>
 						</div>
 					</th>

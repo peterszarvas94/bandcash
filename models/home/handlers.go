@@ -10,13 +10,13 @@ import (
 // Index renders the home page with welcome message.
 func (h *Home) Index(c echo.Context) error {
 	utils.EnsureClientID(c)
-	data := h.Data(c.Request().Context())
 
 	if cookie, err := c.Cookie("session"); err == nil && cookie.Value != "" {
 		if _, err := db.Qry.GetUserByID(c.Request().Context(), cookie.Value); err == nil {
-			data.UserLoggedIn = true
+			return c.Redirect(302, "/dashboard")
 		}
 	}
 
+	data := h.Data(c.Request().Context())
 	return utils.RenderComponent(c, HomeIndex(data))
 }

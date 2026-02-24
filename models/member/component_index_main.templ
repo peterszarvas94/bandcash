@@ -17,13 +17,14 @@ templ MemberIndexMain(data MembersData) {
 					<th data-actions-col>
 						<div class="row row-right">
 							<button
-								class="btn"
+								class="btn btn-icon"
 								type="button"
+								aria-label={ ctxi18n.T(ctx, "members.add") }
+								title={ ctxi18n.T(ctx, "members.add") }
 								data-attr:disabled="$formState !== ''"
 								data-on:click="$formState = 'add'; $editingId = 0; $formData = {name: '', description: ''}; $errors = {name: '', description: ''}"
 							>
 								@icons.Plus(templ.Attributes{"class": "icon"})
-								<span>{ ctxi18n.T(ctx, "members.add") }</span>
 							</button>
 						</div>
 					</th>

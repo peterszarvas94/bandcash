@@ -16,7 +16,7 @@ templ GroupsPage(data GroupsPageData) {
 	<html lang={ appi18n.LocaleCode(ctx) }>
 		@shared.Head(data.Title)
 		<body>
-			<div data-signals={templ.JSONString(map[string]any{"csrf": utils.CSRFToken(ctx), "formState": "", "formData": map[string]any{"name": ""}})} data-init="@get('/sse')"></div>
+			<div data-signals={ templ.JSONString(map[string]any{"csrf": utils.CSRFToken(ctx), "formState": "", "formData": map[string]any{"name": ""}}) } data-init="@get('/sse')"></div>
 			@shared.Notifications()
 			@shared.AppShell("group-dashboard", data.Breadcrumbs, data.UserEmail, shared.AppPrimaryNav("dashboard"), GroupsMain(data), GroupsSidebar())
 		</body>
@@ -32,7 +32,9 @@ templ GroupsMain(data GroupsPageData) {
 				<th>{ ctxi18n.T(ctx, "fields.name") }</th>
 				<th data-actions-col>
 					<div class="row row-right">
-						<button class="btn" type="button" data-attr:disabled="$formState !== ''" data-on:click="$formState = 'add'; $formData = {name: ''}">@icons.Plus(templ.Attributes{"class": "icon"})<span>{ ctxi18n.T(ctx, "groups.create") }</span></button>
+						<button class="btn btn-icon" type="button" aria-label={ ctxi18n.T(ctx, "groups.create") } title={ ctxi18n.T(ctx, "groups.create") } data-attr:disabled="$formState !== ''" data-on:click="$formState = 'add'; $formData = {name: ''}">
+							@icons.Plus(templ.Attributes{"class": "icon"})
+						</button>
 					</div>
 				</th>
 			</tr>
@@ -49,7 +51,9 @@ templ GroupsMain(data GroupsPageData) {
 						<td data-actions-col>
 							<div class="row row-right">
 								<form data-on:submit={ fmt.Sprintf("@post('/groups/%s/delete')", group.Group.ID) } data-sure-title={ ctxi18n.T(ctx, "groups.delete_confirm") } data-sure-message={ ctxi18n.T(ctx, "confirm.destructive_message") } data-sure-submit={ ctxi18n.T(ctx, "groups.delete") } style="display:inline">
-									<button type="submit" class="btn btn-danger btn-icon" aria-label={ ctxi18n.T(ctx, "groups.delete") } title={ ctxi18n.T(ctx, "groups.delete") }>@icons.Trash2(templ.Attributes{"class": "icon"})</button>
+									<button type="submit" class="btn btn-danger btn-icon" aria-label={ ctxi18n.T(ctx, "groups.delete") } title={ ctxi18n.T(ctx, "groups.delete") }>
+										@icons.Trash2(templ.Attributes{"class": "icon"})
+									</button>
 								</form>
 							</div>
 						</td>
@@ -58,10 +62,9 @@ templ GroupsMain(data GroupsPageData) {
 			}
 		</tbody>
 	</table>
-
 	<h2>{ ctxi18n.T(ctx, "groups.viewer_list") }</h2>
 	<table class="table table-sticky-actions">
-		<thead><tr><th>{ ctxi18n.T(ctx, "fields.name") }</th><th data-actions-col>{ ctxi18n.T(ctx, "table.actions") }</th></tr></thead>
+		<thead><tr><th>{ ctxi18n.T(ctx, "fields.name") }</th><th data-actions-col></th></tr></thead>
 		<tbody>
 			if len(data.ReaderGroups) == 0 {
 				<tr><td colspan="2">{ ctxi18n.T(ctx, "groups.viewer_none") }</td></tr>
@@ -82,7 +85,9 @@ templ GroupsMain(data GroupsPageData) {
 									data-sure-message={ ctxi18n.T(ctx, "confirm.leave_message") }
 									data-sure-submit={ ctxi18n.T(ctx, "groups.leave") }
 									data-on:click={ fmt.Sprintf("@post('/groups/%s/leave')", group.Group.ID) }
-								>@icons.SquareArrowRightExit(templ.Attributes{"class": "icon"})</button>
+								>
+									@icons.SquareArrowRightExit(templ.Attributes{"class": "icon"})
+								</button>
 							</div>
 						</td>
 					</tr>
@@ -101,8 +106,14 @@ templ GroupsSidebar() {
 				<input type="text" data-bind="formData.name" placeholder={ ctxi18n.T(ctx, "groups.name_placeholder") }/>
 			</div>
 			<div class="sidebar-actions">
-				<button type="submit" class="btn btn-primary">@icons.Save(templ.Attributes{"class": "icon"})<span>{ ctxi18n.T(ctx, "groups.create") }</span></button>
-				<button class="btn" type="button" data-on:click="$formState = ''; $formData = {name: ''}">@icons.X(templ.Attributes{"class": "icon"})<span>{ ctxi18n.T(ctx, "actions.cancel") }</span></button>
+				<button type="submit" class="btn btn-primary">
+					@icons.Save(templ.Attributes{"class": "icon"})
+					<span>{ ctxi18n.T(ctx, "groups.create") }</span>
+				</button>
+				<button class="btn" type="button" data-on:click="$formState = ''; $formData = {name: ''}">
+					@icons.X(templ.Attributes{"class": "icon"})
+					<span>{ ctxi18n.T(ctx, "actions.cancel") }</span>
+				</button>
 			</div>
 		</form>
 	</div>
