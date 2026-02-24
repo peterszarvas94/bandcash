@@ -19,6 +19,15 @@ import (
 type Auth struct {
 }
 
+func (a *Auth) signupDisabled(c echo.Context) error {
+	utils.Notify(c, "warning", ctxi18n.T(c.Request().Context(), "auth.notifications.signup_disabled"))
+	err := utils.SSEHub.Redirect(c, "/auth/login")
+	if err != nil {
+		return c.NoContent(http.StatusInternalServerError)
+	}
+	return c.NoContent(http.StatusOK)
+}
+
 type authSignals struct {
 	FormData struct {
 		Email string `json:"email" validate:"required,email,max=320"`
@@ -55,6 +64,14 @@ func (a *Auth) LoginRequest(c echo.Context) error {
 	// Check if user exists
 	_, err := db.Qry.GetUserByEmail(c.Request().Context(), emailAddress)
 	if err != nil {
+		if utils.Env().DisableSignup {
+			_ = utils.SSEHub.PatchSignals(c, map[string]any{
+				"authError": ctxi18n.T(c.Request().Context(), "auth.signup_disabled"),
+			})
+			utils.Notify(c, "warning", ctxi18n.T(c.Request().Context(), "auth.notifications.signup_disabled"))
+			return c.NoContent(http.StatusOK)
+		}
+
 		// User doesn't exist - offer to sign up instead
 		err = utils.SSEHub.Redirect(c, "/auth/signup?email="+url.QueryEscape(emailAddress))
 		if err != nil {
@@ -98,6 +115,10 @@ func (a *Auth) LoginRequest(c echo.Context) error {
 
 // SignupPage shows the signup form
 func (a *Auth) SignupPage(c echo.Context) error {
+	if utils.Env().DisableSignup {
+		return a.signupDisabled(c)
+	}
+
 	utils.EnsureClientID(c)
 	emailAddress := utils.NormalizeEmail(c.QueryParam("email"))
 	data := AuthPageData{
@@ -110,6 +131,10 @@ func (a *Auth) SignupPage(c echo.Context) error {
 
 // SignupRequest handles signup form submission
 func (a *Auth) SignupRequest(c echo.Context) error {
+	if utils.Env().DisableSignup {
+		return a.signupDisabled(c)
+	}
+
 	signals := authSignals{}
 	if err := datastar.ReadSignals(c.Request(), &signals); err != nil {
 		return c.NoContent(http.StatusBadRequest)

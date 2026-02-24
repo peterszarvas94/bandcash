@@ -8,6 +8,7 @@ hu:
   auth:
     login: "Belépés"
     signup: "Regisztráció"
+    signup_disabled: "A regisztráció jelenleg le van tiltva."
     logout: "Kijelentkezés"
     email: "Email"
     email_placeholder: "te@email.com"
@@ -23,6 +24,7 @@ hu:
     no_account: "Nincs még fiókod?"
     email_in_use: "Ez az email már használatban van. Kérlek lépj be."
     notifications:
+      signup_disabled: "Új fiók regisztrációja jelenleg le van tiltva. Vedd fel a kapcsolatot az adminnal."
       create_link_failed: "Nem sikerült belépési linket létrehozni. Próbáld újra."
       send_email_failed: "Nem sikerült emailt küldeni. Próbáld újra."
       create_user_failed: "Nem sikerült fiókot létrehozni. Próbáld újra."

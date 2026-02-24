@@ -39,6 +39,7 @@ env:
     LOG_LEVEL: info
     LOG_FOLDER: /storage/logs
     LOG_PREFIX: bandcash
+    DISABLE_SIGNUP: true
   secret:
     - SMTP_HOST
     - SMTP_PORT

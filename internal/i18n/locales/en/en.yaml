@@ -8,6 +8,7 @@ en:
   auth:
     login: "Login"
     signup: "Sign Up"
+    signup_disabled: "Sign up is currently disabled."
     logout: "Logout"
     email: "Email"
     email_placeholder: "your@email.com"
@@ -23,6 +24,7 @@ en:
     no_account: "Don't have an account?"
     email_in_use: "This email is already in use. Please log in."
     notifications:
+      signup_disabled: "New account registration is currently disabled. Contact the admin."
       create_link_failed: "Could not create login link. Please try again."
       send_email_failed: "Could not send email. Please try again."
       create_user_failed: "Could not create account. Please try again."
