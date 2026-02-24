@@ -6,6 +6,7 @@ import (
 	appi18n "bandcash/internal/i18n"
 	"bandcash/internal/utils"
 	shared "bandcash/models/shared"
+	icons "bandcash/models/shared/icons"
 )
 
 templ LoginPage(data AuthPageData) {
@@ -27,6 +28,6 @@ templ LoginMain() {
 			<input type="email" data-bind="formData.email" placeholder={ ctxi18n.T(ctx, "auth.email_placeholder") }/>
 			<div data-show="$authError !== ''" class="color-error" data-text="$authError"></div>
 		</div>
-		<button type="submit" class="btn btn-primary">{ ctxi18n.T(ctx, "auth.send_link") }</button>
+		<button type="submit" class="btn btn-primary">@icons.Send(templ.Attributes{"class": "icon"})<span>{ ctxi18n.T(ctx, "auth.send_link") }</span></button>
 	</form>
 }

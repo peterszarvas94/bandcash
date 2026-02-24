@@ -6,14 +6,15 @@ import (
 	appi18n "bandcash/internal/i18n"
 	"bandcash/internal/utils"
 	shared "bandcash/models/shared"
+	icons "bandcash/models/shared/icons"
 )
 
 templ SettingsIndex(data SettingsData) {
-	<!doctype html>
-	<html lang={appi18n.LocaleCode(ctx)}>
+	<!DOCTYPE html>
+	<html lang={ appi18n.LocaleCode(ctx) }>
 		@shared.Head(data.Title)
 		<body>
-			<div data-signals={templ.JSONString(map[string]any{"csrf": utils.CSRFToken(ctx), "formData": map[string]any{"lang": data.CurrentLang}})} data-init="@get('/sse')"></div>
+			<div data-signals={ templ.JSONString(map[string]any{"csrf": utils.CSRFToken(ctx), "formData": map[string]any{"lang": data.CurrentLang}}) } data-init="@get('/sse')"></div>
 			@shared.Notifications()
 			@shared.AppShellMainOnly("settings-index", data.Breadcrumbs, data.UserEmail, shared.AppPrimaryNav("settings"), SettingsMain(data))
 		</body>
@@ -21,16 +22,17 @@ templ SettingsIndex(data SettingsData) {
 }
 
 templ SettingsMain(data SettingsData) {
-	if data.UserEmail != "" {
-		<div class="row pb row-wrap">
-			<span class="text-muted">{ctxi18n.T(ctx, "nav.logged_in_as")} {data.UserEmail}</span>
-		</div>
-	}
 	@LanguageForm(data.CurrentLang)
 	if data.UserEmail != "" {
+		<div class="row pt row-wrap">
+			<span class="text-muted">{ ctxi18n.T(ctx, "nav.logged_in_as") } { data.UserEmail }</span>
+		</div>
 		<form class="pt" data-on:submit="@post('/auth/logout')">
 			<input type="hidden" data-bind="csrf"/>
-			<button class="btn" type="submit">{ctxi18n.T(ctx, "auth.logout")}</button>
+			<button class="btn" type="submit">
+				@icons.LogOut(templ.Attributes{"class": "icon"})
+				<span>{ ctxi18n.T(ctx, "auth.logout") }</span>
+			</button>
 		</form>
 	}
 }

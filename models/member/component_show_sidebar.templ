@@ -6,36 +6,12 @@ import (
 	ctxi18n "github.com/invopop/ctxi18n/i18n"
 
 	"bandcash/internal/utils"
+	icons "bandcash/models/shared/icons"
 )
 
 templ MemberShowSidebar(data MemberData) {
 	if data.IsAdmin {
-		<div data-show="$formState === ''" class="pb">
-			<h3>{ctxi18n.T(ctx, "members.actions")}</h3>
-			<div class="row">
-				<button
-					class="btn"
-					type="button"
-					data-on:click="$formState = 'edit'; $errors = {name: '', description: ''}"
-				>
-					{ctxi18n.T(ctx, "members.edit")}
-				</button>
-				<button
-					class="btn btn-danger"
-					type="button"
-					data-attr:disabled="$formState !== ''"
-					data-sure-title={ ctxi18n.T(ctx, "members.delete_confirm") }
-					data-sure-message={ ctxi18n.T(ctx, "confirm.destructive_message") }
-					data-sure-submit={ ctxi18n.T(ctx, "actions.delete") }
-			data-on:click={fmt.Sprintf("@delete('/groups/%s/members/%s')", data.GroupID, data.Member.ID)}
-				>
-					{ctxi18n.T(ctx, "actions.delete")}
-				</button>
-			</div>
-		</div>
-
 		<div data-show="$formState === 'edit'" style="display: none" class="pb">
-		<h3>{ctxi18n.T(ctx, "members.edit")}</h3>
 		<form class="form">
 			<div>
 				<label>{ctxi18n.T(ctx, "fields.name")} <span class="required-mark">*</span></label>
@@ -47,14 +23,14 @@ templ MemberShowSidebar(data MemberData) {
 					<textarea data-bind="formData.description" rows="3"></textarea>
 					<div data-show="$errors && $errors.description" class="color-error" data-text="$errors.description"></div>
 				</div>
-				<div class="row">
-			<button class="btn btn-primary" type="button" data-on:click={fmt.Sprintf("@put('/groups/%s/members/%s')", data.GroupID, data.Member.ID)}>{ctxi18n.T(ctx, "members.update")}</button>
+				<div class="sidebar-actions">
+				<button class="btn btn-primary" type="button" data-on:click={fmt.Sprintf("@put('/groups/%s/members/%s')", data.GroupID, data.Member.ID)}>@icons.Save(templ.Attributes{"class": "icon"})<span>{ctxi18n.T(ctx, "members.update")}</span></button>
 					<button
 						class="btn"
 						type="button"
 					data-on:click={"$formState = ''; $formData = {name: " + utils.JSONString(data.Member.Name) + ", description: " + utils.JSONString(data.Member.Description) + "}; $errors = {name: '', description: ''}"}
 					>
-					{ctxi18n.T(ctx, "actions.cancel")}
+					@icons.X(templ.Attributes{"class": "icon"})<span>{ctxi18n.T(ctx, "actions.cancel")}</span>
 					</button>
 				</div>
 			</form>

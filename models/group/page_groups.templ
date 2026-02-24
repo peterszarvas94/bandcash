@@ -7,6 +7,7 @@ import (
 
 	appi18n "bandcash/internal/i18n"
 	"bandcash/internal/utils"
+	icons "bandcash/models/shared/icons"
 	shared "bandcash/models/shared"
 )
 
@@ -25,8 +26,17 @@ templ GroupsPage(data GroupsPageData) {
 templ GroupsMain(data GroupsPageData) {
 	<p class="text-muted">{ ctxi18n.T(ctx, "groups.subtitle") }</p>
 	<h2>{ ctxi18n.T(ctx, "groups.admin_list") }</h2>
-	<table class="table">
-		<thead><tr><th>{ ctxi18n.T(ctx, "fields.name") }</th><th></th></tr></thead>
+	<table class="table table-sticky-actions">
+		<thead>
+			<tr>
+				<th>{ ctxi18n.T(ctx, "fields.name") }</th>
+				<th data-actions-col>
+					<div class="row row-right">
+						<button class="btn" type="button" data-attr:disabled="$formState !== ''" data-on:click="$formState = 'add'; $formData = {name: ''}">@icons.Plus(templ.Attributes{"class": "icon"})<span>{ ctxi18n.T(ctx, "groups.create") }</span></button>
+					</div>
+				</th>
+			</tr>
+		</thead>
 		<tbody>
 			if len(data.AdminGroups) == 0 {
 				<tr><td colspan="2">{ ctxi18n.T(ctx, "groups.none") }</td></tr>
@@ -36,10 +46,10 @@ templ GroupsMain(data GroupsPageData) {
 						<td>
 							<a href={ "/groups/" + group.Group.ID }>{ group.Group.Name }</a>
 						</td>
-						<td>
-							<div class="row row-right row-wrap">
+						<td data-actions-col>
+							<div class="row row-right">
 								<form data-on:submit={ fmt.Sprintf("@post('/groups/%s/delete')", group.Group.ID) } data-sure-title={ ctxi18n.T(ctx, "groups.delete_confirm") } data-sure-message={ ctxi18n.T(ctx, "confirm.destructive_message") } data-sure-submit={ ctxi18n.T(ctx, "groups.delete") } style="display:inline">
-									<button type="submit" class="btn btn-danger">{ ctxi18n.T(ctx, "groups.delete") }</button>
+									<button type="submit" class="btn btn-danger btn-icon" aria-label={ ctxi18n.T(ctx, "groups.delete") } title={ ctxi18n.T(ctx, "groups.delete") }>@icons.Trash2(templ.Attributes{"class": "icon"})</button>
 								</form>
 							</div>
 						</td>
@@ -50,8 +60,8 @@ templ GroupsMain(data GroupsPageData) {
 	</table>
 
 	<h2>{ ctxi18n.T(ctx, "groups.viewer_list") }</h2>
-	<table class="table">
-		<thead><tr><th>{ ctxi18n.T(ctx, "fields.name") }</th><th></th></tr></thead>
+	<table class="table table-sticky-actions">
+		<thead><tr><th>{ ctxi18n.T(ctx, "fields.name") }</th><th data-actions-col>{ ctxi18n.T(ctx, "table.actions") }</th></tr></thead>
 		<tbody>
 			if len(data.ReaderGroups) == 0 {
 				<tr><td colspan="2">{ ctxi18n.T(ctx, "groups.viewer_none") }</td></tr>
@@ -61,16 +71,18 @@ templ GroupsMain(data GroupsPageData) {
 						<td>
 							<a href={ "/groups/" + group.Group.ID }>{ group.Group.Name }</a>
 						</td>
-						<td>
-							<div class="row row-right row-wrap">
+						<td data-actions-col>
+							<div class="row row-right">
 								<button
 									type="button"
-									class="btn btn-danger"
+									class="btn btn-danger btn-icon"
+									aria-label={ ctxi18n.T(ctx, "groups.leave") }
+									title={ ctxi18n.T(ctx, "groups.leave") }
 									data-sure-title={ ctxi18n.T(ctx, "groups.leave_confirm") }
 									data-sure-message={ ctxi18n.T(ctx, "confirm.leave_message") }
 									data-sure-submit={ ctxi18n.T(ctx, "groups.leave") }
 									data-on:click={ fmt.Sprintf("@post('/groups/%s/leave')", group.Group.ID) }
-								>{ ctxi18n.T(ctx, "groups.leave") }</button>
+								>@icons.SquareArrowRightExit(templ.Attributes{"class": "icon"})</button>
 							</div>
 						</td>
 					</tr>
@@ -81,24 +93,16 @@ templ GroupsMain(data GroupsPageData) {
 }
 
 templ GroupsSidebar() {
-	<div data-show="$formState === ''" class="pb">
-		<h3>{ ctxi18n.T(ctx, "groups.actions") }</h3>
-		<div class="row">
-			<button class="btn" type="button" data-on:click="$formState = 'add'; $formData = {name: ''}">{ ctxi18n.T(ctx, "groups.create") }</button>
-		</div>
-	</div>
-
 	<div data-show="$formState === 'add'" style="display: none" class="pb">
-		<h3>{ ctxi18n.T(ctx, "groups.new") }</h3>
 		<p>{ ctxi18n.T(ctx, "groups.new_desc") }</p>
 		<form class="form" data-on:submit="@post('/groups')">
 			<div class="field">
 				<label>{ ctxi18n.T(ctx, "groups.name") } <span class="required-mark">*</span></label>
 				<input type="text" data-bind="formData.name" placeholder={ ctxi18n.T(ctx, "groups.name_placeholder") }/>
 			</div>
-			<div class="row">
-				<button type="submit" class="btn btn-primary">{ ctxi18n.T(ctx, "groups.create") }</button>
-				<button class="btn" type="button" data-on:click="$formState = ''; $formData = {name: ''}">{ ctxi18n.T(ctx, "actions.cancel") }</button>
+			<div class="sidebar-actions">
+				<button type="submit" class="btn btn-primary">@icons.Save(templ.Attributes{"class": "icon"})<span>{ ctxi18n.T(ctx, "groups.create") }</span></button>
+				<button class="btn" type="button" data-on:click="$formState = ''; $formData = {name: ''}">@icons.X(templ.Attributes{"class": "icon"})<span>{ ctxi18n.T(ctx, "actions.cancel") }</span></button>
 			</div>
 		</form>
 	</div>

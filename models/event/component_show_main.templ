@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	ctxi18n "github.com/invopop/ctxi18n/i18n"
+	icons "bandcash/models/shared/icons"
 )
 
 templ EventShowMain(data EventData) {
@@ -30,8 +31,33 @@ templ EventShowMain(data EventData) {
 			<p>{ fmt.Sprintf("%d", data.Leftover) }</p>
 		</div>
 	</div>
+	if data.IsAdmin {
+		<div class="row row-wrap pb">
+			<button
+				class="btn"
+				type="button"
+				data-attr:disabled="$eventFormState !== '' || $formState !== ''"
+				data-on:click="$eventFormState = 'edit'; $errors = {title: '', time: '', description: '', amount: ''}"
+			>
+				@icons.Pencil(templ.Attributes{"class": "icon"})
+				<span>{ ctxi18n.T(ctx, "events.edit") }</span>
+			</button>
+			<button
+				class="btn btn-danger"
+				type="button"
+				data-attr:disabled="$eventFormState !== '' || $formState !== ''"
+				data-sure-title={ ctxi18n.T(ctx, "events.delete_confirm") }
+				data-sure-message={ ctxi18n.T(ctx, "confirm.destructive_message") }
+				data-sure-submit={ ctxi18n.T(ctx, "actions.delete") }
+				data-on:click={ fmt.Sprintf("@delete('/groups/%s/events/%s')", data.GroupID, data.Event.ID) }
+			>
+				@icons.Trash2(templ.Attributes{"class": "icon"})
+				<span>{ ctxi18n.T(ctx, "actions.delete") }</span>
+			</button>
+		</div>
+	}
 	<h2>{ ctxi18n.T(ctx, "events.participants") }</h2>
-	<table class="table">
+	<table class="table table-sticky-actions">
 		<thead>
 			<tr>
 				<th>{ ctxi18n.T(ctx, "participants.member") }</th>
@@ -40,7 +66,19 @@ templ EventShowMain(data EventData) {
 				<th>{ ctxi18n.T(ctx, "participants.expense") }</th>
 				<th>{ ctxi18n.T(ctx, "participants.total") }</th>
 				if data.IsAdmin {
-					<th></th>
+					<th data-actions-col>
+						<div class="row row-right">
+							<button
+								class="btn"
+								type="button"
+								data-attr:disabled="$formState !== '' || $eventFormState !== ''"
+								data-on:click="$formState = 'add'; $editingId = ''; $calcPercent = 0; $formData = {memberId: '', memberName: '', amount: 0, expense: 0}; $errors = {memberId: '', amount: '', expense: ''}"
+							>
+								@icons.Plus(templ.Attributes{"class": "icon"})
+								<span>{ ctxi18n.T(ctx, "participants.add") }</span>
+							</button>
+						</div>
+					</th>
 				}
 			</tr>
 		</thead>
@@ -58,26 +96,30 @@ templ EventShowMain(data EventData) {
 					<td class="text-right">{ fmt.Sprintf("%d", participant.ParticipantExpense) }</td>
 					<td class="text-right">{ fmt.Sprintf("%d", participant.ParticipantAmount+participant.ParticipantExpense) }</td>
 					if data.IsAdmin {
-						<td class="text-right">
+						<td class="text-right" data-actions-col>
 							<div class="row">
 								<button
-									class="btn"
+									class="btn btn-icon"
 									type="button"
+									aria-label={ ctxi18n.T(ctx, "actions.edit") }
+									title={ ctxi18n.T(ctx, "actions.edit") }
 									data-attr:disabled="$formState !== '' || $eventFormState !== ''"
 									data-on:click={ fmt.Sprintf("$formState = 'edit'; $editingId = %q; $formData = {memberId: el.closest('tr').dataset.memberId, memberName: el.closest('tr').dataset.memberName, amount: Number(el.closest('tr').dataset.participantAmount), expense: Number(el.closest('tr').dataset.participantExpense)}", participant.ID) }
 								>
-									{ ctxi18n.T(ctx, "actions.edit") }
+									@icons.Pencil(templ.Attributes{"class": "icon"})
 								</button>
 								<button
-									class="btn btn-danger"
+									class="btn btn-danger btn-icon"
 									type="button"
+									aria-label={ ctxi18n.T(ctx, "actions.delete") }
+									title={ ctxi18n.T(ctx, "actions.delete") }
 									data-attr:disabled="$formState !== '' || $eventFormState !== ''"
 									data-sure-title={ ctxi18n.T(ctx, "participants.delete_confirm") }
 									data-sure-message={ ctxi18n.T(ctx, "confirm.destructive_message") }
 									data-sure-submit={ ctxi18n.T(ctx, "actions.delete") }
 									data-on:click={ fmt.Sprintf("@delete('/groups/%s/events/%s/participants/%s')", data.GroupID, data.Event.ID, participant.ID) }
 								>
-									{ ctxi18n.T(ctx, "actions.delete") }
+									@icons.Trash2(templ.Attributes{"class": "icon"})
 								</button>
 							</div>
 						</td>

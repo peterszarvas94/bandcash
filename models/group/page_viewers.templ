@@ -7,6 +7,7 @@ import (
 
 	appi18n "bandcash/internal/i18n"
 	"bandcash/internal/utils"
+	icons "bandcash/models/shared/icons"
 	shared "bandcash/models/shared"
 )
 
@@ -23,37 +24,48 @@ templ GroupViewersPage(data ViewersPageData) {
 }
 
 templ GroupViewersMain(data ViewersPageData) {
-	<table class="table pt">
+	<table class="table table-sticky-actions pt">
 		<thead>
-			<tr><th>{ ctxi18n.T(ctx, "auth.email") }</th><th>{ ctxi18n.T(ctx, "table.actions") }</th></tr>
+			<tr>
+				<th>{ ctxi18n.T(ctx, "auth.email") }</th>
+				if data.IsAdmin {
+					<th data-actions-col>
+						<div class="row row-right">
+							<button class="btn" type="button" data-attr:disabled="$formState !== ''" data-on:click="$formState = 'add'; $formData = {email: ''}">@icons.Plus(templ.Attributes{"class": "icon"})<span>{ ctxi18n.T(ctx, "groups.add_viewer") }</span></button>
+						</div>
+					</th>
+				}
+			</tr>
 		</thead>
 		<tbody>
 			<tr>
 				<td>{ data.Admin.Email } <span class="text-muted">({ ctxi18n.T(ctx, "groups.admin") })</span></td>
-				<td></td>
+				if data.IsAdmin {
+					<td data-actions-col></td>
+				}
 			</tr>
 			for _, viewer := range data.Viewers {
 				<tr>
 					<td>{ viewer.Email }</td>
-					<td>
-						if data.IsAdmin {
+					if data.IsAdmin {
+						<td data-actions-col>
 							<form data-on:submit={ fmt.Sprintf("@post('/groups/%s/viewers/%s/remove')", data.Group.ID, viewer.ID) } data-sure-title={ ctxi18n.T(ctx, "groups.remove_viewer_confirm") } data-sure-message={ ctxi18n.T(ctx, "confirm.destructive_message") } data-sure-submit={ ctxi18n.T(ctx, "actions.delete") } style="display:inline">
-								<button type="submit" class="btn btn-danger">{ ctxi18n.T(ctx, "actions.delete") }</button>
+								<button type="submit" class="btn btn-danger btn-icon" aria-label={ ctxi18n.T(ctx, "actions.delete") } title={ ctxi18n.T(ctx, "actions.delete") }>@icons.Trash2(templ.Attributes{"class": "icon"})</button>
 							</form>
-						}
-					</td>
+						</td>
+					}
 				</tr>
 			}
 			for _, invite := range data.Invites {
 				<tr>
 					<td>{ invite.Email } <span class="text-muted">(pending)</span></td>
-					<td>
-						if data.IsAdmin {
+					if data.IsAdmin {
+						<td data-actions-col>
 							<form data-on:submit={ fmt.Sprintf("@post('/groups/%s/invites/%s/remove')", data.Group.ID, invite.ID) } data-sure-title={ ctxi18n.T(ctx, "groups.cancel_invite_confirm") } data-sure-message={ ctxi18n.T(ctx, "confirm.destructive_message") } data-sure-submit={ ctxi18n.T(ctx, "actions.delete") } style="display:inline">
-								<button type="submit" class="btn btn-danger">{ ctxi18n.T(ctx, "actions.delete") }</button>
+								<button type="submit" class="btn btn-danger btn-icon" aria-label={ ctxi18n.T(ctx, "actions.delete") } title={ ctxi18n.T(ctx, "actions.delete") }>@icons.Trash2(templ.Attributes{"class": "icon"})</button>
 							</form>
-						}
-					</td>
+						</td>
+					}
 				</tr>
 			}
 		</tbody>
@@ -62,22 +74,15 @@ templ GroupViewersMain(data ViewersPageData) {
 
 templ GroupViewersSidebar(data ViewersPageData) {
 	if data.IsAdmin {
-		<div data-show="$formState === ''" class="pb">
-			<h3>{ ctxi18n.T(ctx, "groups.actions") }</h3>
-			<div class="row">
-				<button class="btn" type="button" data-on:click="$formState = 'add'; $formData = {email: ''}">{ ctxi18n.T(ctx, "groups.add_viewer") }</button>
-			</div>
-		</div>
 		<div data-show="$formState !== ''" style="display: none" class="pb">
-			<h3>{ ctxi18n.T(ctx, "groups.invite_viewer") }</h3>
 			<form class="form" data-on:submit={ fmt.Sprintf("@post('/groups/%s/viewers')", data.Group.ID) }>
 				<div class="field">
 					<label>{ ctxi18n.T(ctx, "auth.email") } <span class="required-mark">*</span></label>
 					<input type="email" data-bind="formData.email" placeholder={ ctxi18n.T(ctx, "groups.viewer_email_placeholder") }/>
 				</div>
-				<div class="row">
-					<button type="submit" class="btn btn-primary">{ ctxi18n.T(ctx, "groups.add_viewer") }</button>
-					<button class="btn" type="button" data-on:click="$formState = ''; $formData = {email: ''}">{ ctxi18n.T(ctx, "actions.cancel") }</button>
+				<div class="sidebar-actions">
+					<button type="submit" class="btn btn-primary">@icons.Save(templ.Attributes{"class": "icon"})<span>{ ctxi18n.T(ctx, "groups.add_viewer") }</span></button>
+					<button class="btn" type="button" data-on:click="$formState = ''; $formData = {email: ''}">@icons.X(templ.Attributes{"class": "icon"})<span>{ ctxi18n.T(ctx, "actions.cancel") }</span></button>
 				</div>
 			</form>
 		</div>

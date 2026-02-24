@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	ctxi18n "github.com/invopop/ctxi18n/i18n"
+	icons "bandcash/models/shared/icons"
 )
 
 templ MemberShowMain(data MemberData) {
@@ -12,6 +13,31 @@ templ MemberShowMain(data MemberData) {
 		<p><strong>{ ctxi18n.T(ctx, "fields.name") }:</strong> { data.Member.Name }</p>
 		<p><strong>{ ctxi18n.T(ctx, "fields.description") }:</strong> { data.Member.Description }</p>
 	</div>
+	if data.IsAdmin {
+		<div class="row row-wrap pb">
+			<button
+				class="btn"
+				type="button"
+				data-attr:disabled="$formState !== ''"
+				data-on:click="$formState = 'edit'; $errors = {name: '', description: ''}"
+			>
+				@icons.Pencil(templ.Attributes{"class": "icon"})
+				<span>{ ctxi18n.T(ctx, "members.edit") }</span>
+			</button>
+			<button
+				class="btn btn-danger"
+				type="button"
+				data-attr:disabled="$formState !== ''"
+				data-sure-title={ ctxi18n.T(ctx, "members.delete_confirm") }
+				data-sure-message={ ctxi18n.T(ctx, "confirm.destructive_message") }
+				data-sure-submit={ ctxi18n.T(ctx, "actions.delete") }
+				data-on:click={fmt.Sprintf("@delete('/groups/%s/members/%s')", data.GroupID, data.Member.ID)}
+			>
+				@icons.Trash2(templ.Attributes{"class": "icon"})
+				<span>{ ctxi18n.T(ctx, "actions.delete") }</span>
+			</button>
+		</div>
+	}
 	<h2>{ ctxi18n.T(ctx, "members.events") }</h2>
 	<table class="table">
 		<thead>
