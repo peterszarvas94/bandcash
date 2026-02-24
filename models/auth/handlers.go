@@ -32,12 +32,7 @@ func New() *Auth {
 
 // LoginPage shows the login form
 func (a *Auth) LoginPage(c echo.Context) error {
-	utils.EnsureClientID(c)
-	data := AuthPageData{
-		Title:       ctxi18n.T(c.Request().Context(), "auth.login_title"),
-		Breadcrumbs: []utils.Crumb{{Label: ctxi18n.T(c.Request().Context(), "auth.login")}},
-	}
-	return utils.RenderComponent(c, LoginPage(data))
+	return c.Redirect(http.StatusFound, "/")
 }
 
 // LoginRequest handles login form submission (sends magic link)

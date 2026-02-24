@@ -34,6 +34,9 @@
     color: var(--error-color);
   }
 
+  .w-fit {
+    width: fit-content;
+  }
 
   @media (max-width: 900px) {
     .two-col {

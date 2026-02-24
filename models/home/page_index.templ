@@ -5,28 +5,42 @@ import (
 
 	appi18n "bandcash/internal/i18n"
 	"bandcash/internal/utils"
+	icons "bandcash/models/shared/icons"
 	shared "bandcash/models/shared"
 )
 
 templ HomeIndex(data HomeData) {
-	<!doctype html>
-	<html lang={appi18n.LocaleCode(ctx)}>
+	<!DOCTYPE html>
+	<html lang={ appi18n.LocaleCode(ctx) }>
 		@shared.Head(data.Title)
 		<body>
-			<div data-signals={templ.JSONString(map[string]any{"csrf": utils.CSRFToken(ctx)})} data-init="@get('/sse')"></div>
+			<div data-signals={ templ.JSONString(map[string]any{"csrf": utils.CSRFToken(ctx), "authError": "", "formData": map[string]any{"email": "", "lang": data.CurrentLang}}) } data-init="@get('/sse')"></div>
 			@shared.Notifications()
 			<main id="app" class="single-col">
-				<h1>{data.Title}</h1>
-				<p>{ctxi18n.T(ctx, "home.tagline")}</p>
-				<div class="row">
+				<h1>{ data.Title }</h1>
+				<p>{ ctxi18n.T(ctx, "home.tagline") }</p>
+				<form class="form" data-on:change="@post('/settings/language')">
+					@shared.LanguageSelect("home-lang", data.CurrentLang)
+				</form>
+				if !data.UserLoggedIn {
+					<form class="form pt" data-on:submit="@post('/auth/login')">
+						<div class="field">
+							<label>{ ctxi18n.T(ctx, "auth.email") } <span class="required-mark">*</span></label>
+							<input type="email" class="w-fit" data-bind="formData.email" placeholder={ ctxi18n.T(ctx, "auth.email_placeholder") }/>
+							<div data-show="$authError !== ''" class="color-error" data-text="$authError"></div>
+						</div>
+						<button type="submit" class="btn btn-primary">
+							@icons.Send(templ.Attributes{"class": "icon"})
+							<span>{ ctxi18n.T(ctx, "auth.send_link") }</span>
+						</button>
+					</form>
+				}
+				<div class="row pt">
 					if data.UserLoggedIn {
-						<a class="btn" href="/dashboard">{ctxi18n.T(ctx, "nav.dashboard")}</a>
-					} else {
-						<a class="btn" href="/auth/login">{ctxi18n.T(ctx, "auth.login")}</a>
+						<a class="btn" href="/dashboard">{ ctxi18n.T(ctx, "nav.dashboard") }</a>
 					}
-					<a class="btn" href="/language">{ctxi18n.T(ctx, "settings.language")}</a>
 					if utils.Env().AppEnv == "development" {
-						<a class="btn" href="/dev">{ctxi18n.T(ctx, "dev.title")}</a>
+						<a class="btn" href="/dev">{ ctxi18n.T(ctx, "dev.title") }</a>
 					}
 				</div>
 			</main>
