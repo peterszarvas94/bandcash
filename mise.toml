@@ -6,7 +6,7 @@ go = "1.26.0"
 "github:pressly/goose" = "3.26.0"
 "github:axllent/mailpit" = "v1.27.8"
 golangci-lint = "2.9.0"
-ruby = "3.3.10"
+ruby = "3.4.2"
 "gem:kamal" = "2.10.1"
 
 [tasks]
