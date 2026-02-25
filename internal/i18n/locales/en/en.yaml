@@ -61,6 +61,7 @@ en:
   settings:
     title: "Settings"
     language: "Language"
+    account: "Account"
     notifications:
       language_saved: "Language saved."
   language:
@@ -156,6 +157,7 @@ en:
   groups:
     title: "Groups"
     actions: "Group actions"
+    details: "Group Details"
     viewers: "Viewers"
     read_only: "Viewer access"
     admin: "Admin"

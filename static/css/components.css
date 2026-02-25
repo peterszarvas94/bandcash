@@ -29,23 +29,43 @@
       width: 1%;
       white-space: nowrap;
     }
-  }
 
-  .table-sticky-actions th[data-actions-col],
-  .table-sticky-actions td[data-actions-col] {
-    position: sticky;
-    right: 0;
-    z-index: 1;
-    background: var(--page-bg);
-  }
+    &.table-sticky-actions {
+      th[data-actions-col],
+      td[data-actions-col] {
+        position: sticky;
+        right: 0;
+        z-index: 1;
+        background: var(--page-bg);
+      }
 
-  .table-sticky-actions th[data-actions-col] {
-    z-index: 3;
-    box-shadow: -1px 0 0 var(--border-color);
-  }
+      th[data-actions-col] {
+        z-index: 3;
+        box-shadow: -1px 0 0 var(--border-color);
+      }
 
-  .table-sticky-actions td[data-actions-col] {
-    box-shadow: -1px 0 0 var(--border-color);
+      td[data-actions-col] {
+        box-shadow: -1px 0 0 var(--border-color);
+      }
+
+      @media (max-width: 1020px) {
+        th[data-actions-col],
+        td[data-actions-col] {
+          padding-left: 0.25rem;
+          padding-right: 0.25rem;
+        }
+
+        td[data-actions-col] .row {
+          gap: 0.25rem;
+        }
+
+        .btn-icon {
+          min-width: 2rem;
+          min-height: 2rem;
+          width: 2rem;
+        }
+      }
+    }
   }
 
   .btn {
@@ -274,6 +294,37 @@
       border-left: var(--border) solid var(--border-color);
       padding-left: calc(var(--space) * 2);
       align-self: stretch;
+    }
+
+    @media (max-width: 900px) {
+      grid-template-columns: 1fr;
+
+      > aside {
+        border-left: 0;
+        padding-left: 0;
+      }
+    }
+  }
+
+  .section {
+    display: grid;
+    gap: calc(var(--space) * 1.5);
+    margin-bottom: calc(var(--space) * 3);
+
+    > header {
+      display: flex;
+      align-items: center;
+      gap: var(--space);
+      padding-bottom: calc(var(--space) * 1);
+
+      > h2 {
+        line-height: 1.4;
+      }
+    }
+
+    > div {
+      display: grid;
+      gap: var(--space);
     }
   }
 
@@ -601,22 +652,6 @@
   }
 
   @media (max-width: 1020px) {
-    .table-sticky-actions th[data-actions-col],
-    .table-sticky-actions td[data-actions-col] {
-      padding-left: 0.25rem;
-      padding-right: 0.25rem;
-    }
-
-    .table-sticky-actions td[data-actions-col] .row {
-      gap: 0.25rem;
-    }
-
-    .table-sticky-actions .btn-icon {
-      min-width: 2rem;
-      min-height: 2rem;
-      width: 2rem;
-    }
-
     .app-shell {
       grid-template-columns: minmax(0, 1fr);
       grid-template-areas:

@@ -24,7 +24,28 @@ templ GroupPage(data GroupPageData) {
 }
 
 templ GroupMain(data GroupPageData) {
-	<div class="event-details pt">
+	@shared.Section(ctxi18n.T(ctx, "groups.details"), GroupDetailsContent(data))
+	if data.IsAdmin {
+		<div class="row row-wrap">
+			<button class="btn" type="button" data-attr:disabled="$formState !== ''" data-on:click="$formState = 'edit'; $errors = {name: ''}">@icons.Pencil(templ.Attributes{"class": "icon"})<span>{ ctxi18n.T(ctx, "groups.edit") }</span></button>
+			<button
+				class="btn btn-danger"
+				type="button"
+				data-attr:disabled="$formState !== ''"
+				data-sure-title={ ctxi18n.T(ctx, "groups.delete_confirm") }
+				data-sure-message={ ctxi18n.T(ctx, "confirm.destructive_message") }
+				data-sure-submit={ ctxi18n.T(ctx, "groups.delete") }
+				data-on:click={ fmt.Sprintf("@post('/groups/%s/delete')", data.Group.ID) }
+			>
+				@icons.Trash2(templ.Attributes{"class": "icon"})
+				<span>{ ctxi18n.T(ctx, "groups.delete") }</span>
+			</button>
+		</div>
+	}
+}
+
+templ GroupDetailsContent(data GroupPageData) {
+	<div class="event-details">
 		<div class="field">
 			<label>{ ctxi18n.T(ctx, "groups.admin") }</label>
 			<p>{ data.Admin.Email }</p>
@@ -44,23 +65,6 @@ templ GroupMain(data GroupPageData) {
 			<p>{ fmt.Sprintf("%d", data.TotalAmount) }</p>
 		</div>
 	</div>
-	if data.IsAdmin {
-		<div class="row row-wrap">
-			<button class="btn" type="button" data-attr:disabled="$formState !== ''" data-on:click="$formState = 'edit'; $errors = {name: ''}">@icons.Pencil(templ.Attributes{"class": "icon"})<span>{ ctxi18n.T(ctx, "groups.edit") }</span></button>
-			<button
-				class="btn btn-danger"
-				type="button"
-				data-attr:disabled="$formState !== ''"
-				data-sure-title={ ctxi18n.T(ctx, "groups.delete_confirm") }
-				data-sure-message={ ctxi18n.T(ctx, "confirm.destructive_message") }
-				data-sure-submit={ ctxi18n.T(ctx, "groups.delete") }
-				data-on:click={ fmt.Sprintf("@post('/groups/%s/delete')", data.Group.ID) }
-			>
-				@icons.Trash2(templ.Attributes{"class": "icon"})
-				<span>{ ctxi18n.T(ctx, "groups.delete") }</span>
-			</button>
-		</div>
-	}
 }
 
 templ GroupSidebar(data GroupPageData) {

@@ -25,7 +25,11 @@ templ GroupsPage(data GroupsPageData) {
 
 templ GroupsMain(data GroupsPageData) {
 	<p class="text-muted">{ ctxi18n.T(ctx, "groups.subtitle") }</p>
-	<h2>{ ctxi18n.T(ctx, "groups.admin_list") }</h2>
+	@shared.Section(ctxi18n.T(ctx, "groups.admin_list"), AdminGroupsContent(data))
+	@shared.Section(ctxi18n.T(ctx, "groups.viewer_list"), ViewerGroupsContent(data))
+}
+
+templ AdminGroupsContent(data GroupsPageData) {
 	<table class="table table-sticky-actions">
 		<thead>
 			<tr>
@@ -62,7 +66,9 @@ templ GroupsMain(data GroupsPageData) {
 			}
 		</tbody>
 	</table>
-	<h2>{ ctxi18n.T(ctx, "groups.viewer_list") }</h2>
+}
+
+templ ViewerGroupsContent(data GroupsPageData) {
 	<table class="table table-sticky-actions">
 		<thead><tr><th>{ ctxi18n.T(ctx, "fields.name") }</th><th data-actions-col></th></tr></thead>
 		<tbody>

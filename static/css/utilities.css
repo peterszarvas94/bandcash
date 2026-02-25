@@ -37,15 +37,4 @@
   .w-fit {
     width: fit-content;
   }
-
-  @media (max-width: 900px) {
-    .two-col {
-      grid-template-columns: 1fr;
-    }
-
-    .two-col > aside {
-      border-left: 0;
-      padding-left: 0;
-    }
-  }
 }

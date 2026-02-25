@@ -119,12 +119,12 @@ templ AppPrimaryNav(active string) {
 			}
 			if utils.Env().AppEnv == "development" {
 				if active == "dev" {
-					<a class="btn app-nav-link active" href="/dev/notifications">
+					<a class="btn app-nav-link active" href="/dev">
 						@icons.Terminal(templ.Attributes{"class": "icon"})
 						<span>{ ctxi18n.T(ctx, "dev.title") }</span>
 					</a>
 				} else {
-					<a class="btn app-nav-link" href="/dev/notifications">
+					<a class="btn app-nav-link" href="/dev">
 						@icons.Terminal(templ.Attributes{"class": "icon"})
 						<span>{ ctxi18n.T(ctx, "dev.title") }</span>
 					</a>
@@ -150,12 +150,12 @@ templ PublicPrimaryNav(active string) {
 			}
 			if utils.Env().AppEnv == "development" {
 				if active == "dev" {
-					<a class="btn app-nav-link active" href="/dev/notifications">
+					<a class="btn app-nav-link active" href="/dev">
 						@icons.Terminal(templ.Attributes{"class": "icon"})
 						<span>{ ctxi18n.T(ctx, "dev.title") }</span>
 					</a>
 				} else {
-					<a class="btn app-nav-link" href="/dev/notifications">
+					<a class="btn app-nav-link" href="/dev">
 						@icons.Terminal(templ.Attributes{"class": "icon"})
 						<span>{ ctxi18n.T(ctx, "dev.title") }</span>
 					</a>
@@ -172,37 +172,15 @@ templ DevPrimaryNav(active string) {
 				@icons.Landmark(templ.Attributes{"class": "icon"})
 				<span>{ ctxi18n.T(ctx, "nav.home") }</span>
 			</a>
-			if active == "notifications" {
-				<a class="btn app-nav-link active" href="/dev/notifications">
-					@icons.Bell(templ.Attributes{"class": "icon"})
-					<span>{ ctxi18n.T(ctx, "dev.notifications.title") }</span>
+			if active == "dev" {
+				<a class="btn app-nav-link active" href="/dev">
+					@icons.Terminal(templ.Attributes{"class": "icon"})
+					<span>{ ctxi18n.T(ctx, "dev.title") }</span>
 				</a>
 			} else {
-				<a class="btn app-nav-link" href="/dev/notifications">
-					@icons.Bell(templ.Attributes{"class": "icon"})
-					<span>{ ctxi18n.T(ctx, "dev.notifications.title") }</span>
-				</a>
-			}
-			if active == "rate-limit" {
-				<a class="btn app-nav-link active" href="/dev/rate-limit">
-					@icons.Triangle(templ.Attributes{"class": "icon"})
-					<span>{ ctxi18n.T(ctx, "dev.ratelimit.title") }</span>
-				</a>
-			} else {
-				<a class="btn app-nav-link" href="/dev/rate-limit">
-					@icons.Triangle(templ.Attributes{"class": "icon"})
-					<span>{ ctxi18n.T(ctx, "dev.ratelimit.title") }</span>
-				</a>
-			}
-			if active == "body-limit" {
-				<a class="btn app-nav-link active" href="/dev/body-limit">
-					@icons.Shield(templ.Attributes{"class": "icon"})
-					<span>{ ctxi18n.T(ctx, "dev.bodylimit.title") }</span>
-				</a>
-			} else {
-				<a class="btn app-nav-link" href="/dev/body-limit">
-					@icons.Shield(templ.Attributes{"class": "icon"})
-					<span>{ ctxi18n.T(ctx, "dev.bodylimit.title") }</span>
+				<a class="btn app-nav-link" href="/dev">
+					@icons.Terminal(templ.Attributes{"class": "icon"})
+					<span>{ ctxi18n.T(ctx, "dev.title") }</span>
 				</a>
 			}
 		</div>
@@ -228,7 +206,7 @@ templ GroupPrimaryNav(groupID string, active string) {
 				</a>
 			}
 			if utils.Env().AppEnv == "development" {
-				<a class="btn app-nav-link" href="/dev/notifications">
+				<a class="btn app-nav-link" href="/dev">
 					@icons.Terminal(templ.Attributes{"class": "icon"})
 					<span>{ ctxi18n.T(ctx, "dev.title") }</span>
 				</a>
@@ -369,26 +347,6 @@ templ GroupTabs(groupID string, activeTab string) {
 	</nav>
 }
 
-templ DevTabs(activeTab string) {
-	<nav class="tabs" aria-label={ ctxi18n.T(ctx, "dev.title") }>
-		if activeTab == "notifications" {
-			<a class="tab tab-active" href="/dev/notifications">{ ctxi18n.T(ctx, "dev.notifications.title") }</a>
-		} else {
-			<a class="tab" href="/dev/notifications">{ ctxi18n.T(ctx, "dev.notifications.title") }</a>
-		}
-		if activeTab == "rate-limit" {
-			<a class="tab tab-active" href="/dev/rate-limit">{ ctxi18n.T(ctx, "dev.ratelimit.title") }</a>
-		} else {
-			<a class="tab" href="/dev/rate-limit">{ ctxi18n.T(ctx, "dev.ratelimit.title") }</a>
-		}
-		if activeTab == "body-limit" {
-			<a class="tab tab-active" href="/dev/body-limit">{ ctxi18n.T(ctx, "dev.bodylimit.title") }</a>
-		} else {
-			<a class="tab" href="/dev/body-limit">{ ctxi18n.T(ctx, "dev.bodylimit.title") }</a>
-		}
-	</nav>
-}
-
 templ TwoCol(id string, main templ.Component, sidebar templ.Component) {
 	<div id={ id } class="two-col">
 		<main id="app">
@@ -398,4 +356,15 @@ templ TwoCol(id string, main templ.Component, sidebar templ.Component) {
 			@sidebar
 		</aside>
 	</div>
+}
+
+templ Section(title string, children templ.Component) {
+	<section class="section">
+		<header>
+			<h2>{ title }</h2>
+		</header>
+		<div>
+			@children
+		</div>
+	</section>
 }

@@ -1,17 +1,11 @@
 package settings
 
 import (
-	ctxi18n "github.com/invopop/ctxi18n/i18n"
-
 	shared "bandcash/models/shared"
-	icons "bandcash/models/shared/icons"
 )
 
 templ LanguageForm(currentLang string) {
-	<form class="form" data-on:submit="@post('/settings/language')">
+	<form class="form" data-on:change="@post('/settings/language')">
 		@shared.LanguageSelect("lang", currentLang)
-		<div class="row">
-			<button class="btn btn-primary" type="submit">@icons.Save(templ.Attributes{"class": "icon"})<span>{ ctxi18n.T(ctx, "actions.save") }</span></button>
-		</div>
 	</form>
 }

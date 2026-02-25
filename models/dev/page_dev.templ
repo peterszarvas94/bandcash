@@ -1,0 +1,77 @@
+package dev
+
+import (
+	ctxi18n "github.com/invopop/ctxi18n/i18n"
+
+	appi18n "bandcash/internal/i18n"
+	"bandcash/internal/utils"
+	shared "bandcash/models/shared"
+)
+
+templ DevPage() {
+	<!DOCTYPE html>
+	<html lang={ appi18n.LocaleCode(ctx) }>
+		@shared.Head(ctxi18n.T(ctx, "dev.title"))
+		<body>
+			<div data-signals={ templ.JSONString(map[string]any{"csrf": utils.CSRFToken(ctx), "errors": map[string]any{"name": ""}, "formData": map[string]any{"name": ""}}) } data-init="@get('/sse')"></div>
+			@shared.Notifications()
+			@shared.AppShellMainOnly("dev-page", []utils.Crumb{{Label: ctxi18n.T(ctx, "dev.title")}}, "", shared.DevPrimaryNav("dev"), DevMain())
+		</body>
+	</html>
+}
+
+templ DevMain() {
+	@shared.Section(ctxi18n.T(ctx, "dev.notifications.title"), NotificationsContent())
+	@shared.Section(ctxi18n.T(ctx, "dev.ratelimit.title"), RateLimitContent())
+	@shared.Section(ctxi18n.T(ctx, "dev.bodylimit.title"), BodyLimitContent())
+}
+
+templ NotificationsContent() {
+	<form class="form" data-on:submit="@post('/dev/notifications/inline')">
+		<div class="field">
+			<label>{ ctxi18n.T(ctx, "dev.notifications.required_field") }</label>
+			<div class="row">
+				<input type="text" data-bind="formData.name" placeholder={ ctxi18n.T(ctx, "dev.notifications.type_anything") }/>
+				<button type="submit" class="btn btn-primary">{ ctxi18n.T(ctx, "dev.notifications.submit_inline") }</button>
+			</div>
+			<div data-show="$errors && $errors.name" class="color-error" data-text="$errors.name"></div>
+		</div>
+	</form>
+	<div class="row row-wrap">
+		<button type="button" class="btn btn-info" data-on:click="@post('/dev/notifications/info')">{ ctxi18n.T(ctx, "dev.notifications.info") }</button>
+		<button type="button" class="btn btn-success" data-on:click="@post('/dev/notifications/success')">{ ctxi18n.T(ctx, "dev.notifications.success") }</button>
+		<button type="button" class="btn btn-warning" data-on:click="@post('/dev/notifications/warning')">{ ctxi18n.T(ctx, "dev.notifications.warning") }</button>
+		<button type="button" class="btn btn-danger" data-on:click="@post('/dev/notifications/error')">{ ctxi18n.T(ctx, "dev.notifications.error") }</button>
+	</div>
+}
+
+templ RateLimitContent() {
+	<p>{ ctxi18n.T(ctx, "dev.ratelimit.description") }</p>
+	<div class="row row-wrap">
+		<button id="spam-health" type="button" class="btn btn-info">{ ctxi18n.T(ctx, "dev.ratelimit.spam_health") }</button>
+		<button id="spam-auth" type="button" class="btn btn-warning">{ ctxi18n.T(ctx, "dev.ratelimit.spam_auth") }</button>
+	</div>
+	<input id="rate-limit-csrf" type="hidden" value={ utils.CSRFToken(ctx) }/>
+	<span id="rate-limit-msg-start-health" hidden>{ ctxi18n.T(ctx, "dev.ratelimit.start_health") }</span>
+	<span id="rate-limit-msg-done-health" hidden>{ ctxi18n.T(ctx, "dev.ratelimit.done_health") }</span>
+	<span id="rate-limit-msg-start-auth" hidden>{ ctxi18n.T(ctx, "dev.ratelimit.start_auth") }</span>
+	<span id="rate-limit-msg-done-auth" hidden>{ ctxi18n.T(ctx, "dev.ratelimit.done_auth") }</span>
+	<pre id="rate-limit-output">{ ctxi18n.T(ctx, "dev.ratelimit.ready") }</pre>
+}
+
+templ BodyLimitContent() {
+	<p>{ ctxi18n.T(ctx, "dev.bodylimit.description") }</p>
+	<div class="row row-wrap">
+		<button id="body-limit-global-ok" type="button" class="btn btn-success">{ ctxi18n.T(ctx, "dev.bodylimit.global_ok") }</button>
+		<button id="body-limit-global-big" type="button" class="btn btn-danger">{ ctxi18n.T(ctx, "dev.bodylimit.global_big") }</button>
+		<button id="body-limit-auth-ok" type="button" class="btn btn-info">{ ctxi18n.T(ctx, "dev.bodylimit.auth_ok") }</button>
+		<button id="body-limit-auth-big" type="button" class="btn btn-warning">{ ctxi18n.T(ctx, "dev.bodylimit.auth_big") }</button>
+	</div>
+	<input id="body-limit-csrf" type="hidden" value={ utils.CSRFToken(ctx) }/>
+	<span id="body-limit-msg-global-ok" hidden>{ ctxi18n.T(ctx, "dev.bodylimit.msg_global_ok") }</span>
+	<span id="body-limit-msg-global-big" hidden>{ ctxi18n.T(ctx, "dev.bodylimit.msg_global_big") }</span>
+	<span id="body-limit-msg-auth-ok" hidden>{ ctxi18n.T(ctx, "dev.bodylimit.msg_auth_ok") }</span>
+	<span id="body-limit-msg-auth-big" hidden>{ ctxi18n.T(ctx, "dev.bodylimit.msg_auth_big") }</span>
+	<span id="body-limit-msg-result" hidden>{ ctxi18n.T(ctx, "dev.bodylimit.msg_result") }</span>
+	<pre id="body-limit-output">{ ctxi18n.T(ctx, "dev.bodylimit.ready") }</pre>
+}

@@ -61,6 +61,7 @@ hu:
   settings:
     title: "Beállítások"
     language: "Nyelv"
+    account: "Fiók"
     notifications:
       language_saved: "Nyelv mentve."
   language:
@@ -156,6 +157,7 @@ hu:
   groups:
     title: "Csoportok"
     actions: "Csoport műveletek"
+    details: "Csoport részletei"
     viewers: "Nézők"
     read_only: "Nézői hozzáférés"
     admin: "Admin"

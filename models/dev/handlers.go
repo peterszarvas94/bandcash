@@ -19,23 +19,9 @@ type devSignals struct {
 
 var devErrorFields = []string{"name"}
 
-func (h *DevNotifications) Index(c echo.Context) error {
+func (h *DevNotifications) DevPageHandler(c echo.Context) error {
 	utils.EnsureClientID(c)
-	return utils.RenderComponent(c, Index())
-}
-
-func (h *DevNotifications) RateLimitPage(c echo.Context) error {
-	utils.EnsureClientID(c)
-	return utils.RenderComponent(c, RateLimit())
-}
-
-func (h *DevNotifications) BodyLimitPage(c echo.Context) error {
-	utils.EnsureClientID(c)
-	return utils.RenderComponent(c, BodyLimit())
-}
-
-func (h *DevNotifications) Redirect(c echo.Context) error {
-	return c.Redirect(http.StatusFound, "/dev/notifications")
+	return utils.RenderComponent(c, DevPage())
 }
 
 func (h *DevNotifications) TestInline(c echo.Context) error {

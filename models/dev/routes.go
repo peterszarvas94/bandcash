@@ -13,10 +13,7 @@ func RegisterRoutes(e *echo.Echo) {
 	}
 
 	h := &DevNotifications{}
-	e.GET("/dev", h.Redirect)
-	e.GET("/dev/notifications", h.Index)
-	e.GET("/dev/rate-limit", h.RateLimitPage)
-	e.GET("/dev/body-limit", h.BodyLimitPage)
+	e.GET("/dev", h.DevPageHandler)
 	e.POST("/dev/body-limit/global", h.BodyLimitGlobalTest)
 	e.POST("/dev/body-limit/auth", h.BodyLimitAuthTest, middleware.AuthBodyLimit())
 	e.POST("/dev/notifications/inline", h.TestInline)
