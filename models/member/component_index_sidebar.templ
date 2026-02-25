@@ -38,14 +38,25 @@ templ MemberIndexSidebar(data MembersData) {
 					data-on:click={fmt.Sprintf("@put('/groups/%s/members/' + $editingId)", data.GroupID)}
 				>
 					@icons.Save(templ.Attributes{"class": "icon"})<span>{ctxi18n.T(ctx, "members.update")}</span>
-					</button>
-					<button
-						class="btn"
-						type="button"
-						data-on:click="$formState = ''; $editingId = 0; $formData = {name: '', description: ''}; $errors = {name: '', description: ''}"
-					>
+				</button>
+				<button
+					class="btn btn-danger"
+					type="button"
+					data-show="$formState === 'edit'"
+					data-sure-title={ ctxi18n.T(ctx, "members.delete_confirm") }
+					data-sure-message={ ctxi18n.T(ctx, "confirm.destructive_message") }
+					data-sure-submit={ ctxi18n.T(ctx, "actions.delete") }
+					data-on:click={fmt.Sprintf("@delete('/groups/%s/members/' + $editingId)", data.GroupID)}
+				>
+					@icons.Trash2(templ.Attributes{"class": "icon"})<span>{ctxi18n.T(ctx, "actions.delete")}</span>
+				</button>
+				<button
+					class="btn"
+					type="button"
+					data-on:click="$formState = ''; $editingId = 0; $formData = {name: '', description: ''}; $errors = {name: '', description: ''}"
+				>
 					@icons.X(templ.Attributes{"class": "icon"})<span>{ctxi18n.T(ctx, "actions.cancel")}</span>
-					</button>
+				</button>
 				</div>
 			</form>
 		</div>

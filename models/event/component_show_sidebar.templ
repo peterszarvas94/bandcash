@@ -114,14 +114,25 @@ templ EventShowSidebar(data EventData) {
 					>
 					@icons.Save(templ.Attributes{"class": "icon"})<span>{ctxi18n.T(ctx, "participants.add")}</span>
 					</button>
-					<button
-						class="btn btn-primary"
-						type="button"
-						data-show="$formState === 'edit'"
-						data-on:click={ fmt.Sprintf("@put('/groups/%s/events/%s/participants/' + $editingId)", data.GroupID, data.Event.ID) }
-					>
+				<button
+					class="btn btn-primary"
+					type="button"
+					data-show="$formState === 'edit'"
+					data-on:click={ fmt.Sprintf("@put('/groups/%s/events/%s/participants/' + $editingId)", data.GroupID, data.Event.ID) }
+				>
 					@icons.Save(templ.Attributes{"class": "icon"})<span>{ctxi18n.T(ctx, "participants.update")}</span>
-					</button>
+				</button>
+				<button
+					class="btn btn-danger"
+					type="button"
+					data-show="$formState === 'edit'"
+					data-sure-title={ ctxi18n.T(ctx, "participants.delete_confirm") }
+					data-sure-message={ ctxi18n.T(ctx, "confirm.destructive_message") }
+					data-sure-submit={ ctxi18n.T(ctx, "actions.delete") }
+					data-on:click={ fmt.Sprintf("@delete('/groups/%s/events/%s/participants/' + $editingId)", data.GroupID, data.Event.ID) }
+				>
+					@icons.Trash2(templ.Attributes{"class": "icon"})<span>{ctxi18n.T(ctx, "actions.delete")}</span>
+				</button>
 					<button
 						class="btn"
 						type="button"

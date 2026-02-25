@@ -39,30 +39,18 @@ templ MemberIndexMain(data MembersData) {
 					if data.IsAdmin {
 						<td data-actions-col>
 							<div class="row">
-								<button
-									class="btn btn-icon"
-									type="button"
-									aria-label={ ctxi18n.T(ctx, "actions.edit") }
-									title={ ctxi18n.T(ctx, "actions.edit") }
-									data-attr:disabled="$formState !== ''"
-									data-on:click={ fmt.Sprintf("$formState = 'edit'; $editingId = %q; $formData = {name: el.closest('tr').dataset.memberName, description: el.closest('tr').dataset.memberDescription}", member.ID) }
-								>
-									@icons.Pencil(templ.Attributes{"class": "icon"})
-								</button>
-								<button
-									class="btn btn-danger btn-icon"
-									aria-label={ ctxi18n.T(ctx, "actions.delete") }
-									title={ ctxi18n.T(ctx, "actions.delete") }
-									data-attr:disabled="$formState !== ''"
-									data-sure-title={ ctxi18n.T(ctx, "members.delete_confirm") }
-									data-sure-message={ ctxi18n.T(ctx, "confirm.destructive_message") }
-									data-sure-submit={ ctxi18n.T(ctx, "actions.delete") }
-									data-on:click={ fmt.Sprintf("@delete('/groups/%s/members/%s')", data.GroupID, member.ID) }
-								>
-									@icons.Trash2(templ.Attributes{"class": "icon"})
-								</button>
-							</div>
-						</td>
+							<button
+								class="btn btn-icon"
+								type="button"
+								aria-label={ ctxi18n.T(ctx, "actions.edit") }
+								title={ ctxi18n.T(ctx, "actions.edit") }
+								data-attr:disabled="$formState !== ''"
+								data-on:click={ fmt.Sprintf("$formState = 'edit'; $editingId = %q; $formData = {name: el.closest('tr').dataset.memberName, description: el.closest('tr').dataset.memberDescription}", member.ID) }
+							>
+								@icons.Pencil(templ.Attributes{"class": "icon"})
+							</button>
+						</div>
+					</td>
 					}
 				</tr>
 			}

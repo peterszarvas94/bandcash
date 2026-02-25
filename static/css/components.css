@@ -145,7 +145,6 @@
   }
 
   .btn-primary,
-  .btn-danger,
   .btn-success,
   .btn-info,
   .btn-warning {
@@ -155,7 +154,6 @@
   }
 
   .btn-primary:not(:disabled):not([disabled]):hover,
-  .btn-danger:not(:disabled):not([disabled]):hover,
   .btn-success:not(:disabled):not([disabled]):hover,
   .btn-info:not(:disabled):not([disabled]):hover,
   .btn-warning:not(:disabled):not([disabled]):hover {
@@ -163,11 +161,24 @@
   }
 
   .btn-primary:focus-visible,
-  .btn-danger:focus-visible,
   .btn-success:focus-visible,
   .btn-info:focus-visible,
   .btn-warning:focus-visible {
     outline-color: var(--link-color);
+  }
+
+  .btn-danger {
+    color: var(--error-color);
+    border-color: var(--error-color);
+    background: var(--page-bg);
+  }
+
+  .btn-danger:not(:disabled):not([disabled]):hover {
+    background: var(--btn-danger-hover-bg);
+  }
+
+  .btn-danger:focus-visible {
+    outline-color: var(--error-color);
   }
 
   .tabs {
