@@ -21,7 +21,7 @@ if err == null && is_object(parsed) {
 [sinks.better_stack]
 type = "http"
 inputs = ["parse_bandcash_json"]
-uri = "https://s1758045.eu-fsn-3.betterstackdata.com/"
+uri = "${BETTER_STACK_URI}"
 method = "post"
 compression = "gzip"
 auth.strategy = "bearer"

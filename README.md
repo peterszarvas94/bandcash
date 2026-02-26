@@ -25,6 +25,7 @@ Open `http://localhost:2222`.
 ```dotenv
 KAMAL_REGISTRY_USERNAME=
 KAMAL_REGISTRY_PASSWORD=
+BETTER_STACK_URI=
 BETTER_STACK_SOURCE_TOKEN=
 
 APP_ENV=production
@@ -95,6 +96,7 @@ mise run mailpit      # local SMTP catch-all UI (http://localhost:8025)
 - Agent-specific implementation guidance lives in `AGENTS.md`.
 - Local dev env loads from committed `.kamal/secrets.dev`.
 - Production env and deploy secrets come from `.kamal/secrets`.
+- Better Stack sink URI and token are both loaded from secrets.
 
 ## License
 

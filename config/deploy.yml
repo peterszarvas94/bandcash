@@ -61,4 +61,5 @@ accessories:
       - bandcash_data:/storage:ro
     env:
       secret:
+        - BETTER_STACK_URI
         - BETTER_STACK_SOURCE_TOKEN

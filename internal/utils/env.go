@@ -24,6 +24,7 @@ type EnvConfig struct {
 	SMTPUser         string
 	SMTPPass         string
 	EmailFrom        string
+	BetterStackURI   string
 }
 
 var (
@@ -46,6 +47,7 @@ type envVars struct {
 	SMTPUser         string `env:"SMTP_USERNAME" validate:"required_if=AppEnv production"`
 	SMTPPass         string `env:"SMTP_PASSWORD" validate:"required_if=AppEnv production"`
 	EmailFrom        string `env:"EMAIL_FROM" validate:"required_if=AppEnv production"`
+	BetterStackURI   string `env:"BETTER_STACK_URI"`
 }
 
 func Env() *EnvConfig {
@@ -85,6 +87,7 @@ func Env() *EnvConfig {
 			SMTPUser:         parsed.SMTPUser,
 			SMTPPass:         parsed.SMTPPass,
 			EmailFrom:        parsed.EmailFrom,
+			BetterStackURI:   parsed.BetterStackURI,
 		}
 	})
 	return envCfg

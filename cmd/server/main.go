@@ -32,8 +32,8 @@ func main() {
 	routesFlag := flag.Bool("routes", false, "Print routes and exit")
 	flag.Parse()
 
-	utils.LoadAppDotEnv()
 	utils.SetupLogger()
+	utils.LoadAppDotEnv()
 
 	e := echo.New()
 	e.HideBanner = true
