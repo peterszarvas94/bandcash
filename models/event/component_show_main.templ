@@ -47,10 +47,7 @@ templ EventShowMain(data EventData) {
 				class="btn btn-danger"
 				type="button"
 				data-attr:disabled="$eventFormState !== '' || $formState !== ''"
-				data-sure-title={ ctxi18n.T(ctx, "events.delete_confirm") }
-				data-sure-message={ ctxi18n.T(ctx, "confirm.destructive_message") }
-				data-sure-submit={ ctxi18n.T(ctx, "actions.delete") }
-				data-on:click={ fmt.Sprintf("@delete('/groups/%s/events/%s')", data.GroupID, data.Event.ID) }
+				data-on:click={ fmt.Sprintf("if (sure(%s, %s, %s, %s)) { @delete('/groups/%s/events/%s') }", utils.JSONString(ctxi18n.T(ctx, "events.delete_confirm")), utils.JSONString(ctxi18n.T(ctx, "confirm.destructive_message")), utils.JSONString(ctxi18n.T(ctx, "actions.delete")), utils.JSONString(ctxi18n.T(ctx, "actions.cancel")), data.GroupID, data.Event.ID) }
 			>
 				@icons.Trash2(templ.Attributes{"class": "icon"})
 				<span>{ ctxi18n.T(ctx, "actions.delete") }</span>

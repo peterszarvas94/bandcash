@@ -26,10 +26,7 @@ templ LanguageMain(data SettingsData) {
 	if data.UserEmail != "" {
 		<div class="row pb row-wrap">
 			<span class="text-muted">{ ctxi18n.T(ctx, "nav.logged_in_as") } { data.UserEmail }</span>
-			<form data-on:submit="@post('/auth/logout')">
-				<input type="hidden" data-bind="csrf"/>
-				<button class="btn" type="submit">@icons.LogOut(templ.Attributes{"class": "icon"})<span>{ ctxi18n.T(ctx, "auth.logout") }</span></button>
-			</form>
+			<button class="btn" type="button" data-on:click="@post('/auth/logout')">@icons.LogOut(templ.Attributes{"class": "icon"})<span>{ ctxi18n.T(ctx, "auth.logout") }</span></button>
 		</div>
 	}
 	@LanguageForm(data.CurrentLang)
