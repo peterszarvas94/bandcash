@@ -85,10 +85,17 @@ templ AdminGroupsContent(data GroupsPageData) {
 
 templ ViewerGroupsContent(data GroupsPageData) {
 	<table class="table table-sticky-actions">
-		<thead><tr><th>{ ctxi18n.T(ctx, "fields.name") }</th><th data-actions-col></th></tr></thead>
+		<thead>
+			<tr>
+				<th>{ ctxi18n.T(ctx, "fields.name") }</th>
+				if len(data.ReaderGroups) > 0 {
+					<th data-actions-col></th>
+				}
+			</tr>
+		</thead>
 		<tbody>
 			if len(data.ReaderGroups) == 0 {
-				<tr><td colspan="2">{ ctxi18n.T(ctx, "groups.viewer_none") }</td></tr>
+				<tr><td>{ ctxi18n.T(ctx, "groups.viewer_none") }</td></tr>
 			} else {
 				for _, group := range data.ReaderGroups {
 					<tr>
@@ -139,16 +146,20 @@ templ GroupsSidebar(data GroupsPageData) {
 	<div data-show="$formState === 'edit' && $selectedGroupId !== ''" style="display: none" class="pb">
 		<div class="row justify-between">
 			<h3>{ ctxi18n.T(ctx, "groups.edit") }</h3>
-			<button
-				type="button"
-				class="btn btn-danger"
-				data-on:click={ fmt.Sprintf("if (sure(%s, %s, %s, %s)) { @post('/groups/%s/delete') }", utils.JSONString(ctxi18n.T(ctx, "groups.delete_confirm")), utils.JSONString(ctxi18n.T(ctx, "confirm.destructive_message")), utils.JSONString(ctxi18n.T(ctx, "groups.delete")), utils.JSONString(ctxi18n.T(ctx, "actions.cancel")), "$selectedGroupId") }
-			>
-				@icons.Trash2(templ.Attributes{"class": "icon"})
-				<span>{ ctxi18n.T(ctx, "actions.delete") }</span>
-			</button>
+			<div class="row row-wrap">
+				<form data-on:submit="@post('/groups/' + $selectedGroupId + '/delete')">
+					<button
+						type="button"
+						class="btn btn-danger"
+						data-on:click={ fmt.Sprintf("sure(el, %s, %s, %s, %s)", utils.JSONString(ctxi18n.T(ctx, "groups.delete_confirm")), utils.JSONString(ctxi18n.T(ctx, "confirm.destructive_message")), utils.JSONString(ctxi18n.T(ctx, "groups.delete")), utils.JSONString(ctxi18n.T(ctx, "actions.cancel"))) }
+					>
+						@icons.Trash2(templ.Attributes{"class": "icon"})
+						<span>{ ctxi18n.T(ctx, "actions.delete") }</span>
+					</button>
+				</form>
+			</div>
 		</div>
-		<form class="form" data-on:submit={ fmt.Sprintf("@put('/groups/%s')", "$selectedGroupId") }>
+		<form class="form" data-on:submit="@put('/groups/' + $selectedGroupId)">
 			<div class="field">
 				<label>{ ctxi18n.T(ctx, "groups.name") } <span class="required-mark">*</span></label>
 				<input type="text" data-bind="formData.name" placeholder={ ctxi18n.T(ctx, "groups.name_placeholder") }/>
@@ -170,14 +181,16 @@ templ GroupsSidebar(data GroupsPageData) {
 		<h3>{ ctxi18n.T(ctx, "groups.leave") }</h3>
 		<p>{ ctxi18n.T(ctx, "groups.leave_confirm") }</p>
 		<div class="sidebar-actions">
-			<button
-				type="button"
-				class="btn btn-danger"
-				data-on:click={ fmt.Sprintf("if (sure(%s, %s, %s, %s)) { @post('/groups/%s/leave') }", utils.JSONString(ctxi18n.T(ctx, "groups.leave_confirm")), utils.JSONString(ctxi18n.T(ctx, "confirm.leave_message")), utils.JSONString(ctxi18n.T(ctx, "groups.leave")), utils.JSONString(ctxi18n.T(ctx, "actions.cancel")), "$selectedGroupId") }
-			>
-				@icons.SquareArrowRightExit(templ.Attributes{"class": "icon"})
-				<span>{ ctxi18n.T(ctx, "groups.leave") }</span>
-			</button>
+			<form data-on:submit="@post('/groups/' + $selectedGroupId + '/leave')">
+				<button
+					type="button"
+					class="btn btn-danger"
+					data-on:click={ fmt.Sprintf("sure(el, %s, %s, %s, %s)", utils.JSONString(ctxi18n.T(ctx, "groups.leave_confirm")), utils.JSONString(ctxi18n.T(ctx, "confirm.leave_message")), utils.JSONString(ctxi18n.T(ctx, "groups.leave")), utils.JSONString(ctxi18n.T(ctx, "actions.cancel"))) }
+				>
+					@icons.SquareArrowRightExit(templ.Attributes{"class": "icon"})
+					<span>{ ctxi18n.T(ctx, "groups.leave") }</span>
+				</button>
+			</form>
 			<button class="btn" type="button" data-on:click="$formState = ''; $selectedGroupId = ''">
 				@icons.X(templ.Attributes{"class": "icon"})
 				<span>{ ctxi18n.T(ctx, "actions.cancel") }</span>

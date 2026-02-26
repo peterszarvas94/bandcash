@@ -105,8 +105,9 @@ func main() {
 
 	// Graceful shutdown
 	go func() {
-		slog.Info("server starting", "port", cfg.Port)
-		err := e.Start(fmt.Sprintf(":%d", cfg.Port))
+		addr := fmt.Sprintf("%s:%d", cfg.Host, cfg.Port)
+		slog.Info("server starting", "host", cfg.Host, "port", cfg.Port)
+		err := e.Start(addr)
 		if err != nil {
 			slog.Info("server stopped", "err", err)
 		}

@@ -29,6 +29,7 @@ BETTER_STACK_URI=
 BETTER_STACK_SOURCE_TOKEN=
 
 APP_ENV=production
+HOST=0.0.0.0
 PORT=2222
 URL=https://bandcash.app
 DB_PATH=/storage/sqlite.db
@@ -76,7 +77,7 @@ mise run sqlc         # regenerate sqlc output
 mise run goose-up     # apply migrations
 mise run goose-status # migration status
 mise run seed         # seed local data
-mise run mailpit      # local SMTP catch-all UI (http://localhost:8025)
+mise run mailpit      # SMTP/UI exposed on 0.0.0.0 (ports 1025/8025)
 ```
 
 ## Project Layout
@@ -97,6 +98,8 @@ mise run mailpit      # local SMTP catch-all UI (http://localhost:8025)
 - Local dev env loads from committed `.kamal/secrets.dev`.
 - Production env and deploy secrets come from `.kamal/secrets`.
 - Better Stack sink URI and token are both loaded from secrets.
+- For Tailscale access, keep `HOST=0.0.0.0` and set `URL` to your reachable tailnet URL/IP.
+- For LAN/Tailscale SMTP, set `SMTP_HOST` to that server (default `localhost` works only for local Mailpit).
 
 ## License
 

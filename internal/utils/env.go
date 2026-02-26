@@ -10,6 +10,7 @@ import (
 )
 
 type EnvConfig struct {
+	Host             string
 	Port             int
 	LogLevel         slog.Level
 	LogFolder        string
@@ -34,6 +35,7 @@ var (
 
 type envVars struct {
 	AppEnv           string `env:"APP_ENV" validate:"required,oneof=development production"`
+	Host             string `env:"HOST" envDefault:"0.0.0.0"`
 	Port             int    `env:"PORT" validate:"required,gte=1,lte=65535"`
 	LogLevel         string `env:"LOG_LEVEL" validate:"required,oneof=debug info warn error"`
 	LogFolder        string `env:"LOG_FOLDER" validate:"required"`
@@ -73,6 +75,7 @@ func Env() *EnvConfig {
 		}
 
 		envCfg = &EnvConfig{
+			Host:             parsed.Host,
 			Port:             parsed.Port,
 			LogLevel:         logLevel,
 			LogFolder:        parsed.LogFolder,
