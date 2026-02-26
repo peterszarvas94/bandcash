@@ -146,8 +146,25 @@ func New(logFile io.Writer) *slog.Logger {
 }
 
 func SetupLogger() {
-	cfg := Env()
-	logFilePath := filepath.Join(cfg.LogFolder, fmt.Sprintf("%s.log", cfg.LogPrefix))
+	logFolder := strings.TrimSpace(os.Getenv("LOG_FOLDER"))
+	if logFolder == "" {
+		logFolder = "logs"
+	}
+
+	logPrefix := strings.TrimSpace(os.Getenv("LOG_PREFIX"))
+	if logPrefix == "" {
+		logPrefix = "bandcash"
+	}
+
+	logLevel := slog.LevelInfo
+	rawLogLevel := strings.ToLower(strings.TrimSpace(os.Getenv("LOG_LEVEL")))
+	if rawLogLevel != "" {
+		if parsed, err := parseLogLevel(rawLogLevel); err == nil {
+			logLevel = parsed
+		}
+	}
+
+	logFilePath := filepath.Join(logFolder, fmt.Sprintf("%s.log", logPrefix))
 
 	err := os.MkdirAll(filepath.Dir(logFilePath), 0755)
 	if err != nil {
@@ -167,7 +184,18 @@ func SetupLogger() {
 		os.Exit(1)
 	}
 
-	log := New(logFile)
+	log := slog.New(&MultiHandler{handlers: []slog.Handler{
+		NewColoredHandler(os.Stdout, logLevel),
+		slog.NewJSONHandler(logFile, &slog.HandlerOptions{
+			Level: logLevel,
+			ReplaceAttr: func(_ []string, a slog.Attr) slog.Attr {
+				if a.Key == slog.MessageKey {
+					a.Key = "message"
+				}
+				return a
+			},
+		}),
+	}})
 	slog.SetDefault(log)
 }
 

@@ -31,21 +31,20 @@ volumes:
   - bandcash_data:/storage
 
 env:
-  clear:
-    APP_ENV: production
-    PORT: "2222"
-    URL: https://bandcash.app
-    DB_PATH: /storage/sqlite.db
-    LOG_LEVEL: info
-    LOG_FOLDER: /storage/logs
-    LOG_PREFIX: bandcash
-    DISABLE_SIGNUP: true
-    DISABLE_RATE_LIMIT: "false"
   secret:
-    - SMTP_HOST
-    - SMTP_PORT
+    - APP_ENV
+    - PORT
+    - URL
+    - DB_PATH
+    - LOG_LEVEL
+    - LOG_FOLDER
+    - LOG_PREFIX
+    - DISABLE_SIGNUP
+    - DISABLE_RATE_LIMIT
     - SMTP_USERNAME
     - SMTP_PASSWORD
+    - SMTP_HOST
+    - SMTP_PORT
     - EMAIL_FROM
 
 accessories:

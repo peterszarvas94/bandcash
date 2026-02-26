@@ -1,12 +1,12 @@
 package utils
 
 import (
-	"fmt"
+	"errors"
 	"log/slog"
-	"os"
-	"strconv"
 	"strings"
 	"sync"
+
+	"github.com/caarlos0/env/v11"
 )
 
 type EnvConfig struct {
@@ -31,90 +31,76 @@ var (
 	envCfg  *EnvConfig
 )
 
+type envVars struct {
+	AppEnv           string `env:"APP_ENV" validate:"required,oneof=development production"`
+	Port             int    `env:"PORT" validate:"required,gte=1,lte=65535"`
+	LogLevel         string `env:"LOG_LEVEL" validate:"required,oneof=debug info warn error"`
+	LogFolder        string `env:"LOG_FOLDER" validate:"required"`
+	LogPrefix        string `env:"LOG_PREFIX" validate:"required"`
+	DBPath           string `env:"DB_PATH" validate:"required"`
+	URL              string `env:"URL" validate:"required_if=AppEnv production"`
+	DisableSignup    bool   `env:"DISABLE_SIGNUP" envDefault:"false"`
+	DisableRateLimit bool   `env:"DISABLE_RATE_LIMIT" envDefault:"false"`
+	SMTPHost         string `env:"SMTP_HOST" validate:"required_if=AppEnv production"`
+	SMTPPort         int    `env:"SMTP_PORT" validate:"required_if=AppEnv production,omitempty,gt=0"`
+	SMTPUser         string `env:"SMTP_USERNAME" validate:"required_if=AppEnv production"`
+	SMTPPass         string `env:"SMTP_PASSWORD" validate:"required_if=AppEnv production"`
+	EmailFrom        string `env:"EMAIL_FROM" validate:"required_if=AppEnv production"`
+}
+
 func Env() *EnvConfig {
 	envOnce.Do(func() {
+		var parsed envVars
+
+		err := env.Parse(&parsed)
+		if err != nil {
+			panic("invalid env vars: " + err.Error())
+		}
+
+		parsed.AppEnv = strings.ToLower(strings.TrimSpace(parsed.AppEnv))
+		parsed.LogLevel = strings.ToLower(strings.TrimSpace(parsed.LogLevel))
+
+		err = validate.Struct(parsed)
+		if err != nil {
+			panic("invalid env vars: " + err.Error())
+		}
+
+		logLevel, err := parseLogLevel(parsed.LogLevel)
+		if err != nil {
+			panic("invalid env vars: " + err.Error())
+		}
+
 		envCfg = &EnvConfig{
-			Port:             getEnvInt("PORT"),
-			LogLevel:         getEnvLogLevel("LOG_LEVEL"),
-			LogFolder:        getEnvString("LOG_FOLDER"),
-			LogPrefix:        getEnvString("LOG_PREFIX"),
-			DBPath:           getEnvString("DB_PATH"),
-			URL:              getEnvString("URL"),
-			AppEnv:           getAppEnv("APP_ENV"),
-			DisableSignup:    getEnvBoolDefault("DISABLE_SIGNUP", false),
-			DisableRateLimit: getEnvBoolDefault("DISABLE_RATE_LIMIT", false),
-			SMTPHost:         getEnvString("SMTP_HOST"),
-			SMTPPort:         getEnvInt("SMTP_PORT"),
-			SMTPUser:         getDevOptionalEnvString("SMTP_USERNAME", "APP_ENV"),
-			SMTPPass:         getDevOptionalEnvString("SMTP_PASSWORD", "APP_ENV"),
-			EmailFrom:        getEnvString("EMAIL_FROM"),
+			Port:             parsed.Port,
+			LogLevel:         logLevel,
+			LogFolder:        parsed.LogFolder,
+			LogPrefix:        parsed.LogPrefix,
+			DBPath:           parsed.DBPath,
+			URL:              parsed.URL,
+			AppEnv:           parsed.AppEnv,
+			DisableSignup:    parsed.DisableSignup,
+			DisableRateLimit: parsed.DisableRateLimit,
+			SMTPHost:         parsed.SMTPHost,
+			SMTPPort:         parsed.SMTPPort,
+			SMTPUser:         parsed.SMTPUser,
+			SMTPPass:         parsed.SMTPPass,
+			EmailFrom:        parsed.EmailFrom,
 		}
 	})
 	return envCfg
 }
 
-func getDevOptionalEnvString(key string, appEnvKey string) string {
-	appEnv := getAppEnv(appEnvKey)
-	if appEnv == "development" {
-		return strings.TrimSpace(os.Getenv(key))
-	}
-	return getEnvString(key)
-}
-
-func getEnvString(key string) string {
-	v := strings.TrimSpace(os.Getenv(key))
-	if v == "" {
-		panic(fmt.Sprintf("Missing required %s env var: %s", key, key))
-	}
-	return v
-}
-
-func getEnvInt(key string) int {
-	v := getEnvString(key)
-	i, err := strconv.Atoi(v)
-	if err != nil {
-		panic(fmt.Sprintf("Invalid %s env var %s: %q. Must be an integer.", key, key, v))
-	}
-	return i
-}
-
-func getEnvBoolDefault(key string, defaultValue bool) bool {
-	v := strings.TrimSpace(os.Getenv(key))
-	if v == "" {
-		return defaultValue
-	}
-	b, err := strconv.ParseBool(v)
-	if err != nil {
-		panic(fmt.Sprintf("Invalid env var %s: %q. Must be a boolean.", key, v))
-	}
-	return b
-}
-
-func getEnvLogLevel(key string) slog.Level {
-	v := getEnvString(key)
+func parseLogLevel(v string) (slog.Level, error) {
 	switch v {
-	case "debug", "DEBUG":
-		return slog.LevelDebug
-	case "info", "INFO":
-		return slog.LevelInfo
-	case "warn", "WARN":
-		return slog.LevelWarn
-	case "error", "ERROR":
-		return slog.LevelError
+	case "debug":
+		return slog.LevelDebug, nil
+	case "info":
+		return slog.LevelInfo, nil
+	case "warn":
+		return slog.LevelWarn, nil
+	case "error":
+		return slog.LevelError, nil
 	default:
-		panic(fmt.Sprintf("Invalid env var %s: %q. Allowed values: debug, info, warn, error", key, v))
+		return 0, errors.New("LOG_LEVEL must be one of: debug, info, warn, error")
 	}
-}
-
-func getAppEnv(key string) string {
-	e := getEnvString(key)
-	switch e {
-	case "development", "DEVELOPMENT":
-		return "development"
-	case "production", "PRODUCTION":
-		return "production"
-	default:
-		panic(fmt.Sprintf("Invalid env var %s: %q. Allowed values: development, production", key, e))
-	}
-
 }

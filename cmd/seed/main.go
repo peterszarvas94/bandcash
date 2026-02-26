@@ -8,8 +8,6 @@ import (
 	"os"
 	"time"
 
-	"github.com/joho/godotenv"
-
 	"bandcash/internal/db"
 	"bandcash/internal/utils"
 )
@@ -40,9 +38,7 @@ func main() {
 
 	flag.Parse()
 
-	if err := godotenv.Load(); err != nil {
-		slog.Info("env: no .env file loaded", "err", err)
-	}
+	utils.LoadAppDotEnv()
 
 	dbPath := utils.Env().DBPath
 	if *flagDBPath != "" {
