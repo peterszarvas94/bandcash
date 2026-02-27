@@ -27,11 +27,13 @@ templ GroupMain(data GroupPageData) {
 	@shared.Section(ctxi18n.T(ctx, "groups.details"), GroupDetailsContent(data))
 	if data.IsAdmin {
 		<div class="row row-wrap detail-actions">
-			@shared.LoadingActionButton("btn", "$formState = 'edit'; $errors = {name: ''}", "$formState !== ''", ctxi18n.T(ctx, "groups.edit"), icons.IconPencil)
-			@shared.DestructiveActionButton(
+			@shared.ActionButton("btn", "$formState = 'edit'; $errors = {name: ''}", "$formState !== '' || $_fetching", ctxi18n.T(ctx, "groups.edit"), icons.IconPencil)
+			@shared.ActionButton(
+				"btn btn-danger",
 				fmt.Sprintf("sure(%s, %s, %s, %s, () => @post('/groups/%s/delete'))", utils.JSONString(ctxi18n.T(ctx, "groups.delete_confirm")), utils.JSONString(ctxi18n.T(ctx, "confirm.destructive_message")), utils.JSONString(ctxi18n.T(ctx, "groups.delete")), utils.JSONString(ctxi18n.T(ctx, "actions.cancel")), data.Group.ID),
 				"$formState !== '' || $_fetching",
 				ctxi18n.T(ctx, "groups.delete"),
+				icons.IconTrash2,
 			)
 		</div>
 	}
@@ -57,6 +59,7 @@ templ GroupDetailsRows(data GroupPageData) {
 }
 
 templ GroupSidebar(data GroupPageData) {
+	<div data-signals={ templ.JSONString(map[string]any{"sidebarLoadingAction": ""}) }>
 	if data.IsAdmin {
 		<div data-show="$formState === 'edit'" style="display: none" class="pb">
 			<form class="form" data-on:submit={ fmt.Sprintf("@put('/groups/%s')", data.Group.ID) } data-indicator:_fetching>
@@ -66,10 +69,11 @@ templ GroupSidebar(data GroupPageData) {
 					<div data-show="$errors && $errors.name" class="color-error" data-text="$errors.name"></div>
 				</div>
 				<div class="sidebar-actions">
-					@shared.LoadingSubmitButton("btn btn-primary", ctxi18n.T(ctx, "groups.update"), icons.IconSave)
-					@shared.LoadingActionButton("btn", "$formState = ''; $formData = {name: "+utils.JSONString(data.Group.Name)+"}; $errors = {name: ''}", "$_fetching", ctxi18n.T(ctx, "actions.cancel"), icons.IconX)
+					@shared.SidebarLoadingSubmitButton("btn btn-primary", ctxi18n.T(ctx, "groups.update"), icons.IconSave, "group-update")
+					@shared.ActionButton("btn", "$formState = ''; $formData = {name: "+utils.JSONString(data.Group.Name)+"}; $errors = {name: ''}", "$_fetching", ctxi18n.T(ctx, "actions.cancel"), icons.IconX)
 				</div>
 			</form>
 		</div>
 	}
+	</div>
 }

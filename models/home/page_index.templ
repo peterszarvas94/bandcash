@@ -14,13 +14,13 @@ templ HomeIndex(data HomeData) {
 	<html lang={ appi18n.LocaleCode(ctx) }>
 		@shared.Head(data.Title)
 		<body>
-			<div data-signals={ templ.JSONString(map[string]any{"csrf": utils.CSRFToken(ctx), "authError": "", "authServerError": "", "authState": "form", "submittedEmail": "", "submittedEmailMasked": "", "resendRemaining": 0, "formData": map[string]any{"email": "", "lang": data.CurrentLang}}) } data-init="@get('/sse')"></div>
+			<div data-signals={ templ.JSONString(map[string]any{"csrf": utils.CSRFToken(ctx), "_langFetching": false, "authError": "", "authServerError": "", "authState": "form", "submittedEmail": "", "submittedEmailMasked": "", "resendRemaining": 0, "formData": map[string]any{"email": "", "lang": data.CurrentLang}}) } data-init="@get('/sse')"></div>
 			@shared.Notifications()
 			<main id="app" class="single-col">
 				<h1>{ data.Title }</h1>
 				<p>{ ctxi18n.T(ctx, "home.tagline") }</p>
-				<form class="form" data-on:change="@post('/settings/language')">
-					@shared.LanguageSelect("home-lang", data.CurrentLang)
+				<form class="form" data-on:change="@post('/settings/language')" data-indicator:_langFetching>
+					@shared.LanguageSelect("home-lang", data.CurrentLang, "_langFetching")
 				</form>
 				<div data-show="$authState === 'form'">
 					<form class="form pt" data-on:submit="@post('/auth/login')" data-indicator:_fetching>

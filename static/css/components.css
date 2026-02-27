@@ -37,6 +37,7 @@
         right: 0;
         z-index: 1;
         background: var(--page-bg);
+        padding: 0 calc(var(--space) * 0.5);
       }
 
       th[data-actions-col] {
@@ -201,14 +202,14 @@
     color: var(--error-color);
     border-color: var(--error-color);
     background: var(--page-bg);
-  }
 
-  .btn-danger:not(:disabled):not([disabled]):hover {
-    background: var(--btn-danger-hover-bg);
-  }
+    &:not(:disabled):not([disabled]):hover {
+      background: var(--btn-danger-hover-bg);
+    }
 
-  .btn-danger:focus-visible {
-    outline-color: var(--error-color);
+    &:focus-visible {
+      outline-color: var(--error-color);
+    }
   }
 
   .tabs {

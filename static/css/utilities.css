@@ -45,4 +45,16 @@
   .w-fit {
     width: fit-content;
   }
+
+  .btn-sm {
+    min-height: 2rem;
+    padding: calc(var(--space) * 0.5) calc(var(--space) * 1.25);
+    font-size: 0.8125rem;
+  }
+
+  .btn-sm.btn-icon {
+    min-width: 2rem;
+    width: 2rem;
+    padding: 0;
+  }
 }

@@ -99,7 +99,7 @@ func EventIndexMain(data EventsData) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = shared.LoadingIconActionButton("btn btn-icon", "$formState = 'add'; $editingId = 0; $formData = {title: '', time: '', description: '', amount: 0}; $errors = {title: '', time: '', description: '', amount: ''}", "$formState !== ''", ctxi18n.T(ctx, "events.add"), ctxi18n.T(ctx, "events.add"), icons.IconPlus).Render(ctx, templ_7745c5c3_Buffer)
+			templ_7745c5c3_Err = shared.IconActionButton("btn btn-sm btn-icon", "$formState = 'add'; $editingId = 0; $formData = {title: '', time: '', description: '', amount: 0}; $errors = {title: '', time: '', description: '', amount: ''}", "$formState !== '' || $_fetching", ctxi18n.T(ctx, "events.add"), ctxi18n.T(ctx, "events.add"), icons.IconPlus).Render(ctx, templ_7745c5c3_Buffer)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -239,7 +239,7 @@ func EventIndexMain(data EventsData) templ.Component {
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				templ_7745c5c3_Err = shared.LoadingIconActionButton("btn btn-icon", fmt.Sprintf("$formState = 'edit'; $editingId = %q; $formData = {title: el.closest('tr').dataset.eventTitle, time: el.closest('tr').dataset.eventTime, description: el.closest('tr').dataset.eventDescription, amount: Number(el.closest('tr').dataset.eventAmount)}", event.ID), "$formState !== ''", ctxi18n.T(ctx, "actions.edit"), ctxi18n.T(ctx, "actions.edit"), icons.IconPencil).Render(ctx, templ_7745c5c3_Buffer)
+				templ_7745c5c3_Err = shared.IconActionButton("btn btn-sm btn-icon", fmt.Sprintf("$formState = 'edit'; $editingId = %q; $formData = {title: el.closest('tr').dataset.eventTitle, time: el.closest('tr').dataset.eventTime, description: el.closest('tr').dataset.eventDescription, amount: Number(el.closest('tr').dataset.eventAmount)}", event.ID), "$formState !== '' || $_fetching", ctxi18n.T(ctx, "actions.edit"), ctxi18n.T(ctx, "actions.edit"), icons.IconPencil).Render(ctx, templ_7745c5c3_Buffer)
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}

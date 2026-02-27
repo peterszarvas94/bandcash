@@ -14,11 +14,13 @@ templ EventShowMain(data EventData) {
 	@shared.DetailTable(EventDetailsRows(data))
 	if data.IsAdmin {
 		<div class="row row-wrap detail-actions">
-			@shared.LoadingActionButton("btn", "$eventFormState = 'edit'; $errors = {title: '', time: '', description: '', amount: ''}", "$eventFormState !== '' || $formState !== ''", ctxi18n.T(ctx, "events.edit"), icons.IconPencil)
-			@shared.DestructiveActionButton(
+			@shared.ActionButton("btn", "$eventFormState = 'edit'; $errors = {title: '', time: '', description: '', amount: ''}", "$eventFormState !== '' || $formState !== '' || $_fetching", ctxi18n.T(ctx, "events.edit"), icons.IconPencil)
+			@shared.ActionButton(
+				"btn btn-danger",
 				fmt.Sprintf("sure(%s, %s, %s, %s, () => @delete('/groups/%s/events/%s'))", utils.JSONString(ctxi18n.T(ctx, "events.delete_confirm")), utils.JSONString(ctxi18n.T(ctx, "confirm.destructive_message")), utils.JSONString(ctxi18n.T(ctx, "actions.delete")), utils.JSONString(ctxi18n.T(ctx, "actions.cancel")), data.GroupID, data.Event.ID),
 				"$eventFormState !== '' || $formState !== '' || $_fetching",
 				ctxi18n.T(ctx, "actions.delete"),
+				icons.IconTrash2,
 			)
 		</div>
 	}
@@ -33,7 +35,7 @@ templ EventShowMain(data EventData) {
 				if data.IsAdmin {
 					<th data-actions-col>
 						<div class="row row-right">
-							@shared.LoadingIconActionButton("btn btn-icon", "$formState = 'add'; $editingId = ''; $calcPercent = 0; $formData = {memberId: '', memberName: '', amount: 0, expense: 0}; $errors = {memberId: '', amount: '', expense: ''}", "$formState !== '' || $eventFormState !== ''", ctxi18n.T(ctx, "participants.add"), ctxi18n.T(ctx, "participants.add"), icons.IconPlus)
+							@shared.LoadingIconActionButton("btn btn-sm btn-icon", "$formState = 'add'; $editingId = ''; $calcPercent = 0; $formData = {memberId: '', memberName: '', amount: 0, expense: 0}; $errors = {memberId: '', amount: '', expense: ''}", "$formState !== '' || $eventFormState !== ''", ctxi18n.T(ctx, "participants.add"), ctxi18n.T(ctx, "participants.add"), icons.IconPlus)
 						</div>
 					</th>
 				}
@@ -54,7 +56,7 @@ templ EventShowMain(data EventData) {
 					if data.IsAdmin {
 						<td class="text-right" data-actions-col>
 							<div class="row">
-							@shared.LoadingIconActionButton("btn btn-icon", fmt.Sprintf("$formState = 'edit'; $editingId = %q; $formData = {memberId: el.closest('tr').dataset.memberId, memberName: el.closest('tr').dataset.memberName, amount: Number(el.closest('tr').dataset.participantAmount), expense: Number(el.closest('tr').dataset.participantExpense)}", participant.ID), "$formState !== '' || $eventFormState !== ''", ctxi18n.T(ctx, "actions.edit"), ctxi18n.T(ctx, "actions.edit"), icons.IconPencil)
+							@shared.LoadingIconActionButton("btn btn-sm btn-icon", fmt.Sprintf("$formState = 'edit'; $editingId = %q; $formData = {memberId: el.closest('tr').dataset.memberId, memberName: el.closest('tr').dataset.memberName, amount: Number(el.closest('tr').dataset.participantAmount), expense: Number(el.closest('tr').dataset.participantExpense)}", participant.ID), "$formState !== '' || $eventFormState !== ''", ctxi18n.T(ctx, "actions.edit"), ctxi18n.T(ctx, "actions.edit"), icons.IconPencil)
 						</div>
 						</td>
 					}

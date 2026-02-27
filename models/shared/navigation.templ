@@ -1,6 +1,8 @@
 package shared
 
 import (
+	"fmt"
+
 	ctxi18n "github.com/invopop/ctxi18n/i18n"
 
 	"bandcash/internal/utils"
@@ -30,13 +32,16 @@ templ BreadcrumbTrail(crumbs []utils.Crumb) {
 	</nav>
 }
 
-templ LanguageSelect(id string, currentLang string) {
+templ LanguageSelect(id string, currentLang string, loadingSignal string) {
 	<div class="field">
 		<label for={ id }>{ ctxi18n.T(ctx, "settings.language") }</label>
-		<select id={ id } data-bind="formData.lang" class="w-fit">
-			<option value="en" selected?={ currentLang == "en" }>{ ctxi18n.T(ctx, "language.en") }</option>
-			<option value="hu" selected?={ currentLang == "hu" }>{ ctxi18n.T(ctx, "language.hu") }</option>
-		</select>
+		<div class="row row-wrap items-center">
+			<select id={ id } data-bind="formData.lang" class="w-fit">
+				<option value="en" selected?={ currentLang == "en" }>{ ctxi18n.T(ctx, "language.en") }</option>
+				<option value="hu" selected?={ currentLang == "hu" }>{ ctxi18n.T(ctx, "language.hu") }</option>
+			</select>
+			<span data-show={ fmt.Sprintf("$%s", loadingSignal) } style="display: none">@icons.LoaderCircle(templ.Attributes{"class": "icon icon-spin"})</span>
+		</div>
 	</div>
 }
 

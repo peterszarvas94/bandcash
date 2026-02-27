@@ -72,7 +72,7 @@ func MemberIndexMain(data MembersData) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = shared.LoadingIconActionButton("btn btn-icon", "$formState = 'add'; $editingId = 0; $formData = {name: '', description: ''}; $errors = {name: '', description: ''}", "$formState !== ''", ctxi18n.T(ctx, "members.add"), ctxi18n.T(ctx, "members.add"), icons.IconPlus).Render(ctx, templ_7745c5c3_Buffer)
+			templ_7745c5c3_Err = shared.IconActionButton("btn btn-sm btn-icon", "$formState = 'add'; $editingId = 0; $formData = {name: '', description: ''}; $errors = {name: '', description: ''}", "$formState !== '' || $_fetching", ctxi18n.T(ctx, "members.add"), ctxi18n.T(ctx, "members.add"), icons.IconPlus).Render(ctx, templ_7745c5c3_Buffer)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -160,7 +160,7 @@ func MemberIndexMain(data MembersData) templ.Component {
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				templ_7745c5c3_Err = shared.LoadingIconActionButton("btn btn-icon", fmt.Sprintf("$formState = 'edit'; $editingId = %q; $formData = {name: el.closest('tr').dataset.memberName, description: el.closest('tr').dataset.memberDescription}", member.ID), "$formState !== ''", ctxi18n.T(ctx, "actions.edit"), ctxi18n.T(ctx, "actions.edit"), icons.IconPencil).Render(ctx, templ_7745c5c3_Buffer)
+				templ_7745c5c3_Err = shared.IconActionButton("btn btn-sm btn-icon", fmt.Sprintf("$formState = 'edit'; $editingId = %q; $formData = {name: el.closest('tr').dataset.memberName, description: el.closest('tr').dataset.memberDescription}", member.ID), "$formState !== '' || $_fetching", ctxi18n.T(ctx, "actions.edit"), ctxi18n.T(ctx, "actions.edit"), icons.IconPencil).Render(ctx, templ_7745c5c3_Buffer)
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}

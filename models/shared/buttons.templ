@@ -1,21 +1,73 @@
 package shared
 
 import (
+	"fmt"
+
 	icons "bandcash/models/shared/icons"
 )
 
 templ LoadingSubmitButton(className string, label string, iconName icons.IconName) {
-	<button type="submit" class={ className } data-attr:disabled="$_fetching">
-		<span data-show="!$_fetching">@icons.Icon(iconName, templ.Attributes{"class": "icon"})</span>
-		<span data-show="$_fetching" style="display: none">@icons.LoaderCircle(templ.Attributes{"class": "icon icon-spin"})</span>
+	@LoadingSubmitButtonWithSignal(className, label, iconName, "_fetching")
+}
+
+templ LoadingSubmitButtonWithSignal(className string, label string, iconName icons.IconName, loadingSignal string) {
+	<button type="submit" class={ className } data-attr:disabled={ fmt.Sprintf("$%s", loadingSignal) }>
+		<span data-show={ fmt.Sprintf("!$%s", loadingSignal) }>@icons.Icon(iconName, templ.Attributes{"class": "icon"})</span>
+		<span data-show={ fmt.Sprintf("$%s", loadingSignal) } style="display: none">@icons.LoaderCircle(templ.Attributes{"class": "icon icon-spin"})</span>
 		<span>{ label }</span>
 	</button>
 }
 
 templ LoadingActionButton(className string, onClick string, disabledExpr string, label string, iconName icons.IconName) {
-	<button class={ className } type="button" data-indicator:_fetching data-attr:disabled={ disabledExpr } data-on:click={ onClick }>
-		<span data-show="!$_fetching">@icons.Icon(iconName, templ.Attributes{"class": "icon"})</span>
-		<span data-show="$_fetching" style="display: none">@icons.LoaderCircle(templ.Attributes{"class": "icon icon-spin"})</span>
+	@LoadingActionButtonWithSignal(className, onClick, disabledExpr, label, iconName, "_fetching")
+}
+
+templ LoadingActionButtonWithSignal(className string, onClick string, disabledExpr string, label string, iconName icons.IconName, loadingSignal string) {
+	<button { templ.Attributes{fmt.Sprintf("data-indicator:%s", loadingSignal): ""}... } class={ className } type="button" data-signals={ templ.JSONString(map[string]any{loadingSignal: false}) } data-attr:disabled={ disabledExpr } data-on:click={ onClick }>
+		<span data-show={ fmt.Sprintf("!$%s", loadingSignal) }>@icons.Icon(iconName, templ.Attributes{"class": "icon"})</span>
+		<span data-show={ fmt.Sprintf("$%s", loadingSignal) } style="display: none">@icons.LoaderCircle(templ.Attributes{"class": "icon icon-spin"})</span>
+		<span>{ label }</span>
+	</button>
+}
+
+templ ActionButton(className string, onClick string, disabledExpr string, label string, iconName icons.IconName) {
+	<button class={ className } type="button" data-attr:disabled={ disabledExpr } data-on:click={ onClick }>
+		@icons.Icon(iconName, templ.Attributes{"class": "icon"})
+		<span>{ label }</span>
+	</button>
+}
+
+templ SidebarLoadingSubmitButton(className string, label string, iconName icons.IconName, actionID string) {
+	<button
+		type="submit"
+		class={ className }
+		data-attr:disabled="$_fetching"
+		data-on:click={ fmt.Sprintf("$sidebarLoadingAction = %q", actionID) }
+	>
+		<span data-show={ fmt.Sprintf("!($_fetching && $sidebarLoadingAction === %q)", actionID) }>
+			@icons.Icon(iconName, templ.Attributes{"class": "icon"})
+		</span>
+		<span data-show={ fmt.Sprintf("$_fetching && $sidebarLoadingAction === %q", actionID) } style="display: none">
+			@icons.LoaderCircle(templ.Attributes{"class": "icon icon-spin"})
+		</span>
+		<span>{ label }</span>
+	</button>
+}
+
+templ SidebarLoadingActionButton(className string, onClick string, label string, iconName icons.IconName, actionID string) {
+	<button
+		class={ className }
+		type="button"
+		data-indicator:_fetching
+		data-attr:disabled="$_fetching"
+		data-on:click={ fmt.Sprintf("$sidebarLoadingAction = %q; %s", actionID, onClick) }
+	>
+		<span data-show={ fmt.Sprintf("!($_fetching && $sidebarLoadingAction === %q)", actionID) }>
+			@icons.Icon(iconName, templ.Attributes{"class": "icon"})
+		</span>
+		<span data-show={ fmt.Sprintf("$_fetching && $sidebarLoadingAction === %q", actionID) } style="display: none">
+			@icons.LoaderCircle(templ.Attributes{"class": "icon icon-spin"})
+		</span>
 		<span>{ label }</span>
 	</button>
 }
@@ -24,6 +76,12 @@ templ LoadingIconActionButton(className string, onClick string, disabledExpr str
 	<button class={ className } type="button" aria-label={ ariaLabel } title={ title } data-indicator:_fetching data-attr:disabled={ disabledExpr } data-on:click={ onClick }>
 		<span data-show="!$_fetching">@icons.Icon(iconName, templ.Attributes{"class": "icon"})</span>
 		<span data-show="$_fetching" style="display: none">@icons.LoaderCircle(templ.Attributes{"class": "icon icon-spin"})</span>
+	</button>
+}
+
+templ IconActionButton(className string, onClick string, disabledExpr string, ariaLabel string, title string, iconName icons.IconName) {
+	<button class={ className } type="button" aria-label={ ariaLabel } title={ title } data-attr:disabled={ disabledExpr } data-on:click={ onClick }>
+		@icons.Icon(iconName, templ.Attributes{"class": "icon"})
 	</button>
 }
 

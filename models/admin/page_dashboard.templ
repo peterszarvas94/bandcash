@@ -90,9 +90,9 @@ templ RecentUsersTable(users []RecentUserRow) {
 					<td data-actions-col>
 						<div class="row row-right">
 							if user.IsBanned {
-								@shared.LoadingActionButton("btn", fmt.Sprintf("@post('/admin/users/%s/unban')", user.ID), "$_fetching", ctxi18n.T(ctx, "admin.users.unban"), icons.IconCheck)
+								@shared.LoadingActionButton("btn btn-sm", fmt.Sprintf("@post('/admin/users/%s/unban')", user.ID), "$_fetching", ctxi18n.T(ctx, "admin.users.unban"), icons.IconCheck)
 							} else {
-								@shared.DestructiveActionButton(fmt.Sprintf("@post('/admin/users/%s/ban')", user.ID), "$_fetching", ctxi18n.T(ctx, "admin.users.ban"))
+								@shared.LoadingActionButton("btn btn-sm btn-danger", fmt.Sprintf("@post('/admin/users/%s/ban')", user.ID), "$_fetching", ctxi18n.T(ctx, "admin.users.ban"), icons.IconTrash2)
 							}
 						</div>
 					</td>

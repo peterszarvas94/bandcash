@@ -5,7 +5,7 @@ import (
 )
 
 templ LanguageForm(currentLang string) {
-	<form class="form" data-on:change="@post('/settings/language')">
-		@shared.LanguageSelect("lang", currentLang)
+	<form class="form" data-on:change="@post('/settings/language')" data-indicator:_fetching>
+		@shared.LanguageSelect("lang", currentLang, "_fetching")
 	</form>
 }

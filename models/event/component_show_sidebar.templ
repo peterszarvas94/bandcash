@@ -12,6 +12,7 @@ import (
 
 templ EventShowSidebar(data EventData) {
 	if data.IsAdmin {
+		<div data-signals={ templ.JSONString(map[string]any{"sidebarLoadingAction": ""}) }>
 		<div data-show="$eventFormState === 'edit'" style="display: none" class="pb">
 			<form class="form">
 				<div class="form-row">
@@ -37,18 +38,20 @@ templ EventShowSidebar(data EventData) {
 					<div data-show="$errors && $errors.amount" class="color-error" data-text="$errors.amount"></div>
 				</div>
 				<div class="sidebar-actions">
-					@shared.LoadingActionButton("btn btn-primary", fmt.Sprintf("@put('/groups/%s/events/%s')", data.GroupID, data.Event.ID), "$_fetching", ctxi18n.T(ctx, "events.update"), icons.IconSave)
-					@shared.LoadingActionButton("btn", "$eventFormState = ''; $eventFormData = {title: "+utils.JSONString(data.Event.Title)+", time: "+utils.JSONString(data.Event.Time)+", description: "+utils.JSONString(data.Event.Description)+", amount: "+fmt.Sprintf("%d", data.Event.Amount)+"}; $errors = {title: '', time: '', description: '', amount: ''}", "$_fetching", ctxi18n.T(ctx, "actions.cancel"), icons.IconX)
+					@shared.SidebarLoadingActionButton("btn btn-primary", fmt.Sprintf("@put('/groups/%s/events/%s')", data.GroupID, data.Event.ID), ctxi18n.T(ctx, "events.update"), icons.IconSave, "event-details-update")
+					@shared.ActionButton("btn", "$eventFormState = ''; $eventFormData = {title: "+utils.JSONString(data.Event.Title)+", time: "+utils.JSONString(data.Event.Time)+", description: "+utils.JSONString(data.Event.Description)+", amount: "+fmt.Sprintf("%d", data.Event.Amount)+"}; $errors = {title: '', time: '', description: '', amount: ''}", "$_fetching", ctxi18n.T(ctx, "actions.cancel"), icons.IconX)
 				</div>
 			</form>
 		</div>
 		<div data-show="$formState !== '' && $eventFormState === ''" style="display: none" class="pb">
 			<div class="row justify-between" data-show="$formState === 'edit'">
 				<h3>{ctxi18n.T(ctx, "participants.edit")}</h3>
-				@shared.DestructiveActionButton(
+				@shared.SidebarLoadingActionButton(
+					"btn btn-danger",
 					fmt.Sprintf("sure(%s, %s, %s, %s, () => @delete('/groups/%s/events/%s/participants/' + $editingId))", utils.JSONString(ctxi18n.T(ctx, "participants.delete_confirm")), utils.JSONString(ctxi18n.T(ctx, "confirm.destructive_message")), utils.JSONString(ctxi18n.T(ctx, "actions.delete")), utils.JSONString(ctxi18n.T(ctx, "actions.cancel")), data.GroupID, data.Event.ID),
-					"$_fetching",
 					ctxi18n.T(ctx, "actions.delete"),
+					icons.IconTrash2,
+					"participant-delete",
 				)
 			</div>
 			<form class="form">
@@ -70,7 +73,7 @@ templ EventShowSidebar(data EventData) {
 				<label>{ctxi18n.T(ctx, "participants.cut_amount")} <span class="required-mark">*</span></label>
 					<div class="row">
 						<input type="number" data-bind="formData.amount" step="1" style="flex: 1"/>
-						@shared.LoadingActionButton("btn", fmt.Sprintf("$calcPercent = $formData.amount > 0 ? Math.round($formData.amount / %d * 10000) / 100 : 0", data.Event.Amount), "false", ctxi18n.T(ctx, "participants.calc_percent"), icons.IconCalculator)
+						@shared.ActionButton("btn", fmt.Sprintf("$calcPercent = $formData.amount > 0 ? Math.round($formData.amount / %d * 10000) / 100 : 0", data.Event.Amount), "false", ctxi18n.T(ctx, "participants.calc_percent"), icons.IconCalculator)
 					</div>
 					<div data-show="$errors && $errors.amount" class="color-error" data-text="$errors.amount"></div>
 				</div>
@@ -78,7 +81,7 @@ templ EventShowSidebar(data EventData) {
 				<label>{ctxi18n.T(ctx, "participants.quick_calc")}</label>
 					<div class="row">
 					<input type="number" data-bind="calcPercent" step="0.01" min="0" placeholder={ctxi18n.T(ctx, "participants.quick_calc_placeholder")} style="flex: 1"/>
-						@shared.LoadingActionButton("btn", fmt.Sprintf("$formData.amount = Math.round(%d * $calcPercent / 100)", data.Event.Amount), "false", ctxi18n.T(ctx, "participants.calc_amount"), icons.IconCalculator)
+						@shared.ActionButton("btn", fmt.Sprintf("$formData.amount = Math.round(%d * $calcPercent / 100)", data.Event.Amount), "false", ctxi18n.T(ctx, "participants.calc_amount"), icons.IconCalculator)
 					</div>
 				</div>
 				<div>
@@ -91,11 +94,12 @@ templ EventShowSidebar(data EventData) {
 					<span data-text="$formData.amount + $formData.expense"></span>
 				</div>
 				<div class="sidebar-actions">
-					<span data-show="$formState === 'add'">@shared.LoadingActionButton("btn btn-primary", fmt.Sprintf("@post('/groups/%s/events/%s/participants')", data.GroupID, data.Event.ID), "$_fetching", ctxi18n.T(ctx, "participants.add"), icons.IconSave)</span>
-					<span data-show="$formState === 'edit'">@shared.LoadingActionButton("btn btn-primary", fmt.Sprintf("@put('/groups/%s/events/%s/participants/' + $editingId)", data.GroupID, data.Event.ID), "$_fetching", ctxi18n.T(ctx, "participants.update"), icons.IconSave)</span>
-					@shared.LoadingActionButton("btn", "$formState = ''; $editingId = ''; $calcPercent = 0; $formData = {memberId: '', memberName: '', amount: 0, expense: 0}; $errors = {memberId: '', amount: '', expense: ''}", "$_fetching", ctxi18n.T(ctx, "actions.cancel"), icons.IconX)
+					<span data-show="$formState === 'add'">@shared.SidebarLoadingActionButton("btn btn-primary", fmt.Sprintf("@post('/groups/%s/events/%s/participants')", data.GroupID, data.Event.ID), ctxi18n.T(ctx, "participants.add"), icons.IconSave, "participant-add")</span>
+					<span data-show="$formState === 'edit'">@shared.SidebarLoadingActionButton("btn btn-primary", fmt.Sprintf("@put('/groups/%s/events/%s/participants/' + $editingId)", data.GroupID, data.Event.ID), ctxi18n.T(ctx, "participants.update"), icons.IconSave, "participant-update")</span>
+					@shared.ActionButton("btn", "$formState = ''; $editingId = ''; $calcPercent = 0; $formData = {memberId: '', memberName: '', amount: 0, expense: 0}; $errors = {memberId: '', amount: '', expense: ''}", "$_fetching", ctxi18n.T(ctx, "actions.cancel"), icons.IconX)
 				</div>
 			</form>
+		</div>
 		</div>
 	}
 }

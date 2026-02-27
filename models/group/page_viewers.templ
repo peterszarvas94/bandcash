@@ -28,13 +28,13 @@ templ GroupViewersMain(data ViewersPageData) {
 		<thead>
 			<tr>
 				<th>{ ctxi18n.T(ctx, "auth.email") }</th>
-				if data.IsAdmin {
-					<th data-actions-col>
-						<div class="row row-right">
-							@shared.LoadingIconActionButton("btn btn-icon", "$formState = 'add'; $formData = {email: ''}", "$formState !== ''", ctxi18n.T(ctx, "groups.add_viewer"), ctxi18n.T(ctx, "groups.add_viewer"), icons.IconPlus)
-						</div>
-					</th>
-				}
+			if data.IsAdmin {
+				<th data-actions-col>
+					<div class="row row-right">
+						@shared.IconActionButton("btn btn-sm btn-icon", "$formState = 'add'; $formData = {email: ''}", "$formState !== '' || $_fetching", ctxi18n.T(ctx, "groups.add_viewer"), ctxi18n.T(ctx, "groups.add_viewer"), icons.IconPlus)
+					</div>
+				</th>
+			}
 			</tr>
 		</thead>
 		<tbody>
@@ -49,8 +49,8 @@ templ GroupViewersMain(data ViewersPageData) {
 					<td>{ viewer.Email }</td>
 					if data.IsAdmin {
 						<td data-actions-col>
-							@shared.LoadingIconActionButton(
-								"btn btn-danger btn-icon",
+							@shared.IconActionButton(
+								"btn btn-sm btn-danger btn-icon",
 								fmt.Sprintf("sure(%s, %s, %s, %s, () => @post('/groups/%s/viewers/%s/remove'))", utils.JSONString(ctxi18n.T(ctx, "groups.remove_viewer_confirm")), utils.JSONString(ctxi18n.T(ctx, "confirm.destructive_message")), utils.JSONString(ctxi18n.T(ctx, "actions.delete")), utils.JSONString(ctxi18n.T(ctx, "actions.cancel")), data.Group.ID, viewer.ID),
 								"$_fetching",
 								ctxi18n.T(ctx, "actions.delete"),
@@ -66,8 +66,8 @@ templ GroupViewersMain(data ViewersPageData) {
 					<td>{ invite.Email } <span class="text-muted">(pending)</span></td>
 					if data.IsAdmin {
 						<td data-actions-col>
-							@shared.LoadingIconActionButton(
-								"btn btn-danger btn-icon",
+							@shared.IconActionButton(
+								"btn btn-sm btn-danger btn-icon",
 								fmt.Sprintf("sure(%s, %s, %s, %s, () => @post('/groups/%s/invites/%s/remove'))", utils.JSONString(ctxi18n.T(ctx, "groups.cancel_invite_confirm")), utils.JSONString(ctxi18n.T(ctx, "confirm.destructive_message")), utils.JSONString(ctxi18n.T(ctx, "actions.delete")), utils.JSONString(ctxi18n.T(ctx, "actions.cancel")), data.Group.ID, invite.ID),
 								"$_fetching",
 								ctxi18n.T(ctx, "actions.delete"),
@@ -83,18 +83,20 @@ templ GroupViewersMain(data ViewersPageData) {
 }
 
 templ GroupViewersSidebar(data ViewersPageData) {
+	<div data-signals={ templ.JSONString(map[string]any{"sidebarLoadingAction": ""}) }>
 	if data.IsAdmin {
 		<div data-show="$formState !== ''" style="display: none" class="pb">
-			<form class="form" data-on:submit={ fmt.Sprintf("@post('/groups/%s/viewers')", data.Group.ID) } data-indicator:_fetching>
+		<form class="form" data-on:submit={ fmt.Sprintf("@post('/groups/%s/viewers')", data.Group.ID) } data-indicator:_fetching>
 				<div class="field">
 					<label>{ ctxi18n.T(ctx, "auth.email") } <span class="required-mark">*</span></label>
 					<input type="email" data-bind="formData.email" placeholder={ ctxi18n.T(ctx, "groups.viewer_email_placeholder") }/>
 				</div>
 				<div class="sidebar-actions">
-					@shared.LoadingSubmitButton("btn btn-primary", ctxi18n.T(ctx, "groups.add_viewer"), icons.IconSave)
-					@shared.LoadingActionButton("btn", "$formState = ''; $formData = {email: ''}", "$_fetching", ctxi18n.T(ctx, "actions.cancel"), icons.IconX)
+					@shared.SidebarLoadingSubmitButton("btn btn-primary", ctxi18n.T(ctx, "groups.add_viewer"), icons.IconSave, "viewer-add")
+					@shared.ActionButton("btn", "$formState = ''; $formData = {email: ''}", "$_fetching", ctxi18n.T(ctx, "actions.cancel"), icons.IconX)
 				</div>
 			</form>
 		</div>
 	}
+	</div>
 }

@@ -3,6 +3,7 @@ package dev
 import (
 	"fmt"
 	"net/http"
+	"strconv"
 	"strings"
 	"time"
 
@@ -95,7 +96,31 @@ func (h *DevNotifications) TestBodyLimitAuth(c echo.Context) error {
 }
 
 func (h *DevNotifications) TestSpinner(c echo.Context) error {
-	time.Sleep(1500 * time.Millisecond)
+	delay := 500
+	if raw := strings.TrimSpace(c.QueryParam("ms")); raw != "" {
+		parsed, err := strconv.Atoi(raw)
+		if err == nil && parsed >= 0 && parsed <= 10000 {
+			delay = parsed
+		}
+	}
+	time.Sleep(time.Duration(delay) * time.Millisecond)
+	return c.NoContent(http.StatusOK)
+}
+
+func (h *DevNotifications) TestMultiAction(c echo.Context) error {
+	action := c.Param("action")
+	time.Sleep(1200 * time.Millisecond)
+
+	utils.SSEHub.PatchSignals(c, map[string]any{
+		"multiActionBusy":   false,
+		"multiActionActive": "",
+	})
+
+	utils.Notify(c, "info", "Completed: "+action)
+	if err := h.patchNotifications(c); err != nil {
+		return c.NoContent(http.StatusInternalServerError)
+	}
+
 	return c.NoContent(http.StatusOK)
 }
 

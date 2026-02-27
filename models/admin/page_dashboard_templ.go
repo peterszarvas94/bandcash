@@ -417,12 +417,12 @@ func RecentUsersTable(users []RecentUserRow) templ.Component {
 				return templ_7745c5c3_Err
 			}
 			if user.IsBanned {
-				templ_7745c5c3_Err = shared.LoadingActionButton("btn", fmt.Sprintf("@post('/admin/users/%s/unban')", user.ID), "$_fetching", ctxi18n.T(ctx, "admin.users.unban"), icons.IconCheck).Render(ctx, templ_7745c5c3_Buffer)
+				templ_7745c5c3_Err = shared.LoadingActionButton("btn btn-sm", fmt.Sprintf("@post('/admin/users/%s/unban')", user.ID), "$_fetching", ctxi18n.T(ctx, "admin.users.unban"), icons.IconCheck).Render(ctx, templ_7745c5c3_Buffer)
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
 			} else {
-				templ_7745c5c3_Err = shared.DestructiveActionButton(fmt.Sprintf("@post('/admin/users/%s/ban')", user.ID), "$_fetching", ctxi18n.T(ctx, "admin.users.ban")).Render(ctx, templ_7745c5c3_Buffer)
+				templ_7745c5c3_Err = shared.LoadingActionButton("btn btn-sm btn-danger", fmt.Sprintf("@post('/admin/users/%s/ban')", user.ID), "$_fetching", ctxi18n.T(ctx, "admin.users.ban"), icons.IconTrash2).Render(ctx, templ_7745c5c3_Buffer)
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}

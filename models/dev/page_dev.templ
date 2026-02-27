@@ -5,8 +5,8 @@ import (
 
 	appi18n "bandcash/internal/i18n"
 	"bandcash/internal/utils"
-	icons "bandcash/models/shared/icons"
 	shared "bandcash/models/shared"
+	icons "bandcash/models/shared/icons"
 )
 
 templ DevPage() {
@@ -14,7 +14,7 @@ templ DevPage() {
 	<html lang={ appi18n.LocaleCode(ctx) }>
 		@shared.Head(ctxi18n.T(ctx, "dev.title"))
 		<body>
-			<div data-signals={ templ.JSONString(map[string]any{"csrf": utils.CSRFToken(ctx), "errors": map[string]any{"name": ""}, "formData": map[string]any{"name": ""}}) } data-init="@get('/sse')"></div>
+			<div data-signals={ templ.JSONString(map[string]any{"csrf": utils.CSRFToken(ctx), "errors": map[string]any{"name": ""}, "formData": map[string]any{"name": ""}, "_fetching": false, "activeSpinner": "", "_notifyInline": false, "_notifyInfo": false, "_notifySuccess": false, "_notifyWarning": false, "_notifyError": false}) } data-init="@get('/sse')"></div>
 			@shared.Notifications()
 			@shared.AppShellMainOnly("dev-page", []utils.Crumb{{Label: ctxi18n.T(ctx, "dev.title")}}, "", shared.DevPrimaryNav("dev"), DevMain())
 		</body>
@@ -38,27 +38,59 @@ templ EmailPreviewContent() {
 }
 
 templ LoadingIndicatorContent() {
-	<form class="form" data-on:submit="@post('/dev/spinner-test')" data-indicator:_fetching>
-		@shared.LoadingSubmitButton("btn btn-primary", "Spinner test request", icons.IconSave)
-	</form>
+	<div class="row row-wrap">
+		<form data-on:submit="@post('/dev/spinner')" data-indicator:_fetching>
+			<button class="btn btn-primary" type="submit" data-on:click="$activeSpinner = 'request'" data-attr:disabled="$_fetching">
+				<span data-show="$_fetching && $activeSpinner === 'request'" style="display: none">
+					@icons.LoaderCircle(templ.Attributes{"class": "icon icon-spin"})
+				</span>
+				<span data-show="!($_fetching && $activeSpinner === 'request')">
+					@icons.Play(templ.Attributes{"class": "icon"})
+				</span>
+				<span>Spinner 500ms</span>
+			</button>
+		</form>
+		<form data-on:submit="@post('/dev/spinner?ms=750')" data-indicator:_fetching>
+			<button class="btn" type="submit" data-on:click="$activeSpinner = 'quick'" data-attr:disabled="$_fetching">
+				<span data-show="$_fetching && $activeSpinner === 'quick'" style="display: none">
+					@icons.LoaderCircle(templ.Attributes{"class": "icon icon-spin"})
+				</span>
+				<span data-show="!($_fetching && $activeSpinner === 'quick')">
+					@icons.Play(templ.Attributes{"class": "icon"})
+				</span>
+				<span>Spinner 750ms</span>
+			</button>
+		</form>
+		<form data-on:submit="@post('/dev/spinner?ms=3000')" data-indicator:_fetching>
+			<button class="btn" type="submit" data-on:click="$activeSpinner = 'slow'" data-attr:disabled="$_fetching">
+				<span data-show="$_fetching && $activeSpinner === 'slow'" style="display: none">
+					@icons.LoaderCircle(templ.Attributes{"class": "icon icon-spin"})
+				</span>
+				<span data-show="!($_fetching && $activeSpinner === 'slow')">
+					@icons.Play(templ.Attributes{"class": "icon"})
+				</span>
+				<span>Spinner 3000ms</span>
+			</button>
+		</form>
+	</div>
 }
 
 templ NotificationsContent() {
-	<form class="form" data-on:submit="@post('/dev/notifications/inline')" data-indicator:_fetching>
+	<form class="form" data-on:submit="@post('/dev/notifications/inline')" data-indicator:_notifyInline>
 		<div class="field">
 			<label>{ ctxi18n.T(ctx, "dev.notifications.required_field") }</label>
 			<div class="row">
 				<input type="text" data-bind="formData.name" placeholder={ ctxi18n.T(ctx, "dev.notifications.type_anything") }/>
-				@shared.LoadingSubmitButton("btn btn-primary", ctxi18n.T(ctx, "dev.notifications.submit_inline"), icons.IconSave)
+				@shared.LoadingSubmitButtonWithSignal("btn btn-primary", ctxi18n.T(ctx, "dev.notifications.submit_inline"), icons.IconSave, "_notifyInline")
 			</div>
 			<div data-show="$errors && $errors.name" class="color-error" data-text="$errors.name"></div>
 		</div>
 	</form>
 	<div class="row row-wrap">
-		@shared.LoadingActionButton("btn btn-info", "@post('/dev/notifications/info')", "$_fetching", ctxi18n.T(ctx, "dev.notifications.info"), icons.IconInfo)
-		@shared.LoadingActionButton("btn btn-success", "@post('/dev/notifications/success')", "$_fetching", ctxi18n.T(ctx, "dev.notifications.success"), icons.IconCheck)
-		@shared.LoadingActionButton("btn btn-warning", "@post('/dev/notifications/warning')", "$_fetching", ctxi18n.T(ctx, "dev.notifications.warning"), icons.IconTriangleAlert)
-		@shared.LoadingActionButton("btn btn-danger", "@post('/dev/notifications/error')", "$_fetching", ctxi18n.T(ctx, "dev.notifications.error"), icons.IconCircleX)
+		@shared.LoadingActionButtonWithSignal("btn btn-info", "@post('/dev/notifications/info')", "$_notifyInfo", ctxi18n.T(ctx, "dev.notifications.info"), icons.IconInfo, "_notifyInfo")
+		@shared.LoadingActionButtonWithSignal("btn btn-success", "@post('/dev/notifications/success')", "$_notifySuccess", ctxi18n.T(ctx, "dev.notifications.success"), icons.IconCheck, "_notifySuccess")
+		@shared.LoadingActionButtonWithSignal("btn btn-warning", "@post('/dev/notifications/warning')", "$_notifyWarning", ctxi18n.T(ctx, "dev.notifications.warning"), icons.IconTriangleAlert, "_notifyWarning")
+		@shared.LoadingActionButtonWithSignal("btn btn-danger", "@post('/dev/notifications/error')", "$_notifyError", ctxi18n.T(ctx, "dev.notifications.error"), icons.IconCircleX, "_notifyError")
 	</div>
 }
 
@@ -82,7 +114,7 @@ templ BodyLimitContent() {
 		@shared.IDActionButton("body-limit-global-ok", "btn btn-success", ctxi18n.T(ctx, "dev.bodylimit.global_ok"))
 		@shared.IDActionButton("body-limit-global-big", "btn btn-danger", ctxi18n.T(ctx, "dev.bodylimit.global_big"))
 		@shared.IDActionButton("body-limit-auth-ok", "btn btn-info", ctxi18n.T(ctx, "dev.bodylimit.auth_ok"))
-		@shared.IDActionButton("body-limit-auth-big", "btn btn-warning", ctxi18n.T(ctx, "dev.bodylimit.auth_big"))
+		@shared.IDActionButton("body-limit-auth-big", "btn btn-danger", ctxi18n.T(ctx, "dev.bodylimit.auth_big"))
 	</div>
 	<input id="body-limit-csrf" type="hidden" value={ utils.CSRFToken(ctx) }/>
 	<span id="body-limit-msg-global-ok" hidden>{ ctxi18n.T(ctx, "dev.bodylimit.msg_global_ok") }</span>

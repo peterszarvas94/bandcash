@@ -17,7 +17,7 @@ templ MemberIndexMain(data MembersData) {
 				if data.IsAdmin {
 					<th data-actions-col>
 						<div class="row row-right">
-							@shared.LoadingIconActionButton("btn btn-icon", "$formState = 'add'; $editingId = 0; $formData = {name: '', description: ''}; $errors = {name: '', description: ''}", "$formState !== ''", ctxi18n.T(ctx, "members.add"), ctxi18n.T(ctx, "members.add"), icons.IconPlus)
+							@shared.IconActionButton("btn btn-sm btn-icon", "$formState = 'add'; $editingId = 0; $formData = {name: '', description: ''}; $errors = {name: '', description: ''}", "$formState !== '' || $_fetching", ctxi18n.T(ctx, "members.add"), ctxi18n.T(ctx, "members.add"), icons.IconPlus)
 						</div>
 					</th>
 				}
@@ -31,7 +31,7 @@ templ MemberIndexMain(data MembersData) {
 					if data.IsAdmin {
 						<td data-actions-col>
 							<div class="row">
-							@shared.LoadingIconActionButton("btn btn-icon", fmt.Sprintf("$formState = 'edit'; $editingId = %q; $formData = {name: el.closest('tr').dataset.memberName, description: el.closest('tr').dataset.memberDescription}", member.ID), "$formState !== ''", ctxi18n.T(ctx, "actions.edit"), ctxi18n.T(ctx, "actions.edit"), icons.IconPencil)
+							@shared.IconActionButton("btn btn-sm btn-icon", fmt.Sprintf("$formState = 'edit'; $editingId = %q; $formData = {name: el.closest('tr').dataset.memberName, description: el.closest('tr').dataset.memberDescription}", member.ID), "$formState !== '' || $_fetching", ctxi18n.T(ctx, "actions.edit"), ctxi18n.T(ctx, "actions.edit"), icons.IconPencil)
 						</div>
 					</td>
 					}

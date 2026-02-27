@@ -12,13 +12,16 @@ import (
 
 templ MemberIndexSidebar(data MembersData) {
 	if data.IsAdmin {
+		<div data-signals={ templ.JSONString(map[string]any{"sidebarLoadingAction": ""}) }>
 		<div data-show="$formState !== ''" style="display: none" class="pb">
 			<div class="row justify-between" data-show="$formState === 'edit'">
 				<h3>{ctxi18n.T(ctx, "members.edit")}</h3>
-				@shared.DestructiveActionButton(
+				@shared.SidebarLoadingActionButton(
+					"btn btn-danger",
 					fmt.Sprintf("sure(%s, %s, %s, %s, () => @delete('/groups/%s/members/' + $editingId))", utils.JSONString(ctxi18n.T(ctx, "members.delete_confirm")), utils.JSONString(ctxi18n.T(ctx, "confirm.destructive_message")), utils.JSONString(ctxi18n.T(ctx, "actions.delete")), utils.JSONString(ctxi18n.T(ctx, "actions.cancel")), data.GroupID),
-					"$_fetching",
 					ctxi18n.T(ctx, "actions.delete"),
+					icons.IconTrash2,
+					"member-delete",
 				)
 			</div>
 			<form class="form">
@@ -33,11 +36,12 @@ templ MemberIndexSidebar(data MembersData) {
 					<div data-show="$errors && $errors.description" class="color-error" data-text="$errors.description"></div>
 				</div>
 				<div class="sidebar-actions">
-				<span data-show="$formState === 'add'">@shared.LoadingActionButton("btn btn-primary", fmt.Sprintf("@post('/groups/%s/members')", data.GroupID), "$_fetching", ctxi18n.T(ctx, "members.create"), icons.IconSave)</span>
-				<span data-show="$formState === 'edit'">@shared.LoadingActionButton("btn btn-primary", fmt.Sprintf("@put('/groups/%s/members/' + $editingId)", data.GroupID), "$_fetching", ctxi18n.T(ctx, "members.update"), icons.IconSave)</span>
-				@shared.LoadingActionButton("btn", "$formState = ''; $editingId = 0; $formData = {name: '', description: ''}; $errors = {name: '', description: ''}", "$_fetching", ctxi18n.T(ctx, "actions.cancel"), icons.IconX)
+				<span data-show="$formState === 'add'">@shared.SidebarLoadingActionButton("btn btn-primary", fmt.Sprintf("@post('/groups/%s/members')", data.GroupID), ctxi18n.T(ctx, "members.create"), icons.IconSave, "member-create")</span>
+				<span data-show="$formState === 'edit'">@shared.SidebarLoadingActionButton("btn btn-primary", fmt.Sprintf("@put('/groups/%s/members/' + $editingId)", data.GroupID), ctxi18n.T(ctx, "members.update"), icons.IconSave, "member-update")</span>
+				@shared.ActionButton("btn", "$formState = ''; $editingId = 0; $formData = {name: '', description: ''}; $errors = {name: '', description: ''}", "$_fetching", ctxi18n.T(ctx, "actions.cancel"), icons.IconX)
 				</div>
 			</form>
+		</div>
 		</div>
 	}
 }

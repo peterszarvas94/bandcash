@@ -14,11 +14,13 @@ templ MemberShowMain(data MemberData) {
 	@shared.DetailTable(MemberDetailsRows(data))
 	if data.IsAdmin {
 		<div class="row row-wrap detail-actions">
-			@shared.LoadingActionButton("btn", "$formState = 'edit'; $errors = {name: '', description: ''}", "$formState !== ''", ctxi18n.T(ctx, "members.edit"), icons.IconPencil)
-			@shared.DestructiveActionButton(
+			@shared.ActionButton("btn", "$formState = 'edit'; $errors = {name: '', description: ''}", "$formState !== '' || $_fetching", ctxi18n.T(ctx, "members.edit"), icons.IconPencil)
+			@shared.ActionButton(
+				"btn btn-danger",
 				fmt.Sprintf("sure(%s, %s, %s, %s, () => @delete('/groups/%s/members/%s'))", utils.JSONString(ctxi18n.T(ctx, "members.delete_confirm")), utils.JSONString(ctxi18n.T(ctx, "confirm.destructive_message")), utils.JSONString(ctxi18n.T(ctx, "actions.delete")), utils.JSONString(ctxi18n.T(ctx, "actions.cancel")), data.GroupID, data.Member.ID),
 				"$formState !== '' || $_fetching",
 				ctxi18n.T(ctx, "actions.delete"),
+				icons.IconTrash2,
 			)
 		</div>
 	}

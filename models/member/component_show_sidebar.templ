@@ -12,6 +12,7 @@ import (
 
 templ MemberShowSidebar(data MemberData) {
 	if data.IsAdmin {
+		<div data-signals={ templ.JSONString(map[string]any{"sidebarLoadingAction": ""}) }>
 		<div data-show="$formState === 'edit'" style="display: none" class="pb">
 		<form class="form">
 			<div>
@@ -25,10 +26,11 @@ templ MemberShowSidebar(data MemberData) {
 					<div data-show="$errors && $errors.description" class="color-error" data-text="$errors.description"></div>
 				</div>
 				<div class="sidebar-actions">
-				@shared.LoadingActionButton("btn btn-primary", fmt.Sprintf("@put('/groups/%s/members/%s')", data.GroupID, data.Member.ID), "$_fetching", ctxi18n.T(ctx, "members.update"), icons.IconSave)
-					@shared.LoadingActionButton("btn", "$formState = ''; $formData = {name: "+utils.JSONString(data.Member.Name)+", description: "+utils.JSONString(data.Member.Description)+"}; $errors = {name: '', description: ''}", "$_fetching", ctxi18n.T(ctx, "actions.cancel"), icons.IconX)
+				@shared.SidebarLoadingActionButton("btn btn-primary", fmt.Sprintf("@put('/groups/%s/members/%s')", data.GroupID, data.Member.ID), ctxi18n.T(ctx, "members.update"), icons.IconSave, "member-details-update")
+					@shared.ActionButton("btn", "$formState = ''; $formData = {name: "+utils.JSONString(data.Member.Name)+", description: "+utils.JSONString(data.Member.Description)+"}; $errors = {name: '', description: ''}", "$_fetching", ctxi18n.T(ctx, "actions.cancel"), icons.IconX)
 				</div>
 			</form>
+		</div>
 		</div>
 	}
 }
