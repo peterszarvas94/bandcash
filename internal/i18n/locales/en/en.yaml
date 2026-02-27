@@ -4,6 +4,7 @@ en:
   nav:
     home: "BandCash"
     dashboard: "Dashboard"
+    admin: "Admin"
     overview: "Overview"
     menu: "Menu"
     close: "Close"
@@ -224,3 +225,14 @@ en:
       remove_failed: "Failed to remove viewer"
       leave_failed: "Failed to leave group"
       delete_failed: "Failed to delete group"
+  admin:
+    title: "Admin Dashboard"
+    dashboard: "Admin"
+    stats: "System Stats"
+    total_users: "Total users"
+    total_groups: "Total groups"
+    total_events: "Total events"
+    total_members: "Total members"
+    recent_users: "Recent users"
+    recent_groups: "Recent groups"
+    access_denied: "You do not have access to admin pages."

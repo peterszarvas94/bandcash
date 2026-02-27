@@ -17,6 +17,7 @@ import (
 	"bandcash/internal/i18n"
 	"bandcash/internal/middleware"
 	"bandcash/internal/utils"
+	"bandcash/models/admin"
 	"bandcash/models/auth"
 	"bandcash/models/dev"
 	"bandcash/models/event"
@@ -69,6 +70,7 @@ func main() {
 
 	health.RegisterRoutes(e)
 	auth.RegisterRoutes(e)
+	admin.RegisterRoutes(e)
 	group.RegisterRoutes(e)
 	home.RegisterRoutes(e)
 	event.RegisterRoutes(e)

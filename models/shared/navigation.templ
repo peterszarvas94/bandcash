@@ -65,6 +65,19 @@ templ AppPrimaryNav(active string) {
 					<span>{ ctxi18n.T(ctx, "settings.title") }</span>
 				</a>
 			}
+			if utils.Env().SuperadminEmail != "" {
+				if active == "admin" {
+					<a class="btn app-nav-link active" href="/admin">
+						@icons.Shield(templ.Attributes{"class": "icon"})
+						<span>{ ctxi18n.T(ctx, "nav.admin") }</span>
+					</a>
+				} else {
+					<a class="btn app-nav-link" href="/admin">
+						@icons.Shield(templ.Attributes{"class": "icon"})
+						<span>{ ctxi18n.T(ctx, "nav.admin") }</span>
+					</a>
+				}
+			}
 			if utils.Env().AppEnv == "development" {
 				if active == "dev" {
 					<a class="btn app-nav-link active" href="/dev">

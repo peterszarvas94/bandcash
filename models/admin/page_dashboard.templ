@@ -1,0 +1,101 @@
+package admin
+
+import (
+	"fmt"
+
+	ctxi18n "github.com/invopop/ctxi18n/i18n"
+
+	"bandcash/internal/db"
+	appi18n "bandcash/internal/i18n"
+	"bandcash/internal/utils"
+	shared "bandcash/models/shared"
+)
+
+templ DashboardPage(data DashboardData) {
+	<!doctype html>
+	<html lang={ appi18n.LocaleCode(ctx) }>
+		@shared.Head(data.Title)
+		<body>
+			<div data-signals={ templ.JSONString(map[string]any{"csrf": utils.CSRFToken(ctx)}) } data-init="@get('/sse')"></div>
+			@shared.Notifications()
+			@shared.AppShellMainOnly("admin-dashboard", data.Breadcrumbs, data.UserEmail, shared.AppPrimaryNav("admin"), DashboardMain(data))
+		</body>
+	</html>
+}
+
+templ DashboardMain(data DashboardData) {
+	@shared.Section(ctxi18n.T(ctx, "admin.stats"), DashboardStats(data))
+	@shared.Section(ctxi18n.T(ctx, "admin.recent_users"), RecentUsersTable(data.RecentUsers))
+	@shared.Section(ctxi18n.T(ctx, "admin.recent_groups"), RecentGroupsTable(data.RecentGroups))
+}
+
+templ DashboardStats(data DashboardData) {
+	@shared.DetailTable(DashboardStatsRows(data))
+}
+
+templ DashboardStatsRows(data DashboardData) {
+	@shared.DetailRow(ctxi18n.T(ctx, "admin.total_users"), fmt.Sprintf("%d", data.UsersCount))
+	@shared.DetailRow(ctxi18n.T(ctx, "admin.total_groups"), fmt.Sprintf("%d", data.GroupsCount))
+	@shared.DetailRow(ctxi18n.T(ctx, "admin.total_events"), fmt.Sprintf("%d", data.EventsCount))
+	@shared.DetailRow(ctxi18n.T(ctx, "admin.total_members"), fmt.Sprintf("%d", data.MembersCount))
+}
+
+templ RecentUsersTable(users []db.User) {
+	<table class="table">
+		<thead>
+			<tr>
+				<th>{ ctxi18n.T(ctx, "auth.email") }</th>
+				<th>{ ctxi18n.T(ctx, "groups.created") }</th>
+			</tr>
+		</thead>
+		<tbody>
+			for _, user := range users {
+				<tr>
+					<td>{ user.Email }</td>
+					<td>
+						if user.CreatedAt.Valid {
+							{ utils.FormatTimeLocalized(ctx, user.CreatedAt.Time) }
+						} else {
+							{ "-" }
+						}
+					</td>
+				</tr>
+			}
+			if len(users) == 0 {
+				<tr>
+					<td colspan="2">{ ctxi18n.T(ctx, "table.empty") }</td>
+				</tr>
+			}
+		</tbody>
+	</table>
+}
+
+templ RecentGroupsTable(groups []db.Group) {
+	<table class="table">
+		<thead>
+			<tr>
+				<th>{ ctxi18n.T(ctx, "groups.name") }</th>
+				<th>{ ctxi18n.T(ctx, "groups.created") }</th>
+			</tr>
+		</thead>
+		<tbody>
+			for _, group := range groups {
+				<tr>
+					<td><a href={ "/groups/" + group.ID }>{ group.Name }</a></td>
+					<td>
+						if group.CreatedAt.Valid {
+							{ utils.FormatTimeLocalized(ctx, group.CreatedAt.Time) }
+						} else {
+							{ "-" }
+						}
+					</td>
+				</tr>
+			}
+			if len(groups) == 0 {
+				<tr>
+					<td colspan="2">{ ctxi18n.T(ctx, "table.empty") }</td>
+				</tr>
+			}
+		</tbody>
+	</table>
+}

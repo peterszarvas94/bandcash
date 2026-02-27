@@ -4,6 +4,7 @@ hu:
   nav:
     home: "BandCash"
     dashboard: "Vezérlőpult"
+    admin: "Admin"
     overview: "Áttekintés"
     menu: "Menü"
     close: "Bezárás"
@@ -224,3 +225,14 @@ hu:
       remove_failed: "Néző eltávolítása sikertelen"
       leave_failed: "Kilépés sikertelen"
       delete_failed: "A csoport törlése sikertelen"
+  admin:
+    title: "Admin vezérlőpult"
+    dashboard: "Admin"
+    stats: "Rendszer statisztikák"
+    total_users: "Felhasználók összesen"
+    total_groups: "Csoportok összesen"
+    total_events: "Események összesen"
+    total_members: "Tagok összesen"
+    recent_users: "Legutóbbi felhasználók"
+    recent_groups: "Legutóbbi csoportok"
+    access_denied: "Nincs hozzáférésed az admin oldalakhoz."

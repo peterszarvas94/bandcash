@@ -19,6 +19,7 @@ type EnvConfig struct {
 	DBPath           string
 	URL              string
 	AppEnv           string
+	SuperadminEmail  string
 	DisableSignup    bool
 	DisableRateLimit bool
 	SMTPHost         string
@@ -44,6 +45,7 @@ type envVars struct {
 	LogPrefix        string `env:"LOG_PREFIX" validate:"required"`
 	DBPath           string `env:"DB_PATH" validate:"required"`
 	URL              string `env:"URL" validate:"required_if=AppEnv production"`
+	SuperadminEmail  string `env:"SUPERADMIN_EMAIL" validate:"omitempty,email"`
 	DisableSignup    bool   `env:"DISABLE_SIGNUP" envDefault:"false"`
 	DisableRateLimit bool   `env:"DISABLE_RATE_LIMIT" envDefault:"false"`
 	SMTPHost         string `env:"SMTP_HOST" validate:"required_if=AppEnv production"`
@@ -86,6 +88,7 @@ func Env() *EnvConfig {
 			DBPath:           parsed.DBPath,
 			URL:              parsed.URL,
 			AppEnv:           parsed.AppEnv,
+			SuperadminEmail:  strings.ToLower(strings.TrimSpace(parsed.SuperadminEmail)),
 			DisableSignup:    parsed.DisableSignup,
 			DisableRateLimit: parsed.DisableRateLimit,
 			SMTPHost:         parsed.SMTPHost,
