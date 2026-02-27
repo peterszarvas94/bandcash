@@ -20,12 +20,6 @@ Open `http://localhost:2222`.
 
 ## Deployment (Kamal)
 
-If you use `direnv`, run once in this repo:
-
-```bash
-direnv allow
-```
-
 1. Copy the dev secrets template, then update values for production:
 
 ```bash
