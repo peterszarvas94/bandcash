@@ -20,6 +20,12 @@ Open `http://localhost:2222`.
 
 ## Deployment (Kamal)
 
+If you use `direnv`, run once in this repo:
+
+```bash
+direnv allow
+```
+
 1. Copy the dev secrets template, then update values for production:
 
 ```bash
@@ -42,6 +48,7 @@ Useful commands:
 mise run kamal setup
 mise run kamal app logs
 mise run kamal app details
+./scripts/pull_prod_db.sh   # snapshot prod SQLite to tmp/prod-db/
 ```
 
 ## Common Commands
