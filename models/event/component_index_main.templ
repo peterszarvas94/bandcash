@@ -15,8 +15,8 @@ templ EventIndexMain(data EventsData) {
 			<tr>
 				<th>{ ctxi18n.T(ctx, "fields.title") }</th>
 				<th>{ ctxi18n.T(ctx, "fields.time") }</th>
-				<th>{ ctxi18n.T(ctx, "fields.description") }</th>
 				<th>{ ctxi18n.T(ctx, "fields.amount") }</th>
+				<th>{ ctxi18n.T(ctx, "fields.description") }</th>
 				if data.IsAdmin {
 					<th data-actions-col>
 						<div class="row row-right">
@@ -36,8 +36,8 @@ templ EventIndexMain(data EventsData) {
 				>
 					<td><a href={ fmt.Sprintf("/groups/%s/events/%s", data.GroupID, event.ID) }>{ event.Title }</a></td>
 					<td>{ utils.FormatDateTimeLocalized(ctx, event.Time) }</td>
-					<td><span class="cell-ellipsis">{ event.Description }</span></td>
 					<td class="text-right">{ utils.FormatNumberLocalized(ctx, event.Amount) }</td>
+					<td><span class="cell-ellipsis">{ event.Description }</span></td>
 					if data.IsAdmin {
 						<td data-actions-col>
 							<div class="row row-right">
