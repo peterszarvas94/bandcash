@@ -1,13 +1,16 @@
 package dev
 
 import (
+	"fmt"
 	"net/http"
+	"strings"
 	"time"
 
 	ctxi18n "github.com/invopop/ctxi18n/i18n"
 	"github.com/labstack/echo/v4"
 	"github.com/starfederation/datastar-go/datastar"
 
+	"bandcash/internal/email"
 	"bandcash/internal/utils"
 	shared "bandcash/models/shared"
 )
@@ -94,6 +97,30 @@ func (h *DevNotifications) TestBodyLimitAuth(c echo.Context) error {
 func (h *DevNotifications) TestSpinner(c echo.Context) error {
 	time.Sleep(1500 * time.Millisecond)
 	return c.NoContent(http.StatusOK)
+}
+
+func (h *DevNotifications) PreviewLoginEmail(c echo.Context) error {
+	html, err := email.Email().PreviewMagicLinkHTML(c.Request().Context(), "tok_12345678901234567890", devBaseURL(c))
+	if err != nil {
+		return c.String(http.StatusInternalServerError, err.Error())
+	}
+	return c.HTML(http.StatusOK, html)
+}
+
+func (h *DevNotifications) PreviewInviteEmail(c echo.Context) error {
+	html, err := email.Email().PreviewGroupInvitationHTML(c.Request().Context(), "Preview Group", "tok_ABCDEFGHIJ1234567890", devBaseURL(c))
+	if err != nil {
+		return c.String(http.StatusInternalServerError, err.Error())
+	}
+	return c.HTML(http.StatusOK, html)
+}
+
+func devBaseURL(c echo.Context) string {
+	configured := strings.TrimSpace(utils.Env().URL)
+	if configured != "" {
+		return configured
+	}
+	return fmt.Sprintf("%s://%s", c.Scheme(), c.Request().Host)
 }
 
 func (h *DevNotifications) patchNotifications(c echo.Context) error {

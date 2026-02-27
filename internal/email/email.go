@@ -57,6 +57,26 @@ func emailContext(ctx context.Context) context.Context {
 	return withLocale
 }
 
+func contextWithLocale(base context.Context, locale string) context.Context {
+	withLocale, err := ctxi18n.WithLocale(base, locale)
+	if err != nil {
+		return base
+	}
+	return withLocale
+}
+
+func verifyLink(baseURL, token, locale string) string {
+	return fmt.Sprintf("%s/auth/verify?token=%s&lang=%s", baseURL, token, locale)
+}
+
+func joinBilingualText(huText, enText string) string {
+	return strings.TrimSpace("Find english below.\n\n" + strings.TrimSpace(huText) + "\n\n---\n\n" + strings.TrimSpace(enText))
+}
+
+func joinBilingualHTML(huHTML, enHTML string) string {
+	return strings.TrimSpace(`<div style="margin:0;padding:0 0 12px;font-family:system-ui,-apple-system,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif;color:#1a1a1a;">Find english below.</div>` + strings.TrimSpace(huHTML) + `<div style="height:12px"></div>` + strings.TrimSpace(enHTML))
+}
+
 func NewFromEnv() *Service {
 	env := utils.Env()
 
@@ -103,35 +123,97 @@ func (s *Service) Send(to, subject, textBody, htmlBody string) error {
 }
 
 func (s *Service) SendMagicLink(ctx context.Context, to, token, baseURL string) error {
-	link := fmt.Sprintf("%s/auth/verify?token=%s", baseURL, token)
-	ctx = emailContext(ctx)
-
-	subject := ctxi18ncore.T(ctx, "email.magic_link.subject")
-	textBody, err := utils.RenderComponentString(ctx, MagicLinkText(link))
+	htmlBody, textBody, subject, err := s.buildMagicLinkBodies(ctx, token, baseURL)
 	if err != nil {
-		return fmt.Errorf("failed to render magic-link text template: %w", err)
-	}
-	htmlBody, err := utils.RenderComponentString(ctx, MagicLinkHTML(link))
-	if err != nil {
-		return fmt.Errorf("failed to render magic-link HTML template: %w", err)
+		return err
 	}
 
 	return s.Send(to, subject, strings.TrimSpace(textBody), strings.TrimSpace(htmlBody))
 }
 
-func (s *Service) SendGroupInvitation(ctx context.Context, to, groupName, token, baseURL string) error {
-	link := fmt.Sprintf("%s/auth/verify?token=%s", baseURL, token)
-	ctx = emailContext(ctx)
-
-	subject := ctxi18ncore.T(ctx, "email.invite.subject", groupName)
-	textBody, err := utils.RenderComponentString(ctx, GroupInvitationText(groupName, link))
+func (s *Service) PreviewMagicLinkHTML(ctx context.Context, token, baseURL string) (string, error) {
+	htmlBody, _, _, err := s.buildMagicLinkBodies(ctx, token, baseURL)
 	if err != nil {
-		return fmt.Errorf("failed to render invite text template: %w", err)
+		return "", err
 	}
-	htmlBody, err := utils.RenderComponentString(ctx, GroupInvitationHTML(groupName, link))
+	return strings.TrimSpace(htmlBody), nil
+}
+
+func (s *Service) buildMagicLinkBodies(ctx context.Context, token, baseURL string) (string, string, string, error) {
+	ctx = emailContext(ctx)
+	huCtx := contextWithLocale(ctx, "hu")
+	enCtx := contextWithLocale(ctx, "en")
+
+	huLink := verifyLink(baseURL, token, "hu")
+	enLink := verifyLink(baseURL, token, "en")
+
+	subject := ctxi18ncore.T(enCtx, "email.magic_link.subject")
+	huTextBody, err := utils.RenderComponentString(huCtx, MagicLinkText(huLink))
 	if err != nil {
-		return fmt.Errorf("failed to render invite HTML template: %w", err)
+		return "", "", "", fmt.Errorf("failed to render magic-link text template: %w", err)
+	}
+	enTextBody, err := utils.RenderComponentString(enCtx, MagicLinkText(enLink))
+	if err != nil {
+		return "", "", "", fmt.Errorf("failed to render magic-link text template: %w", err)
+	}
+	huHTMLBody, err := utils.RenderComponentString(huCtx, MagicLinkHTML(huLink))
+	if err != nil {
+		return "", "", "", fmt.Errorf("failed to render magic-link HTML template: %w", err)
+	}
+	enHTMLBody, err := utils.RenderComponentString(enCtx, MagicLinkHTML(enLink))
+	if err != nil {
+		return "", "", "", fmt.Errorf("failed to render magic-link HTML template: %w", err)
+	}
+
+	textBody := joinBilingualText(huTextBody, enTextBody)
+	htmlBody := joinBilingualHTML(huHTMLBody, enHTMLBody)
+	return htmlBody, textBody, subject, nil
+}
+
+func (s *Service) SendGroupInvitation(ctx context.Context, to, groupName, token, baseURL string) error {
+	htmlBody, textBody, subject, err := s.buildGroupInvitationBodies(ctx, groupName, token, baseURL)
+	if err != nil {
+		return err
 	}
 
 	return s.Send(to, subject, strings.TrimSpace(textBody), strings.TrimSpace(htmlBody))
+}
+
+func (s *Service) PreviewGroupInvitationHTML(ctx context.Context, groupName, token, baseURL string) (string, error) {
+	htmlBody, _, _, err := s.buildGroupInvitationBodies(ctx, groupName, token, baseURL)
+	if err != nil {
+		return "", err
+	}
+	return strings.TrimSpace(htmlBody), nil
+}
+
+func (s *Service) buildGroupInvitationBodies(ctx context.Context, groupName, token, baseURL string) (string, string, string, error) {
+	ctx = emailContext(ctx)
+	huCtx := contextWithLocale(ctx, "hu")
+	enCtx := contextWithLocale(ctx, "en")
+
+	huLink := verifyLink(baseURL, token, "hu")
+	enLink := verifyLink(baseURL, token, "en")
+
+	subject := ctxi18ncore.T(enCtx, "email.invite.subject", groupName)
+	huTextBody, err := utils.RenderComponentString(huCtx, GroupInvitationText(groupName, huLink))
+	if err != nil {
+		return "", "", "", fmt.Errorf("failed to render invite text template: %w", err)
+	}
+	enTextBody, err := utils.RenderComponentString(enCtx, GroupInvitationText(groupName, enLink))
+	if err != nil {
+		return "", "", "", fmt.Errorf("failed to render invite text template: %w", err)
+	}
+	huHTMLBody, err := utils.RenderComponentString(huCtx, GroupInvitationHTML(groupName, huLink))
+	if err != nil {
+		return "", "", "", fmt.Errorf("failed to render invite HTML template: %w", err)
+	}
+	enHTMLBody, err := utils.RenderComponentString(enCtx, GroupInvitationHTML(groupName, enLink))
+	if err != nil {
+		return "", "", "", fmt.Errorf("failed to render invite HTML template: %w", err)
+	}
+
+	textBody := joinBilingualText(huTextBody, enTextBody)
+	htmlBody := joinBilingualHTML(huHTMLBody, enHTMLBody)
+	return htmlBody, textBody, subject, nil
 }

@@ -22,4 +22,6 @@ func RegisterRoutes(e *echo.Echo) {
 	e.POST("/dev/notifications/error", h.TestError)
 	e.POST("/dev/notifications/info", h.TestInfo)
 	e.POST("/dev/notifications/warning", h.TestWarning)
+	e.GET("/dev/emails/login", h.PreviewLoginEmail)
+	e.GET("/dev/emails/invite", h.PreviewInviteEmail)
 }

@@ -14,6 +14,7 @@ import (
 
 	"bandcash/internal/db"
 	"bandcash/internal/email"
+	appi18n "bandcash/internal/i18n"
 	"bandcash/internal/middleware"
 	"bandcash/internal/utils"
 )
@@ -158,6 +159,16 @@ func (a *Auth) VerifyMagicLink(c echo.Context) error {
 	if !utils.IsValidID(token, "tok") {
 		return c.String(http.StatusBadRequest, "Invalid token")
 	}
+
+	locale := appi18n.NormalizeLocale(c.QueryParam("lang"))
+	c.SetCookie(&http.Cookie{
+		Name:     appi18n.CookieName,
+		Value:    locale,
+		Path:     "/",
+		MaxAge:   60 * 60 * 24 * 365,
+		SameSite: http.SameSiteLaxMode,
+		HttpOnly: true,
+	})
 
 	// Get magic link
 	magicLink, err := db.Qry.GetMagicLinkByToken(c.Request().Context(), token)

@@ -178,7 +178,7 @@ func AccountContent(data SettingsData) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = shared.LoadingActionButton("btn w-fit", "@post('/auth/logout')", "$_fetching", ctxi18n.T(ctx, "auth.logout"), icons.IconLogOut).Render(ctx, templ_7745c5c3_Buffer)
+		templ_7745c5c3_Err = shared.LoadingActionButton("btn", "@post('/auth/logout')", "$_fetching", ctxi18n.T(ctx, "auth.logout"), icons.IconLogOut).Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

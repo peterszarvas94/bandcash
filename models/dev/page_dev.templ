@@ -23,9 +23,18 @@ templ DevPage() {
 
 templ DevMain() {
 	@shared.Section(ctxi18n.T(ctx, "dev.notifications.title"), NotificationsContent())
+	@shared.Section("Email previews", EmailPreviewContent())
 	@shared.Section("Loading indicator test", LoadingIndicatorContent())
 	@shared.Section(ctxi18n.T(ctx, "dev.ratelimit.title"), RateLimitContent())
 	@shared.Section(ctxi18n.T(ctx, "dev.bodylimit.title"), BodyLimitContent())
+}
+
+templ EmailPreviewContent() {
+	<p>Open email previews in a new tab (no app shell, only raw email content):</p>
+	<div class="row row-wrap">
+		<a class="btn" href="/dev/emails/login" target="_blank" rel="noopener">Login email</a>
+		<a class="btn" href="/dev/emails/invite" target="_blank" rel="noopener">Invite email</a>
+	</div>
 }
 
 templ LoadingIndicatorContent() {
