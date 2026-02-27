@@ -201,6 +201,17 @@ templ GroupPrimaryNav(groupID string, active string) {
 					<span>{ ctxi18n.T(ctx, "events.title") }</span>
 				</a>
 			}
+			if active == "expenses" {
+				<a class="btn app-nav-link active" href={ "/groups/" + groupID + "/expenses" }>
+					@icons.HandCoins(templ.Attributes{"class": "icon"})
+					<span>{ ctxi18n.T(ctx, "expenses.title") }</span>
+				</a>
+			} else {
+				<a class="btn app-nav-link" href={ "/groups/" + groupID + "/expenses" }>
+					@icons.HandCoins(templ.Attributes{"class": "icon"})
+					<span>{ ctxi18n.T(ctx, "expenses.title") }</span>
+				</a>
+			}
 			if active == "members" {
 				<a class="btn app-nav-link active" href={ "/groups/" + groupID + "/members" }>
 					@icons.Users(templ.Attributes{"class": "icon"})

@@ -24,6 +24,13 @@ type seedMember struct {
 	Description string
 }
 
+type seedExpense struct {
+	Title       string
+	Description string
+	Amount      int64
+	Date        string
+}
+
 type seedParticipant struct {
 	EventIndex  int
 	MemberIndex int
@@ -172,6 +179,33 @@ func main() {
 		},
 	}
 
+	expenses := []seedExpense{
+		{
+			Title:       "Furgon bérlés",
+			Description: "Hétvégi koncertek oda-vissza szállítása",
+			Amount:      42000,
+			Date:        time.Now().Add(-220 * time.Hour).Format("2006-01-02"),
+		},
+		{
+			Title:       "Hangmérnök",
+			Description: "Két koncert FOH díja",
+			Amount:      35000,
+			Date:        time.Now().Add(-170 * time.Hour).Format("2006-01-02"),
+		},
+		{
+			Title:       "Húrok és dobbőrök",
+			Description: "Hangszer karbantartás és fogyóeszközök",
+			Amount:      18000,
+			Date:        time.Now().Add(-120 * time.Hour).Format("2006-01-02"),
+		},
+		{
+			Title:       "Promó anyagok",
+			Description: "Plakátnyomás és közösségi hirdetés",
+			Amount:      12000,
+			Date:        time.Now().Add(-72 * time.Hour).Format("2006-01-02"),
+		},
+	}
+
 	createdEvents := make([]db.Event, 0, len(events))
 	for _, event := range events {
 		created, err := db.Qry.CreateEvent(ctx, db.CreateEventParams{
@@ -202,6 +236,21 @@ func main() {
 			os.Exit(1)
 		}
 		createdMembers = append(createdMembers, created)
+	}
+
+	for _, expense := range expenses {
+		_, err := db.Qry.CreateExpense(ctx, db.CreateExpenseParams{
+			ID:          utils.GenerateID(utils.PrefixExpense),
+			GroupID:     groupID,
+			Title:       expense.Title,
+			Description: expense.Description,
+			Amount:      expense.Amount,
+			Date:        expense.Date,
+		})
+		if err != nil {
+			slog.Error("failed to insert seed expense", "title", expense.Title, "err", err)
+			os.Exit(1)
+		}
 	}
 
 	// Résztvevők - zenekari tagok részesedése koncertenként
@@ -275,6 +324,7 @@ func main() {
 		OwnerEmail   string
 		GroupName    string
 		Events       []seedEvent
+		Expenses     []seedExpense
 		Members      []seedMember
 		Participants []seedParticipant
 	}{
@@ -284,6 +334,10 @@ func main() {
 			Events: []seedEvent{
 				{Title: "Warehouse Rehearsal", Time: time.Now().Add(-72 * time.Hour).Format("2006-01-02T15:04"), Description: "Paid technical rehearsal", Amount: 60000},
 				{Title: "Downtown Showcase", Time: time.Now().Add(-12 * time.Hour).Format("2006-01-02T15:04"), Description: "Support slot in city center", Amount: 90000},
+			},
+			Expenses: []seedExpense{
+				{Title: "Üzemanyag", Description: "Furgon tankolás és parkolás", Amount: 15000, Date: time.Now().Add(-60 * time.Hour).Format("2006-01-02")},
+				{Title: "Backline bérlés", Description: "Erősítő és mikrofonállvány bérlés", Amount: 11000, Date: time.Now().Add(-10 * time.Hour).Format("2006-01-02")},
 			},
 			Members: []seedMember{
 				{Name: "Crew Alice", Description: "Lead vocals"},
@@ -306,6 +360,10 @@ func main() {
 				{Title: "Jazz Basement", Time: time.Now().Add(-96 * time.Hour).Format("2006-01-02T15:04"), Description: "Ticketed evening set", Amount: 70000},
 				{Title: "Studio Overdub", Time: time.Now().Add(-6 * time.Hour).Format("2006-01-02T15:04"), Description: "Paid recording session", Amount: 50000},
 			},
+			Expenses: []seedExpense{
+				{Title: "Stúdió snack", Description: "Session vendéglátás", Amount: 5000, Date: time.Now().Add(-8 * time.Hour).Format("2006-01-02")},
+				{Title: "Fuvarköltség", Description: "Késő esti hazajutás", Amount: 8000, Date: time.Now().Add(-5 * time.Hour).Format("2006-01-02")},
+			},
 			Members: []seedMember{
 				{Name: "Session Dani", Description: "Keyboard"},
 				{Name: "Session Erik", Description: "Bass"},
@@ -327,6 +385,7 @@ func main() {
 	totalEvents := len(events)
 	totalMembers := len(members)
 	totalParticipants := len(participants)
+	totalExpenses := len(expenses)
 	totalViewerLinks := 0
 
 	for _, fixture := range viewerFixtures {
@@ -376,6 +435,21 @@ func main() {
 			viewerEvents = append(viewerEvents, createdEvent)
 		}
 
+		for _, expense := range fixture.Expenses {
+			_, err := db.Qry.CreateExpense(ctx, db.CreateExpenseParams{
+				ID:          utils.GenerateID(utils.PrefixExpense),
+				GroupID:     viewerGroup.ID,
+				Title:       expense.Title,
+				Description: expense.Description,
+				Amount:      expense.Amount,
+				Date:        expense.Date,
+			})
+			if err != nil {
+				slog.Error("failed to create viewer fixture expense", "group_id", viewerGroup.ID, "title", expense.Title, "err", err)
+				os.Exit(1)
+			}
+		}
+
 		viewerMembers := make([]db.Member, 0, len(fixture.Members))
 		for _, member := range fixture.Members {
 			createdMember, err := db.Qry.CreateMember(ctx, db.CreateMemberParams{
@@ -411,9 +485,10 @@ func main() {
 		totalEvents += len(fixture.Events)
 		totalMembers += len(fixture.Members)
 		totalParticipants += len(fixture.Participants)
+		totalExpenses += len(fixture.Expenses)
 		totalViewerLinks++
 	}
 
-	fmt.Printf("Seeded %d users, %d groups, %d events, %d members, %d participants, %d viewer links into %s\n", totalUsers, totalGroups, totalEvents, totalMembers, totalParticipants, totalViewerLinks, dbPath)
+	fmt.Printf("Seeded %d users, %d groups, %d events, %d expenses, %d members, %d participants, %d viewer links into %s\n", totalUsers, totalGroups, totalEvents, totalExpenses, totalMembers, totalParticipants, totalViewerLinks, dbPath)
 	fmt.Printf("Login: admin@bandcash.local\n")
 }

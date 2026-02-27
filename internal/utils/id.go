@@ -46,6 +46,7 @@ func IsValidID(id string, prefix string) bool {
 // ID prefixes for different entity types
 const (
 	PrefixEvent       = "evt"
+	PrefixExpense     = "exp"
 	PrefixMember      = "mem"
 	PrefixParticipant = "par"
 )

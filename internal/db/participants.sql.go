@@ -177,6 +177,18 @@ func (q *Queries) RemoveParticipant(ctx context.Context, arg RemoveParticipantPa
 	return err
 }
 
+const sumParticipantAmountsByGroup = `-- name: SumParticipantAmountsByGroup :one
+SELECT CAST(COALESCE(SUM(amount), 0) AS INTEGER) FROM participants
+WHERE group_id = ?
+`
+
+func (q *Queries) SumParticipantAmountsByGroup(ctx context.Context, groupID string) (int64, error) {
+	row := q.db.QueryRowContext(ctx, sumParticipantAmountsByGroup, groupID)
+	var column_1 int64
+	err := row.Scan(&column_1)
+	return column_1, err
+}
+
 const updateParticipant = `-- name: UpdateParticipant :exec
 UPDATE participants
 SET amount = ?, expense = ?

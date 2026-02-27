@@ -32,6 +32,17 @@ type Event struct {
 	UpdatedAt   sql.NullTime `json:"updated_at"`
 }
 
+type Expense struct {
+	ID          string       `json:"id"`
+	GroupID     string       `json:"group_id"`
+	Title       string       `json:"title"`
+	Description string       `json:"description"`
+	Amount      int64        `json:"amount"`
+	Date        string       `json:"date"`
+	CreatedAt   sql.NullTime `json:"created_at"`
+	UpdatedAt   sql.NullTime `json:"updated_at"`
+}
+
 type Group struct {
 	ID          string       `json:"id"`
 	Name        string       `json:"name"`

@@ -42,6 +42,9 @@ type GroupPageData struct {
 	UserEmail   string
 	Group       db.Group
 	Admin       db.User
-	TotalAmount int64
+	Income      int64
+	Payouts     int64
+	Expenses    int64
+	Leftover    int64
 	IsAdmin     bool
 }

@@ -1,0 +1,58 @@
+package expense
+
+import (
+	"fmt"
+
+	ctxi18n "github.com/invopop/ctxi18n/i18n"
+	"bandcash/internal/utils"
+	shared "bandcash/models/shared"
+	icons "bandcash/models/shared/icons"
+)
+
+templ ExpenseIndexSidebar(data ExpensesData) {
+	if data.IsAdmin {
+		<div data-signals={ templ.JSONString(map[string]any{"sidebarLoadingAction": ""}) }>
+			<div data-show="$formState !== ''" style="display: none" class="pb">
+				<div class="row justify-between" data-show="$formState === 'edit'">
+					<h3>{ ctxi18n.T(ctx, "expenses.edit") }</h3>
+					@shared.SidebarLoadingActionButton(
+						"btn btn-danger",
+						fmt.Sprintf("sure(%s, %s, %s, %s, () => @delete('/groups/%s/expenses/' + $editingId))", utils.JSONString(ctxi18n.T(ctx, "expenses.delete_confirm")), utils.JSONString(ctxi18n.T(ctx, "confirm.destructive_message")), utils.JSONString(ctxi18n.T(ctx, "actions.delete")), utils.JSONString(ctxi18n.T(ctx, "actions.cancel")), data.GroupID),
+						ctxi18n.T(ctx, "actions.delete"),
+						icons.IconTrash2,
+						"expense-delete",
+					)
+				</div>
+				<form class="form">
+					<div class="field">
+						<label>{ ctxi18n.T(ctx, "fields.title") } <span class="required-mark">*</span></label>
+						<input type="text" data-bind="formData.title"/>
+						<div data-show="$errors && $errors.title" class="color-error" data-text="$errors.title"></div>
+					</div>
+					<div class="field">
+						<label>{ ctxi18n.T(ctx, "fields.description") }</label>
+						<input type="text" data-bind="formData.description"/>
+						<div data-show="$errors && $errors.description" class="color-error" data-text="$errors.description"></div>
+					</div>
+					<div class="form-row">
+						<div class="field">
+							<label>{ ctxi18n.T(ctx, "fields.amount") } <span class="required-mark">*</span></label>
+							<input type="number" data-bind="formData.amount" step="1"/>
+							<div data-show="$errors && $errors.amount" class="color-error" data-text="$errors.amount"></div>
+						</div>
+						<div class="field">
+							<label>{ ctxi18n.T(ctx, "fields.date") } <span class="required-mark">*</span></label>
+							<input type="date" data-bind="formData.date"/>
+							<div data-show="$errors && $errors.date" class="color-error" data-text="$errors.date"></div>
+						</div>
+					</div>
+					<div class="sidebar-actions">
+						<span data-show="$formState === 'add'">@shared.SidebarLoadingActionButton("btn btn-primary", fmt.Sprintf("@post('/groups/%s/expenses')", data.GroupID), ctxi18n.T(ctx, "expenses.create"), icons.IconSave, "expense-create")</span>
+						<span data-show="$formState === 'edit'">@shared.SidebarLoadingActionButton("btn btn-primary", fmt.Sprintf("@put('/groups/%s/expenses/' + $editingId)", data.GroupID), ctxi18n.T(ctx, "expenses.update"), icons.IconSave, "expense-update")</span>
+						@shared.ActionButton("btn", "$formState = ''; $editingId = 0; $formData = {title: '', description: '', amount: 0, date: ''}; $errors = {title: '', description: '', amount: '', date: ''}", "$_fetching", ctxi18n.T(ctx, "actions.cancel"), icons.IconX)
+					</div>
+				</form>
+			</div>
+		</div>
+	}
+}

@@ -21,6 +21,7 @@ import (
 	"bandcash/models/auth"
 	"bandcash/models/dev"
 	"bandcash/models/event"
+	"bandcash/models/expense"
 	"bandcash/models/group"
 	"bandcash/models/health"
 	"bandcash/models/home"
@@ -74,6 +75,7 @@ func main() {
 	group.RegisterRoutes(e)
 	home.RegisterRoutes(e)
 	event.RegisterRoutes(e)
+	expense.RegisterRoutes(e)
 	member.RegisterRoutes(e)
 	settings.RegisterRoutes(e)
 	sse.RegisterRoutes(e)

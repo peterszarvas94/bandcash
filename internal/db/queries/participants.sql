@@ -25,3 +25,7 @@ FROM events
 JOIN participants ON participants.event_id = events.id
 WHERE participants.member_id = ? AND participants.group_id = ?
 ORDER BY events.created_at DESC;
+
+-- name: SumParticipantAmountsByGroup :one
+SELECT CAST(COALESCE(SUM(amount), 0) AS INTEGER) FROM participants
+WHERE group_id = ?;

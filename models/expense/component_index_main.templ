@@ -1,0 +1,56 @@
+package expense
+
+import (
+	"fmt"
+
+	ctxi18n "github.com/invopop/ctxi18n/i18n"
+	"bandcash/internal/utils"
+	shared "bandcash/models/shared"
+	icons "bandcash/models/shared/icons"
+)
+
+templ ExpenseIndexMain(data ExpensesData) {
+	<table class="table table-sticky-actions pt">
+		<thead>
+			<tr>
+				<th>{ ctxi18n.T(ctx, "fields.title") }</th>
+				<th>{ ctxi18n.T(ctx, "fields.description") }</th>
+				<th>{ ctxi18n.T(ctx, "fields.amount") }</th>
+				<th>{ ctxi18n.T(ctx, "fields.date") }</th>
+				if data.IsAdmin {
+					<th data-actions-col>
+						<div class="row row-right">
+							@shared.IconActionButton("btn btn-sm btn-icon", "$formState = 'add'; $editingId = 0; $formData = {title: '', description: '', amount: 0, date: ''}; $errors = {title: '', description: '', amount: '', date: ''}", "$formState !== '' || $_fetching", ctxi18n.T(ctx, "expenses.add"), ctxi18n.T(ctx, "expenses.add"), icons.IconPlus)
+						</div>
+					</th>
+				}
+			</tr>
+		</thead>
+		<tbody>
+			for _, expense := range data.Expenses {
+				<tr data-expense-title={ expense.Title } data-expense-description={ expense.Description } data-expense-amount={ fmt.Sprintf("%d", expense.Amount) } data-expense-date={ expense.Date }>
+					<td><span class="cell-ellipsis">{ expense.Title }</span></td>
+					<td><span class="cell-ellipsis">{ expense.Description }</span></td>
+					<td class="text-right">{ utils.FormatNumberLocalized(ctx, expense.Amount) }</td>
+					<td>{ utils.FormatDateLocalized(ctx, expense.Date) }</td>
+					if data.IsAdmin {
+						<td data-actions-col>
+							<div class="row">
+								@shared.IconActionButton("btn btn-sm btn-icon", fmt.Sprintf("$formState = 'edit'; $editingId = %q; $formData = {title: el.closest('tr').dataset.expenseTitle, description: el.closest('tr').dataset.expenseDescription, amount: Number(el.closest('tr').dataset.expenseAmount), date: el.closest('tr').dataset.expenseDate}", expense.ID), "$formState !== '' || $_fetching", ctxi18n.T(ctx, "actions.edit"), ctxi18n.T(ctx, "actions.edit"), icons.IconPencil)
+							</div>
+						</td>
+					}
+				</tr>
+			}
+			if len(data.Expenses) == 0 {
+				<tr>
+					if data.IsAdmin {
+						<td colspan="5">{ ctxi18n.T(ctx, "table.empty") }</td>
+					} else {
+						<td colspan="4">{ ctxi18n.T(ctx, "table.empty") }</td>
+					}
+				</tr>
+			}
+		</tbody>
+	</table>
+}

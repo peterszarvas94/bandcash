@@ -1,0 +1,19 @@
+package expense
+
+import (
+	appi18n "bandcash/internal/i18n"
+	"bandcash/internal/utils"
+	shared "bandcash/models/shared"
+)
+
+templ ExpenseIndex(data ExpensesData) {
+	<!doctype html>
+	<html lang={appi18n.LocaleCode(ctx)}>
+		@shared.Head(data.Title)
+		<body>
+			<div data-signals={templ.JSONString(expenseIndexSignals(utils.CSRFToken(ctx)))} data-init="@get('/sse')"></div>
+			@shared.Notifications()
+			@shared.AppShell("expense-index", data.Breadcrumbs, data.UserEmail, shared.GroupPrimaryNav(data.GroupID, "expenses"), ExpenseIndexMain(data), ExpenseIndexSidebar(data))
+		</body>
+	</html>
+}

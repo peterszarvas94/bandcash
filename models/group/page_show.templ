@@ -55,7 +55,10 @@ templ GroupDetailsRows(data GroupPageData) {
 			return "-"
 		}(),
 	)
-	@shared.DetailRow(ctxi18n.T(ctx, "groups.total_amount"), utils.FormatNumberLocalized(ctx, data.TotalAmount))
+	@shared.DetailRow(ctxi18n.T(ctx, "groups.income"), utils.FormatNumberLocalized(ctx, data.Income))
+	@shared.DetailRow(ctxi18n.T(ctx, "groups.payouts"), utils.FormatNumberLocalized(ctx, data.Payouts))
+	@shared.DetailRow(ctxi18n.T(ctx, "groups.expenses"), utils.FormatNumberLocalized(ctx, data.Expenses))
+	@shared.DetailRow(ctxi18n.T(ctx, "groups.leftover"), utils.FormatNumberLocalized(ctx, data.Leftover))
 }
 
 templ GroupSidebar(data GroupPageData) {
