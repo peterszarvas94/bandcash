@@ -11,6 +11,19 @@ WHERE email = ?;
 SELECT * FROM users
 WHERE id = ?;
 
+-- name: IsUserBanned :one
+SELECT COUNT(*) FROM banned_users
+WHERE user_id = ?;
+
+-- name: BanUser :exec
+INSERT INTO banned_users (id, user_id)
+VALUES (?, ?)
+ON CONFLICT(user_id) DO NOTHING;
+
+-- name: UnbanUser :exec
+DELETE FROM banned_users
+WHERE user_id = ?;
+
 -- name: CreateGroup :one
 INSERT INTO groups (id, name, admin_user_id)
 VALUES (?, ?, ?)

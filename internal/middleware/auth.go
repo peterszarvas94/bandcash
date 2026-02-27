@@ -34,6 +34,18 @@ func RequireAuth() echo.MiddlewareFunc {
 				return c.Redirect(http.StatusFound, "/auth/login")
 			}
 
+			bannedCount, err := db.Qry.IsUserBanned(c.Request().Context(), user.ID)
+			if err != nil {
+				slog.Warn("auth: failed to check user ban", "user_id", user.ID, "err", err)
+				clearSession(c)
+				return c.Redirect(http.StatusFound, "/auth/login")
+			}
+			if bannedCount > 0 {
+				clearSession(c)
+				utils.Notify(c, "warning", ctxi18n.T(c.Request().Context(), "auth.banned"))
+				return c.Redirect(http.StatusFound, "/auth/login")
+			}
+
 			c.Set(string(UserIDKey), user.ID)
 			return next(c)
 		}

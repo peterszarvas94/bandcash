@@ -1,9 +1,18 @@
 package admin
 
 import (
+	"database/sql"
+
 	"bandcash/internal/db"
 	"bandcash/internal/utils"
 )
+
+type RecentUserRow struct {
+	ID        string
+	Email     string
+	CreatedAt sql.NullTime
+	IsBanned  bool
+}
 
 type DashboardData struct {
 	Title       string
@@ -17,6 +26,6 @@ type DashboardData struct {
 
 	SignupEnabled bool
 
-	RecentUsers  []db.User
+	RecentUsers  []RecentUserRow
 	RecentGroups []db.Group
 }

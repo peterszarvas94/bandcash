@@ -11,6 +11,22 @@ import (
 	"time"
 )
 
+const banUser = `-- name: BanUser :exec
+INSERT INTO banned_users (id, user_id)
+VALUES (?, ?)
+ON CONFLICT(user_id) DO NOTHING
+`
+
+type BanUserParams struct {
+	ID     string `json:"id"`
+	UserID string `json:"user_id"`
+}
+
+func (q *Queries) BanUser(ctx context.Context, arg BanUserParams) error {
+	_, err := q.db.ExecContext(ctx, banUser, arg.ID, arg.UserID)
+	return err
+}
+
 const createGroup = `-- name: CreateGroup :one
 INSERT INTO groups (id, name, admin_user_id)
 VALUES (?, ?, ?)
@@ -278,6 +294,18 @@ func (q *Queries) IsGroupReader(ctx context.Context, arg IsGroupReaderParams) (i
 	return count, err
 }
 
+const isUserBanned = `-- name: IsUserBanned :one
+SELECT COUNT(*) FROM banned_users
+WHERE user_id = ?
+`
+
+func (q *Queries) IsUserBanned(ctx context.Context, userID string) (int64, error) {
+	row := q.db.QueryRowContext(ctx, isUserBanned, userID)
+	var count int64
+	err := row.Scan(&count)
+	return count, err
+}
+
 const listGroupPendingInvites = `-- name: ListGroupPendingInvites :many
 SELECT id, token, email, "action", group_id, expires_at, used_at, created_at FROM magic_links
 WHERE action = 'invite'
@@ -402,6 +430,16 @@ type RemoveGroupReaderParams struct {
 
 func (q *Queries) RemoveGroupReader(ctx context.Context, arg RemoveGroupReaderParams) error {
 	_, err := q.db.ExecContext(ctx, removeGroupReader, arg.UserID, arg.GroupID)
+	return err
+}
+
+const unbanUser = `-- name: UnbanUser :exec
+DELETE FROM banned_users
+WHERE user_id = ?
+`
+
+func (q *Queries) UnbanUser(ctx context.Context, userID string) error {
+	_, err := q.db.ExecContext(ctx, unbanUser, userID)
 	return err
 }
 

@@ -1,12 +1,15 @@
 package admin
 
 import (
+	"fmt"
+
 	ctxi18n "github.com/invopop/ctxi18n/i18n"
 
 	"bandcash/internal/db"
 	appi18n "bandcash/internal/i18n"
 	"bandcash/internal/utils"
 	shared "bandcash/models/shared"
+	icons "bandcash/models/shared/icons"
 )
 
 templ DashboardPage(data DashboardData) {
@@ -56,12 +59,14 @@ templ DashboardStatsRows(data DashboardData) {
 	@shared.DetailRow(ctxi18n.T(ctx, "admin.total_members"), utils.FormatNumberLocalized(ctx, data.MembersCount))
 }
 
-templ RecentUsersTable(users []db.User) {
-	<table class="table">
+templ RecentUsersTable(users []RecentUserRow) {
+	<table id="admin-recent-users" class="table table-sticky-actions">
 		<thead>
 			<tr>
 				<th>{ ctxi18n.T(ctx, "auth.email") }</th>
 				<th>{ ctxi18n.T(ctx, "groups.created") }</th>
+				<th>{ ctxi18n.T(ctx, "admin.users.status") }</th>
+				<th data-actions-col>{ ctxi18n.T(ctx, "table.actions") }</th>
 			</tr>
 		</thead>
 		<tbody>
@@ -75,11 +80,27 @@ templ RecentUsersTable(users []db.User) {
 							{ "-" }
 						}
 					</td>
+					<td>
+						if user.IsBanned {
+							{ ctxi18n.T(ctx, "admin.users.banned_status") }
+						} else {
+							{ ctxi18n.T(ctx, "admin.users.active_status") }
+						}
+					</td>
+					<td data-actions-col>
+						<div class="row row-right">
+							if user.IsBanned {
+								@shared.LoadingActionButton("btn", fmt.Sprintf("@post('/admin/users/%s/unban')", user.ID), "$_fetching", ctxi18n.T(ctx, "admin.users.unban"), icons.IconCheck)
+							} else {
+								@shared.DestructiveActionButton(fmt.Sprintf("@post('/admin/users/%s/ban')", user.ID), "$_fetching", ctxi18n.T(ctx, "admin.users.ban"))
+							}
+						</div>
+					</td>
 				</tr>
 			}
 			if len(users) == 0 {
 				<tr>
-					<td colspan="2">{ ctxi18n.T(ctx, "table.empty") }</td>
+					<td colspan="4">{ ctxi18n.T(ctx, "table.empty") }</td>
 				</tr>
 			}
 		</tbody>

@@ -7,6 +7,7 @@ package db
 
 import (
 	"context"
+	"database/sql"
 )
 
 const countEvents = `-- name: CountEvents :one
@@ -87,22 +88,40 @@ func (q *Queries) ListRecentGroups(ctx context.Context, limit int64) ([]Group, e
 	return items, nil
 }
 
-const listRecentUsers = `-- name: ListRecentUsers :many
-SELECT id, email, created_at FROM users
-ORDER BY created_at DESC
+const listRecentUsersWithBanStatus = `-- name: ListRecentUsersWithBanStatus :many
+SELECT
+  users.id,
+  users.email,
+  users.created_at,
+  CASE WHEN banned_users.user_id IS NULL THEN 0 ELSE 1 END AS is_banned
+FROM users
+LEFT JOIN banned_users ON banned_users.user_id = users.id
+ORDER BY users.created_at DESC
 LIMIT ?
 `
 
-func (q *Queries) ListRecentUsers(ctx context.Context, limit int64) ([]User, error) {
-	rows, err := q.db.QueryContext(ctx, listRecentUsers, limit)
+type ListRecentUsersWithBanStatusRow struct {
+	ID        string       `json:"id"`
+	Email     string       `json:"email"`
+	CreatedAt sql.NullTime `json:"created_at"`
+	IsBanned  int64        `json:"is_banned"`
+}
+
+func (q *Queries) ListRecentUsersWithBanStatus(ctx context.Context, limit int64) ([]ListRecentUsersWithBanStatusRow, error) {
+	rows, err := q.db.QueryContext(ctx, listRecentUsersWithBanStatus, limit)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
-	items := []User{}
+	items := []ListRecentUsersWithBanStatusRow{}
 	for rows.Next() {
-		var i User
-		if err := rows.Scan(&i.ID, &i.Email, &i.CreatedAt); err != nil {
+		var i ListRecentUsersWithBanStatusRow
+		if err := rows.Scan(
+			&i.ID,
+			&i.Email,
+			&i.CreatedAt,
+			&i.IsBanned,
+		); err != nil {
 			return nil, err
 		}
 		items = append(items, i)

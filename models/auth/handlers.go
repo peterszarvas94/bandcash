@@ -89,7 +89,7 @@ func (a *Auth) LoginRequest(c echo.Context) error {
 	}
 	emailAddress := signals.FormData.Email
 
-	_, err := db.Qry.GetUserByEmail(c.Request().Context(), emailAddress)
+	loginUser, err := db.Qry.GetUserByEmail(c.Request().Context(), emailAddress)
 	if err != nil {
 		if !errors.Is(err, sql.ErrNoRows) {
 			slog.Error("auth.login: failed to load user by email", "err", err)
@@ -112,7 +112,7 @@ func (a *Auth) LoginRequest(c echo.Context) error {
 			return c.NoContent(http.StatusOK)
 		}
 
-		_, err = db.Qry.CreateUser(c.Request().Context(), db.CreateUserParams{
+		loginUser, err = db.Qry.CreateUser(c.Request().Context(), db.CreateUserParams{
 			ID:    utils.GenerateID("usr"),
 			Email: emailAddress,
 		})
@@ -121,6 +121,17 @@ func (a *Auth) LoginRequest(c echo.Context) error {
 			a.patchLoginSentState(c, emailAddress)
 			return c.NoContent(http.StatusOK)
 		}
+	}
+
+	bannedCount, err := db.Qry.IsUserBanned(c.Request().Context(), loginUser.ID)
+	if err != nil {
+		slog.Error("auth.login: failed to check user ban", "err", err)
+		a.patchLoginSentState(c, emailAddress)
+		return c.NoContent(http.StatusOK)
+	}
+	if bannedCount > 0 {
+		a.patchLoginSentState(c, emailAddress)
+		return c.NoContent(http.StatusOK)
 	}
 
 	token := utils.GenerateID("tok")
@@ -205,6 +216,16 @@ func (a *Auth) VerifyMagicLink(c echo.Context) error {
 			slog.Error("auth: failed to create user", "err", err)
 			return c.String(http.StatusInternalServerError, "Failed to create user")
 		}
+	}
+
+	bannedCount, err := db.Qry.IsUserBanned(c.Request().Context(), user.ID)
+	if err != nil {
+		slog.Error("auth.verify: failed to check user ban", "user_id", user.ID, "err", err)
+		return c.String(http.StatusInternalServerError, "Failed to process link")
+	}
+	if bannedCount > 0 {
+		utils.Notify(c, "warning", ctxi18n.T(c.Request().Context(), "auth.banned"))
+		return c.Redirect(http.StatusFound, "/auth/login")
 	}
 
 	// Create session cookie
