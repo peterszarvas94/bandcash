@@ -45,13 +45,16 @@ func main() {
 		dbPath = *flagDBPath
 	}
 
-	err := os.Remove(dbPath)
-	if err != nil && !os.IsNotExist(err) {
-		slog.Error("failed to remove existing database", "err", err)
-		os.Exit(1)
+	pathsToRemove := []string{dbPath, dbPath + "-wal", dbPath + "-shm"}
+	for _, path := range pathsToRemove {
+		err := os.Remove(path)
+		if err != nil && !os.IsNotExist(err) {
+			slog.Error("failed to remove existing database file", "path", path, "err", err)
+			os.Exit(1)
+		}
 	}
 
-	err = db.Init(dbPath)
+	err := db.Init(dbPath)
 	if err != nil {
 		slog.Error("failed to initialize database", "err", err)
 		os.Exit(1)
