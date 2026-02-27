@@ -99,8 +99,27 @@ func (a *Auth) LoginRequest(c echo.Context) error {
 			return c.NoContent(http.StatusInternalServerError)
 		}
 
-		a.patchLoginSentState(c, emailAddress)
-		return c.NoContent(http.StatusOK)
+		signupEnabled, err := utils.IsSignupEnabled(c.Request().Context())
+		if err != nil {
+			slog.Error("auth.login: failed to read signup flag", "err", err)
+			a.patchLoginSentState(c, emailAddress)
+			return c.NoContent(http.StatusOK)
+		}
+
+		if !signupEnabled {
+			a.patchLoginSentState(c, emailAddress)
+			return c.NoContent(http.StatusOK)
+		}
+
+		_, err = db.Qry.CreateUser(c.Request().Context(), db.CreateUserParams{
+			ID:    utils.GenerateID("usr"),
+			Email: emailAddress,
+		})
+		if err != nil {
+			slog.Error("auth.login: failed to create user", "err", err)
+			a.patchLoginSentState(c, emailAddress)
+			return c.NoContent(http.StatusOK)
+		}
 	}
 
 	token := utils.GenerateID("tok")

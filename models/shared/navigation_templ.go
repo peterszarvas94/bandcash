@@ -272,7 +272,7 @@ func LanguageSelect(id string, currentLang string) templ.Component {
 	})
 }
 
-func AppPrimaryNav(active string) templ.Component {
+func AppPrimaryNav(active string, userEmail string) templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
 		if templ_7745c5c3_CtxErr := ctx.Err(); templ_7745c5c3_CtxErr != nil {
@@ -403,7 +403,7 @@ func AppPrimaryNav(active string) templ.Component {
 				return templ_7745c5c3_Err
 			}
 		}
-		if utils.Env().SuperadminEmail != "" {
+		if utils.Env().SuperadminEmail != "" && userEmail != "" && userEmail == utils.Env().SuperadminEmail {
 			if active == "admin" {
 				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 35, "<a class=\"btn app-nav-link active\" href=\"/admin\">")
 				if templ_7745c5c3_Err != nil {

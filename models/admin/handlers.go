@@ -10,6 +10,7 @@ import (
 	"bandcash/internal/db"
 	"bandcash/internal/middleware"
 	"bandcash/internal/utils"
+	shared "bandcash/models/shared"
 )
 
 type Admin struct{}
@@ -63,17 +64,61 @@ func (a *Admin) Dashboard(c echo.Context) error {
 		return c.NoContent(http.StatusInternalServerError)
 	}
 
+	signupEnabled, err := utils.IsSignupEnabled(c.Request().Context())
+	if err != nil {
+		slog.Error("admin.dashboard: failed to read enable_signup flag", "err", err)
+		return c.NoContent(http.StatusInternalServerError)
+	}
+
 	data := DashboardData{
-		Title:        ctxi18n.T(c.Request().Context(), "admin.title"),
-		Breadcrumbs:  []utils.Crumb{{Label: ctxi18n.T(c.Request().Context(), "admin.dashboard")}},
-		UserEmail:    user.Email,
-		UsersCount:   usersCount,
-		GroupsCount:  groupsCount,
-		EventsCount:  eventsCount,
-		MembersCount: membersCount,
-		RecentUsers:  recentUsers,
-		RecentGroups: recentGroups,
+		Title:         ctxi18n.T(c.Request().Context(), "admin.title"),
+		Breadcrumbs:   []utils.Crumb{{Label: ctxi18n.T(c.Request().Context(), "admin.dashboard")}},
+		UserEmail:     user.Email,
+		UsersCount:    usersCount,
+		GroupsCount:   groupsCount,
+		EventsCount:   eventsCount,
+		MembersCount:  membersCount,
+		SignupEnabled: signupEnabled,
+		RecentUsers:   recentUsers,
+		RecentGroups:  recentGroups,
 	}
 
 	return utils.RenderComponent(c, DashboardPage(data))
+}
+
+func (a *Admin) UpdateSignupFlag(c echo.Context) error {
+	var next bool
+	switch c.QueryParam("value") {
+	case "1", "true", "on":
+		next = true
+	case "0", "false", "off":
+		next = false
+	default:
+		current, err := utils.IsSignupEnabled(c.Request().Context())
+		if err != nil {
+			slog.Error("admin.flags.update_signup: failed to read flag", "err", err)
+			return c.NoContent(http.StatusInternalServerError)
+		}
+		next = !current
+	}
+
+	err := utils.SetSignupEnabled(c.Request().Context(), next)
+	if err != nil {
+		slog.Error("admin.flags.update_signup: failed to update flag", "err", err)
+		utils.Notify(c, "error", ctxi18n.T(c.Request().Context(), "admin.flags.update_failed"))
+		return c.NoContent(http.StatusInternalServerError)
+	}
+
+	utils.Notify(c, "success", ctxi18n.T(c.Request().Context(), "admin.flags.updated"))
+	notificationsHTML, err := utils.RenderComponentStringFor(c, shared.Notifications())
+	if err == nil {
+		_ = utils.SSEHub.PatchHTML(c, notificationsHTML)
+	}
+
+	flagsHTML, err := utils.RenderComponentStringFor(c, FlagsContent(next))
+	if err == nil {
+		_ = utils.SSEHub.PatchHTML(c, flagsHTML)
+	}
+
+	return c.NoContent(http.StatusOK)
 }

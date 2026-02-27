@@ -36,7 +36,6 @@ DB_PATH=/storage/sqlite.db
 LOG_LEVEL=info
 LOG_FOLDER=/storage/logs
 LOG_PREFIX=bandcash
-DISABLE_SIGNUP=true
 DISABLE_RATE_LIMIT=false
 
 SMTP_USERNAME=

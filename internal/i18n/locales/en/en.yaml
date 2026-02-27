@@ -236,3 +236,12 @@ en:
     recent_users: "Recent users"
     recent_groups: "Recent groups"
     access_denied: "You do not have access to admin pages."
+    flags:
+      title: "Feature Flags"
+      signup: "Signup"
+      disabled: "Disabled"
+      enabled: "Enabled"
+      enable_signup: "Enable signup"
+      disable_signup_action: "Disable signup"
+      updated: "Feature flag updated."
+      update_failed: "Could not update feature flag."

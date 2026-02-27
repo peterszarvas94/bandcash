@@ -40,7 +40,7 @@ templ LanguageSelect(id string, currentLang string) {
 	</div>
 }
 
-templ AppPrimaryNav(active string) {
+templ AppPrimaryNav(active string, userEmail string) {
 	<nav class="app-nav" aria-label="Primary">
 		<div class="app-nav-primary">
 			if active == "dashboard" {
@@ -65,7 +65,7 @@ templ AppPrimaryNav(active string) {
 					<span>{ ctxi18n.T(ctx, "settings.title") }</span>
 				</a>
 			}
-			if utils.Env().SuperadminEmail != "" {
+			if utils.Env().SuperadminEmail != "" && userEmail != "" && userEmail == utils.Env().SuperadminEmail {
 				if active == "admin" {
 					<a class="btn app-nav-link active" href="/admin">
 						@icons.Shield(templ.Attributes{"class": "icon"})

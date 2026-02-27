@@ -11,6 +11,7 @@ func RegisterRoutes(e *echo.Echo) *Admin {
 
 	g := e.Group("/admin", middleware.RequireAuth(), middleware.RequireSuperadmin())
 	g.GET("", a.Dashboard)
+	g.POST("/flags/signup", a.UpdateSignupFlag)
 
 	return a
 }

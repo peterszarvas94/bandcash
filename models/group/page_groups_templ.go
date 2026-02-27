@@ -82,7 +82,7 @@ func GroupsPage(data GroupsPageData) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = shared.AppShell("group-dashboard", data.Breadcrumbs, data.UserEmail, shared.AppPrimaryNav("dashboard"), GroupsMain(data), GroupsSidebar(data)).Render(ctx, templ_7745c5c3_Buffer)
+		templ_7745c5c3_Err = shared.AppShell("group-dashboard", data.Breadcrumbs, data.UserEmail, shared.AppPrimaryNav("dashboard", data.UserEmail), GroupsMain(data), GroupsSidebar(data)).Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

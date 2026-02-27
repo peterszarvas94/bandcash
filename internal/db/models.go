@@ -9,6 +9,12 @@ import (
 	"time"
 )
 
+type AppFlag struct {
+	Key       string    `json:"key"`
+	BoolValue int64     `json:"bool_value"`
+	UpdatedAt time.Time `json:"updated_at"`
+}
+
 type Event struct {
 	ID          string       `json:"id"`
 	GroupID     string       `json:"group_id"`

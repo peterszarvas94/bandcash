@@ -236,3 +236,12 @@ hu:
     recent_users: "Legutóbbi felhasználók"
     recent_groups: "Legutóbbi csoportok"
     access_denied: "Nincs hozzáférésed az admin oldalakhoz."
+    flags:
+      title: "Funkció kapcsolók"
+      signup: "Regisztráció"
+      disabled: "Tiltva"
+      enabled: "Engedélyezve"
+      enable_signup: "Regisztráció engedélyezése"
+      disable_signup_action: "Regisztráció tiltása"
+      updated: "Funkció kapcsoló frissítve."
+      update_failed: "A funkció kapcsoló frissítése sikertelen."

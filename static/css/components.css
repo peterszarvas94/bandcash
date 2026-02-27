@@ -498,6 +498,10 @@
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
+
+        .native-checkbox {
+          all: revert;
+        }
       }
     }
 

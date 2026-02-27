@@ -16,15 +16,33 @@ templ DashboardPage(data DashboardData) {
 		<body>
 			<div data-signals={ templ.JSONString(map[string]any{"csrf": utils.CSRFToken(ctx)}) } data-init="@get('/sse')"></div>
 			@shared.Notifications()
-			@shared.AppShellMainOnly("admin-dashboard", data.Breadcrumbs, data.UserEmail, shared.AppPrimaryNav("admin"), DashboardMain(data))
+			@shared.AppShellMainOnly("admin-dashboard", data.Breadcrumbs, data.UserEmail, shared.AppPrimaryNav("admin", data.UserEmail), DashboardMain(data))
 		</body>
 	</html>
 }
 
 templ DashboardMain(data DashboardData) {
 	@shared.Section(ctxi18n.T(ctx, "admin.stats"), DashboardStats(data))
+	@shared.Section(ctxi18n.T(ctx, "admin.flags.title"), FlagsContent(data.SignupEnabled))
 	@shared.Section(ctxi18n.T(ctx, "admin.recent_users"), RecentUsersTable(data.RecentUsers))
 	@shared.Section(ctxi18n.T(ctx, "admin.recent_groups"), RecentGroupsTable(data.RecentGroups))
+}
+
+templ FlagsContent(signupEnabled bool) {
+	<div id="admin-flags" class="detail-table">
+		<div class="detail-row">
+			<p class="detail-key">{ ctxi18n.T(ctx, "admin.flags.signup") }</p>
+			<div class="detail-val">
+				<input
+					class="native-checkbox"
+					type="checkbox"
+					checked?={ signupEnabled }
+					data-on:change="@post('/admin/flags/signup?value=' + (el.checked ? '1' : '0'))"
+					aria-label={ ctxi18n.T(ctx, "admin.flags.signup") }
+				/>
+			</div>
+		</div>
+	</div>
 }
 
 templ DashboardStats(data DashboardData) {

@@ -15,6 +15,8 @@ type DashboardData struct {
 	EventsCount  int64
 	MembersCount int64
 
+	SignupEnabled bool
+
 	RecentUsers  []db.User
 	RecentGroups []db.Group
 }
