@@ -41,10 +41,10 @@ templ MemberShowMain(data MemberData) {
 					<td><a href={ fmt.Sprintf("/groups/%s/events/%s", data.GroupID, event.ID) }>{ event.Title }</a></td>
 					<td>{ utils.FormatDateTimeLocalized(ctx, event.Time) }</td>
 					<td><span class="cell-ellipsis">{ event.Description }</span></td>
-					<td class="text-right">{ fmt.Sprintf("%d", event.Amount) }</td>
-					<td class="text-right">{ fmt.Sprintf("%d", event.ParticipantAmount) }</td>
-					<td class="text-right">{ fmt.Sprintf("%d", event.ParticipantExpense) }</td>
-					<td class="text-right">{ fmt.Sprintf("%d", event.ParticipantAmount+event.ParticipantExpense) }</td>
+					<td class="text-right">{ utils.FormatNumberLocalized(ctx, event.Amount) }</td>
+					<td class="text-right">{ utils.FormatNumberLocalized(ctx, event.ParticipantAmount) }</td>
+					<td class="text-right">{ utils.FormatNumberLocalized(ctx, event.ParticipantExpense) }</td>
+					<td class="text-right">{ utils.FormatNumberLocalized(ctx, event.ParticipantAmount+event.ParticipantExpense) }</td>
 				</tr>
 			}
 			if len(data.Events) == 0 {
@@ -59,5 +59,5 @@ templ MemberShowMain(data MemberData) {
 templ MemberDetailsRows(data MemberData) {
 	@shared.DetailRow(ctxi18n.T(ctx, "fields.name"), data.Member.Name)
 	@shared.DetailRow(ctxi18n.T(ctx, "fields.description"), data.Member.Description)
-	@shared.DetailRow(ctxi18n.T(ctx, "events.title"), fmt.Sprintf("%d", len(data.Events)))
+	@shared.DetailRow(ctxi18n.T(ctx, "events.title"), utils.FormatNumberLocalized(ctx, int64(len(data.Events))))
 }

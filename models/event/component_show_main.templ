@@ -48,9 +48,9 @@ templ EventShowMain(data EventData) {
 					data-participant-expense={ fmt.Sprintf("%d", participant.ParticipantExpense) }
 				>
 					<td><a href={ fmt.Sprintf("/groups/%s/members/%s", data.GroupID, participant.ID) }>{ participant.Name }</a></td>
-					<td class="text-right">{ fmt.Sprintf("%d", participant.ParticipantAmount+participant.ParticipantExpense) }</td>
-					<td class="text-right">{ fmt.Sprintf("%d", participant.ParticipantAmount) }</td>
-					<td class="text-right">{ fmt.Sprintf("%d", participant.ParticipantExpense) }</td>
+					<td class="text-right">{ utils.FormatNumberLocalized(ctx, participant.ParticipantAmount+participant.ParticipantExpense) }</td>
+					<td class="text-right">{ utils.FormatNumberLocalized(ctx, participant.ParticipantAmount) }</td>
+					<td class="text-right">{ utils.FormatNumberLocalized(ctx, participant.ParticipantExpense) }</td>
 					if data.IsAdmin {
 						<td class="text-right" data-actions-col>
 							<div class="row">
@@ -77,6 +77,6 @@ templ EventDetailsRows(data EventData) {
 	@shared.DetailRow(ctxi18n.T(ctx, "fields.title"), data.Event.Title)
 	@shared.DetailRow(ctxi18n.T(ctx, "fields.time"), utils.FormatDateTimeLocalized(ctx, data.Event.Time))
 	@shared.DetailRow(ctxi18n.T(ctx, "fields.description"), data.Event.Description)
-	@shared.DetailRow(ctxi18n.T(ctx, "fields.amount"), fmt.Sprintf("%d", data.Event.Amount))
-	@shared.DetailRow(ctxi18n.T(ctx, "events.leftover"), fmt.Sprintf("%d", data.Leftover))
+	@shared.DetailRow(ctxi18n.T(ctx, "fields.amount"), utils.FormatNumberLocalized(ctx, data.Event.Amount))
+	@shared.DetailRow(ctxi18n.T(ctx, "events.leftover"), utils.FormatNumberLocalized(ctx, data.Leftover))
 }

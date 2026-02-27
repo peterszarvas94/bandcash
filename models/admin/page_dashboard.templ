@@ -1,8 +1,6 @@
 package admin
 
 import (
-	"fmt"
-
 	ctxi18n "github.com/invopop/ctxi18n/i18n"
 
 	"bandcash/internal/db"
@@ -34,10 +32,10 @@ templ DashboardStats(data DashboardData) {
 }
 
 templ DashboardStatsRows(data DashboardData) {
-	@shared.DetailRow(ctxi18n.T(ctx, "admin.total_users"), fmt.Sprintf("%d", data.UsersCount))
-	@shared.DetailRow(ctxi18n.T(ctx, "admin.total_groups"), fmt.Sprintf("%d", data.GroupsCount))
-	@shared.DetailRow(ctxi18n.T(ctx, "admin.total_events"), fmt.Sprintf("%d", data.EventsCount))
-	@shared.DetailRow(ctxi18n.T(ctx, "admin.total_members"), fmt.Sprintf("%d", data.MembersCount))
+	@shared.DetailRow(ctxi18n.T(ctx, "admin.total_users"), utils.FormatNumberLocalized(ctx, data.UsersCount))
+	@shared.DetailRow(ctxi18n.T(ctx, "admin.total_groups"), utils.FormatNumberLocalized(ctx, data.GroupsCount))
+	@shared.DetailRow(ctxi18n.T(ctx, "admin.total_events"), utils.FormatNumberLocalized(ctx, data.EventsCount))
+	@shared.DetailRow(ctxi18n.T(ctx, "admin.total_members"), utils.FormatNumberLocalized(ctx, data.MembersCount))
 }
 
 templ RecentUsersTable(users []db.User) {

@@ -53,7 +53,7 @@ templ GroupDetailsRows(data GroupPageData) {
 			return "-"
 		}(),
 	)
-	@shared.DetailRow(ctxi18n.T(ctx, "groups.total_amount"), fmt.Sprintf("%d", data.TotalAmount))
+	@shared.DetailRow(ctxi18n.T(ctx, "groups.total_amount"), utils.FormatNumberLocalized(ctx, data.TotalAmount))
 }
 
 templ GroupSidebar(data GroupPageData) {

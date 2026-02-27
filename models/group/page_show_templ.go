@@ -215,7 +215,7 @@ func GroupDetailsRows(data GroupPageData) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = shared.DetailRow(ctxi18n.T(ctx, "groups.total_amount"), fmt.Sprintf("%d", data.TotalAmount)).Render(ctx, templ_7745c5c3_Buffer)
+		templ_7745c5c3_Err = shared.DetailRow(ctxi18n.T(ctx, "groups.total_amount"), utils.FormatNumberLocalized(ctx, data.TotalAmount)).Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
