@@ -11,12 +11,9 @@ import (
 
 templ MemberShowMain(data MemberData) {
 	<h2 class="pt">{ ctxi18n.T(ctx, "members.details") }</h2>
-	<div class="entry-details">
-		<p><strong>{ ctxi18n.T(ctx, "fields.name") }:</strong> { data.Member.Name }</p>
-		<p><strong>{ ctxi18n.T(ctx, "fields.description") }:</strong> { data.Member.Description }</p>
-	</div>
+	@shared.DetailTable(MemberDetailsRows(data))
 	if data.IsAdmin {
-		<div class="row row-wrap pb">
+		<div class="row row-wrap detail-actions">
 			@shared.LoadingActionButton("btn", "$formState = 'edit'; $errors = {name: '', description: ''}", "$formState !== ''", ctxi18n.T(ctx, "members.edit"), icons.IconPencil)
 			@shared.DestructiveActionButton(
 				fmt.Sprintf("sure(%s, %s, %s, %s, () => @delete('/groups/%s/members/%s'))", utils.JSONString(ctxi18n.T(ctx, "members.delete_confirm")), utils.JSONString(ctxi18n.T(ctx, "confirm.destructive_message")), utils.JSONString(ctxi18n.T(ctx, "actions.delete")), utils.JSONString(ctxi18n.T(ctx, "actions.cancel")), data.GroupID, data.Member.ID),
@@ -57,4 +54,10 @@ templ MemberShowMain(data MemberData) {
 			}
 		</tbody>
 	</table>
+}
+
+templ MemberDetailsRows(data MemberData) {
+	@shared.DetailRow(ctxi18n.T(ctx, "fields.name"), data.Member.Name)
+	@shared.DetailRow(ctxi18n.T(ctx, "fields.description"), data.Member.Description)
+	@shared.DetailRow(ctxi18n.T(ctx, "events.title"), fmt.Sprintf("%d", len(data.Events)))
 }

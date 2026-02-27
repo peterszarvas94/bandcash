@@ -474,22 +474,44 @@
     border-left-color: var(--color-warning);
   }
 
-  .event-details {
+  .detail-table {
     display: grid;
-    gap: var(--space);
+    gap: calc(var(--space) * 0.85);
 
-    .field {
-      padding: 0 0 var(--space) 0;
+    .detail-row {
+      display: grid;
+      grid-template-columns: minmax(8rem, 12rem) minmax(0, 1fr);
+      gap: calc(var(--space) * 1.2);
+      align-items: start;
 
-      label {
+      .detail-key,
+      .detail-val {
+        margin: 0;
+      }
+
+      .detail-key {
         color: var(--muted-text-color);
       }
 
-      p {
-        margin: 0;
+      .detail-val {
         font-weight: 600;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
       }
     }
+
+    @media (max-width: 720px) {
+      .detail-row {
+        grid-template-columns: 1fr;
+        gap: calc(var(--space) * 0.3);
+      }
+    }
+  }
+
+  .detail-actions {
+    margin-top: calc(var(--space) * 1.25);
+    margin-bottom: calc(var(--space) * 1.25);
   }
 
   .topbar {

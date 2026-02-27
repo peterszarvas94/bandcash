@@ -1,0 +1,14 @@
+package shared
+
+templ DetailTable(content templ.Component) {
+	<div class="detail-table">
+		@content
+	</div>
+}
+
+templ DetailRow(label string, value string) {
+	<div class="detail-row">
+		<p class="detail-key">{ label }</p>
+		<p class="detail-val">{ value }</p>
+	</div>
+}
