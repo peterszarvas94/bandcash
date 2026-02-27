@@ -78,6 +78,7 @@ func (e *Events) GetShowData(ctx context.Context, groupID, eventID string) (Even
 		Breadcrumbs: []utils.Crumb{
 			{Label: ctxi18n.T(ctx, "groups.title"), Href: "/dashboard"},
 			{Label: group.Name, Href: "/groups/" + groupID},
+			{Label: ctxi18n.T(ctx, "events.title"), Href: "/groups/" + groupID + "/events"},
 			{Label: event.Title},
 		},
 	}, nil
