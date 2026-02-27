@@ -6,6 +6,7 @@ import (
 	ctxi18n "github.com/invopop/ctxi18n/i18n"
 
 	"bandcash/internal/utils"
+	shared "bandcash/models/shared"
 	icons "bandcash/models/shared/icons"
 )
 
@@ -24,10 +25,11 @@ templ MemberShowSidebar(data MemberData) {
 					<div data-show="$errors && $errors.description" class="color-error" data-text="$errors.description"></div>
 				</div>
 				<div class="sidebar-actions">
-				<button class="btn btn-primary" type="button" data-on:click={fmt.Sprintf("@put('/groups/%s/members/%s')", data.GroupID, data.Member.ID)}>@icons.Save(templ.Attributes{"class": "icon"})<span>{ctxi18n.T(ctx, "members.update")}</span></button>
+				@shared.LoadingActionButton("btn btn-primary", fmt.Sprintf("@put('/groups/%s/members/%s')", data.GroupID, data.Member.ID), "$_fetching", ctxi18n.T(ctx, "members.update"), icons.IconSave)
 					<button
 						class="btn"
 						type="button"
+						data-attr:disabled="$_fetching"
 					data-on:click={"$formState = ''; $formData = {name: " + utils.JSONString(data.Member.Name) + ", description: " + utils.JSONString(data.Member.Description) + "}; $errors = {name: '', description: ''}"}
 					>
 					@icons.X(templ.Attributes{"class": "icon"})<span>{ctxi18n.T(ctx, "actions.cancel")}</span>

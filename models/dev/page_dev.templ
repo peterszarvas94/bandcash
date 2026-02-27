@@ -5,6 +5,7 @@ import (
 
 	appi18n "bandcash/internal/i18n"
 	"bandcash/internal/utils"
+	icons "bandcash/models/shared/icons"
 	shared "bandcash/models/shared"
 )
 
@@ -22,8 +23,15 @@ templ DevPage() {
 
 templ DevMain() {
 	@shared.Section(ctxi18n.T(ctx, "dev.notifications.title"), NotificationsContent())
+	@shared.Section("Loading indicator test", LoadingIndicatorContent())
 	@shared.Section(ctxi18n.T(ctx, "dev.ratelimit.title"), RateLimitContent())
 	@shared.Section(ctxi18n.T(ctx, "dev.bodylimit.title"), BodyLimitContent())
+}
+
+templ LoadingIndicatorContent() {
+	<form class="form" data-on:submit="@post('/dev/spinner-test')" data-indicator:_fetching>
+		@shared.LoadingSubmitButton("btn btn-primary", "Spinner test request", icons.IconSave)
+	</form>
 }
 
 templ NotificationsContent() {

@@ -5,6 +5,7 @@ import (
 
 	ctxi18n "github.com/invopop/ctxi18n/i18n"
 	"bandcash/internal/utils"
+	shared "bandcash/models/shared"
 	icons "bandcash/models/shared/icons"
 )
 
@@ -25,17 +26,11 @@ templ MemberShowMain(data MemberData) {
 				@icons.Pencil(templ.Attributes{"class": "icon"})
 				<span>{ ctxi18n.T(ctx, "members.edit") }</span>
 			</button>
-			<form data-on:submit={ fmt.Sprintf("@delete('/groups/%s/members/%s')", data.GroupID, data.Member.ID) }>
-				<button
-					class="btn btn-danger"
-					type="button"
-					data-attr:disabled="$formState !== ''"
-					data-on:click={ fmt.Sprintf("sure(el, %s, %s, %s, %s)", utils.JSONString(ctxi18n.T(ctx, "members.delete_confirm")), utils.JSONString(ctxi18n.T(ctx, "confirm.destructive_message")), utils.JSONString(ctxi18n.T(ctx, "actions.delete")), utils.JSONString(ctxi18n.T(ctx, "actions.cancel"))) }
-				>
-					@icons.Trash2(templ.Attributes{"class": "icon"})
-					<span>{ ctxi18n.T(ctx, "actions.delete") }</span>
-				</button>
-			</form>
+			@shared.DestructiveActionButton(
+				fmt.Sprintf("sure(%s, %s, %s, %s, () => @delete('/groups/%s/members/%s'))", utils.JSONString(ctxi18n.T(ctx, "members.delete_confirm")), utils.JSONString(ctxi18n.T(ctx, "confirm.destructive_message")), utils.JSONString(ctxi18n.T(ctx, "actions.delete")), utils.JSONString(ctxi18n.T(ctx, "actions.cancel")), data.GroupID, data.Member.ID),
+				"$formState !== '' || $_fetching",
+				ctxi18n.T(ctx, "actions.delete"),
+			)
 		</div>
 	}
 	<h2>{ ctxi18n.T(ctx, "members.events") }</h2>
@@ -56,7 +51,7 @@ templ MemberShowMain(data MemberData) {
 				<tr>
 					<td><a href={ fmt.Sprintf("/groups/%s/events/%s", data.GroupID, event.ID) }>{ event.Title }</a></td>
 					<td>{ utils.FormatDateTimeLocalized(ctx, event.Time) }</td>
-					<td>{ event.Description }</td>
+					<td><span class="cell-ellipsis">{ event.Description }</span></td>
 					<td class="text-right">{ fmt.Sprintf("%d", event.Amount) }</td>
 					<td class="text-right">{ fmt.Sprintf("%d", event.ParticipantAmount) }</td>
 					<td class="text-right">{ fmt.Sprintf("%d", event.ParticipantExpense) }</td>

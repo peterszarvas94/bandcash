@@ -41,6 +41,7 @@ func main() {
 
 	e.Use(middleware.Compression())
 	e.Use(middleware.RequestID())
+	e.Use(middleware.GlobalDelay())
 	e.Use(middleware.Locale())
 	e.Use(middleware.GlobalRateLimit())
 	e.Use(middleware.GlobalBodyLimit())

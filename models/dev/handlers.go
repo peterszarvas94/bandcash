@@ -2,6 +2,7 @@ package dev
 
 import (
 	"net/http"
+	"time"
 
 	ctxi18n "github.com/invopop/ctxi18n/i18n"
 	"github.com/labstack/echo/v4"
@@ -82,11 +83,16 @@ func (h *DevNotifications) TestWarning(c echo.Context) error {
 	return c.NoContent(http.StatusOK)
 }
 
-func (h *DevNotifications) BodyLimitGlobalTest(c echo.Context) error {
+func (h *DevNotifications) TestBodyLimitGlobal(c echo.Context) error {
 	return c.NoContent(http.StatusOK)
 }
 
-func (h *DevNotifications) BodyLimitAuthTest(c echo.Context) error {
+func (h *DevNotifications) TestBodyLimitAuth(c echo.Context) error {
+	return c.NoContent(http.StatusOK)
+}
+
+func (h *DevNotifications) TestSpinner(c echo.Context) error {
+	time.Sleep(1500 * time.Millisecond)
 	return c.NoContent(http.StatusOK)
 }
 

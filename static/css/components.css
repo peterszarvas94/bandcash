@@ -114,14 +114,33 @@
     flex: 0 0 auto;
   }
 
+  .icon-spin {
+    animation: icon-spin 1s linear infinite;
+  }
+
+  @keyframes icon-spin {
+    from {
+      transform: rotate(0deg);
+    }
+
+    to {
+      transform: rotate(360deg);
+    }
+  }
+
   .btn .icon {
     margin-right: 0;
     transform: translateY(-0.02em);
   }
 
+  .btn .icon-spin {
+    transform: none;
+  }
+
   .btn span {
     display: inline-flex;
     align-items: center;
+    line-height: 1;
   }
 
   .btn-icon {
@@ -132,6 +151,14 @@
 
   .btn-icon .icon {
     margin-right: 0;
+  }
+
+  .cell-ellipsis {
+    display: block;
+    max-width: 20rem;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
   }
 
   .sidebar-actions {

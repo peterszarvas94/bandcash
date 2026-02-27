@@ -1,0 +1,39 @@
+package shared
+
+import (
+	icons "bandcash/models/shared/icons"
+)
+
+templ LoadingSubmitButton(className string, label string, iconName icons.IconName) {
+	<button type="submit" class={ className } data-attr:disabled="$_fetching">
+		<span data-show="!$_fetching">@icons.Icon(iconName, templ.Attributes{"class": "icon"})</span>
+		<span data-show="$_fetching" style="display: none">@icons.LoaderCircle(templ.Attributes{"class": "icon icon-spin"})</span>
+		<span>{ label }</span>
+	</button>
+}
+
+templ LoadingActionButton(className string, onClick string, disabledExpr string, label string, iconName icons.IconName) {
+	<button class={ className } type="button" data-indicator:_fetching data-attr:disabled={ disabledExpr } data-on:click={ onClick }>
+		<span data-show="!$_fetching">@icons.Icon(iconName, templ.Attributes{"class": "icon"})</span>
+		<span data-show="$_fetching" style="display: none">@icons.LoaderCircle(templ.Attributes{"class": "icon icon-spin"})</span>
+		<span>{ label }</span>
+	</button>
+}
+
+templ LoadingIconActionButton(className string, onClick string, disabledExpr string, ariaLabel string, title string, iconName icons.IconName) {
+	<button class={ className } type="button" aria-label={ ariaLabel } title={ title } data-indicator:_fetching data-attr:disabled={ disabledExpr } data-on:click={ onClick }>
+		<span data-show="!$_fetching">@icons.Icon(iconName, templ.Attributes{"class": "icon"})</span>
+		<span data-show="$_fetching" style="display: none">@icons.LoaderCircle(templ.Attributes{"class": "icon icon-spin"})</span>
+	</button>
+}
+
+templ DestructiveActionButton(onClick string, disabledExpr string, label string) {
+	@LoadingActionButton("btn btn-danger", onClick, disabledExpr, label, icons.IconTrash2)
+}
+
+templ ButtonLink(href string, className string, label string, iconName icons.IconName) {
+	<a class={ className } href={ href }>
+		@icons.Icon(iconName, templ.Attributes{"class": "icon"})
+		<span>{ label }</span>
+	</a>
+}

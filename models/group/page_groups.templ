@@ -126,17 +126,14 @@ templ ViewerGroupsContent(data GroupsPageData) {
 templ GroupsSidebar(data GroupsPageData) {
 	<div data-show="$formState === 'add'" style="display: none" class="pb">
 		<h3>{ ctxi18n.T(ctx, "groups.new") }</h3>
-		<form class="form" data-on:submit="@post('/groups')">
+		<form class="form" data-on:submit="@post('/groups')" data-indicator:_fetching>
 			<div class="field">
 				<label>{ ctxi18n.T(ctx, "groups.name") } <span class="required-mark">*</span></label>
 				<input type="text" data-bind="formData.name" placeholder={ ctxi18n.T(ctx, "groups.name_placeholder") }/>
 			</div>
 			<div class="sidebar-actions">
-				<button type="submit" class="btn btn-primary">
-					@icons.Save(templ.Attributes{"class": "icon"})
-					<span>{ ctxi18n.T(ctx, "groups.create") }</span>
-				</button>
-				<button class="btn" type="button" data-on:click="$formState = ''; $formData = {name: ''}">
+				@shared.LoadingSubmitButton("btn btn-primary", ctxi18n.T(ctx, "groups.create"), icons.IconSave)
+				<button class="btn" type="button" data-attr:disabled="$_fetching" data-on:click="$formState = ''; $formData = {name: ''}">
 					@icons.X(templ.Attributes{"class": "icon"})
 					<span>{ ctxi18n.T(ctx, "actions.cancel") }</span>
 				</button>
@@ -147,30 +144,22 @@ templ GroupsSidebar(data GroupsPageData) {
 		<div class="row justify-between">
 			<h3>{ ctxi18n.T(ctx, "groups.edit") }</h3>
 			<div class="row row-wrap">
-				<form data-on:submit="@post('/groups/' + $selectedGroupId + '/delete')">
-					<button
-						type="button"
-						class="btn btn-danger"
-						data-on:click={ fmt.Sprintf("sure(el, %s, %s, %s, %s)", utils.JSONString(ctxi18n.T(ctx, "groups.delete_confirm")), utils.JSONString(ctxi18n.T(ctx, "confirm.destructive_message")), utils.JSONString(ctxi18n.T(ctx, "groups.delete")), utils.JSONString(ctxi18n.T(ctx, "actions.cancel"))) }
-					>
-						@icons.Trash2(templ.Attributes{"class": "icon"})
-						<span>{ ctxi18n.T(ctx, "actions.delete") }</span>
-					</button>
-				</form>
+				@shared.DestructiveActionButton(
+					fmt.Sprintf("sure(%s, %s, %s, %s, () => @post('/groups/' + $selectedGroupId + '/delete'))", utils.JSONString(ctxi18n.T(ctx, "groups.delete_confirm")), utils.JSONString(ctxi18n.T(ctx, "confirm.destructive_message")), utils.JSONString(ctxi18n.T(ctx, "groups.delete")), utils.JSONString(ctxi18n.T(ctx, "actions.cancel"))),
+					"$_fetching",
+					ctxi18n.T(ctx, "actions.delete"),
+				)
 			</div>
 		</div>
-		<form class="form" data-on:submit="@put('/groups/' + $selectedGroupId)">
+		<form class="form" data-on:submit="@put('/groups/' + $selectedGroupId)" data-indicator:_fetching>
 			<div class="field">
 				<label>{ ctxi18n.T(ctx, "groups.name") } <span class="required-mark">*</span></label>
 				<input type="text" data-bind="formData.name" placeholder={ ctxi18n.T(ctx, "groups.name_placeholder") }/>
 				<div data-show="$errors && $errors.name" class="color-error" data-text="$errors.name"></div>
 			</div>
 			<div class="sidebar-actions">
-				<button class="btn btn-primary" type="submit">
-					@icons.Save(templ.Attributes{"class": "icon"})
-					<span>{ ctxi18n.T(ctx, "groups.update") }</span>
-				</button>
-				<button class="btn" type="button" data-on:click="$formState = ''; $selectedGroupId = ''; $formData = {name: ''}; $errors = {name: ''}">
+				@shared.LoadingSubmitButton("btn btn-primary", ctxi18n.T(ctx, "groups.update"), icons.IconSave)
+				<button class="btn" type="button" data-attr:disabled="$_fetching" data-on:click="$formState = ''; $selectedGroupId = ''; $formData = {name: ''}; $errors = {name: ''}">
 					@icons.X(templ.Attributes{"class": "icon"})
 					<span>{ ctxi18n.T(ctx, "actions.cancel") }</span>
 				</button>
@@ -181,17 +170,14 @@ templ GroupsSidebar(data GroupsPageData) {
 		<h3>{ ctxi18n.T(ctx, "groups.leave") }</h3>
 		<p>{ ctxi18n.T(ctx, "groups.leave_confirm") }</p>
 		<div class="sidebar-actions">
-			<form data-on:submit="@post('/groups/' + $selectedGroupId + '/leave')">
-				<button
-					type="button"
-					class="btn btn-danger"
-					data-on:click={ fmt.Sprintf("sure(el, %s, %s, %s, %s)", utils.JSONString(ctxi18n.T(ctx, "groups.leave_confirm")), utils.JSONString(ctxi18n.T(ctx, "confirm.leave_message")), utils.JSONString(ctxi18n.T(ctx, "groups.leave")), utils.JSONString(ctxi18n.T(ctx, "actions.cancel"))) }
-				>
-					@icons.SquareArrowRightExit(templ.Attributes{"class": "icon"})
-					<span>{ ctxi18n.T(ctx, "groups.leave") }</span>
-				</button>
-			</form>
-			<button class="btn" type="button" data-on:click="$formState = ''; $selectedGroupId = ''">
+			@shared.LoadingActionButton(
+				"btn btn-danger",
+				fmt.Sprintf("sure(%s, %s, %s, %s, () => @post('/groups/' + $selectedGroupId + '/leave'))", utils.JSONString(ctxi18n.T(ctx, "groups.leave_confirm")), utils.JSONString(ctxi18n.T(ctx, "confirm.leave_message")), utils.JSONString(ctxi18n.T(ctx, "groups.leave")), utils.JSONString(ctxi18n.T(ctx, "actions.cancel"))),
+				"$_fetching",
+				ctxi18n.T(ctx, "groups.leave"),
+				icons.IconSquareArrowRightExit,
+			)
+			<button class="btn" type="button" data-attr:disabled="$_fetching" data-on:click="$formState = ''; $selectedGroupId = ''">
 				@icons.X(templ.Attributes{"class": "icon"})
 				<span>{ ctxi18n.T(ctx, "actions.cancel") }</span>
 			</button>

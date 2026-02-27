@@ -1,6 +1,6 @@
 # P1
 
-- [ ] loading indicator for forms and buttons
+- [x] loading indicator for forms and buttons
 - [ ] remove unnecessary sidebars (for example read-only users)
 - [ ] improve mobile friendliness
 - [x] add monitoring + alerting for `/health` (defer with centralized logs/observability)

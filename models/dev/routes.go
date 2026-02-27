@@ -14,8 +14,9 @@ func RegisterRoutes(e *echo.Echo) {
 
 	h := &DevNotifications{}
 	e.GET("/dev", h.DevPageHandler)
-	e.POST("/dev/body-limit/global", h.BodyLimitGlobalTest)
-	e.POST("/dev/body-limit/auth", h.BodyLimitAuthTest, middleware.AuthBodyLimit())
+	e.POST("/dev/body-limit/global", h.TestBodyLimitGlobal)
+	e.POST("/dev/body-limit/auth", h.TestBodyLimitAuth, middleware.AuthBodyLimit())
+	e.POST("/dev/spinner-test", h.TestSpinner)
 	e.POST("/dev/notifications/inline", h.TestInline)
 	e.POST("/dev/notifications/success", h.TestSuccess)
 	e.POST("/dev/notifications/error", h.TestError)

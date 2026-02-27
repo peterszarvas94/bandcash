@@ -5,6 +5,7 @@ import (
 
 	ctxi18n "github.com/invopop/ctxi18n/i18n"
 	"bandcash/internal/utils"
+	shared "bandcash/models/shared"
 	icons "bandcash/models/shared/icons"
 )
 
@@ -13,15 +14,11 @@ templ EventIndexSidebar(data EventsData) {
 		<div data-show="$formState !== ''" style="display: none" class="pb">
 			<div class="row justify-between" data-show="$formState === 'edit'">
 				<h3>{ctxi18n.T(ctx, "events.edit")}</h3>
-				<form data-on:submit={ fmt.Sprintf("@delete('/groups/%s/events/' + $editingId)", data.GroupID) }>
-					<button
-						class="btn btn-danger"
-						type="button"
-						data-on:click={ fmt.Sprintf("sure(el, %s, %s, %s, %s)", utils.JSONString(ctxi18n.T(ctx, "events.delete_confirm")), utils.JSONString(ctxi18n.T(ctx, "confirm.destructive_message")), utils.JSONString(ctxi18n.T(ctx, "actions.delete")), utils.JSONString(ctxi18n.T(ctx, "actions.cancel"))) }
-					>
-						@icons.Trash2(templ.Attributes{"class": "icon"})<span>{ctxi18n.T(ctx, "actions.delete")}</span>
-					</button>
-				</form>
+				@shared.DestructiveActionButton(
+					fmt.Sprintf("sure(%s, %s, %s, %s, () => @delete('/groups/%s/events/' + $editingId))", utils.JSONString(ctxi18n.T(ctx, "events.delete_confirm")), utils.JSONString(ctxi18n.T(ctx, "confirm.destructive_message")), utils.JSONString(ctxi18n.T(ctx, "actions.delete")), utils.JSONString(ctxi18n.T(ctx, "actions.cancel")), data.GroupID),
+					"$_fetching",
+					ctxi18n.T(ctx, "actions.delete"),
+				)
 			</div>
 			<form class="form">
 				<div class="form-row">
@@ -47,25 +44,12 @@ templ EventIndexSidebar(data EventsData) {
 					<div data-show="$errors && $errors.amount" class="color-error" data-text="$errors.amount"></div>
 				</div>
 				<div class="sidebar-actions">
-				<button
-					class="btn btn-primary"
-					type="button"
-					data-show="$formState === 'add'"
-					data-on:click={fmt.Sprintf("@post('/groups/%s/events')", data.GroupID)}
-				>
-					@icons.Save(templ.Attributes{"class": "icon"})<span>{ctxi18n.T(ctx, "events.create")}</span>
-				</button>
-				<button
-					class="btn btn-primary"
-					type="button"
-					data-show="$formState === 'edit'"
-					data-on:click={fmt.Sprintf("@put('/groups/%s/events/' + $editingId)", data.GroupID)}
-				>
-					@icons.Save(templ.Attributes{"class": "icon"})<span>{ctxi18n.T(ctx, "events.update")}</span>
-				</button>
+				<span data-show="$formState === 'add'">@shared.LoadingActionButton("btn btn-primary", fmt.Sprintf("@post('/groups/%s/events')", data.GroupID), "$_fetching", ctxi18n.T(ctx, "events.create"), icons.IconSave)</span>
+				<span data-show="$formState === 'edit'">@shared.LoadingActionButton("btn btn-primary", fmt.Sprintf("@put('/groups/%s/events/' + $editingId)", data.GroupID), "$_fetching", ctxi18n.T(ctx, "events.update"), icons.IconSave)</span>
 				<button
 					class="btn"
 					type="button"
+					data-attr:disabled="$_fetching"
 					data-on:click="$formState = ''; $editingId = 0; $formData = {title: '', time: '', description: '', amount: 0}; $errors = {title: '', time: '', description: '', amount: ''}"
 				>
 					@icons.X(templ.Attributes{"class": "icon"})<span>{ctxi18n.T(ctx, "actions.cancel")}</span>

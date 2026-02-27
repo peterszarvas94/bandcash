@@ -22,12 +22,12 @@ templ LoginPage(data AuthPageData) {
 }
 
 templ LoginMain() {
-	<form class="form" data-on:submit="@post('/auth/login')">
+	<form class="form" data-on:submit="@post('/auth/login')" data-indicator:_fetching>
 		<div class="field">
 			<label>{ ctxi18n.T(ctx, "auth.email") } <span class="required-mark">*</span></label>
 			<input type="email" data-bind="formData.email" placeholder={ ctxi18n.T(ctx, "auth.email_placeholder") }/>
 			<div data-show="$authError !== ''" class="color-error" data-text="$authError"></div>
 		</div>
-		<button type="submit" class="btn btn-primary">@icons.Send(templ.Attributes{"class": "icon"})<span>{ ctxi18n.T(ctx, "auth.send_link") }</span></button>
+		@shared.LoadingSubmitButton("btn btn-primary", ctxi18n.T(ctx, "auth.send_link"), icons.IconSend)
 	</form>
 }
