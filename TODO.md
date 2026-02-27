@@ -1,7 +1,11 @@
 # P1
 
 - [x] loading indicator for forms and buttons
-- [ ] remove unnecessary sidebars (for example read-only users)
+- [x] remove unnecessary sidebars (for example read-only users)
+- [ ] pagination for tables
+- [ ] search for tables
+- [ ] filter for tables
+- [ ] order for tables
 - [ ] improve mobile friendliness
 - [x] add monitoring + alerting for `/health` (defer with centralized logs/observability)
 - [ ] add expenses table (title, description, amount, date)

@@ -20,34 +20,17 @@ Open `http://localhost:2222`.
 
 ## Deployment (Kamal)
 
-1) Create `.kamal/secrets` on your machine/server (this file is ignored by git) and set at least:
+1. Copy the dev secrets template, then update values for production:
 
-```dotenv
-KAMAL_REGISTRY_USERNAME=
-KAMAL_REGISTRY_PASSWORD=
-BETTER_STACK_URI=
-BETTER_STACK_SOURCE_TOKEN=
-
-APP_ENV=production
-HOST=0.0.0.0
-PORT=2222
-URL=https://bandcash.app
-DB_PATH=/storage/sqlite.db
-LOG_LEVEL=info
-LOG_FOLDER=/storage/logs
-LOG_PREFIX=bandcash
-DISABLE_RATE_LIMIT=false
-
-SMTP_USERNAME=
-SMTP_PASSWORD=
-SMTP_HOST=
-SMTP_PORT=
-EMAIL_FROM="BandCash <noreply@bandcash.app>"
+```bash
+cp .kamal/secrets.dev .kamal/secrets
 ```
 
-2) Ensure SSH host alias `bandcash` is configured and reachable.
+This file contains example values for production.
 
-3) Run deploy via mise:
+2. Ensure SSH host alias `bandcash` is configured and reachable.
+
+3. Run deploy via mise:
 
 ```bash
 mise run kamal deploy
