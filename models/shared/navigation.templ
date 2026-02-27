@@ -87,12 +87,12 @@ templ AppPrimaryNav(active string, userEmail string) {
 				if active == "dev" {
 					<a class="btn app-nav-link active" href="/dev">
 						@icons.Terminal(templ.Attributes{"class": "icon"})
-						<span>{ ctxi18n.T(ctx, "dev.title") }</span>
+						<span>Dev</span>
 					</a>
 				} else {
 					<a class="btn app-nav-link" href="/dev">
 						@icons.Terminal(templ.Attributes{"class": "icon"})
-						<span>{ ctxi18n.T(ctx, "dev.title") }</span>
+						<span>Dev</span>
 					</a>
 				}
 			}
@@ -118,12 +118,12 @@ templ PublicPrimaryNav(active string) {
 				if active == "dev" {
 					<a class="btn app-nav-link active" href="/dev">
 						@icons.Terminal(templ.Attributes{"class": "icon"})
-						<span>{ ctxi18n.T(ctx, "dev.title") }</span>
+						<span>Dev</span>
 					</a>
 				} else {
 					<a class="btn app-nav-link" href="/dev">
 						@icons.Terminal(templ.Attributes{"class": "icon"})
-						<span>{ ctxi18n.T(ctx, "dev.title") }</span>
+						<span>Dev</span>
 					</a>
 				}
 			}
@@ -132,7 +132,7 @@ templ PublicPrimaryNav(active string) {
 }
 
 templ DevPrimaryNav(active string) {
-	<nav class="app-nav" aria-label={ ctxi18n.T(ctx, "dev.title") }>
+	<nav class="app-nav" aria-label="Dev">
 		<div class="app-nav-primary">
 			<a class="btn app-nav-link" href="/">
 				@icons.Landmark(templ.Attributes{"class": "icon"})
@@ -141,12 +141,12 @@ templ DevPrimaryNav(active string) {
 			if active == "dev" {
 				<a class="btn app-nav-link active" href="/dev">
 					@icons.Terminal(templ.Attributes{"class": "icon"})
-					<span>{ ctxi18n.T(ctx, "dev.title") }</span>
+					<span>Dev</span>
 				</a>
 			} else {
 				<a class="btn app-nav-link" href="/dev">
 					@icons.Terminal(templ.Attributes{"class": "icon"})
-					<span>{ ctxi18n.T(ctx, "dev.title") }</span>
+					<span>Dev</span>
 				</a>
 			}
 		</div>
@@ -174,7 +174,7 @@ templ GroupPrimaryNav(groupID string, active string) {
 			if utils.Env().AppEnv == "development" {
 				<a class="btn app-nav-link" href="/dev">
 					@icons.Terminal(templ.Attributes{"class": "icon"})
-					<span>{ ctxi18n.T(ctx, "dev.title") }</span>
+					<span>Dev</span>
 				</a>
 			}
 		</div>

@@ -2,14 +2,12 @@ package dev
 
 import (
 	"fmt"
+	"github.com/labstack/echo/v4"
+	"github.com/starfederation/datastar-go/datastar"
 	"net/http"
 	"strconv"
 	"strings"
 	"time"
-
-	ctxi18n "github.com/invopop/ctxi18n/i18n"
-	"github.com/labstack/echo/v4"
-	"github.com/starfederation/datastar-go/datastar"
 
 	"bandcash/internal/email"
 	"bandcash/internal/utils"
@@ -47,7 +45,7 @@ func (h *DevNotifications) TestInline(c echo.Context) error {
 		"errors":   utils.GetEmptyErrors(devErrorFields),
 		"formData": map[string]any{"name": ""},
 	})
-	utils.Notify(c, "success", ctxi18n.T(c.Request().Context(), "dev.notifications.inline_passed"))
+	utils.Notify(c, "success", "Inline validation passed")
 	if err := h.patchNotifications(c); err != nil {
 		return c.NoContent(http.StatusInternalServerError)
 	}
@@ -56,7 +54,7 @@ func (h *DevNotifications) TestInline(c echo.Context) error {
 }
 
 func (h *DevNotifications) TestSuccess(c echo.Context) error {
-	utils.Notify(c, "success", ctxi18n.T(c.Request().Context(), "dev.notifications.success_test"))
+	utils.Notify(c, "success", "Success notification test")
 	if err := h.patchNotifications(c); err != nil {
 		return c.NoContent(http.StatusInternalServerError)
 	}
@@ -64,7 +62,7 @@ func (h *DevNotifications) TestSuccess(c echo.Context) error {
 }
 
 func (h *DevNotifications) TestError(c echo.Context) error {
-	utils.Notify(c, "error", ctxi18n.T(c.Request().Context(), "dev.notifications.error_test"))
+	utils.Notify(c, "error", "Error notification test")
 	if err := h.patchNotifications(c); err != nil {
 		return c.NoContent(http.StatusInternalServerError)
 	}
@@ -72,7 +70,7 @@ func (h *DevNotifications) TestError(c echo.Context) error {
 }
 
 func (h *DevNotifications) TestInfo(c echo.Context) error {
-	utils.Notify(c, "info", ctxi18n.T(c.Request().Context(), "dev.notifications.info_test"))
+	utils.Notify(c, "info", "Info notification test")
 	if err := h.patchNotifications(c); err != nil {
 		return c.NoContent(http.StatusInternalServerError)
 	}
@@ -80,7 +78,7 @@ func (h *DevNotifications) TestInfo(c echo.Context) error {
 }
 
 func (h *DevNotifications) TestWarning(c echo.Context) error {
-	utils.Notify(c, "warning", ctxi18n.T(c.Request().Context(), "dev.notifications.warning_test"))
+	utils.Notify(c, "warning", "Warning notification test")
 	if err := h.patchNotifications(c); err != nil {
 		return c.NoContent(http.StatusInternalServerError)
 	}
