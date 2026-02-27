@@ -271,6 +271,149 @@ func main() {
 		}
 	}
 
-	fmt.Printf("Seeded 1 user, 1 group, %d events, %d members, %d participants into %s\n", len(events), len(members), len(participants), dbPath)
+	viewerFixtures := []struct {
+		OwnerEmail   string
+		GroupName    string
+		Events       []seedEvent
+		Members      []seedMember
+		Participants []seedParticipant
+	}{
+		{
+			OwnerEmail: "owner.one@bandcash.local",
+			GroupName:  "Road Crew Collective",
+			Events: []seedEvent{
+				{Title: "Warehouse Rehearsal", Time: time.Now().Add(-72 * time.Hour).Format("2006-01-02T15:04"), Description: "Paid technical rehearsal", Amount: 60000},
+				{Title: "Downtown Showcase", Time: time.Now().Add(-12 * time.Hour).Format("2006-01-02T15:04"), Description: "Support slot in city center", Amount: 90000},
+			},
+			Members: []seedMember{
+				{Name: "Crew Alice", Description: "Lead vocals"},
+				{Name: "Crew Bob", Description: "Drums"},
+				{Name: "Crew Cara", Description: "Sound tech"},
+			},
+			Participants: []seedParticipant{
+				{EventIndex: 0, MemberIndex: 0, Amount: 25000},
+				{EventIndex: 0, MemberIndex: 1, Amount: 20000},
+				{EventIndex: 0, MemberIndex: 2, Amount: 10000},
+				{EventIndex: 1, MemberIndex: 0, Amount: 35000},
+				{EventIndex: 1, MemberIndex: 1, Amount: 30000},
+				{EventIndex: 1, MemberIndex: 2, Amount: 15000},
+			},
+		},
+		{
+			OwnerEmail: "owner.two@bandcash.local",
+			GroupName:  "Late Night Session",
+			Events: []seedEvent{
+				{Title: "Jazz Basement", Time: time.Now().Add(-96 * time.Hour).Format("2006-01-02T15:04"), Description: "Ticketed evening set", Amount: 70000},
+				{Title: "Studio Overdub", Time: time.Now().Add(-6 * time.Hour).Format("2006-01-02T15:04"), Description: "Paid recording session", Amount: 50000},
+			},
+			Members: []seedMember{
+				{Name: "Session Dani", Description: "Keyboard"},
+				{Name: "Session Erik", Description: "Bass"},
+				{Name: "Session Faye", Description: "Backing vocals"},
+			},
+			Participants: []seedParticipant{
+				{EventIndex: 0, MemberIndex: 0, Amount: 25000},
+				{EventIndex: 0, MemberIndex: 1, Amount: 22000},
+				{EventIndex: 0, MemberIndex: 2, Amount: 13000},
+				{EventIndex: 1, MemberIndex: 0, Amount: 18000},
+				{EventIndex: 1, MemberIndex: 1, Amount: 17000},
+				{EventIndex: 1, MemberIndex: 2, Amount: 10000},
+			},
+		},
+	}
+
+	totalUsers := 1
+	totalGroups := 1
+	totalEvents := len(events)
+	totalMembers := len(members)
+	totalParticipants := len(participants)
+	totalViewerLinks := 0
+
+	for _, fixture := range viewerFixtures {
+		ownerUser, err := db.Qry.CreateUser(ctx, db.CreateUserParams{
+			ID:    utils.GenerateID("usr"),
+			Email: fixture.OwnerEmail,
+		})
+		if err != nil {
+			slog.Error("failed to create fixture owner user", "email", fixture.OwnerEmail, "err", err)
+			os.Exit(1)
+		}
+
+		viewerGroup, err := db.Qry.CreateGroup(ctx, db.CreateGroupParams{
+			ID:          utils.GenerateID("grp"),
+			Name:        fixture.GroupName,
+			AdminUserID: ownerUser.ID,
+		})
+		if err != nil {
+			slog.Error("failed to create viewer fixture group", "group_name", fixture.GroupName, "err", err)
+			os.Exit(1)
+		}
+
+		_, err = db.Qry.CreateGroupReader(ctx, db.CreateGroupReaderParams{
+			ID:      utils.GenerateID("grd"),
+			UserID:  adminUser.ID,
+			GroupID: viewerGroup.ID,
+		})
+		if err != nil {
+			slog.Error("failed to add admin user as group viewer", "group_id", viewerGroup.ID, "err", err)
+			os.Exit(1)
+		}
+
+		viewerEvents := make([]db.Event, 0, len(fixture.Events))
+		for _, event := range fixture.Events {
+			createdEvent, err := db.Qry.CreateEvent(ctx, db.CreateEventParams{
+				ID:          utils.GenerateID(utils.PrefixEvent),
+				GroupID:     viewerGroup.ID,
+				Title:       event.Title,
+				Time:        event.Time,
+				Description: event.Description,
+				Amount:      event.Amount,
+			})
+			if err != nil {
+				slog.Error("failed to create viewer fixture event", "group_id", viewerGroup.ID, "title", event.Title, "err", err)
+				os.Exit(1)
+			}
+			viewerEvents = append(viewerEvents, createdEvent)
+		}
+
+		viewerMembers := make([]db.Member, 0, len(fixture.Members))
+		for _, member := range fixture.Members {
+			createdMember, err := db.Qry.CreateMember(ctx, db.CreateMemberParams{
+				ID:          utils.GenerateID(utils.PrefixMember),
+				GroupID:     viewerGroup.ID,
+				Name:        member.Name,
+				Description: member.Description,
+			})
+			if err != nil {
+				slog.Error("failed to create viewer fixture member", "group_id", viewerGroup.ID, "name", member.Name, "err", err)
+				os.Exit(1)
+			}
+			viewerMembers = append(viewerMembers, createdMember)
+		}
+
+		for _, participant := range fixture.Participants {
+			event := viewerEvents[participant.EventIndex]
+			member := viewerMembers[participant.MemberIndex]
+			_, err := db.Qry.AddParticipant(ctx, db.AddParticipantParams{
+				GroupID:  viewerGroup.ID,
+				EventID:  event.ID,
+				MemberID: member.ID,
+				Amount:   participant.Amount,
+			})
+			if err != nil {
+				slog.Error("failed to create viewer fixture participant", "group_id", viewerGroup.ID, "event_id", event.ID, "member_id", member.ID, "err", err)
+				os.Exit(1)
+			}
+		}
+
+		totalUsers++
+		totalGroups++
+		totalEvents += len(fixture.Events)
+		totalMembers += len(fixture.Members)
+		totalParticipants += len(fixture.Participants)
+		totalViewerLinks++
+	}
+
+	fmt.Printf("Seeded %d users, %d groups, %d events, %d members, %d participants, %d viewer links into %s\n", totalUsers, totalGroups, totalEvents, totalMembers, totalParticipants, totalViewerLinks, dbPath)
 	fmt.Printf("Login: admin@bandcash.local\n")
 }
