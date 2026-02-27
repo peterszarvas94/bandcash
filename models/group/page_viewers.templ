@@ -31,7 +31,7 @@ templ GroupViewersMain(data ViewersPageData) {
 				if data.IsAdmin {
 					<th data-actions-col>
 						<div class="row row-right">
-							<button class="btn btn-icon" type="button" aria-label={ ctxi18n.T(ctx, "groups.add_viewer") } title={ ctxi18n.T(ctx, "groups.add_viewer") } data-attr:disabled="$formState !== ''" data-on:click="$formState = 'add'; $formData = {email: ''}">@icons.Plus(templ.Attributes{"class": "icon"})</button>
+							@shared.LoadingIconActionButton("btn btn-icon", "$formState = 'add'; $formData = {email: ''}", "$formState !== ''", ctxi18n.T(ctx, "groups.add_viewer"), ctxi18n.T(ctx, "groups.add_viewer"), icons.IconPlus)
 						</div>
 					</th>
 				}
@@ -92,7 +92,7 @@ templ GroupViewersSidebar(data ViewersPageData) {
 				</div>
 				<div class="sidebar-actions">
 					@shared.LoadingSubmitButton("btn btn-primary", ctxi18n.T(ctx, "groups.add_viewer"), icons.IconSave)
-					<button class="btn" type="button" data-attr:disabled="$_fetching" data-on:click="$formState = ''; $formData = {email: ''}">@icons.X(templ.Attributes{"class": "icon"})<span>{ ctxi18n.T(ctx, "actions.cancel") }</span></button>
+					@shared.LoadingActionButton("btn", "$formState = ''; $formData = {email: ''}", "$_fetching", ctxi18n.T(ctx, "actions.cancel"), icons.IconX)
 				</div>
 			</form>
 		</div>

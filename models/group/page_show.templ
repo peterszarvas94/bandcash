@@ -27,7 +27,7 @@ templ GroupMain(data GroupPageData) {
 	@shared.Section(ctxi18n.T(ctx, "groups.details"), GroupDetailsContent(data))
 	if data.IsAdmin {
 		<div class="row row-wrap">
-			<button class="btn" type="button" data-attr:disabled="$formState !== ''" data-on:click="$formState = 'edit'; $errors = {name: ''}">@icons.Pencil(templ.Attributes{"class": "icon"})<span>{ ctxi18n.T(ctx, "groups.edit") }</span></button>
+			@shared.LoadingActionButton("btn", "$formState = 'edit'; $errors = {name: ''}", "$formState !== ''", ctxi18n.T(ctx, "groups.edit"), icons.IconPencil)
 			@shared.DestructiveActionButton(
 				fmt.Sprintf("sure(%s, %s, %s, %s, () => @post('/groups/%s/delete'))", utils.JSONString(ctxi18n.T(ctx, "groups.delete_confirm")), utils.JSONString(ctxi18n.T(ctx, "confirm.destructive_message")), utils.JSONString(ctxi18n.T(ctx, "groups.delete")), utils.JSONString(ctxi18n.T(ctx, "actions.cancel")), data.Group.ID),
 				"$formState !== '' || $_fetching",
@@ -71,7 +71,7 @@ templ GroupSidebar(data GroupPageData) {
 				</div>
 				<div class="sidebar-actions">
 					@shared.LoadingSubmitButton("btn btn-primary", ctxi18n.T(ctx, "groups.update"), icons.IconSave)
-					<button class="btn" type="button" data-attr:disabled="$_fetching" data-on:click={ "$formState = ''; $formData = {name: " + utils.JSONString(data.Group.Name) + "}; $errors = {name: ''}" }>@icons.X(templ.Attributes{"class": "icon"})<span>{ ctxi18n.T(ctx, "actions.cancel") }</span></button>
+					@shared.LoadingActionButton("btn", "$formState = ''; $formData = {name: "+utils.JSONString(data.Group.Name)+"}; $errors = {name: ''}", "$_fetching", ctxi18n.T(ctx, "actions.cancel"), icons.IconX)
 				</div>
 			</form>
 		</div>

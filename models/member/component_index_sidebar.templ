@@ -35,14 +35,7 @@ templ MemberIndexSidebar(data MembersData) {
 				<div class="sidebar-actions">
 				<span data-show="$formState === 'add'">@shared.LoadingActionButton("btn btn-primary", fmt.Sprintf("@post('/groups/%s/members')", data.GroupID), "$_fetching", ctxi18n.T(ctx, "members.create"), icons.IconSave)</span>
 				<span data-show="$formState === 'edit'">@shared.LoadingActionButton("btn btn-primary", fmt.Sprintf("@put('/groups/%s/members/' + $editingId)", data.GroupID), "$_fetching", ctxi18n.T(ctx, "members.update"), icons.IconSave)</span>
-				<button
-					class="btn"
-					type="button"
-					data-attr:disabled="$_fetching"
-					data-on:click="$formState = ''; $editingId = 0; $formData = {name: '', description: ''}; $errors = {name: '', description: ''}"
-				>
-					@icons.X(templ.Attributes{"class": "icon"})<span>{ctxi18n.T(ctx, "actions.cancel")}</span>
-				</button>
+				@shared.LoadingActionButton("btn", "$formState = ''; $editingId = 0; $formData = {name: '', description: ''}; $errors = {name: '', description: ''}", "$_fetching", ctxi18n.T(ctx, "actions.cancel"), icons.IconX)
 				</div>
 			</form>
 		</div>

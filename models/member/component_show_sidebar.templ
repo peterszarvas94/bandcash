@@ -26,14 +26,7 @@ templ MemberShowSidebar(data MemberData) {
 				</div>
 				<div class="sidebar-actions">
 				@shared.LoadingActionButton("btn btn-primary", fmt.Sprintf("@put('/groups/%s/members/%s')", data.GroupID, data.Member.ID), "$_fetching", ctxi18n.T(ctx, "members.update"), icons.IconSave)
-					<button
-						class="btn"
-						type="button"
-						data-attr:disabled="$_fetching"
-					data-on:click={"$formState = ''; $formData = {name: " + utils.JSONString(data.Member.Name) + ", description: " + utils.JSONString(data.Member.Description) + "}; $errors = {name: '', description: ''}"}
-					>
-					@icons.X(templ.Attributes{"class": "icon"})<span>{ctxi18n.T(ctx, "actions.cancel")}</span>
-					</button>
+					@shared.LoadingActionButton("btn", "$formState = ''; $formData = {name: "+utils.JSONString(data.Member.Name)+", description: "+utils.JSONString(data.Member.Description)+"}; $errors = {name: '', description: ''}", "$_fetching", ctxi18n.T(ctx, "actions.cancel"), icons.IconX)
 				</div>
 			</form>
 		</div>

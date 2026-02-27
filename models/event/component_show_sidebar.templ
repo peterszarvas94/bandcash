@@ -38,14 +38,7 @@ templ EventShowSidebar(data EventData) {
 				</div>
 				<div class="sidebar-actions">
 					@shared.LoadingActionButton("btn btn-primary", fmt.Sprintf("@put('/groups/%s/events/%s')", data.GroupID, data.Event.ID), "$_fetching", ctxi18n.T(ctx, "events.update"), icons.IconSave)
-					<button
-						class="btn"
-						type="button"
-						data-attr:disabled="$_fetching"
-					data-on:click={"$eventFormState = ''; $eventFormData = {title: " + utils.JSONString(data.Event.Title) + ", time: " + utils.JSONString(data.Event.Time) + ", description: " + utils.JSONString(data.Event.Description) + ", amount: " + fmt.Sprintf("%d", data.Event.Amount) + "}; $errors = {title: '', time: '', description: '', amount: ''}"}
-					>
-					@icons.X(templ.Attributes{"class": "icon"})<span>{ctxi18n.T(ctx, "actions.cancel")}</span>
-					</button>
+					@shared.LoadingActionButton("btn", "$eventFormState = ''; $eventFormData = {title: "+utils.JSONString(data.Event.Title)+", time: "+utils.JSONString(data.Event.Time)+", description: "+utils.JSONString(data.Event.Description)+", amount: "+fmt.Sprintf("%d", data.Event.Amount)+"}; $errors = {title: '', time: '', description: '', amount: ''}", "$_fetching", ctxi18n.T(ctx, "actions.cancel"), icons.IconX)
 				</div>
 			</form>
 		</div>
@@ -77,13 +70,7 @@ templ EventShowSidebar(data EventData) {
 				<label>{ctxi18n.T(ctx, "participants.cut_amount")} <span class="required-mark">*</span></label>
 					<div class="row">
 						<input type="number" data-bind="formData.amount" step="1" style="flex: 1"/>
-						<button
-							class="btn"
-							type="button"
-							data-on:click={ fmt.Sprintf("$calcPercent = $formData.amount > 0 ? Math.round($formData.amount / %d * 10000) / 100 : 0", data.Event.Amount) }
-						>
-							{ctxi18n.T(ctx, "participants.calc_percent")}
-						</button>
+						@shared.LoadingActionButton("btn", fmt.Sprintf("$calcPercent = $formData.amount > 0 ? Math.round($formData.amount / %d * 10000) / 100 : 0", data.Event.Amount), "false", ctxi18n.T(ctx, "participants.calc_percent"), icons.IconCalculator)
 					</div>
 					<div data-show="$errors && $errors.amount" class="color-error" data-text="$errors.amount"></div>
 				</div>
@@ -91,13 +78,7 @@ templ EventShowSidebar(data EventData) {
 				<label>{ctxi18n.T(ctx, "participants.quick_calc")}</label>
 					<div class="row">
 					<input type="number" data-bind="calcPercent" step="0.01" min="0" placeholder={ctxi18n.T(ctx, "participants.quick_calc_placeholder")} style="flex: 1"/>
-						<button
-							class="btn"
-							type="button"
-							data-on:click={ fmt.Sprintf("$formData.amount = Math.round(%d * $calcPercent / 100)", data.Event.Amount) }
-						>
-							{ctxi18n.T(ctx, "participants.calc_amount")}
-						</button>
+						@shared.LoadingActionButton("btn", fmt.Sprintf("$formData.amount = Math.round(%d * $calcPercent / 100)", data.Event.Amount), "false", ctxi18n.T(ctx, "participants.calc_amount"), icons.IconCalculator)
 					</div>
 				</div>
 				<div>
@@ -112,14 +93,7 @@ templ EventShowSidebar(data EventData) {
 				<div class="sidebar-actions">
 					<span data-show="$formState === 'add'">@shared.LoadingActionButton("btn btn-primary", fmt.Sprintf("@post('/groups/%s/events/%s/participants')", data.GroupID, data.Event.ID), "$_fetching", ctxi18n.T(ctx, "participants.add"), icons.IconSave)</span>
 					<span data-show="$formState === 'edit'">@shared.LoadingActionButton("btn btn-primary", fmt.Sprintf("@put('/groups/%s/events/%s/participants/' + $editingId)", data.GroupID, data.Event.ID), "$_fetching", ctxi18n.T(ctx, "participants.update"), icons.IconSave)</span>
-					<button
-						class="btn"
-						type="button"
-						data-attr:disabled="$_fetching"
-					data-on:click="$formState = ''; $editingId = ''; $calcPercent = 0; $formData = {memberId: '', memberName: '', amount: 0, expense: 0}; $errors = {memberId: '', amount: '', expense: ''}"
-					>
-					@icons.X(templ.Attributes{"class": "icon"})<span>{ctxi18n.T(ctx, "actions.cancel")}</span>
-					</button>
+					@shared.LoadingActionButton("btn", "$formState = ''; $editingId = ''; $calcPercent = 0; $formData = {memberId: '', memberName: '', amount: 0, expense: 0}; $errors = {memberId: '', amount: '', expense: ''}", "$_fetching", ctxi18n.T(ctx, "actions.cancel"), icons.IconX)
 				</div>
 			</form>
 		</div>

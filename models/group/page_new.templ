@@ -6,6 +6,7 @@ import (
 	appi18n "bandcash/internal/i18n"
 	"bandcash/internal/utils"
 	shared "bandcash/models/shared"
+	icons "bandcash/models/shared/icons"
 )
 
 templ GroupNewPage(data NewGroupPageData) {
@@ -18,12 +19,12 @@ templ GroupNewPage(data NewGroupPageData) {
 			<main id="app" class="single-col">
 				@shared.Breadcrumbs(data.Breadcrumbs, data.UserEmail)
 				<p>{ ctxi18n.T(ctx, "groups.new_desc") }</p>
-				<form class="form" data-on:submit="@post('/groups')">
+				<form class="form" data-on:submit="@post('/groups')" data-indicator:_fetching>
 					<div class="field">
 						<label>{ ctxi18n.T(ctx, "groups.name") } <span class="required-mark">*</span></label>
 						<input type="text" data-bind="formData.name" placeholder={ ctxi18n.T(ctx, "groups.name_placeholder") }/>
 					</div>
-					<button type="submit" class="btn btn-primary">{ ctxi18n.T(ctx, "groups.create") }</button>
+					@shared.LoadingSubmitButton("btn btn-primary", ctxi18n.T(ctx, "groups.create"), icons.IconSave)
 				</form>
 			</main>
 		</body>

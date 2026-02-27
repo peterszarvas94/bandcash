@@ -37,3 +37,9 @@ templ ButtonLink(href string, className string, label string, iconName icons.Ico
 		<span>{ label }</span>
 	</a>
 }
+
+templ IDActionButton(id string, className string, label string) {
+	<button id={ id } type="button" class={ className }>
+		<span>{ label }</span>
+	</button>
+}

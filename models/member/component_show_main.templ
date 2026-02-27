@@ -17,15 +17,7 @@ templ MemberShowMain(data MemberData) {
 	</div>
 	if data.IsAdmin {
 		<div class="row row-wrap pb">
-			<button
-				class="btn"
-				type="button"
-				data-attr:disabled="$formState !== ''"
-				data-on:click="$formState = 'edit'; $errors = {name: '', description: ''}"
-			>
-				@icons.Pencil(templ.Attributes{"class": "icon"})
-				<span>{ ctxi18n.T(ctx, "members.edit") }</span>
-			</button>
+			@shared.LoadingActionButton("btn", "$formState = 'edit'; $errors = {name: '', description: ''}", "$formState !== ''", ctxi18n.T(ctx, "members.edit"), icons.IconPencil)
 			@shared.DestructiveActionButton(
 				fmt.Sprintf("sure(%s, %s, %s, %s, () => @delete('/groups/%s/members/%s'))", utils.JSONString(ctxi18n.T(ctx, "members.delete_confirm")), utils.JSONString(ctxi18n.T(ctx, "confirm.destructive_message")), utils.JSONString(ctxi18n.T(ctx, "actions.delete")), utils.JSONString(ctxi18n.T(ctx, "actions.cancel")), data.GroupID, data.Member.ID),
 				"$formState !== '' || $_fetching",

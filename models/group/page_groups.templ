@@ -39,16 +39,14 @@ templ AdminGroupsContent(data GroupsPageData) {
 				<th>{ ctxi18n.T(ctx, "fields.name") }</th>
 				<th data-actions-col>
 					<div class="row row-right">
-						<button
-							class="btn btn-icon"
-							type="button"
-							aria-label={ ctxi18n.T(ctx, "groups.create") }
-							title={ ctxi18n.T(ctx, "groups.create") }
-							data-attr:disabled="$formState !== ''"
-							data-on:click="$formState = 'add'; $formData = {name: ''}; $selectedGroupId = ''"
-						>
-							@icons.Plus(templ.Attributes{"class": "icon"})
-						</button>
+						@shared.LoadingIconActionButton(
+							"btn btn-icon",
+							"$formState = 'add'; $formData = {name: ''}; $selectedGroupId = ''",
+							"$formState !== ''",
+							ctxi18n.T(ctx, "groups.create"),
+							ctxi18n.T(ctx, "groups.create"),
+							icons.IconPlus,
+						)
 					</div>
 				</th>
 			</tr>
@@ -64,16 +62,14 @@ templ AdminGroupsContent(data GroupsPageData) {
 						</td>
 						<td data-actions-col>
 							<div class="row row-right">
-								<button
-									type="button"
-									class="btn btn-icon"
-									aria-label={ ctxi18n.T(ctx, "actions.edit") }
-									title={ ctxi18n.T(ctx, "actions.edit") }
-									data-attr:disabled="$formState !== ''"
-									data-on:click={ fmt.Sprintf("$formState = 'edit'; $selectedGroupId = '%s'; $formData = {name: %s}; $errors = {name: ''}", group.Group.ID, utils.JSONString(group.Group.Name)) }
-								>
-									@icons.Pencil(templ.Attributes{"class": "icon"})
-								</button>
+								@shared.LoadingIconActionButton(
+									"btn btn-icon",
+									fmt.Sprintf("$formState = 'edit'; $selectedGroupId = '%s'; $formData = {name: %s}; $errors = {name: ''}", group.Group.ID, utils.JSONString(group.Group.Name)),
+									"$formState !== ''",
+									ctxi18n.T(ctx, "actions.edit"),
+									ctxi18n.T(ctx, "actions.edit"),
+									icons.IconPencil,
+								)
 							</div>
 						</td>
 					</tr>
@@ -104,16 +100,14 @@ templ ViewerGroupsContent(data GroupsPageData) {
 						</td>
 						<td data-actions-col>
 							<div class="row row-right">
-								<button
-									type="button"
-									class="btn btn-icon"
-									aria-label={ ctxi18n.T(ctx, "groups.actions") }
-									title={ ctxi18n.T(ctx, "groups.actions") }
-									data-attr:disabled="$formState !== ''"
-									data-on:click={ fmt.Sprintf("$formState = 'leave'; $selectedGroupId = '%s'", group.Group.ID) }
-								>
-									@icons.Pencil(templ.Attributes{"class": "icon"})
-								</button>
+								@shared.LoadingIconActionButton(
+									"btn btn-icon",
+									fmt.Sprintf("$formState = 'leave'; $selectedGroupId = '%s'", group.Group.ID),
+									"$formState !== ''",
+									ctxi18n.T(ctx, "groups.actions"),
+									ctxi18n.T(ctx, "groups.actions"),
+									icons.IconPencil,
+								)
 							</div>
 						</td>
 					</tr>
@@ -133,10 +127,7 @@ templ GroupsSidebar(data GroupsPageData) {
 			</div>
 			<div class="sidebar-actions">
 				@shared.LoadingSubmitButton("btn btn-primary", ctxi18n.T(ctx, "groups.create"), icons.IconSave)
-				<button class="btn" type="button" data-attr:disabled="$_fetching" data-on:click="$formState = ''; $formData = {name: ''}">
-					@icons.X(templ.Attributes{"class": "icon"})
-					<span>{ ctxi18n.T(ctx, "actions.cancel") }</span>
-				</button>
+				@shared.LoadingActionButton("btn", "$formState = ''; $formData = {name: ''}", "$_fetching", ctxi18n.T(ctx, "actions.cancel"), icons.IconX)
 			</div>
 		</form>
 	</div>
@@ -159,10 +150,7 @@ templ GroupsSidebar(data GroupsPageData) {
 			</div>
 			<div class="sidebar-actions">
 				@shared.LoadingSubmitButton("btn btn-primary", ctxi18n.T(ctx, "groups.update"), icons.IconSave)
-				<button class="btn" type="button" data-attr:disabled="$_fetching" data-on:click="$formState = ''; $selectedGroupId = ''; $formData = {name: ''}; $errors = {name: ''}">
-					@icons.X(templ.Attributes{"class": "icon"})
-					<span>{ ctxi18n.T(ctx, "actions.cancel") }</span>
-				</button>
+				@shared.LoadingActionButton("btn", "$formState = ''; $selectedGroupId = ''; $formData = {name: ''}; $errors = {name: ''}", "$_fetching", ctxi18n.T(ctx, "actions.cancel"), icons.IconX)
 			</div>
 		</form>
 	</div>
@@ -177,10 +165,7 @@ templ GroupsSidebar(data GroupsPageData) {
 				ctxi18n.T(ctx, "groups.leave"),
 				icons.IconSquareArrowRightExit,
 			)
-			<button class="btn" type="button" data-attr:disabled="$_fetching" data-on:click="$formState = ''; $selectedGroupId = ''">
-				@icons.X(templ.Attributes{"class": "icon"})
-				<span>{ ctxi18n.T(ctx, "actions.cancel") }</span>
-			</button>
+			@shared.LoadingActionButton("btn", "$formState = ''; $selectedGroupId = ''", "$_fetching", ctxi18n.T(ctx, "actions.cancel"), icons.IconX)
 		</div>
 	</div>
 }
