@@ -14,7 +14,7 @@ templ LoginPage(data AuthPageData) {
 	<html lang={ appi18n.LocaleCode(ctx) }>
 		@shared.Head(data.Title)
 		<body>
-			<div data-signals={templ.JSONString(map[string]any{"csrf": utils.CSRFToken(ctx), "authError": "", "formData": map[string]any{"email": ""}})} data-init="@get('/sse')"></div>
+			<div data-signals={templ.JSONString(map[string]any{"csrf": utils.CSRFToken(ctx), "authError": "", "authServerError": "", "authState": "form", "submittedEmail": "", "submittedEmailMasked": "", "resendRemaining": 0, "formData": map[string]any{"email": ""}})} data-init="@get('/sse')"></div>
 			@shared.Notifications()
 			@shared.AppShellMainOnly("auth-login", data.Breadcrumbs, data.UserEmail, shared.PublicPrimaryNav("login"), LoginMain())
 		</body>
@@ -22,12 +22,25 @@ templ LoginPage(data AuthPageData) {
 }
 
 templ LoginMain() {
-	<form class="form" data-on:submit="@post('/auth/login')" data-indicator:_fetching>
-		<div class="field">
-			<label>{ ctxi18n.T(ctx, "auth.email") } <span class="required-mark">*</span></label>
-			<input type="email" data-bind="formData.email" placeholder={ ctxi18n.T(ctx, "auth.email_placeholder") }/>
-			<div data-show="$authError !== ''" class="color-error" data-text="$authError"></div>
+	<div data-show="$authState === 'form'">
+		<form class="form" data-on:submit="@post('/auth/login')" data-indicator:_fetching>
+			<div class="field">
+				<label>{ ctxi18n.T(ctx, "auth.email") } <span class="required-mark">*</span></label>
+				<input type="email" data-bind="formData.email" placeholder={ ctxi18n.T(ctx, "auth.email_placeholder") }/>
+				<div data-show="$authError !== ''" class="color-error" data-text="$authError"></div>
+				<div data-show="$authServerError !== ''" class="color-error" data-text="$authServerError"></div>
+			</div>
+			@shared.LoadingSubmitButton("btn btn-primary", ctxi18n.T(ctx, "auth.send_link"), icons.IconSend)
+		</form>
+	</div>
+	<div data-show="$authState === 'sent'" style="display: none" class="form">
+		<div data-show="$authState === 'sent'" data-on-interval__duration.1s="$resendRemaining = Math.max(0, $resendRemaining - 1)" style="display: none"></div>
+		<p>{ ctxi18n.T(ctx, "auth.check_email_safe") }</p>
+		<p><strong>{ ctxi18n.T(ctx, "auth.masked_email") }:</strong> <span data-text="$submittedEmailMasked"></span></p>
+		<div class="row row-wrap">
+			@shared.LoadingActionButton("btn btn-primary", "@post('/auth/login')", "$_fetching || $resendRemaining > 0", ctxi18n.T(ctx, "auth.resend_email"), icons.IconSend)
+			<span class="text-muted" data-show="$resendRemaining > 0" data-text="'(' + $resendRemaining + 's)'"></span>
+			@shared.LoadingActionButton("btn", "$authState = 'form'; $authError = ''; $authServerError = ''; $formData.email = $submittedEmail", "$_fetching", ctxi18n.T(ctx, "auth.use_different_email"), icons.IconPencil)
 		</div>
-		@shared.LoadingSubmitButton("btn btn-primary", ctxi18n.T(ctx, "auth.send_link"), icons.IconSend)
-	</form>
+	</div>
 }

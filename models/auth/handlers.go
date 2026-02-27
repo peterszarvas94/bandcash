@@ -5,6 +5,7 @@ import (
 	"errors"
 	"log/slog"
 	"net/http"
+	"strings"
 	"time"
 
 	ctxi18n "github.com/invopop/ctxi18n/i18n"
@@ -20,6 +21,8 @@ import (
 type Auth struct {
 }
 
+const resendCooldown = 30 * time.Second
+
 type authSignals struct {
 	FormData struct {
 		Email string `json:"email" validate:"required,email,max=320"`
@@ -28,6 +31,43 @@ type authSignals struct {
 
 func New() *Auth {
 	return &Auth{}
+}
+
+func maskEmail(email string) string {
+	parts := strings.Split(email, "@")
+	if len(parts) != 2 {
+		return email
+	}
+
+	local := parts[0]
+	domain := parts[1]
+
+	maskedLocal := "***"
+	if len(local) == 1 {
+		maskedLocal = local + "***"
+	} else if len(local) > 1 {
+		maskedLocal = local[:1] + "***" + local[len(local)-1:]
+	}
+
+	maskedDomain := "***"
+	if dot := strings.LastIndex(domain, "."); dot > 1 {
+		maskedDomain = domain[:1] + "***" + domain[dot:]
+	} else if len(domain) > 0 {
+		maskedDomain = domain[:1] + "***"
+	}
+
+	return maskedLocal + "@" + maskedDomain
+}
+
+func (a *Auth) patchLoginSentState(c echo.Context, emailAddress string) {
+	_ = utils.SSEHub.PatchSignals(c, map[string]any{
+		"authError":            "",
+		"authServerError":      "",
+		"authState":            "sent",
+		"submittedEmail":       emailAddress,
+		"submittedEmailMasked": maskEmail(emailAddress),
+		"resendRemaining":      int(resendCooldown.Seconds()),
+	})
 }
 
 // LoginPage shows the login form
@@ -43,39 +83,26 @@ func (a *Auth) LoginRequest(c echo.Context) error {
 	}
 	signals.FormData.Email = utils.NormalizeEmail(signals.FormData.Email)
 	if errs := utils.ValidateWithLocale(c.Request().Context(), signals.FormData); errs != nil {
-		_ = utils.SSEHub.PatchSignals(c, map[string]any{"authError": errs["email"]})
+		_ = utils.SSEHub.PatchSignals(c, map[string]any{"authError": errs["email"], "authServerError": ""})
 		return c.NoContent(http.StatusUnprocessableEntity)
 	}
 	emailAddress := signals.FormData.Email
 
-	// Check if user exists
 	_, err := db.Qry.GetUserByEmail(c.Request().Context(), emailAddress)
 	if err != nil {
 		if !errors.Is(err, sql.ErrNoRows) {
-			slog.Error("auth.login: failed to load user by email", "email", emailAddress, "err", err)
-			utils.Notify(c, "error", ctxi18n.T(c.Request().Context(), "auth.notifications.create_link_failed"))
-			return c.NoContent(http.StatusInternalServerError)
-		}
-
-		if utils.Env().DisableSignup {
+			slog.Error("auth.login: failed to load user by email", "err", err)
 			_ = utils.SSEHub.PatchSignals(c, map[string]any{
-				"authError": ctxi18n.T(c.Request().Context(), "auth.no_account_for_email"),
+				"authError":       "",
+				"authServerError": ctxi18n.T(c.Request().Context(), "auth.generic_server_error"),
 			})
-			return c.NoContent(http.StatusUnprocessableEntity)
-		}
-
-		_, err = db.Qry.CreateUser(c.Request().Context(), db.CreateUserParams{
-			ID:    utils.GenerateID("usr"),
-			Email: emailAddress,
-		})
-		if err != nil {
-			slog.Error("auth.login: failed to create user", "email", emailAddress, "err", err)
-			utils.Notify(c, "error", ctxi18n.T(c.Request().Context(), "auth.notifications.create_user_failed"))
 			return c.NoContent(http.StatusInternalServerError)
 		}
+
+		a.patchLoginSentState(c, emailAddress)
+		return c.NoContent(http.StatusOK)
 	}
 
-	// Create magic link
 	token := utils.GenerateID("tok")
 	expiresAt := time.Now().Add(1 * time.Hour)
 
@@ -87,34 +114,23 @@ func (a *Auth) LoginRequest(c echo.Context) error {
 		ExpiresAt: expiresAt,
 	})
 	if err != nil {
-		slog.Error("auth: failed to create magic link", "err", err)
-		utils.Notify(c, "error", ctxi18n.T(c.Request().Context(), "auth.notifications.create_link_failed"))
-		return c.NoContent(http.StatusInternalServerError)
+		slog.Error("auth.login: failed to create magic link", "err", err)
+		a.patchLoginSentState(c, emailAddress)
+		return c.NoContent(http.StatusOK)
 	}
 
-	// Send email
 	err = email.Email().SendMagicLink(c.Request().Context(), emailAddress, token, utils.Env().URL)
 	if err != nil {
-		slog.Error("auth: failed to send email", "err", err)
-		utils.Notify(c, "error", ctxi18n.T(c.Request().Context(), "auth.notifications.send_email_failed"))
-		return c.NoContent(http.StatusInternalServerError)
+		slog.Error("auth.login: failed to send email", "err", err)
 	}
-	utils.Notify(c, "info", ctxi18n.T(c.Request().Context(), "auth.notifications.link_sent"))
 
-	err = utils.SSEHub.Redirect(c, "/auth/login-sent")
-	if err != nil {
-		return c.NoContent(http.StatusInternalServerError)
-	}
+	a.patchLoginSentState(c, emailAddress)
 	return c.NoContent(http.StatusOK)
 }
 
 // LoginSentPage shows confirmation that email was sent
 func (a *Auth) LoginSentPage(c echo.Context) error {
-	data := AuthPageData{
-		Title:       ctxi18n.T(c.Request().Context(), "auth.check_email_title"),
-		Breadcrumbs: []utils.Crumb{{Label: ctxi18n.T(c.Request().Context(), "auth.check_email")}},
-	}
-	return utils.RenderComponent(c, LoginSentPage(data))
+	return c.Redirect(http.StatusFound, "/")
 }
 
 // VerifyMagicLink handles the magic link verification
