@@ -20,12 +20,38 @@ templ DevPage() {
 }
 
 templ DevMain() {
+	@shared.Section("Button variants", ButtonVariantsContent())
 	@shared.Section("Notifications", NotificationsContent())
 	@shared.Section("Email previews", EmailPreviewContent())
 	@shared.Section("Loading indicator test", LoadingIndicatorContent())
 	@shared.Section("Table query tests", TableQueryTestContent())
 	@shared.Section("Rate limit", RateLimitContent())
 	@shared.Section("Body limit", BodyLimitContent())
+}
+
+templ ButtonVariantsContent() {
+	<p>Use this palette to tune button styling consistently across variants.</p>
+	<div class="row row-wrap">
+		<button class="btn" type="button">Default</button>
+		<button class="btn btn-primary" type="button">Primary</button>
+		<button class="btn btn-success" type="button">Success</button>
+		<button class="btn btn-info" type="button">Info</button>
+		<button class="btn btn-warning" type="button">Warning</button>
+		<button class="btn btn-danger" type="button">Danger</button>
+		<button class="btn btn-active" type="button">Active</button>
+		<button class="btn" type="button" disabled>Disabled</button>
+	</div>
+	<div class="row row-wrap">
+		<button class="btn btn-sm" type="button">Small</button>
+		<button class="btn btn-sm btn-primary" type="button">Small primary</button>
+		<button class="btn btn-sm btn-active" type="button">Small active</button>
+		<button class="btn btn-sm btn-icon" type="button" aria-label="Icon default" title="Icon default">
+			@icons.Plus(templ.Attributes{"class": "icon"})
+		</button>
+		<button class="btn btn-sm btn-icon btn-danger" type="button" aria-label="Icon danger" title="Icon danger">
+			@icons.Trash2(templ.Attributes{"class": "icon"})
+		</button>
+	</div>
 }
 
 templ TableQueryTestContent() {

@@ -181,7 +181,7 @@ func LoginMain() templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 12, "<span class=\"text-muted\" data-show=\"$resendRemaining > 0\" data-text=\"'(' + $resendRemaining + 's)'\"></span>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 12, "<span data-show=\"$resendRemaining > 0\" data-text=\"'(' + $resendRemaining + 's)'\"></span>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

@@ -25,7 +25,7 @@ templ LanguageMain(data SettingsData) {
 	<h1>{ ctxi18n.T(ctx, "settings.language") }</h1>
 	if data.UserEmail != "" {
 		<div class="row pb row-wrap">
-			<span class="text-muted">{ ctxi18n.T(ctx, "nav.logged_in_as") } { data.UserEmail }</span>
+			<span>{ ctxi18n.T(ctx, "nav.logged_in_as") } { data.UserEmail }</span>
 			@shared.LoadingActionButtonWithSignal("btn", "@post('/auth/logout')", "$_logoutFetching", ctxi18n.T(ctx, "auth.logout"), icons.IconLogOut, "_logoutFetching")
 		</div>
 	}

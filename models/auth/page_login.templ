@@ -39,7 +39,7 @@ templ LoginMain() {
 		<p><strong>{ ctxi18n.T(ctx, "auth.masked_email") }:</strong> <span data-text="$submittedEmailMasked"></span></p>
 		<div class="row row-wrap">
 			@shared.LoadingActionButton("btn btn-primary", "@post('/auth/login')", "$_fetching || $resendRemaining > 0", ctxi18n.T(ctx, "auth.resend_email"), icons.IconSend)
-			<span class="text-muted" data-show="$resendRemaining > 0" data-text="'(' + $resendRemaining + 's)'"></span>
+			<span data-show="$resendRemaining > 0" data-text="'(' + $resendRemaining + 's)'"></span>
 			@shared.LoadingActionButton("btn", "$authState = 'form'; $authError = ''; $authServerError = ''; $formData.email = $submittedEmail", "$_fetching", ctxi18n.T(ctx, "auth.use_different_email"), icons.IconPencil)
 		</div>
 	</div>

@@ -39,7 +39,7 @@ templ GroupViewersMain(data ViewersPageData) {
 		</thead>
 		<tbody>
 			<tr>
-				<td>{ data.Admin.Email } <span class="text-muted">({ ctxi18n.T(ctx, "groups.admin") })</span></td>
+				<td>{ data.Admin.Email } <span>({ ctxi18n.T(ctx, "groups.admin") })</span></td>
 				if data.IsAdmin {
 					<td data-actions-col></td>
 				}
@@ -63,7 +63,7 @@ templ GroupViewersMain(data ViewersPageData) {
 			}
 			for _, invite := range data.Invites {
 				<tr>
-					<td>{ invite.Email } <span class="text-muted">(pending)</span></td>
+					<td>{ invite.Email } <span>(pending)</span></td>
 					if data.IsAdmin {
 						<td data-actions-col>
 							@shared.IconActionButton(

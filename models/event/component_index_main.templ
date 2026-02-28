@@ -10,10 +10,10 @@ import (
 )
 
 templ EventIndexMain(data EventsData) {
-	<div class="row row-wrap pt">
+	<form class="row row-wrap pt" data-on:submit={ eventSearchAction(data) }>
 		<input type="search" data-bind="tableQuery.search" placeholder={ ctxi18n.T(ctx, "table.search_placeholder") }/>
-		<button class="btn btn-sm" type="button" data-on:click={ eventSearchAction(data) }>{ ctxi18n.T(ctx, "table.search") }</button>
-	</div>
+		<button class="btn btn-sm" type="submit">{ ctxi18n.T(ctx, "table.search") }</button>
+	</form>
 	<table class="table table-sticky-actions pt">
 		<thead>
 			<tr>

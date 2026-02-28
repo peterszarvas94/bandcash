@@ -49,7 +49,7 @@ func groupsPageSizeURL(data GroupsPageData, pageSize int) string {
 
 func pageSizeButtonClass(current, value int) string {
 	if current == value {
-		return "btn btn-sm btn-primary"
+		return "btn btn-sm btn-active"
 	}
 	return "btn btn-sm"
 }

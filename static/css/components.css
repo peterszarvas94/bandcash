@@ -175,27 +175,70 @@
     justify-content: flex-start;
   }
 
-  .btn-primary,
-  .btn-success,
-  .btn-info,
+  .btn-primary {
+    color: var(--link-color);
+    border-color: var(--btn-primary-border);
+    background: color-mix(in srgb, var(--page-bg) 88%, var(--link-color) 12%);
+
+    &:not(:disabled):not([disabled]):hover {
+      background: var(--btn-primary-hover-bg);
+      color: var(--page-bg);
+    }
+
+    &:focus-visible {
+      outline-color: var(--btn-primary-focus);
+    }
+  }
+
+  .btn-success {
+    color: var(--color-success);
+    border-color: var(--btn-success-border);
+    background: color-mix(in srgb, var(--page-bg) 88%, var(--color-success) 12%);
+
+    &:not(:disabled):not([disabled]):hover {
+      background: var(--btn-success-hover-bg);
+    }
+
+    &:focus-visible {
+      outline-color: var(--btn-success-focus);
+    }
+  }
+
+  .btn-info {
+    color: var(--color-info);
+    border-color: var(--btn-info-border);
+    background: color-mix(in srgb, var(--page-bg) 88%, var(--color-info) 12%);
+
+    &:not(:disabled):not([disabled]):hover {
+      background: var(--btn-info-hover-bg);
+    }
+
+    &:focus-visible {
+      outline-color: var(--btn-info-focus);
+    }
+  }
+
   .btn-warning {
-    background: var(--page-bg);
-    border-color: var(--border-color);
-    color: var(--text-color);
+    color: var(--color-warning);
+    border-color: var(--btn-warning-border);
+    background: color-mix(in srgb, var(--page-bg) 88%, var(--color-warning) 12%);
+
+    &:not(:disabled):not([disabled]):hover {
+      background: var(--btn-warning-hover-bg);
+    }
+
+    &:focus-visible {
+      outline-color: var(--btn-warning-focus);
+    }
   }
 
-  .btn-primary:not(:disabled):not([disabled]):hover,
-  .btn-success:not(:disabled):not([disabled]):hover,
-  .btn-info:not(:disabled):not([disabled]):hover,
-  .btn-warning:not(:disabled):not([disabled]):hover {
+  .btn-active {
     background: var(--surface-hover);
+    border-color: var(--link-color);
   }
 
-  .btn-primary:focus-visible,
-  .btn-success:focus-visible,
-  .btn-info:focus-visible,
-  .btn-warning:focus-visible {
-    outline-color: var(--link-color);
+  .btn-active:not(:disabled):not([disabled]):hover {
+    background: var(--surface-hover);
   }
 
   .btn-danger {
@@ -809,8 +852,5 @@
       display: inline;
     }
 
-    .topbar-actions .text-muted {
-      display: none;
-    }
   }
 }

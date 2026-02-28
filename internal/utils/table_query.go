@@ -326,6 +326,8 @@ func BuildTableQueryURLWith(basePath string, query TableQuery, patch TableQueryP
 	values := u.Query()
 	if resolved.Search != "" {
 		values.Set("q", resolved.Search)
+	} else {
+		values.Del("q")
 	}
 	if resolved.SortSet {
 		values.Set("sort", resolved.Sort)
