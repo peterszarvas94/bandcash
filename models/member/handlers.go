@@ -19,12 +19,14 @@ type memberParams struct {
 }
 
 type memberTableParams struct {
-	FormData memberParams `json:"formData"`
-	Mode     string       `json:"mode"`
+	FormData   memberParams     `json:"formData"`
+	TableQuery utils.TableQuery `json:"tableQuery"`
+	Mode       string           `json:"mode"`
 }
 
 type modeParams struct {
-	Mode string `json:"mode"`
+	Mode       string           `json:"mode"`
+	TableQuery utils.TableQuery `json:"tableQuery"`
 }
 
 // Default signal state for resetting member forms on success
@@ -59,8 +61,9 @@ func (p *Members) Index(c echo.Context) error {
 	utils.EnsureClientID(c)
 	groupID := getGroupID(c)
 	userEmail := getUserEmail(c)
+	query := utils.ParseTableQuery(c, p)
 
-	data, err := p.GetIndexData(c.Request().Context(), groupID)
+	data, err := p.GetIndexData(c.Request().Context(), groupID, query)
 	if err != nil {
 		slog.Error("member.list: failed to get data", "err", err)
 		return c.NoContent(http.StatusInternalServerError)
@@ -129,7 +132,8 @@ func (p *Members) Create(c echo.Context) error {
 	utils.Notify(c, "success", ctxi18n.T(c.Request().Context(), "members.notifications.created"))
 
 	utils.SSEHub.PatchSignals(c, defaultMemberSignals)
-	data, err := p.GetIndexData(c.Request().Context(), groupID)
+	query := utils.NormalizeTableQuery(signals.TableQuery, p.TableQuerySpec())
+	data, err := p.GetIndexData(c.Request().Context(), groupID, query)
 	if err != nil {
 		slog.Error("member.create.table: failed to get data", "err", err)
 		return c.NoContent(http.StatusInternalServerError)
@@ -196,7 +200,8 @@ func (p *Members) Update(c echo.Context) error {
 	}
 
 	utils.SSEHub.PatchSignals(c, defaultMemberSignals)
-	data, err := p.GetIndexData(c.Request().Context(), groupID)
+	query := utils.NormalizeTableQuery(signals.TableQuery, p.TableQuerySpec())
+	data, err := p.GetIndexData(c.Request().Context(), groupID, query)
 	if err != nil {
 		slog.Error("member.update: failed to get data", "err", err)
 		return c.NoContent(http.StatusInternalServerError)
@@ -253,7 +258,8 @@ func (p *Members) Destroy(c echo.Context) error {
 	}
 
 	utils.SSEHub.PatchSignals(c, defaultMemberSignals)
-	data, err := p.GetIndexData(c.Request().Context(), groupID)
+	query := utils.NormalizeTableQuery(signals.TableQuery, p.TableQuerySpec())
+	data, err := p.GetIndexData(c.Request().Context(), groupID, query)
 	if err != nil {
 		slog.Error("member.destroy: failed to get data", "err", err)
 		return c.NoContent(http.StatusInternalServerError)

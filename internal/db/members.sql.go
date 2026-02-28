@@ -9,6 +9,28 @@ import (
 	"context"
 )
 
+const countMembersFiltered = `-- name: CountMembersFiltered :one
+SELECT COUNT(*) FROM members
+WHERE group_id = ?1
+  AND (
+    ?2 = ''
+    OR name LIKE '%' || ?2 || '%'
+    OR description LIKE '%' || ?2 || '%'
+  )
+`
+
+type CountMembersFilteredParams struct {
+	GroupID string      `json:"group_id"`
+	Search  interface{} `json:"search"`
+}
+
+func (q *Queries) CountMembersFiltered(ctx context.Context, arg CountMembersFilteredParams) (int64, error) {
+	row := q.db.QueryRowContext(ctx, countMembersFiltered, arg.GroupID, arg.Search)
+	var count int64
+	err := row.Scan(&count)
+	return count, err
+}
+
 const createMember = `-- name: CreateMember :one
 INSERT INTO members (id, group_id, name, description)
 VALUES (?, ?, ?, ?)
@@ -88,6 +110,222 @@ ORDER BY created_at DESC
 
 func (q *Queries) ListMembers(ctx context.Context, groupID string) ([]Member, error) {
 	rows, err := q.db.QueryContext(ctx, listMembers, groupID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []Member{}
+	for rows.Next() {
+		var i Member
+		if err := rows.Scan(
+			&i.ID,
+			&i.GroupID,
+			&i.Name,
+			&i.Description,
+			&i.CreatedAt,
+			&i.UpdatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const listMembersByCreatedAtAscFiltered = `-- name: ListMembersByCreatedAtAscFiltered :many
+SELECT id, group_id, name, description, created_at, updated_at FROM members
+WHERE group_id = ?1
+  AND (
+    ?2 = ''
+    OR name LIKE '%' || ?2 || '%'
+    OR description LIKE '%' || ?2 || '%'
+  )
+ORDER BY created_at ASC
+LIMIT ?4 OFFSET ?3
+`
+
+type ListMembersByCreatedAtAscFilteredParams struct {
+	GroupID string      `json:"group_id"`
+	Search  interface{} `json:"search"`
+	Offset  int64       `json:"offset"`
+	Limit   int64       `json:"limit"`
+}
+
+func (q *Queries) ListMembersByCreatedAtAscFiltered(ctx context.Context, arg ListMembersByCreatedAtAscFilteredParams) ([]Member, error) {
+	rows, err := q.db.QueryContext(ctx, listMembersByCreatedAtAscFiltered,
+		arg.GroupID,
+		arg.Search,
+		arg.Offset,
+		arg.Limit,
+	)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []Member{}
+	for rows.Next() {
+		var i Member
+		if err := rows.Scan(
+			&i.ID,
+			&i.GroupID,
+			&i.Name,
+			&i.Description,
+			&i.CreatedAt,
+			&i.UpdatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const listMembersByCreatedAtDescFiltered = `-- name: ListMembersByCreatedAtDescFiltered :many
+SELECT id, group_id, name, description, created_at, updated_at FROM members
+WHERE group_id = ?1
+  AND (
+    ?2 = ''
+    OR name LIKE '%' || ?2 || '%'
+    OR description LIKE '%' || ?2 || '%'
+  )
+ORDER BY created_at DESC
+LIMIT ?4 OFFSET ?3
+`
+
+type ListMembersByCreatedAtDescFilteredParams struct {
+	GroupID string      `json:"group_id"`
+	Search  interface{} `json:"search"`
+	Offset  int64       `json:"offset"`
+	Limit   int64       `json:"limit"`
+}
+
+func (q *Queries) ListMembersByCreatedAtDescFiltered(ctx context.Context, arg ListMembersByCreatedAtDescFilteredParams) ([]Member, error) {
+	rows, err := q.db.QueryContext(ctx, listMembersByCreatedAtDescFiltered,
+		arg.GroupID,
+		arg.Search,
+		arg.Offset,
+		arg.Limit,
+	)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []Member{}
+	for rows.Next() {
+		var i Member
+		if err := rows.Scan(
+			&i.ID,
+			&i.GroupID,
+			&i.Name,
+			&i.Description,
+			&i.CreatedAt,
+			&i.UpdatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const listMembersByNameAscFiltered = `-- name: ListMembersByNameAscFiltered :many
+SELECT id, group_id, name, description, created_at, updated_at FROM members
+WHERE group_id = ?1
+  AND (
+    ?2 = ''
+    OR name LIKE '%' || ?2 || '%'
+    OR description LIKE '%' || ?2 || '%'
+  )
+ORDER BY name COLLATE NOCASE ASC, created_at DESC
+LIMIT ?4 OFFSET ?3
+`
+
+type ListMembersByNameAscFilteredParams struct {
+	GroupID string      `json:"group_id"`
+	Search  interface{} `json:"search"`
+	Offset  int64       `json:"offset"`
+	Limit   int64       `json:"limit"`
+}
+
+func (q *Queries) ListMembersByNameAscFiltered(ctx context.Context, arg ListMembersByNameAscFilteredParams) ([]Member, error) {
+	rows, err := q.db.QueryContext(ctx, listMembersByNameAscFiltered,
+		arg.GroupID,
+		arg.Search,
+		arg.Offset,
+		arg.Limit,
+	)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []Member{}
+	for rows.Next() {
+		var i Member
+		if err := rows.Scan(
+			&i.ID,
+			&i.GroupID,
+			&i.Name,
+			&i.Description,
+			&i.CreatedAt,
+			&i.UpdatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const listMembersByNameDescFiltered = `-- name: ListMembersByNameDescFiltered :many
+SELECT id, group_id, name, description, created_at, updated_at FROM members
+WHERE group_id = ?1
+  AND (
+    ?2 = ''
+    OR name LIKE '%' || ?2 || '%'
+    OR description LIKE '%' || ?2 || '%'
+  )
+ORDER BY name COLLATE NOCASE DESC, created_at DESC
+LIMIT ?4 OFFSET ?3
+`
+
+type ListMembersByNameDescFilteredParams struct {
+	GroupID string      `json:"group_id"`
+	Search  interface{} `json:"search"`
+	Offset  int64       `json:"offset"`
+	Limit   int64       `json:"limit"`
+}
+
+func (q *Queries) ListMembersByNameDescFiltered(ctx context.Context, arg ListMembersByNameDescFilteredParams) ([]Member, error) {
+	rows, err := q.db.QueryContext(ctx, listMembersByNameDescFiltered,
+		arg.GroupID,
+		arg.Search,
+		arg.Offset,
+		arg.Limit,
+	)
 	if err != nil {
 		return nil, err
 	}

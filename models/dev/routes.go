@@ -25,4 +25,5 @@ func RegisterRoutes(e *echo.Echo) {
 	e.POST("/dev/notifications/warning", h.TestWarning)
 	e.GET("/dev/emails/login", h.PreviewLoginEmail)
 	e.GET("/dev/emails/invite", h.PreviewInviteEmail)
+	e.GET("/dev/query-test/:model", h.TestTableQuery)
 }

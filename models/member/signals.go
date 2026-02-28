@@ -1,8 +1,9 @@
 package member
 
-func memberIndexSignals(csrfToken string) map[string]any {
+func memberIndexSignals(csrfToken string, query map[string]any) map[string]any {
 	return map[string]any{
 		"csrf":           csrfToken,
+		"tableQuery":     query,
 		"mode":           "",
 		"formState":      "",
 		"eventFormState": "",

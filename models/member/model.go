@@ -12,6 +12,25 @@ import (
 type Members struct {
 }
 
+func (p *Members) TableQuerySpec() utils.TableQuerySpec {
+	return utils.TableQuerySpec{
+		DefaultSort: "createdAt",
+		DefaultDir:  "desc",
+		AllowedSorts: map[string]struct{}{
+			"name":      {},
+			"createdAt": {},
+		},
+		AllowedPageSizes: map[int]struct{}{
+			10:  {},
+			50:  {},
+			100: {},
+			200: {},
+		},
+		DefaultSize:  50,
+		MaxSearchLen: 100,
+	}
+}
+
 func New() *Members {
 	return &Members{}
 }
@@ -52,19 +71,52 @@ func (p *Members) GetShowData(ctx context.Context, groupID, memberID string) (Me
 	}, nil
 }
 
-func (p *Members) GetIndexData(ctx context.Context, groupID string) (MembersData, error) {
+func (p *Members) GetIndexData(ctx context.Context, groupID string, query utils.TableQuery) (MembersData, error) {
 	group, err := db.Qry.GetGroupByID(ctx, groupID)
 	if err != nil {
 		return MembersData{}, err
 	}
 
-	members, err := db.Qry.ListMembers(ctx, groupID)
+	totalItems, err := db.Qry.CountMembersFiltered(ctx, db.CountMembersFilteredParams{
+		GroupID: groupID,
+		Search:  query.Search,
+	})
+	if err != nil {
+		return MembersData{}, err
+	}
+
+	query = utils.ClampPage(query, totalItems)
+
+	params := db.ListMembersByNameAscFilteredParams{
+		GroupID: groupID,
+		Search:  query.Search,
+		Limit:   int64(query.PageSize),
+		Offset:  query.Offset(),
+	}
+
+	var members []db.Member
+	switch query.Sort {
+	case "name":
+		if query.Dir == "desc" {
+			members, err = db.Qry.ListMembersByNameDescFiltered(ctx, db.ListMembersByNameDescFilteredParams(params))
+		} else {
+			members, err = db.Qry.ListMembersByNameAscFiltered(ctx, params)
+		}
+	default:
+		if query.Dir == "asc" {
+			members, err = db.Qry.ListMembersByCreatedAtAscFiltered(ctx, db.ListMembersByCreatedAtAscFilteredParams(params))
+		} else {
+			members, err = db.Qry.ListMembersByCreatedAtDescFiltered(ctx, db.ListMembersByCreatedAtDescFilteredParams(params))
+		}
+	}
 	if err != nil {
 		return MembersData{}, err
 	}
 	return MembersData{
 		Title:   ctxi18n.T(ctx, "members.title"),
 		Members: members,
+		Query:   query,
+		Pager:   utils.BuildTablePagination(totalItems, query),
 		GroupID: groupID,
 		Breadcrumbs: []utils.Crumb{
 			{Label: ctxi18n.T(ctx, "groups.title"), Href: "/dashboard"},

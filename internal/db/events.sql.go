@@ -9,6 +9,28 @@ import (
 	"context"
 )
 
+const countEventsFiltered = `-- name: CountEventsFiltered :one
+SELECT COUNT(*) FROM events
+WHERE group_id = ?1
+  AND (
+    ?2 = ''
+    OR title LIKE '%' || ?2 || '%'
+    OR description LIKE '%' || ?2 || '%'
+  )
+`
+
+type CountEventsFilteredParams struct {
+	GroupID string      `json:"group_id"`
+	Search  interface{} `json:"search"`
+}
+
+func (q *Queries) CountEventsFiltered(ctx context.Context, arg CountEventsFilteredParams) (int64, error) {
+	row := q.db.QueryRowContext(ctx, countEventsFiltered, arg.GroupID, arg.Search)
+	var count int64
+	err := row.Scan(&count)
+	return count, err
+}
+
 const createEvent = `-- name: CreateEvent :one
 INSERT INTO events (id, group_id, title, time, description, amount)
 VALUES (?, ?, ?, ?, ?, ?)
@@ -105,6 +127,342 @@ ORDER BY time ASC
 
 func (q *Queries) ListEvents(ctx context.Context, groupID string) ([]Event, error) {
 	rows, err := q.db.QueryContext(ctx, listEvents, groupID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []Event{}
+	for rows.Next() {
+		var i Event
+		if err := rows.Scan(
+			&i.ID,
+			&i.GroupID,
+			&i.Title,
+			&i.Time,
+			&i.Description,
+			&i.Amount,
+			&i.CreatedAt,
+			&i.UpdatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const listEventsByAmountAscFiltered = `-- name: ListEventsByAmountAscFiltered :many
+SELECT id, group_id, title, time, description, amount, created_at, updated_at FROM events
+WHERE group_id = ?1
+  AND (
+    ?2 = ''
+    OR title LIKE '%' || ?2 || '%'
+    OR description LIKE '%' || ?2 || '%'
+  )
+ORDER BY amount ASC, created_at DESC
+LIMIT ?4 OFFSET ?3
+`
+
+type ListEventsByAmountAscFilteredParams struct {
+	GroupID string      `json:"group_id"`
+	Search  interface{} `json:"search"`
+	Offset  int64       `json:"offset"`
+	Limit   int64       `json:"limit"`
+}
+
+func (q *Queries) ListEventsByAmountAscFiltered(ctx context.Context, arg ListEventsByAmountAscFilteredParams) ([]Event, error) {
+	rows, err := q.db.QueryContext(ctx, listEventsByAmountAscFiltered,
+		arg.GroupID,
+		arg.Search,
+		arg.Offset,
+		arg.Limit,
+	)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []Event{}
+	for rows.Next() {
+		var i Event
+		if err := rows.Scan(
+			&i.ID,
+			&i.GroupID,
+			&i.Title,
+			&i.Time,
+			&i.Description,
+			&i.Amount,
+			&i.CreatedAt,
+			&i.UpdatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const listEventsByAmountDescFiltered = `-- name: ListEventsByAmountDescFiltered :many
+SELECT id, group_id, title, time, description, amount, created_at, updated_at FROM events
+WHERE group_id = ?1
+  AND (
+    ?2 = ''
+    OR title LIKE '%' || ?2 || '%'
+    OR description LIKE '%' || ?2 || '%'
+  )
+ORDER BY amount DESC, created_at DESC
+LIMIT ?4 OFFSET ?3
+`
+
+type ListEventsByAmountDescFilteredParams struct {
+	GroupID string      `json:"group_id"`
+	Search  interface{} `json:"search"`
+	Offset  int64       `json:"offset"`
+	Limit   int64       `json:"limit"`
+}
+
+func (q *Queries) ListEventsByAmountDescFiltered(ctx context.Context, arg ListEventsByAmountDescFilteredParams) ([]Event, error) {
+	rows, err := q.db.QueryContext(ctx, listEventsByAmountDescFiltered,
+		arg.GroupID,
+		arg.Search,
+		arg.Offset,
+		arg.Limit,
+	)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []Event{}
+	for rows.Next() {
+		var i Event
+		if err := rows.Scan(
+			&i.ID,
+			&i.GroupID,
+			&i.Title,
+			&i.Time,
+			&i.Description,
+			&i.Amount,
+			&i.CreatedAt,
+			&i.UpdatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const listEventsByTimeAscFiltered = `-- name: ListEventsByTimeAscFiltered :many
+SELECT id, group_id, title, time, description, amount, created_at, updated_at FROM events
+WHERE group_id = ?1
+  AND (
+    ?2 = ''
+    OR title LIKE '%' || ?2 || '%'
+    OR description LIKE '%' || ?2 || '%'
+  )
+ORDER BY time ASC, created_at DESC
+LIMIT ?4 OFFSET ?3
+`
+
+type ListEventsByTimeAscFilteredParams struct {
+	GroupID string      `json:"group_id"`
+	Search  interface{} `json:"search"`
+	Offset  int64       `json:"offset"`
+	Limit   int64       `json:"limit"`
+}
+
+func (q *Queries) ListEventsByTimeAscFiltered(ctx context.Context, arg ListEventsByTimeAscFilteredParams) ([]Event, error) {
+	rows, err := q.db.QueryContext(ctx, listEventsByTimeAscFiltered,
+		arg.GroupID,
+		arg.Search,
+		arg.Offset,
+		arg.Limit,
+	)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []Event{}
+	for rows.Next() {
+		var i Event
+		if err := rows.Scan(
+			&i.ID,
+			&i.GroupID,
+			&i.Title,
+			&i.Time,
+			&i.Description,
+			&i.Amount,
+			&i.CreatedAt,
+			&i.UpdatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const listEventsByTimeDescFiltered = `-- name: ListEventsByTimeDescFiltered :many
+SELECT id, group_id, title, time, description, amount, created_at, updated_at FROM events
+WHERE group_id = ?1
+  AND (
+    ?2 = ''
+    OR title LIKE '%' || ?2 || '%'
+    OR description LIKE '%' || ?2 || '%'
+  )
+ORDER BY time DESC, created_at DESC
+LIMIT ?4 OFFSET ?3
+`
+
+type ListEventsByTimeDescFilteredParams struct {
+	GroupID string      `json:"group_id"`
+	Search  interface{} `json:"search"`
+	Offset  int64       `json:"offset"`
+	Limit   int64       `json:"limit"`
+}
+
+func (q *Queries) ListEventsByTimeDescFiltered(ctx context.Context, arg ListEventsByTimeDescFilteredParams) ([]Event, error) {
+	rows, err := q.db.QueryContext(ctx, listEventsByTimeDescFiltered,
+		arg.GroupID,
+		arg.Search,
+		arg.Offset,
+		arg.Limit,
+	)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []Event{}
+	for rows.Next() {
+		var i Event
+		if err := rows.Scan(
+			&i.ID,
+			&i.GroupID,
+			&i.Title,
+			&i.Time,
+			&i.Description,
+			&i.Amount,
+			&i.CreatedAt,
+			&i.UpdatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const listEventsByTitleAscFiltered = `-- name: ListEventsByTitleAscFiltered :many
+SELECT id, group_id, title, time, description, amount, created_at, updated_at FROM events
+WHERE group_id = ?1
+  AND (
+    ?2 = ''
+    OR title LIKE '%' || ?2 || '%'
+    OR description LIKE '%' || ?2 || '%'
+  )
+ORDER BY title COLLATE NOCASE ASC, created_at DESC
+LIMIT ?4 OFFSET ?3
+`
+
+type ListEventsByTitleAscFilteredParams struct {
+	GroupID string      `json:"group_id"`
+	Search  interface{} `json:"search"`
+	Offset  int64       `json:"offset"`
+	Limit   int64       `json:"limit"`
+}
+
+func (q *Queries) ListEventsByTitleAscFiltered(ctx context.Context, arg ListEventsByTitleAscFilteredParams) ([]Event, error) {
+	rows, err := q.db.QueryContext(ctx, listEventsByTitleAscFiltered,
+		arg.GroupID,
+		arg.Search,
+		arg.Offset,
+		arg.Limit,
+	)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []Event{}
+	for rows.Next() {
+		var i Event
+		if err := rows.Scan(
+			&i.ID,
+			&i.GroupID,
+			&i.Title,
+			&i.Time,
+			&i.Description,
+			&i.Amount,
+			&i.CreatedAt,
+			&i.UpdatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const listEventsByTitleDescFiltered = `-- name: ListEventsByTitleDescFiltered :many
+SELECT id, group_id, title, time, description, amount, created_at, updated_at FROM events
+WHERE group_id = ?1
+  AND (
+    ?2 = ''
+    OR title LIKE '%' || ?2 || '%'
+    OR description LIKE '%' || ?2 || '%'
+  )
+ORDER BY title COLLATE NOCASE DESC, created_at DESC
+LIMIT ?4 OFFSET ?3
+`
+
+type ListEventsByTitleDescFilteredParams struct {
+	GroupID string      `json:"group_id"`
+	Search  interface{} `json:"search"`
+	Offset  int64       `json:"offset"`
+	Limit   int64       `json:"limit"`
+}
+
+func (q *Queries) ListEventsByTitleDescFiltered(ctx context.Context, arg ListEventsByTitleDescFilteredParams) ([]Event, error) {
+	rows, err := q.db.QueryContext(ctx, listEventsByTitleDescFiltered,
+		arg.GroupID,
+		arg.Search,
+		arg.Offset,
+		arg.Limit,
+	)
 	if err != nil {
 		return nil, err
 	}

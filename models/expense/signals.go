@@ -1,8 +1,9 @@
 package expense
 
-func expenseIndexSignals(csrfToken string) map[string]any {
+func expenseIndexSignals(csrfToken string, query map[string]any) map[string]any {
 	return map[string]any{
 		"csrf":           csrfToken,
+		"tableQuery":     query,
 		"mode":           "",
 		"formState":      "",
 		"eventFormState": "",

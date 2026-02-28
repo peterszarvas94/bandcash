@@ -10,12 +10,43 @@ import (
 )
 
 templ EventIndexMain(data EventsData) {
+	<div class="row row-wrap pt">
+		<input type="search" data-bind="tableQuery.search" placeholder={ ctxi18n.T(ctx, "table.search_placeholder") }/>
+		<button class="btn btn-sm" type="button" data-on:click={ eventSearchAction(data) }>{ ctxi18n.T(ctx, "table.search") }</button>
+	</div>
 	<table class="table table-sticky-actions pt">
 		<thead>
 			<tr>
-				<th>{ ctxi18n.T(ctx, "fields.title") }</th>
-				<th>{ ctxi18n.T(ctx, "fields.time") }</th>
-				<th>{ ctxi18n.T(ctx, "fields.amount") }</th>
+				<th>
+					<button class="btn btn-sm" type="button" data-on:click={ eventQueryAction(eventSortURL(data, "title")) }>
+						<span>{ ctxi18n.T(ctx, "fields.title") }</span>
+						if eventSortDir(data, "title") == "asc" {
+							@icons.ArrowDownAZ(templ.Attributes{"class": "icon"})
+						} else if eventSortDir(data, "title") == "desc" {
+							@icons.ArrowUpZA(templ.Attributes{"class": "icon"})
+						}
+					</button>
+				</th>
+				<th>
+					<button class="btn btn-sm" type="button" data-on:click={ eventQueryAction(eventSortURL(data, "time")) }>
+						<span>{ ctxi18n.T(ctx, "fields.time") }</span>
+						if eventSortDir(data, "time") == "asc" {
+							@icons.ArrowDownAZ(templ.Attributes{"class": "icon"})
+						} else if eventSortDir(data, "time") == "desc" {
+							@icons.ArrowUpZA(templ.Attributes{"class": "icon"})
+						}
+					</button>
+				</th>
+				<th>
+					<button class="btn btn-sm" type="button" data-on:click={ eventQueryAction(eventSortURL(data, "amount")) }>
+						<span>{ ctxi18n.T(ctx, "fields.amount") }</span>
+						if eventSortDir(data, "amount") == "asc" {
+							@icons.ArrowDownAZ(templ.Attributes{"class": "icon"})
+						} else if eventSortDir(data, "amount") == "desc" {
+							@icons.ArrowUpZA(templ.Attributes{"class": "icon"})
+						}
+					</button>
+				</th>
 				<th>{ ctxi18n.T(ctx, "fields.description") }</th>
 				if data.IsAdmin {
 					<th data-actions-col>
@@ -58,4 +89,33 @@ templ EventIndexMain(data EventsData) {
 			}
 		</tbody>
 	</table>
+	<div class="row row-wrap justify-between pt">
+		<div class="row row-wrap">
+			<span>{ ctxi18n.T(ctx, "table.page_size") }</span>
+			for _, pageSize := range tablePageSizes {
+				<button class={ pageSizeButtonClass(data.Query.PageSize, pageSize) } type="button" data-on:click={ eventQueryAction(eventPageSizeURL(data, pageSize)) }>{ fmt.Sprintf("%d", pageSize) }</button>
+			}
+		</div>
+		<div class="row row-wrap">
+			if data.Pager.HasPrev {
+				<button class="btn btn-sm btn-icon" type="button" data-on:click={ eventQueryAction(eventPageURL(data, data.Pager.Page-1)) } aria-label={ ctxi18n.T(ctx, "table.prev") } title={ ctxi18n.T(ctx, "table.prev") }>
+					@icons.ChevronLeft(templ.Attributes{"class": "icon"})
+				</button>
+			} else {
+				<button type="button" class="btn btn-sm btn-icon" disabled>
+					@icons.ChevronLeft(templ.Attributes{"class": "icon"})
+				</button>
+			}
+			<span>{ fmt.Sprintf("%s %d / %d", ctxi18n.T(ctx, "table.page"), data.Pager.Page, data.Pager.TotalPages) }</span>
+			if data.Pager.HasNext {
+				<button class="btn btn-sm btn-icon" type="button" data-on:click={ eventQueryAction(eventPageURL(data, data.Pager.Page+1)) } aria-label={ ctxi18n.T(ctx, "table.next") } title={ ctxi18n.T(ctx, "table.next") }>
+					@icons.ChevronRight(templ.Attributes{"class": "icon"})
+				</button>
+			} else {
+				<button type="button" class="btn btn-sm btn-icon" disabled>
+					@icons.ChevronRight(templ.Attributes{"class": "icon"})
+				</button>
+			}
+		</div>
+	</div>
 }

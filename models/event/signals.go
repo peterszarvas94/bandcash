@@ -1,8 +1,9 @@
 package event
 
-func eventIndexSignals(csrfToken string) map[string]any {
+func eventIndexSignals(csrfToken string, query map[string]any) map[string]any {
 	return map[string]any{
 		"csrf":           csrfToken,
+		"tableQuery":     query,
 		"mode":           "",
 		"formState":      "",
 		"editingId":      0,

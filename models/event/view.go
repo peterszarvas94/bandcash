@@ -22,6 +22,8 @@ type EventData struct {
 type EventsData struct {
 	Title       string
 	Events      []db.Event
+	Query       utils.TableQuery
+	Pager       utils.TablePagination
 	Breadcrumbs []utils.Crumb
 	GroupID     string
 	IsAdmin     bool

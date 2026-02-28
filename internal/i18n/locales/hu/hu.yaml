@@ -78,6 +78,12 @@ hu:
   table:
     empty: "nincs elem"
     actions: "Műveletek"
+    search: "Keresés"
+    search_placeholder: "Keresés"
+    page: "Oldal"
+    prev: "Előző"
+    next: "Következő"
+    page_size: "Oldalméret"
   fields:
     title: "Cím"
     time: "Idő"

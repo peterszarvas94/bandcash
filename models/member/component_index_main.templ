@@ -9,10 +9,23 @@ import (
 )
 
 templ MemberIndexMain(data MembersData) {
+	<div class="row row-wrap pt">
+		<input type="search" data-bind="tableQuery.search" placeholder={ ctxi18n.T(ctx, "table.search_placeholder") }/>
+		<button class="btn btn-sm" type="button" data-on:click={ memberSearchAction(data) }>{ ctxi18n.T(ctx, "table.search") }</button>
+	</div>
 	<table class="table table-sticky-actions pt">
 		<thead>
 			<tr>
-				<th>{ ctxi18n.T(ctx, "fields.name") }</th>
+				<th>
+					<button class="btn btn-sm" type="button" data-on:click={ memberQueryAction(memberSortURL(data, "name")) }>
+						<span>{ ctxi18n.T(ctx, "fields.name") }</span>
+						if memberSortDir(data, "name") == "asc" {
+							@icons.ArrowDownAZ(templ.Attributes{"class": "icon"})
+						} else if memberSortDir(data, "name") == "desc" {
+							@icons.ArrowUpZA(templ.Attributes{"class": "icon"})
+						}
+					</button>
+				</th>
 				<th>{ ctxi18n.T(ctx, "fields.description") }</th>
 				if data.IsAdmin {
 					<th data-actions-col>
@@ -48,4 +61,33 @@ templ MemberIndexMain(data MembersData) {
 			}
 		</tbody>
 	</table>
+	<div class="row row-wrap justify-between pt">
+		<div class="row row-wrap">
+			<span>{ ctxi18n.T(ctx, "table.page_size") }</span>
+			for _, pageSize := range tablePageSizes {
+				<button class={ pageSizeButtonClass(data.Query.PageSize, pageSize) } type="button" data-on:click={ memberQueryAction(memberPageSizeURL(data, pageSize)) }>{ fmt.Sprintf("%d", pageSize) }</button>
+			}
+		</div>
+		<div class="row row-wrap">
+			if data.Pager.HasPrev {
+				<button class="btn btn-sm btn-icon" type="button" data-on:click={ memberQueryAction(memberPageURL(data, data.Pager.Page-1)) } aria-label={ ctxi18n.T(ctx, "table.prev") } title={ ctxi18n.T(ctx, "table.prev") }>
+					@icons.ChevronLeft(templ.Attributes{"class": "icon"})
+				</button>
+			} else {
+				<button type="button" class="btn btn-sm btn-icon" disabled>
+					@icons.ChevronLeft(templ.Attributes{"class": "icon"})
+				</button>
+			}
+			<span>{ fmt.Sprintf("%s %d / %d", ctxi18n.T(ctx, "table.page"), data.Pager.Page, data.Pager.TotalPages) }</span>
+			if data.Pager.HasNext {
+				<button class="btn btn-sm btn-icon" type="button" data-on:click={ memberQueryAction(memberPageURL(data, data.Pager.Page+1)) } aria-label={ ctxi18n.T(ctx, "table.next") } title={ ctxi18n.T(ctx, "table.next") }>
+					@icons.ChevronRight(templ.Attributes{"class": "icon"})
+				</button>
+			} else {
+				<button type="button" class="btn btn-sm btn-icon" disabled>
+					@icons.ChevronRight(templ.Attributes{"class": "icon"})
+				</button>
+			}
+		</div>
+	</div>
 }

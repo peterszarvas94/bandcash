@@ -18,6 +18,8 @@ type MemberData struct {
 type MembersData struct {
 	Title       string
 	Members     []db.Member
+	Query       utils.TableQuery
+	Pager       utils.TablePagination
 	Breadcrumbs []utils.Crumb
 	GroupID     string
 	IsAdmin     bool

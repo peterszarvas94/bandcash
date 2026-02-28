@@ -8,6 +8,8 @@ import (
 type ExpensesData struct {
 	Title       string
 	Expenses    []db.Expense
+	Query       utils.TableQuery
+	Pager       utils.TablePagination
 	Breadcrumbs []utils.Crumb
 	GroupID     string
 	IsAdmin     bool

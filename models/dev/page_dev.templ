@@ -23,8 +23,20 @@ templ DevMain() {
 	@shared.Section("Notifications", NotificationsContent())
 	@shared.Section("Email previews", EmailPreviewContent())
 	@shared.Section("Loading indicator test", LoadingIndicatorContent())
+	@shared.Section("Table query tests", TableQueryTestContent())
 	@shared.Section("Rate limit", RateLimitContent())
 	@shared.Section("Body limit", BodyLimitContent())
+}
+
+templ TableQueryTestContent() {
+	<p>Run hardcoded query examples and inspect parsed + backend response.</p>
+	<div class="row row-wrap">
+		@shared.IDActionButton("query-test-events-valid", "btn btn-info", "Events valid query")
+		@shared.IDActionButton("query-test-events-invalid", "btn btn-warning", "Events invalid values")
+		@shared.IDActionButton("query-test-members-valid", "btn btn-success", "Members valid query")
+		@shared.IDActionButton("query-test-expenses-valid", "btn btn-primary", "Expenses valid query")
+	</div>
+	<pre id="query-test-output">Ready.</pre>
 }
 
 templ EmailPreviewContent() {

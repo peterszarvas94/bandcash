@@ -78,6 +78,12 @@ en:
   table:
     empty: "no items"
     actions: "Actions"
+    search: "Search"
+    search_placeholder: "Search"
+    page: "Page"
+    prev: "Previous"
+    next: "Next"
+    page_size: "Page size"
   fields:
     title: "Title"
     time: "Time"

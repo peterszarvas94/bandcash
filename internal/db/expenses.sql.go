@@ -9,6 +9,28 @@ import (
 	"context"
 )
 
+const countExpensesFiltered = `-- name: CountExpensesFiltered :one
+SELECT COUNT(*) FROM expenses
+WHERE group_id = ?1
+  AND (
+    ?2 = ''
+    OR title LIKE '%' || ?2 || '%'
+    OR description LIKE '%' || ?2 || '%'
+  )
+`
+
+type CountExpensesFilteredParams struct {
+	GroupID string      `json:"group_id"`
+	Search  interface{} `json:"search"`
+}
+
+func (q *Queries) CountExpensesFiltered(ctx context.Context, arg CountExpensesFilteredParams) (int64, error) {
+	row := q.db.QueryRowContext(ctx, countExpensesFiltered, arg.GroupID, arg.Search)
+	var count int64
+	err := row.Scan(&count)
+	return count, err
+}
+
 const createExpense = `-- name: CreateExpense :one
 INSERT INTO expenses (id, group_id, title, description, amount, date)
 VALUES (?, ?, ?, ?, ?, ?)
@@ -70,6 +92,342 @@ ORDER BY date DESC, created_at DESC
 
 func (q *Queries) ListExpenses(ctx context.Context, groupID string) ([]Expense, error) {
 	rows, err := q.db.QueryContext(ctx, listExpenses, groupID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []Expense{}
+	for rows.Next() {
+		var i Expense
+		if err := rows.Scan(
+			&i.ID,
+			&i.GroupID,
+			&i.Title,
+			&i.Description,
+			&i.Amount,
+			&i.Date,
+			&i.CreatedAt,
+			&i.UpdatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const listExpensesByAmountAscFiltered = `-- name: ListExpensesByAmountAscFiltered :many
+SELECT id, group_id, title, description, amount, date, created_at, updated_at FROM expenses
+WHERE group_id = ?1
+  AND (
+    ?2 = ''
+    OR title LIKE '%' || ?2 || '%'
+    OR description LIKE '%' || ?2 || '%'
+  )
+ORDER BY amount ASC, created_at DESC
+LIMIT ?4 OFFSET ?3
+`
+
+type ListExpensesByAmountAscFilteredParams struct {
+	GroupID string      `json:"group_id"`
+	Search  interface{} `json:"search"`
+	Offset  int64       `json:"offset"`
+	Limit   int64       `json:"limit"`
+}
+
+func (q *Queries) ListExpensesByAmountAscFiltered(ctx context.Context, arg ListExpensesByAmountAscFilteredParams) ([]Expense, error) {
+	rows, err := q.db.QueryContext(ctx, listExpensesByAmountAscFiltered,
+		arg.GroupID,
+		arg.Search,
+		arg.Offset,
+		arg.Limit,
+	)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []Expense{}
+	for rows.Next() {
+		var i Expense
+		if err := rows.Scan(
+			&i.ID,
+			&i.GroupID,
+			&i.Title,
+			&i.Description,
+			&i.Amount,
+			&i.Date,
+			&i.CreatedAt,
+			&i.UpdatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const listExpensesByAmountDescFiltered = `-- name: ListExpensesByAmountDescFiltered :many
+SELECT id, group_id, title, description, amount, date, created_at, updated_at FROM expenses
+WHERE group_id = ?1
+  AND (
+    ?2 = ''
+    OR title LIKE '%' || ?2 || '%'
+    OR description LIKE '%' || ?2 || '%'
+  )
+ORDER BY amount DESC, created_at DESC
+LIMIT ?4 OFFSET ?3
+`
+
+type ListExpensesByAmountDescFilteredParams struct {
+	GroupID string      `json:"group_id"`
+	Search  interface{} `json:"search"`
+	Offset  int64       `json:"offset"`
+	Limit   int64       `json:"limit"`
+}
+
+func (q *Queries) ListExpensesByAmountDescFiltered(ctx context.Context, arg ListExpensesByAmountDescFilteredParams) ([]Expense, error) {
+	rows, err := q.db.QueryContext(ctx, listExpensesByAmountDescFiltered,
+		arg.GroupID,
+		arg.Search,
+		arg.Offset,
+		arg.Limit,
+	)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []Expense{}
+	for rows.Next() {
+		var i Expense
+		if err := rows.Scan(
+			&i.ID,
+			&i.GroupID,
+			&i.Title,
+			&i.Description,
+			&i.Amount,
+			&i.Date,
+			&i.CreatedAt,
+			&i.UpdatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const listExpensesByDateAscFiltered = `-- name: ListExpensesByDateAscFiltered :many
+SELECT id, group_id, title, description, amount, date, created_at, updated_at FROM expenses
+WHERE group_id = ?1
+  AND (
+    ?2 = ''
+    OR title LIKE '%' || ?2 || '%'
+    OR description LIKE '%' || ?2 || '%'
+  )
+ORDER BY date ASC, created_at DESC
+LIMIT ?4 OFFSET ?3
+`
+
+type ListExpensesByDateAscFilteredParams struct {
+	GroupID string      `json:"group_id"`
+	Search  interface{} `json:"search"`
+	Offset  int64       `json:"offset"`
+	Limit   int64       `json:"limit"`
+}
+
+func (q *Queries) ListExpensesByDateAscFiltered(ctx context.Context, arg ListExpensesByDateAscFilteredParams) ([]Expense, error) {
+	rows, err := q.db.QueryContext(ctx, listExpensesByDateAscFiltered,
+		arg.GroupID,
+		arg.Search,
+		arg.Offset,
+		arg.Limit,
+	)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []Expense{}
+	for rows.Next() {
+		var i Expense
+		if err := rows.Scan(
+			&i.ID,
+			&i.GroupID,
+			&i.Title,
+			&i.Description,
+			&i.Amount,
+			&i.Date,
+			&i.CreatedAt,
+			&i.UpdatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const listExpensesByDateDescFiltered = `-- name: ListExpensesByDateDescFiltered :many
+SELECT id, group_id, title, description, amount, date, created_at, updated_at FROM expenses
+WHERE group_id = ?1
+  AND (
+    ?2 = ''
+    OR title LIKE '%' || ?2 || '%'
+    OR description LIKE '%' || ?2 || '%'
+  )
+ORDER BY date DESC, created_at DESC
+LIMIT ?4 OFFSET ?3
+`
+
+type ListExpensesByDateDescFilteredParams struct {
+	GroupID string      `json:"group_id"`
+	Search  interface{} `json:"search"`
+	Offset  int64       `json:"offset"`
+	Limit   int64       `json:"limit"`
+}
+
+func (q *Queries) ListExpensesByDateDescFiltered(ctx context.Context, arg ListExpensesByDateDescFilteredParams) ([]Expense, error) {
+	rows, err := q.db.QueryContext(ctx, listExpensesByDateDescFiltered,
+		arg.GroupID,
+		arg.Search,
+		arg.Offset,
+		arg.Limit,
+	)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []Expense{}
+	for rows.Next() {
+		var i Expense
+		if err := rows.Scan(
+			&i.ID,
+			&i.GroupID,
+			&i.Title,
+			&i.Description,
+			&i.Amount,
+			&i.Date,
+			&i.CreatedAt,
+			&i.UpdatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const listExpensesByTitleAscFiltered = `-- name: ListExpensesByTitleAscFiltered :many
+SELECT id, group_id, title, description, amount, date, created_at, updated_at FROM expenses
+WHERE group_id = ?1
+  AND (
+    ?2 = ''
+    OR title LIKE '%' || ?2 || '%'
+    OR description LIKE '%' || ?2 || '%'
+  )
+ORDER BY title COLLATE NOCASE ASC, created_at DESC
+LIMIT ?4 OFFSET ?3
+`
+
+type ListExpensesByTitleAscFilteredParams struct {
+	GroupID string      `json:"group_id"`
+	Search  interface{} `json:"search"`
+	Offset  int64       `json:"offset"`
+	Limit   int64       `json:"limit"`
+}
+
+func (q *Queries) ListExpensesByTitleAscFiltered(ctx context.Context, arg ListExpensesByTitleAscFilteredParams) ([]Expense, error) {
+	rows, err := q.db.QueryContext(ctx, listExpensesByTitleAscFiltered,
+		arg.GroupID,
+		arg.Search,
+		arg.Offset,
+		arg.Limit,
+	)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []Expense{}
+	for rows.Next() {
+		var i Expense
+		if err := rows.Scan(
+			&i.ID,
+			&i.GroupID,
+			&i.Title,
+			&i.Description,
+			&i.Amount,
+			&i.Date,
+			&i.CreatedAt,
+			&i.UpdatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const listExpensesByTitleDescFiltered = `-- name: ListExpensesByTitleDescFiltered :many
+SELECT id, group_id, title, description, amount, date, created_at, updated_at FROM expenses
+WHERE group_id = ?1
+  AND (
+    ?2 = ''
+    OR title LIKE '%' || ?2 || '%'
+    OR description LIKE '%' || ?2 || '%'
+  )
+ORDER BY title COLLATE NOCASE DESC, created_at DESC
+LIMIT ?4 OFFSET ?3
+`
+
+type ListExpensesByTitleDescFilteredParams struct {
+	GroupID string      `json:"group_id"`
+	Search  interface{} `json:"search"`
+	Offset  int64       `json:"offset"`
+	Limit   int64       `json:"limit"`
+}
+
+func (q *Queries) ListExpensesByTitleDescFiltered(ctx context.Context, arg ListExpensesByTitleDescFilteredParams) ([]Expense, error) {
+	rows, err := q.db.QueryContext(ctx, listExpensesByTitleDescFiltered,
+		arg.GroupID,
+		arg.Search,
+		arg.Offset,
+		arg.Limit,
+	)
 	if err != nil {
 		return nil, err
 	}

@@ -14,13 +14,15 @@ import (
 )
 
 type eventInlineParams struct {
-	FormData      eventData `json:"formData"`
-	EventFormData eventData `json:"eventFormData"`
-	Mode          string    `json:"mode"`
+	FormData      eventData        `json:"formData"`
+	EventFormData eventData        `json:"eventFormData"`
+	TableQuery    utils.TableQuery `json:"tableQuery"`
+	Mode          string           `json:"mode"`
 }
 
 type modeParams struct {
-	Mode string `json:"mode"`
+	Mode       string           `json:"mode"`
+	TableQuery utils.TableQuery `json:"tableQuery"`
 }
 
 type eventData struct {
@@ -82,8 +84,9 @@ func (e *Events) Index(c echo.Context) error {
 	utils.EnsureClientID(c)
 	groupID := getGroupID(c)
 	userEmail := getUserEmail(c)
+	query := utils.ParseTableQuery(c, e)
 
-	data, err := e.GetIndexData(c.Request().Context(), groupID)
+	data, err := e.GetIndexData(c.Request().Context(), groupID, query)
 	if err != nil {
 		slog.Error("event.list: failed to get data", "err", err)
 		return c.NoContent(http.StatusInternalServerError)
@@ -158,7 +161,8 @@ func (e *Events) Create(c echo.Context) error {
 	utils.Notify(c, "success", ctxi18n.T(c.Request().Context(), "events.notifications.created"))
 
 	utils.SSEHub.PatchSignals(c, defaultEventSignals)
-	data, err := e.GetIndexData(c.Request().Context(), groupID)
+	query := utils.NormalizeTableQuery(signals.TableQuery, e.TableQuerySpec())
+	data, err := e.GetIndexData(c.Request().Context(), groupID, query)
 	if err != nil {
 		slog.Error("event.create.table: failed to get data", "err", err)
 		return c.NoContent(http.StatusInternalServerError)
@@ -256,7 +260,8 @@ func (e *Events) Update(c echo.Context) error {
 	}
 
 	utils.SSEHub.PatchSignals(c, defaultEventSignals)
-	data, err := e.GetIndexData(c.Request().Context(), groupID)
+	query := utils.NormalizeTableQuery(signals.TableQuery, e.TableQuerySpec())
+	data, err := e.GetIndexData(c.Request().Context(), groupID, query)
 	if err != nil {
 		slog.Error("event.update: failed to get data", "err", err)
 		return c.NoContent(http.StatusInternalServerError)
@@ -313,7 +318,8 @@ func (e *Events) Destroy(c echo.Context) error {
 	}
 
 	utils.SSEHub.PatchSignals(c, defaultEventSignals)
-	data, err := e.GetIndexData(c.Request().Context(), groupID)
+	query := utils.NormalizeTableQuery(signals.TableQuery, e.TableQuerySpec())
+	data, err := e.GetIndexData(c.Request().Context(), groupID, query)
 	if err != nil {
 		slog.Error("event.destroy: failed to get data", "err", err)
 		return c.NoContent(http.StatusInternalServerError)

@@ -20,6 +20,9 @@ var (
 //go:embed migrations/*.sql
 var migrationsFS embed.FS
 
+//go:embed seeds/*.sql
+var seedsFS embed.FS
+
 func Init(dbPath string) error {
 	// Ensure directory exists
 	dir := filepath.Dir(dbPath)
@@ -77,6 +80,23 @@ func Migrate() error {
 	err = goose.Up(DB, "migrations")
 	if err != nil {
 		return fmt.Errorf("failed to run migrations: %w", err)
+	}
+
+	return nil
+}
+
+func Seed(seedFile string) error {
+	if DB == nil {
+		return fmt.Errorf("database is not initialized")
+	}
+
+	content, err := seedsFS.ReadFile("seeds/" + seedFile)
+	if err != nil {
+		return fmt.Errorf("failed to read seed file %q: %w", seedFile, err)
+	}
+
+	if _, err := DB.Exec(string(content)); err != nil {
+		return fmt.Errorf("failed to execute seed file %q: %w", seedFile, err)
 	}
 
 	return nil

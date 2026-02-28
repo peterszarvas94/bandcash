@@ -21,12 +21,14 @@ type expenseParams struct {
 }
 
 type expenseTableParams struct {
-	FormData expenseParams `json:"formData"`
-	Mode     string        `json:"mode"`
+	FormData   expenseParams    `json:"formData"`
+	TableQuery utils.TableQuery `json:"tableQuery"`
+	Mode       string           `json:"mode"`
 }
 
 type modeParams struct {
-	Mode string `json:"mode"`
+	Mode       string           `json:"mode"`
+	TableQuery utils.TableQuery `json:"tableQuery"`
 }
 
 var (
@@ -60,8 +62,9 @@ func (e *Expenses) Index(c echo.Context) error {
 	utils.EnsureClientID(c)
 	groupID := getGroupID(c)
 	userEmail := getUserEmail(c)
+	query := utils.ParseTableQuery(c, e)
 
-	data, err := e.GetIndexData(c.Request().Context(), groupID)
+	data, err := e.GetIndexData(c.Request().Context(), groupID, query)
 	if err != nil {
 		slog.Error("expense.list: failed to get data", "err", err)
 		return c.NoContent(http.StatusInternalServerError)
@@ -108,7 +111,8 @@ func (e *Expenses) Create(c echo.Context) error {
 	utils.Notify(c, "success", ctxi18n.T(c.Request().Context(), "expenses.notifications.created"))
 	utils.SSEHub.PatchSignals(c, defaultExpenseSignals)
 
-	data, err := e.GetIndexData(c.Request().Context(), groupID)
+	query := utils.NormalizeTableQuery(signals.TableQuery, e.TableQuerySpec())
+	data, err := e.GetIndexData(c.Request().Context(), groupID, query)
 	if err != nil {
 		slog.Error("expense.create.table: failed to get data", "err", err)
 		return c.NoContent(http.StatusInternalServerError)
@@ -168,7 +172,8 @@ func (e *Expenses) Update(c echo.Context) error {
 	utils.Notify(c, "success", ctxi18n.T(c.Request().Context(), "expenses.notifications.updated"))
 	utils.SSEHub.PatchSignals(c, defaultExpenseSignals)
 
-	data, err := e.GetIndexData(c.Request().Context(), groupID)
+	query := utils.NormalizeTableQuery(signals.TableQuery, e.TableQuerySpec())
+	data, err := e.GetIndexData(c.Request().Context(), groupID, query)
 	if err != nil {
 		slog.Error("expense.update: failed to get data", "err", err)
 		return c.NoContent(http.StatusInternalServerError)
@@ -216,7 +221,8 @@ func (e *Expenses) Destroy(c echo.Context) error {
 	utils.Notify(c, "success", ctxi18n.T(c.Request().Context(), "expenses.notifications.deleted"))
 	utils.SSEHub.PatchSignals(c, defaultExpenseSignals)
 
-	data, err := e.GetIndexData(c.Request().Context(), groupID)
+	query := utils.NormalizeTableQuery(signals.TableQuery, e.TableQuerySpec())
+	data, err := e.GetIndexData(c.Request().Context(), groupID, query)
 	if err != nil {
 		slog.Error("expense.destroy: failed to get data", "err", err)
 		return c.NoContent(http.StatusInternalServerError)
