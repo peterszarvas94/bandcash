@@ -27,6 +27,38 @@ func (q *Queries) BanUser(ctx context.Context, arg BanUserParams) error {
 	return err
 }
 
+const countUserGroupsFiltered = `-- name: CountUserGroupsFiltered :one
+SELECT COUNT(*) FROM (
+  SELECT g.id FROM groups g
+  WHERE g.admin_user_id = ?1
+    AND (
+      ?2 = ''
+      OR g.name LIKE '%' || ?2 || '%'
+    )
+  UNION
+  SELECT g.id FROM groups g
+  JOIN group_readers gr ON gr.group_id = g.id
+  WHERE gr.user_id = ?1
+    AND g.admin_user_id != ?1
+    AND (
+      ?2 = ''
+      OR g.name LIKE '%' || ?2 || '%'
+    )
+)
+`
+
+type CountUserGroupsFilteredParams struct {
+	UserID string      `json:"user_id"`
+	Search interface{} `json:"search"`
+}
+
+func (q *Queries) CountUserGroupsFiltered(ctx context.Context, arg CountUserGroupsFilteredParams) (int64, error) {
+	row := q.db.QueryRowContext(ctx, countUserGroupsFiltered, arg.UserID, arg.Search)
+	var count int64
+	err := row.Scan(&count)
+	return count, err
+}
+
 const createGroup = `-- name: CreateGroup :one
 INSERT INTO groups (id, name, admin_user_id)
 VALUES (?, ?, ?)
@@ -404,6 +436,330 @@ func (q *Queries) ListGroupsByReader(ctx context.Context, userID string) ([]Grou
 			&i.Name,
 			&i.AdminUserID,
 			&i.CreatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const listUserGroupsByCreatedAscFiltered = `-- name: ListUserGroupsByCreatedAscFiltered :many
+SELECT 
+  g.id,
+  g.name,
+  g.admin_user_id,
+  g.created_at,
+  CASE WHEN g.admin_user_id = ?3 THEN 'admin' ELSE 'viewer' END as role
+FROM groups g
+WHERE g.admin_user_id = ?3
+  AND (
+    ?4 = ''
+    OR g.name LIKE '%' || ?4 || '%'
+  )
+UNION ALL
+SELECT 
+  g.id,
+  g.name,
+  g.admin_user_id,
+  g.created_at,
+  'viewer' as role
+FROM groups g
+JOIN group_readers gr ON gr.group_id = g.id
+WHERE gr.user_id = ?3
+  AND g.admin_user_id != ?3
+  AND (
+    ?4 = ''
+    OR g.name LIKE '%' || ?4 || '%'
+  )
+ORDER BY created_at ASC, name COLLATE NOCASE ASC
+LIMIT ?2 OFFSET ?1
+`
+
+type ListUserGroupsByCreatedAscFilteredParams struct {
+	Offset int64       `json:"offset"`
+	Limit  int64       `json:"limit"`
+	UserID string      `json:"user_id"`
+	Search interface{} `json:"search"`
+}
+
+type ListUserGroupsByCreatedAscFilteredRow struct {
+	ID          string       `json:"id"`
+	Name        string       `json:"name"`
+	AdminUserID string       `json:"admin_user_id"`
+	CreatedAt   sql.NullTime `json:"created_at"`
+	Role        string       `json:"role"`
+}
+
+func (q *Queries) ListUserGroupsByCreatedAscFiltered(ctx context.Context, arg ListUserGroupsByCreatedAscFilteredParams) ([]ListUserGroupsByCreatedAscFilteredRow, error) {
+	rows, err := q.db.QueryContext(ctx, listUserGroupsByCreatedAscFiltered,
+		arg.Offset,
+		arg.Limit,
+		arg.UserID,
+		arg.Search,
+	)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []ListUserGroupsByCreatedAscFilteredRow{}
+	for rows.Next() {
+		var i ListUserGroupsByCreatedAscFilteredRow
+		if err := rows.Scan(
+			&i.ID,
+			&i.Name,
+			&i.AdminUserID,
+			&i.CreatedAt,
+			&i.Role,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const listUserGroupsByCreatedDescFiltered = `-- name: ListUserGroupsByCreatedDescFiltered :many
+SELECT 
+  g.id,
+  g.name,
+  g.admin_user_id,
+  g.created_at,
+  CASE WHEN g.admin_user_id = ?3 THEN 'admin' ELSE 'viewer' END as role
+FROM groups g
+WHERE g.admin_user_id = ?3
+  AND (
+    ?4 = ''
+    OR g.name LIKE '%' || ?4 || '%'
+  )
+UNION ALL
+SELECT 
+  g.id,
+  g.name,
+  g.admin_user_id,
+  g.created_at,
+  'viewer' as role
+FROM groups g
+JOIN group_readers gr ON gr.group_id = g.id
+WHERE gr.user_id = ?3
+  AND g.admin_user_id != ?3
+  AND (
+    ?4 = ''
+    OR g.name LIKE '%' || ?4 || '%'
+  )
+ORDER BY created_at DESC, name COLLATE NOCASE ASC
+LIMIT ?2 OFFSET ?1
+`
+
+type ListUserGroupsByCreatedDescFilteredParams struct {
+	Offset int64       `json:"offset"`
+	Limit  int64       `json:"limit"`
+	UserID string      `json:"user_id"`
+	Search interface{} `json:"search"`
+}
+
+type ListUserGroupsByCreatedDescFilteredRow struct {
+	ID          string       `json:"id"`
+	Name        string       `json:"name"`
+	AdminUserID string       `json:"admin_user_id"`
+	CreatedAt   sql.NullTime `json:"created_at"`
+	Role        string       `json:"role"`
+}
+
+func (q *Queries) ListUserGroupsByCreatedDescFiltered(ctx context.Context, arg ListUserGroupsByCreatedDescFilteredParams) ([]ListUserGroupsByCreatedDescFilteredRow, error) {
+	rows, err := q.db.QueryContext(ctx, listUserGroupsByCreatedDescFiltered,
+		arg.Offset,
+		arg.Limit,
+		arg.UserID,
+		arg.Search,
+	)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []ListUserGroupsByCreatedDescFilteredRow{}
+	for rows.Next() {
+		var i ListUserGroupsByCreatedDescFilteredRow
+		if err := rows.Scan(
+			&i.ID,
+			&i.Name,
+			&i.AdminUserID,
+			&i.CreatedAt,
+			&i.Role,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const listUserGroupsByNameAscFiltered = `-- name: ListUserGroupsByNameAscFiltered :many
+SELECT 
+  g.id,
+  g.name,
+  g.admin_user_id,
+  g.created_at,
+  CASE WHEN g.admin_user_id = ?3 THEN 'admin' ELSE 'viewer' END as role
+FROM groups g
+WHERE g.admin_user_id = ?3
+  AND (
+    ?4 = ''
+    OR g.name LIKE '%' || ?4 || '%'
+  )
+UNION ALL
+SELECT 
+  g.id,
+  g.name,
+  g.admin_user_id,
+  g.created_at,
+  'viewer' as role
+FROM groups g
+JOIN group_readers gr ON gr.group_id = g.id
+WHERE gr.user_id = ?3
+  AND g.admin_user_id != ?3
+  AND (
+    ?4 = ''
+    OR g.name LIKE '%' || ?4 || '%'
+  )
+ORDER BY name COLLATE NOCASE ASC, created_at DESC
+LIMIT ?2 OFFSET ?1
+`
+
+type ListUserGroupsByNameAscFilteredParams struct {
+	Offset int64       `json:"offset"`
+	Limit  int64       `json:"limit"`
+	UserID string      `json:"user_id"`
+	Search interface{} `json:"search"`
+}
+
+type ListUserGroupsByNameAscFilteredRow struct {
+	ID          string       `json:"id"`
+	Name        string       `json:"name"`
+	AdminUserID string       `json:"admin_user_id"`
+	CreatedAt   sql.NullTime `json:"created_at"`
+	Role        string       `json:"role"`
+}
+
+func (q *Queries) ListUserGroupsByNameAscFiltered(ctx context.Context, arg ListUserGroupsByNameAscFilteredParams) ([]ListUserGroupsByNameAscFilteredRow, error) {
+	rows, err := q.db.QueryContext(ctx, listUserGroupsByNameAscFiltered,
+		arg.Offset,
+		arg.Limit,
+		arg.UserID,
+		arg.Search,
+	)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []ListUserGroupsByNameAscFilteredRow{}
+	for rows.Next() {
+		var i ListUserGroupsByNameAscFilteredRow
+		if err := rows.Scan(
+			&i.ID,
+			&i.Name,
+			&i.AdminUserID,
+			&i.CreatedAt,
+			&i.Role,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const listUserGroupsByNameDescFiltered = `-- name: ListUserGroupsByNameDescFiltered :many
+SELECT 
+  g.id,
+  g.name,
+  g.admin_user_id,
+  g.created_at,
+  CASE WHEN g.admin_user_id = ?3 THEN 'admin' ELSE 'viewer' END as role
+FROM groups g
+WHERE g.admin_user_id = ?3
+  AND (
+    ?4 = ''
+    OR g.name LIKE '%' || ?4 || '%'
+  )
+UNION ALL
+SELECT 
+  g.id,
+  g.name,
+  g.admin_user_id,
+  g.created_at,
+  'viewer' as role
+FROM groups g
+JOIN group_readers gr ON gr.group_id = g.id
+WHERE gr.user_id = ?3
+  AND g.admin_user_id != ?3
+  AND (
+    ?4 = ''
+    OR g.name LIKE '%' || ?4 || '%'
+  )
+ORDER BY name COLLATE NOCASE DESC, created_at DESC
+LIMIT ?2 OFFSET ?1
+`
+
+type ListUserGroupsByNameDescFilteredParams struct {
+	Offset int64       `json:"offset"`
+	Limit  int64       `json:"limit"`
+	UserID string      `json:"user_id"`
+	Search interface{} `json:"search"`
+}
+
+type ListUserGroupsByNameDescFilteredRow struct {
+	ID          string       `json:"id"`
+	Name        string       `json:"name"`
+	AdminUserID string       `json:"admin_user_id"`
+	CreatedAt   sql.NullTime `json:"created_at"`
+	Role        string       `json:"role"`
+}
+
+func (q *Queries) ListUserGroupsByNameDescFiltered(ctx context.Context, arg ListUserGroupsByNameDescFilteredParams) ([]ListUserGroupsByNameDescFilteredRow, error) {
+	rows, err := q.db.QueryContext(ctx, listUserGroupsByNameDescFiltered,
+		arg.Offset,
+		arg.Limit,
+		arg.UserID,
+		arg.Search,
+	)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []ListUserGroupsByNameDescFilteredRow{}
+	for rows.Next() {
+		var i ListUserGroupsByNameDescFilteredRow
+		if err := rows.Scan(
+			&i.ID,
+			&i.Name,
+			&i.AdminUserID,
+			&i.CreatedAt,
+			&i.Role,
 		); err != nil {
 			return nil, err
 		}

@@ -294,25 +294,57 @@ func BuildTableQueryURLWith(basePath string, query TableQuery, patch TableQueryP
 		resolved.PageSize = 20
 	}
 
-	values := url.Values{}
+	// Parse the basePath to handle existing query parameters properly
+	u, err := url.Parse(basePath)
+	if err != nil {
+		// If parsing fails, fall back to simple concatenation
+		values := url.Values{}
+		if resolved.Search != "" {
+			values.Set("q", resolved.Search)
+		}
+		if resolved.SortSet {
+			values.Set("sort", resolved.Sort)
+			values.Set("dir", resolved.Dir)
+		}
+		if resolved.Page > 1 {
+			values.Set("page", strconv.Itoa(resolved.Page))
+		}
+		if resolved.PageSize != 50 {
+			values.Set("pageSize", strconv.Itoa(resolved.PageSize))
+		}
+		encoded := values.Encode()
+		if encoded == "" {
+			return basePath
+		}
+		if strings.Contains(basePath, "?") {
+			return basePath + "&" + encoded
+		}
+		return basePath + "?" + encoded
+	}
+
+	// Merge existing query parameters with new ones
+	values := u.Query()
 	if resolved.Search != "" {
 		values.Set("q", resolved.Search)
 	}
 	if resolved.SortSet {
 		values.Set("sort", resolved.Sort)
 		values.Set("dir", resolved.Dir)
+	} else {
+		values.Del("sort")
+		values.Del("dir")
 	}
 	if resolved.Page > 1 {
 		values.Set("page", strconv.Itoa(resolved.Page))
+	} else {
+		values.Del("page")
 	}
 	if resolved.PageSize != 50 {
 		values.Set("pageSize", strconv.Itoa(resolved.PageSize))
+	} else {
+		values.Del("pageSize")
 	}
 
-	encoded := values.Encode()
-	if encoded == "" {
-		return basePath
-	}
-
-	return basePath + "?" + encoded
+	u.RawQuery = values.Encode()
+	return u.String()
 }

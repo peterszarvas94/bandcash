@@ -91,6 +91,9 @@ hu:
     description: "Leírás"
     amount: "Összeg"
     name: "Név"
+    role: "Szerep"
+    admin: "Admin"
+    created: "Létrehozva"
   actions:
     edit: "Szerkesztés"
     delete: "Törlés"
@@ -192,6 +195,8 @@ hu:
     viewers: "Nézők"
     read_only: "Nézői hozzáférés"
     admin: "Admin"
+    role_admin: "admin"
+    role_viewer: "néző"
     created: "Létrehozva"
     income: "Bevétel"
     payouts: "Kifizetések"
@@ -265,6 +270,7 @@ hu:
     recent_groups: "Legutóbbi csoportok"
     access_denied: "Nincs hozzáférésed az admin oldalakhoz."
     users:
+      title: "Felhasználók"
       status: "Státusz"
       active_status: "Aktív"
       banned_status: "Tiltva"
@@ -284,3 +290,12 @@ hu:
       disable_signup_action: "Regisztráció tiltása"
       updated: "Funkció kapcsoló frissítve."
       update_failed: "A funkció kapcsoló frissítése sikertelen."
+    tab:
+      overview: "Áttekintés"
+      flags: "Kapcsolók"
+      users: "Felhasználók"
+      groups: "Csoportok"
+    groups:
+      title: "Csoportok"
+      admin: "Admin"
+      viewers: "Megtekintők"

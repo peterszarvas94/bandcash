@@ -17,6 +17,7 @@ import (
 )
 
 type Group struct {
+	model *GroupModel
 }
 
 type createGroupSignals struct {
@@ -38,7 +39,9 @@ type updateGroupSignals struct {
 }
 
 func New() *Group {
-	return &Group{}
+	return &Group{
+		model: NewModel(),
+	}
 }
 
 // NewGroupPage shows the form to create a new group
@@ -107,38 +110,18 @@ func (g *Group) GroupsPage(c echo.Context) error {
 		return c.Redirect(http.StatusFound, "/auth/login")
 	}
 
-	adminGroups, err := db.Qry.ListGroupsByAdmin(c.Request().Context(), userID)
+	query := utils.ParseTableQuery(c, g.model)
+
+	data, err := g.model.GetGroupsPageData(c.Request().Context(), userID, query)
 	if err != nil {
-		slog.Error("group: failed to load admin groups", "err", err)
+		slog.Error("group: failed to load groups", "err", err)
 		return c.String(http.StatusInternalServerError, "Failed to load groups")
 	}
 
-	readerGroups, err := db.Qry.ListGroupsByReader(c.Request().Context(), userID)
-	if err != nil {
-		slog.Error("group: failed to load reader groups", "err", err)
-		return c.String(http.StatusInternalServerError, "Failed to load groups")
-	}
+	data.Title = ctxi18n.T(c.Request().Context(), "groups.title")
+	data.Breadcrumbs = []utils.Crumb{{Label: ctxi18n.T(c.Request().Context(), "groups.title")}}
+	data.UserEmail = userEmail
 
-	// Remove any reader groups where user is admin
-	adminMap := make(map[string]bool, len(adminGroups))
-	for _, group := range adminGroups {
-		adminMap[group.ID] = true
-	}
-	filteredReaders := make([]db.Group, 0, len(readerGroups))
-	for _, group := range readerGroups {
-		if adminMap[group.ID] {
-			continue
-		}
-		filteredReaders = append(filteredReaders, group)
-	}
-
-	data := GroupsPageData{
-		Title:        ctxi18n.T(c.Request().Context(), "groups.title"),
-		Breadcrumbs:  []utils.Crumb{{Label: ctxi18n.T(c.Request().Context(), "groups.title")}},
-		UserEmail:    userEmail,
-		AdminGroups:  g.groupSummaries(c, adminGroups),
-		ReaderGroups: g.groupSummaries(c, filteredReaders),
-	}
 	return utils.RenderComponent(c, GroupsPage(data))
 }
 
@@ -263,7 +246,7 @@ func (g *Group) DeleteGroup(c echo.Context) error {
 		}
 		return c.NoContent(http.StatusOK)
 	}
-	if group.AdminUserID != userID {
+	if group.AdminUserID != userID && !middleware.IsSuperadmin(c) {
 		utils.Notify(c, "error", ctxi18n.T(c.Request().Context(), "groups.errors.admin_required"))
 		err = utils.SSEHub.Redirect(c, "/dashboard")
 		if err != nil {
@@ -551,27 +534,4 @@ func (g *Group) groupPageData(c echo.Context, groupID string) (GroupPageData, er
 		Leftover:    leftover,
 		IsAdmin:     middleware.IsAdmin(c),
 	}, nil
-}
-
-func (g *Group) groupSummaries(c echo.Context, groups []db.Group) []GroupSummary {
-	summaries := make([]GroupSummary, 0, len(groups))
-	for _, group := range groups {
-		viewers, err := db.Qry.GetGroupReaders(c.Request().Context(), group.ID)
-		if err != nil {
-			slog.Warn("group: failed to load viewer count", "group_id", group.ID, "err", err)
-			continue
-		}
-
-		adminEmail := ""
-		if admin, err := db.Qry.GetUserByID(c.Request().Context(), group.AdminUserID); err == nil {
-			adminEmail = admin.Email
-		}
-
-		summaries = append(summaries, GroupSummary{
-			Group:       group,
-			ViewerCount: len(viewers),
-			AdminEmail:  adminEmail,
-		})
-	}
-	return summaries
 }

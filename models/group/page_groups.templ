@@ -17,7 +17,7 @@ templ GroupsPage(data GroupsPageData) {
 		@shared.Head(data.Title)
 		<body>
 			<div
-				data-signals={ templ.JSONString(map[string]any{"csrf": utils.CSRFToken(ctx), "formState": "", "selectedGroupId": "", "formData": map[string]any{"name": ""}, "errors": map[string]any{"name": ""}}) }
+				data-signals={ templ.JSONString(map[string]any{"csrf": utils.CSRFToken(ctx), "formState": "", "selectedGroupId": "", "formData": map[string]any{"name": ""}, "errors": map[string]any{"name": ""}, "tableQuery": groupsQuerySignals(data.Query)}) }
 				data-init="@get('/sse')"
 			></div>
 			@shared.Notifications()
@@ -26,17 +26,47 @@ templ GroupsPage(data GroupsPageData) {
 	</html>
 }
 
-templ GroupsMain(data GroupsPageData) {
-	<p class="text-muted">{ ctxi18n.T(ctx, "groups.subtitle") }</p>
-	@shared.Section(ctxi18n.T(ctx, "groups.admin_list"), AdminGroupsContent(data))
-	@shared.Section(ctxi18n.T(ctx, "groups.viewer_list"), ViewerGroupsContent(data))
+func groupsQuerySignals(query utils.TableQuery) map[string]any {
+	return map[string]any{
+		"page":     query.Page,
+		"pageSize": query.PageSize,
+		"search":   query.Search,
+		"sort":     query.Sort,
+		"dir":      query.Dir,
+	}
 }
 
-templ AdminGroupsContent(data GroupsPageData) {
-	<table class="table table-sticky-actions">
+templ GroupsMain(data GroupsPageData) {
+	<p class="text-muted">{ ctxi18n.T(ctx, "groups.subtitle") }</p>
+	<div class="row row-wrap pt">
+		<input type="search" data-bind="tableQuery.search" placeholder={ ctxi18n.T(ctx, "table.search_placeholder") }/>
+		<button class="btn btn-sm" type="button" data-on:click={ groupsSearchAction(data) }>{ ctxi18n.T(ctx, "table.search") }</button>
+	</div>
+	<table class="table table-sticky-actions pt">
 		<thead>
 			<tr>
-				<th>{ ctxi18n.T(ctx, "fields.name") }</th>
+				<th>
+					<button class="btn btn-sm" type="button" data-on:click={ groupsQueryAction(groupsSortURL(data, "name")) }>
+						<span>{ ctxi18n.T(ctx, "fields.name") }</span>
+						if groupsSortDir(data, "name") == "asc" {
+							@icons.ArrowDownAZ(templ.Attributes{"class": "icon"})
+						} else if groupsSortDir(data, "name") == "desc" {
+							@icons.ArrowUpZA(templ.Attributes{"class": "icon"})
+						}
+					</button>
+				</th>
+				<th>{ ctxi18n.T(ctx, "fields.role") }</th>
+				<th>
+					<button class="btn btn-sm" type="button" data-on:click={ groupsQueryAction(groupsSortURL(data, "createdAt")) }>
+						<span>{ ctxi18n.T(ctx, "fields.created") }</span>
+						if groupsSortDir(data, "createdAt") == "asc" {
+							@icons.ArrowDownAZ(templ.Attributes{"class": "icon"})
+						} else if groupsSortDir(data, "createdAt") == "desc" {
+							@icons.ArrowUpZA(templ.Attributes{"class": "icon"})
+						}
+					</button>
+				</th>
+				<th>{ ctxi18n.T(ctx, "fields.admin") }</th>
 				<th data-actions-col>
 					<div class="row row-right">
 						@shared.LoadingIconActionButton(
@@ -52,24 +82,44 @@ templ AdminGroupsContent(data GroupsPageData) {
 			</tr>
 		</thead>
 		<tbody>
-			if len(data.AdminGroups) == 0 {
-				<tr><td colspan="2">{ ctxi18n.T(ctx, "groups.none") }</td></tr>
+			if len(data.AllGroups) == 0 {
+				<tr><td colspan="5">{ ctxi18n.T(ctx, "table.empty") }</td></tr>
 			} else {
-				for _, group := range data.AdminGroups {
+				for _, group := range data.AllGroups {
 					<tr>
 						<td>
 							<a href={ "/groups/" + group.Group.ID }>{ group.Group.Name }</a>
 						</td>
+						<td>
+							if group.Role == "admin" {
+								<span class="badge badge-primary">{ ctxi18n.T(ctx, "groups.role_admin") }</span>
+							} else {
+								<span class="badge">{ ctxi18n.T(ctx, "groups.role_viewer") }</span>
+							}
+						</td>
+						<td>{ group.Group.CreatedAt.Time.Format("2006-01-02") }</td>
+						<td>{ group.AdminEmail }</td>
 						<td data-actions-col>
 							<div class="row row-right">
-								@shared.LoadingIconActionButton(
-									"btn btn-sm btn-icon",
-									fmt.Sprintf("$formState = 'edit'; $selectedGroupId = '%s'; $formData = {name: %s}; $errors = {name: ''}", group.Group.ID, utils.JSONString(group.Group.Name)),
-									"$formState !== ''",
-									ctxi18n.T(ctx, "actions.edit"),
-									ctxi18n.T(ctx, "actions.edit"),
-									icons.IconPencil,
-								)
+								if group.Role == "admin" {
+									@shared.LoadingIconActionButton(
+										"btn btn-sm btn-icon",
+										fmt.Sprintf("$formState = 'edit'; $selectedGroupId = '%s'; $formData = {name: %s}; $errors = {name: ''}", group.Group.ID, utils.JSONString(group.Group.Name)),
+										"$formState !== ''",
+										ctxi18n.T(ctx, "actions.edit"),
+										ctxi18n.T(ctx, "actions.edit"),
+										icons.IconPencil,
+									)
+								} else {
+									@shared.LoadingIconActionButton(
+										"btn btn-sm btn-icon",
+										fmt.Sprintf("$formState = 'leave'; $selectedGroupId = '%s'", group.Group.ID),
+										"$formState !== ''",
+										ctxi18n.T(ctx, "groups.leave"),
+										ctxi18n.T(ctx, "groups.leave"),
+										icons.IconSquareArrowRightExit,
+									)
+								}
 							</div>
 						</td>
 					</tr>
@@ -77,44 +127,35 @@ templ AdminGroupsContent(data GroupsPageData) {
 			}
 		</tbody>
 	</table>
-}
-
-templ ViewerGroupsContent(data GroupsPageData) {
-	<table class="table table-sticky-actions">
-		<thead>
-			<tr>
-				<th>{ ctxi18n.T(ctx, "fields.name") }</th>
-				if len(data.ReaderGroups) > 0 {
-					<th data-actions-col></th>
-				}
-			</tr>
-		</thead>
-		<tbody>
-			if len(data.ReaderGroups) == 0 {
-				<tr><td>{ ctxi18n.T(ctx, "groups.viewer_none") }</td></tr>
-			} else {
-				for _, group := range data.ReaderGroups {
-					<tr>
-						<td>
-							<a href={ "/groups/" + group.Group.ID }>{ group.Group.Name }</a>
-						</td>
-						<td data-actions-col>
-							<div class="row row-right">
-								@shared.LoadingIconActionButton(
-									"btn btn-sm btn-icon",
-									fmt.Sprintf("$formState = 'leave'; $selectedGroupId = '%s'", group.Group.ID),
-									"$formState !== ''",
-									ctxi18n.T(ctx, "groups.actions"),
-									ctxi18n.T(ctx, "groups.actions"),
-									icons.IconPencil,
-								)
-							</div>
-						</td>
-					</tr>
-				}
+	<div class="row row-wrap justify-between pt">
+		<div class="row row-wrap">
+			<span>{ ctxi18n.T(ctx, "table.page_size") }</span>
+			for _, pageSize := range tablePageSizes {
+				<button class={ pageSizeButtonClass(data.Query.PageSize, pageSize) } type="button" data-on:click={ groupsQueryAction(groupsPageSizeURL(data, pageSize)) }>{ fmt.Sprintf("%d", pageSize) }</button>
 			}
-		</tbody>
-	</table>
+		</div>
+		<div class="row row-wrap">
+			if data.Pagination.HasPrev {
+				<button class="btn btn-sm btn-icon" type="button" data-on:click={ groupsQueryAction(groupsPageURL(data, data.Pagination.Page-1)) } aria-label={ ctxi18n.T(ctx, "table.prev") } title={ ctxi18n.T(ctx, "table.prev") }>
+					@icons.ChevronLeft(templ.Attributes{"class": "icon"})
+				</button>
+			} else {
+				<button type="button" class="btn btn-sm btn-icon" disabled>
+					@icons.ChevronLeft(templ.Attributes{"class": "icon"})
+				</button>
+			}
+			<span>{ fmt.Sprintf("%s %d / %d", ctxi18n.T(ctx, "table.page"), data.Pagination.Page, data.Pagination.TotalPages) }</span>
+			if data.Pagination.HasNext {
+				<button class="btn btn-sm btn-icon" type="button" data-on:click={ groupsQueryAction(groupsPageURL(data, data.Pagination.Page+1)) } aria-label={ ctxi18n.T(ctx, "table.next") } title={ ctxi18n.T(ctx, "table.next") }>
+					@icons.ChevronRight(templ.Attributes{"class": "icon"})
+				</button>
+			} else {
+				<button type="button" class="btn btn-sm btn-icon" disabled>
+					@icons.ChevronRight(templ.Attributes{"class": "icon"})
+				</button>
+			}
+		</div>
+	</div>
 }
 
 templ GroupsSidebar(data GroupsPageData) {

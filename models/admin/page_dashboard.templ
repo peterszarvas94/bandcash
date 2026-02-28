@@ -2,15 +2,26 @@ package admin
 
 import (
 	"fmt"
+	"strconv"
 
 	ctxi18n "github.com/invopop/ctxi18n/i18n"
 
-	"bandcash/internal/db"
 	appi18n "bandcash/internal/i18n"
 	"bandcash/internal/utils"
 	shared "bandcash/models/shared"
 	icons "bandcash/models/shared/icons"
 )
+
+func tabClass(currentTab, targetTab string) string {
+	if currentTab == targetTab {
+		return "tab tab-active"
+	}
+	return "tab"
+}
+
+func buildTabURL(tab string) string {
+	return fmt.Sprintf("/admin?tab=%s", tab)
+}
 
 templ DashboardPage(data DashboardData) {
 	<!doctype html>
@@ -25,10 +36,24 @@ templ DashboardPage(data DashboardData) {
 }
 
 templ DashboardMain(data DashboardData) {
-	@shared.Section(ctxi18n.T(ctx, "admin.stats"), DashboardStats(data))
-	@shared.Section(ctxi18n.T(ctx, "admin.flags.title"), FlagsContent(data.SignupEnabled))
-	@shared.Section(ctxi18n.T(ctx, "admin.recent_users"), RecentUsersTable(data.RecentUsers))
-	@shared.Section(ctxi18n.T(ctx, "admin.recent_groups"), RecentGroupsTable(data.RecentGroups))
+	// Tab navigation
+	<div class="tabs pt">
+		<a href={ buildTabURL("overview") } class={ tabClass(data.Tab, "overview") }>{ ctxi18n.T(ctx, "admin.tab.overview") }</a>
+		<a href={ buildTabURL("flags") } class={ tabClass(data.Tab, "flags") }>{ ctxi18n.T(ctx, "admin.tab.flags") }</a>
+		<a href={ buildTabURL("users") } class={ tabClass(data.Tab, "users") }>{ ctxi18n.T(ctx, "admin.tab.users") }</a>
+		<a href={ buildTabURL("groups") } class={ tabClass(data.Tab, "groups") }>{ ctxi18n.T(ctx, "admin.tab.groups") }</a>
+	</div>
+
+	// Tab content
+	if data.Tab == "overview" {
+		@shared.Section(ctxi18n.T(ctx, "admin.stats"), DashboardStats(data))
+	} else if data.Tab == "flags" {
+		@shared.Section(ctxi18n.T(ctx, "admin.flags.title"), FlagsContent(data.SignupEnabled))
+	} else if data.Tab == "users" {
+		@shared.Section(ctxi18n.T(ctx, "admin.users.title"), UsersTableSection(data))
+	} else if data.Tab == "groups" {
+		@shared.Section(ctxi18n.T(ctx, "admin.groups.title"), GroupsTableSection(data))
+	}
 }
 
 templ FlagsContent(signupEnabled bool) {
@@ -59,80 +84,231 @@ templ DashboardStatsRows(data DashboardData) {
 	@shared.DetailRow(ctxi18n.T(ctx, "admin.total_members"), utils.FormatNumberLocalized(ctx, data.MembersCount))
 }
 
-templ RecentUsersTable(users []RecentUserRow) {
-	<table id="admin-recent-users" class="table table-sticky-actions">
-		<thead>
-			<tr>
-				<th>{ ctxi18n.T(ctx, "auth.email") }</th>
-				<th>{ ctxi18n.T(ctx, "groups.created") }</th>
-				<th>{ ctxi18n.T(ctx, "admin.users.status") }</th>
-				<th data-actions-col>{ ctxi18n.T(ctx, "table.actions") }</th>
-			</tr>
-		</thead>
-		<tbody>
-			for _, user := range users {
+// Users Table Section with controls
+templ UsersTableSection(data DashboardData) {
+	<div class="table-section">
+		// Search
+		<form class="row row-wrap pt" method="GET" action="/admin" onsubmit="const q=this.querySelector('input[name=q]'); if (q && q.value.trim() === '') { q.removeAttribute('name'); }">
+			<input type="hidden" name="tab" value="users"/>
+			<input type="search" name="q" value={ data.UserQuery.Search } placeholder={ ctxi18n.T(ctx, "table.search_placeholder") }/>
+			<button class="btn btn-sm" type="submit">{ ctxi18n.T(ctx, "table.search") }</button>
+		</form>
+
+		// Table
+		<table id="admin-users" class="table table-sticky-actions pt">
+			<thead>
 				<tr>
-					<td>{ user.Email }</td>
-					<td>
-						if user.CreatedAt.Valid {
-							{ utils.FormatTimeLocalized(ctx, user.CreatedAt.Time) }
-						} else {
-							{ "-" }
-						}
-					</td>
-					<td>
-						if user.IsBanned {
-							{ ctxi18n.T(ctx, "admin.users.banned_status") }
-						} else {
-							{ ctxi18n.T(ctx, "admin.users.active_status") }
-						}
-					</td>
-					<td data-actions-col>
-						<div class="row row-right">
-							if user.IsBanned {
-								@shared.LoadingActionButton("btn btn-sm", fmt.Sprintf("@post('/admin/users/%s/unban')", user.ID), "$_fetching", ctxi18n.T(ctx, "admin.users.unban"), icons.IconCheck)
-							} else {
-								@shared.LoadingActionButton("btn btn-sm btn-danger", fmt.Sprintf("@post('/admin/users/%s/ban')", user.ID), "$_fetching", ctxi18n.T(ctx, "admin.users.ban"), icons.IconTrash2)
+					<th>
+						<a class="row" href={ adminUsersSortURL(data, "email") }>
+							<span>{ ctxi18n.T(ctx, "auth.email") }</span>
+							if data.UserQuery.Sort == "email" {
+								if data.UserQuery.Dir == "asc" {
+									@icons.ArrowDownAZ(templ.Attributes{"class": "icon"})
+								} else {
+									@icons.ArrowUpZA(templ.Attributes{"class": "icon"})
+								}
 							}
-						</div>
-					</td>
+						</a>
+					</th>
+					<th>
+						<a class="row" href={ adminUsersSortURL(data, "createdAt") }>
+							<span>{ ctxi18n.T(ctx, "groups.created") }</span>
+							if data.UserQuery.Sort == "createdAt" {
+								if data.UserQuery.Dir == "asc" {
+									@icons.ArrowDownAZ(templ.Attributes{"class": "icon"})
+								} else {
+									@icons.ArrowUpZA(templ.Attributes{"class": "icon"})
+								}
+							}
+						</a>
+					</th>
+					<th>{ ctxi18n.T(ctx, "admin.users.status") }</th>
+					<th data-actions-col>{ ctxi18n.T(ctx, "table.actions") }</th>
 				</tr>
-			}
-			if len(users) == 0 {
-				<tr>
-					<td colspan="4">{ ctxi18n.T(ctx, "table.empty") }</td>
-				</tr>
-			}
-		</tbody>
-	</table>
+			</thead>
+			<tbody>
+				for _, user := range data.Users {
+					<tr>
+						<td>{ user.Email }</td>
+						<td>
+							if user.CreatedAt.Valid {
+								{ utils.FormatTimeLocalized(ctx, user.CreatedAt.Time) }
+							} else {
+								{ "-" }
+							}
+						</td>
+						<td>
+							if user.IsBanned {
+								{ ctxi18n.T(ctx, "admin.users.banned_status") }
+							} else {
+								{ ctxi18n.T(ctx, "admin.users.active_status") }
+							}
+						</td>
+						<td data-actions-col>
+							<div class="row row-right">
+								if user.IsBanned {
+									@shared.LoadingActionButton("btn btn-sm", fmt.Sprintf("@post('/admin/users/%s/unban')", user.ID), "$_fetching", ctxi18n.T(ctx, "admin.users.unban"), icons.IconCheck)
+								} else {
+									@shared.LoadingActionButton("btn btn-sm btn-danger", fmt.Sprintf("@post('/admin/users/%s/ban')", user.ID), "$_fetching", ctxi18n.T(ctx, "admin.users.ban"), icons.IconTrash2)
+								}
+							</div>
+						</td>
+					</tr>
+				}
+				if len(data.Users) == 0 {
+					<tr>
+						<td colspan="4">{ ctxi18n.T(ctx, "table.empty") }</td>
+					</tr>
+				}
+			</tbody>
+		</table>
+
+		// Pagination
+		@adminTablePagination(data.UserPager, data.UserQuery, "users")
+	</div>
 }
 
-templ RecentGroupsTable(groups []db.Group) {
-	<table class="table">
-		<thead>
-			<tr>
-				<th>{ ctxi18n.T(ctx, "groups.name") }</th>
-				<th>{ ctxi18n.T(ctx, "groups.created") }</th>
-			</tr>
-		</thead>
-		<tbody>
-			for _, group := range groups {
+// Groups Table Section with controls
+templ GroupsTableSection(data DashboardData) {
+	<div class="table-section">
+		// Search
+		<form class="row row-wrap pt" method="GET" action="/admin" onsubmit="const q=this.querySelector('input[name=q]'); if (q && q.value.trim() === '') { q.removeAttribute('name'); }">
+			<input type="hidden" name="tab" value="groups"/>
+			<input type="search" name="q" value={ data.GroupQuery.Search } placeholder={ ctxi18n.T(ctx, "table.search_placeholder") }/>
+			<button class="btn btn-sm" type="submit">{ ctxi18n.T(ctx, "table.search") }</button>
+		</form>
+
+		// Table
+		<table class="table pt">
+			<thead>
 				<tr>
-					<td><a href={ "/groups/" + group.ID }>{ group.Name }</a></td>
-					<td>
-						if group.CreatedAt.Valid {
-							{ utils.FormatTimeLocalized(ctx, group.CreatedAt.Time) }
-						} else {
-							{ "-" }
-						}
-					</td>
+					<th>
+						<a class="row" href={ adminGroupsSortURL(data, "name") }>
+							<span>{ ctxi18n.T(ctx, "groups.name") }</span>
+							if data.GroupQuery.Sort == "name" {
+								if data.GroupQuery.Dir == "asc" {
+									@icons.ArrowDownAZ(templ.Attributes{"class": "icon"})
+								} else {
+									@icons.ArrowUpZA(templ.Attributes{"class": "icon"})
+								}
+							}
+						</a>
+					</th>
+					<th>{ ctxi18n.T(ctx, "groups.admin") }</th>
+					<th>{ ctxi18n.T(ctx, "groups.viewers") }</th>
+					<th>
+						<a class="row" href={ adminGroupsSortURL(data, "createdAt") }>
+							<span>{ ctxi18n.T(ctx, "groups.created") }</span>
+							if data.GroupQuery.Sort == "createdAt" {
+								if data.GroupQuery.Dir == "asc" {
+									@icons.ArrowDownAZ(templ.Attributes{"class": "icon"})
+								} else {
+									@icons.ArrowUpZA(templ.Attributes{"class": "icon"})
+								}
+							}
+						</a>
+					</th>
 				</tr>
+			</thead>
+			<tbody>
+				for _, group := range data.Groups {
+					<tr>
+						<td><a href={ fmt.Sprintf("/groups/%s/events", group.ID) }>{ group.Name }</a></td>
+						<td>
+							{ group.AdminUserID }
+						</td>
+						<td>
+							// TODO: viewer count
+						</td>
+						<td>
+							if group.CreatedAt.Valid {
+								{ utils.FormatTimeLocalized(ctx, group.CreatedAt.Time) }
+							} else {
+								{ "-" }
+							}
+						</td>
+					</tr>
+				}
+				if len(data.Groups) == 0 {
+					<tr>
+						<td colspan="4">{ ctxi18n.T(ctx, "table.empty") }</td>
+					</tr>
+				}
+			</tbody>
+		</table>
+
+		// Pagination
+		@adminTablePagination(data.GroupPager, data.GroupQuery, "groups")
+	</div>
+}
+
+// Pagination component
+templ adminTablePagination(pager utils.TablePagination, query utils.TableQuery, tab string) {
+	<div class="row row-wrap justify-between pt">
+		<div class="row row-wrap">
+			<span>{ ctxi18n.T(ctx, "table.page_size") }</span>
+			for _, pageSize := range []int{10, 50, 100, 200} {
+				<a class={ pageSizeButtonClass(query.PageSize, pageSize) } href={ adminPageSizeURL(query, tab, pageSize) }>{ strconv.Itoa(pageSize) }</a>
 			}
-			if len(groups) == 0 {
-				<tr>
-					<td colspan="2">{ ctxi18n.T(ctx, "table.empty") }</td>
-				</tr>
+		</div>
+		<div class="row row-wrap">
+			if pager.HasPrev {
+				<a class="btn btn-sm btn-icon" href={ adminPageURL(query, tab, pager.Page-1) } aria-label={ ctxi18n.T(ctx, "table.prev") } title={ ctxi18n.T(ctx, "table.prev") }>
+					@icons.ChevronLeft(templ.Attributes{"class": "icon"})
+				</a>
+			} else {
+				<button type="button" class="btn btn-sm btn-icon" disabled>
+					@icons.ChevronLeft(templ.Attributes{"class": "icon"})
+				</button>
 			}
-		</tbody>
-	</table>
+			<span>{ fmt.Sprintf("%s %d / %d", ctxi18n.T(ctx, "table.page"), pager.Page, pager.TotalPages) }</span>
+			if pager.HasNext {
+				<a class="btn btn-sm btn-icon" href={ adminPageURL(query, tab, pager.Page+1) } aria-label={ ctxi18n.T(ctx, "table.next") } title={ ctxi18n.T(ctx, "table.next") }>
+					@icons.ChevronRight(templ.Attributes{"class": "icon"})
+				</a>
+			} else {
+				<button type="button" class="btn btn-sm btn-icon" disabled>
+					@icons.ChevronRight(templ.Attributes{"class": "icon"})
+				</button>
+			}
+		</div>
+	</div>
+}
+
+func pageSizeButtonClass(current, value int) string {
+	if current == value {
+		return "btn btn-sm btn-primary"
+	}
+	return "btn btn-sm"
+}
+
+// URL builders for admin table controls
+func adminUsersSortURL(data DashboardData, column string) string {
+	next := utils.NextSortCycle(data.UserQuery, column)
+	return utils.BuildTableQueryURLWith("/admin?tab=users", data.UserQuery, utils.TableQueryPatch{
+		Sort: &next.Sort,
+		Dir:  &next.Dir,
+		Page: func() *int { p := 1; return &p }(),
+	})
+}
+
+func adminGroupsSortURL(data DashboardData, column string) string {
+	next := utils.NextSortCycle(data.GroupQuery, column)
+	return utils.BuildTableQueryURLWith("/admin?tab=groups", data.GroupQuery, utils.TableQueryPatch{
+		Sort: &next.Sort,
+		Dir:  &next.Dir,
+		Page: func() *int { p := 1; return &p }(),
+	})
+}
+
+func adminPageURL(query utils.TableQuery, tab string, page int) string {
+	return utils.BuildTableQueryURLWith(fmt.Sprintf("/admin?tab=%s", tab), query, utils.TableQueryPatch{Page: &page})
+}
+
+func adminPageSizeURL(query utils.TableQuery, tab string, pageSize int) string {
+	page := 1
+	return utils.BuildTableQueryURLWith(fmt.Sprintf("/admin?tab=%s", tab), query, utils.TableQueryPatch{
+		Page:     &page,
+		PageSize: &pageSize,
+	})
 }

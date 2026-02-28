@@ -11,12 +11,22 @@ type NewGroupPageData struct {
 	UserEmail   string
 }
 
+type GroupWithRole struct {
+	Group       db.Group
+	Role        string
+	ViewerCount int
+	AdminEmail  string
+}
+
 type GroupsPageData struct {
 	Title        string
 	Breadcrumbs  []utils.Crumb
 	UserEmail    string
+	AllGroups    []GroupWithRole
 	AdminGroups  []GroupSummary
 	ReaderGroups []GroupSummary
+	Query        utils.TableQuery
+	Pagination   utils.TablePagination
 }
 
 type GroupSummary struct {

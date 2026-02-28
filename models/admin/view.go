@@ -18,14 +18,22 @@ type DashboardData struct {
 	Title       string
 	Breadcrumbs []utils.Crumb
 	UserEmail   string
+	Tab         string
 
-	UsersCount   int64
-	GroupsCount  int64
-	EventsCount  int64
-	MembersCount int64
-
+	// Overview stats (always present)
+	UsersCount    int64
+	GroupsCount   int64
+	EventsCount   int64
+	MembersCount  int64
 	SignupEnabled bool
 
-	RecentUsers  []RecentUserRow
-	RecentGroups []db.Group
+	// Users tab data
+	Users     []RecentUserRow
+	UserPager utils.TablePagination
+	UserQuery utils.TableQuery
+
+	// Groups tab data
+	Groups     []db.Group
+	GroupPager utils.TablePagination
+	GroupQuery utils.TableQuery
 }

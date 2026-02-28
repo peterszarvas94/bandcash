@@ -32,6 +32,18 @@ func (q *Queries) CountGroups(ctx context.Context) (int64, error) {
 	return count, err
 }
 
+const countGroupsFiltered = `-- name: CountGroupsFiltered :one
+SELECT COUNT(*) FROM groups
+WHERE ?1 = '' OR LOWER(name) LIKE '%' || LOWER(?1) || '%'
+`
+
+func (q *Queries) CountGroupsFiltered(ctx context.Context, search interface{}) (int64, error) {
+	row := q.db.QueryRowContext(ctx, countGroupsFiltered, search)
+	var count int64
+	err := row.Scan(&count)
+	return count, err
+}
+
 const countMembers = `-- name: CountMembers :one
 SELECT COUNT(*) FROM members
 `
@@ -52,6 +64,235 @@ func (q *Queries) CountUsers(ctx context.Context) (int64, error) {
 	var count int64
 	err := row.Scan(&count)
 	return count, err
+}
+
+const countUsersFiltered = `-- name: CountUsersFiltered :one
+SELECT COUNT(*) FROM users
+WHERE ?1 = '' OR LOWER(email) LIKE '%' || LOWER(?1) || '%'
+`
+
+func (q *Queries) CountUsersFiltered(ctx context.Context, search interface{}) (int64, error) {
+	row := q.db.QueryRowContext(ctx, countUsersFiltered, search)
+	var count int64
+	err := row.Scan(&count)
+	return count, err
+}
+
+const listAllGroups = `-- name: ListAllGroups :many
+SELECT id, name, admin_user_id, created_at FROM groups
+ORDER BY created_at DESC
+`
+
+func (q *Queries) ListAllGroups(ctx context.Context) ([]Group, error) {
+	rows, err := q.db.QueryContext(ctx, listAllGroups)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []Group{}
+	for rows.Next() {
+		var i Group
+		if err := rows.Scan(
+			&i.ID,
+			&i.Name,
+			&i.AdminUserID,
+			&i.CreatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const listGroupsByCreatedAscFiltered = `-- name: ListGroupsByCreatedAscFiltered :many
+SELECT
+  groups.id,
+  groups.name,
+  groups.admin_user_id,
+  groups.created_at
+FROM groups
+WHERE ?1 = '' OR LOWER(name) LIKE '%' || LOWER(?1) || '%'
+ORDER BY groups.created_at ASC, LOWER(groups.name) ASC
+LIMIT ?3 OFFSET ?2
+`
+
+type ListGroupsByCreatedAscFilteredParams struct {
+	Search interface{} `json:"search"`
+	Offset int64       `json:"offset"`
+	Limit  int64       `json:"limit"`
+}
+
+func (q *Queries) ListGroupsByCreatedAscFiltered(ctx context.Context, arg ListGroupsByCreatedAscFilteredParams) ([]Group, error) {
+	rows, err := q.db.QueryContext(ctx, listGroupsByCreatedAscFiltered, arg.Search, arg.Offset, arg.Limit)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []Group{}
+	for rows.Next() {
+		var i Group
+		if err := rows.Scan(
+			&i.ID,
+			&i.Name,
+			&i.AdminUserID,
+			&i.CreatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const listGroupsByCreatedDescFiltered = `-- name: ListGroupsByCreatedDescFiltered :many
+SELECT
+  groups.id,
+  groups.name,
+  groups.admin_user_id,
+  groups.created_at
+FROM groups
+WHERE ?1 = '' OR LOWER(name) LIKE '%' || LOWER(?1) || '%'
+ORDER BY groups.created_at DESC, LOWER(groups.name) ASC
+LIMIT ?3 OFFSET ?2
+`
+
+type ListGroupsByCreatedDescFilteredParams struct {
+	Search interface{} `json:"search"`
+	Offset int64       `json:"offset"`
+	Limit  int64       `json:"limit"`
+}
+
+func (q *Queries) ListGroupsByCreatedDescFiltered(ctx context.Context, arg ListGroupsByCreatedDescFilteredParams) ([]Group, error) {
+	rows, err := q.db.QueryContext(ctx, listGroupsByCreatedDescFiltered, arg.Search, arg.Offset, arg.Limit)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []Group{}
+	for rows.Next() {
+		var i Group
+		if err := rows.Scan(
+			&i.ID,
+			&i.Name,
+			&i.AdminUserID,
+			&i.CreatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const listGroupsByNameAscFiltered = `-- name: ListGroupsByNameAscFiltered :many
+SELECT
+  groups.id,
+  groups.name,
+  groups.admin_user_id,
+  groups.created_at
+FROM groups
+WHERE ?1 = '' OR LOWER(name) LIKE '%' || LOWER(?1) || '%'
+ORDER BY LOWER(groups.name) ASC, groups.created_at DESC
+LIMIT ?3 OFFSET ?2
+`
+
+type ListGroupsByNameAscFilteredParams struct {
+	Search interface{} `json:"search"`
+	Offset int64       `json:"offset"`
+	Limit  int64       `json:"limit"`
+}
+
+func (q *Queries) ListGroupsByNameAscFiltered(ctx context.Context, arg ListGroupsByNameAscFilteredParams) ([]Group, error) {
+	rows, err := q.db.QueryContext(ctx, listGroupsByNameAscFiltered, arg.Search, arg.Offset, arg.Limit)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []Group{}
+	for rows.Next() {
+		var i Group
+		if err := rows.Scan(
+			&i.ID,
+			&i.Name,
+			&i.AdminUserID,
+			&i.CreatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const listGroupsByNameDescFiltered = `-- name: ListGroupsByNameDescFiltered :many
+SELECT
+  groups.id,
+  groups.name,
+  groups.admin_user_id,
+  groups.created_at
+FROM groups
+WHERE ?1 = '' OR LOWER(name) LIKE '%' || LOWER(?1) || '%'
+ORDER BY LOWER(groups.name) DESC, groups.created_at DESC
+LIMIT ?3 OFFSET ?2
+`
+
+type ListGroupsByNameDescFilteredParams struct {
+	Search interface{} `json:"search"`
+	Offset int64       `json:"offset"`
+	Limit  int64       `json:"limit"`
+}
+
+func (q *Queries) ListGroupsByNameDescFiltered(ctx context.Context, arg ListGroupsByNameDescFilteredParams) ([]Group, error) {
+	rows, err := q.db.QueryContext(ctx, listGroupsByNameDescFiltered, arg.Search, arg.Offset, arg.Limit)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []Group{}
+	for rows.Next() {
+		var i Group
+		if err := rows.Scan(
+			&i.ID,
+			&i.Name,
+			&i.AdminUserID,
+			&i.CreatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
 }
 
 const listRecentGroups = `-- name: ListRecentGroups :many
@@ -116,6 +357,222 @@ func (q *Queries) ListRecentUsersWithBanStatus(ctx context.Context, limit int64)
 	items := []ListRecentUsersWithBanStatusRow{}
 	for rows.Next() {
 		var i ListRecentUsersWithBanStatusRow
+		if err := rows.Scan(
+			&i.ID,
+			&i.Email,
+			&i.CreatedAt,
+			&i.IsBanned,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const listUsersByCreatedAscFiltered = `-- name: ListUsersByCreatedAscFiltered :many
+SELECT
+  users.id,
+  users.email,
+  users.created_at,
+  CASE WHEN banned_users.user_id IS NULL THEN 0 ELSE 1 END AS is_banned
+FROM users
+LEFT JOIN banned_users ON banned_users.user_id = users.id
+WHERE ?1 = '' OR LOWER(email) LIKE '%' || LOWER(?1) || '%'
+ORDER BY users.created_at ASC, LOWER(email) ASC
+LIMIT ?3 OFFSET ?2
+`
+
+type ListUsersByCreatedAscFilteredParams struct {
+	Search interface{} `json:"search"`
+	Offset int64       `json:"offset"`
+	Limit  int64       `json:"limit"`
+}
+
+type ListUsersByCreatedAscFilteredRow struct {
+	ID        string       `json:"id"`
+	Email     string       `json:"email"`
+	CreatedAt sql.NullTime `json:"created_at"`
+	IsBanned  int64        `json:"is_banned"`
+}
+
+func (q *Queries) ListUsersByCreatedAscFiltered(ctx context.Context, arg ListUsersByCreatedAscFilteredParams) ([]ListUsersByCreatedAscFilteredRow, error) {
+	rows, err := q.db.QueryContext(ctx, listUsersByCreatedAscFiltered, arg.Search, arg.Offset, arg.Limit)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []ListUsersByCreatedAscFilteredRow{}
+	for rows.Next() {
+		var i ListUsersByCreatedAscFilteredRow
+		if err := rows.Scan(
+			&i.ID,
+			&i.Email,
+			&i.CreatedAt,
+			&i.IsBanned,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const listUsersByCreatedDescFiltered = `-- name: ListUsersByCreatedDescFiltered :many
+SELECT
+  users.id,
+  users.email,
+  users.created_at,
+  CASE WHEN banned_users.user_id IS NULL THEN 0 ELSE 1 END AS is_banned
+FROM users
+LEFT JOIN banned_users ON banned_users.user_id = users.id
+WHERE ?1 = '' OR LOWER(email) LIKE '%' || LOWER(?1) || '%'
+ORDER BY users.created_at DESC, LOWER(email) ASC
+LIMIT ?3 OFFSET ?2
+`
+
+type ListUsersByCreatedDescFilteredParams struct {
+	Search interface{} `json:"search"`
+	Offset int64       `json:"offset"`
+	Limit  int64       `json:"limit"`
+}
+
+type ListUsersByCreatedDescFilteredRow struct {
+	ID        string       `json:"id"`
+	Email     string       `json:"email"`
+	CreatedAt sql.NullTime `json:"created_at"`
+	IsBanned  int64        `json:"is_banned"`
+}
+
+func (q *Queries) ListUsersByCreatedDescFiltered(ctx context.Context, arg ListUsersByCreatedDescFilteredParams) ([]ListUsersByCreatedDescFilteredRow, error) {
+	rows, err := q.db.QueryContext(ctx, listUsersByCreatedDescFiltered, arg.Search, arg.Offset, arg.Limit)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []ListUsersByCreatedDescFilteredRow{}
+	for rows.Next() {
+		var i ListUsersByCreatedDescFilteredRow
+		if err := rows.Scan(
+			&i.ID,
+			&i.Email,
+			&i.CreatedAt,
+			&i.IsBanned,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const listUsersByEmailAscFiltered = `-- name: ListUsersByEmailAscFiltered :many
+SELECT
+  users.id,
+  users.email,
+  users.created_at,
+  CASE WHEN banned_users.user_id IS NULL THEN 0 ELSE 1 END AS is_banned
+FROM users
+LEFT JOIN banned_users ON banned_users.user_id = users.id
+WHERE ?1 = '' OR LOWER(email) LIKE '%' || LOWER(?1) || '%'
+ORDER BY LOWER(email) ASC, users.created_at DESC
+LIMIT ?3 OFFSET ?2
+`
+
+type ListUsersByEmailAscFilteredParams struct {
+	Search interface{} `json:"search"`
+	Offset int64       `json:"offset"`
+	Limit  int64       `json:"limit"`
+}
+
+type ListUsersByEmailAscFilteredRow struct {
+	ID        string       `json:"id"`
+	Email     string       `json:"email"`
+	CreatedAt sql.NullTime `json:"created_at"`
+	IsBanned  int64        `json:"is_banned"`
+}
+
+func (q *Queries) ListUsersByEmailAscFiltered(ctx context.Context, arg ListUsersByEmailAscFilteredParams) ([]ListUsersByEmailAscFilteredRow, error) {
+	rows, err := q.db.QueryContext(ctx, listUsersByEmailAscFiltered, arg.Search, arg.Offset, arg.Limit)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []ListUsersByEmailAscFilteredRow{}
+	for rows.Next() {
+		var i ListUsersByEmailAscFilteredRow
+		if err := rows.Scan(
+			&i.ID,
+			&i.Email,
+			&i.CreatedAt,
+			&i.IsBanned,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const listUsersByEmailDescFiltered = `-- name: ListUsersByEmailDescFiltered :many
+SELECT
+  users.id,
+  users.email,
+  users.created_at,
+  CASE WHEN banned_users.user_id IS NULL THEN 0 ELSE 1 END AS is_banned
+FROM users
+LEFT JOIN banned_users ON banned_users.user_id = users.id
+WHERE ?1 = '' OR LOWER(email) LIKE '%' || LOWER(?1) || '%'
+ORDER BY LOWER(email) DESC, users.created_at DESC
+LIMIT ?3 OFFSET ?2
+`
+
+type ListUsersByEmailDescFilteredParams struct {
+	Search interface{} `json:"search"`
+	Offset int64       `json:"offset"`
+	Limit  int64       `json:"limit"`
+}
+
+type ListUsersByEmailDescFilteredRow struct {
+	ID        string       `json:"id"`
+	Email     string       `json:"email"`
+	CreatedAt sql.NullTime `json:"created_at"`
+	IsBanned  int64        `json:"is_banned"`
+}
+
+func (q *Queries) ListUsersByEmailDescFiltered(ctx context.Context, arg ListUsersByEmailDescFilteredParams) ([]ListUsersByEmailDescFilteredRow, error) {
+	rows, err := q.db.QueryContext(ctx, listUsersByEmailDescFiltered, arg.Search, arg.Offset, arg.Limit)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []ListUsersByEmailDescFilteredRow{}
+	for rows.Next() {
+		var i ListUsersByEmailDescFilteredRow
 		if err := rows.Scan(
 			&i.ID,
 			&i.Email,

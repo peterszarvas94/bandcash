@@ -3,6 +3,7 @@ package middleware
 import (
 	"log/slog"
 	"net/http"
+	"strings"
 
 	ctxi18n "github.com/invopop/ctxi18n/i18n"
 	"github.com/labstack/echo/v4"
@@ -12,9 +13,10 @@ import (
 )
 
 const (
-	UserIDKey  contextKey = "user_id"
-	GroupIDKey contextKey = "group_id"
-	IsAdminKey contextKey = "is_admin"
+	UserIDKey       contextKey = "user_id"
+	GroupIDKey      contextKey = "group_id"
+	IsAdminKey      contextKey = "is_admin"
+	IsSuperadminKey contextKey = "is_superadmin"
 )
 
 // RequireAuth ensures user is logged in
@@ -46,7 +48,14 @@ func RequireAuth() echo.MiddlewareFunc {
 				return c.Redirect(http.StatusFound, "/auth/login")
 			}
 
+			isSuperadmin := false
+			superadminEmail := strings.ToLower(strings.TrimSpace(utils.Env().SuperadminEmail))
+			if superadminEmail != "" && strings.ToLower(strings.TrimSpace(user.Email)) == superadminEmail {
+				isSuperadmin = true
+			}
+
 			c.Set(string(UserIDKey), user.ID)
+			c.Set(string(IsSuperadminKey), isSuperadmin)
 			return next(c)
 		}
 	}
@@ -58,14 +67,26 @@ func RequireGroup() echo.MiddlewareFunc {
 		return func(c echo.Context) error {
 			userID := c.Get(string(UserIDKey)).(string)
 			groupID := c.Param("groupId")
+			isSuperadmin := IsSuperadmin(c)
 
 			if !utils.IsValidID(groupID, "grp") {
 				return c.String(http.StatusBadRequest, "Invalid group ID")
 			}
 
-			// Check if admin
 			group, err := db.Qry.GetGroupByID(c.Request().Context(), groupID)
-			if err == nil && group.AdminUserID == userID {
+			if err != nil {
+				utils.Notify(c, "warning", ctxi18n.T(c.Request().Context(), "groups.errors.access_denied"))
+				return c.Redirect(http.StatusFound, "/dashboard")
+			}
+
+			if isSuperadmin {
+				c.Set(string(GroupIDKey), groupID)
+				c.Set(string(IsAdminKey), true)
+				return next(c)
+			}
+
+			// Check if admin
+			if group.AdminUserID == userID {
 				c.Set(string(GroupIDKey), groupID)
 				c.Set(string(IsAdminKey), true)
 				return next(c)
@@ -121,6 +142,13 @@ func GetGroupID(c echo.Context) string {
 func IsAdmin(c echo.Context) bool {
 	if isAdmin, ok := c.Get(string(IsAdminKey)).(bool); ok {
 		return isAdmin
+	}
+	return false
+}
+
+func IsSuperadmin(c echo.Context) bool {
+	if isSuperadmin, ok := c.Get(string(IsSuperadminKey)).(bool); ok {
+		return isSuperadmin
 	}
 	return false
 }

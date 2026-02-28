@@ -91,6 +91,9 @@ en:
     description: "Description"
     amount: "Amount"
     name: "Name"
+    role: "Role"
+    admin: "Admin"
+    created: "Created"
   actions:
     edit: "Edit"
     delete: "Delete"
@@ -192,6 +195,8 @@ en:
     viewers: "Viewers"
     read_only: "Viewer access"
     admin: "Admin"
+    role_admin: "admin"
+    role_viewer: "viewer"
     created: "Created"
     income: "Income"
     payouts: "Payouts"
@@ -265,6 +270,7 @@ en:
     recent_groups: "Recent groups"
     access_denied: "You do not have access to admin pages."
     users:
+      title: "Users"
       status: "Status"
       active_status: "Active"
       banned_status: "Banned"
@@ -284,3 +290,12 @@ en:
       disable_signup_action: "Disable signup"
       updated: "Feature flag updated."
       update_failed: "Could not update feature flag."
+    tab:
+      overview: "Overview"
+      flags: "Flags"
+      users: "Users"
+      groups: "Groups"
+    groups:
+      title: "Groups"
+      admin: "Admin"
+      viewers: "Viewers"

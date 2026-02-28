@@ -115,3 +115,146 @@ WHERE id = ?
   AND action = 'invite'
   AND group_id = ?
   AND used_at IS NULL;
+
+-- name: CountUserGroupsFiltered :one
+SELECT COUNT(*) FROM (
+  SELECT g.id FROM groups g
+  WHERE g.admin_user_id = sqlc.arg(user_id)
+    AND (
+      sqlc.arg(search) = ''
+      OR g.name LIKE '%' || sqlc.arg(search) || '%'
+    )
+  UNION
+  SELECT g.id FROM groups g
+  JOIN group_readers gr ON gr.group_id = g.id
+  WHERE gr.user_id = sqlc.arg(user_id)
+    AND g.admin_user_id != sqlc.arg(user_id)
+    AND (
+      sqlc.arg(search) = ''
+      OR g.name LIKE '%' || sqlc.arg(search) || '%'
+    )
+);
+
+-- name: ListUserGroupsByNameAscFiltered :many
+SELECT 
+  g.id,
+  g.name,
+  g.admin_user_id,
+  g.created_at,
+  CASE WHEN g.admin_user_id = sqlc.arg(user_id) THEN 'admin' ELSE 'viewer' END as role
+FROM groups g
+WHERE g.admin_user_id = sqlc.arg(user_id)
+  AND (
+    sqlc.arg(search) = ''
+    OR g.name LIKE '%' || sqlc.arg(search) || '%'
+  )
+UNION ALL
+SELECT 
+  g.id,
+  g.name,
+  g.admin_user_id,
+  g.created_at,
+  'viewer' as role
+FROM groups g
+JOIN group_readers gr ON gr.group_id = g.id
+WHERE gr.user_id = sqlc.arg(user_id)
+  AND g.admin_user_id != sqlc.arg(user_id)
+  AND (
+    sqlc.arg(search) = ''
+    OR g.name LIKE '%' || sqlc.arg(search) || '%'
+  )
+ORDER BY name COLLATE NOCASE ASC, created_at DESC
+LIMIT sqlc.arg(limit) OFFSET sqlc.arg(offset);
+
+-- name: ListUserGroupsByNameDescFiltered :many
+SELECT 
+  g.id,
+  g.name,
+  g.admin_user_id,
+  g.created_at,
+  CASE WHEN g.admin_user_id = sqlc.arg(user_id) THEN 'admin' ELSE 'viewer' END as role
+FROM groups g
+WHERE g.admin_user_id = sqlc.arg(user_id)
+  AND (
+    sqlc.arg(search) = ''
+    OR g.name LIKE '%' || sqlc.arg(search) || '%'
+  )
+UNION ALL
+SELECT 
+  g.id,
+  g.name,
+  g.admin_user_id,
+  g.created_at,
+  'viewer' as role
+FROM groups g
+JOIN group_readers gr ON gr.group_id = g.id
+WHERE gr.user_id = sqlc.arg(user_id)
+  AND g.admin_user_id != sqlc.arg(user_id)
+  AND (
+    sqlc.arg(search) = ''
+    OR g.name LIKE '%' || sqlc.arg(search) || '%'
+  )
+ORDER BY name COLLATE NOCASE DESC, created_at DESC
+LIMIT sqlc.arg(limit) OFFSET sqlc.arg(offset);
+
+-- name: ListUserGroupsByCreatedAscFiltered :many
+SELECT 
+  g.id,
+  g.name,
+  g.admin_user_id,
+  g.created_at,
+  CASE WHEN g.admin_user_id = sqlc.arg(user_id) THEN 'admin' ELSE 'viewer' END as role
+FROM groups g
+WHERE g.admin_user_id = sqlc.arg(user_id)
+  AND (
+    sqlc.arg(search) = ''
+    OR g.name LIKE '%' || sqlc.arg(search) || '%'
+  )
+UNION ALL
+SELECT 
+  g.id,
+  g.name,
+  g.admin_user_id,
+  g.created_at,
+  'viewer' as role
+FROM groups g
+JOIN group_readers gr ON gr.group_id = g.id
+WHERE gr.user_id = sqlc.arg(user_id)
+  AND g.admin_user_id != sqlc.arg(user_id)
+  AND (
+    sqlc.arg(search) = ''
+    OR g.name LIKE '%' || sqlc.arg(search) || '%'
+  )
+ORDER BY created_at ASC, name COLLATE NOCASE ASC
+LIMIT sqlc.arg(limit) OFFSET sqlc.arg(offset);
+
+-- name: ListUserGroupsByCreatedDescFiltered :many
+SELECT 
+  g.id,
+  g.name,
+  g.admin_user_id,
+  g.created_at,
+  CASE WHEN g.admin_user_id = sqlc.arg(user_id) THEN 'admin' ELSE 'viewer' END as role
+FROM groups g
+WHERE g.admin_user_id = sqlc.arg(user_id)
+  AND (
+    sqlc.arg(search) = ''
+    OR g.name LIKE '%' || sqlc.arg(search) || '%'
+  )
+UNION ALL
+SELECT 
+  g.id,
+  g.name,
+  g.admin_user_id,
+  g.created_at,
+  'viewer' as role
+FROM groups g
+JOIN group_readers gr ON gr.group_id = g.id
+WHERE gr.user_id = sqlc.arg(user_id)
+  AND g.admin_user_id != sqlc.arg(user_id)
+  AND (
+    sqlc.arg(search) = ''
+    OR g.name LIKE '%' || sqlc.arg(search) || '%'
+  )
+ORDER BY created_at DESC, name COLLATE NOCASE ASC
+LIMIT sqlc.arg(limit) OFFSET sqlc.arg(offset);
