@@ -40,25 +40,11 @@ templ GroupsMain(data GroupsPageData) {
 		<thead>
 			<tr>
 				<th>
-					<button class="btn btn-sm" type="button" data-on:click={ utils.BuildTableQueryDatastarAction(utils.BuildTableSortURL("/dashboard", data.Query, "name")) }>
-						<span>{ ctxi18n.T(ctx, "fields.name") }</span>
-						if data.Query.SortSet && data.Query.Sort == "name" && data.Query.Dir == "asc" {
-							@icons.ArrowDownAZ(templ.Attributes{"class": "icon"})
-						} else if data.Query.SortSet && data.Query.Sort == "name" && data.Query.Dir == "desc" {
-							@icons.ArrowUpZA(templ.Attributes{"class": "icon"})
-						}
-					</button>
+					@shared.TableSortHeader(ctxi18n.T(ctx, "fields.name"), "name", data.Query, utils.BuildTableSortURL("/dashboard", data.Query, "name"))
 				</th>
 				<th>{ ctxi18n.T(ctx, "fields.role") }</th>
 				<th>
-					<button class="btn btn-sm" type="button" data-on:click={ utils.BuildTableQueryDatastarAction(utils.BuildTableSortURL("/dashboard", data.Query, "createdAt")) }>
-						<span>{ ctxi18n.T(ctx, "fields.created") }</span>
-						if data.Query.SortSet && data.Query.Sort == "createdAt" && data.Query.Dir == "asc" {
-							@icons.ArrowDownAZ(templ.Attributes{"class": "icon"})
-						} else if data.Query.SortSet && data.Query.Sort == "createdAt" && data.Query.Dir == "desc" {
-							@icons.ArrowUpZA(templ.Attributes{"class": "icon"})
-						}
-					</button>
+					@shared.TableSortHeader(ctxi18n.T(ctx, "fields.created"), "createdAt", data.Query, utils.BuildTableSortURL("/dashboard", data.Query, "createdAt"))
 				</th>
 				<th>{ ctxi18n.T(ctx, "fields.admin") }</th>
 				<th data-actions-col>

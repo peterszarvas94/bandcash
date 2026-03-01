@@ -1,0 +1,17 @@
+package shared
+
+import (
+	"bandcash/internal/utils"
+	icons "bandcash/models/shared/icons"
+)
+
+templ TableSortHeader(label string, column string, query utils.TableQuery, actionURL string) {
+	<button class="btn btn-sm" type="button" data-on:click={ utils.BuildTableQueryDatastarAction(actionURL) }>
+		<span>{ label }</span>
+		if query.SortSet && query.Sort == column && query.Dir == "asc" {
+			@icons.ArrowDownAZ(templ.Attributes{"class": "icon"})
+		} else if query.SortSet && query.Sort == column && query.Dir == "desc" {
+			@icons.ArrowUpZA(templ.Attributes{"class": "icon"})
+		}
+	</button>
+}

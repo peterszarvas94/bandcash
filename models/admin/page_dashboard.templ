@@ -107,28 +107,10 @@ templ UsersTableSection(data DashboardData) {
 			<thead>
 				<tr>
 					<th>
-						<button class="btn btn-sm" type="button" data-on:click={ utils.BuildTableQueryDatastarAction(adminUsersSortURL(data, "email")) }>
-							<span>{ ctxi18n.T(ctx, "auth.email") }</span>
-							if data.UserQuery.Sort == "email" {
-								if data.UserQuery.Dir == "asc" {
-									@icons.ArrowDownAZ(templ.Attributes{"class": "icon"})
-								} else {
-									@icons.ArrowUpZA(templ.Attributes{"class": "icon"})
-								}
-							}
-						</button>
+						@shared.TableSortHeader(ctxi18n.T(ctx, "auth.email"), "email", data.UserQuery, adminUsersSortURL(data, "email"))
 					</th>
 					<th>
-						<button class="btn btn-sm" type="button" data-on:click={ utils.BuildTableQueryDatastarAction(adminUsersSortURL(data, "createdAt")) }>
-							<span>{ ctxi18n.T(ctx, "groups.created") }</span>
-							if data.UserQuery.Sort == "createdAt" {
-								if data.UserQuery.Dir == "asc" {
-									@icons.ArrowDownAZ(templ.Attributes{"class": "icon"})
-								} else {
-									@icons.ArrowUpZA(templ.Attributes{"class": "icon"})
-								}
-							}
-						</button>
+						@shared.TableSortHeader(ctxi18n.T(ctx, "groups.created"), "createdAt", data.UserQuery, adminUsersSortURL(data, "createdAt"))
 					</th>
 					<th>{ ctxi18n.T(ctx, "admin.users.status") }</th>
 					<th data-actions-col></th>
@@ -188,30 +170,12 @@ templ GroupsTableSection(data DashboardData) {
 			<thead>
 				<tr>
 					<th>
-						<button class="btn btn-sm" type="button" data-on:click={ utils.BuildTableQueryDatastarAction(adminGroupsSortURL(data, "name")) }>
-							<span>{ ctxi18n.T(ctx, "groups.name") }</span>
-							if data.GroupQuery.Sort == "name" {
-								if data.GroupQuery.Dir == "asc" {
-									@icons.ArrowDownAZ(templ.Attributes{"class": "icon"})
-								} else {
-									@icons.ArrowUpZA(templ.Attributes{"class": "icon"})
-								}
-							}
-						</button>
+						@shared.TableSortHeader(ctxi18n.T(ctx, "groups.name"), "name", data.GroupQuery, adminGroupsSortURL(data, "name"))
 					</th>
 					<th>{ ctxi18n.T(ctx, "groups.admin") }</th>
 					<th>{ ctxi18n.T(ctx, "groups.viewers") }</th>
 					<th>
-						<button class="btn btn-sm" type="button" data-on:click={ utils.BuildTableQueryDatastarAction(adminGroupsSortURL(data, "createdAt")) }>
-							<span>{ ctxi18n.T(ctx, "groups.created") }</span>
-							if data.GroupQuery.Sort == "createdAt" {
-								if data.GroupQuery.Dir == "asc" {
-									@icons.ArrowDownAZ(templ.Attributes{"class": "icon"})
-								} else {
-									@icons.ArrowUpZA(templ.Attributes{"class": "icon"})
-								}
-							}
-						</button>
+						@shared.TableSortHeader(ctxi18n.T(ctx, "groups.created"), "createdAt", data.GroupQuery, adminGroupsSortURL(data, "createdAt"))
 					</th>
 				</tr>
 			</thead>

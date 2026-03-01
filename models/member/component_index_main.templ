@@ -18,14 +18,7 @@ templ MemberIndexMain(data MembersData) {
 		<thead>
 			<tr>
 				<th>
-					<button class="btn btn-sm" type="button" data-on:click={ utils.BuildTableQueryDatastarAction(utils.BuildTableSortURL(fmt.Sprintf("/groups/%s/members", data.GroupID), data.Query, "name")) }>
-						<span>{ ctxi18n.T(ctx, "fields.name") }</span>
-						if data.Query.SortSet && data.Query.Sort == "name" && data.Query.Dir == "asc" {
-							@icons.ArrowDownAZ(templ.Attributes{"class": "icon"})
-						} else if data.Query.SortSet && data.Query.Sort == "name" && data.Query.Dir == "desc" {
-							@icons.ArrowUpZA(templ.Attributes{"class": "icon"})
-						}
-					</button>
+					@shared.TableSortHeader(ctxi18n.T(ctx, "fields.name"), "name", data.Query, utils.BuildTableSortURL(fmt.Sprintf("/groups/%s/members", data.GroupID), data.Query, "name"))
 				</th>
 				<th>{ ctxi18n.T(ctx, "fields.description") }</th>
 				if data.IsAdmin {

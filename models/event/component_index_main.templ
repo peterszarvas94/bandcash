@@ -18,34 +18,13 @@ templ EventIndexMain(data EventsData) {
 		<thead>
 			<tr>
 				<th>
-					<button class="btn btn-sm" type="button" data-on:click={ utils.BuildTableQueryDatastarAction(utils.BuildTableSortURL(fmt.Sprintf("/groups/%s/events", data.GroupID), data.Query, "title")) }>
-						<span>{ ctxi18n.T(ctx, "fields.title") }</span>
-						if data.Query.SortSet && data.Query.Sort == "title" && data.Query.Dir == "asc" {
-							@icons.ArrowDownAZ(templ.Attributes{"class": "icon"})
-						} else if data.Query.SortSet && data.Query.Sort == "title" && data.Query.Dir == "desc" {
-							@icons.ArrowUpZA(templ.Attributes{"class": "icon"})
-						}
-					</button>
+					@shared.TableSortHeader(ctxi18n.T(ctx, "fields.title"), "title", data.Query, utils.BuildTableSortURL(fmt.Sprintf("/groups/%s/events", data.GroupID), data.Query, "title"))
 				</th>
 				<th>
-					<button class="btn btn-sm" type="button" data-on:click={ utils.BuildTableQueryDatastarAction(utils.BuildTableSortURL(fmt.Sprintf("/groups/%s/events", data.GroupID), data.Query, "time")) }>
-						<span>{ ctxi18n.T(ctx, "fields.time") }</span>
-						if data.Query.SortSet && data.Query.Sort == "time" && data.Query.Dir == "asc" {
-							@icons.ArrowDownAZ(templ.Attributes{"class": "icon"})
-						} else if data.Query.SortSet && data.Query.Sort == "time" && data.Query.Dir == "desc" {
-							@icons.ArrowUpZA(templ.Attributes{"class": "icon"})
-						}
-					</button>
+					@shared.TableSortHeader(ctxi18n.T(ctx, "fields.time"), "time", data.Query, utils.BuildTableSortURL(fmt.Sprintf("/groups/%s/events", data.GroupID), data.Query, "time"))
 				</th>
 				<th>
-					<button class="btn btn-sm" type="button" data-on:click={ utils.BuildTableQueryDatastarAction(utils.BuildTableSortURL(fmt.Sprintf("/groups/%s/events", data.GroupID), data.Query, "amount")) }>
-						<span>{ ctxi18n.T(ctx, "fields.amount") }</span>
-						if data.Query.SortSet && data.Query.Sort == "amount" && data.Query.Dir == "asc" {
-							@icons.ArrowDownAZ(templ.Attributes{"class": "icon"})
-						} else if data.Query.SortSet && data.Query.Sort == "amount" && data.Query.Dir == "desc" {
-							@icons.ArrowUpZA(templ.Attributes{"class": "icon"})
-						}
-					</button>
+					@shared.TableSortHeader(ctxi18n.T(ctx, "fields.amount"), "amount", data.Query, utils.BuildTableSortURL(fmt.Sprintf("/groups/%s/events", data.GroupID), data.Query, "amount"))
 				</th>
 				<th>{ ctxi18n.T(ctx, "fields.description") }</th>
 				if data.IsAdmin {
