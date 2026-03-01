@@ -32,6 +32,7 @@ Use this when implementing interactive UI behaviors with Datastar.
 - Bind inputs/signals: `data-bind="name"` on `input`, `select`, `textarea`, and hidden fields.
 - CSRF signal: include `csrf` in root `data-signals` on interactive pages.
 - Logout action: use Datastar POST (`@post('/auth/logout')`) with bound `csrf` signal.
+- Table search action: use `globalThis.tableSearchAction('/path', $tableQuery, 50)`.
 - Loading state: `data-indicator:fetching` + `data-attr:disabled="$fetching"`.
 
 ## Example: active search

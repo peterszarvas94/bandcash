@@ -22,7 +22,8 @@ Apply one strict feedback model across the app.
 
 ## Rendering requirements
 - Every top-level page template should include `@shared.Notifications()`.
-- For server-side patch rendering, use request-aware render helpers so notification queues are drained.
+- For handlers rendering full pages, use `utils.RenderPage(...)`.
+- For server-side patch rendering, use `utils.RenderHTMLForRequest(...)` so notification queues are drained.
 
 ## i18n
 - Notification text must use locale keys from `internal/i18n/locales/en/en.yaml` and `internal/i18n/locales/hu/hu.yaml`.

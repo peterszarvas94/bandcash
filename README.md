@@ -51,9 +51,11 @@ mise run kamal app details
 mise run dev          # hot reload
 mise run run          # run server directly
 mise run build        # build binary (tmp/server)
-mise run test         # go test -v ./...
+mise run test         # go test ./...
+mise run test-pretty  # gotestsum testdox output
 mise run format       # go fmt ./...
 mise run vet          # go vet ./...
+mise run check        # format + vet + test
 mise run lint         # golangci-lint run
 mise run templ        # regenerate *_templ.go
 mise run sqlc         # regenerate sqlc output
@@ -70,6 +72,8 @@ mise run mailpit      # SMTP/UI exposed on 0.0.0.0 (ports 1025/8025)
 - `internal/` - shared packages (`db`, `middleware`, `utils`, `i18n`, `email`)
 - `internal/db/migrations/` - goose migrations
 - `internal/db/queries/` - sqlc query sources
+- `internal/utils/table_query.go` - shared table query helpers
+- `models/shared/table.templ` - shared table UI components
 - `static/` - CSS and JS assets
 
 ## Notes

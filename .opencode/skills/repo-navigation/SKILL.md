@@ -17,12 +17,14 @@ Use this when you need to locate where to make changes without scanning the whol
 - SSE + helpers: `internal/utils/hub.go`, `models/sse/**`
 - Middleware: `internal/middleware/*.go`
 - Templates: `models/**/*.templ` (+ generated `*_templ.go`)
+- Shared tables: `models/shared/table.templ`, `internal/utils/table_query.go`, `static/js/table_query.js`
 - Database: `internal/db/queries/*.sql`, `internal/db/migrations/*.sql`, generated `internal/db/*.sql.go`
 - Assets: `static/css/*.css`, `static/js/*.js`
 
 ## Scoped search rules
 - Start with `models/<area>/*.templ` when UI is mentioned.
 - Use `models/<area>/handlers.go` for request logic.
+- Use `models/shared/table.templ` + `internal/utils/table_query.go` for table search/sort/pagination.
 - Use `internal/db/queries/*.sql` for query changes, then run sqlc.
 - Use `Glob` with narrow patterns before `Grep`.
 

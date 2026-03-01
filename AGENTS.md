@@ -41,21 +41,20 @@ Prefer `mise` tasks first, then direct Go commands when needed.
 - `mise run vet` - run `go vet ./...`.
 - `mise run lint` - run `golangci-lint run`.
 - `mise run lsp` - run `gopls check` on tracked Go files, excluding generated DB files.
-- `mise run check` - currently broken in this repo (`fmt` task referenced but not defined).
-- Recommended replacement for `check`: `mise run format && mise run vet && mise run test`.
+- `mise run check` - run format + vet + test in sequence.
 
 ### Tests
 
-- `mise run test` - run all tests (`go test -v ./...`).
-- Single package: `go test -v ./models/event`.
-- Single file (by package + regex): `go test -v ./models/event -run TestHandlerCreate`.
-- Single test exact match: `go test -v ./models/event -run '^TestHandlerCreate$'`.
-- Multiple tests by pattern: `go test -v ./models/event -run 'TestCreate|TestUpdate'`.
+- `mise run test` - run all tests (`go test ./...`).
+- Optional pretty output: `mise run test-pretty`.
+- Single package: `go test ./models/event`.
+- Single file (by package + regex): `go test ./models/event -run TestHandlerCreate`.
+- Single test exact match: `go test ./models/event -run '^TestHandlerCreate$'`.
+- Multiple tests by pattern: `go test ./models/event -run 'TestCreate|TestUpdate'`.
 - With race detector: `go test -race ./...`.
 - With coverage profile: `go test -coverprofile=coverage.out ./...`.
 
 Notes:
-- There are currently no `*_test.go` files in this repo, but the commands above are the expected patterns.
 - For sqlc-dependent packages, ensure DB-facing code compiles after query changes.
 
 ### Database / Codegen / Templates
@@ -136,6 +135,8 @@ Notes:
 
 - Keep signal names and payload shapes aligned between `*.templ` and handler structs.
 - Reuse existing page/component composition patterns (`EventIndex`, `EventShow`, `MemberIndex`, etc.).
+- For table pages, prefer shared helpers in `internal/utils/table_query.go` and shared table components in `models/shared/table.templ`.
+- For table search actions, use `globalThis.tableSearchAction(...)` from `static/js/table_query.js`.
 - Prefer patching via `utils.SSEHub.PatchHTML` + `PatchSignals` rather than ad-hoc response shapes.
 - Keep notification usage consistent (`utils.Notify(c, "success"|"error"|"warning", message)`).
 

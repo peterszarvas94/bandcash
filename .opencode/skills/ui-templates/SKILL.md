@@ -14,6 +14,7 @@ Use this for page layout, buttons, tables, and form changes.
 ## Template locations
 - Feature templates: `models/**/**/*.templ`
 - Shared layout/components: `models/shared/*.templ` and `models/shared/*.go`
+- Shared table components: `models/shared/table.templ`
 - Static assets: `static/css/*`, `static/js/*`
 
 ## Form conventions
@@ -27,6 +28,8 @@ Use this for page layout, buttons, tables, and form changes.
 ## Table conventions
 - Use `.table` class for tables.
 - Align numeric values with `.text-right`.
+- Prefer `shared.TableSearchForm(...)` and `shared.TableSortHeader(...)`.
+- Build table actions with `utils.TableSearchAction(...)`.
 
 ## Notes
 - Keep markup in existing sections; do not introduce new layout wrappers unless needed.
