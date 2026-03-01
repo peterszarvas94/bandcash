@@ -16,14 +16,14 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v6
 
-      - name: Setup Go
-        uses: actions/setup-go@v6
+      - name: Setup mise
+        uses: jdx/mise-action@v3
         with:
-          go-version-file: go.mod
+          install: true
           cache: true
 
       - name: Run tests
-        run: go test ./...
+        run: mise run test
 
   govulncheck:
     if: false # temporarily disabled; keep job definition for easy re-enable
@@ -32,17 +32,17 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v6
 
-      - name: Setup Go
-        uses: actions/setup-go@v6
+      - name: Setup mise
+        uses: jdx/mise-action@v3
         with:
-          go-version-file: go.mod
+          install: true
           cache: true
 
       - name: Install govulncheck
-        run: go install golang.org/x/vuln/cmd/govulncheck@latest
+        run: mise x -- go install golang.org/x/vuln/cmd/govulncheck@latest
 
       - name: Check tool version parity
-        run: go run ./cmd/checkversions
+        run: mise run check-versions
 
       - name: Run govulncheck
-        run: govulncheck ./...
+        run: mise x -- govulncheck ./...
