@@ -10,7 +10,7 @@ import (
 )
 
 templ MemberIndexMain(data MembersData) {
-	<form class="row row-wrap pt" data-on:submit={ memberSearchAction(data) }>
+	<form class="row row-wrap pt" data-on:submit={ utils.BuildTableSearchDatastarAction(fmt.Sprintf("/groups/%s/members", data.GroupID), utils.DefaultTablePageSize) }>
 		<input type="search" data-bind="tableQuery.search" placeholder={ ctxi18n.T(ctx, "table.search_placeholder") }/>
 		<button class="btn btn-sm" type="submit">{ ctxi18n.T(ctx, "table.search") }</button>
 	</form>
@@ -18,11 +18,11 @@ templ MemberIndexMain(data MembersData) {
 		<thead>
 			<tr>
 				<th>
-					<button class="btn btn-sm" type="button" data-on:click={ utils.BuildTableQueryDatastarAction(memberSortURL(data, "name")) }>
+					<button class="btn btn-sm" type="button" data-on:click={ utils.BuildTableQueryDatastarAction(utils.BuildTableSortURL(fmt.Sprintf("/groups/%s/members", data.GroupID), data.Query, "name")) }>
 						<span>{ ctxi18n.T(ctx, "fields.name") }</span>
-						if memberSortDir(data, "name") == "asc" {
+						if data.Query.SortSet && data.Query.Sort == "name" && data.Query.Dir == "asc" {
 							@icons.ArrowDownAZ(templ.Attributes{"class": "icon"})
-						} else if memberSortDir(data, "name") == "desc" {
+						} else if data.Query.SortSet && data.Query.Sort == "name" && data.Query.Dir == "desc" {
 							@icons.ArrowUpZA(templ.Attributes{"class": "icon"})
 						}
 					</button>
@@ -65,13 +65,13 @@ templ MemberIndexMain(data MembersData) {
 	<div class="row row-wrap justify-between pt">
 		<div class="row row-wrap">
 			<span>{ ctxi18n.T(ctx, "table.page_size") }</span>
-			for _, pageSize := range tablePageSizes {
-				<button class={ utils.PageSizeButtonClass(data.Query.PageSize, pageSize) } type="button" data-on:click={ utils.BuildTableQueryDatastarAction(memberPageSizeURL(data, pageSize)) }>{ fmt.Sprintf("%d", pageSize) }</button>
+			for _, pageSize := range utils.StandardTablePageSizes {
+				<button class={ utils.PageSizeButtonClass(data.Query.PageSize, pageSize) } type="button" data-on:click={ utils.BuildTableQueryDatastarAction(utils.BuildTablePageSizeURL(fmt.Sprintf("/groups/%s/members", data.GroupID), data.Query, pageSize)) }>{ fmt.Sprintf("%d", pageSize) }</button>
 			}
 		</div>
 		<div class="row row-wrap">
 			if data.Pager.HasPrev {
-				<button class="btn btn-sm btn-icon" type="button" data-on:click={ utils.BuildTableQueryDatastarAction(memberPageURL(data, data.Pager.Page-1)) } aria-label={ ctxi18n.T(ctx, "table.prev") } title={ ctxi18n.T(ctx, "table.prev") }>
+				<button class="btn btn-sm btn-icon" type="button" data-on:click={ utils.BuildTableQueryDatastarAction(utils.BuildTablePageURL(fmt.Sprintf("/groups/%s/members", data.GroupID), data.Query, data.Pager.Page-1, data.Pager.TotalPages)) } aria-label={ ctxi18n.T(ctx, "table.prev") } title={ ctxi18n.T(ctx, "table.prev") }>
 					@icons.ChevronLeft(templ.Attributes{"class": "icon"})
 				</button>
 			} else {
@@ -81,7 +81,7 @@ templ MemberIndexMain(data MembersData) {
 			}
 			<span>{ fmt.Sprintf("%s %d / %d", ctxi18n.T(ctx, "table.page"), data.Pager.Page, data.Pager.TotalPages) }</span>
 			if data.Pager.HasNext {
-				<button class="btn btn-sm btn-icon" type="button" data-on:click={ utils.BuildTableQueryDatastarAction(memberPageURL(data, data.Pager.Page+1)) } aria-label={ ctxi18n.T(ctx, "table.next") } title={ ctxi18n.T(ctx, "table.next") }>
+				<button class="btn btn-sm btn-icon" type="button" data-on:click={ utils.BuildTableQueryDatastarAction(utils.BuildTablePageURL(fmt.Sprintf("/groups/%s/members", data.GroupID), data.Query, data.Pager.Page+1, data.Pager.TotalPages)) } aria-label={ ctxi18n.T(ctx, "table.next") } title={ ctxi18n.T(ctx, "table.next") }>
 					@icons.ChevronRight(templ.Attributes{"class": "icon"})
 				</button>
 			} else {
