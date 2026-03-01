@@ -64,14 +64,14 @@ func (e *Events) GetShowData(ctx context.Context, groupID, eventID string) (Even
 		return EventData{}, err
 	}
 
-	memberIDs := make(map[string]bool, len(participants))
+	participantMemberIDs := make(map[string]bool, len(participants))
 	for _, participant := range participants {
-		memberIDs[participant.ID] = true
+		participantMemberIDs[participant.ID] = true
 	}
 
 	filteredMembers := make([]db.Member, 0, len(members))
 	for _, member := range members {
-		if memberIDs[member.ID] {
+		if participantMemberIDs[member.ID] {
 			continue
 		}
 		filteredMembers = append(filteredMembers, member)
@@ -91,7 +91,6 @@ func (e *Events) GetShowData(ctx context.Context, groupID, eventID string) (Even
 		Event:            &event,
 		Participants:     participants,
 		Members:          filteredMembers,
-		MemberIDs:        memberIDs,
 		Leftover:         leftover,
 		TotalDistributed: totalDistributed,
 		GroupID:          groupID,

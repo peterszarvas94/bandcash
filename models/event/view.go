@@ -10,7 +10,6 @@ type EventData struct {
 	Event            *db.Event
 	Participants     []db.ListParticipantsByEventRow
 	Members          []db.Member
-	MemberIDs        map[string]bool
 	Breadcrumbs      []utils.Crumb
 	Leftover         int64
 	TotalDistributed int64
