@@ -6,7 +6,7 @@ import (
 
 templ BilingualEmailHTML(huHTML, enHTML string) {
 	<div style="margin:0;padding:0;">
-		<div style="margin:0 0 10px;font-family:system-ui,-apple-system,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif;font-size:12px;line-height:1.4;color:#6b7280;">
+		<div style="margin:0 0 10px;font-family:system-ui,-apple-system,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif;font-size:12px;line-height:1.4;color:#6b7280;text-align:center;">
 			English follows below.
 		</div>
 		@templ.Raw(huHTML)

@@ -70,7 +70,7 @@ func verifyLink(baseURL, token, locale string) string {
 }
 
 func joinBilingualText(huText, enText string) string {
-	return strings.TrimSpace("Find english below.\n\n" + strings.TrimSpace(huText) + "\n\n---\n\n" + strings.TrimSpace(enText))
+	return strings.TrimSpace("English follows below.\n\n" + strings.TrimSpace(huText) + "\n\n---\n\n" + strings.TrimSpace(enText))
 }
 
 func joinBilingualHTML(ctx context.Context, huHTML, enHTML string) (string, error) {

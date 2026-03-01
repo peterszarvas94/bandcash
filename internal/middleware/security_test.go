@@ -40,17 +40,23 @@ func TestIsSameOrigin(t *testing.T) {
 	req.Host = "app.example.com"
 	c := e.NewContext(req, httptest.NewRecorder())
 
-	if !isSameOrigin(c, "https://app.example.com/groups") {
-		t.Fatal("expected same origin to pass")
-	}
+	t.Run("accepts exact same origin", func(t *testing.T) {
+		if !isSameOrigin(c, "https://app.example.com/groups") {
+			t.Fatal("expected same origin to pass")
+		}
+	})
 
-	if isSameOrigin(c, "https://evil.example.com/phish") {
-		t.Fatal("expected different origin to fail")
-	}
+	t.Run("rejects cross-origin host", func(t *testing.T) {
+		if isSameOrigin(c, "https://evil.example.com/phish") {
+			t.Fatal("expected different origin to fail")
+		}
+	})
 
-	if isSameOrigin(c, "://bad-url") {
-		t.Fatal("expected malformed url to fail")
-	}
+	t.Run("rejects malformed origin url", func(t *testing.T) {
+		if isSameOrigin(c, "://bad-url") {
+			t.Fatal("expected malformed url to fail")
+		}
+	})
 }
 
 func TestCSRFFromRequest(t *testing.T) {

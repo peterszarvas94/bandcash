@@ -77,24 +77,28 @@ func TestEventsFilteredQueries(t *testing.T) {
 		}
 	}
 
-	count, err := q.CountEventsFiltered(ctx, CountEventsFilteredParams{GroupID: groupID, Search: "test"})
-	if err != nil {
-		t.Fatalf("count events: %v", err)
-	}
-	if count != 1 {
-		t.Fatalf("expected count 1, got %d", count)
-	}
+	t.Run("counts only matching rows in same group", func(t *testing.T) {
+		count, err := q.CountEventsFiltered(ctx, CountEventsFilteredParams{GroupID: groupID, Search: "test"})
+		if err != nil {
+			t.Fatalf("count events: %v", err)
+		}
+		if count != 1 {
+			t.Fatalf("expected count 1, got %d", count)
+		}
+	})
 
-	list, err := q.ListEventsByAmountDescFiltered(ctx, ListEventsByAmountDescFilteredParams{GroupID: groupID, Search: "", Limit: 2, Offset: 0})
-	if err != nil {
-		t.Fatalf("list events by amount desc: %v", err)
-	}
-	if len(list) != 2 {
-		t.Fatalf("expected 2 events, got %d", len(list))
-	}
-	if list[0].ID != "evt_beta" || list[1].ID != "evt_gamma" {
-		t.Fatalf("unexpected order: %s, %s", list[0].ID, list[1].ID)
-	}
+	t.Run("lists events sorted by amount desc with pagination", func(t *testing.T) {
+		list, err := q.ListEventsByAmountDescFiltered(ctx, ListEventsByAmountDescFilteredParams{GroupID: groupID, Search: "", Limit: 2, Offset: 0})
+		if err != nil {
+			t.Fatalf("list events by amount desc: %v", err)
+		}
+		if len(list) != 2 {
+			t.Fatalf("expected 2 events, got %d", len(list))
+		}
+		if list[0].ID != "evt_beta" || list[1].ID != "evt_gamma" {
+			t.Fatalf("unexpected order: %s, %s", list[0].ID, list[1].ID)
+		}
+	})
 }
 
 func TestMembersFilteredQueries(t *testing.T) {
@@ -116,24 +120,28 @@ func TestMembersFilteredQueries(t *testing.T) {
 		}
 	}
 
-	count, err := q.CountMembersFiltered(ctx, CountMembersFilteredParams{GroupID: groupID, Search: ""})
-	if err != nil {
-		t.Fatalf("count members: %v", err)
-	}
-	if count != 3 {
-		t.Fatalf("expected count 3, got %d", count)
-	}
+	t.Run("counts only members for selected group", func(t *testing.T) {
+		count, err := q.CountMembersFiltered(ctx, CountMembersFilteredParams{GroupID: groupID, Search: ""})
+		if err != nil {
+			t.Fatalf("count members: %v", err)
+		}
+		if count != 3 {
+			t.Fatalf("expected count 3, got %d", count)
+		}
+	})
 
-	list, err := q.ListMembersByNameAscFiltered(ctx, ListMembersByNameAscFilteredParams{GroupID: groupID, Search: "", Limit: 2, Offset: 1})
-	if err != nil {
-		t.Fatalf("list members by name asc: %v", err)
-	}
-	if len(list) != 2 {
-		t.Fatalf("expected 2 members, got %d", len(list))
-	}
-	if list[0].Name != "Bob" || list[1].Name != "Carol" {
-		t.Fatalf("unexpected order: %s, %s", list[0].Name, list[1].Name)
-	}
+	t.Run("lists members sorted by name asc with offset", func(t *testing.T) {
+		list, err := q.ListMembersByNameAscFiltered(ctx, ListMembersByNameAscFilteredParams{GroupID: groupID, Search: "", Limit: 2, Offset: 1})
+		if err != nil {
+			t.Fatalf("list members by name asc: %v", err)
+		}
+		if len(list) != 2 {
+			t.Fatalf("expected 2 members, got %d", len(list))
+		}
+		if list[0].Name != "Bob" || list[1].Name != "Carol" {
+			t.Fatalf("unexpected order: %s, %s", list[0].Name, list[1].Name)
+		}
+	})
 }
 
 func TestExpensesFilteredQueries(t *testing.T) {
@@ -155,22 +163,26 @@ func TestExpensesFilteredQueries(t *testing.T) {
 		}
 	}
 
-	count, err := q.CountExpensesFiltered(ctx, CountExpensesFilteredParams{GroupID: groupID, Search: "test"})
-	if err != nil {
-		t.Fatalf("count expenses: %v", err)
-	}
-	if count != 1 {
-		t.Fatalf("expected count 1, got %d", count)
-	}
+	t.Run("counts filtered expenses for selected group", func(t *testing.T) {
+		count, err := q.CountExpensesFiltered(ctx, CountExpensesFilteredParams{GroupID: groupID, Search: "test"})
+		if err != nil {
+			t.Fatalf("count expenses: %v", err)
+		}
+		if count != 1 {
+			t.Fatalf("expected count 1, got %d", count)
+		}
+	})
 
-	list, err := q.ListExpensesByDateDescFiltered(ctx, ListExpensesByDateDescFilteredParams{GroupID: groupID, Search: "", Limit: 2, Offset: 0})
-	if err != nil {
-		t.Fatalf("list expenses by date desc: %v", err)
-	}
-	if len(list) != 2 {
-		t.Fatalf("expected 2 expenses, got %d", len(list))
-	}
-	if list[0].ID != "exp_food" || list[1].ID != "exp_travel" {
-		t.Fatalf("unexpected order: %s, %s", list[0].ID, list[1].ID)
-	}
+	t.Run("lists expenses sorted by date desc", func(t *testing.T) {
+		list, err := q.ListExpensesByDateDescFiltered(ctx, ListExpensesByDateDescFilteredParams{GroupID: groupID, Search: "", Limit: 2, Offset: 0})
+		if err != nil {
+			t.Fatalf("list expenses by date desc: %v", err)
+		}
+		if len(list) != 2 {
+			t.Fatalf("expected 2 expenses, got %d", len(list))
+		}
+		if list[0].ID != "exp_food" || list[1].ID != "exp_travel" {
+			t.Fatalf("unexpected order: %s, %s", list[0].ID, list[1].ID)
+		}
+	})
 }
