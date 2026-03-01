@@ -19,8 +19,21 @@ jobs:
       - name: Setup mise
         uses: jdx/mise-action@v3
         with:
-          install: true
+          install: false
           cache: true
+
+      - name: Install only Go via mise
+        run: mise install go
+
+      - name: Cache Go build and module downloads
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cache/go-build
+            ~/go/pkg/mod
+          key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
+          restore-keys: |
+            ${{ runner.os }}-go-
 
       - name: Run tests
         run: mise run test
@@ -35,8 +48,11 @@ jobs:
       - name: Setup mise
         uses: jdx/mise-action@v3
         with:
-          install: true
+          install: false
           cache: true
+
+      - name: Install only Go via mise
+        run: mise install go
 
       - name: Install govulncheck
         run: mise x -- go install golang.org/x/vuln/cmd/govulncheck@latest
