@@ -73,8 +73,12 @@ func joinBilingualText(huText, enText string) string {
 	return strings.TrimSpace("Find english below.\n\n" + strings.TrimSpace(huText) + "\n\n---\n\n" + strings.TrimSpace(enText))
 }
 
-func joinBilingualHTML(huHTML, enHTML string) string {
-	return strings.TrimSpace(`<div style="margin:0;padding:0 0 12px;font-family:system-ui,-apple-system,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif;color:#1a1a1a;">Find english below.</div>` + strings.TrimSpace(huHTML) + `<div style="height:12px"></div>` + strings.TrimSpace(enHTML))
+func joinBilingualHTML(ctx context.Context, huHTML, enHTML string) (string, error) {
+	rendered, err := utils.RenderHTML(ctx, BilingualEmailHTML(strings.TrimSpace(huHTML), strings.TrimSpace(enHTML)))
+	if err != nil {
+		return "", fmt.Errorf("failed to render bilingual html: %w", err)
+	}
+	return strings.TrimSpace(rendered), nil
 }
 
 func NewFromEnv() *Service {
@@ -166,7 +170,10 @@ func (s *Service) buildMagicLinkBodies(ctx context.Context, token, baseURL strin
 	}
 
 	textBody := joinBilingualText(huTextBody, enTextBody)
-	htmlBody := joinBilingualHTML(huHTMLBody, enHTMLBody)
+	htmlBody, err := joinBilingualHTML(ctx, huHTMLBody, enHTMLBody)
+	if err != nil {
+		return "", "", "", err
+	}
 	return htmlBody, textBody, subject, nil
 }
 
@@ -214,6 +221,9 @@ func (s *Service) buildGroupInvitationBodies(ctx context.Context, groupName, tok
 	}
 
 	textBody := joinBilingualText(huTextBody, enTextBody)
-	htmlBody := joinBilingualHTML(huHTMLBody, enHTMLBody)
+	htmlBody, err := joinBilingualHTML(ctx, huHTMLBody, enHTMLBody)
+	if err != nil {
+		return "", "", "", err
+	}
 	return htmlBody, textBody, subject, nil
 }

@@ -4,6 +4,17 @@ import (
 	ctxi18n "github.com/invopop/ctxi18n/i18n"
 )
 
+templ BilingualEmailHTML(huHTML, enHTML string) {
+	<div style="margin:0;padding:0;">
+		<div style="margin:0 0 10px;font-family:system-ui,-apple-system,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif;font-size:12px;line-height:1.4;color:#6b7280;">
+			English follows below.
+		</div>
+		@templ.Raw(huHTML)
+		<div style="height:10px"></div>
+		@templ.Raw(enHTML)
+	</div>
+}
+
 templ MagicLinkText(link string) {
 	{ ctxi18n.T(ctx, "email.magic_link.text.greeting") }
 	{ ctxi18n.T(ctx, "email.magic_link.text.intro") }
