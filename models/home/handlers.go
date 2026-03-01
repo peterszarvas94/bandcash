@@ -18,5 +18,5 @@ func (h *Home) Index(c echo.Context) error {
 	}
 
 	data := h.Data(c.Request().Context())
-	return utils.RenderComponent(c, HomeIndex(data))
+	return utils.RenderPage(c, HomeIndex(data))
 }

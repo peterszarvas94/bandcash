@@ -25,17 +25,6 @@ var validate = func() *validator.Validate {
 	return v
 }()
 
-// MapErrors returns a map of field names to error messages.
-func MapErrors(err error) map[string]string {
-	errors := make(map[string]string)
-	if validationErrors, ok := err.(validator.ValidationErrors); ok {
-		for _, e := range validationErrors {
-			errors[e.Field()] = e.Error()
-		}
-	}
-	return errors
-}
-
 // MapErrorsLocalized returns a map of field names to localized error messages.
 func MapErrorsLocalized(ctx context.Context, err error) map[string]string {
 	errors := make(map[string]string)
@@ -45,15 +34,6 @@ func MapErrorsLocalized(ctx context.Context, err error) map[string]string {
 		}
 	}
 	return errors
-}
-
-// Validate validates a struct and returns errors if any
-func Validate(s any) map[string]string {
-	err := validate.Struct(s)
-	if err != nil {
-		return MapErrors(err)
-	}
-	return nil
 }
 
 // ValidateWithLocale validates a struct and returns localized errors if any.

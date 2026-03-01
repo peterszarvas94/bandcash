@@ -12,7 +12,7 @@ templ DevPage() {
 	<html lang={ appi18n.LocaleCode(ctx) }>
 		@shared.Head("Dev tools")
 		<body>
-			<div data-signals={ templ.JSONString(map[string]any{"csrf": utils.CSRFToken(ctx), "errors": map[string]any{"name": ""}, "formData": map[string]any{"name": ""}, "_fetching": false, "activeSpinner": "", "_notifyInline": false, "_notifyInfo": false, "_notifySuccess": false, "_notifyWarning": false, "_notifyError": false}) } data-init="@get('/sse')"></div>
+			<div data-signals={ templ.JSONString(map[string]any{"csrf": utils.CSRFTokenFromContext(ctx), "errors": map[string]any{"name": ""}, "formData": map[string]any{"name": ""}, "_fetching": false, "activeSpinner": "", "_notifyInline": false, "_notifyInfo": false, "_notifySuccess": false, "_notifyWarning": false, "_notifyError": false}) } data-init="@get('/sse')"></div>
 			@shared.Notifications()
 			@shared.AppShellMainOnly("dev-page", []utils.Crumb{{Label: "Dev tools"}}, "", shared.DevPrimaryNav("dev"), DevMain())
 		</body>
@@ -136,7 +136,7 @@ templ RateLimitContent() {
 		@shared.IDActionButton("spam-health", "btn btn-info", "Spam /health")
 		@shared.IDActionButton("spam-auth", "btn btn-warning", "Spam /auth/login")
 	</div>
-	<input id="rate-limit-csrf" type="hidden" value={ utils.CSRFToken(ctx) }/>
+	<input id="rate-limit-csrf" type="hidden" value={ utils.CSRFTokenFromContext(ctx) }/>
 	<span id="rate-limit-msg-start-health" hidden>Running /health burst...</span>
 	<span id="rate-limit-msg-done-health" hidden>/health burst completed.</span>
 	<span id="rate-limit-msg-start-auth" hidden>Running /auth/login burst...</span>
@@ -152,7 +152,7 @@ templ BodyLimitContent() {
 		@shared.IDActionButton("body-limit-auth-ok", "btn btn-info", "POST /auth/login (small body)")
 		@shared.IDActionButton("body-limit-auth-big", "btn btn-danger", "POST /auth/login (too large)")
 	</div>
-	<input id="body-limit-csrf" type="hidden" value={ utils.CSRFToken(ctx) }/>
+	<input id="body-limit-csrf" type="hidden" value={ utils.CSRFTokenFromContext(ctx) }/>
 	<span id="body-limit-msg-global-ok" hidden>Sending small payload to /health...</span>
 	<span id="body-limit-msg-global-big" hidden>Sending oversized payload to /health...</span>
 	<span id="body-limit-msg-auth-ok" hidden>Sending small payload to /auth/login...</span>

@@ -11,7 +11,7 @@ templ ExpenseIndex(data ExpensesData) {
 	<html lang={appi18n.LocaleCode(ctx)}>
 		@shared.Head(data.Title)
 		<body>
-			<div data-signals={templ.JSONString(expenseIndexSignals(utils.CSRFToken(ctx), expenseQuerySignals(data.Query)))} data-init="@get('/sse')"></div>
+			<div data-signals={templ.JSONString(expenseIndexSignals(utils.CSRFTokenFromContext(ctx), utils.TableQuerySignals(data.Query)))} data-init="@get('/sse')"></div>
 			@shared.Notifications()
 			@shared.AppShell("expense-index", data.Breadcrumbs, data.UserEmail, shared.GroupPrimaryNav(data.GroupID, "expenses"), ExpenseIndexMain(data), ExpenseIndexSidebar(data))
 		</body>

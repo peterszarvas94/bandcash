@@ -14,7 +14,7 @@ templ LoginPage(data AuthPageData) {
 	<html lang={ appi18n.LocaleCode(ctx) }>
 		@shared.Head(data.Title)
 		<body>
-			<div data-signals={templ.JSONString(map[string]any{"csrf": utils.CSRFToken(ctx), "authError": "", "authServerError": "", "authState": "form", "submittedEmail": "", "submittedEmailMasked": "", "resendRemaining": 0, "formData": map[string]any{"email": ""}})} data-init="@get('/sse')"></div>
+			<div data-signals={templ.JSONString(map[string]any{"csrf": utils.CSRFTokenFromContext(ctx), "authError": "", "authServerError": "", "authState": "form", "submittedEmail": "", "submittedEmailMasked": "", "resendRemaining": 0, "formData": map[string]any{"email": ""}})} data-init="@get('/sse')"></div>
 			@shared.Notifications()
 			@shared.AppShellMainOnly("auth-login", data.Breadcrumbs, data.UserEmail, shared.PublicPrimaryNav("login"), LoginMain())
 		</body>

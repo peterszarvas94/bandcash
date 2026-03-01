@@ -148,19 +148,19 @@ func (s *Service) buildMagicLinkBodies(ctx context.Context, token, baseURL strin
 	enLink := verifyLink(baseURL, token, "en")
 
 	subject := ctxi18ncore.T(enCtx, "email.magic_link.subject")
-	huTextBody, err := utils.RenderComponentString(huCtx, MagicLinkText(huLink))
+	huTextBody, err := utils.RenderHTML(huCtx, MagicLinkText(huLink))
 	if err != nil {
 		return "", "", "", fmt.Errorf("failed to render magic-link text template: %w", err)
 	}
-	enTextBody, err := utils.RenderComponentString(enCtx, MagicLinkText(enLink))
+	enTextBody, err := utils.RenderHTML(enCtx, MagicLinkText(enLink))
 	if err != nil {
 		return "", "", "", fmt.Errorf("failed to render magic-link text template: %w", err)
 	}
-	huHTMLBody, err := utils.RenderComponentString(huCtx, MagicLinkHTML(huLink))
+	huHTMLBody, err := utils.RenderHTML(huCtx, MagicLinkHTML(huLink))
 	if err != nil {
 		return "", "", "", fmt.Errorf("failed to render magic-link HTML template: %w", err)
 	}
-	enHTMLBody, err := utils.RenderComponentString(enCtx, MagicLinkHTML(enLink))
+	enHTMLBody, err := utils.RenderHTML(enCtx, MagicLinkHTML(enLink))
 	if err != nil {
 		return "", "", "", fmt.Errorf("failed to render magic-link HTML template: %w", err)
 	}
@@ -196,19 +196,19 @@ func (s *Service) buildGroupInvitationBodies(ctx context.Context, groupName, tok
 	enLink := verifyLink(baseURL, token, "en")
 
 	subject := ctxi18ncore.T(enCtx, "email.invite.subject", groupName)
-	huTextBody, err := utils.RenderComponentString(huCtx, GroupInvitationText(groupName, huLink))
+	huTextBody, err := utils.RenderHTML(huCtx, GroupInvitationText(groupName, huLink))
 	if err != nil {
 		return "", "", "", fmt.Errorf("failed to render invite text template: %w", err)
 	}
-	enTextBody, err := utils.RenderComponentString(enCtx, GroupInvitationText(groupName, enLink))
+	enTextBody, err := utils.RenderHTML(enCtx, GroupInvitationText(groupName, enLink))
 	if err != nil {
 		return "", "", "", fmt.Errorf("failed to render invite text template: %w", err)
 	}
-	huHTMLBody, err := utils.RenderComponentString(huCtx, GroupInvitationHTML(groupName, huLink))
+	huHTMLBody, err := utils.RenderHTML(huCtx, GroupInvitationHTML(groupName, huLink))
 	if err != nil {
 		return "", "", "", fmt.Errorf("failed to render invite HTML template: %w", err)
 	}
-	enHTMLBody, err := utils.RenderComponentString(enCtx, GroupInvitationHTML(groupName, enLink))
+	enHTMLBody, err := utils.RenderHTML(enCtx, GroupInvitationHTML(groupName, enLink))
 	if err != nil {
 		return "", "", "", fmt.Errorf("failed to render invite HTML template: %w", err)
 	}

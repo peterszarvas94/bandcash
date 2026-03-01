@@ -17,17 +17,13 @@ templ GroupsPage(data GroupsPageData) {
 		@shared.Head(data.Title)
 		<body>
 			<div
-				data-signals={ templ.JSONString(map[string]any{"csrf": utils.CSRFToken(ctx), "formState": "", "selectedGroupId": "", "formData": map[string]any{"name": ""}, "errors": map[string]any{"name": ""}, "tableQuery": groupsQuerySignals(data.Query)}) }
+				data-signals={ templ.JSONString(map[string]any{"csrf": utils.CSRFTokenFromContext(ctx), "formState": "", "selectedGroupId": "", "formData": map[string]any{"name": ""}, "errors": map[string]any{"name": ""}, "tableQuery": utils.TableQuerySignals(data.Query)}) }
 				data-init="@get('/sse')"
 			></div>
 			@shared.Notifications()
 			@shared.AppShell("group-dashboard", data.Breadcrumbs, data.UserEmail, shared.AppPrimaryNav("dashboard", data.UserEmail), GroupsMain(data), GroupsSidebar(data))
 		</body>
 	</html>
-}
-
-func groupsQuerySignals(query utils.TableQuery) map[string]any {
-	return utils.TableQuerySignals(query)
 }
 
 templ GroupsMain(data GroupsPageData) {
@@ -81,7 +77,7 @@ templ GroupsMain(data GroupsPageData) {
 								if group.Role == "admin" {
 									@shared.LoadingIconActionButton(
 										"btn btn-sm btn-icon",
-										fmt.Sprintf("$formState = 'edit'; $selectedGroupId = '%s'; $formData = {name: %s}; $errors = {name: ''}", group.Group.ID, utils.JSONString(group.Group.Name)),
+									fmt.Sprintf("$formState = 'edit'; $selectedGroupId = '%s'; $formData = {name: %s}; $errors = {name: ''}", group.Group.ID, utils.JSONString(group.Group.Name)),
 										"$formState !== ''",
 										ctxi18n.T(ctx, "actions.edit"),
 										ctxi18n.T(ctx, "actions.edit"),

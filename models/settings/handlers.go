@@ -27,7 +27,7 @@ func (s *Settings) Index(c echo.Context) error {
 			data.UserEmail = user.Email
 		}
 	}
-	return utils.RenderComponent(c, SettingsIndex(data))
+	return utils.RenderPage(c, SettingsIndex(data))
 }
 
 func (s *Settings) LanguagePage(c echo.Context) error {
@@ -40,7 +40,7 @@ func (s *Settings) LanguagePage(c echo.Context) error {
 			data.UserEmail = user.Email
 		}
 	}
-	return utils.RenderComponent(c, LanguagePage(data))
+	return utils.RenderPage(c, LanguagePage(data))
 }
 
 func (s *Settings) UpdateLanguage(c echo.Context) error {

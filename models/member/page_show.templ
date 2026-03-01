@@ -11,7 +11,7 @@ templ MemberShow(data MemberData) {
 	<html lang={appi18n.LocaleCode(ctx)}>
 		@shared.Head(data.Title)
 		<body>
-			<div data-signals={templ.JSONString(memberShowSignals(data, utils.CSRFToken(ctx)))} data-init="@get('/sse')"></div>
+			<div data-signals={templ.JSONString(memberShowSignals(data, utils.CSRFTokenFromContext(ctx)))} data-init="@get('/sse')"></div>
 			@shared.Notifications()
 			@shared.AppShell("member-show", data.Breadcrumbs, data.UserEmail, shared.GroupPrimaryNav(data.GroupID, "members"), MemberShowMain(data), MemberShowSidebar(data))
 		</body>

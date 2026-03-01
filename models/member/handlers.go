@@ -3,6 +3,7 @@ package member
 import (
 	"log/slog"
 	"net/http"
+	"strings"
 
 	ctxi18n "github.com/invopop/ctxi18n/i18n"
 	"github.com/labstack/echo/v4"
@@ -41,10 +42,6 @@ var (
 	memberErrorFields = []string{"name", "description"}
 )
 
-func getGroupID(c echo.Context) string {
-	return middleware.GetGroupID(c)
-}
-
 func getUserEmail(c echo.Context) string {
 	userID := middleware.GetUserID(c)
 	if userID == "" {
@@ -59,7 +56,7 @@ func getUserEmail(c echo.Context) string {
 
 func (p *Members) Index(c echo.Context) error {
 	utils.EnsureClientID(c)
-	groupID := getGroupID(c)
+	groupID := middleware.GetGroupID(c)
 	userEmail := getUserEmail(c)
 	query := utils.ParseTableQuery(c, p)
 
@@ -72,12 +69,12 @@ func (p *Members) Index(c echo.Context) error {
 	data.UserEmail = userEmail
 
 	slog.Debug("member.index", "member_count", len(data.Members))
-	return utils.RenderComponent(c, MemberIndex(data))
+	return utils.RenderPage(c, MemberIndex(data))
 }
 
 func (p *Members) Show(c echo.Context) error {
 	utils.EnsureClientID(c)
-	groupID := getGroupID(c)
+	groupID := middleware.GetGroupID(c)
 	userEmail := getUserEmail(c)
 
 	id := c.Param("id")
@@ -94,11 +91,11 @@ func (p *Members) Show(c echo.Context) error {
 	data.IsAdmin = middleware.IsAdmin(c)
 	data.UserEmail = userEmail
 
-	return utils.RenderComponent(c, MemberShow(data))
+	return utils.RenderPage(c, MemberShow(data))
 }
 
 func (p *Members) Create(c echo.Context) error {
-	groupID := getGroupID(c)
+	groupID := middleware.GetGroupID(c)
 	userEmail := getUserEmail(c)
 
 	var signals memberTableParams
@@ -107,8 +104,8 @@ func (p *Members) Create(c echo.Context) error {
 		slog.Info("member.create.table: failed to read signals", "err", err)
 		return c.NoContent(http.StatusBadRequest)
 	}
-	signals.FormData.Name = utils.NormalizeText(signals.FormData.Name)
-	signals.FormData.Description = utils.NormalizeText(signals.FormData.Description)
+	signals.FormData.Name = strings.TrimSpace(signals.FormData.Name)
+	signals.FormData.Description = strings.TrimSpace(signals.FormData.Description)
 
 	// Validate
 	if errs := utils.ValidateWithLocale(c.Request().Context(), signals.FormData); errs != nil {
@@ -140,7 +137,7 @@ func (p *Members) Create(c echo.Context) error {
 	}
 	data.IsAdmin = middleware.IsAdmin(c)
 	data.UserEmail = userEmail
-	html, err := utils.RenderComponentStringFor(c, MemberIndex(data))
+	html, err := utils.RenderHTMLForRequest(c, MemberIndex(data))
 	if err != nil {
 		slog.Error("member.create.table: failed to render", "err", err)
 		return c.NoContent(http.StatusInternalServerError)
@@ -152,7 +149,7 @@ func (p *Members) Create(c echo.Context) error {
 }
 
 func (p *Members) Update(c echo.Context) error {
-	groupID := getGroupID(c)
+	groupID := middleware.GetGroupID(c)
 	userEmail := getUserEmail(c)
 
 	id := c.Param("id")
@@ -167,8 +164,8 @@ func (p *Members) Update(c echo.Context) error {
 		slog.Info("member.update: failed to read signals", "err", err)
 		return c.NoContent(http.StatusBadRequest)
 	}
-	signals.FormData.Name = utils.NormalizeText(signals.FormData.Name)
-	signals.FormData.Description = utils.NormalizeText(signals.FormData.Description)
+	signals.FormData.Name = strings.TrimSpace(signals.FormData.Name)
+	signals.FormData.Description = strings.TrimSpace(signals.FormData.Description)
 
 	// Validate
 	if errs := utils.ValidateWithLocale(c.Request().Context(), signals.FormData); errs != nil {
@@ -208,7 +205,7 @@ func (p *Members) Update(c echo.Context) error {
 	}
 	data.IsAdmin = middleware.IsAdmin(c)
 	data.UserEmail = userEmail
-	html, err := utils.RenderComponentStringFor(c, MemberIndex(data))
+	html, err := utils.RenderHTMLForRequest(c, MemberIndex(data))
 	if err != nil {
 		slog.Error("member.update: failed to render", "err", err)
 		return c.NoContent(http.StatusInternalServerError)
@@ -220,7 +217,7 @@ func (p *Members) Update(c echo.Context) error {
 }
 
 func (p *Members) Destroy(c echo.Context) error {
-	groupID := getGroupID(c)
+	groupID := middleware.GetGroupID(c)
 	userEmail := getUserEmail(c)
 
 	id := c.Param("id")
@@ -266,7 +263,7 @@ func (p *Members) Destroy(c echo.Context) error {
 	}
 	data.IsAdmin = middleware.IsAdmin(c)
 	data.UserEmail = userEmail
-	html, err := utils.RenderComponentStringFor(c, MemberIndex(data))
+	html, err := utils.RenderHTMLForRequest(c, MemberIndex(data))
 	if err != nil {
 		slog.Error("member.destroy: failed to render", "err", err)
 		return c.NoContent(http.StatusInternalServerError)

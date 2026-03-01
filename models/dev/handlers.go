@@ -30,7 +30,7 @@ var devErrorFields = []string{"name"}
 
 func (h *DevNotifications) DevPageHandler(c echo.Context) error {
 	utils.EnsureClientID(c)
-	return utils.RenderComponent(c, DevPage())
+	return utils.RenderPage(c, DevPage())
 }
 
 func (h *DevNotifications) TestInline(c echo.Context) error {
@@ -38,7 +38,7 @@ func (h *DevNotifications) TestInline(c echo.Context) error {
 	if err := datastar.ReadSignals(c.Request(), &signals); err != nil {
 		return c.NoContent(http.StatusBadRequest)
 	}
-	signals.FormData.Name = utils.NormalizeText(signals.FormData.Name)
+	signals.FormData.Name = strings.TrimSpace(signals.FormData.Name)
 
 	if errs := utils.ValidateWithLocale(c.Request().Context(), signals.FormData); errs != nil {
 		utils.SSEHub.PatchSignals(c, map[string]any{
@@ -355,7 +355,7 @@ func devBaseURL(c echo.Context) string {
 }
 
 func (h *DevNotifications) patchNotifications(c echo.Context) error {
-	html, err := utils.RenderComponentStringFor(c, shared.Notifications())
+	html, err := utils.RenderHTMLForRequest(c, shared.Notifications())
 	if err != nil {
 		return err
 	}

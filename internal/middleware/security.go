@@ -68,7 +68,7 @@ func CSRFToken() echo.MiddlewareFunc {
 
 			if token == "" {
 				env := utils.Env()
-				token, err = utils.NewCSRFToken()
+				token, err = utils.GenerateCSRFToken()
 				if err != nil {
 					return c.NoContent(http.StatusInternalServerError)
 				}
@@ -84,7 +84,7 @@ func CSRFToken() echo.MiddlewareFunc {
 				})
 			}
 
-			ctx := utils.WithCSRFToken(c.Request().Context(), token)
+			ctx := utils.ContextWithCSRFToken(c.Request().Context(), token)
 			c.SetRequest(c.Request().WithContext(ctx))
 
 			return next(c)
@@ -99,7 +99,7 @@ func CSRFProtection() echo.MiddlewareFunc {
 				return next(c)
 			}
 
-			expected := utils.CSRFToken(c.Request().Context())
+			expected := utils.CSRFTokenFromContext(c.Request().Context())
 			if expected == "" {
 				return c.NoContent(http.StatusForbidden)
 			}

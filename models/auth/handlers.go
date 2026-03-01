@@ -82,7 +82,7 @@ func (a *Auth) LoginRequest(c echo.Context) error {
 	if err := datastar.ReadSignals(c.Request(), &signals); err != nil {
 		return c.NoContent(http.StatusBadRequest)
 	}
-	signals.FormData.Email = utils.NormalizeEmail(signals.FormData.Email)
+	signals.FormData.Email = strings.ToLower(strings.TrimSpace(signals.FormData.Email))
 	if errs := utils.ValidateWithLocale(c.Request().Context(), signals.FormData); errs != nil {
 		_ = utils.SSEHub.PatchSignals(c, map[string]any{"authError": errs["email"], "authServerError": ""})
 		return c.NoContent(http.StatusUnprocessableEntity)

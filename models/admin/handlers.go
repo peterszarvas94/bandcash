@@ -242,7 +242,7 @@ func (a *Admin) Dashboard(c echo.Context) error {
 		data.GroupQuery = query
 	}
 
-	return utils.RenderComponent(c, DashboardPage(data))
+	return utils.RenderPage(c, DashboardPage(data))
 }
 
 func mapEmailDescUserRows(rows []db.ListUsersByEmailDescFilteredRow) []RecentUserRow {
@@ -355,12 +355,12 @@ func (a *Admin) UpdateSignupFlag(c echo.Context) error {
 	}
 
 	utils.Notify(c, "success", ctxi18n.T(c.Request().Context(), "admin.flags.updated"))
-	notificationsHTML, err := utils.RenderComponentStringFor(c, shared.Notifications())
+	notificationsHTML, err := utils.RenderHTMLForRequest(c, shared.Notifications())
 	if err == nil {
 		_ = utils.SSEHub.PatchHTML(c, notificationsHTML)
 	}
 
-	flagsHTML, err := utils.RenderComponentStringFor(c, FlagsContent(next))
+	flagsHTML, err := utils.RenderHTMLForRequest(c, FlagsContent(next))
 	if err == nil {
 		_ = utils.SSEHub.PatchHTML(c, flagsHTML)
 	}
@@ -411,7 +411,7 @@ func (a *Admin) setUserBanState(c echo.Context, banned bool) error {
 
 func (a *Admin) patchRecentUsers(c echo.Context) error {
 	// Patch notifications first
-	notificationsHTML, err := utils.RenderComponentStringFor(c, shared.Notifications())
+	notificationsHTML, err := utils.RenderHTMLForRequest(c, shared.Notifications())
 	if err == nil {
 		_ = utils.SSEHub.PatchHTML(c, notificationsHTML)
 	}
@@ -548,7 +548,7 @@ func (a *Admin) patchRecentUsers(c echo.Context) error {
 	}
 
 	// Render and patch the full DashboardPage
-	html, err := utils.RenderComponentStringFor(c, DashboardPage(data))
+	html, err := utils.RenderHTMLForRequest(c, DashboardPage(data))
 	if err != nil {
 		slog.Error("admin.users.patch: failed to render page", "err", err)
 		return c.NoContent(http.StatusInternalServerError)

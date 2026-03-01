@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"log/slog"
 	"net/http"
+	"strings"
 	"time"
 
 	ctxi18n "github.com/invopop/ctxi18n/i18n"
@@ -53,7 +54,7 @@ func (g *Group) NewGroupPage(c echo.Context) error {
 		Breadcrumbs: []utils.Crumb{{Label: ctxi18n.T(c.Request().Context(), "groups.title"), Href: "/dashboard"}, {Label: ctxi18n.T(c.Request().Context(), "groups.new")}},
 		UserEmail:   userEmail,
 	}
-	return utils.RenderComponent(c, GroupNewPage(data))
+	return utils.RenderPage(c, GroupNewPage(data))
 }
 
 // CreateGroup handles group creation
@@ -71,7 +72,7 @@ func (g *Group) CreateGroup(c echo.Context) error {
 	if err := datastar.ReadSignals(c.Request(), &signals); err != nil {
 		return c.NoContent(http.StatusBadRequest)
 	}
-	signals.FormData.Name = utils.NormalizeText(signals.FormData.Name)
+	signals.FormData.Name = strings.TrimSpace(signals.FormData.Name)
 	if errs := utils.ValidateWithLocale(c.Request().Context(), signals.FormData); errs != nil {
 		utils.Notify(c, "error", errs["name"])
 		return c.NoContent(http.StatusUnprocessableEntity)
@@ -122,7 +123,7 @@ func (g *Group) GroupsPage(c echo.Context) error {
 	data.Breadcrumbs = []utils.Crumb{{Label: ctxi18n.T(c.Request().Context(), "groups.title")}}
 	data.UserEmail = userEmail
 
-	return utils.RenderComponent(c, GroupsPage(data))
+	return utils.RenderPage(c, GroupsPage(data))
 }
 
 // GroupPage shows group details and admin actions.
@@ -135,7 +136,7 @@ func (g *Group) GroupPage(c echo.Context) error {
 		return c.String(http.StatusInternalServerError, "Failed to load group")
 	}
 
-	return utils.RenderComponent(c, GroupPage(data))
+	return utils.RenderPage(c, GroupPage(data))
 }
 
 // UpdateGroup updates group name (admin only).
@@ -313,7 +314,7 @@ func (g *Group) ViewersPage(c echo.Context) error {
 		IsAdmin:     middleware.IsAdmin(c),
 	}
 
-	return utils.RenderComponent(c, GroupViewersPage(data))
+	return utils.RenderPage(c, GroupViewersPage(data))
 }
 
 func (g *Group) patchViewersPage(c echo.Context, groupID, messageKey, errorKey string) error {
@@ -359,7 +360,7 @@ func (g *Group) patchViewersPage(c echo.Context, groupID, messageKey, errorKey s
 		IsAdmin:     middleware.IsAdmin(c),
 	}
 
-	html, err := utils.RenderComponentStringFor(c, GroupViewersPage(data))
+	html, err := utils.RenderHTMLForRequest(c, GroupViewersPage(data))
 	if err != nil {
 		slog.Error("group: failed to render viewers page", "err", err)
 		return c.NoContent(http.StatusInternalServerError)
@@ -376,7 +377,7 @@ func (g *Group) AddViewer(c echo.Context) error {
 	if err := datastar.ReadSignals(c.Request(), &signals); err != nil {
 		return c.NoContent(http.StatusBadRequest)
 	}
-	signals.FormData.Email = utils.NormalizeEmail(signals.FormData.Email)
+	signals.FormData.Email = strings.ToLower(strings.TrimSpace(signals.FormData.Email))
 	if errs := utils.ValidateWithLocale(c.Request().Context(), signals.FormData); errs != nil {
 		utils.Notify(c, "error", errs["email"])
 		return g.patchViewersPage(c, groupID, "", "")

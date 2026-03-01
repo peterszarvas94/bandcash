@@ -3,6 +3,7 @@ package expense
 import (
 	"log/slog"
 	"net/http"
+	"strings"
 
 	ctxi18n "github.com/invopop/ctxi18n/i18n"
 	"github.com/labstack/echo/v4"
@@ -42,10 +43,6 @@ var (
 	expenseErrorFields = []string{"title", "description", "amount", "date"}
 )
 
-func getGroupID(c echo.Context) string {
-	return middleware.GetGroupID(c)
-}
-
 func getUserEmail(c echo.Context) string {
 	userID := middleware.GetUserID(c)
 	if userID == "" {
@@ -60,7 +57,7 @@ func getUserEmail(c echo.Context) string {
 
 func (e *Expenses) Index(c echo.Context) error {
 	utils.EnsureClientID(c)
-	groupID := getGroupID(c)
+	groupID := middleware.GetGroupID(c)
 	userEmail := getUserEmail(c)
 	query := utils.ParseTableQuery(c, e)
 
@@ -72,11 +69,11 @@ func (e *Expenses) Index(c echo.Context) error {
 	data.IsAdmin = middleware.IsAdmin(c)
 	data.UserEmail = userEmail
 
-	return utils.RenderComponent(c, ExpenseIndex(data))
+	return utils.RenderPage(c, ExpenseIndex(data))
 }
 
 func (e *Expenses) Create(c echo.Context) error {
-	groupID := getGroupID(c)
+	groupID := middleware.GetGroupID(c)
 	userEmail := getUserEmail(c)
 
 	var signals expenseTableParams
@@ -85,9 +82,9 @@ func (e *Expenses) Create(c echo.Context) error {
 		slog.Info("expense.create.table: failed to read signals", "err", err)
 		return c.NoContent(http.StatusBadRequest)
 	}
-	signals.FormData.Title = utils.NormalizeText(signals.FormData.Title)
-	signals.FormData.Description = utils.NormalizeText(signals.FormData.Description)
-	signals.FormData.Date = utils.NormalizeText(signals.FormData.Date)
+	signals.FormData.Title = strings.TrimSpace(signals.FormData.Title)
+	signals.FormData.Description = strings.TrimSpace(signals.FormData.Description)
+	signals.FormData.Date = strings.TrimSpace(signals.FormData.Date)
 
 	if errs := utils.ValidateWithLocale(c.Request().Context(), signals.FormData); errs != nil {
 		utils.SSEHub.PatchSignals(c, map[string]any{"errors": utils.WithErrors(expenseErrorFields, errs)})
@@ -120,7 +117,7 @@ func (e *Expenses) Create(c echo.Context) error {
 	data.IsAdmin = middleware.IsAdmin(c)
 	data.UserEmail = userEmail
 
-	html, err := utils.RenderComponentStringFor(c, ExpenseIndex(data))
+	html, err := utils.RenderHTMLForRequest(c, ExpenseIndex(data))
 	if err != nil {
 		slog.Error("expense.create.table: failed to render", "err", err)
 		return c.NoContent(http.StatusInternalServerError)
@@ -131,7 +128,7 @@ func (e *Expenses) Create(c echo.Context) error {
 }
 
 func (e *Expenses) Update(c echo.Context) error {
-	groupID := getGroupID(c)
+	groupID := middleware.GetGroupID(c)
 	userEmail := getUserEmail(c)
 
 	id := c.Param("id")
@@ -146,9 +143,9 @@ func (e *Expenses) Update(c echo.Context) error {
 		slog.Info("expense.update: failed to read signals", "err", err)
 		return c.NoContent(http.StatusBadRequest)
 	}
-	signals.FormData.Title = utils.NormalizeText(signals.FormData.Title)
-	signals.FormData.Description = utils.NormalizeText(signals.FormData.Description)
-	signals.FormData.Date = utils.NormalizeText(signals.FormData.Date)
+	signals.FormData.Title = strings.TrimSpace(signals.FormData.Title)
+	signals.FormData.Description = strings.TrimSpace(signals.FormData.Description)
+	signals.FormData.Date = strings.TrimSpace(signals.FormData.Date)
 
 	if errs := utils.ValidateWithLocale(c.Request().Context(), signals.FormData); errs != nil {
 		utils.SSEHub.PatchSignals(c, map[string]any{"errors": utils.WithErrors(expenseErrorFields, errs)})
@@ -181,7 +178,7 @@ func (e *Expenses) Update(c echo.Context) error {
 	data.IsAdmin = middleware.IsAdmin(c)
 	data.UserEmail = userEmail
 
-	html, err := utils.RenderComponentStringFor(c, ExpenseIndex(data))
+	html, err := utils.RenderHTMLForRequest(c, ExpenseIndex(data))
 	if err != nil {
 		slog.Error("expense.update: failed to render", "err", err)
 		return c.NoContent(http.StatusInternalServerError)
@@ -192,7 +189,7 @@ func (e *Expenses) Update(c echo.Context) error {
 }
 
 func (e *Expenses) Destroy(c echo.Context) error {
-	groupID := getGroupID(c)
+	groupID := middleware.GetGroupID(c)
 	userEmail := getUserEmail(c)
 
 	id := c.Param("id")
@@ -230,7 +227,7 @@ func (e *Expenses) Destroy(c echo.Context) error {
 	data.IsAdmin = middleware.IsAdmin(c)
 	data.UserEmail = userEmail
 
-	html, err := utils.RenderComponentStringFor(c, ExpenseIndex(data))
+	html, err := utils.RenderHTMLForRequest(c, ExpenseIndex(data))
 	if err != nil {
 		slog.Error("expense.destroy: failed to render", "err", err)
 		return c.NoContent(http.StatusInternalServerError)
