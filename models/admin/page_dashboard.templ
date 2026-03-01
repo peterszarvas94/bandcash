@@ -96,12 +96,9 @@ templ DashboardStatsRows(data DashboardData) {
 
 // Users Table Section with controls
 templ UsersTableSection(data DashboardData) {
-	<div class="table-section">
-		// Search
-		<form class="row row-wrap pt" data-on:submit={ adminSearchAction("users") }>
-			<input type="search" data-bind="tableQuery.search" placeholder={ ctxi18n.T(ctx, "table.search_placeholder") }/>
-			<button class="btn btn-sm" type="submit">{ ctxi18n.T(ctx, "table.search") }</button>
-		</form>
+		<div class="table-section">
+			// Search
+			@shared.TableSearchForm(adminSearchAction("users"))
 		// Table
 		<table id="admin-users" class="table table-sticky-actions pt">
 			<thead>
@@ -159,12 +156,9 @@ templ UsersTableSection(data DashboardData) {
 
 // Groups Table Section with controls
 templ GroupsTableSection(data DashboardData) {
-	<div class="table-section">
-		// Search
-		<form class="row row-wrap pt" data-on:submit={ adminSearchAction("groups") }>
-			<input type="search" data-bind="tableQuery.search" placeholder={ ctxi18n.T(ctx, "table.search_placeholder") }/>
-			<button class="btn btn-sm" type="submit">{ ctxi18n.T(ctx, "table.search") }</button>
-		</form>
+		<div class="table-section">
+			// Search
+			@shared.TableSearchForm(adminSearchAction("groups"))
 		// Table
 		<table class="table pt">
 			<thead>

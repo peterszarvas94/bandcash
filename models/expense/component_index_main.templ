@@ -10,10 +10,7 @@ import (
 )
 
 templ ExpenseIndexMain(data ExpensesData) {
-	<form class="row row-wrap pt" data-on:submit={ utils.BuildTableSearchDatastarAction(fmt.Sprintf("/groups/%s/expenses", data.GroupID), utils.DefaultTablePageSize) }>
-		<input type="search" data-bind="tableQuery.search" placeholder={ ctxi18n.T(ctx, "table.search_placeholder") }/>
-		<button class="btn btn-sm" type="submit">{ ctxi18n.T(ctx, "table.search") }</button>
-	</form>
+	@shared.TableSearchForm(utils.BuildTableSearchDatastarAction(fmt.Sprintf("/groups/%s/expenses", data.GroupID), utils.DefaultTablePageSize))
 	<table class="table table-sticky-actions pt">
 		<thead>
 			<tr>

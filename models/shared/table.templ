@@ -1,9 +1,18 @@
 package shared
 
 import (
+	ctxi18n "github.com/invopop/ctxi18n/i18n"
+
 	"bandcash/internal/utils"
 	icons "bandcash/models/shared/icons"
 )
+
+templ TableSearchForm(onSubmitAction string) {
+	<form class="row row-wrap pt" data-on:submit={ onSubmitAction }>
+		<input type="search" data-bind="tableQuery.search" placeholder={ ctxi18n.T(ctx, "table.search_placeholder") }/>
+		<button class="btn btn-sm" type="submit">{ ctxi18n.T(ctx, "table.search") }</button>
+	</form>
+}
 
 templ TableSortHeader(label string, column string, query utils.TableQuery, actionURL string) {
 	<button class="btn btn-sm" type="button" data-on:click={ utils.BuildTableQueryDatastarAction(actionURL) }>
