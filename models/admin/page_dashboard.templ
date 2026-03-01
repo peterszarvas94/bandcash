@@ -215,7 +215,7 @@ templ adminTablePagination(pager utils.TablePagination, query utils.TableQuery, 
 		</div>
 		<div class="row row-wrap">
 			if pager.HasPrev {
-				<button class="btn btn-sm btn-icon" type="button" data-on:click={ utils.BuildTableQueryDatastarAction(adminPageURL(query, tab, pager.Page-1)) } aria-label={ ctxi18n.T(ctx, "table.prev") } title={ ctxi18n.T(ctx, "table.prev") }>
+				<button class="btn btn-sm btn-icon" type="button" data-on:click={ utils.BuildTableQueryDatastarAction(adminPageURL(query, tab, pager.Page-1, pager.TotalPages)) } aria-label={ ctxi18n.T(ctx, "table.prev") } title={ ctxi18n.T(ctx, "table.prev") }>
 					@icons.ChevronLeft(templ.Attributes{"class": "icon"})
 				</button>
 			} else {
@@ -225,7 +225,7 @@ templ adminTablePagination(pager utils.TablePagination, query utils.TableQuery, 
 			}
 			<span>{ fmt.Sprintf("%s %d / %d", ctxi18n.T(ctx, "table.page"), pager.Page, pager.TotalPages) }</span>
 			if pager.HasNext {
-				<button class="btn btn-sm btn-icon" type="button" data-on:click={ utils.BuildTableQueryDatastarAction(adminPageURL(query, tab, pager.Page+1)) } aria-label={ ctxi18n.T(ctx, "table.next") } title={ ctxi18n.T(ctx, "table.next") }>
+				<button class="btn btn-sm btn-icon" type="button" data-on:click={ utils.BuildTableQueryDatastarAction(adminPageURL(query, tab, pager.Page+1, pager.TotalPages)) } aria-label={ ctxi18n.T(ctx, "table.next") } title={ ctxi18n.T(ctx, "table.next") }>
 					@icons.ChevronRight(templ.Attributes{"class": "icon"})
 				</button>
 			} else {
@@ -246,8 +246,8 @@ func adminGroupsSortURL(data DashboardData, column string) string {
 	return utils.BuildTableSortURL("/admin?tab=groups", data.GroupQuery, column)
 }
 
-func adminPageURL(query utils.TableQuery, tab string, page int) string {
-	return utils.BuildTablePageURL(fmt.Sprintf("/admin?tab=%s", tab), query, page, 0)
+func adminPageURL(query utils.TableQuery, tab string, page int, totalPages int) string {
+	return utils.BuildTablePageURL(fmt.Sprintf("/admin?tab=%s", tab), query, page, totalPages)
 }
 
 func adminPageSizeURL(query utils.TableQuery, tab string, pageSize int) string {

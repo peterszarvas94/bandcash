@@ -958,9 +958,9 @@ func adminTablePagination(pager utils.TablePagination, query utils.TableQuery, t
 				return templ_7745c5c3_Err
 			}
 			var templ_7745c5c3_Var49 string
-			templ_7745c5c3_Var49, templ_7745c5c3_Err = templ.JoinStringErrs(utils.BuildTableQueryDatastarAction(adminPageURL(query, tab, pager.Page-1)))
+			templ_7745c5c3_Var49, templ_7745c5c3_Err = templ.JoinStringErrs(utils.BuildTableQueryDatastarAction(adminPageURL(query, tab, pager.Page-1, pager.TotalPages)))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/admin/page_dashboard.templ`, Line: 218, Col: 145}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/admin/page_dashboard.templ`, Line: 218, Col: 163}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var49))
 			if templ_7745c5c3_Err != nil {
@@ -973,7 +973,7 @@ func adminTablePagination(pager utils.TablePagination, query utils.TableQuery, t
 			var templ_7745c5c3_Var50 string
 			templ_7745c5c3_Var50, templ_7745c5c3_Err = templ.JoinStringErrs(ctxi18n.T(ctx, "table.prev"))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/admin/page_dashboard.templ`, Line: 218, Col: 189}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/admin/page_dashboard.templ`, Line: 218, Col: 207}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var50))
 			if templ_7745c5c3_Err != nil {
@@ -986,7 +986,7 @@ func adminTablePagination(pager utils.TablePagination, query utils.TableQuery, t
 			var templ_7745c5c3_Var51 string
 			templ_7745c5c3_Var51, templ_7745c5c3_Err = templ.JoinStringErrs(ctxi18n.T(ctx, "table.prev"))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/admin/page_dashboard.templ`, Line: 218, Col: 228}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/admin/page_dashboard.templ`, Line: 218, Col: 246}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var51))
 			if templ_7745c5c3_Err != nil {
@@ -1041,9 +1041,9 @@ func adminTablePagination(pager utils.TablePagination, query utils.TableQuery, t
 				return templ_7745c5c3_Err
 			}
 			var templ_7745c5c3_Var53 string
-			templ_7745c5c3_Var53, templ_7745c5c3_Err = templ.JoinStringErrs(utils.BuildTableQueryDatastarAction(adminPageURL(query, tab, pager.Page+1)))
+			templ_7745c5c3_Var53, templ_7745c5c3_Err = templ.JoinStringErrs(utils.BuildTableQueryDatastarAction(adminPageURL(query, tab, pager.Page+1, pager.TotalPages)))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/admin/page_dashboard.templ`, Line: 228, Col: 145}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/admin/page_dashboard.templ`, Line: 228, Col: 163}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var53))
 			if templ_7745c5c3_Err != nil {
@@ -1056,7 +1056,7 @@ func adminTablePagination(pager utils.TablePagination, query utils.TableQuery, t
 			var templ_7745c5c3_Var54 string
 			templ_7745c5c3_Var54, templ_7745c5c3_Err = templ.JoinStringErrs(ctxi18n.T(ctx, "table.next"))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/admin/page_dashboard.templ`, Line: 228, Col: 189}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/admin/page_dashboard.templ`, Line: 228, Col: 207}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var54))
 			if templ_7745c5c3_Err != nil {
@@ -1069,7 +1069,7 @@ func adminTablePagination(pager utils.TablePagination, query utils.TableQuery, t
 			var templ_7745c5c3_Var55 string
 			templ_7745c5c3_Var55, templ_7745c5c3_Err = templ.JoinStringErrs(ctxi18n.T(ctx, "table.next"))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/admin/page_dashboard.templ`, Line: 228, Col: 228}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/admin/page_dashboard.templ`, Line: 228, Col: 246}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var55))
 			if templ_7745c5c3_Err != nil {
@@ -1118,8 +1118,8 @@ func adminGroupsSortURL(data DashboardData, column string) string {
 	return utils.BuildTableSortURL("/admin?tab=groups", data.GroupQuery, column)
 }
 
-func adminPageURL(query utils.TableQuery, tab string, page int) string {
-	return utils.BuildTablePageURL(fmt.Sprintf("/admin?tab=%s", tab), query, page, 0)
+func adminPageURL(query utils.TableQuery, tab string, page int, totalPages int) string {
+	return utils.BuildTablePageURL(fmt.Sprintf("/admin?tab=%s", tab), query, page, totalPages)
 }
 
 func adminPageSizeURL(query utils.TableQuery, tab string, pageSize int) string {
