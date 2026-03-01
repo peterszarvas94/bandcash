@@ -41,13 +41,7 @@ func adminTableQuerySignals(data DashboardData) map[string]any {
 		query = data.GroupQuery
 	}
 
-	return map[string]any{
-		"page":     query.Page,
-		"pageSize": query.PageSize,
-		"search":   query.Search,
-		"sort":     query.Sort,
-		"dir":      query.Dir,
-	}
+	return utils.TableQuerySignals(query)
 }
 
 templ DashboardMain(data DashboardData) {
@@ -287,36 +281,22 @@ templ adminTablePagination(pager utils.TablePagination, query utils.TableQuery, 
 
 // URL builders for admin table controls
 func adminUsersSortURL(data DashboardData, column string) string {
-	next := utils.NextSortCycle(data.UserQuery, column)
-	return utils.BuildTableQueryURLWith("/admin?tab=users", data.UserQuery, utils.TableQueryPatch{
-		Sort: &next.Sort,
-		Dir:  &next.Dir,
-		Page: func() *int { p := 1; return &p }(),
-	})
+	return utils.BuildTableSortURL("/admin?tab=users", data.UserQuery, column)
 }
 
 func adminGroupsSortURL(data DashboardData, column string) string {
-	next := utils.NextSortCycle(data.GroupQuery, column)
-	return utils.BuildTableQueryURLWith("/admin?tab=groups", data.GroupQuery, utils.TableQueryPatch{
-		Sort: &next.Sort,
-		Dir:  &next.Dir,
-		Page: func() *int { p := 1; return &p }(),
-	})
+	return utils.BuildTableSortURL("/admin?tab=groups", data.GroupQuery, column)
 }
 
 func adminPageURL(query utils.TableQuery, tab string, page int) string {
-	return utils.BuildTableQueryURLWith(fmt.Sprintf("/admin?tab=%s", tab), query, utils.TableQueryPatch{Page: &page})
+	return utils.BuildTablePageURL(fmt.Sprintf("/admin?tab=%s", tab), query, page, 0)
 }
 
 func adminPageSizeURL(query utils.TableQuery, tab string, pageSize int) string {
-	page := 1
-	return utils.BuildTableQueryURLWith(fmt.Sprintf("/admin?tab=%s", tab), query, utils.TableQueryPatch{
-		Page:     &page,
-		PageSize: &pageSize,
-	})
+	return utils.BuildTablePageSizeURL(fmt.Sprintf("/admin?tab=%s", tab), query, pageSize)
 }
 
 func adminSearchAction(tab string) string {
 	baseURL := fmt.Sprintf("/admin?tab=%s", tab)
-	return utils.BuildTableSearchDatastarAction(baseURL, 50)
+	return utils.BuildTableSearchDatastarAction(baseURL, utils.DefaultTablePageSize)
 }

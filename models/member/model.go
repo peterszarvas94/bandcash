@@ -13,22 +13,7 @@ type Members struct {
 }
 
 func (p *Members) TableQuerySpec() utils.TableQuerySpec {
-	return utils.TableQuerySpec{
-		DefaultSort: "createdAt",
-		DefaultDir:  "desc",
-		AllowedSorts: map[string]struct{}{
-			"name":      {},
-			"createdAt": {},
-		},
-		AllowedPageSizes: map[int]struct{}{
-			10:  {},
-			50:  {},
-			100: {},
-			200: {},
-		},
-		DefaultSize:  50,
-		MaxSearchLen: 100,
-	}
+	return utils.StandardTableQuerySpec("createdAt", "desc", "name", "createdAt")
 }
 
 func New() *Members {

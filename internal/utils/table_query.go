@@ -20,6 +20,11 @@ type TableQuerySpec struct {
 
 var StandardTablePageSizes = []int{10, 50, 100, 200}
 
+const (
+	DefaultTablePageSize  = 50
+	DefaultTableMaxSearch = 100
+)
+
 type Queryable interface {
 	TableQuerySpec() TableQuerySpec
 }
@@ -261,9 +266,76 @@ func BuildTableQueryURL(basePath string, query TableQuery) string {
 	return BuildTableQueryURLWith(basePath, query, TableQueryPatch{})
 }
 
+func BuildTableSortURL(basePath string, query TableQuery, column string) string {
+	next := NextSortCycle(query, column)
+	page := 1
+	return BuildTableQueryURLWith(basePath, query, TableQueryPatch{
+		Sort: &next.Sort,
+		Dir:  &next.Dir,
+		Page: &page,
+	})
+}
+
+func BuildTablePageURL(basePath string, query TableQuery, page, totalPages int) string {
+	if page < 1 {
+		page = 1
+	}
+	if totalPages > 0 && page > totalPages {
+		page = totalPages
+	}
+	return BuildTableQueryURLWith(basePath, query, TableQueryPatch{Page: &page})
+}
+
+func BuildTablePageSizeURL(basePath string, query TableQuery, pageSize int) string {
+	page := 1
+	return BuildTableQueryURLWith(basePath, query, TableQueryPatch{
+		Page:     &page,
+		PageSize: &pageSize,
+	})
+}
+
+func TableQuerySignals(query TableQuery) map[string]any {
+	sort := ""
+	dir := ""
+	if query.SortSet {
+		sort = query.Sort
+		dir = query.Dir
+	}
+
+	return map[string]any{
+		"search":   query.Search,
+		"sort":     sort,
+		"sortSet":  query.SortSet,
+		"dir":      dir,
+		"page":     query.Page,
+		"pageSize": query.PageSize,
+	}
+}
+
+func StandardTableQuerySpec(defaultSort, defaultDir string, allowedSorts ...string) TableQuerySpec {
+	sorts := make(map[string]struct{}, len(allowedSorts))
+	for _, sort := range allowedSorts {
+		sorts[sort] = struct{}{}
+	}
+
+	pageSizes := make(map[int]struct{}, len(StandardTablePageSizes))
+	for _, size := range StandardTablePageSizes {
+		pageSizes[size] = struct{}{}
+	}
+
+	return TableQuerySpec{
+		DefaultSort:      defaultSort,
+		DefaultDir:       defaultDir,
+		AllowedSorts:     sorts,
+		AllowedPageSizes: pageSizes,
+		DefaultSize:      DefaultTablePageSize,
+		MaxSearchLen:     DefaultTableMaxSearch,
+	}
+}
+
 func BuildTableSearchDatastarAction(basePath string, defaultPageSize int) string {
 	if defaultPageSize <= 0 {
-		defaultPageSize = 50
+		defaultPageSize = DefaultTablePageSize
 	}
 	return fmt.Sprintf("const url = globalThis.tableSearchAction('%s', $tableQuery, %d); @get(url)", basePath, defaultPageSize)
 }
@@ -312,7 +384,7 @@ func BuildTableQueryURLWith(basePath string, query TableQuery, patch TableQueryP
 	}
 
 	if resolved.PageSize < 1 {
-		resolved.PageSize = 20
+		resolved.PageSize = DefaultTablePageSize
 	}
 
 	// Parse the basePath to handle existing query parameters properly
@@ -330,7 +402,7 @@ func BuildTableQueryURLWith(basePath string, query TableQuery, patch TableQueryP
 		if resolved.Page > 1 {
 			values.Set("page", strconv.Itoa(resolved.Page))
 		}
-		if resolved.PageSize != 50 {
+		if resolved.PageSize != DefaultTablePageSize {
 			values.Set("pageSize", strconv.Itoa(resolved.PageSize))
 		}
 		encoded := values.Encode()
@@ -362,7 +434,7 @@ func BuildTableQueryURLWith(basePath string, query TableQuery, patch TableQueryP
 	} else {
 		values.Del("page")
 	}
-	if resolved.PageSize != 50 {
+	if resolved.PageSize != DefaultTablePageSize {
 		values.Set("pageSize", strconv.Itoa(resolved.PageSize))
 	} else {
 		values.Del("pageSize")

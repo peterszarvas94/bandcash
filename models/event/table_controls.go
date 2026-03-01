@@ -13,13 +13,7 @@ func eventIndexPath(groupID string) string {
 }
 
 func eventSortURL(data EventsData, column string) string {
-	next := utils.NextSortCycle(data.Query, column)
-	page := 1
-	return utils.BuildTableQueryURLWith(eventIndexPath(data.GroupID), data.Query, utils.TableQueryPatch{
-		Sort: &next.Sort,
-		Dir:  &next.Dir,
-		Page: &page,
-	})
+	return utils.BuildTableSortURL(eventIndexPath(data.GroupID), data.Query, column)
 }
 
 func eventSortDir(data EventsData, column string) string {
@@ -30,23 +24,13 @@ func eventSortDir(data EventsData, column string) string {
 }
 
 func eventPageURL(data EventsData, page int) string {
-	if page < 1 {
-		page = 1
-	}
-	if page > data.Pager.TotalPages {
-		page = data.Pager.TotalPages
-	}
-	return utils.BuildTableQueryURLWith(eventIndexPath(data.GroupID), data.Query, utils.TableQueryPatch{Page: &page})
+	return utils.BuildTablePageURL(eventIndexPath(data.GroupID), data.Query, page, data.Pager.TotalPages)
 }
 
 func eventPageSizeURL(data EventsData, pageSize int) string {
-	page := 1
-	return utils.BuildTableQueryURLWith(eventIndexPath(data.GroupID), data.Query, utils.TableQueryPatch{
-		Page:     &page,
-		PageSize: &pageSize,
-	})
+	return utils.BuildTablePageSizeURL(eventIndexPath(data.GroupID), data.Query, pageSize)
 }
 
 func eventSearchAction(data EventsData) string {
-	return utils.BuildTableSearchDatastarAction(eventIndexPath(data.GroupID), 50)
+	return utils.BuildTableSearchDatastarAction(eventIndexPath(data.GroupID), utils.DefaultTablePageSize)
 }

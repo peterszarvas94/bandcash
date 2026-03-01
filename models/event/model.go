@@ -14,23 +14,7 @@ type Events struct {
 }
 
 func (e *Events) TableQuerySpec() utils.TableQuerySpec {
-	return utils.TableQuerySpec{
-		DefaultSort: "time",
-		DefaultDir:  "asc",
-		AllowedSorts: map[string]struct{}{
-			"time":   {},
-			"title":  {},
-			"amount": {},
-		},
-		AllowedPageSizes: map[int]struct{}{
-			10:  {},
-			50:  {},
-			100: {},
-			200: {},
-		},
-		DefaultSize:  50,
-		MaxSearchLen: 100,
-	}
+	return utils.StandardTableQuerySpec("time", "asc", "time", "title", "amount")
 }
 
 func New() *Events {

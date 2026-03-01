@@ -27,13 +27,7 @@ templ GroupsPage(data GroupsPageData) {
 }
 
 func groupsQuerySignals(query utils.TableQuery) map[string]any {
-	return map[string]any{
-		"page":     query.Page,
-		"pageSize": query.PageSize,
-		"search":   query.Search,
-		"sort":     query.Sort,
-		"dir":      query.Dir,
-	}
+	return utils.TableQuerySignals(query)
 }
 
 templ GroupsMain(data GroupsPageData) {

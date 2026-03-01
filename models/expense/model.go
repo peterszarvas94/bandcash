@@ -12,23 +12,7 @@ import (
 type Expenses struct{}
 
 func (e *Expenses) TableQuerySpec() utils.TableQuerySpec {
-	return utils.TableQuerySpec{
-		DefaultSort: "date",
-		DefaultDir:  "desc",
-		AllowedSorts: map[string]struct{}{
-			"date":   {},
-			"title":  {},
-			"amount": {},
-		},
-		AllowedPageSizes: map[int]struct{}{
-			10:  {},
-			50:  {},
-			100: {},
-			200: {},
-		},
-		DefaultSize:  50,
-		MaxSearchLen: 100,
-	}
+	return utils.StandardTableQuerySpec("date", "desc", "date", "title", "amount")
 }
 
 func New() *Expenses {

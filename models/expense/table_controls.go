@@ -13,13 +13,7 @@ func expenseIndexPath(groupID string) string {
 }
 
 func expenseSortURL(data ExpensesData, column string) string {
-	next := utils.NextSortCycle(data.Query, column)
-	page := 1
-	return utils.BuildTableQueryURLWith(expenseIndexPath(data.GroupID), data.Query, utils.TableQueryPatch{
-		Sort: &next.Sort,
-		Dir:  &next.Dir,
-		Page: &page,
-	})
+	return utils.BuildTableSortURL(expenseIndexPath(data.GroupID), data.Query, column)
 }
 
 func expenseSortDir(data ExpensesData, column string) string {
@@ -30,23 +24,13 @@ func expenseSortDir(data ExpensesData, column string) string {
 }
 
 func expensePageURL(data ExpensesData, page int) string {
-	if page < 1 {
-		page = 1
-	}
-	if page > data.Pager.TotalPages {
-		page = data.Pager.TotalPages
-	}
-	return utils.BuildTableQueryURLWith(expenseIndexPath(data.GroupID), data.Query, utils.TableQueryPatch{Page: &page})
+	return utils.BuildTablePageURL(expenseIndexPath(data.GroupID), data.Query, page, data.Pager.TotalPages)
 }
 
 func expensePageSizeURL(data ExpensesData, pageSize int) string {
-	page := 1
-	return utils.BuildTableQueryURLWith(expenseIndexPath(data.GroupID), data.Query, utils.TableQueryPatch{
-		Page:     &page,
-		PageSize: &pageSize,
-	})
+	return utils.BuildTablePageSizeURL(expenseIndexPath(data.GroupID), data.Query, pageSize)
 }
 
 func expenseSearchAction(data ExpensesData) string {
-	return utils.BuildTableSearchDatastarAction(expenseIndexPath(data.GroupID), 50)
+	return utils.BuildTableSearchDatastarAction(expenseIndexPath(data.GroupID), utils.DefaultTablePageSize)
 }

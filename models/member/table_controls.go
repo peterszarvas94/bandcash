@@ -13,13 +13,7 @@ func memberIndexPath(groupID string) string {
 }
 
 func memberSortURL(data MembersData, column string) string {
-	next := utils.NextSortCycle(data.Query, column)
-	page := 1
-	return utils.BuildTableQueryURLWith(memberIndexPath(data.GroupID), data.Query, utils.TableQueryPatch{
-		Sort: &next.Sort,
-		Dir:  &next.Dir,
-		Page: &page,
-	})
+	return utils.BuildTableSortURL(memberIndexPath(data.GroupID), data.Query, column)
 }
 
 func memberSortDir(data MembersData, column string) string {
@@ -30,23 +24,13 @@ func memberSortDir(data MembersData, column string) string {
 }
 
 func memberPageURL(data MembersData, page int) string {
-	if page < 1 {
-		page = 1
-	}
-	if page > data.Pager.TotalPages {
-		page = data.Pager.TotalPages
-	}
-	return utils.BuildTableQueryURLWith(memberIndexPath(data.GroupID), data.Query, utils.TableQueryPatch{Page: &page})
+	return utils.BuildTablePageURL(memberIndexPath(data.GroupID), data.Query, page, data.Pager.TotalPages)
 }
 
 func memberPageSizeURL(data MembersData, pageSize int) string {
-	page := 1
-	return utils.BuildTableQueryURLWith(memberIndexPath(data.GroupID), data.Query, utils.TableQueryPatch{
-		Page:     &page,
-		PageSize: &pageSize,
-	})
+	return utils.BuildTablePageSizeURL(memberIndexPath(data.GroupID), data.Query, pageSize)
 }
 
 func memberSearchAction(data MembersData) string {
-	return utils.BuildTableSearchDatastarAction(memberIndexPath(data.GroupID), 50)
+	return utils.BuildTableSearchDatastarAction(memberIndexPath(data.GroupID), utils.DefaultTablePageSize)
 }
