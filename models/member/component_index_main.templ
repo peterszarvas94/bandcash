@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	ctxi18n "github.com/invopop/ctxi18n/i18n"
+	"bandcash/internal/utils"
 	shared "bandcash/models/shared"
 	icons "bandcash/models/shared/icons"
 )
@@ -17,7 +18,7 @@ templ MemberIndexMain(data MembersData) {
 		<thead>
 			<tr>
 				<th>
-					<button class="btn btn-sm" type="button" data-on:click={ memberQueryAction(memberSortURL(data, "name")) }>
+					<button class="btn btn-sm" type="button" data-on:click={ utils.BuildTableQueryDatastarAction(memberSortURL(data, "name")) }>
 						<span>{ ctxi18n.T(ctx, "fields.name") }</span>
 						if memberSortDir(data, "name") == "asc" {
 							@icons.ArrowDownAZ(templ.Attributes{"class": "icon"})
@@ -65,12 +66,12 @@ templ MemberIndexMain(data MembersData) {
 		<div class="row row-wrap">
 			<span>{ ctxi18n.T(ctx, "table.page_size") }</span>
 			for _, pageSize := range tablePageSizes {
-				<button class={ pageSizeButtonClass(data.Query.PageSize, pageSize) } type="button" data-on:click={ memberQueryAction(memberPageSizeURL(data, pageSize)) }>{ fmt.Sprintf("%d", pageSize) }</button>
+				<button class={ utils.PageSizeButtonClass(data.Query.PageSize, pageSize) } type="button" data-on:click={ utils.BuildTableQueryDatastarAction(memberPageSizeURL(data, pageSize)) }>{ fmt.Sprintf("%d", pageSize) }</button>
 			}
 		</div>
 		<div class="row row-wrap">
 			if data.Pager.HasPrev {
-				<button class="btn btn-sm btn-icon" type="button" data-on:click={ memberQueryAction(memberPageURL(data, data.Pager.Page-1)) } aria-label={ ctxi18n.T(ctx, "table.prev") } title={ ctxi18n.T(ctx, "table.prev") }>
+				<button class="btn btn-sm btn-icon" type="button" data-on:click={ utils.BuildTableQueryDatastarAction(memberPageURL(data, data.Pager.Page-1)) } aria-label={ ctxi18n.T(ctx, "table.prev") } title={ ctxi18n.T(ctx, "table.prev") }>
 					@icons.ChevronLeft(templ.Attributes{"class": "icon"})
 				</button>
 			} else {
@@ -80,7 +81,7 @@ templ MemberIndexMain(data MembersData) {
 			}
 			<span>{ fmt.Sprintf("%s %d / %d", ctxi18n.T(ctx, "table.page"), data.Pager.Page, data.Pager.TotalPages) }</span>
 			if data.Pager.HasNext {
-				<button class="btn btn-sm btn-icon" type="button" data-on:click={ memberQueryAction(memberPageURL(data, data.Pager.Page+1)) } aria-label={ ctxi18n.T(ctx, "table.next") } title={ ctxi18n.T(ctx, "table.next") }>
+				<button class="btn btn-sm btn-icon" type="button" data-on:click={ utils.BuildTableQueryDatastarAction(memberPageURL(data, data.Pager.Page+1)) } aria-label={ ctxi18n.T(ctx, "table.next") } title={ ctxi18n.T(ctx, "table.next") }>
 					@icons.ChevronRight(templ.Attributes{"class": "icon"})
 				</button>
 			} else {

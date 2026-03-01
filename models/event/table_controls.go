@@ -6,7 +6,7 @@ import (
 	"bandcash/internal/utils"
 )
 
-var tablePageSizes = []int{10, 50, 100, 200}
+var tablePageSizes = utils.StandardTablePageSizes
 
 func eventIndexPath(groupID string) string {
 	return fmt.Sprintf("/groups/%s/events", groupID)
@@ -47,17 +47,6 @@ func eventPageSizeURL(data EventsData, pageSize int) string {
 	})
 }
 
-func pageSizeButtonClass(current, value int) string {
-	if current == value {
-		return "btn btn-sm btn-active"
-	}
-	return "btn btn-sm"
-}
-
 func eventSearchAction(data EventsData) string {
-	return fmt.Sprintf("$tableQuery.page = 1; const params = new URLSearchParams(); if (($tableQuery.search || '').trim() !== '') { params.set('q', ($tableQuery.search || '').trim()) }; if ($tableQuery.sort) { params.set('sort', $tableQuery.sort); params.set('dir', $tableQuery.dir || 'asc') }; if (Number($tableQuery.pageSize || 50) !== 50) { params.set('pageSize', String($tableQuery.pageSize)) }; const url = '%s' + (params.toString() ? '?' + params.toString() : ''); history.pushState(null, '', url); @get(url)", eventIndexPath(data.GroupID))
-}
-
-func eventQueryAction(url string) string {
-	return fmt.Sprintf("history.pushState(null, '', '%s'); @get('%s')", url, url)
+	return utils.BuildTableSearchDatastarAction(eventIndexPath(data.GroupID), 50)
 }

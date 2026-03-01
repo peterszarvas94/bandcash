@@ -1,6 +1,7 @@
 package utils
 
 import (
+	"fmt"
 	"net/url"
 	"strconv"
 	"strings"
@@ -16,6 +17,8 @@ type TableQuerySpec struct {
 	DefaultSize      int
 	MaxSearchLen     int
 }
+
+var StandardTablePageSizes = []int{10, 50, 100, 200}
 
 type Queryable interface {
 	TableQuerySpec() TableQuerySpec
@@ -256,6 +259,24 @@ func NextSortCycle(query TableQuery, column string) SortCycle {
 
 func BuildTableQueryURL(basePath string, query TableQuery) string {
 	return BuildTableQueryURLWith(basePath, query, TableQueryPatch{})
+}
+
+func BuildTableSearchDatastarAction(basePath string, defaultPageSize int) string {
+	if defaultPageSize <= 0 {
+		defaultPageSize = 50
+	}
+	return fmt.Sprintf("const url = globalThis.tableSearchAction('%s', $tableQuery, %d); @get(url)", basePath, defaultPageSize)
+}
+
+func BuildTableQueryDatastarAction(url string) string {
+	return fmt.Sprintf("history.pushState(null, '', '%s'); @get('%s')", url, url)
+}
+
+func PageSizeButtonClass(current, value int) string {
+	if current == value {
+		return "btn btn-sm btn-active"
+	}
+	return "btn btn-sm"
 }
 
 func BuildTableQueryURLWith(basePath string, query TableQuery, patch TableQueryPatch) string {

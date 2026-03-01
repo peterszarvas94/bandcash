@@ -18,7 +18,7 @@ templ ExpenseIndexMain(data ExpensesData) {
 		<thead>
 			<tr>
 				<th>
-					<button class="btn btn-sm" type="button" data-on:click={ expenseQueryAction(expenseSortURL(data, "title")) }>
+					<button class="btn btn-sm" type="button" data-on:click={ utils.BuildTableQueryDatastarAction(expenseSortURL(data, "title")) }>
 						<span>{ ctxi18n.T(ctx, "fields.title") }</span>
 						if expenseSortDir(data, "title") == "asc" {
 							@icons.ArrowDownAZ(templ.Attributes{"class": "icon"})
@@ -29,7 +29,7 @@ templ ExpenseIndexMain(data ExpensesData) {
 				</th>
 				<th>{ ctxi18n.T(ctx, "fields.description") }</th>
 				<th>
-					<button class="btn btn-sm" type="button" data-on:click={ expenseQueryAction(expenseSortURL(data, "amount")) }>
+					<button class="btn btn-sm" type="button" data-on:click={ utils.BuildTableQueryDatastarAction(expenseSortURL(data, "amount")) }>
 						<span>{ ctxi18n.T(ctx, "fields.amount") }</span>
 						if expenseSortDir(data, "amount") == "asc" {
 							@icons.ArrowDownAZ(templ.Attributes{"class": "icon"})
@@ -39,7 +39,7 @@ templ ExpenseIndexMain(data ExpensesData) {
 					</button>
 				</th>
 				<th>
-					<button class="btn btn-sm" type="button" data-on:click={ expenseQueryAction(expenseSortURL(data, "date")) }>
+					<button class="btn btn-sm" type="button" data-on:click={ utils.BuildTableQueryDatastarAction(expenseSortURL(data, "date")) }>
 						<span>{ ctxi18n.T(ctx, "fields.date") }</span>
 						if expenseSortDir(data, "date") == "asc" {
 							@icons.ArrowDownAZ(templ.Attributes{"class": "icon"})
@@ -88,12 +88,12 @@ templ ExpenseIndexMain(data ExpensesData) {
 		<div class="row row-wrap">
 			<span>{ ctxi18n.T(ctx, "table.page_size") }</span>
 			for _, pageSize := range tablePageSizes {
-				<button class={ pageSizeButtonClass(data.Query.PageSize, pageSize) } type="button" data-on:click={ expenseQueryAction(expensePageSizeURL(data, pageSize)) }>{ fmt.Sprintf("%d", pageSize) }</button>
+				<button class={ utils.PageSizeButtonClass(data.Query.PageSize, pageSize) } type="button" data-on:click={ utils.BuildTableQueryDatastarAction(expensePageSizeURL(data, pageSize)) }>{ fmt.Sprintf("%d", pageSize) }</button>
 			}
 		</div>
 		<div class="row row-wrap">
 			if data.Pager.HasPrev {
-				<button class="btn btn-sm btn-icon" type="button" data-on:click={ expenseQueryAction(expensePageURL(data, data.Pager.Page-1)) } aria-label={ ctxi18n.T(ctx, "table.prev") } title={ ctxi18n.T(ctx, "table.prev") }>
+				<button class="btn btn-sm btn-icon" type="button" data-on:click={ utils.BuildTableQueryDatastarAction(expensePageURL(data, data.Pager.Page-1)) } aria-label={ ctxi18n.T(ctx, "table.prev") } title={ ctxi18n.T(ctx, "table.prev") }>
 					@icons.ChevronLeft(templ.Attributes{"class": "icon"})
 				</button>
 			} else {
@@ -103,7 +103,7 @@ templ ExpenseIndexMain(data ExpensesData) {
 			}
 			<span>{ fmt.Sprintf("%s %d / %d", ctxi18n.T(ctx, "table.page"), data.Pager.Page, data.Pager.TotalPages) }</span>
 			if data.Pager.HasNext {
-				<button class="btn btn-sm btn-icon" type="button" data-on:click={ expenseQueryAction(expensePageURL(data, data.Pager.Page+1)) } aria-label={ ctxi18n.T(ctx, "table.next") } title={ ctxi18n.T(ctx, "table.next") }>
+				<button class="btn btn-sm btn-icon" type="button" data-on:click={ utils.BuildTableQueryDatastarAction(expensePageURL(data, data.Pager.Page+1)) } aria-label={ ctxi18n.T(ctx, "table.next") } title={ ctxi18n.T(ctx, "table.next") }>
 					@icons.ChevronRight(templ.Attributes{"class": "icon"})
 				</button>
 			} else {

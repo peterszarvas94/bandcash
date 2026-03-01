@@ -113,7 +113,7 @@ templ UsersTableSection(data DashboardData) {
 			<thead>
 				<tr>
 					<th>
-						<button class="btn btn-sm" type="button" data-on:click={ adminQueryAction(adminUsersSortURL(data, "email")) }>
+						<button class="btn btn-sm" type="button" data-on:click={ utils.BuildTableQueryDatastarAction(adminUsersSortURL(data, "email")) }>
 							<span>{ ctxi18n.T(ctx, "auth.email") }</span>
 							if data.UserQuery.Sort == "email" {
 								if data.UserQuery.Dir == "asc" {
@@ -125,7 +125,7 @@ templ UsersTableSection(data DashboardData) {
 						</button>
 					</th>
 					<th>
-						<button class="btn btn-sm" type="button" data-on:click={ adminQueryAction(adminUsersSortURL(data, "createdAt")) }>
+						<button class="btn btn-sm" type="button" data-on:click={ utils.BuildTableQueryDatastarAction(adminUsersSortURL(data, "createdAt")) }>
 							<span>{ ctxi18n.T(ctx, "groups.created") }</span>
 							if data.UserQuery.Sort == "createdAt" {
 								if data.UserQuery.Dir == "asc" {
@@ -194,7 +194,7 @@ templ GroupsTableSection(data DashboardData) {
 			<thead>
 				<tr>
 					<th>
-						<button class="btn btn-sm" type="button" data-on:click={ adminQueryAction(adminGroupsSortURL(data, "name")) }>
+						<button class="btn btn-sm" type="button" data-on:click={ utils.BuildTableQueryDatastarAction(adminGroupsSortURL(data, "name")) }>
 							<span>{ ctxi18n.T(ctx, "groups.name") }</span>
 							if data.GroupQuery.Sort == "name" {
 								if data.GroupQuery.Dir == "asc" {
@@ -208,7 +208,7 @@ templ GroupsTableSection(data DashboardData) {
 					<th>{ ctxi18n.T(ctx, "groups.admin") }</th>
 					<th>{ ctxi18n.T(ctx, "groups.viewers") }</th>
 					<th>
-						<button class="btn btn-sm" type="button" data-on:click={ adminQueryAction(adminGroupsSortURL(data, "createdAt")) }>
+						<button class="btn btn-sm" type="button" data-on:click={ utils.BuildTableQueryDatastarAction(adminGroupsSortURL(data, "createdAt")) }>
 							<span>{ ctxi18n.T(ctx, "groups.created") }</span>
 							if data.GroupQuery.Sort == "createdAt" {
 								if data.GroupQuery.Dir == "asc" {
@@ -257,13 +257,13 @@ templ adminTablePagination(pager utils.TablePagination, query utils.TableQuery, 
 	<div class="row row-wrap justify-between pt">
 		<div class="row row-wrap">
 			<span>{ ctxi18n.T(ctx, "table.page_size") }</span>
-			for _, pageSize := range []int{10, 50, 100, 200} {
-				<button class={ pageSizeButtonClass(query.PageSize, pageSize) } type="button" data-on:click={ adminQueryAction(adminPageSizeURL(query, tab, pageSize)) }>{ strconv.Itoa(pageSize) }</button>
+			for _, pageSize := range utils.StandardTablePageSizes {
+				<button class={ utils.PageSizeButtonClass(query.PageSize, pageSize) } type="button" data-on:click={ utils.BuildTableQueryDatastarAction(adminPageSizeURL(query, tab, pageSize)) }>{ strconv.Itoa(pageSize) }</button>
 			}
 		</div>
 		<div class="row row-wrap">
 			if pager.HasPrev {
-				<button class="btn btn-sm btn-icon" type="button" data-on:click={ adminQueryAction(adminPageURL(query, tab, pager.Page-1)) } aria-label={ ctxi18n.T(ctx, "table.prev") } title={ ctxi18n.T(ctx, "table.prev") }>
+				<button class="btn btn-sm btn-icon" type="button" data-on:click={ utils.BuildTableQueryDatastarAction(adminPageURL(query, tab, pager.Page-1)) } aria-label={ ctxi18n.T(ctx, "table.prev") } title={ ctxi18n.T(ctx, "table.prev") }>
 					@icons.ChevronLeft(templ.Attributes{"class": "icon"})
 				</button>
 			} else {
@@ -273,7 +273,7 @@ templ adminTablePagination(pager utils.TablePagination, query utils.TableQuery, 
 			}
 			<span>{ fmt.Sprintf("%s %d / %d", ctxi18n.T(ctx, "table.page"), pager.Page, pager.TotalPages) }</span>
 			if pager.HasNext {
-				<button class="btn btn-sm btn-icon" type="button" data-on:click={ adminQueryAction(adminPageURL(query, tab, pager.Page+1)) } aria-label={ ctxi18n.T(ctx, "table.next") } title={ ctxi18n.T(ctx, "table.next") }>
+				<button class="btn btn-sm btn-icon" type="button" data-on:click={ utils.BuildTableQueryDatastarAction(adminPageURL(query, tab, pager.Page+1)) } aria-label={ ctxi18n.T(ctx, "table.next") } title={ ctxi18n.T(ctx, "table.next") }>
 					@icons.ChevronRight(templ.Attributes{"class": "icon"})
 				</button>
 			} else {
@@ -283,13 +283,6 @@ templ adminTablePagination(pager utils.TablePagination, query utils.TableQuery, 
 			}
 		</div>
 	</div>
-}
-
-func pageSizeButtonClass(current, value int) string {
-	if current == value {
-		return "btn btn-sm btn-active"
-	}
-	return "btn btn-sm"
 }
 
 // URL builders for admin table controls
@@ -325,9 +318,5 @@ func adminPageSizeURL(query utils.TableQuery, tab string, pageSize int) string {
 
 func adminSearchAction(tab string) string {
 	baseURL := fmt.Sprintf("/admin?tab=%s", tab)
-	return fmt.Sprintf("$tableQuery.page = 1; const params = new URLSearchParams(); if (($tableQuery.search || '').trim() !== '') { params.set('q', ($tableQuery.search || '').trim()) }; if ($tableQuery.sort) { params.set('sort', $tableQuery.sort); params.set('dir', $tableQuery.dir || 'asc') }; if (Number($tableQuery.pageSize || 50) !== 50) { params.set('pageSize', String($tableQuery.pageSize)) }; const url = '%s' + (params.toString() ? '&' + params.toString() : ''); history.pushState(null, '', url); @get(url)", baseURL)
-}
-
-func adminQueryAction(url string) string {
-	return fmt.Sprintf("history.pushState(null, '', '%s'); @get('%s')", url, url)
+	return utils.BuildTableSearchDatastarAction(baseURL, 50)
 }

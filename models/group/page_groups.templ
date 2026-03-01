@@ -46,7 +46,7 @@ templ GroupsMain(data GroupsPageData) {
 		<thead>
 			<tr>
 				<th>
-					<button class="btn btn-sm" type="button" data-on:click={ groupsQueryAction(groupsSortURL(data, "name")) }>
+					<button class="btn btn-sm" type="button" data-on:click={ utils.BuildTableQueryDatastarAction(groupsSortURL(data, "name")) }>
 						<span>{ ctxi18n.T(ctx, "fields.name") }</span>
 						if groupsSortDir(data, "name") == "asc" {
 							@icons.ArrowDownAZ(templ.Attributes{"class": "icon"})
@@ -57,7 +57,7 @@ templ GroupsMain(data GroupsPageData) {
 				</th>
 				<th>{ ctxi18n.T(ctx, "fields.role") }</th>
 				<th>
-					<button class="btn btn-sm" type="button" data-on:click={ groupsQueryAction(groupsSortURL(data, "createdAt")) }>
+					<button class="btn btn-sm" type="button" data-on:click={ utils.BuildTableQueryDatastarAction(groupsSortURL(data, "createdAt")) }>
 						<span>{ ctxi18n.T(ctx, "fields.created") }</span>
 						if groupsSortDir(data, "createdAt") == "asc" {
 							@icons.ArrowDownAZ(templ.Attributes{"class": "icon"})
@@ -131,12 +131,12 @@ templ GroupsMain(data GroupsPageData) {
 		<div class="row row-wrap">
 			<span>{ ctxi18n.T(ctx, "table.page_size") }</span>
 			for _, pageSize := range tablePageSizes {
-				<button class={ pageSizeButtonClass(data.Query.PageSize, pageSize) } type="button" data-on:click={ groupsQueryAction(groupsPageSizeURL(data, pageSize)) }>{ fmt.Sprintf("%d", pageSize) }</button>
+				<button class={ utils.PageSizeButtonClass(data.Query.PageSize, pageSize) } type="button" data-on:click={ utils.BuildTableQueryDatastarAction(groupsPageSizeURL(data, pageSize)) }>{ fmt.Sprintf("%d", pageSize) }</button>
 			}
 		</div>
 		<div class="row row-wrap">
 			if data.Pagination.HasPrev {
-				<button class="btn btn-sm btn-icon" type="button" data-on:click={ groupsQueryAction(groupsPageURL(data, data.Pagination.Page-1)) } aria-label={ ctxi18n.T(ctx, "table.prev") } title={ ctxi18n.T(ctx, "table.prev") }>
+				<button class="btn btn-sm btn-icon" type="button" data-on:click={ utils.BuildTableQueryDatastarAction(groupsPageURL(data, data.Pagination.Page-1)) } aria-label={ ctxi18n.T(ctx, "table.prev") } title={ ctxi18n.T(ctx, "table.prev") }>
 					@icons.ChevronLeft(templ.Attributes{"class": "icon"})
 				</button>
 			} else {
@@ -146,7 +146,7 @@ templ GroupsMain(data GroupsPageData) {
 			}
 			<span>{ fmt.Sprintf("%s %d / %d", ctxi18n.T(ctx, "table.page"), data.Pagination.Page, data.Pagination.TotalPages) }</span>
 			if data.Pagination.HasNext {
-				<button class="btn btn-sm btn-icon" type="button" data-on:click={ groupsQueryAction(groupsPageURL(data, data.Pagination.Page+1)) } aria-label={ ctxi18n.T(ctx, "table.next") } title={ ctxi18n.T(ctx, "table.next") }>
+				<button class="btn btn-sm btn-icon" type="button" data-on:click={ utils.BuildTableQueryDatastarAction(groupsPageURL(data, data.Pagination.Page+1)) } aria-label={ ctxi18n.T(ctx, "table.next") } title={ ctxi18n.T(ctx, "table.next") }>
 					@icons.ChevronRight(templ.Attributes{"class": "icon"})
 				</button>
 			} else {
