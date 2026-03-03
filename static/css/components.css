@@ -555,7 +555,7 @@
     border-left-color: var(--color-warning);
   }
 
-  .detail-table {
+  .detail-grid {
     display: grid;
     gap: calc(var(--space) * 0.85);
 

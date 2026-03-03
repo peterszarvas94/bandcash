@@ -11,7 +11,13 @@ import (
 
 templ EventShowMain(data EventData) {
 	<h2 class="pt">{ ctxi18n.T(ctx, "events.details") }</h2>
-	@shared.DetailTable(EventDetailsRows(data))
+	@shared.DetailGrid([]shared.DetailGridRow{
+		{Label: ctxi18n.T(ctx, "fields.title"), Value: data.Event.Title},
+		{Label: ctxi18n.T(ctx, "fields.time"), Value: utils.FormatDateTimeLocalized(ctx, data.Event.Time)},
+		{Label: ctxi18n.T(ctx, "fields.description"), Value: data.Event.Description},
+		{Label: ctxi18n.T(ctx, "fields.amount"), Value: utils.FormatNumberLocalized(ctx, data.Event.Amount)},
+		{Label: ctxi18n.T(ctx, "events.leftover"), Value: utils.FormatNumberLocalized(ctx, data.Leftover)},
+	})
 	if data.IsAdmin {
 		<div class="row row-wrap detail-actions">
 			@shared.ActionButton(shared.ActionButtonProps{ClassName: "btn", OnClick: "$eventFormState = 'edit'; $errors = {title: '', time: '', description: '', amount: ''}", DisabledExpr: "$eventFormState !== '' || $formState !== '' || $_fetching", Label: ctxi18n.T(ctx, "events.edit"), IconName: icons.IconPencil})
@@ -86,12 +92,4 @@ templ EventShowMain(data EventData) {
 			}
 		</tbody>
 	</table>
-}
-
-templ EventDetailsRows(data EventData) {
-	@shared.DetailRow(ctxi18n.T(ctx, "fields.title"), data.Event.Title)
-	@shared.DetailRow(ctxi18n.T(ctx, "fields.time"), utils.FormatDateTimeLocalized(ctx, data.Event.Time))
-	@shared.DetailRow(ctxi18n.T(ctx, "fields.description"), data.Event.Description)
-	@shared.DetailRow(ctxi18n.T(ctx, "fields.amount"), utils.FormatNumberLocalized(ctx, data.Event.Amount))
-	@shared.DetailRow(ctxi18n.T(ctx, "events.leftover"), utils.FormatNumberLocalized(ctx, data.Leftover))
 }

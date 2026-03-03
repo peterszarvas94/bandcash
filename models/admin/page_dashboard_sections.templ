@@ -12,7 +12,7 @@ import (
 )
 
 templ FlagsContent(signupEnabled bool) {
-	<div id="admin-flags" class="detail-table">
+	<div id="admin-flags" class="detail-grid">
 		<div class="detail-row">
 			<p class="detail-key">{ ctxi18n.T(ctx, "admin.flags.signup") }</p>
 			<div class="detail-val">
@@ -29,14 +29,12 @@ templ FlagsContent(signupEnabled bool) {
 }
 
 templ DashboardStats(data DashboardData) {
-	@shared.DetailTable(DashboardStatsRows(data))
-}
-
-templ DashboardStatsRows(data DashboardData) {
-	@shared.DetailRow(ctxi18n.T(ctx, "admin.total_users"), utils.FormatNumberLocalized(ctx, data.UsersCount))
-	@shared.DetailRow(ctxi18n.T(ctx, "admin.total_groups"), utils.FormatNumberLocalized(ctx, data.GroupsCount))
-	@shared.DetailRow(ctxi18n.T(ctx, "admin.total_events"), utils.FormatNumberLocalized(ctx, data.EventsCount))
-	@shared.DetailRow(ctxi18n.T(ctx, "admin.total_members"), utils.FormatNumberLocalized(ctx, data.MembersCount))
+	@shared.DetailGrid([]shared.DetailGridRow{
+		{Label: ctxi18n.T(ctx, "admin.total_users"), Value: utils.FormatNumberLocalized(ctx, data.UsersCount)},
+		{Label: ctxi18n.T(ctx, "admin.total_groups"), Value: utils.FormatNumberLocalized(ctx, data.GroupsCount)},
+		{Label: ctxi18n.T(ctx, "admin.total_events"), Value: utils.FormatNumberLocalized(ctx, data.EventsCount)},
+		{Label: ctxi18n.T(ctx, "admin.total_members"), Value: utils.FormatNumberLocalized(ctx, data.MembersCount)},
+	})
 }
 
 templ UsersTableSection(data DashboardData) {

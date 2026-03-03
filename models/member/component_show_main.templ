@@ -11,7 +11,11 @@ import (
 
 templ MemberShowMain(data MemberData) {
 	<h2 class="pt">{ ctxi18n.T(ctx, "members.details") }</h2>
-	@shared.DetailTable(MemberDetailsRows(data))
+	@shared.DetailGrid([]shared.DetailGridRow{
+		{Label: ctxi18n.T(ctx, "fields.name"), Value: data.Member.Name},
+		{Label: ctxi18n.T(ctx, "fields.description"), Value: data.Member.Description},
+		{Label: ctxi18n.T(ctx, "events.title"), Value: utils.FormatNumberLocalized(ctx, int64(len(data.Events)))},
+	})
 	if data.IsAdmin {
 		<div class="row row-wrap detail-actions">
 			@shared.ActionButton(shared.ActionButtonProps{ClassName: "btn", OnClick: "$formState = 'edit'; $errors = {name: '', description: ''}", DisabledExpr: "$formState !== '' || $_fetching", Label: ctxi18n.T(ctx, "members.edit"), IconName: icons.IconPencil})
@@ -64,10 +68,4 @@ templ MemberShowMain(data MemberData) {
 			}
 		</tbody>
 	</table>
-}
-
-templ MemberDetailsRows(data MemberData) {
-	@shared.DetailRow(ctxi18n.T(ctx, "fields.name"), data.Member.Name)
-	@shared.DetailRow(ctxi18n.T(ctx, "fields.description"), data.Member.Description)
-	@shared.DetailRow(ctxi18n.T(ctx, "events.title"), utils.FormatNumberLocalized(ctx, int64(len(data.Events))))
 }

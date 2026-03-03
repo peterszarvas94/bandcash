@@ -1,14 +1,17 @@
 package shared
 
-templ DetailTable(content templ.Component) {
-	<div class="detail-table">
-		@content
-	</div>
+type DetailGridRow struct {
+	Label string
+	Value string
 }
 
-templ DetailRow(label string, value string) {
-	<div class="detail-row">
-		<p class="detail-key">{ label }</p>
-		<p class="detail-val">{ value }</p>
+templ DetailGrid(rows []DetailGridRow) {
+	<div class="detail-grid">
+		for _, row := range rows {
+			<div class="detail-row">
+				<p class="detail-key">{ row.Label }</p>
+				<p class="detail-val">{ row.Value }</p>
+			</div>
+		}
 	</div>
 }

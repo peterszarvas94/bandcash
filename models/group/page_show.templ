@@ -48,25 +48,23 @@ templ GroupMain(data GroupPageData) {
 }
 
 templ GroupDetailsContent(data GroupPageData) {
-	@shared.DetailTable(GroupDetailsRows(data))
-}
-
-templ GroupDetailsRows(data GroupPageData) {
-	@shared.DetailRow(ctxi18n.T(ctx, "groups.name"), data.Group.Name)
-	@shared.DetailRow(ctxi18n.T(ctx, "groups.admin"), data.Admin.Email)
-	@shared.DetailRow(
-		ctxi18n.T(ctx, "groups.created"),
-		func() string {
-			if data.Group.CreatedAt.Valid {
-				return utils.FormatTimeLocalized(ctx, data.Group.CreatedAt.Time)
-			}
-			return "-"
-		}(),
-	)
-	@shared.DetailRow(ctxi18n.T(ctx, "groups.income"), utils.FormatNumberLocalized(ctx, data.Income))
-	@shared.DetailRow(ctxi18n.T(ctx, "groups.payouts"), utils.FormatNumberLocalized(ctx, data.Payouts))
-	@shared.DetailRow(ctxi18n.T(ctx, "groups.expenses"), utils.FormatNumberLocalized(ctx, data.Expenses))
-	@shared.DetailRow(ctxi18n.T(ctx, "groups.leftover"), utils.FormatNumberLocalized(ctx, data.Leftover))
+	@shared.DetailGrid([]shared.DetailGridRow{
+		{Label: ctxi18n.T(ctx, "groups.name"), Value: data.Group.Name},
+		{Label: ctxi18n.T(ctx, "groups.admin"), Value: data.Admin.Email},
+		{
+			Label: ctxi18n.T(ctx, "groups.created"),
+			Value: func() string {
+				if data.Group.CreatedAt.Valid {
+					return utils.FormatTimeLocalized(ctx, data.Group.CreatedAt.Time)
+				}
+				return "-"
+			}(),
+		},
+		{Label: ctxi18n.T(ctx, "groups.income"), Value: utils.FormatNumberLocalized(ctx, data.Income)},
+		{Label: ctxi18n.T(ctx, "groups.payouts"), Value: utils.FormatNumberLocalized(ctx, data.Payouts)},
+		{Label: ctxi18n.T(ctx, "groups.expenses"), Value: utils.FormatNumberLocalized(ctx, data.Expenses)},
+		{Label: ctxi18n.T(ctx, "groups.leftover"), Value: utils.FormatNumberLocalized(ctx, data.Leftover)},
+	})
 }
 
 templ GroupSidebar(data GroupPageData) {
