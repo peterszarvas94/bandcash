@@ -144,6 +144,22 @@ func (h *DevNotifications) PreviewInviteEmail(c echo.Context) error {
 	return c.HTML(http.StatusOK, html)
 }
 
+func (h *DevNotifications) PreviewInviteAcceptedEmail(c echo.Context) error {
+	html, err := email.Email().PreviewInviteAcceptedHTML(c.Request().Context(), "Preview Group", "grp_preview1234567890", devBaseURL(c))
+	if err != nil {
+		return c.String(http.StatusInternalServerError, err.Error())
+	}
+	return c.HTML(http.StatusOK, html)
+}
+
+func (h *DevNotifications) PreviewGroupCreatedEmail(c echo.Context) error {
+	html, err := email.Email().PreviewGroupCreatedHTML(c.Request().Context(), "Preview Group", "grp_preview1234567890", devBaseURL(c))
+	if err != nil {
+		return c.String(http.StatusInternalServerError, err.Error())
+	}
+	return c.HTML(http.StatusOK, html)
+}
+
 func (h *DevNotifications) TestTableQuery(c echo.Context) error {
 	model := c.Param("model")
 	groupID, err := h.resolveTableQueryGroupID(c, model)

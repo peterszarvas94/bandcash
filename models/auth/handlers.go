@@ -247,18 +247,35 @@ func (a *Auth) VerifyMagicLink(c echo.Context) error {
 		}
 
 		groupID := magicLink.GroupID.String
-		group, err := db.Qry.GetGroupByID(c.Request().Context(), groupID)
-		if err == nil && group.AdminUserID == user.ID {
-			return c.Redirect(http.StatusFound, "/groups/"+groupID+"/events")
+		groupName := groupID
+		group, groupErr := db.Qry.GetGroupByID(c.Request().Context(), groupID)
+		if groupErr == nil {
+			groupName = group.Name
+			if group.AdminUserID != user.ID {
+				_, err = db.Qry.CreateGroupReader(c.Request().Context(), db.CreateGroupReaderParams{
+					ID:      utils.GenerateID("grd"),
+					UserID:  user.ID,
+					GroupID: groupID,
+				})
+				if err != nil {
+					slog.Warn("auth: failed to add group reader", "group_id", groupID, "user_id", user.ID, "err", err)
+				}
+			}
+		} else {
+			slog.Warn("auth.verify: failed to load group for invite", "group_id", groupID, "err", groupErr)
+			_, err = db.Qry.CreateGroupReader(c.Request().Context(), db.CreateGroupReaderParams{
+				ID:      utils.GenerateID("grd"),
+				UserID:  user.ID,
+				GroupID: groupID,
+			})
+			if err != nil {
+				slog.Warn("auth: failed to add group reader", "group_id", groupID, "user_id", user.ID, "err", err)
+			}
 		}
 
-		_, err = db.Qry.CreateGroupReader(c.Request().Context(), db.CreateGroupReaderParams{
-			ID:      utils.GenerateID("grd"),
-			UserID:  user.ID,
-			GroupID: groupID,
-		})
+		err = email.Email().SendInviteAccepted(c.Request().Context(), user.Email, groupName, groupID, utils.Env().URL)
 		if err != nil {
-			slog.Warn("auth: failed to add group reader", "err", err)
+			slog.Warn("auth.verify: failed to send invite accepted email", "group_id", groupID, "user_id", user.ID, "err", err)
 		}
 
 		return c.Redirect(http.StatusFound, "/groups/"+groupID+"/events")

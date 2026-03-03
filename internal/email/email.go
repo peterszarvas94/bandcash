@@ -69,6 +69,10 @@ func verifyLink(baseURL, token, locale string) string {
 	return fmt.Sprintf("%s/auth/verify?token=%s&lang=%s", baseURL, token, locale)
 }
 
+func groupLink(baseURL, groupID string) string {
+	return fmt.Sprintf("%s/groups/%s", baseURL, groupID)
+}
+
 func joinBilingualText(huText, enText string) string {
 	return strings.TrimSpace("English follows below.\n\n" + strings.TrimSpace(huText) + "\n\n---\n\n" + strings.TrimSpace(enText))
 }
@@ -218,6 +222,106 @@ func (s *Service) buildGroupInvitationBodies(ctx context.Context, groupName, tok
 	enHTMLBody, err := utils.RenderHTML(enCtx, GroupInvitationHTML(groupName, enLink))
 	if err != nil {
 		return "", "", "", fmt.Errorf("failed to render invite HTML template: %w", err)
+	}
+
+	textBody := joinBilingualText(huTextBody, enTextBody)
+	htmlBody, err := joinBilingualHTML(ctx, huHTMLBody, enHTMLBody)
+	if err != nil {
+		return "", "", "", err
+	}
+	return htmlBody, textBody, subject, nil
+}
+
+func (s *Service) SendInviteAccepted(ctx context.Context, to, groupName, groupID, baseURL string) error {
+	htmlBody, textBody, subject, err := s.buildInviteAcceptedBodies(ctx, groupName, groupID, baseURL)
+	if err != nil {
+		return err
+	}
+
+	return s.Send(to, subject, strings.TrimSpace(textBody), strings.TrimSpace(htmlBody))
+}
+
+func (s *Service) PreviewInviteAcceptedHTML(ctx context.Context, groupName, groupID, baseURL string) (string, error) {
+	htmlBody, _, _, err := s.buildInviteAcceptedBodies(ctx, groupName, groupID, baseURL)
+	if err != nil {
+		return "", err
+	}
+	return strings.TrimSpace(htmlBody), nil
+}
+
+func (s *Service) buildInviteAcceptedBodies(ctx context.Context, groupName, groupID, baseURL string) (string, string, string, error) {
+	ctx = emailContext(ctx)
+	huCtx := contextWithLocale(ctx, "hu")
+	enCtx := contextWithLocale(ctx, "en")
+
+	link := groupLink(baseURL, groupID)
+
+	subject := ctxi18ncore.T(enCtx, "email.invite_accepted.subject", groupName)
+	huTextBody, err := utils.RenderHTML(huCtx, InviteAcceptedText(groupName, link))
+	if err != nil {
+		return "", "", "", fmt.Errorf("failed to render invite accepted text template: %w", err)
+	}
+	enTextBody, err := utils.RenderHTML(enCtx, InviteAcceptedText(groupName, link))
+	if err != nil {
+		return "", "", "", fmt.Errorf("failed to render invite accepted text template: %w", err)
+	}
+	huHTMLBody, err := utils.RenderHTML(huCtx, InviteAcceptedHTML(groupName, link))
+	if err != nil {
+		return "", "", "", fmt.Errorf("failed to render invite accepted HTML template: %w", err)
+	}
+	enHTMLBody, err := utils.RenderHTML(enCtx, InviteAcceptedHTML(groupName, link))
+	if err != nil {
+		return "", "", "", fmt.Errorf("failed to render invite accepted HTML template: %w", err)
+	}
+
+	textBody := joinBilingualText(huTextBody, enTextBody)
+	htmlBody, err := joinBilingualHTML(ctx, huHTMLBody, enHTMLBody)
+	if err != nil {
+		return "", "", "", err
+	}
+	return htmlBody, textBody, subject, nil
+}
+
+func (s *Service) SendGroupCreated(ctx context.Context, to, groupName, groupID, baseURL string) error {
+	htmlBody, textBody, subject, err := s.buildGroupCreatedBodies(ctx, groupName, groupID, baseURL)
+	if err != nil {
+		return err
+	}
+
+	return s.Send(to, subject, strings.TrimSpace(textBody), strings.TrimSpace(htmlBody))
+}
+
+func (s *Service) PreviewGroupCreatedHTML(ctx context.Context, groupName, groupID, baseURL string) (string, error) {
+	htmlBody, _, _, err := s.buildGroupCreatedBodies(ctx, groupName, groupID, baseURL)
+	if err != nil {
+		return "", err
+	}
+	return strings.TrimSpace(htmlBody), nil
+}
+
+func (s *Service) buildGroupCreatedBodies(ctx context.Context, groupName, groupID, baseURL string) (string, string, string, error) {
+	ctx = emailContext(ctx)
+	huCtx := contextWithLocale(ctx, "hu")
+	enCtx := contextWithLocale(ctx, "en")
+
+	link := groupLink(baseURL, groupID)
+
+	subject := ctxi18ncore.T(enCtx, "email.group_created.subject", groupName)
+	huTextBody, err := utils.RenderHTML(huCtx, GroupCreatedText(groupName, link))
+	if err != nil {
+		return "", "", "", fmt.Errorf("failed to render group created text template: %w", err)
+	}
+	enTextBody, err := utils.RenderHTML(enCtx, GroupCreatedText(groupName, link))
+	if err != nil {
+		return "", "", "", fmt.Errorf("failed to render group created text template: %w", err)
+	}
+	huHTMLBody, err := utils.RenderHTML(huCtx, GroupCreatedHTML(groupName, link))
+	if err != nil {
+		return "", "", "", fmt.Errorf("failed to render group created HTML template: %w", err)
+	}
+	enHTMLBody, err := utils.RenderHTML(enCtx, GroupCreatedHTML(groupName, link))
+	if err != nil {
+		return "", "", "", fmt.Errorf("failed to render group created HTML template: %w", err)
 	}
 
 	textBody := joinBilingualText(huTextBody, enTextBody)

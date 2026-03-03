@@ -64,6 +64,32 @@ en:
         copy_link: "Or copy and paste this link into your browser:"
         expiry: "This link will expire in 1 hour."
         ignore: "If you didn't expect this invitation, you can safely ignore this email."
+    invite_accepted:
+      subject: "You now have access to %s on BandCash"
+      text:
+        greeting: "Hello!"
+        intro: "You now have access to %s on BandCash."
+        open_group: "Open your group here:"
+      html:
+        title: "Invitation accepted"
+        intro: "You now have access to %s on BandCash."
+        cta: "Open group"
+        copy_link: "Or copy and paste this link into your browser:"
+        expiry: "This link will stay valid."
+        ignore: "If this wasn't expected, you can safely ignore this email."
+    group_created:
+      subject: "Your group %s is ready on BandCash"
+      text:
+        greeting: "Hello!"
+        intro: "Your group %s is ready on BandCash."
+        open_group: "Open your group here:"
+      html:
+        title: "Group created"
+        intro: "Your group %s is ready on BandCash."
+        cta: "Open group"
+        copy_link: "Or copy and paste this link into your browser:"
+        expiry: "This link will stay valid."
+        ignore: "If this wasn't expected, you can safely ignore this email."
   home:
     tagline: "Where is my cut?"
   settings:

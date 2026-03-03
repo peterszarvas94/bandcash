@@ -122,6 +122,12 @@ func (g *Group) CreateGroup(c echo.Context) error {
 	}
 
 	slog.Info("group: created", "group_id", group.ID, "name", group.Name, "admin", userID)
+	if userEmail := getUserEmail(c); userEmail != "" {
+		err = email.Email().SendGroupCreated(c.Request().Context(), userEmail, group.Name, group.ID, utils.Env().URL)
+		if err != nil {
+			slog.Warn("group.create: failed to send group created email", "group_id", group.ID, "err", err)
+		}
+	}
 	utils.Notify(c, "success", ctxi18n.T(c.Request().Context(), "groups.messages.created"))
 
 	// Redirect to group overview

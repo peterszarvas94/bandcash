@@ -50,20 +50,46 @@ hu:
         expiry: "Ez a link 1 órán belül lejár."
         ignore: "Ha nem te kérted ezt, nyugodtan figyelmen kívül hagyhatod ezt az emailt."
     invite:
-      subject: "Meghívtak a(z) %s zenekarba a BandCash-ben"
+      subject: "Meghívtak a(z) %s csoportba a BandCash-ben"
       text:
         greeting: "Szia!"
-        intro: "Meghívtak, hogy csatlakozz a(z) \"%s\" zenekarhoz a BandCash-ben."
+        intro: "Meghívtak, hogy csatlakozz a(z) \"%s\" csoporthoz a BandCash-ben."
         accept: "Kattints az alábbi linkre a meghívás elfogadásához:"
         expiry: "Ez a link 1 órán belül lejár."
-        ignore: "Ha nem erre a meghívásra számítottál, nyugodtan figyelmen kívül hagyhatod ezt az emailt."
+        ignore: "Ha nem te kérted ezt, nyugodtan figyelmen kívül hagyhatod ezt az emailt."
       html:
         title: "Meghívás a BandCash-be"
-        intro: "Meghívtak, hogy csatlakozz a(z) %s zenekarhoz."
+        intro: "Meghívtak, hogy csatlakozz a(z) %s csoporthoz."
         cta: "Meghívás elfogadása"
         copy_link: "Vagy másold be ezt a linket a böngésződbe:"
         expiry: "Ez a link 1 órán belül lejár."
-        ignore: "Ha nem erre a meghívásra számítottál, nyugodtan figyelmen kívül hagyhatod ezt az emailt."
+        ignore: "Ha nem te kérted ezt, nyugodtan figyelmen kívül hagyhatod ezt az emailt."
+    invite_accepted:
+      subject: "Mostantól hozzáférsz a(z) %s csoporthoz a BandCash-ben"
+      text:
+        greeting: "Szia!"
+        intro: "Mostantól hozzáférsz a(z) %s csoporthoz a BandCash-ben."
+        open_group: "Itt tudod megnyitni a csoportot:"
+      html:
+        title: "Meghívás elfogadva"
+        intro: "Mostantól hozzáférsz a(z) %s csoporthoz a BandCash-ben."
+        cta: "Csoport megnyitása"
+        copy_link: "Vagy másold be ezt a linket a böngésződbe:"
+        expiry: "Ez a link nem jár le."
+        ignore: "Ha nem te kérted ezt, nyugodtan figyelmen kívül hagyhatod ezt az emailt."
+    group_created:
+      subject: "A(z) %s csoportod elkészült a BandCash-ben"
+      text:
+        greeting: "Szia!"
+        intro: "A(z) %s csoportod elkészült a BandCash-ben."
+        open_group: "Itt tudod megnyitni a csoportot:"
+      html:
+        title: "Csoport létrehozva"
+        intro: "A(z) %s csoportod elkészült a BandCash-ben."
+        cta: "Csoport megnyitása"
+        copy_link: "Vagy másold be ezt a linket a böngésződbe:"
+        expiry: "Ez a link nem jár le."
+        ignore: "Ha nem te kérted ezt, nyugodtan figyelmen kívül hagyhatod ezt az emailt."
   home:
     tagline: "Hol van a gázsim?"
   settings:
