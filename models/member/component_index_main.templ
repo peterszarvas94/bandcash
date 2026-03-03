@@ -41,7 +41,7 @@ templ MemberIndexMain(data MembersData) {
 		<tbody>
 			for _, member := range data.Members {
 				<tr data-member-name={ member.Name } data-member-description={ member.Description }>
-					<td><a href={ fmt.Sprintf("/groups/%s/members/%s", data.GroupID, member.ID) }>{ member.Name }</a></td>
+					<td><a class="link" href={ fmt.Sprintf("/groups/%s/members/%s", data.GroupID, member.ID) }>{ member.Name }</a></td>
 					<td><span class="cell-ellipsis">{ member.Description }</span></td>
 					if data.IsAdmin {
 						<td data-actions-col>

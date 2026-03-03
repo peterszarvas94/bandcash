@@ -22,7 +22,7 @@ templ GroupNewPage(data NewGroupPageData) {
 				<form class="form" data-on:submit="@post('/groups')" data-indicator:_fetching>
 					<div class="field">
 						<label>{ ctxi18n.T(ctx, "groups.name") } <span class="required-mark">*</span></label>
-						<input type="text" data-bind="formData.name" placeholder={ ctxi18n.T(ctx, "groups.name_placeholder") }/>
+						<input type="text" data-bind="formData.name" placeholder={ ctxi18n.T(ctx, "groups.name_placeholder") } class="input"/>
 					</div>
 					@shared.LoadingSubmitButton("btn", ctxi18n.T(ctx, "groups.create"), icons.IconSave)
 				</form>

@@ -36,7 +36,7 @@ templ LanguageSelect(id string, currentLang string, loadingSignal string) {
 	<div class="field">
 		<label for={ id }>{ ctxi18n.T(ctx, "settings.language") }</label>
 		<div class="row row-wrap items-center">
-			<select id={ id } data-bind="formData.lang" class="w-fit">
+			<select id={ id } data-bind="formData.lang" class="input w-fit">
 				<option value="en" selected?={ currentLang == "en" }>{ ctxi18n.T(ctx, "language.en") }</option>
 				<option value="hu" selected?={ currentLang == "hu" }>{ ctxi18n.T(ctx, "language.hu") }</option>
 			</select>

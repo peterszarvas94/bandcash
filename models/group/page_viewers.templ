@@ -177,7 +177,7 @@ templ GroupViewersSidebar(data ViewersPageData) {
 		<form class="form" data-on:submit={ fmt.Sprintf("@post('/groups/%s/viewers')", data.Group.ID) } data-indicator:_fetching>
 				<div class="field">
 					<label>{ ctxi18n.T(ctx, "auth.email") } <span class="required-mark">*</span></label>
-					<input type="email" data-bind="formData.email" placeholder={ ctxi18n.T(ctx, "groups.viewer_email_placeholder") }/>
+					<input type="email" data-bind="formData.email" placeholder={ ctxi18n.T(ctx, "groups.viewer_email_placeholder") } class="input"/>
 				</div>
 				<div class="sidebar-actions">
 					@shared.SidebarLoadingSubmitButton("btn", ctxi18n.T(ctx, "groups.add_viewer"), icons.IconSave, "viewer-add")

@@ -72,7 +72,7 @@ templ GroupsMain(data GroupsPageData) {
 				for _, group := range data.AllGroups {
 					<tr>
 						<td>
-							<a href={ "/groups/" + group.Group.ID }>{ group.Group.Name }</a>
+							<a class="link" href={ "/groups/" + group.Group.ID }>{ group.Group.Name }</a>
 						</td>
 						<td>
 							if group.Role == "admin" {
@@ -120,7 +120,7 @@ templ GroupsSidebar(data GroupsPageData) {
 		<form class="form" data-on:submit="@post('/groups')" data-indicator:_fetching>
 			<div class="field">
 				<label>{ ctxi18n.T(ctx, "groups.name") } <span class="required-mark">*</span></label>
-				<input type="text" data-bind="formData.name" placeholder={ ctxi18n.T(ctx, "groups.name_placeholder") }/>
+				<input type="text" data-bind="formData.name" placeholder={ ctxi18n.T(ctx, "groups.name_placeholder") } class="input"/>
 			</div>
 			<div class="sidebar-actions">
 				@shared.SidebarLoadingSubmitButton("btn", ctxi18n.T(ctx, "groups.create"), icons.IconSave, "group-create")
@@ -144,7 +144,7 @@ templ GroupsSidebar(data GroupsPageData) {
 		<form class="form" data-on:submit="@put('/groups/' + $selectedGroupId)" data-indicator:_fetching>
 			<div class="field">
 				<label>{ ctxi18n.T(ctx, "groups.name") } <span class="required-mark">*</span></label>
-				<input type="text" data-bind="formData.name" placeholder={ ctxi18n.T(ctx, "groups.name_placeholder") }/>
+				<input type="text" data-bind="formData.name" placeholder={ ctxi18n.T(ctx, "groups.name_placeholder") } class="input"/>
 				<div data-show="$errors && $errors.name" class="color-error" data-text="$errors.name"></div>
 			</div>
 			<div class="sidebar-actions">

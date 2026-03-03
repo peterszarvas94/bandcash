@@ -68,7 +68,7 @@ templ GroupSidebar(data GroupPageData) {
 			<form class="form" data-on:submit={ fmt.Sprintf("@put('/groups/%s')", data.Group.ID) } data-indicator:_fetching>
 				<div class="field">
 					<label>{ ctxi18n.T(ctx, "groups.name") } <span class="required-mark">*</span></label>
-					<input type="text" data-bind="formData.name" placeholder={ ctxi18n.T(ctx, "groups.name_placeholder") }/>
+					<input type="text" data-bind="formData.name" placeholder={ ctxi18n.T(ctx, "groups.name_placeholder") } class="input"/>
 					<div data-show="$errors && $errors.name" class="color-error" data-text="$errors.name"></div>
 				</div>
 				<div class="sidebar-actions">

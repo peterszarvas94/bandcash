@@ -113,7 +113,7 @@ templ NotificationsContent() {
 		<div class="field">
 			<label>Required field</label>
 			<div class="row">
-				<input type="text" data-bind="formData.name" placeholder="Type anything"/>
+				<input type="text" data-bind="formData.name" placeholder="Type anything" class="input"/>
 				@shared.LoadingSubmitButtonWithSignal("btn", "Inline validation", icons.IconSave, "_notifyInline")
 			</div>
 			<div data-show="$errors && $errors.name" class="color-error" data-text="$errors.name"></div>

@@ -26,7 +26,7 @@ templ LoginMain() {
 		<form class="form" data-on:submit="@post('/auth/login')" data-indicator:_fetching>
 			<div class="field">
 				<label>{ ctxi18n.T(ctx, "auth.email") } <span class="required-mark">*</span></label>
-				<input type="email" data-bind="formData.email" placeholder={ ctxi18n.T(ctx, "auth.email_placeholder") }/>
+				<input type="email" data-bind="formData.email" placeholder={ ctxi18n.T(ctx, "auth.email_placeholder") } class="input"/>
 				<div data-show="$authError !== ''" class="color-error" data-text="$authError"></div>
 				<div data-show="$authServerError !== ''" class="color-error" data-text="$authServerError"></div>
 			</div>

@@ -6,6 +6,8 @@
 
   :root {
     --space: 0.5rem;
+    --font-sans: system-ui, sans-serif;
+    --font-mono: ui-monospace, monospace;
 
     --border: 1px;
 
@@ -138,6 +140,9 @@
       var(--page-bg) 30%
     );
 
+    --focus-ring: 2px solid var(--link-color);
+    --focus-ring-offset: 2px;
+
     color-scheme: light dark;
     interpolate-size: allow-keywords;
   }
@@ -152,13 +157,7 @@
   body {
     margin: 0;
 
-    font-family:
-      "Segoe UI",
-      "SF Pro Text",
-      -apple-system,
-      "Helvetica Neue",
-      Arial,
-      sans-serif;
+    font-family: var(--font-sans);
     background: var(--page-bg);
     color: var(--text-color);
     letter-spacing: 0;
@@ -199,7 +198,6 @@
     margin: 0;
   }
 
-  /* Media elements */
   img,
   svg,
   video,
@@ -208,39 +206,4 @@
     display: block;
   }
 
-  /* Form elements */
-  input,
-  textarea,
-  select {
-    field-sizing: content;
-    font: inherit;
-    border-radius: var(--border);
-    min-width: 12ch;
-    height: 2.5rem;
-    padding: var(--space) calc(var(--space) * 2);
-    border: var(--border) solid var(--border-color);
-  }
-
-  button {
-    font: inherit;
-  }
-
-  /* Links */
-  a:not(.btn),
-  a:not(.btn):visited {
-    color: var(--link-color);
-    text-decoration: underline;
-    text-decoration-thickness: 1px;
-    text-underline-offset: 0.14em;
-  }
-
-  a:not(.btn):hover {
-    color: color-mix(in srgb, var(--link-color) 82%, var(--text-color) 18%);
-  }
-
-  a:not(.btn):focus-visible {
-    outline: 2px solid var(--link-color);
-    outline-offset: 2px;
-    border-radius: calc(var(--border) * 2);
-  }
 }
