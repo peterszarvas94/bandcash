@@ -89,8 +89,11 @@ en:
     search_placeholder_admin_users: "Email"
     search_placeholder_admin_groups: "Group name"
     page: "Page"
+    first: "First"
     prev: "Previous"
     next: "Next"
+    last: "Last"
+    go: "Go to page"
     page_size: "Page size"
   fields:
     title: "Title"

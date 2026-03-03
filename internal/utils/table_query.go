@@ -18,10 +18,10 @@ type TableQuerySpec struct {
 	MaxSearchLen     int
 }
 
-var StandardTablePageSizes = []int{50, 100, 200}
+var StandardTablePageSizes = []int{10, 20, 50, 100, 200}
 
 const (
-	DefaultTablePageSize  = 50
+	DefaultTablePageSize  = 10
 	DefaultTableMaxSearch = 100
 )
 
@@ -338,6 +338,18 @@ func BuildTableSearchDatastarAction(basePath string, defaultPageSize int) string
 		defaultPageSize = DefaultTablePageSize
 	}
 	return fmt.Sprintf("const url = globalThis.tableSearchAction('%s', $tableQuery, %d); @get(url)", basePath, defaultPageSize)
+}
+
+func BuildTablePageDatastarAction(basePath string, totalPages int, defaultPageSize int) string {
+	if totalPages < 1 {
+		totalPages = 1
+	}
+
+	if defaultPageSize <= 0 {
+		defaultPageSize = DefaultTablePageSize
+	}
+
+	return fmt.Sprintf("const url = globalThis.tablePageAction('%s', $tableQuery, %d, %d); @get(url)", basePath, totalPages, defaultPageSize)
 }
 
 func BuildTableQueryDatastarAction(url string) string {

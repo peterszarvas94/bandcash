@@ -40,7 +40,7 @@ function initTableQueryTester() {
   }
 
   eventsValid.addEventListener("click", function onEventsValidClick() {
-    runQueryTest(output, "events-valid", "/dev/query-test/events?q=concert&sort=time&dir=asc&page=1&pageSize=50");
+    runQueryTest(output, "events-valid", "/dev/query-test/events?q=concert&sort=time&dir=asc&page=1&pageSize=10");
   });
 
   eventsInvalid.addEventListener("click", function onEventsInvalidClick() {
@@ -48,11 +48,11 @@ function initTableQueryTester() {
   });
 
   membersValid.addEventListener("click", function onMembersValidClick() {
-    runQueryTest(output, "members-valid", "/dev/query-test/members?q=&sort=name&dir=asc&page=1&pageSize=50");
+    runQueryTest(output, "members-valid", "/dev/query-test/members?q=&sort=name&dir=asc&page=1&pageSize=10");
   });
 
   expensesValid.addEventListener("click", function onExpensesValidClick() {
-    runQueryTest(output, "expenses-valid", "/dev/query-test/expenses?q=&sort=amount&dir=desc&page=1&pageSize=50");
+    runQueryTest(output, "expenses-valid", "/dev/query-test/expenses?q=&sort=amount&dir=desc&page=1&pageSize=10");
   });
 }
 

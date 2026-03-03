@@ -1,6 +1,8 @@
 package shared
 
 import (
+	"fmt"
+
 	ctxi18n "github.com/invopop/ctxi18n/i18n"
 
 	"bandcash/internal/utils"
@@ -23,4 +25,47 @@ templ TableSortHeader(label string, column string, query utils.TableQuery, actio
 			@icons.ArrowUpZA(templ.Attributes{"class": "icon"})
 		}
 	</button>
+}
+
+templ TablePaginationControls(basePath string, query utils.TableQuery, pager utils.TablePagination) {
+	<form class="row row-wrap" data-on:submit={ utils.BuildTablePageDatastarAction(basePath, pager.TotalPages, utils.DefaultTablePageSize) }>
+		if pager.HasPrev {
+			<button class="btn btn-sm btn-icon" type="button" data-on:click={ utils.BuildTableQueryDatastarAction(utils.BuildTablePageURL(basePath, query, 1, pager.TotalPages)) } aria-label={ ctxi18n.T(ctx, "table.first") } title={ ctxi18n.T(ctx, "table.first") }>
+				@icons.ArrowLeftToLine(templ.Attributes{"class": "icon"})
+			</button>
+			<button class="btn btn-sm btn-icon" type="button" data-on:click={ utils.BuildTableQueryDatastarAction(utils.BuildTablePageURL(basePath, query, pager.Page-1, pager.TotalPages)) } aria-label={ ctxi18n.T(ctx, "table.prev") } title={ ctxi18n.T(ctx, "table.prev") }>
+				@icons.ArrowLeft(templ.Attributes{"class": "icon"})
+			</button>
+		} else {
+			<button type="button" class="btn btn-sm btn-icon" aria-label={ ctxi18n.T(ctx, "table.first") } title={ ctxi18n.T(ctx, "table.first") } disabled>
+				@icons.ArrowLeftToLine(templ.Attributes{"class": "icon"})
+			</button>
+			<button type="button" class="btn btn-sm btn-icon" aria-label={ ctxi18n.T(ctx, "table.prev") } title={ ctxi18n.T(ctx, "table.prev") } disabled>
+				@icons.ArrowLeft(templ.Attributes{"class": "icon"})
+			</button>
+		}
+		<label class="row">
+			<span>{ ctxi18n.T(ctx, "table.page") }</span>
+			<input type="number" min="1" max={ fmt.Sprintf("%d", pager.TotalPages) } step="1" data-bind="tableQuery.page" aria-label={ ctxi18n.T(ctx, "table.page") } style="width: 5rem"/>
+			<button class="btn btn-sm btn-icon" type="submit" aria-label={ ctxi18n.T(ctx, "table.go") } title={ ctxi18n.T(ctx, "table.go") }>
+				@icons.CornerDownLeft(templ.Attributes{"class": "icon"})
+			</button>
+			<span>{ fmt.Sprintf("/ %d", pager.TotalPages) }</span>
+		</label>
+		if pager.HasNext {
+			<button class="btn btn-sm btn-icon" type="button" data-on:click={ utils.BuildTableQueryDatastarAction(utils.BuildTablePageURL(basePath, query, pager.Page+1, pager.TotalPages)) } aria-label={ ctxi18n.T(ctx, "table.next") } title={ ctxi18n.T(ctx, "table.next") }>
+				@icons.ArrowRight(templ.Attributes{"class": "icon"})
+			</button>
+			<button class="btn btn-sm btn-icon" type="button" data-on:click={ utils.BuildTableQueryDatastarAction(utils.BuildTablePageURL(basePath, query, pager.TotalPages, pager.TotalPages)) } aria-label={ ctxi18n.T(ctx, "table.last") } title={ ctxi18n.T(ctx, "table.last") }>
+				@icons.ArrowRightToLine(templ.Attributes{"class": "icon"})
+			</button>
+		} else {
+			<button type="button" class="btn btn-sm btn-icon" aria-label={ ctxi18n.T(ctx, "table.next") } title={ ctxi18n.T(ctx, "table.next") } disabled>
+				@icons.ArrowRight(templ.Attributes{"class": "icon"})
+			</button>
+			<button type="button" class="btn btn-sm btn-icon" aria-label={ ctxi18n.T(ctx, "table.last") } title={ ctxi18n.T(ctx, "table.last") } disabled>
+				@icons.ArrowRightToLine(templ.Attributes{"class": "icon"})
+			</button>
+		}
+	</form>
 }

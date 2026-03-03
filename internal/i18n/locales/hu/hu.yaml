@@ -89,8 +89,11 @@ hu:
     search_placeholder_admin_users: "Email"
     search_placeholder_admin_groups: "Csoport név"
     page: "Oldal"
+    first: "Első"
     prev: "Előző"
     next: "Következő"
+    last: "Utolsó"
+    go: "Ugrás oldalra"
     page_size: "Oldalméret"
   fields:
     title: "Cím"
