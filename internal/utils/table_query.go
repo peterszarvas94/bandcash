@@ -18,7 +18,7 @@ type TableQuerySpec struct {
 	MaxSearchLen     int
 }
 
-var StandardTablePageSizes = []int{10, 50, 100, 200}
+var StandardTablePageSizes = []int{50, 100, 200}
 
 const (
 	DefaultTablePageSize  = 50

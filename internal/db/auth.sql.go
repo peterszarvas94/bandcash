@@ -30,19 +30,23 @@ func (q *Queries) BanUser(ctx context.Context, arg BanUserParams) error {
 const countUserGroupsFiltered = `-- name: CountUserGroupsFiltered :one
 SELECT COUNT(*) FROM (
   SELECT g.id FROM groups g
+  JOIN users u ON u.id = g.admin_user_id
   WHERE g.admin_user_id = ?1
     AND (
       ?2 = ''
       OR g.name LIKE '%' || ?2 || '%'
+      OR u.email LIKE '%' || ?2 || '%'
     )
   UNION
   SELECT g.id FROM groups g
   JOIN group_readers gr ON gr.group_id = g.id
+  JOIN users u ON u.id = g.admin_user_id
   WHERE gr.user_id = ?1
     AND g.admin_user_id != ?1
     AND (
       ?2 = ''
       OR g.name LIKE '%' || ?2 || '%'
+      OR u.email LIKE '%' || ?2 || '%'
     )
 )
 `
@@ -450,6 +454,184 @@ func (q *Queries) ListGroupsByReader(ctx context.Context, userID string) ([]Grou
 	return items, nil
 }
 
+const listUserGroupsByAdminAscFiltered = `-- name: ListUserGroupsByAdminAscFiltered :many
+SELECT 
+  g.id,
+  g.name,
+  g.admin_user_id,
+  g.created_at,
+  CASE WHEN g.admin_user_id = ?3 THEN 'admin' ELSE 'viewer' END as role,
+  u.email as admin_email
+FROM groups g
+JOIN users u ON u.id = g.admin_user_id
+WHERE g.admin_user_id = ?3
+  AND (
+    ?4 = ''
+    OR g.name LIKE '%' || ?4 || '%'
+    OR u.email LIKE '%' || ?4 || '%'
+  )
+UNION ALL
+SELECT 
+  g.id,
+  g.name,
+  g.admin_user_id,
+  g.created_at,
+  'viewer' as role,
+  u.email as admin_email
+FROM groups g
+JOIN group_readers gr ON gr.group_id = g.id
+JOIN users u ON u.id = g.admin_user_id
+WHERE gr.user_id = ?3
+  AND g.admin_user_id != ?3
+  AND (
+    ?4 = ''
+    OR g.name LIKE '%' || ?4 || '%'
+    OR u.email LIKE '%' || ?4 || '%'
+  )
+ORDER BY admin_email COLLATE NOCASE ASC, g.name COLLATE NOCASE ASC
+LIMIT ?2 OFFSET ?1
+`
+
+type ListUserGroupsByAdminAscFilteredParams struct {
+	Offset int64       `json:"offset"`
+	Limit  int64       `json:"limit"`
+	UserID string      `json:"user_id"`
+	Search interface{} `json:"search"`
+}
+
+type ListUserGroupsByAdminAscFilteredRow struct {
+	ID          string       `json:"id"`
+	Name        string       `json:"name"`
+	AdminUserID string       `json:"admin_user_id"`
+	CreatedAt   sql.NullTime `json:"created_at"`
+	Role        string       `json:"role"`
+	AdminEmail  string       `json:"admin_email"`
+}
+
+func (q *Queries) ListUserGroupsByAdminAscFiltered(ctx context.Context, arg ListUserGroupsByAdminAscFilteredParams) ([]ListUserGroupsByAdminAscFilteredRow, error) {
+	rows, err := q.db.QueryContext(ctx, listUserGroupsByAdminAscFiltered,
+		arg.Offset,
+		arg.Limit,
+		arg.UserID,
+		arg.Search,
+	)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []ListUserGroupsByAdminAscFilteredRow{}
+	for rows.Next() {
+		var i ListUserGroupsByAdminAscFilteredRow
+		if err := rows.Scan(
+			&i.ID,
+			&i.Name,
+			&i.AdminUserID,
+			&i.CreatedAt,
+			&i.Role,
+			&i.AdminEmail,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const listUserGroupsByAdminDescFiltered = `-- name: ListUserGroupsByAdminDescFiltered :many
+SELECT 
+  g.id,
+  g.name,
+  g.admin_user_id,
+  g.created_at,
+  CASE WHEN g.admin_user_id = ?3 THEN 'admin' ELSE 'viewer' END as role,
+  u.email as admin_email
+FROM groups g
+JOIN users u ON u.id = g.admin_user_id
+WHERE g.admin_user_id = ?3
+  AND (
+    ?4 = ''
+    OR g.name LIKE '%' || ?4 || '%'
+    OR u.email LIKE '%' || ?4 || '%'
+  )
+UNION ALL
+SELECT 
+  g.id,
+  g.name,
+  g.admin_user_id,
+  g.created_at,
+  'viewer' as role,
+  u.email as admin_email
+FROM groups g
+JOIN group_readers gr ON gr.group_id = g.id
+JOIN users u ON u.id = g.admin_user_id
+WHERE gr.user_id = ?3
+  AND g.admin_user_id != ?3
+  AND (
+    ?4 = ''
+    OR g.name LIKE '%' || ?4 || '%'
+    OR u.email LIKE '%' || ?4 || '%'
+  )
+ORDER BY admin_email COLLATE NOCASE DESC, g.name COLLATE NOCASE ASC
+LIMIT ?2 OFFSET ?1
+`
+
+type ListUserGroupsByAdminDescFilteredParams struct {
+	Offset int64       `json:"offset"`
+	Limit  int64       `json:"limit"`
+	UserID string      `json:"user_id"`
+	Search interface{} `json:"search"`
+}
+
+type ListUserGroupsByAdminDescFilteredRow struct {
+	ID          string       `json:"id"`
+	Name        string       `json:"name"`
+	AdminUserID string       `json:"admin_user_id"`
+	CreatedAt   sql.NullTime `json:"created_at"`
+	Role        string       `json:"role"`
+	AdminEmail  string       `json:"admin_email"`
+}
+
+func (q *Queries) ListUserGroupsByAdminDescFiltered(ctx context.Context, arg ListUserGroupsByAdminDescFilteredParams) ([]ListUserGroupsByAdminDescFilteredRow, error) {
+	rows, err := q.db.QueryContext(ctx, listUserGroupsByAdminDescFiltered,
+		arg.Offset,
+		arg.Limit,
+		arg.UserID,
+		arg.Search,
+	)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []ListUserGroupsByAdminDescFilteredRow{}
+	for rows.Next() {
+		var i ListUserGroupsByAdminDescFilteredRow
+		if err := rows.Scan(
+			&i.ID,
+			&i.Name,
+			&i.AdminUserID,
+			&i.CreatedAt,
+			&i.Role,
+			&i.AdminEmail,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const listUserGroupsByCreatedAscFiltered = `-- name: ListUserGroupsByCreatedAscFiltered :many
 SELECT 
   g.id,
@@ -458,10 +640,12 @@ SELECT
   g.created_at,
   CASE WHEN g.admin_user_id = ?3 THEN 'admin' ELSE 'viewer' END as role
 FROM groups g
+JOIN users u ON u.id = g.admin_user_id
 WHERE g.admin_user_id = ?3
   AND (
     ?4 = ''
     OR g.name LIKE '%' || ?4 || '%'
+    OR u.email LIKE '%' || ?4 || '%'
   )
 UNION ALL
 SELECT 
@@ -472,13 +656,15 @@ SELECT
   'viewer' as role
 FROM groups g
 JOIN group_readers gr ON gr.group_id = g.id
+JOIN users u ON u.id = g.admin_user_id
 WHERE gr.user_id = ?3
   AND g.admin_user_id != ?3
   AND (
     ?4 = ''
     OR g.name LIKE '%' || ?4 || '%'
+    OR u.email LIKE '%' || ?4 || '%'
   )
-ORDER BY created_at ASC, name COLLATE NOCASE ASC
+ORDER BY g.created_at ASC, g.name COLLATE NOCASE ASC
 LIMIT ?2 OFFSET ?1
 `
 
@@ -539,10 +725,12 @@ SELECT
   g.created_at,
   CASE WHEN g.admin_user_id = ?3 THEN 'admin' ELSE 'viewer' END as role
 FROM groups g
+JOIN users u ON u.id = g.admin_user_id
 WHERE g.admin_user_id = ?3
   AND (
     ?4 = ''
     OR g.name LIKE '%' || ?4 || '%'
+    OR u.email LIKE '%' || ?4 || '%'
   )
 UNION ALL
 SELECT 
@@ -553,13 +741,15 @@ SELECT
   'viewer' as role
 FROM groups g
 JOIN group_readers gr ON gr.group_id = g.id
+JOIN users u ON u.id = g.admin_user_id
 WHERE gr.user_id = ?3
   AND g.admin_user_id != ?3
   AND (
     ?4 = ''
     OR g.name LIKE '%' || ?4 || '%'
+    OR u.email LIKE '%' || ?4 || '%'
   )
-ORDER BY created_at DESC, name COLLATE NOCASE ASC
+ORDER BY g.created_at DESC, g.name COLLATE NOCASE ASC
 LIMIT ?2 OFFSET ?1
 `
 
@@ -620,10 +810,12 @@ SELECT
   g.created_at,
   CASE WHEN g.admin_user_id = ?3 THEN 'admin' ELSE 'viewer' END as role
 FROM groups g
+JOIN users u ON u.id = g.admin_user_id
 WHERE g.admin_user_id = ?3
   AND (
     ?4 = ''
     OR g.name LIKE '%' || ?4 || '%'
+    OR u.email LIKE '%' || ?4 || '%'
   )
 UNION ALL
 SELECT 
@@ -634,13 +826,15 @@ SELECT
   'viewer' as role
 FROM groups g
 JOIN group_readers gr ON gr.group_id = g.id
+JOIN users u ON u.id = g.admin_user_id
 WHERE gr.user_id = ?3
   AND g.admin_user_id != ?3
   AND (
     ?4 = ''
     OR g.name LIKE '%' || ?4 || '%'
+    OR u.email LIKE '%' || ?4 || '%'
   )
-ORDER BY name COLLATE NOCASE ASC, created_at DESC
+ORDER BY g.name COLLATE NOCASE ASC, g.created_at DESC
 LIMIT ?2 OFFSET ?1
 `
 
@@ -701,10 +895,12 @@ SELECT
   g.created_at,
   CASE WHEN g.admin_user_id = ?3 THEN 'admin' ELSE 'viewer' END as role
 FROM groups g
+JOIN users u ON u.id = g.admin_user_id
 WHERE g.admin_user_id = ?3
   AND (
     ?4 = ''
     OR g.name LIKE '%' || ?4 || '%'
+    OR u.email LIKE '%' || ?4 || '%'
   )
 UNION ALL
 SELECT 
@@ -715,13 +911,15 @@ SELECT
   'viewer' as role
 FROM groups g
 JOIN group_readers gr ON gr.group_id = g.id
+JOIN users u ON u.id = g.admin_user_id
 WHERE gr.user_id = ?3
   AND g.admin_user_id != ?3
   AND (
     ?4 = ''
     OR g.name LIKE '%' || ?4 || '%'
+    OR u.email LIKE '%' || ?4 || '%'
   )
-ORDER BY name COLLATE NOCASE DESC, created_at DESC
+ORDER BY g.name COLLATE NOCASE DESC, g.created_at DESC
 LIMIT ?2 OFFSET ?1
 `
 

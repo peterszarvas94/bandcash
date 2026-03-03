@@ -39,7 +39,9 @@ templ GroupsMain(data GroupsPageData) {
 				<th>
 					@shared.TableSortHeader(ctxi18n.T(ctx, "fields.created"), "createdAt", data.Query, utils.BuildTableSortURL("/dashboard", data.Query, "createdAt"))
 				</th>
-				<th>{ ctxi18n.T(ctx, "fields.admin") }</th>
+				<th>
+					@shared.TableSortHeader(ctxi18n.T(ctx, "fields.admin"), "admin", data.Query, utils.BuildTableSortURL("/dashboard", data.Query, "admin"))
+				</th>
 				<th data-actions-col>
 					<div class="row row-right">
 						@shared.LoadingIconActionButton(

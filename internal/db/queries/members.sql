@@ -65,6 +65,28 @@ WHERE group_id = sqlc.arg(group_id)
 ORDER BY created_at DESC
 LIMIT sqlc.arg(limit) OFFSET sqlc.arg(offset);
 
+-- name: ListMembersByDescriptionAscFiltered :many
+SELECT * FROM members
+WHERE group_id = sqlc.arg(group_id)
+  AND (
+    sqlc.arg(search) = ''
+    OR name LIKE '%' || sqlc.arg(search) || '%'
+    OR description LIKE '%' || sqlc.arg(search) || '%'
+  )
+ORDER BY description COLLATE NOCASE ASC, name COLLATE NOCASE ASC
+LIMIT sqlc.arg(limit) OFFSET sqlc.arg(offset);
+
+-- name: ListMembersByDescriptionDescFiltered :many
+SELECT * FROM members
+WHERE group_id = sqlc.arg(group_id)
+  AND (
+    sqlc.arg(search) = ''
+    OR name LIKE '%' || sqlc.arg(search) || '%'
+    OR description LIKE '%' || sqlc.arg(search) || '%'
+  )
+ORDER BY description COLLATE NOCASE DESC, name COLLATE NOCASE ASC
+LIMIT sqlc.arg(limit) OFFSET sqlc.arg(offset);
+
 -- name: UpdateMember :one
 UPDATE members
 SET name = ?, description = ?

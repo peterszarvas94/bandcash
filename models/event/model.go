@@ -14,7 +14,7 @@ type Events struct {
 }
 
 func (e *Events) TableQuerySpec() utils.TableQuerySpec {
-	return utils.StandardTableQuerySpec("time", "asc", "time", "title", "amount")
+	return utils.StandardTableQuerySpec("time", "asc", "time", "title", "amount", "description")
 }
 
 func New() *Events {
@@ -123,6 +123,12 @@ func (e *Events) GetIndexData(ctx context.Context, groupID string, query utils.T
 			events, err = db.Qry.ListEventsByAmountDescFiltered(ctx, db.ListEventsByAmountDescFilteredParams(params))
 		} else {
 			events, err = db.Qry.ListEventsByAmountAscFiltered(ctx, db.ListEventsByAmountAscFilteredParams(params))
+		}
+	case "description":
+		if query.Dir == "desc" {
+			events, err = db.Qry.ListEventsByDescriptionDescFiltered(ctx, db.ListEventsByDescriptionDescFilteredParams(params))
+		} else {
+			events, err = db.Qry.ListEventsByDescriptionAscFiltered(ctx, db.ListEventsByDescriptionAscFilteredParams(params))
 		}
 	default:
 		if query.Dir == "desc" {

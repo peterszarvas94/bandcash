@@ -16,7 +16,7 @@ func NewModel() *GroupModel {
 }
 
 func (m *GroupModel) TableQuerySpec() utils.TableQuerySpec {
-	return utils.StandardTableQuerySpec("createdAt", "desc", "name", "createdAt")
+	return utils.StandardTableQuerySpec("createdAt", "desc", "name", "createdAt", "admin")
 }
 
 func (m *GroupModel) GetGroupsPageData(ctx context.Context, userID string, query utils.TableQuery) (GroupsPageData, error) {
@@ -91,6 +91,32 @@ func (m *GroupModel) GetGroupsPageData(ctx context.Context, userID string, query
 				return GroupsPageData{}, err
 			}
 			allGroups = convertCreatedDescRowsToGroupWithRole(ctx, rows)
+		}
+	case "admin":
+		if query.Dir == "desc" {
+			rows, err := db.Qry.ListUserGroupsByAdminDescFiltered(ctx, db.ListUserGroupsByAdminDescFilteredParams{
+				UserID: userID,
+				Search: query.Search,
+				Limit:  limit,
+				Offset: offset,
+			})
+			if err != nil {
+				slog.Error("group.model: failed to list groups by admin desc", "err", err)
+				return GroupsPageData{}, err
+			}
+			allGroups = convertAdminDescRowsToGroupWithRole(ctx, rows)
+		} else {
+			rows, err := db.Qry.ListUserGroupsByAdminAscFiltered(ctx, db.ListUserGroupsByAdminAscFilteredParams{
+				UserID: userID,
+				Search: query.Search,
+				Limit:  limit,
+				Offset: offset,
+			})
+			if err != nil {
+				slog.Error("group.model: failed to list groups by admin asc", "err", err)
+				return GroupsPageData{}, err
+			}
+			allGroups = convertAdminAscRowsToGroupWithRole(ctx, rows)
 		}
 	default:
 		// Default to createdAt desc
@@ -191,6 +217,44 @@ func convertCreatedDescRowsToGroupWithRole(ctx context.Context, rows []db.ListUs
 			Role:        r.Role,
 			ViewerCount: len(viewers),
 			AdminEmail:  admin.Email,
+		}
+	}
+	return result
+}
+
+func convertAdminAscRowsToGroupWithRole(ctx context.Context, rows []db.ListUserGroupsByAdminAscFilteredRow) []GroupWithRole {
+	result := make([]GroupWithRole, len(rows))
+	for i, r := range rows {
+		viewers, _ := db.Qry.GetGroupReaders(ctx, r.ID)
+		result[i] = GroupWithRole{
+			Group: db.Group{
+				ID:          r.ID,
+				Name:        r.Name,
+				AdminUserID: r.AdminUserID,
+				CreatedAt:   r.CreatedAt,
+			},
+			Role:        r.Role,
+			ViewerCount: len(viewers),
+			AdminEmail:  r.AdminEmail,
+		}
+	}
+	return result
+}
+
+func convertAdminDescRowsToGroupWithRole(ctx context.Context, rows []db.ListUserGroupsByAdminDescFilteredRow) []GroupWithRole {
+	result := make([]GroupWithRole, len(rows))
+	for i, r := range rows {
+		viewers, _ := db.Qry.GetGroupReaders(ctx, r.ID)
+		result[i] = GroupWithRole{
+			Group: db.Group{
+				ID:          r.ID,
+				Name:        r.Name,
+				AdminUserID: r.AdminUserID,
+				CreatedAt:   r.CreatedAt,
+			},
+			Role:        r.Role,
+			ViewerCount: len(viewers),
+			AdminEmail:  r.AdminEmail,
 		}
 	}
 	return result

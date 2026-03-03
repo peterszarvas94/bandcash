@@ -19,6 +19,7 @@ WHERE group_id = sqlc.arg(group_id)
     sqlc.arg(search) = ''
     OR title LIKE '%' || sqlc.arg(search) || '%'
     OR description LIKE '%' || sqlc.arg(search) || '%'
+    OR CAST(amount AS TEXT) LIKE '%' || sqlc.arg(search) || '%'
   );
 
 -- name: ListEventsByTimeAscFiltered :many
@@ -28,6 +29,7 @@ WHERE group_id = sqlc.arg(group_id)
     sqlc.arg(search) = ''
     OR title LIKE '%' || sqlc.arg(search) || '%'
     OR description LIKE '%' || sqlc.arg(search) || '%'
+    OR CAST(amount AS TEXT) LIKE '%' || sqlc.arg(search) || '%'
   )
 ORDER BY time ASC, created_at DESC
 LIMIT sqlc.arg(limit) OFFSET sqlc.arg(offset);
@@ -39,6 +41,7 @@ WHERE group_id = sqlc.arg(group_id)
     sqlc.arg(search) = ''
     OR title LIKE '%' || sqlc.arg(search) || '%'
     OR description LIKE '%' || sqlc.arg(search) || '%'
+    OR CAST(amount AS TEXT) LIKE '%' || sqlc.arg(search) || '%'
   )
 ORDER BY time DESC, created_at DESC
 LIMIT sqlc.arg(limit) OFFSET sqlc.arg(offset);
@@ -50,6 +53,7 @@ WHERE group_id = sqlc.arg(group_id)
     sqlc.arg(search) = ''
     OR title LIKE '%' || sqlc.arg(search) || '%'
     OR description LIKE '%' || sqlc.arg(search) || '%'
+    OR CAST(amount AS TEXT) LIKE '%' || sqlc.arg(search) || '%'
   )
 ORDER BY title COLLATE NOCASE ASC, created_at DESC
 LIMIT sqlc.arg(limit) OFFSET sqlc.arg(offset);
@@ -61,6 +65,7 @@ WHERE group_id = sqlc.arg(group_id)
     sqlc.arg(search) = ''
     OR title LIKE '%' || sqlc.arg(search) || '%'
     OR description LIKE '%' || sqlc.arg(search) || '%'
+    OR CAST(amount AS TEXT) LIKE '%' || sqlc.arg(search) || '%'
   )
 ORDER BY title COLLATE NOCASE DESC, created_at DESC
 LIMIT sqlc.arg(limit) OFFSET sqlc.arg(offset);
@@ -72,6 +77,7 @@ WHERE group_id = sqlc.arg(group_id)
     sqlc.arg(search) = ''
     OR title LIKE '%' || sqlc.arg(search) || '%'
     OR description LIKE '%' || sqlc.arg(search) || '%'
+    OR CAST(amount AS TEXT) LIKE '%' || sqlc.arg(search) || '%'
   )
 ORDER BY amount ASC, created_at DESC
 LIMIT sqlc.arg(limit) OFFSET sqlc.arg(offset);
@@ -83,8 +89,33 @@ WHERE group_id = sqlc.arg(group_id)
     sqlc.arg(search) = ''
     OR title LIKE '%' || sqlc.arg(search) || '%'
     OR description LIKE '%' || sqlc.arg(search) || '%'
+    OR CAST(amount AS TEXT) LIKE '%' || sqlc.arg(search) || '%'
   )
 ORDER BY amount DESC, created_at DESC
+LIMIT sqlc.arg(limit) OFFSET sqlc.arg(offset);
+
+-- name: ListEventsByDescriptionAscFiltered :many
+SELECT * FROM events
+WHERE group_id = sqlc.arg(group_id)
+  AND (
+    sqlc.arg(search) = ''
+    OR title LIKE '%' || sqlc.arg(search) || '%'
+    OR description LIKE '%' || sqlc.arg(search) || '%'
+    OR CAST(amount AS TEXT) LIKE '%' || sqlc.arg(search) || '%'
+  )
+ORDER BY description COLLATE NOCASE ASC, time ASC
+LIMIT sqlc.arg(limit) OFFSET sqlc.arg(offset);
+
+-- name: ListEventsByDescriptionDescFiltered :many
+SELECT * FROM events
+WHERE group_id = sqlc.arg(group_id)
+  AND (
+    sqlc.arg(search) = ''
+    OR title LIKE '%' || sqlc.arg(search) || '%'
+    OR description LIKE '%' || sqlc.arg(search) || '%'
+    OR CAST(amount AS TEXT) LIKE '%' || sqlc.arg(search) || '%'
+  )
+ORDER BY description COLLATE NOCASE DESC, time ASC
 LIMIT sqlc.arg(limit) OFFSET sqlc.arg(offset);
 
 -- name: UpdateEvent :one

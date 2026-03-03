@@ -17,7 +17,9 @@ templ MemberIndexMain(data MembersData) {
 				<th>
 					@shared.TableSortHeader(ctxi18n.T(ctx, "fields.name"), "name", data.Query, utils.BuildTableSortURL(fmt.Sprintf("/groups/%s/members", data.GroupID), data.Query, "name"))
 				</th>
-				<th>{ ctxi18n.T(ctx, "fields.description") }</th>
+				<th>
+					@shared.TableSortHeader(ctxi18n.T(ctx, "fields.description"), "description", data.Query, utils.BuildTableSortURL(fmt.Sprintf("/groups/%s/members", data.GroupID), data.Query, "description"))
+				</th>
 				if data.IsAdmin {
 					<th data-actions-col>
 						<div class="row row-right">

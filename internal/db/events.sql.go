@@ -16,6 +16,7 @@ WHERE group_id = ?1
     ?2 = ''
     OR title LIKE '%' || ?2 || '%'
     OR description LIKE '%' || ?2 || '%'
+    OR CAST(amount AS TEXT) LIKE '%' || ?2 || '%'
   )
 `
 
@@ -164,6 +165,7 @@ WHERE group_id = ?1
     ?2 = ''
     OR title LIKE '%' || ?2 || '%'
     OR description LIKE '%' || ?2 || '%'
+    OR CAST(amount AS TEXT) LIKE '%' || ?2 || '%'
   )
 ORDER BY amount ASC, created_at DESC
 LIMIT ?4 OFFSET ?3
@@ -220,6 +222,7 @@ WHERE group_id = ?1
     ?2 = ''
     OR title LIKE '%' || ?2 || '%'
     OR description LIKE '%' || ?2 || '%'
+    OR CAST(amount AS TEXT) LIKE '%' || ?2 || '%'
   )
 ORDER BY amount DESC, created_at DESC
 LIMIT ?4 OFFSET ?3
@@ -269,6 +272,120 @@ func (q *Queries) ListEventsByAmountDescFiltered(ctx context.Context, arg ListEv
 	return items, nil
 }
 
+const listEventsByDescriptionAscFiltered = `-- name: ListEventsByDescriptionAscFiltered :many
+SELECT id, group_id, title, time, description, amount, created_at, updated_at FROM events
+WHERE group_id = ?1
+  AND (
+    ?2 = ''
+    OR title LIKE '%' || ?2 || '%'
+    OR description LIKE '%' || ?2 || '%'
+    OR CAST(amount AS TEXT) LIKE '%' || ?2 || '%'
+  )
+ORDER BY description COLLATE NOCASE ASC, time ASC
+LIMIT ?4 OFFSET ?3
+`
+
+type ListEventsByDescriptionAscFilteredParams struct {
+	GroupID string      `json:"group_id"`
+	Search  interface{} `json:"search"`
+	Offset  int64       `json:"offset"`
+	Limit   int64       `json:"limit"`
+}
+
+func (q *Queries) ListEventsByDescriptionAscFiltered(ctx context.Context, arg ListEventsByDescriptionAscFilteredParams) ([]Event, error) {
+	rows, err := q.db.QueryContext(ctx, listEventsByDescriptionAscFiltered,
+		arg.GroupID,
+		arg.Search,
+		arg.Offset,
+		arg.Limit,
+	)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []Event{}
+	for rows.Next() {
+		var i Event
+		if err := rows.Scan(
+			&i.ID,
+			&i.GroupID,
+			&i.Title,
+			&i.Time,
+			&i.Description,
+			&i.Amount,
+			&i.CreatedAt,
+			&i.UpdatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const listEventsByDescriptionDescFiltered = `-- name: ListEventsByDescriptionDescFiltered :many
+SELECT id, group_id, title, time, description, amount, created_at, updated_at FROM events
+WHERE group_id = ?1
+  AND (
+    ?2 = ''
+    OR title LIKE '%' || ?2 || '%'
+    OR description LIKE '%' || ?2 || '%'
+    OR CAST(amount AS TEXT) LIKE '%' || ?2 || '%'
+  )
+ORDER BY description COLLATE NOCASE DESC, time ASC
+LIMIT ?4 OFFSET ?3
+`
+
+type ListEventsByDescriptionDescFilteredParams struct {
+	GroupID string      `json:"group_id"`
+	Search  interface{} `json:"search"`
+	Offset  int64       `json:"offset"`
+	Limit   int64       `json:"limit"`
+}
+
+func (q *Queries) ListEventsByDescriptionDescFiltered(ctx context.Context, arg ListEventsByDescriptionDescFilteredParams) ([]Event, error) {
+	rows, err := q.db.QueryContext(ctx, listEventsByDescriptionDescFiltered,
+		arg.GroupID,
+		arg.Search,
+		arg.Offset,
+		arg.Limit,
+	)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []Event{}
+	for rows.Next() {
+		var i Event
+		if err := rows.Scan(
+			&i.ID,
+			&i.GroupID,
+			&i.Title,
+			&i.Time,
+			&i.Description,
+			&i.Amount,
+			&i.CreatedAt,
+			&i.UpdatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const listEventsByTimeAscFiltered = `-- name: ListEventsByTimeAscFiltered :many
 SELECT id, group_id, title, time, description, amount, created_at, updated_at FROM events
 WHERE group_id = ?1
@@ -276,6 +393,7 @@ WHERE group_id = ?1
     ?2 = ''
     OR title LIKE '%' || ?2 || '%'
     OR description LIKE '%' || ?2 || '%'
+    OR CAST(amount AS TEXT) LIKE '%' || ?2 || '%'
   )
 ORDER BY time ASC, created_at DESC
 LIMIT ?4 OFFSET ?3
@@ -332,6 +450,7 @@ WHERE group_id = ?1
     ?2 = ''
     OR title LIKE '%' || ?2 || '%'
     OR description LIKE '%' || ?2 || '%'
+    OR CAST(amount AS TEXT) LIKE '%' || ?2 || '%'
   )
 ORDER BY time DESC, created_at DESC
 LIMIT ?4 OFFSET ?3
@@ -388,6 +507,7 @@ WHERE group_id = ?1
     ?2 = ''
     OR title LIKE '%' || ?2 || '%'
     OR description LIKE '%' || ?2 || '%'
+    OR CAST(amount AS TEXT) LIKE '%' || ?2 || '%'
   )
 ORDER BY title COLLATE NOCASE ASC, created_at DESC
 LIMIT ?4 OFFSET ?3
@@ -444,6 +564,7 @@ WHERE group_id = ?1
     ?2 = ''
     OR title LIKE '%' || ?2 || '%'
     OR description LIKE '%' || ?2 || '%'
+    OR CAST(amount AS TEXT) LIKE '%' || ?2 || '%'
   )
 ORDER BY title COLLATE NOCASE DESC, created_at DESC
 LIMIT ?4 OFFSET ?3

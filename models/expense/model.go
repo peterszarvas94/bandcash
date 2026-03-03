@@ -12,7 +12,7 @@ import (
 type Expenses struct{}
 
 func (e *Expenses) TableQuerySpec() utils.TableQuerySpec {
-	return utils.StandardTableQuerySpec("date", "desc", "date", "title", "amount")
+	return utils.StandardTableQuerySpec("date", "desc", "date", "title", "amount", "description")
 }
 
 func New() *Expenses {
@@ -55,6 +55,12 @@ func (e *Expenses) GetIndexData(ctx context.Context, groupID string, query utils
 			expenses, err = db.Qry.ListExpensesByAmountDescFiltered(ctx, db.ListExpensesByAmountDescFilteredParams(params))
 		} else {
 			expenses, err = db.Qry.ListExpensesByAmountAscFiltered(ctx, db.ListExpensesByAmountAscFilteredParams(params))
+		}
+	case "description":
+		if query.Dir == "desc" {
+			expenses, err = db.Qry.ListExpensesByDescriptionDescFiltered(ctx, db.ListExpensesByDescriptionDescFilteredParams(params))
+		} else {
+			expenses, err = db.Qry.ListExpensesByDescriptionAscFiltered(ctx, db.ListExpensesByDescriptionAscFilteredParams(params))
 		}
 	default:
 		if query.Dir == "asc" {

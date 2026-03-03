@@ -83,6 +83,28 @@ WHERE group_id = sqlc.arg(group_id)
 ORDER BY amount DESC, created_at DESC
 LIMIT sqlc.arg(limit) OFFSET sqlc.arg(offset);
 
+-- name: ListExpensesByDescriptionAscFiltered :many
+SELECT * FROM expenses
+WHERE group_id = sqlc.arg(group_id)
+  AND (
+    sqlc.arg(search) = ''
+    OR title LIKE '%' || sqlc.arg(search) || '%'
+    OR description LIKE '%' || sqlc.arg(search) || '%'
+  )
+ORDER BY description COLLATE NOCASE ASC, date DESC
+LIMIT sqlc.arg(limit) OFFSET sqlc.arg(offset);
+
+-- name: ListExpensesByDescriptionDescFiltered :many
+SELECT * FROM expenses
+WHERE group_id = sqlc.arg(group_id)
+  AND (
+    sqlc.arg(search) = ''
+    OR title LIKE '%' || sqlc.arg(search) || '%'
+    OR description LIKE '%' || sqlc.arg(search) || '%'
+  )
+ORDER BY description COLLATE NOCASE DESC, date DESC
+LIMIT sqlc.arg(limit) OFFSET sqlc.arg(offset);
+
 -- name: UpdateExpense :one
 UPDATE expenses
 SET title = ?, description = ?, amount = ?, date = ?

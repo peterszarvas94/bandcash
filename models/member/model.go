@@ -13,7 +13,7 @@ type Members struct {
 }
 
 func (p *Members) TableQuerySpec() utils.TableQuerySpec {
-	return utils.StandardTableQuerySpec("createdAt", "desc", "name", "createdAt")
+	return utils.StandardTableQuerySpec("createdAt", "desc", "name", "createdAt", "description")
 }
 
 func New() *Members {
@@ -86,6 +86,12 @@ func (p *Members) GetIndexData(ctx context.Context, groupID string, query utils.
 			members, err = db.Qry.ListMembersByNameDescFiltered(ctx, db.ListMembersByNameDescFilteredParams(params))
 		} else {
 			members, err = db.Qry.ListMembersByNameAscFiltered(ctx, params)
+		}
+	case "description":
+		if query.Dir == "desc" {
+			members, err = db.Qry.ListMembersByDescriptionDescFiltered(ctx, db.ListMembersByDescriptionDescFilteredParams(params))
+		} else {
+			members, err = db.Qry.ListMembersByDescriptionAscFiltered(ctx, db.ListMembersByDescriptionAscFilteredParams(params))
 		}
 	default:
 		if query.Dir == "asc" {

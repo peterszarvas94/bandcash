@@ -246,6 +246,114 @@ func (q *Queries) ListMembersByCreatedAtDescFiltered(ctx context.Context, arg Li
 	return items, nil
 }
 
+const listMembersByDescriptionAscFiltered = `-- name: ListMembersByDescriptionAscFiltered :many
+SELECT id, group_id, name, description, created_at, updated_at FROM members
+WHERE group_id = ?1
+  AND (
+    ?2 = ''
+    OR name LIKE '%' || ?2 || '%'
+    OR description LIKE '%' || ?2 || '%'
+  )
+ORDER BY description COLLATE NOCASE ASC, name COLLATE NOCASE ASC
+LIMIT ?4 OFFSET ?3
+`
+
+type ListMembersByDescriptionAscFilteredParams struct {
+	GroupID string      `json:"group_id"`
+	Search  interface{} `json:"search"`
+	Offset  int64       `json:"offset"`
+	Limit   int64       `json:"limit"`
+}
+
+func (q *Queries) ListMembersByDescriptionAscFiltered(ctx context.Context, arg ListMembersByDescriptionAscFilteredParams) ([]Member, error) {
+	rows, err := q.db.QueryContext(ctx, listMembersByDescriptionAscFiltered,
+		arg.GroupID,
+		arg.Search,
+		arg.Offset,
+		arg.Limit,
+	)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []Member{}
+	for rows.Next() {
+		var i Member
+		if err := rows.Scan(
+			&i.ID,
+			&i.GroupID,
+			&i.Name,
+			&i.Description,
+			&i.CreatedAt,
+			&i.UpdatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const listMembersByDescriptionDescFiltered = `-- name: ListMembersByDescriptionDescFiltered :many
+SELECT id, group_id, name, description, created_at, updated_at FROM members
+WHERE group_id = ?1
+  AND (
+    ?2 = ''
+    OR name LIKE '%' || ?2 || '%'
+    OR description LIKE '%' || ?2 || '%'
+  )
+ORDER BY description COLLATE NOCASE DESC, name COLLATE NOCASE ASC
+LIMIT ?4 OFFSET ?3
+`
+
+type ListMembersByDescriptionDescFilteredParams struct {
+	GroupID string      `json:"group_id"`
+	Search  interface{} `json:"search"`
+	Offset  int64       `json:"offset"`
+	Limit   int64       `json:"limit"`
+}
+
+func (q *Queries) ListMembersByDescriptionDescFiltered(ctx context.Context, arg ListMembersByDescriptionDescFilteredParams) ([]Member, error) {
+	rows, err := q.db.QueryContext(ctx, listMembersByDescriptionDescFiltered,
+		arg.GroupID,
+		arg.Search,
+		arg.Offset,
+		arg.Limit,
+	)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []Member{}
+	for rows.Next() {
+		var i Member
+		if err := rows.Scan(
+			&i.ID,
+			&i.GroupID,
+			&i.Name,
+			&i.Description,
+			&i.CreatedAt,
+			&i.UpdatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const listMembersByNameAscFiltered = `-- name: ListMembersByNameAscFiltered :many
 SELECT id, group_id, name, description, created_at, updated_at FROM members
 WHERE group_id = ?1
