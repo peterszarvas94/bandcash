@@ -16,7 +16,6 @@ WHERE group_id = ?1
     ?2 = ''
     OR title LIKE '%' || ?2 || '%'
     OR description LIKE '%' || ?2 || '%'
-    OR CAST(amount AS TEXT) LIKE '%' || ?2 || '%'
   )
 `
 
@@ -165,7 +164,6 @@ WHERE group_id = ?1
     ?2 = ''
     OR title LIKE '%' || ?2 || '%'
     OR description LIKE '%' || ?2 || '%'
-    OR CAST(amount AS TEXT) LIKE '%' || ?2 || '%'
   )
 ORDER BY amount ASC, created_at DESC
 LIMIT ?4 OFFSET ?3
@@ -222,7 +220,6 @@ WHERE group_id = ?1
     ?2 = ''
     OR title LIKE '%' || ?2 || '%'
     OR description LIKE '%' || ?2 || '%'
-    OR CAST(amount AS TEXT) LIKE '%' || ?2 || '%'
   )
 ORDER BY amount DESC, created_at DESC
 LIMIT ?4 OFFSET ?3
@@ -279,7 +276,6 @@ WHERE group_id = ?1
     ?2 = ''
     OR title LIKE '%' || ?2 || '%'
     OR description LIKE '%' || ?2 || '%'
-    OR CAST(amount AS TEXT) LIKE '%' || ?2 || '%'
   )
 ORDER BY description COLLATE NOCASE ASC, time ASC
 LIMIT ?4 OFFSET ?3
@@ -336,7 +332,6 @@ WHERE group_id = ?1
     ?2 = ''
     OR title LIKE '%' || ?2 || '%'
     OR description LIKE '%' || ?2 || '%'
-    OR CAST(amount AS TEXT) LIKE '%' || ?2 || '%'
   )
 ORDER BY description COLLATE NOCASE DESC, time ASC
 LIMIT ?4 OFFSET ?3
@@ -393,7 +388,6 @@ WHERE group_id = ?1
     ?2 = ''
     OR title LIKE '%' || ?2 || '%'
     OR description LIKE '%' || ?2 || '%'
-    OR CAST(amount AS TEXT) LIKE '%' || ?2 || '%'
   )
 ORDER BY time ASC, created_at DESC
 LIMIT ?4 OFFSET ?3
@@ -450,7 +444,6 @@ WHERE group_id = ?1
     ?2 = ''
     OR title LIKE '%' || ?2 || '%'
     OR description LIKE '%' || ?2 || '%'
-    OR CAST(amount AS TEXT) LIKE '%' || ?2 || '%'
   )
 ORDER BY time DESC, created_at DESC
 LIMIT ?4 OFFSET ?3
@@ -507,7 +500,6 @@ WHERE group_id = ?1
     ?2 = ''
     OR title LIKE '%' || ?2 || '%'
     OR description LIKE '%' || ?2 || '%'
-    OR CAST(amount AS TEXT) LIKE '%' || ?2 || '%'
   )
 ORDER BY title COLLATE NOCASE ASC, created_at DESC
 LIMIT ?4 OFFSET ?3
@@ -564,7 +556,6 @@ WHERE group_id = ?1
     ?2 = ''
     OR title LIKE '%' || ?2 || '%'
     OR description LIKE '%' || ?2 || '%'
-    OR CAST(amount AS TEXT) LIKE '%' || ?2 || '%'
   )
 ORDER BY title COLLATE NOCASE DESC, created_at DESC
 LIMIT ?4 OFFSET ?3
