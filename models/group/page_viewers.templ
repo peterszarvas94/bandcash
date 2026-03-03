@@ -97,14 +97,15 @@ templ GroupViewersMain(data ViewersPageData) {
 						<td>{ utils.FormatTimeLocalized(ctx, invite.CreatedAt.Time) }</td>
 						if data.IsAdmin {
 							<td data-actions-col>
-								@shared.IconActionButton(
-									"btn btn-sm btn-danger btn-icon",
-									fmt.Sprintf("sure(%s, %s, %s, %s, () => @post('/groups/%s/invites/%s/remove'))", utils.JSONString(ctxi18n.T(ctx, "groups.cancel_invite_confirm")), utils.JSONString(ctxi18n.T(ctx, "confirm.destructive_message")), utils.JSONString(ctxi18n.T(ctx, "actions.delete")), utils.JSONString(ctxi18n.T(ctx, "actions.cancel")), data.Group.ID, invite.ID),
-									"$_fetching",
-									ctxi18n.T(ctx, "actions.delete"),
-									ctxi18n.T(ctx, "actions.delete"),
-									icons.IconTrash2,
-								)
+							@shared.SureIconActionButton(
+								"btn btn-sm btn-danger btn-icon",
+								fmt.Sprintf("$sureOpen = true; $sureTitle = %s; $sureMessage = %s; $sureSubmitLabel = %s; $sureCancelLabel = %s; $sureMethod = 'post'; $sureURL = '/groups/%s/invites/%s/remove'; $sureTriggerID = %s", utils.JSONString(ctxi18n.T(ctx, "groups.cancel_invite_confirm")), utils.JSONString(ctxi18n.T(ctx, "confirm.destructive_message")), utils.JSONString(ctxi18n.T(ctx, "actions.delete")), utils.JSONString(ctxi18n.T(ctx, "actions.cancel")), data.Group.ID, invite.ID, utils.JSONString("invite-remove-"+invite.ID)),
+								"$_fetching",
+								ctxi18n.T(ctx, "actions.delete"),
+								ctxi18n.T(ctx, "actions.delete"),
+								icons.IconTrash2,
+								"invite-remove-" + invite.ID,
+							)
 							</td>
 						}
 					</tr>
@@ -138,14 +139,15 @@ templ GroupViewersMain(data ViewersPageData) {
 						<td>{ viewer.Email }</td>
 						if data.IsAdmin {
 							<td data-actions-col>
-								@shared.IconActionButton(
-									"btn btn-sm btn-danger btn-icon",
-									fmt.Sprintf("sure(%s, %s, %s, %s, () => @post('/groups/%s/viewers/%s/remove'))", utils.JSONString(ctxi18n.T(ctx, "groups.remove_viewer_confirm")), utils.JSONString(ctxi18n.T(ctx, "confirm.destructive_message")), utils.JSONString(ctxi18n.T(ctx, "actions.delete")), utils.JSONString(ctxi18n.T(ctx, "actions.cancel")), data.Group.ID, viewer.ID),
-									"$_fetching",
-									ctxi18n.T(ctx, "actions.delete"),
-									ctxi18n.T(ctx, "actions.delete"),
-									icons.IconTrash2,
-								)
+							@shared.SureIconActionButton(
+								"btn btn-sm btn-danger btn-icon",
+								fmt.Sprintf("$sureOpen = true; $sureTitle = %s; $sureMessage = %s; $sureSubmitLabel = %s; $sureCancelLabel = %s; $sureMethod = 'post'; $sureURL = '/groups/%s/viewers/%s/remove'; $sureTriggerID = %s", utils.JSONString(ctxi18n.T(ctx, "groups.remove_viewer_confirm")), utils.JSONString(ctxi18n.T(ctx, "confirm.destructive_message")), utils.JSONString(ctxi18n.T(ctx, "actions.delete")), utils.JSONString(ctxi18n.T(ctx, "actions.cancel")), data.Group.ID, viewer.ID, utils.JSONString("viewer-remove-"+viewer.ID)),
+								"$_fetching",
+								ctxi18n.T(ctx, "actions.delete"),
+								ctxi18n.T(ctx, "actions.delete"),
+								icons.IconTrash2,
+								"viewer-remove-" + viewer.ID,
+							)
 							</td>
 						}
 					</tr>

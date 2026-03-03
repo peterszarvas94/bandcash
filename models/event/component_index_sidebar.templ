@@ -15,12 +15,13 @@ templ EventIndexSidebar(data EventsData) {
 		<div data-show="$formState !== ''" style="display: none" class="pb">
 			<div class="row justify-between" data-show="$formState === 'edit'">
 				<h3>{ctxi18n.T(ctx, "events.edit")}</h3>
-				@shared.SidebarLoadingActionButton(
+				@shared.SureActionButton(
 					"btn btn-danger",
-					fmt.Sprintf("sure(%s, %s, %s, %s, () => @delete('/groups/%s/events/' + $editingId))", utils.JSONString(ctxi18n.T(ctx, "events.delete_confirm")), utils.JSONString(ctxi18n.T(ctx, "confirm.destructive_message")), utils.JSONString(ctxi18n.T(ctx, "actions.delete")), utils.JSONString(ctxi18n.T(ctx, "actions.cancel")), data.GroupID),
+					fmt.Sprintf("$sureOpen = true; $sureTitle = %s; $sureMessage = %s; $sureSubmitLabel = %s; $sureCancelLabel = %s; $sureMethod = 'delete'; $sureURL = '/groups/%s/events/' + $editingId; $sureTriggerID = 'event-sidebar-delete'", utils.JSONString(ctxi18n.T(ctx, "events.delete_confirm")), utils.JSONString(ctxi18n.T(ctx, "confirm.destructive_message")), utils.JSONString(ctxi18n.T(ctx, "actions.delete")), utils.JSONString(ctxi18n.T(ctx, "actions.cancel")), data.GroupID),
+					"$_fetching",
 					ctxi18n.T(ctx, "actions.delete"),
 					icons.IconTrash2,
-					"event-delete",
+					"event-sidebar-delete",
 				)
 			</div>
 			<form class="form">

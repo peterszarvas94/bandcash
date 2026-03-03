@@ -17,7 +17,6 @@ templ Head(title string) {
 				"imports": {
 					"datastar": "/static/js/vendor/datastar.js",
 					"bandcash/notifications": "/static/js/notifications.js",
-					"bandcash/sure": "/static/js/sure.js",
 					"bandcash/drawer-focus": "/static/js/drawer_focus.js",
 					"bandcash/rate-limit-tester": "/static/js/rate_limit_tester.js",
 					"bandcash/body-limit-tester": "/static/js/body_limit_tester.js",
@@ -42,18 +41,28 @@ templ Notifications() {
 	</div>
 	<div
 		id="sure-popover"
-		popover="manual"
 		class="sure-popover"
-		data-default-title={ ctxi18n.T(ctx, "actions.confirm") }
-		data-default-submit={ ctxi18n.T(ctx, "actions.confirm") }
-		data-default-cancel={ ctxi18n.T(ctx, "actions.cancel") }
+		data-signals={ templ.JSONString(map[string]any{
+			"sureOpen": false,
+			"sureTitle": ctxi18n.T(ctx, "actions.confirm"),
+			"sureMessage": "",
+			"sureSubmitLabel": ctxi18n.T(ctx, "actions.confirm"),
+			"sureCancelLabel": ctxi18n.T(ctx, "actions.cancel"),
+			"sureMethod": "post",
+			"sureURL": "",
+			"sureTriggerID": "",
+		}) }
+		data-show="$sureOpen"
+		style="display: none"
+		data-on:click="evt.target === el && ($sureOpen = false; $sureTriggerID = '')"
+		data-on:keydown__window="evt.key === 'Escape' && $sureOpen && ($sureOpen = false; $sureTriggerID = '')"
 	>
 		<section class="sure-dialog" role="dialog" aria-modal="true" aria-labelledby="sure-title" aria-describedby="sure-message">
-			<h3 id="sure-title"></h3>
-			<p id="sure-message"></p>
+			<h3 id="sure-title" data-text="$sureTitle"></h3>
+			<p id="sure-message" data-show="$sureMessage !== ''" style="display: none" data-text="$sureMessage"></p>
 			<div class="row row-right row-wrap">
-				<button id="sure-cancel" type="button" class="btn"></button>
-				<button id="sure-submit" type="button" class="btn btn-danger"></button>
+				<button id="sure-cancel" type="button" class="btn" data-on:click="$sureOpen = false; $sureTriggerID = ''" data-text="$sureCancelLabel"></button>
+				<button id="sure-submit" type="button" class="btn btn-danger" data-indicator:_fetching data-on:click="$sureOpen = false; ($sureMethod === 'delete' ? @delete($sureURL) : ($sureMethod === 'put' ? @put($sureURL) : @post($sureURL)))" data-on:datastar-fetch="(evt.detail.type === 'finished' || evt.detail.type === 'error' || evt.detail.type === 'retries-failed') && ($sureTriggerID = '')" data-text="$sureSubmitLabel"></button>
 			</div>
 		</section>
 	</div>

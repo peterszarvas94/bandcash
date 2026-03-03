@@ -37,6 +37,14 @@ templ ActionButton(className string, onClick string, disabledExpr string, label 
 	</button>
 }
 
+templ SureActionButton(className string, onClick string, disabledExpr string, label string, iconName icons.IconName, triggerID string) {
+	<button class={ className } type="button" data-attr:disabled={ disabledExpr } data-on:click={ onClick }>
+		<span data-show={ fmt.Sprintf("$sureTriggerID !== %q", triggerID) }>@icons.Icon(iconName, templ.Attributes{"class": "icon"})</span>
+		<span data-show={ fmt.Sprintf("$sureTriggerID === %q", triggerID) } style="display: none">@icons.LoaderCircle(templ.Attributes{"class": "icon icon-spin"})</span>
+		<span>{ label }</span>
+	</button>
+}
+
 templ SidebarLoadingSubmitButton(className string, label string, iconName icons.IconName, actionID string) {
 	<button
 		type="submit"
@@ -82,6 +90,13 @@ templ LoadingIconActionButton(className string, onClick string, disabledExpr str
 templ IconActionButton(className string, onClick string, disabledExpr string, ariaLabel string, title string, iconName icons.IconName) {
 	<button class={ className } type="button" aria-label={ ariaLabel } title={ title } data-attr:disabled={ disabledExpr } data-on:click={ onClick }>
 		@icons.Icon(iconName, templ.Attributes{"class": "icon"})
+	</button>
+}
+
+templ SureIconActionButton(className string, onClick string, disabledExpr string, ariaLabel string, title string, iconName icons.IconName, triggerID string) {
+	<button class={ className } type="button" aria-label={ ariaLabel } title={ title } data-attr:disabled={ disabledExpr } data-on:click={ onClick }>
+		<span data-show={ fmt.Sprintf("$sureTriggerID !== %q", triggerID) }>@icons.Icon(iconName, templ.Attributes{"class": "icon"})</span>
+		<span data-show={ fmt.Sprintf("$sureTriggerID === %q", triggerID) } style="display: none">@icons.LoaderCircle(templ.Attributes{"class": "icon icon-spin"})</span>
 	</button>
 }
 
