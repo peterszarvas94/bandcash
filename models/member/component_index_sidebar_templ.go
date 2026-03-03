@@ -94,7 +94,7 @@ func MemberIndexSidebar(data MembersData) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = shared.SidebarLoadingActionButton("btn", fmt.Sprintf("@post('/groups/%s/members')", data.GroupID), ctxi18n.T(ctx, "members.create"), icons.IconSave, "member-create").Render(ctx, templ_7745c5c3_Buffer)
+			templ_7745c5c3_Err = shared.SidebarLoadingActionButton(shared.SidebarLoadingActionButtonProps{ClassName: "btn", OnClick: fmt.Sprintf("@post('/groups/%s/members')", data.GroupID), Label: ctxi18n.T(ctx, "members.create"), IconName: icons.IconSave, ActionID: "member-create"}).Render(ctx, templ_7745c5c3_Buffer)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -102,7 +102,7 @@ func MemberIndexSidebar(data MembersData) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = shared.SidebarLoadingActionButton("btn", fmt.Sprintf("@put('/groups/%s/members/' + $editingId)", data.GroupID), ctxi18n.T(ctx, "members.update"), icons.IconSave, "member-update").Render(ctx, templ_7745c5c3_Buffer)
+			templ_7745c5c3_Err = shared.SidebarLoadingActionButton(shared.SidebarLoadingActionButtonProps{ClassName: "btn", OnClick: fmt.Sprintf("@put('/groups/%s/members/' + $editingId)", data.GroupID), Label: ctxi18n.T(ctx, "members.update"), IconName: icons.IconSave, ActionID: "member-update"}).Render(ctx, templ_7745c5c3_Buffer)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -110,7 +110,7 @@ func MemberIndexSidebar(data MembersData) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = shared.ActionButton("btn", "$formState = ''; $editingId = 0; $formData = {name: '', description: ''}; $errors = {name: '', description: ''}", "$_fetching", ctxi18n.T(ctx, "actions.cancel"), icons.IconX).Render(ctx, templ_7745c5c3_Buffer)
+			templ_7745c5c3_Err = shared.ActionButton(shared.ActionButtonProps{ClassName: "btn", OnClick: "$formState = ''; $editingId = 0; $formData = {name: '', description: ''}; $errors = {name: '', description: ''}", DisabledExpr: "$_fetching", Label: ctxi18n.T(ctx, "actions.cancel"), IconName: icons.IconX}).Render(ctx, templ_7745c5c3_Buffer)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}

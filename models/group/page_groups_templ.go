@@ -252,14 +252,7 @@ func GroupsMain(data GroupsPageData) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = shared.LoadingIconActionButton(
-			"btn btn-ghost btn-sm btn-icon",
-			"$formState = 'add'; $formData = {name: ''}; $selectedGroupId = ''",
-			"$formState !== ''",
-			ctxi18n.T(ctx, "groups.create"),
-			ctxi18n.T(ctx, "groups.create"),
-			icons.IconPlus,
-		).Render(ctx, templ_7745c5c3_Buffer)
+		templ_7745c5c3_Err = shared.LoadingIconActionButton(shared.LoadingIconActionButtonProps{ClassName: "btn btn-ghost btn-sm btn-icon", OnClick: "$formState = 'add'; $formData = {name: ''}; $selectedGroupId = ''", DisabledExpr: "$formState !== ''", AriaLabel: ctxi18n.T(ctx, "groups.create"), Title: ctxi18n.T(ctx, "groups.create"), IconName: icons.IconPlus}).Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -275,7 +268,7 @@ func GroupsMain(data GroupsPageData) templ.Component {
 			var templ_7745c5c3_Var12 string
 			templ_7745c5c3_Var12, templ_7745c5c3_Err = templ.JoinStringErrs(ctxi18n.T(ctx, "table.empty"))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/group/page_groups.templ`, Line: 76, Col: 55}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/group/page_groups.templ`, Line: 69, Col: 55}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var12))
 			if templ_7745c5c3_Err != nil {
@@ -294,7 +287,7 @@ func GroupsMain(data GroupsPageData) templ.Component {
 				var templ_7745c5c3_Var13 templ.SafeURL
 				templ_7745c5c3_Var13, templ_7745c5c3_Err = templ.JoinURLErrs("/groups/" + group.Group.ID)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/group/page_groups.templ`, Line: 81, Col: 57}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/group/page_groups.templ`, Line: 74, Col: 57}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var13))
 				if templ_7745c5c3_Err != nil {
@@ -307,7 +300,7 @@ func GroupsMain(data GroupsPageData) templ.Component {
 				var templ_7745c5c3_Var14 string
 				templ_7745c5c3_Var14, templ_7745c5c3_Err = templ.JoinStringErrs(group.Group.Name)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/group/page_groups.templ`, Line: 81, Col: 78}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/group/page_groups.templ`, Line: 74, Col: 78}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var14))
 				if templ_7745c5c3_Err != nil {
@@ -325,7 +318,7 @@ func GroupsMain(data GroupsPageData) templ.Component {
 					var templ_7745c5c3_Var15 string
 					templ_7745c5c3_Var15, templ_7745c5c3_Err = templ.JoinStringErrs(ctxi18n.T(ctx, "groups.role_admin"))
 					if templ_7745c5c3_Err != nil {
-						return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/group/page_groups.templ`, Line: 85, Col: 79}
+						return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/group/page_groups.templ`, Line: 78, Col: 79}
 					}
 					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var15))
 					if templ_7745c5c3_Err != nil {
@@ -343,7 +336,7 @@ func GroupsMain(data GroupsPageData) templ.Component {
 					var templ_7745c5c3_Var16 string
 					templ_7745c5c3_Var16, templ_7745c5c3_Err = templ.JoinStringErrs(ctxi18n.T(ctx, "groups.role_viewer"))
 					if templ_7745c5c3_Err != nil {
-						return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/group/page_groups.templ`, Line: 87, Col: 66}
+						return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/group/page_groups.templ`, Line: 80, Col: 66}
 					}
 					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var16))
 					if templ_7745c5c3_Err != nil {
@@ -361,7 +354,7 @@ func GroupsMain(data GroupsPageData) templ.Component {
 				var templ_7745c5c3_Var17 string
 				templ_7745c5c3_Var17, templ_7745c5c3_Err = templ.JoinStringErrs(group.Group.CreatedAt.Time.Format("2006-01-02"))
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/group/page_groups.templ`, Line: 90, Col: 59}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/group/page_groups.templ`, Line: 83, Col: 59}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var17))
 				if templ_7745c5c3_Err != nil {
@@ -374,7 +367,7 @@ func GroupsMain(data GroupsPageData) templ.Component {
 				var templ_7745c5c3_Var18 string
 				templ_7745c5c3_Var18, templ_7745c5c3_Err = templ.JoinStringErrs(group.AdminEmail)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/group/page_groups.templ`, Line: 91, Col: 28}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/group/page_groups.templ`, Line: 84, Col: 28}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var18))
 				if templ_7745c5c3_Err != nil {
@@ -385,26 +378,12 @@ func GroupsMain(data GroupsPageData) templ.Component {
 					return templ_7745c5c3_Err
 				}
 				if group.Role == "admin" {
-					templ_7745c5c3_Err = shared.LoadingIconActionButton(
-						"btn btn-ghost btn-sm btn-icon",
-						fmt.Sprintf("$formState = 'edit'; $selectedGroupId = '%s'; $formData = {name: %s}; $errors = {name: ''}", group.Group.ID, utils.JSONString(group.Group.Name)),
-						"$formState !== ''",
-						ctxi18n.T(ctx, "actions.edit"),
-						ctxi18n.T(ctx, "actions.edit"),
-						icons.IconPencil,
-					).Render(ctx, templ_7745c5c3_Buffer)
+					templ_7745c5c3_Err = shared.LoadingIconActionButton(shared.LoadingIconActionButtonProps{ClassName: "btn btn-ghost btn-sm btn-icon", OnClick: fmt.Sprintf("$formState = 'edit'; $selectedGroupId = '%s'; $formData = {name: %s}; $errors = {name: ''}", group.Group.ID, utils.JSONString(group.Group.Name)), DisabledExpr: "$formState !== ''", AriaLabel: ctxi18n.T(ctx, "actions.edit"), Title: ctxi18n.T(ctx, "actions.edit"), IconName: icons.IconPencil}).Render(ctx, templ_7745c5c3_Buffer)
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
 				} else {
-					templ_7745c5c3_Err = shared.LoadingIconActionButton(
-						"btn btn-ghost btn-sm btn-icon",
-						fmt.Sprintf("$formState = 'leave'; $selectedGroupId = '%s'", group.Group.ID),
-						"$formState !== ''",
-						ctxi18n.T(ctx, "groups.leave"),
-						ctxi18n.T(ctx, "groups.leave"),
-						icons.IconSquareArrowRightExit,
-					).Render(ctx, templ_7745c5c3_Buffer)
+					templ_7745c5c3_Err = shared.LoadingIconActionButton(shared.LoadingIconActionButtonProps{ClassName: "btn btn-ghost btn-sm btn-icon", OnClick: fmt.Sprintf("$formState = 'leave'; $selectedGroupId = '%s'", group.Group.ID), DisabledExpr: "$formState !== ''", AriaLabel: ctxi18n.T(ctx, "groups.leave"), Title: ctxi18n.T(ctx, "groups.leave"), IconName: icons.IconSquareArrowRightExit}).Render(ctx, templ_7745c5c3_Buffer)
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
@@ -451,7 +430,7 @@ func GroupsSidebar(data GroupsPageData) templ.Component {
 		var templ_7745c5c3_Var20 string
 		templ_7745c5c3_Var20, templ_7745c5c3_Err = templ.JoinStringErrs(templ.JSONString(map[string]any{"sidebarLoadingAction": ""}))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/group/page_groups.templ`, Line: 123, Col: 81}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/group/page_groups.templ`, Line: 102, Col: 81}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var20))
 		if templ_7745c5c3_Err != nil {
@@ -464,7 +443,7 @@ func GroupsSidebar(data GroupsPageData) templ.Component {
 		var templ_7745c5c3_Var21 string
 		templ_7745c5c3_Var21, templ_7745c5c3_Err = templ.JoinStringErrs(ctxi18n.T(ctx, "groups.new"))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/group/page_groups.templ`, Line: 125, Col: 36}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/group/page_groups.templ`, Line: 104, Col: 36}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var21))
 		if templ_7745c5c3_Err != nil {
@@ -477,7 +456,7 @@ func GroupsSidebar(data GroupsPageData) templ.Component {
 		var templ_7745c5c3_Var22 string
 		templ_7745c5c3_Var22, templ_7745c5c3_Err = templ.JoinStringErrs(ctxi18n.T(ctx, "groups.name"))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/group/page_groups.templ`, Line: 128, Col: 42}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/group/page_groups.templ`, Line: 107, Col: 42}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var22))
 		if templ_7745c5c3_Err != nil {
@@ -490,7 +469,7 @@ func GroupsSidebar(data GroupsPageData) templ.Component {
 		var templ_7745c5c3_Var23 string
 		templ_7745c5c3_Var23, templ_7745c5c3_Err = templ.JoinStringErrs(ctxi18n.T(ctx, "groups.name_placeholder"))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/group/page_groups.templ`, Line: 129, Col: 104}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/group/page_groups.templ`, Line: 108, Col: 104}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var23))
 		if templ_7745c5c3_Err != nil {
@@ -500,11 +479,11 @@ func GroupsSidebar(data GroupsPageData) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = shared.SidebarLoadingSubmitButton("btn", ctxi18n.T(ctx, "groups.create"), icons.IconSave, "group-create").Render(ctx, templ_7745c5c3_Buffer)
+		templ_7745c5c3_Err = shared.SidebarLoadingSubmitButton(shared.SidebarLoadingSubmitButtonProps{ClassName: "btn", Label: ctxi18n.T(ctx, "groups.create"), IconName: icons.IconSave, ActionID: "group-create"}).Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = shared.ActionButton("btn", "$formState = ''; $formData = {name: ''}", "$_fetching", ctxi18n.T(ctx, "actions.cancel"), icons.IconX).Render(ctx, templ_7745c5c3_Buffer)
+		templ_7745c5c3_Err = shared.ActionButton(shared.ActionButtonProps{ClassName: "btn", OnClick: "$formState = ''; $formData = {name: ''}", DisabledExpr: "$_fetching", Label: ctxi18n.T(ctx, "actions.cancel"), IconName: icons.IconX}).Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -515,7 +494,7 @@ func GroupsSidebar(data GroupsPageData) templ.Component {
 		var templ_7745c5c3_Var24 string
 		templ_7745c5c3_Var24, templ_7745c5c3_Err = templ.JoinStringErrs(ctxi18n.T(ctx, "groups.edit"))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/group/page_groups.templ`, Line: 139, Col: 38}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/group/page_groups.templ`, Line: 118, Col: 38}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var24))
 		if templ_7745c5c3_Err != nil {
@@ -525,19 +504,13 @@ func GroupsSidebar(data GroupsPageData) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = shared.ActionButton(
-			"btn btn-danger",
-			fmt.Sprintf(
-				"$sureOpen = true; $sureTitle = %s; $sureMessage = %s; $sureSubmitLabel = %s; $sureCancelLabel = %s; $sureMethod = 'post'; $sureURL = '/groups/' + $selectedGroupId + '/delete'; $sureTriggerID = 'groups-sidebar-delete'",
-				utils.JSONString(ctxi18n.T(ctx, "groups.delete_confirm")),
-				utils.JSONString(ctxi18n.T(ctx, "confirm.destructive_message")),
-				utils.JSONString(ctxi18n.T(ctx, "groups.delete")),
-				utils.JSONString(ctxi18n.T(ctx, "actions.cancel")),
-			),
-			"$_fetching",
-			ctxi18n.T(ctx, "actions.delete"),
-			icons.IconTrash2,
-		).Render(ctx, templ_7745c5c3_Buffer)
+		templ_7745c5c3_Err = shared.ActionButton(shared.ActionButtonProps{ClassName: "btn btn-danger", OnClick: fmt.Sprintf(
+			"$sureOpen = true; $sureTitle = %s; $sureMessage = %s; $sureSubmitLabel = %s; $sureCancelLabel = %s; $sureMethod = 'post'; $sureURL = '/groups/' + $selectedGroupId + '/delete'; $sureTriggerID = 'groups-sidebar-delete'",
+			utils.JSONString(ctxi18n.T(ctx, "groups.delete_confirm")),
+			utils.JSONString(ctxi18n.T(ctx, "confirm.destructive_message")),
+			utils.JSONString(ctxi18n.T(ctx, "groups.delete")),
+			utils.JSONString(ctxi18n.T(ctx, "actions.cancel")),
+		), DisabledExpr: "$_fetching", Label: ctxi18n.T(ctx, "actions.delete"), IconName: icons.IconTrash2}).Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -548,7 +521,7 @@ func GroupsSidebar(data GroupsPageData) templ.Component {
 		var templ_7745c5c3_Var25 string
 		templ_7745c5c3_Var25, templ_7745c5c3_Err = templ.JoinStringErrs(ctxi18n.T(ctx, "groups.name"))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/group/page_groups.templ`, Line: 158, Col: 42}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/group/page_groups.templ`, Line: 131, Col: 42}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var25))
 		if templ_7745c5c3_Err != nil {
@@ -561,7 +534,7 @@ func GroupsSidebar(data GroupsPageData) templ.Component {
 		var templ_7745c5c3_Var26 string
 		templ_7745c5c3_Var26, templ_7745c5c3_Err = templ.JoinStringErrs(ctxi18n.T(ctx, "groups.name_placeholder"))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/group/page_groups.templ`, Line: 159, Col: 104}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/group/page_groups.templ`, Line: 132, Col: 104}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var26))
 		if templ_7745c5c3_Err != nil {
@@ -571,11 +544,11 @@ func GroupsSidebar(data GroupsPageData) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = shared.SidebarLoadingSubmitButton("btn", ctxi18n.T(ctx, "groups.update"), icons.IconSave, "group-update").Render(ctx, templ_7745c5c3_Buffer)
+		templ_7745c5c3_Err = shared.SidebarLoadingSubmitButton(shared.SidebarLoadingSubmitButtonProps{ClassName: "btn", Label: ctxi18n.T(ctx, "groups.update"), IconName: icons.IconSave, ActionID: "group-update"}).Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = shared.ActionButton("btn", "$formState = ''; $selectedGroupId = ''; $formData = {name: ''}; $errors = {name: ''}", "$_fetching", ctxi18n.T(ctx, "actions.cancel"), icons.IconX).Render(ctx, templ_7745c5c3_Buffer)
+		templ_7745c5c3_Err = shared.ActionButton(shared.ActionButtonProps{ClassName: "btn", OnClick: "$formState = ''; $selectedGroupId = ''; $formData = {name: ''}; $errors = {name: ''}", DisabledExpr: "$_fetching", Label: ctxi18n.T(ctx, "actions.cancel"), IconName: icons.IconX}).Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -586,7 +559,7 @@ func GroupsSidebar(data GroupsPageData) templ.Component {
 		var templ_7745c5c3_Var27 string
 		templ_7745c5c3_Var27, templ_7745c5c3_Err = templ.JoinStringErrs(ctxi18n.T(ctx, "groups.leave"))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/group/page_groups.templ`, Line: 169, Col: 38}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/group/page_groups.templ`, Line: 142, Col: 38}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var27))
 		if templ_7745c5c3_Err != nil {
@@ -599,7 +572,7 @@ func GroupsSidebar(data GroupsPageData) templ.Component {
 		var templ_7745c5c3_Var28 string
 		templ_7745c5c3_Var28, templ_7745c5c3_Err = templ.JoinStringErrs(ctxi18n.T(ctx, "groups.leave_confirm"))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/group/page_groups.templ`, Line: 170, Col: 45}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/group/page_groups.templ`, Line: 143, Col: 45}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var28))
 		if templ_7745c5c3_Err != nil {
@@ -609,23 +582,17 @@ func GroupsSidebar(data GroupsPageData) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = shared.ActionButton(
-			"btn btn-danger",
-			fmt.Sprintf(
-				"$sureOpen = true; $sureTitle = %s; $sureMessage = %s; $sureSubmitLabel = %s; $sureCancelLabel = %s; $sureMethod = 'post'; $sureURL = '/groups/' + $selectedGroupId + '/leave'; $sureTriggerID = 'groups-sidebar-leave'",
-				utils.JSONString(ctxi18n.T(ctx, "groups.leave_confirm")),
-				utils.JSONString(ctxi18n.T(ctx, "confirm.leave_message")),
-				utils.JSONString(ctxi18n.T(ctx, "groups.leave")),
-				utils.JSONString(ctxi18n.T(ctx, "actions.cancel")),
-			),
-			"$_fetching",
-			ctxi18n.T(ctx, "groups.leave"),
-			icons.IconSquareArrowRightExit,
-		).Render(ctx, templ_7745c5c3_Buffer)
+		templ_7745c5c3_Err = shared.ActionButton(shared.ActionButtonProps{ClassName: "btn btn-danger", OnClick: fmt.Sprintf(
+			"$sureOpen = true; $sureTitle = %s; $sureMessage = %s; $sureSubmitLabel = %s; $sureCancelLabel = %s; $sureMethod = 'post'; $sureURL = '/groups/' + $selectedGroupId + '/leave'; $sureTriggerID = 'groups-sidebar-leave'",
+			utils.JSONString(ctxi18n.T(ctx, "groups.leave_confirm")),
+			utils.JSONString(ctxi18n.T(ctx, "confirm.leave_message")),
+			utils.JSONString(ctxi18n.T(ctx, "groups.leave")),
+			utils.JSONString(ctxi18n.T(ctx, "actions.cancel")),
+		), DisabledExpr: "$_fetching", Label: ctxi18n.T(ctx, "groups.leave"), IconName: icons.IconSquareArrowRightExit}).Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = shared.ActionButton("btn", "$formState = ''; $selectedGroupId = ''", "$_fetching", ctxi18n.T(ctx, "actions.cancel"), icons.IconX).Render(ctx, templ_7745c5c3_Buffer)
+		templ_7745c5c3_Err = shared.ActionButton(shared.ActionButtonProps{ClassName: "btn", OnClick: "$formState = ''; $selectedGroupId = ''", DisabledExpr: "$_fetching", Label: ctxi18n.T(ctx, "actions.cancel"), IconName: icons.IconX}).Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

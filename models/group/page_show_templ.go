@@ -124,25 +124,25 @@ func GroupMain(data GroupPageData) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = shared.ActionButton("btn", "$formState = 'edit'; $errors = {name: ''}", "$formState !== '' || $_fetching", ctxi18n.T(ctx, "groups.edit"), icons.IconPencil).Render(ctx, templ_7745c5c3_Buffer)
+			templ_7745c5c3_Err = shared.ActionButton(shared.ActionButtonProps{ClassName: "btn", OnClick: "$formState = 'edit'; $errors = {name: ''}", DisabledExpr: "$formState !== '' || $_fetching", Label: ctxi18n.T(ctx, "groups.edit"), IconName: icons.IconPencil}).Render(ctx, templ_7745c5c3_Buffer)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = shared.SureActionButton(
-				"btn btn-danger",
-				fmt.Sprintf(
-					"$sureOpen = true; $sureTitle = %s; $sureMessage = %s; $sureSubmitLabel = %s; $sureCancelLabel = %s; $sureMethod = 'post'; $sureURL = '/groups/%s/delete'; $sureTriggerID = 'group-show-delete'",
-					utils.JSONString(ctxi18n.T(ctx, "groups.delete_confirm")),
-					utils.JSONString(ctxi18n.T(ctx, "confirm.destructive_message")),
-					utils.JSONString(ctxi18n.T(ctx, "groups.delete")),
-					utils.JSONString(ctxi18n.T(ctx, "actions.cancel")),
-					data.Group.ID,
-				),
-				"$formState !== '' || $_fetching",
-				ctxi18n.T(ctx, "groups.delete"),
-				icons.IconTrash2,
-				"group-show-delete",
-			).Render(ctx, templ_7745c5c3_Buffer)
+			templ_7745c5c3_Err = shared.SureActionButton(shared.SureActionButtonProps{
+				ClassName:    "btn btn-danger",
+				DisabledExpr: "$formState !== '' || $_fetching",
+				Label:        ctxi18n.T(ctx, "groups.delete"),
+				IconName:     icons.IconTrash2,
+				Dialog: shared.SureDialogProps{
+					Title:       ctxi18n.T(ctx, "groups.delete_confirm"),
+					Message:     ctxi18n.T(ctx, "confirm.destructive_message"),
+					SubmitLabel: ctxi18n.T(ctx, "groups.delete"),
+					CancelLabel: ctxi18n.T(ctx, "actions.cancel"),
+					Method:      "post",
+					URL:         fmt.Sprintf("/groups/%s/delete", data.Group.ID),
+					TriggerID:   "group-show-delete",
+				},
+			}).Render(ctx, templ_7745c5c3_Buffer)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -327,11 +327,11 @@ func GroupSidebar(data GroupPageData) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = shared.SidebarLoadingSubmitButton("btn", ctxi18n.T(ctx, "groups.update"), icons.IconSave, "group-update").Render(ctx, templ_7745c5c3_Buffer)
+			templ_7745c5c3_Err = shared.SidebarLoadingSubmitButton(shared.SidebarLoadingSubmitButtonProps{ClassName: "btn", Label: ctxi18n.T(ctx, "groups.update"), IconName: icons.IconSave, ActionID: "group-update"}).Render(ctx, templ_7745c5c3_Buffer)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = shared.ActionButton("btn", "$formState = ''; $formData = {name: "+utils.JSONString(data.Group.Name)+"}; $errors = {name: ''}", "$_fetching", ctxi18n.T(ctx, "actions.cancel"), icons.IconX).Render(ctx, templ_7745c5c3_Buffer)
+			templ_7745c5c3_Err = shared.ActionButton(shared.ActionButtonProps{ClassName: "btn", OnClick: "$formState = ''; $formData = {name: " + utils.JSONString(data.Group.Name) + "}; $errors = {name: ''}", DisabledExpr: "$_fetching", Label: ctxi18n.T(ctx, "actions.cancel"), IconName: icons.IconX}).Render(ctx, templ_7745c5c3_Buffer)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}

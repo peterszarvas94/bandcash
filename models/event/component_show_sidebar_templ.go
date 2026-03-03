@@ -109,23 +109,11 @@ func EventShowSidebar(data EventData) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = shared.SidebarLoadingActionButton(
-				"btn",
-				fmt.Sprintf("@put('/groups/%s/events/%s')", data.GroupID, data.Event.ID),
-				ctxi18n.T(ctx, "events.update"),
-				icons.IconSave,
-				"event-details-update",
-			).Render(ctx, templ_7745c5c3_Buffer)
+			templ_7745c5c3_Err = shared.SidebarLoadingActionButton(shared.SidebarLoadingActionButtonProps{ClassName: "btn", OnClick: fmt.Sprintf("@put('/groups/%s/events/%s')", data.GroupID, data.Event.ID), Label: ctxi18n.T(ctx, "events.update"), IconName: icons.IconSave, ActionID: "event-details-update"}).Render(ctx, templ_7745c5c3_Buffer)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = shared.ActionButton(
-				"btn",
-				"$eventFormState = ''; $eventFormData = {title: "+utils.JSONString(data.Event.Title)+", time: "+utils.JSONString(data.Event.Time)+", description: "+utils.JSONString(data.Event.Description)+", amount: "+fmt.Sprintf("%d", data.Event.Amount)+"}; $errors = {title: '', time: '', description: '', amount: ''}",
-				"$_fetching",
-				ctxi18n.T(ctx, "actions.cancel"),
-				icons.IconX,
-			).Render(ctx, templ_7745c5c3_Buffer)
+			templ_7745c5c3_Err = shared.ActionButton(shared.ActionButtonProps{ClassName: "btn", OnClick: "$eventFormState = ''; $eventFormData = {title: " + utils.JSONString(data.Event.Title) + ", time: " + utils.JSONString(data.Event.Time) + ", description: " + utils.JSONString(data.Event.Description) + ", amount: " + fmt.Sprintf("%d", data.Event.Amount) + "}; $errors = {title: '', time: '', description: '', amount: ''}", DisabledExpr: "$_fetching", Label: ctxi18n.T(ctx, "actions.cancel"), IconName: icons.IconX}).Render(ctx, templ_7745c5c3_Buffer)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -136,7 +124,7 @@ func EventShowSidebar(data EventData) templ.Component {
 			var templ_7745c5c3_Var7 string
 			templ_7745c5c3_Var7, templ_7745c5c3_Err = templ.JoinStringErrs(ctxi18n.T(ctx, "participants.edit"))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/event/component_show_sidebar.templ`, Line: 59, Col: 77}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/event/component_show_sidebar.templ`, Line: 47, Col: 77}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var7))
 			if templ_7745c5c3_Err != nil {
@@ -149,7 +137,7 @@ func EventShowSidebar(data EventData) templ.Component {
 			var templ_7745c5c3_Var8 string
 			templ_7745c5c3_Var8, templ_7745c5c3_Err = templ.JoinStringErrs(ctxi18n.T(ctx, "participants.member"))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/event/component_show_sidebar.templ`, Line: 62, Col: 49}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/event/component_show_sidebar.templ`, Line: 50, Col: 49}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var8))
 			if templ_7745c5c3_Err != nil {
@@ -162,7 +150,7 @@ func EventShowSidebar(data EventData) templ.Component {
 			var templ_7745c5c3_Var9 string
 			templ_7745c5c3_Var9, templ_7745c5c3_Err = templ.JoinStringErrs(ctxi18n.T(ctx, "participants.select_member"))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/event/component_show_sidebar.templ`, Line: 64, Col: 67}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/event/component_show_sidebar.templ`, Line: 52, Col: 67}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var9))
 			if templ_7745c5c3_Err != nil {
@@ -180,7 +168,7 @@ func EventShowSidebar(data EventData) templ.Component {
 				var templ_7745c5c3_Var10 string
 				templ_7745c5c3_Var10, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("%s", member.ID))
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/event/component_show_sidebar.templ`, Line: 66, Col: 50}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/event/component_show_sidebar.templ`, Line: 54, Col: 50}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var10))
 				if templ_7745c5c3_Err != nil {
@@ -193,7 +181,7 @@ func EventShowSidebar(data EventData) templ.Component {
 				var templ_7745c5c3_Var11 string
 				templ_7745c5c3_Var11, templ_7745c5c3_Err = templ.JoinStringErrs(member.Name)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/event/component_show_sidebar.templ`, Line: 66, Col: 66}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/event/component_show_sidebar.templ`, Line: 54, Col: 66}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var11))
 				if templ_7745c5c3_Err != nil {
@@ -211,7 +199,7 @@ func EventShowSidebar(data EventData) templ.Component {
 			var templ_7745c5c3_Var12 string
 			templ_7745c5c3_Var12, templ_7745c5c3_Err = templ.JoinStringErrs(ctxi18n.T(ctx, "participants.member"))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/event/component_show_sidebar.templ`, Line: 72, Col: 49}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/event/component_show_sidebar.templ`, Line: 60, Col: 49}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var12))
 			if templ_7745c5c3_Err != nil {
@@ -224,7 +212,7 @@ func EventShowSidebar(data EventData) templ.Component {
 			var templ_7745c5c3_Var13 string
 			templ_7745c5c3_Var13, templ_7745c5c3_Err = templ.JoinStringErrs(ctxi18n.T(ctx, "participants.cut_amount"))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/event/component_show_sidebar.templ`, Line: 76, Col: 53}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/event/component_show_sidebar.templ`, Line: 64, Col: 53}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var13))
 			if templ_7745c5c3_Err != nil {
@@ -234,13 +222,7 @@ func EventShowSidebar(data EventData) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = shared.ActionButton(
-				"btn",
-				fmt.Sprintf("$calcPercent = $formData.amount > 0 ? Math.round($formData.amount / %d * 10000) / 100 : 0", data.Event.Amount),
-				"false",
-				ctxi18n.T(ctx, "participants.calc_percent"),
-				icons.IconCalculator,
-			).Render(ctx, templ_7745c5c3_Buffer)
+			templ_7745c5c3_Err = shared.ActionButton(shared.ActionButtonProps{ClassName: "btn", OnClick: fmt.Sprintf("$calcPercent = $formData.amount > 0 ? Math.round($formData.amount / %d * 10000) / 100 : 0", data.Event.Amount), DisabledExpr: "false", Label: ctxi18n.T(ctx, "participants.calc_percent"), IconName: icons.IconCalculator}).Render(ctx, templ_7745c5c3_Buffer)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -251,7 +233,7 @@ func EventShowSidebar(data EventData) templ.Component {
 			var templ_7745c5c3_Var14 string
 			templ_7745c5c3_Var14, templ_7745c5c3_Err = templ.JoinStringErrs(ctxi18n.T(ctx, "participants.quick_calc"))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/event/component_show_sidebar.templ`, Line: 90, Col: 53}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/event/component_show_sidebar.templ`, Line: 72, Col: 53}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var14))
 			if templ_7745c5c3_Err != nil {
@@ -264,7 +246,7 @@ func EventShowSidebar(data EventData) templ.Component {
 			var templ_7745c5c3_Var15 string
 			templ_7745c5c3_Var15, templ_7745c5c3_Err = templ.JoinStringErrs(ctxi18n.T(ctx, "participants.quick_calc_placeholder"))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/event/component_show_sidebar.templ`, Line: 92, Col: 136}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/event/component_show_sidebar.templ`, Line: 74, Col: 136}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var15))
 			if templ_7745c5c3_Err != nil {
@@ -274,13 +256,7 @@ func EventShowSidebar(data EventData) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = shared.ActionButton(
-				"btn",
-				fmt.Sprintf("$formData.amount = Math.round(%d * $calcPercent / 100)", data.Event.Amount),
-				"false",
-				ctxi18n.T(ctx, "participants.calc_amount"),
-				icons.IconCalculator,
-			).Render(ctx, templ_7745c5c3_Buffer)
+			templ_7745c5c3_Err = shared.ActionButton(shared.ActionButtonProps{ClassName: "btn", OnClick: fmt.Sprintf("$formData.amount = Math.round(%d * $calcPercent / 100)", data.Event.Amount), DisabledExpr: "false", Label: ctxi18n.T(ctx, "participants.calc_amount"), IconName: icons.IconCalculator}).Render(ctx, templ_7745c5c3_Buffer)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -291,7 +267,7 @@ func EventShowSidebar(data EventData) templ.Component {
 			var templ_7745c5c3_Var16 string
 			templ_7745c5c3_Var16, templ_7745c5c3_Err = templ.JoinStringErrs(ctxi18n.T(ctx, "participants.expense"))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/event/component_show_sidebar.templ`, Line: 103, Col: 50}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/event/component_show_sidebar.templ`, Line: 79, Col: 50}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var16))
 			if templ_7745c5c3_Err != nil {
@@ -304,7 +280,7 @@ func EventShowSidebar(data EventData) templ.Component {
 			var templ_7745c5c3_Var17 string
 			templ_7745c5c3_Var17, templ_7745c5c3_Err = templ.JoinStringErrs(ctxi18n.T(ctx, "participants.total"))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/event/component_show_sidebar.templ`, Line: 108, Col: 50}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/event/component_show_sidebar.templ`, Line: 84, Col: 50}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var17))
 			if templ_7745c5c3_Err != nil {
@@ -314,13 +290,7 @@ func EventShowSidebar(data EventData) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = shared.SidebarLoadingActionButton(
-				"btn",
-				fmt.Sprintf("@post('/groups/%s/events/%s/participants')", data.GroupID, data.Event.ID),
-				ctxi18n.T(ctx, "participants.add"),
-				icons.IconSave,
-				"participant-add",
-			).Render(ctx, templ_7745c5c3_Buffer)
+			templ_7745c5c3_Err = shared.SidebarLoadingActionButton(shared.SidebarLoadingActionButtonProps{ClassName: "btn", OnClick: fmt.Sprintf("@post('/groups/%s/events/%s/participants')", data.GroupID, data.Event.ID), Label: ctxi18n.T(ctx, "participants.add"), IconName: icons.IconSave, ActionID: "participant-add"}).Render(ctx, templ_7745c5c3_Buffer)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -328,13 +298,7 @@ func EventShowSidebar(data EventData) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = shared.SidebarLoadingActionButton(
-				"btn",
-				fmt.Sprintf("@put('/groups/%s/events/%s/participants/' + $editingId)", data.GroupID, data.Event.ID),
-				ctxi18n.T(ctx, "participants.update"),
-				icons.IconSave,
-				"participant-update",
-			).Render(ctx, templ_7745c5c3_Buffer)
+			templ_7745c5c3_Err = shared.SidebarLoadingActionButton(shared.SidebarLoadingActionButtonProps{ClassName: "btn", OnClick: fmt.Sprintf("@put('/groups/%s/events/%s/participants/' + $editingId)", data.GroupID, data.Event.ID), Label: ctxi18n.T(ctx, "participants.update"), IconName: icons.IconSave, ActionID: "participant-update"}).Render(ctx, templ_7745c5c3_Buffer)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -342,7 +306,7 @@ func EventShowSidebar(data EventData) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = shared.ActionButton("btn", "$formState = ''; $editingId = ''; $calcPercent = 0; $formData = {memberId: '', memberName: '', amount: 0, expense: 0}; $errors = {memberId: '', amount: '', expense: ''}", "$_fetching", ctxi18n.T(ctx, "actions.cancel"), icons.IconX).Render(ctx, templ_7745c5c3_Buffer)
+			templ_7745c5c3_Err = shared.ActionButton(shared.ActionButtonProps{ClassName: "btn", OnClick: "$formState = ''; $editingId = ''; $calcPercent = 0; $formData = {memberId: '', memberName: '', amount: 0, expense: 0}; $errors = {memberId: '', amount: '', expense: ''}", DisabledExpr: "$_fetching", Label: ctxi18n.T(ctx, "actions.cancel"), IconName: icons.IconX}).Render(ctx, templ_7745c5c3_Buffer)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}

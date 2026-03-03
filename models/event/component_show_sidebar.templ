@@ -38,20 +38,8 @@ templ EventShowSidebar(data EventData) {
 					<div data-show="$errors && $errors.amount" class="color-error" data-text="$errors.amount"></div>
 				</div>
 				<div class="sidebar-actions">
-					@shared.SidebarLoadingActionButton(
-						"btn",
-						fmt.Sprintf("@put('/groups/%s/events/%s')", data.GroupID, data.Event.ID),
-						ctxi18n.T(ctx, "events.update"),
-						icons.IconSave,
-						"event-details-update",
-					)
-					@shared.ActionButton(
-						"btn",
-						"$eventFormState = ''; $eventFormData = {title: "+utils.JSONString(data.Event.Title)+", time: "+utils.JSONString(data.Event.Time)+", description: "+utils.JSONString(data.Event.Description)+", amount: "+fmt.Sprintf("%d", data.Event.Amount)+"}; $errors = {title: '', time: '', description: '', amount: ''}",
-						"$_fetching",
-						ctxi18n.T(ctx, "actions.cancel"),
-						icons.IconX,
-					)
+					@shared.SidebarLoadingActionButton(shared.SidebarLoadingActionButtonProps{ClassName: "btn", OnClick: fmt.Sprintf("@put('/groups/%s/events/%s')", data.GroupID, data.Event.ID), Label: ctxi18n.T(ctx, "events.update"), IconName: icons.IconSave, ActionID: "event-details-update"})
+					@shared.ActionButton(shared.ActionButtonProps{ClassName: "btn", OnClick: "$eventFormState = ''; $eventFormData = {title: "+utils.JSONString(data.Event.Title)+", time: "+utils.JSONString(data.Event.Time)+", description: "+utils.JSONString(data.Event.Description)+", amount: "+fmt.Sprintf("%d", data.Event.Amount)+"}; $errors = {title: '', time: '', description: '', amount: ''}", DisabledExpr: "$_fetching", Label: ctxi18n.T(ctx, "actions.cancel"), IconName: icons.IconX})
 				</div>
 			</form>
 		</div>
@@ -76,13 +64,7 @@ templ EventShowSidebar(data EventData) {
 				<label>{ctxi18n.T(ctx, "participants.cut_amount")} <span class="required-mark">*</span></label>
 					<div class="row">
 						<input type="number" data-bind="formData.amount" step="1" class="input input-grow"/>
-						@shared.ActionButton(
-							"btn",
-							fmt.Sprintf("$calcPercent = $formData.amount > 0 ? Math.round($formData.amount / %d * 10000) / 100 : 0", data.Event.Amount),
-							"false",
-							ctxi18n.T(ctx, "participants.calc_percent"),
-							icons.IconCalculator,
-						)
+						@shared.ActionButton(shared.ActionButtonProps{ClassName: "btn", OnClick: fmt.Sprintf("$calcPercent = $formData.amount > 0 ? Math.round($formData.amount / %d * 10000) / 100 : 0", data.Event.Amount), DisabledExpr: "false", Label: ctxi18n.T(ctx, "participants.calc_percent"), IconName: icons.IconCalculator})
 					</div>
 					<div data-show="$errors && $errors.amount" class="color-error" data-text="$errors.amount"></div>
 				</div>
@@ -90,13 +72,7 @@ templ EventShowSidebar(data EventData) {
 				<label>{ctxi18n.T(ctx, "participants.quick_calc")}</label>
 					<div class="row">
 					<input type="number" data-bind="calcPercent" step="0.01" min="0" placeholder={ctxi18n.T(ctx, "participants.quick_calc_placeholder")} class="input input-grow"/>
-						@shared.ActionButton(
-							"btn",
-							fmt.Sprintf("$formData.amount = Math.round(%d * $calcPercent / 100)", data.Event.Amount),
-							"false",
-							ctxi18n.T(ctx, "participants.calc_amount"),
-							icons.IconCalculator,
-						)
+						@shared.ActionButton(shared.ActionButtonProps{ClassName: "btn", OnClick: fmt.Sprintf("$formData.amount = Math.round(%d * $calcPercent / 100)", data.Event.Amount), DisabledExpr: "false", Label: ctxi18n.T(ctx, "participants.calc_amount"), IconName: icons.IconCalculator})
 					</div>
 				</div>
 				<div>
@@ -110,24 +86,12 @@ templ EventShowSidebar(data EventData) {
 				</div>
 				<div class="sidebar-actions">
 					<span data-show="$formState === 'add'">
-						@shared.SidebarLoadingActionButton(
-							"btn",
-							fmt.Sprintf("@post('/groups/%s/events/%s/participants')", data.GroupID, data.Event.ID),
-							ctxi18n.T(ctx, "participants.add"),
-							icons.IconSave,
-							"participant-add",
-						)
+						@shared.SidebarLoadingActionButton(shared.SidebarLoadingActionButtonProps{ClassName: "btn", OnClick: fmt.Sprintf("@post('/groups/%s/events/%s/participants')", data.GroupID, data.Event.ID), Label: ctxi18n.T(ctx, "participants.add"), IconName: icons.IconSave, ActionID: "participant-add"})
 					</span>
 					<span data-show="$formState === 'edit'">
-						@shared.SidebarLoadingActionButton(
-							"btn",
-							fmt.Sprintf("@put('/groups/%s/events/%s/participants/' + $editingId)", data.GroupID, data.Event.ID),
-							ctxi18n.T(ctx, "participants.update"),
-							icons.IconSave,
-							"participant-update",
-						)
+						@shared.SidebarLoadingActionButton(shared.SidebarLoadingActionButtonProps{ClassName: "btn", OnClick: fmt.Sprintf("@put('/groups/%s/events/%s/participants/' + $editingId)", data.GroupID, data.Event.ID), Label: ctxi18n.T(ctx, "participants.update"), IconName: icons.IconSave, ActionID: "participant-update"})
 					</span>
-					@shared.ActionButton("btn", "$formState = ''; $editingId = ''; $calcPercent = 0; $formData = {memberId: '', memberName: '', amount: 0, expense: 0}; $errors = {memberId: '', amount: '', expense: ''}", "$_fetching", ctxi18n.T(ctx, "actions.cancel"), icons.IconX)
+					@shared.ActionButton(shared.ActionButtonProps{ClassName: "btn", OnClick: "$formState = ''; $editingId = ''; $calcPercent = 0; $formData = {memberId: '', memberName: '', amount: 0, expense: 0}; $errors = {memberId: '', amount: '', expense: ''}", DisabledExpr: "$_fetching", Label: ctxi18n.T(ctx, "actions.cancel"), IconName: icons.IconX})
 				</div>
 			</form>
 		</div>

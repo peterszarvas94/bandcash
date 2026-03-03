@@ -14,10 +14,8 @@ templ EventShowMain(data EventData) {
 	@shared.DetailTable(EventDetailsRows(data))
 	if data.IsAdmin {
 		<div class="row row-wrap detail-actions">
-			@shared.ActionButton("btn", "$eventFormState = 'edit'; $errors = {title: '', time: '', description: '', amount: ''}", "$eventFormState !== '' || $formState !== '' || $_fetching", ctxi18n.T(ctx, "events.edit"), icons.IconPencil)
-			@shared.ActionButton(
-				"btn btn-danger",
-				fmt.Sprintf(
+			@shared.ActionButton(shared.ActionButtonProps{ClassName: "btn", OnClick: "$eventFormState = 'edit'; $errors = {title: '', time: '', description: '', amount: ''}", DisabledExpr: "$eventFormState !== '' || $formState !== '' || $_fetching", Label: ctxi18n.T(ctx, "events.edit"), IconName: icons.IconPencil})
+			@shared.ActionButton(shared.ActionButtonProps{ClassName: "btn btn-danger", OnClick: fmt.Sprintf(
 					"$sureOpen = true; $sureTitle = %s; $sureMessage = %s; $sureSubmitLabel = %s; $sureCancelLabel = %s; $sureMethod = 'delete'; $sureURL = '/groups/%s/events/%s'; $sureTriggerID = 'event-show-delete'",
 					utils.JSONString(ctxi18n.T(ctx, "events.delete_confirm")),
 					utils.JSONString(ctxi18n.T(ctx, "confirm.destructive_message")),
@@ -25,11 +23,7 @@ templ EventShowMain(data EventData) {
 					utils.JSONString(ctxi18n.T(ctx, "actions.cancel")),
 					data.GroupID,
 					data.Event.ID,
-				),
-				"$eventFormState !== '' || $formState !== '' || $_fetching",
-				ctxi18n.T(ctx, "actions.delete"),
-				icons.IconTrash2,
-			)
+				), DisabledExpr: "$eventFormState !== '' || $formState !== '' || $_fetching", Label: ctxi18n.T(ctx, "actions.delete"), IconName: icons.IconTrash2})
 		</div>
 	}
 	<h2 class="pb">{ ctxi18n.T(ctx, "events.participants") }</h2>
@@ -43,7 +37,7 @@ templ EventShowMain(data EventData) {
 				if data.IsAdmin {
 					<th data-actions-col>
 						<div class="row row-right row-tight">
-							@shared.IconActionButton("btn btn-ghost btn-sm btn-icon", "$formState = 'add'; $editingId = ''; $calcPercent = 0; $formData = {memberId: '', memberName: '', amount: 0, expense: 0}; $errors = {memberId: '', amount: '', expense: ''}", "$formState !== '' || $eventFormState !== '' || $_fetching", ctxi18n.T(ctx, "participants.add"), ctxi18n.T(ctx, "participants.add"), icons.IconPlus)
+							@shared.IconActionButton(shared.IconActionButtonProps{ClassName: "btn btn-ghost btn-sm btn-icon", OnClick: "$formState = 'add'; $editingId = ''; $calcPercent = 0; $formData = {memberId: '', memberName: '', amount: 0, expense: 0}; $errors = {memberId: '', amount: '', expense: ''}", DisabledExpr: "$formState !== '' || $eventFormState !== '' || $_fetching", AriaLabel: ctxi18n.T(ctx, "participants.add"), Title: ctxi18n.T(ctx, "participants.add"), IconName: icons.IconPlus})
 						</div>
 					</th>
 				}
@@ -64,17 +58,8 @@ templ EventShowMain(data EventData) {
 					if data.IsAdmin {
 						<td class="text-right" data-actions-col>
 							<div class="row row-tight">
-								@shared.IconActionButton(
-									"btn btn-ghost btn-sm btn-icon",
-									fmt.Sprintf("$formState = 'edit'; $editingId = %q; $formData = {memberId: el.closest('tr').dataset.memberId, memberName: el.closest('tr').dataset.memberName, amount: Number(el.closest('tr').dataset.participantAmount), expense: Number(el.closest('tr').dataset.participantExpense)}", participant.ID),
-									"$formState !== '' || $eventFormState !== '' || $_fetching",
-									ctxi18n.T(ctx, "actions.edit"),
-									ctxi18n.T(ctx, "actions.edit"),
-									icons.IconPencil,
-								)
-								@shared.IconActionButton(
-									"btn btn-ghost btn-sm btn-danger btn-icon",
-									fmt.Sprintf(
+								@shared.IconActionButton(shared.IconActionButtonProps{ClassName: "btn btn-ghost btn-sm btn-icon", OnClick: fmt.Sprintf("$formState = 'edit'; $editingId = %q; $formData = {memberId: el.closest('tr').dataset.memberId, memberName: el.closest('tr').dataset.memberName, amount: Number(el.closest('tr').dataset.participantAmount), expense: Number(el.closest('tr').dataset.participantExpense)}", participant.ID), DisabledExpr: "$formState !== '' || $eventFormState !== '' || $_fetching", AriaLabel: ctxi18n.T(ctx, "actions.edit"), Title: ctxi18n.T(ctx, "actions.edit"), IconName: icons.IconPencil})
+								@shared.IconActionButton(shared.IconActionButtonProps{ClassName: "btn btn-ghost btn-sm btn-danger btn-icon", OnClick: fmt.Sprintf(
 										"$sureOpen = true; $sureTitle = %s; $sureMessage = %s; $sureSubmitLabel = %s; $sureCancelLabel = %s; $sureMethod = 'delete'; $sureURL = '/groups/%s/events/%s/participants/%s'; $sureTriggerID = %s",
 										utils.JSONString(ctxi18n.T(ctx, "participants.delete_confirm")),
 										utils.JSONString(ctxi18n.T(ctx, "confirm.destructive_message")),
@@ -84,12 +69,7 @@ templ EventShowMain(data EventData) {
 										data.Event.ID,
 										participant.ID,
 										utils.JSONString("participant-delete-"+participant.ID),
-									),
-									"$formState !== '' || $eventFormState !== '' || $_fetching",
-									ctxi18n.T(ctx, "actions.delete"),
-									ctxi18n.T(ctx, "actions.delete"),
-									icons.IconTrash2,
-								)
+									), DisabledExpr: "$formState !== '' || $eventFormState !== '' || $_fetching", AriaLabel: ctxi18n.T(ctx, "actions.delete"), Title: ctxi18n.T(ctx, "actions.delete"), IconName: icons.IconTrash2})
 							</div>
 						</td>
 					}

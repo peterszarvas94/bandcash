@@ -97,9 +97,7 @@ templ GroupViewersMain(data ViewersPageData) {
 						<td>{ utils.FormatTimeLocalized(ctx, invite.CreatedAt.Time) }</td>
 						if data.IsAdmin {
 							<td data-actions-col>
-							@shared.IconActionButton(
-								"btn btn-ghost btn-sm btn-danger btn-icon",
-								fmt.Sprintf(
+							@shared.IconActionButton(shared.IconActionButtonProps{ClassName: "btn btn-ghost btn-sm btn-danger btn-icon", OnClick: fmt.Sprintf(
 									"$sureOpen = true; $sureTitle = %s; $sureMessage = %s; $sureSubmitLabel = %s; $sureCancelLabel = %s; $sureMethod = 'delete'; $sureURL = '/groups/%s/invites/%s'; $sureTriggerID = %s",
 									utils.JSONString(ctxi18n.T(ctx, "groups.cancel_invite_confirm")),
 									utils.JSONString(ctxi18n.T(ctx, "confirm.destructive_message")),
@@ -108,12 +106,7 @@ templ GroupViewersMain(data ViewersPageData) {
 									data.Group.ID,
 									invite.ID,
 									utils.JSONString("invite-remove-"+invite.ID),
-								),
-								"$_fetching",
-								ctxi18n.T(ctx, "actions.delete"),
-								ctxi18n.T(ctx, "actions.delete"),
-								icons.IconTrash2,
-							)
+								), DisabledExpr: "$_fetching", AriaLabel: ctxi18n.T(ctx, "actions.delete"), Title: ctxi18n.T(ctx, "actions.delete"), IconName: icons.IconTrash2})
 							</td>
 						}
 					</tr>
@@ -135,7 +128,7 @@ templ GroupViewersMain(data ViewersPageData) {
 					if data.IsAdmin {
 						<th data-actions-col>
 							<div class="row row-right row-tight">
-							@shared.IconActionButton("btn btn-ghost btn-sm btn-icon", "$formState = 'add'; $formData = {email: ''}", "$formState !== '' || $_fetching", ctxi18n.T(ctx, "groups.add_viewer"), ctxi18n.T(ctx, "groups.add_viewer"), icons.IconPlus)
+							@shared.IconActionButton(shared.IconActionButtonProps{ClassName: "btn btn-ghost btn-sm btn-icon", OnClick: "$formState = 'add'; $formData = {email: ''}", DisabledExpr: "$formState !== '' || $_fetching", AriaLabel: ctxi18n.T(ctx, "groups.add_viewer"), Title: ctxi18n.T(ctx, "groups.add_viewer"), IconName: icons.IconPlus})
 							</div>
 						</th>
 					}
@@ -147,9 +140,7 @@ templ GroupViewersMain(data ViewersPageData) {
 						<td>{ viewer.Email }</td>
 						if data.IsAdmin {
 							<td data-actions-col>
-							@shared.IconActionButton(
-								"btn btn-ghost btn-sm btn-danger btn-icon",
-								fmt.Sprintf(
+							@shared.IconActionButton(shared.IconActionButtonProps{ClassName: "btn btn-ghost btn-sm btn-danger btn-icon", OnClick: fmt.Sprintf(
 									"$sureOpen = true; $sureTitle = %s; $sureMessage = %s; $sureSubmitLabel = %s; $sureCancelLabel = %s; $sureMethod = 'delete'; $sureURL = '/groups/%s/viewers/%s'; $sureTriggerID = %s",
 									utils.JSONString(ctxi18n.T(ctx, "groups.remove_viewer_confirm")),
 									utils.JSONString(ctxi18n.T(ctx, "confirm.destructive_message")),
@@ -158,12 +149,7 @@ templ GroupViewersMain(data ViewersPageData) {
 									data.Group.ID,
 									viewer.ID,
 									utils.JSONString("viewer-remove-"+viewer.ID),
-								),
-								"$_fetching",
-								ctxi18n.T(ctx, "actions.delete"),
-								ctxi18n.T(ctx, "actions.delete"),
-								icons.IconTrash2,
-							)
+								), DisabledExpr: "$_fetching", AriaLabel: ctxi18n.T(ctx, "actions.delete"), Title: ctxi18n.T(ctx, "actions.delete"), IconName: icons.IconTrash2})
 							</td>
 						}
 					</tr>
@@ -204,8 +190,8 @@ templ GroupViewersSidebar(data ViewersPageData) {
 					<input type="email" data-bind="formData.email" placeholder={ ctxi18n.T(ctx, "groups.viewer_email_placeholder") } class="input"/>
 				</div>
 				<div class="sidebar-actions">
-					@shared.SidebarLoadingSubmitButton("btn", ctxi18n.T(ctx, "groups.add_viewer"), icons.IconSave, "viewer-add")
-					@shared.ActionButton("btn", "$formState = ''; $formData = {email: ''}", "$_fetching", ctxi18n.T(ctx, "actions.cancel"), icons.IconX)
+					@shared.SidebarLoadingSubmitButton(shared.SidebarLoadingSubmitButtonProps{ClassName: "btn", Label: ctxi18n.T(ctx, "groups.add_viewer"), IconName: icons.IconSave, ActionID: "viewer-add"})
+					@shared.ActionButton(shared.ActionButtonProps{ClassName: "btn", OnClick: "$formState = ''; $formData = {email: ''}", DisabledExpr: "$_fetching", Label: ctxi18n.T(ctx, "actions.cancel"), IconName: icons.IconX})
 				</div>
 			</form>
 		</div>

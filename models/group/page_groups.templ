@@ -59,14 +59,7 @@ templ GroupsMain(data GroupsPageData) {
 				</th>
 					<th data-actions-col>
 						<div class="row row-right row-tight">
-						@shared.LoadingIconActionButton(
-									"btn btn-ghost btn-sm btn-icon",
-							"$formState = 'add'; $formData = {name: ''}; $selectedGroupId = ''",
-							"$formState !== ''",
-							ctxi18n.T(ctx, "groups.create"),
-							ctxi18n.T(ctx, "groups.create"),
-							icons.IconPlus,
-						)
+						@shared.LoadingIconActionButton(shared.LoadingIconActionButtonProps{ClassName: "btn btn-ghost btn-sm btn-icon", OnClick: "$formState = 'add'; $formData = {name: ''}; $selectedGroupId = ''", DisabledExpr: "$formState !== ''", AriaLabel: ctxi18n.T(ctx, "groups.create"), Title: ctxi18n.T(ctx, "groups.create"), IconName: icons.IconPlus})
 					</div>
 				</th>
 			</tr>
@@ -92,23 +85,9 @@ templ GroupsMain(data GroupsPageData) {
 						<td data-actions-col>
 							<div class="row row-right row-tight">
 								if group.Role == "admin" {
-									@shared.LoadingIconActionButton(
-									"btn btn-ghost btn-sm btn-icon",
-									fmt.Sprintf("$formState = 'edit'; $selectedGroupId = '%s'; $formData = {name: %s}; $errors = {name: ''}", group.Group.ID, utils.JSONString(group.Group.Name)),
-										"$formState !== ''",
-										ctxi18n.T(ctx, "actions.edit"),
-										ctxi18n.T(ctx, "actions.edit"),
-										icons.IconPencil,
-									)
+									@shared.LoadingIconActionButton(shared.LoadingIconActionButtonProps{ClassName: "btn btn-ghost btn-sm btn-icon", OnClick: fmt.Sprintf("$formState = 'edit'; $selectedGroupId = '%s'; $formData = {name: %s}; $errors = {name: ''}", group.Group.ID, utils.JSONString(group.Group.Name)), DisabledExpr: "$formState !== ''", AriaLabel: ctxi18n.T(ctx, "actions.edit"), Title: ctxi18n.T(ctx, "actions.edit"), IconName: icons.IconPencil})
 								} else {
-									@shared.LoadingIconActionButton(
-									"btn btn-ghost btn-sm btn-icon",
-										fmt.Sprintf("$formState = 'leave'; $selectedGroupId = '%s'", group.Group.ID),
-										"$formState !== ''",
-										ctxi18n.T(ctx, "groups.leave"),
-										ctxi18n.T(ctx, "groups.leave"),
-										icons.IconSquareArrowRightExit,
-									)
+									@shared.LoadingIconActionButton(shared.LoadingIconActionButtonProps{ClassName: "btn btn-ghost btn-sm btn-icon", OnClick: fmt.Sprintf("$formState = 'leave'; $selectedGroupId = '%s'", group.Group.ID), DisabledExpr: "$formState !== ''", AriaLabel: ctxi18n.T(ctx, "groups.leave"), Title: ctxi18n.T(ctx, "groups.leave"), IconName: icons.IconSquareArrowRightExit})
 								}
 							</div>
 						</td>
@@ -129,8 +108,8 @@ templ GroupsSidebar(data GroupsPageData) {
 				<input type="text" data-bind="formData.name" placeholder={ ctxi18n.T(ctx, "groups.name_placeholder") } class="input"/>
 			</div>
 			<div class="sidebar-actions">
-				@shared.SidebarLoadingSubmitButton("btn", ctxi18n.T(ctx, "groups.create"), icons.IconSave, "group-create")
-				@shared.ActionButton("btn", "$formState = ''; $formData = {name: ''}", "$_fetching", ctxi18n.T(ctx, "actions.cancel"), icons.IconX)
+				@shared.SidebarLoadingSubmitButton(shared.SidebarLoadingSubmitButtonProps{ClassName: "btn", Label: ctxi18n.T(ctx, "groups.create"), IconName: icons.IconSave, ActionID: "group-create"})
+				@shared.ActionButton(shared.ActionButtonProps{ClassName: "btn", OnClick: "$formState = ''; $formData = {name: ''}", DisabledExpr: "$_fetching", Label: ctxi18n.T(ctx, "actions.cancel"), IconName: icons.IconX})
 			</div>
 		</form>
 	</div>
@@ -138,19 +117,13 @@ templ GroupsSidebar(data GroupsPageData) {
 		<div class="row justify-between">
 			<h3>{ ctxi18n.T(ctx, "groups.edit") }</h3>
 			<div class="row row-wrap">
-				@shared.ActionButton(
-					"btn btn-danger",
-					fmt.Sprintf(
+				@shared.ActionButton(shared.ActionButtonProps{ClassName: "btn btn-danger", OnClick: fmt.Sprintf(
 						"$sureOpen = true; $sureTitle = %s; $sureMessage = %s; $sureSubmitLabel = %s; $sureCancelLabel = %s; $sureMethod = 'post'; $sureURL = '/groups/' + $selectedGroupId + '/delete'; $sureTriggerID = 'groups-sidebar-delete'",
 						utils.JSONString(ctxi18n.T(ctx, "groups.delete_confirm")),
 						utils.JSONString(ctxi18n.T(ctx, "confirm.destructive_message")),
 						utils.JSONString(ctxi18n.T(ctx, "groups.delete")),
 						utils.JSONString(ctxi18n.T(ctx, "actions.cancel")),
-					),
-					"$_fetching",
-					ctxi18n.T(ctx, "actions.delete"),
-					icons.IconTrash2,
-				)
+					), DisabledExpr: "$_fetching", Label: ctxi18n.T(ctx, "actions.delete"), IconName: icons.IconTrash2})
 			</div>
 		</div>
 		<form class="form" data-on:submit="@put('/groups/' + $selectedGroupId)" data-indicator:_fetching>
@@ -160,8 +133,8 @@ templ GroupsSidebar(data GroupsPageData) {
 				<div data-show="$errors && $errors.name" class="color-error" data-text="$errors.name"></div>
 			</div>
 			<div class="sidebar-actions">
-				@shared.SidebarLoadingSubmitButton("btn", ctxi18n.T(ctx, "groups.update"), icons.IconSave, "group-update")
-				@shared.ActionButton("btn", "$formState = ''; $selectedGroupId = ''; $formData = {name: ''}; $errors = {name: ''}", "$_fetching", ctxi18n.T(ctx, "actions.cancel"), icons.IconX)
+				@shared.SidebarLoadingSubmitButton(shared.SidebarLoadingSubmitButtonProps{ClassName: "btn", Label: ctxi18n.T(ctx, "groups.update"), IconName: icons.IconSave, ActionID: "group-update"})
+				@shared.ActionButton(shared.ActionButtonProps{ClassName: "btn", OnClick: "$formState = ''; $selectedGroupId = ''; $formData = {name: ''}; $errors = {name: ''}", DisabledExpr: "$_fetching", Label: ctxi18n.T(ctx, "actions.cancel"), IconName: icons.IconX})
 			</div>
 		</form>
 	</div>
@@ -169,20 +142,14 @@ templ GroupsSidebar(data GroupsPageData) {
 		<h3>{ ctxi18n.T(ctx, "groups.leave") }</h3>
 		<p>{ ctxi18n.T(ctx, "groups.leave_confirm") }</p>
 		<div class="sidebar-actions">
-			@shared.ActionButton(
-				"btn btn-danger",
-				fmt.Sprintf(
+			@shared.ActionButton(shared.ActionButtonProps{ClassName: "btn btn-danger", OnClick: fmt.Sprintf(
 					"$sureOpen = true; $sureTitle = %s; $sureMessage = %s; $sureSubmitLabel = %s; $sureCancelLabel = %s; $sureMethod = 'post'; $sureURL = '/groups/' + $selectedGroupId + '/leave'; $sureTriggerID = 'groups-sidebar-leave'",
 					utils.JSONString(ctxi18n.T(ctx, "groups.leave_confirm")),
 					utils.JSONString(ctxi18n.T(ctx, "confirm.leave_message")),
 					utils.JSONString(ctxi18n.T(ctx, "groups.leave")),
 					utils.JSONString(ctxi18n.T(ctx, "actions.cancel")),
-				),
-				"$_fetching",
-				ctxi18n.T(ctx, "groups.leave"),
-				icons.IconSquareArrowRightExit,
-			)
-			@shared.ActionButton("btn", "$formState = ''; $selectedGroupId = ''", "$_fetching", ctxi18n.T(ctx, "actions.cancel"), icons.IconX)
+				), DisabledExpr: "$_fetching", Label: ctxi18n.T(ctx, "groups.leave"), IconName: icons.IconSquareArrowRightExit})
+			@shared.ActionButton(shared.ActionButtonProps{ClassName: "btn", OnClick: "$formState = ''; $selectedGroupId = ''", DisabledExpr: "$_fetching", Label: ctxi18n.T(ctx, "actions.cancel"), IconName: icons.IconX})
 		</div>
 	</div>
 	</div>

@@ -38,12 +38,12 @@ templ ExpenseIndexSidebar(data ExpensesData) {
 					</div>
 					<div class="sidebar-actions">
 						<span data-show="$formState === 'add'">
-							@shared.SidebarLoadingActionButton("btn", fmt.Sprintf("@post('/groups/%s/expenses')", data.GroupID), ctxi18n.T(ctx, "expenses.create"), icons.IconSave, "expense-create")
+							@shared.SidebarLoadingActionButton(shared.SidebarLoadingActionButtonProps{ClassName: "btn", OnClick: fmt.Sprintf("@post('/groups/%s/expenses')", data.GroupID), Label: ctxi18n.T(ctx, "expenses.create"), IconName: icons.IconSave, ActionID: "expense-create"})
 						</span>
 						<span data-show="$formState === 'edit'">
-							@shared.SidebarLoadingActionButton("btn", fmt.Sprintf("@put('/groups/%s/expenses/' + $editingId)", data.GroupID), ctxi18n.T(ctx, "expenses.update"), icons.IconSave, "expense-update")
+							@shared.SidebarLoadingActionButton(shared.SidebarLoadingActionButtonProps{ClassName: "btn", OnClick: fmt.Sprintf("@put('/groups/%s/expenses/' + $editingId)", data.GroupID), Label: ctxi18n.T(ctx, "expenses.update"), IconName: icons.IconSave, ActionID: "expense-update"})
 						</span>
-						@shared.ActionButton("btn", "$formState = ''; $editingId = 0; $formData = {title: '', description: '', amount: 0, date: ''}; $errors = {title: '', description: '', amount: '', date: ''}", "$_fetching", ctxi18n.T(ctx, "actions.cancel"), icons.IconX)
+						@shared.ActionButton(shared.ActionButtonProps{ClassName: "btn", OnClick: "$formState = ''; $editingId = 0; $formData = {title: '', description: '', amount: 0, date: ''}; $errors = {title: '', description: '', amount: '', date: ''}", DisabledExpr: "$_fetching", Label: ctxi18n.T(ctx, "actions.cancel"), IconName: icons.IconX})
 					</div>
 				</form>
 			</div>

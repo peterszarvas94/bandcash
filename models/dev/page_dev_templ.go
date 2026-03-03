@@ -213,19 +213,19 @@ func TableQueryTestContent() templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = shared.IDActionButton("query-test-events-valid", "btn", "Events valid query").Render(ctx, templ_7745c5c3_Buffer)
+		templ_7745c5c3_Err = shared.IDActionButton(shared.IDActionButtonProps{ID: "query-test-events-valid", ClassName: "btn", Label: "Events valid query"}).Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = shared.IDActionButton("query-test-events-invalid", "btn", "Events invalid values").Render(ctx, templ_7745c5c3_Buffer)
+		templ_7745c5c3_Err = shared.IDActionButton(shared.IDActionButtonProps{ID: "query-test-events-invalid", ClassName: "btn", Label: "Events invalid values"}).Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = shared.IDActionButton("query-test-members-valid", "btn", "Members valid query").Render(ctx, templ_7745c5c3_Buffer)
+		templ_7745c5c3_Err = shared.IDActionButton(shared.IDActionButtonProps{ID: "query-test-members-valid", ClassName: "btn", Label: "Members valid query"}).Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = shared.IDActionButton("query-test-expenses-valid", "btn", "Expenses valid query").Render(ctx, templ_7745c5c3_Buffer)
+		templ_7745c5c3_Err = shared.IDActionButton(shared.IDActionButtonProps{ID: "query-test-expenses-valid", ClassName: "btn", Label: "Expenses valid query"}).Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -368,7 +368,7 @@ func NotificationsContent() templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = shared.LoadingSubmitButtonWithSignal("btn", "Inline validation", icons.IconSave, "_notifyInline").Render(ctx, templ_7745c5c3_Buffer)
+		templ_7745c5c3_Err = shared.LoadingSubmitButtonWithSignal(shared.LoadingSubmitButtonWithSignalProps{ClassName: "btn", Label: "Inline validation", IconName: icons.IconSave, LoadingSignal: "_notifyInline"}).Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -376,19 +376,19 @@ func NotificationsContent() templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = shared.LoadingActionButtonWithSignal("btn", "@post('/dev/notifications/info')", "$_notifyInfo", "Info", icons.IconInfo, "_notifyInfo").Render(ctx, templ_7745c5c3_Buffer)
+		templ_7745c5c3_Err = shared.LoadingActionButtonWithSignal(shared.LoadingActionButtonWithSignalProps{ClassName: "btn", OnClick: "@post('/dev/notifications/info')", DisabledExpr: "$_notifyInfo", Label: "Info", IconName: icons.IconInfo, LoadingSignal: "_notifyInfo"}).Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = shared.LoadingActionButtonWithSignal("btn", "@post('/dev/notifications/success')", "$_notifySuccess", "Success", icons.IconCheck, "_notifySuccess").Render(ctx, templ_7745c5c3_Buffer)
+		templ_7745c5c3_Err = shared.LoadingActionButtonWithSignal(shared.LoadingActionButtonWithSignalProps{ClassName: "btn", OnClick: "@post('/dev/notifications/success')", DisabledExpr: "$_notifySuccess", Label: "Success", IconName: icons.IconCheck, LoadingSignal: "_notifySuccess"}).Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = shared.LoadingActionButtonWithSignal("btn", "@post('/dev/notifications/warning')", "$_notifyWarning", "Warning", icons.IconTriangleAlert, "_notifyWarning").Render(ctx, templ_7745c5c3_Buffer)
+		templ_7745c5c3_Err = shared.LoadingActionButtonWithSignal(shared.LoadingActionButtonWithSignalProps{ClassName: "btn", OnClick: "@post('/dev/notifications/warning')", DisabledExpr: "$_notifyWarning", Label: "Warning", IconName: icons.IconTriangleAlert, LoadingSignal: "_notifyWarning"}).Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = shared.LoadingActionButtonWithSignal("btn btn-danger", "@post('/dev/notifications/error')", "$_notifyError", "Error", icons.IconCircleX, "_notifyError").Render(ctx, templ_7745c5c3_Buffer)
+		templ_7745c5c3_Err = shared.LoadingActionButtonWithSignal(shared.LoadingActionButtonWithSignalProps{ClassName: "btn btn-danger", OnClick: "@post('/dev/notifications/error')", DisabledExpr: "$_notifyError", Label: "Error", IconName: icons.IconCircleX, LoadingSignal: "_notifyError"}).Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -425,11 +425,11 @@ func RateLimitContent() templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = shared.IDActionButton("spam-health", "btn", "Spam /health").Render(ctx, templ_7745c5c3_Buffer)
+		templ_7745c5c3_Err = shared.IDActionButton(shared.IDActionButtonProps{ID: "spam-health", ClassName: "btn", Label: "Spam /health"}).Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = shared.IDActionButton("spam-auth", "btn", "Spam /auth/login").Render(ctx, templ_7745c5c3_Buffer)
+		templ_7745c5c3_Err = shared.IDActionButton(shared.IDActionButtonProps{ID: "spam-auth", ClassName: "btn", Label: "Spam /auth/login"}).Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -479,19 +479,19 @@ func BodyLimitContent() templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = shared.IDActionButton("body-limit-global-ok", "btn", "POST /health (small body)").Render(ctx, templ_7745c5c3_Buffer)
+		templ_7745c5c3_Err = shared.IDActionButton(shared.IDActionButtonProps{ID: "body-limit-global-ok", ClassName: "btn", Label: "POST /health (small body)"}).Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = shared.IDActionButton("body-limit-global-big", "btn btn-danger", "POST /health (too large)").Render(ctx, templ_7745c5c3_Buffer)
+		templ_7745c5c3_Err = shared.IDActionButton(shared.IDActionButtonProps{ID: "body-limit-global-big", ClassName: "btn btn-danger", Label: "POST /health (too large)"}).Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = shared.IDActionButton("body-limit-auth-ok", "btn", "POST /auth/login (small body)").Render(ctx, templ_7745c5c3_Buffer)
+		templ_7745c5c3_Err = shared.IDActionButton(shared.IDActionButtonProps{ID: "body-limit-auth-ok", ClassName: "btn", Label: "POST /auth/login (small body)"}).Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = shared.IDActionButton("body-limit-auth-big", "btn btn-danger", "POST /auth/login (too large)").Render(ctx, templ_7745c5c3_Buffer)
+		templ_7745c5c3_Err = shared.IDActionButton(shared.IDActionButtonProps{ID: "body-limit-auth-big", ClassName: "btn btn-danger", Label: "POST /auth/login (too large)"}).Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

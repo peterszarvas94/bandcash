@@ -24,7 +24,7 @@ templ GroupNewPage(data NewGroupPageData) {
 						<label>{ ctxi18n.T(ctx, "groups.name") } <span class="required-mark">*</span></label>
 						<input type="text" data-bind="formData.name" placeholder={ ctxi18n.T(ctx, "groups.name_placeholder") } class="input"/>
 					</div>
-					@shared.LoadingSubmitButton("btn", ctxi18n.T(ctx, "groups.create"), icons.IconSave)
+					@shared.LoadingSubmitButton(shared.LoadingSubmitButtonProps{ClassName: "btn", Label: ctxi18n.T(ctx, "groups.create"), IconName: icons.IconSave})
 				</form>
 			</main>
 		</body>

@@ -3,150 +3,271 @@ package shared
 import (
 	"fmt"
 
+	"bandcash/internal/utils"
 	icons "bandcash/models/shared/icons"
 )
 
-templ LoadingSubmitButton(className string, label string, iconName icons.IconName) {
-	@LoadingSubmitButtonWithSignal(className, label, iconName, "_fetching")
+type SureDialogProps struct {
+	Title       string
+	Message     string
+	SubmitLabel string
+	CancelLabel string
+	Method      string
+	URL         string
+	TriggerID   string
 }
 
-templ LoadingSubmitButtonWithSignal(className string, label string, iconName icons.IconName, loadingSignal string) {
-	<button type="submit" class={ className } data-attr:disabled={ fmt.Sprintf("$%s", loadingSignal) }>
-		<span data-show={ fmt.Sprintf("!$%s", loadingSignal) }>@icons.Icon(iconName, templ.Attributes{"class": "icon"})</span>
-		<span data-show={ fmt.Sprintf("$%s", loadingSignal) } style="display: none">@icons.LoaderCircle(templ.Attributes{"class": "icon icon-spin"})</span>
-		<span>{ label }</span>
+type LoadingSubmitButtonProps struct {
+	ClassName string
+	Label     string
+	IconName  icons.IconName
+}
+
+type LoadingSubmitButtonWithSignalProps struct {
+	ClassName     string
+	Label         string
+	IconName      icons.IconName
+	LoadingSignal string
+}
+
+type LoadingActionButtonProps struct {
+	ClassName    string
+	OnClick      string
+	DisabledExpr string
+	Label        string
+	IconName     icons.IconName
+}
+
+type LoadingActionButtonWithSignalProps struct {
+	ClassName     string
+	OnClick       string
+	DisabledExpr  string
+	Label         string
+	IconName      icons.IconName
+	LoadingSignal string
+}
+
+type ActionButtonProps struct {
+	ClassName    string
+	OnClick      string
+	DisabledExpr string
+	Label        string
+	IconName     icons.IconName
+}
+
+type SureActionButtonProps struct {
+	ClassName    string
+	DisabledExpr string
+	Label        string
+	IconName     icons.IconName
+	Dialog       SureDialogProps
+}
+
+type SidebarLoadingSubmitButtonProps struct {
+	ClassName string
+	Label     string
+	IconName  icons.IconName
+	ActionID  string
+}
+
+type SidebarLoadingActionButtonProps struct {
+	ClassName string
+	OnClick   string
+	Label     string
+	IconName  icons.IconName
+	ActionID  string
+}
+
+type LoadingIconActionButtonProps struct {
+	ClassName    string
+	OnClick      string
+	DisabledExpr string
+	AriaLabel    string
+	Title        string
+	IconName     icons.IconName
+}
+
+type IconActionButtonProps struct {
+	ClassName    string
+	OnClick      string
+	DisabledExpr string
+	AriaLabel    string
+	Title        string
+	IconName     icons.IconName
+}
+
+type IDActionButtonProps struct {
+	ID        string
+	ClassName string
+	Label     string
+}
+
+templ LoadingSubmitButton(props LoadingSubmitButtonProps) {
+	@LoadingSubmitButtonWithSignal(LoadingSubmitButtonWithSignalProps{
+		ClassName:     props.ClassName,
+		Label:         props.Label,
+		IconName:      props.IconName,
+		LoadingSignal: "_fetching",
+	})
+}
+
+templ LoadingSubmitButtonWithSignal(props LoadingSubmitButtonWithSignalProps) {
+	<button type="submit" class={ props.ClassName } data-attr:disabled={ fmt.Sprintf("$%s", props.LoadingSignal) }>
+		<span data-show={ fmt.Sprintf("!$%s", props.LoadingSignal) }>
+			@icons.Icon(props.IconName, templ.Attributes{"class": "icon"})
+		</span>
+		<span data-show={ fmt.Sprintf("$%s", props.LoadingSignal) } style="display: none">
+			@icons.LoaderCircle(templ.Attributes{"class": "icon icon-spin"})
+		</span>
+		<span>{ props.Label }</span>
 	</button>
 }
 
-templ LoadingActionButton(className string, onClick string, disabledExpr string, label string, iconName icons.IconName) {
-	@LoadingActionButtonWithSignal(className, onClick, disabledExpr, label, iconName, "_fetching")
+templ LoadingActionButton(props LoadingActionButtonProps) {
+	@LoadingActionButtonWithSignal(LoadingActionButtonWithSignalProps{
+		ClassName:     props.ClassName,
+		OnClick:       props.OnClick,
+		DisabledExpr:  props.DisabledExpr,
+		Label:         props.Label,
+		IconName:      props.IconName,
+		LoadingSignal: "_fetching",
+	})
 }
 
-templ LoadingActionButtonWithSignal(className string, onClick string, disabledExpr string, label string, iconName icons.IconName, loadingSignal string) {
+templ LoadingActionButtonWithSignal(props LoadingActionButtonWithSignalProps) {
 	<button
-		{ templ.Attributes{fmt.Sprintf("data-indicator:%s", loadingSignal): ""}... }
-		class={ className }
+		{ templ.Attributes{fmt.Sprintf("data-indicator:%s", props.LoadingSignal): ""}... }
+		class={ props.ClassName }
 		type="button"
-		data-signals={ templ.JSONString(map[string]any{loadingSignal: false}) }
+		data-signals={ templ.JSONString(map[string]any{props.LoadingSignal: false}) }
+		data-attr:disabled={ props.DisabledExpr }
+		data-on:click={ props.OnClick }
+	>
+		<span data-show={ fmt.Sprintf("!$%s", props.LoadingSignal) }>
+			@icons.Icon(props.IconName, templ.Attributes{"class": "icon"})
+		</span>
+		<span data-show={ fmt.Sprintf("$%s", props.LoadingSignal) } style="display: none">
+			@icons.LoaderCircle(templ.Attributes{"class": "icon icon-spin"})
+		</span>
+		<span>{ props.Label }</span>
+	</button>
+}
+
+templ ActionButton(props ActionButtonProps) {
+	<button class={ props.ClassName } type="button" data-attr:disabled={ props.DisabledExpr } data-on:click={ props.OnClick }>
+		@icons.Icon(props.IconName, templ.Attributes{"class": "icon"})
+		<span>{ props.Label }</span>
+	</button>
+}
+
+templ SureActionButton(props SureActionButtonProps) {
+	{{
+		disabledExpr := fmt.Sprintf("(%s) || $sureTriggerID === %q", props.DisabledExpr, props.Dialog.TriggerID)
+		onClickExpr := fmt.Sprintf(
+			`$sureOpen = true;
+			$sureTitle = %s;
+			$sureMessage = %s;
+			$sureSubmitLabel = %s;
+			$sureCancelLabel = %s;
+			$sureMethod = %s;
+			$sureURL = %s;
+			$sureTriggerID = %s`,
+			utils.JSONString(props.Dialog.Title),
+			utils.JSONString(props.Dialog.Message),
+			utils.JSONString(props.Dialog.SubmitLabel),
+			utils.JSONString(props.Dialog.CancelLabel),
+			utils.JSONString(props.Dialog.Method),
+			utils.JSONString(props.Dialog.URL),
+			utils.JSONString(props.Dialog.TriggerID),
+		)
+		showIconExpr := fmt.Sprintf("$sureTriggerID !== %q", props.Dialog.TriggerID)
+		showSpinnerExpr := fmt.Sprintf("$sureTriggerID === %q", props.Dialog.TriggerID)
+	}}
+	<button
+		class={ props.ClassName }
+		type="button"
 		data-attr:disabled={ disabledExpr }
-		data-on:click={ onClick }
+		data-on:click={ onClickExpr }
 	>
-		<span data-show={ fmt.Sprintf("!$%s", loadingSignal) }>@icons.Icon(iconName, templ.Attributes{"class": "icon"})</span>
-		<span data-show={ fmt.Sprintf("$%s", loadingSignal) } style="display: none">@icons.LoaderCircle(templ.Attributes{"class": "icon icon-spin"})</span>
-		<span>{ label }</span>
+		<span data-show={ showIconExpr }>
+			@icons.Icon(props.IconName, templ.Attributes{"class": "icon"})
+		</span>
+		<span data-show={ showSpinnerExpr } style="display: none">
+			@icons.LoaderCircle(templ.Attributes{"class": "icon icon-spin"})
+		</span>
+		<span>{ props.Label }</span>
 	</button>
 }
 
-templ ActionButton(className string, onClick string, disabledExpr string, label string, iconName icons.IconName) {
-	<button class={ className } type="button" data-attr:disabled={ disabledExpr } data-on:click={ onClick }>
-		@icons.Icon(iconName, templ.Attributes{"class": "icon"})
-		<span>{ label }</span>
-	</button>
-}
-
-templ SureActionButton(className string, onClick string, disabledExpr string, label string, iconName icons.IconName, triggerID string) {
-	<button
-		class={ className }
-		type="button"
-		data-attr:disabled={ fmt.Sprintf("(%s) || $sureTriggerID === %q", disabledExpr, triggerID) }
-		data-on:click={ onClick }
-	>
-		<span data-show={ fmt.Sprintf("$sureTriggerID !== %q", triggerID) }>@icons.Icon(iconName, templ.Attributes{"class": "icon"})</span>
-		<span data-show={ fmt.Sprintf("$sureTriggerID === %q", triggerID) } style="display: none">@icons.LoaderCircle(templ.Attributes{"class": "icon icon-spin"})</span>
-		<span>{ label }</span>
-	</button>
-}
-
-templ SidebarLoadingSubmitButton(className string, label string, iconName icons.IconName, actionID string) {
+templ SidebarLoadingSubmitButton(props SidebarLoadingSubmitButtonProps) {
 	<button
 		type="submit"
-		class={ className }
+		class={ props.ClassName }
 		data-attr:disabled="$_fetching"
-		data-on:click={ fmt.Sprintf("$sidebarLoadingAction = %q", actionID) }
+		data-on:click={ fmt.Sprintf("$sidebarLoadingAction = %q", props.ActionID) }
 	>
-		<span data-show={ fmt.Sprintf("!($_fetching && $sidebarLoadingAction === %q)", actionID) }>
-			@icons.Icon(iconName, templ.Attributes{"class": "icon"})
+		<span data-show={ fmt.Sprintf("!($_fetching && $sidebarLoadingAction === %q)", props.ActionID) }>
+			@icons.Icon(props.IconName, templ.Attributes{"class": "icon"})
 		</span>
-		<span data-show={ fmt.Sprintf("$_fetching && $sidebarLoadingAction === %q", actionID) } style="display: none">
+		<span data-show={ fmt.Sprintf("$_fetching && $sidebarLoadingAction === %q", props.ActionID) } style="display: none">
 			@icons.LoaderCircle(templ.Attributes{"class": "icon icon-spin"})
 		</span>
-		<span>{ label }</span>
+		<span>{ props.Label }</span>
 	</button>
 }
 
-templ SidebarLoadingActionButton(className string, onClick string, label string, iconName icons.IconName, actionID string) {
+templ SidebarLoadingActionButton(props SidebarLoadingActionButtonProps) {
 	<button
-		class={ className }
+		class={ props.ClassName }
 		type="button"
 		data-indicator:_fetching
 		data-attr:disabled="$_fetching"
-		data-on:click={ fmt.Sprintf("$sidebarLoadingAction = %q; %s", actionID, onClick) }
+		data-on:click={ fmt.Sprintf("$sidebarLoadingAction = %q; %s", props.ActionID, props.OnClick) }
 	>
-		<span data-show={ fmt.Sprintf("!($_fetching && $sidebarLoadingAction === %q)", actionID) }>
-			@icons.Icon(iconName, templ.Attributes{"class": "icon"})
+		<span data-show={ fmt.Sprintf("!($_fetching && $sidebarLoadingAction === %q)", props.ActionID) }>
+			@icons.Icon(props.IconName, templ.Attributes{"class": "icon"})
 		</span>
-		<span data-show={ fmt.Sprintf("$_fetching && $sidebarLoadingAction === %q", actionID) } style="display: none">
+		<span data-show={ fmt.Sprintf("$_fetching && $sidebarLoadingAction === %q", props.ActionID) } style="display: none">
 			@icons.LoaderCircle(templ.Attributes{"class": "icon icon-spin"})
 		</span>
-		<span>{ label }</span>
+		<span>{ props.Label }</span>
 	</button>
 }
 
-templ LoadingIconActionButton(className string, onClick string, disabledExpr string, ariaLabel string, title string, iconName icons.IconName) {
+templ LoadingIconActionButton(props LoadingIconActionButtonProps) {
 	<button
-		class={ className }
+		class={ props.ClassName }
 		type="button"
-		aria-label={ ariaLabel }
-		title={ title }
+		aria-label={ props.AriaLabel }
+		title={ props.Title }
 		data-indicator:_fetching
-		data-attr:disabled={ disabledExpr }
-		data-on:click={ onClick }
+		data-attr:disabled={ props.DisabledExpr }
+		data-on:click={ props.OnClick }
 	>
-		<span data-show="!$_fetching">@icons.Icon(iconName, templ.Attributes{"class": "icon"})</span>
-		<span data-show="$_fetching" style="display: none">@icons.LoaderCircle(templ.Attributes{"class": "icon icon-spin"})</span>
+		<span data-show="!$_fetching">
+			@icons.Icon(props.IconName, templ.Attributes{"class": "icon"})
+		</span>
+		<span data-show="$_fetching" style="display: none">
+			@icons.LoaderCircle(templ.Attributes{"class": "icon icon-spin"})
+		</span>
 	</button>
 }
 
-templ IconActionButton(className string, onClick string, disabledExpr string, ariaLabel string, title string, iconName icons.IconName) {
+templ IconActionButton(props IconActionButtonProps) {
 	<button
-		class={ className }
+		class={ props.ClassName }
 		type="button"
-		aria-label={ ariaLabel }
-		title={ title }
-		data-attr:disabled={ disabledExpr }
-		data-on:click={ onClick }
+		aria-label={ props.AriaLabel }
+		title={ props.Title }
+		data-attr:disabled={ props.DisabledExpr }
+		data-on:click={ props.OnClick }
 	>
-		@icons.Icon(iconName, templ.Attributes{"class": "icon"})
+		@icons.Icon(props.IconName, templ.Attributes{"class": "icon"})
 	</button>
 }
 
-templ SureIconActionButton(className string, onClick string, disabledExpr string, ariaLabel string, title string, iconName icons.IconName, triggerID string) {
-	<button
-		class={ className }
-		type="button"
-		aria-label={ ariaLabel }
-		title={ title }
-		data-attr:disabled={ fmt.Sprintf("(%s) || $sureTriggerID === %q", disabledExpr, triggerID) }
-		data-on:click={ onClick }
-	>
-		<span data-show={ fmt.Sprintf("$sureTriggerID !== %q", triggerID) }>@icons.Icon(iconName, templ.Attributes{"class": "icon"})</span>
-		<span data-show={ fmt.Sprintf("$sureTriggerID === %q", triggerID) } style="display: none">@icons.LoaderCircle(templ.Attributes{"class": "icon icon-spin"})</span>
-	</button>
-}
-
-templ DestructiveActionButton(onClick string, disabledExpr string, label string) {
-	@LoadingActionButton("btn btn-danger", onClick, disabledExpr, label, icons.IconTrash2)
-}
-
-templ ButtonLink(href string, className string, label string, iconName icons.IconName) {
-	<a class={ className } href={ href }>
-		@icons.Icon(iconName, templ.Attributes{"class": "icon"})
-		<span>{ label }</span>
-	</a>
-}
-
-templ IDActionButton(id string, className string, label string) {
-	<button id={ id } type="button" class={ className }>
-		<span>{ label }</span>
+templ IDActionButton(props IDActionButtonProps) {
+	<button id={ props.ID } type="button" class={ props.ClassName }>
+		<span>{ props.Label }</span>
 	</button>
 }

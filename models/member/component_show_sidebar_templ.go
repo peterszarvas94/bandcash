@@ -83,11 +83,11 @@ func MemberShowSidebar(data MemberData) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = shared.SidebarLoadingActionButton("btn", fmt.Sprintf("@put('/groups/%s/members/%s')", data.GroupID, data.Member.ID), ctxi18n.T(ctx, "members.update"), icons.IconSave, "member-details-update").Render(ctx, templ_7745c5c3_Buffer)
+			templ_7745c5c3_Err = shared.SidebarLoadingActionButton(shared.SidebarLoadingActionButtonProps{ClassName: "btn", OnClick: fmt.Sprintf("@put('/groups/%s/members/%s')", data.GroupID, data.Member.ID), Label: ctxi18n.T(ctx, "members.update"), IconName: icons.IconSave, ActionID: "member-details-update"}).Render(ctx, templ_7745c5c3_Buffer)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = shared.ActionButton("btn", "$formState = ''; $formData = {name: "+utils.JSONString(data.Member.Name)+", description: "+utils.JSONString(data.Member.Description)+"}; $errors = {name: '', description: ''}", "$_fetching", ctxi18n.T(ctx, "actions.cancel"), icons.IconX).Render(ctx, templ_7745c5c3_Buffer)
+			templ_7745c5c3_Err = shared.ActionButton(shared.ActionButtonProps{ClassName: "btn", OnClick: "$formState = ''; $formData = {name: " + utils.JSONString(data.Member.Name) + ", description: " + utils.JSONString(data.Member.Description) + "}; $errors = {name: '', description: ''}", DisabledExpr: "$_fetching", Label: ctxi18n.T(ctx, "actions.cancel"), IconName: icons.IconX}).Render(ctx, templ_7745c5c3_Buffer)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}

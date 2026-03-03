@@ -423,23 +423,16 @@ func GroupViewersMain(data ViewersPageData) templ.Component {
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
-					templ_7745c5c3_Err = shared.IconActionButton(
-						"btn btn-ghost btn-sm btn-danger btn-icon",
-						fmt.Sprintf(
-							"$sureOpen = true; $sureTitle = %s; $sureMessage = %s; $sureSubmitLabel = %s; $sureCancelLabel = %s; $sureMethod = 'delete'; $sureURL = '/groups/%s/invites/%s'; $sureTriggerID = %s",
-							utils.JSONString(ctxi18n.T(ctx, "groups.cancel_invite_confirm")),
-							utils.JSONString(ctxi18n.T(ctx, "confirm.destructive_message")),
-							utils.JSONString(ctxi18n.T(ctx, "actions.delete")),
-							utils.JSONString(ctxi18n.T(ctx, "actions.cancel")),
-							data.Group.ID,
-							invite.ID,
-							utils.JSONString("invite-remove-"+invite.ID),
-						),
-						"$_fetching",
-						ctxi18n.T(ctx, "actions.delete"),
-						ctxi18n.T(ctx, "actions.delete"),
-						icons.IconTrash2,
-					).Render(ctx, templ_7745c5c3_Buffer)
+					templ_7745c5c3_Err = shared.IconActionButton(shared.IconActionButtonProps{ClassName: "btn btn-ghost btn-sm btn-danger btn-icon", OnClick: fmt.Sprintf(
+						"$sureOpen = true; $sureTitle = %s; $sureMessage = %s; $sureSubmitLabel = %s; $sureCancelLabel = %s; $sureMethod = 'delete'; $sureURL = '/groups/%s/invites/%s'; $sureTriggerID = %s",
+						utils.JSONString(ctxi18n.T(ctx, "groups.cancel_invite_confirm")),
+						utils.JSONString(ctxi18n.T(ctx, "confirm.destructive_message")),
+						utils.JSONString(ctxi18n.T(ctx, "actions.delete")),
+						utils.JSONString(ctxi18n.T(ctx, "actions.cancel")),
+						data.Group.ID,
+						invite.ID,
+						utils.JSONString("invite-remove-"+invite.ID),
+					), DisabledExpr: "$_fetching", AriaLabel: ctxi18n.T(ctx, "actions.delete"), Title: ctxi18n.T(ctx, "actions.delete"), IconName: icons.IconTrash2}).Render(ctx, templ_7745c5c3_Buffer)
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
@@ -461,7 +454,7 @@ func GroupViewersMain(data ViewersPageData) templ.Component {
 				var templ_7745c5c3_Var21 string
 				templ_7745c5c3_Var21, templ_7745c5c3_Err = templ.JoinStringErrs(ctxi18n.T(ctx, "table.empty"))
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/group/page_viewers.templ`, Line: 122, Col: 56}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/group/page_viewers.templ`, Line: 115, Col: 56}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var21))
 				if templ_7745c5c3_Err != nil {
@@ -506,7 +499,7 @@ func GroupViewersMain(data ViewersPageData) templ.Component {
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				templ_7745c5c3_Err = shared.IconActionButton("btn btn-ghost btn-sm btn-icon", "$formState = 'add'; $formData = {email: ''}", "$formState !== '' || $_fetching", ctxi18n.T(ctx, "groups.add_viewer"), ctxi18n.T(ctx, "groups.add_viewer"), icons.IconPlus).Render(ctx, templ_7745c5c3_Buffer)
+				templ_7745c5c3_Err = shared.IconActionButton(shared.IconActionButtonProps{ClassName: "btn btn-ghost btn-sm btn-icon", OnClick: "$formState = 'add'; $formData = {email: ''}", DisabledExpr: "$formState !== '' || $_fetching", AriaLabel: ctxi18n.T(ctx, "groups.add_viewer"), Title: ctxi18n.T(ctx, "groups.add_viewer"), IconName: icons.IconPlus}).Render(ctx, templ_7745c5c3_Buffer)
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
@@ -527,7 +520,7 @@ func GroupViewersMain(data ViewersPageData) templ.Component {
 				var templ_7745c5c3_Var22 string
 				templ_7745c5c3_Var22, templ_7745c5c3_Err = templ.JoinStringErrs(viewer.Email)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/group/page_viewers.templ`, Line: 147, Col: 24}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/group/page_viewers.templ`, Line: 140, Col: 24}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var22))
 				if templ_7745c5c3_Err != nil {
@@ -542,23 +535,16 @@ func GroupViewersMain(data ViewersPageData) templ.Component {
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
-					templ_7745c5c3_Err = shared.IconActionButton(
-						"btn btn-ghost btn-sm btn-danger btn-icon",
-						fmt.Sprintf(
-							"$sureOpen = true; $sureTitle = %s; $sureMessage = %s; $sureSubmitLabel = %s; $sureCancelLabel = %s; $sureMethod = 'delete'; $sureURL = '/groups/%s/viewers/%s'; $sureTriggerID = %s",
-							utils.JSONString(ctxi18n.T(ctx, "groups.remove_viewer_confirm")),
-							utils.JSONString(ctxi18n.T(ctx, "confirm.destructive_message")),
-							utils.JSONString(ctxi18n.T(ctx, "actions.delete")),
-							utils.JSONString(ctxi18n.T(ctx, "actions.cancel")),
-							data.Group.ID,
-							viewer.ID,
-							utils.JSONString("viewer-remove-"+viewer.ID),
-						),
-						"$_fetching",
-						ctxi18n.T(ctx, "actions.delete"),
-						ctxi18n.T(ctx, "actions.delete"),
-						icons.IconTrash2,
-					).Render(ctx, templ_7745c5c3_Buffer)
+					templ_7745c5c3_Err = shared.IconActionButton(shared.IconActionButtonProps{ClassName: "btn btn-ghost btn-sm btn-danger btn-icon", OnClick: fmt.Sprintf(
+						"$sureOpen = true; $sureTitle = %s; $sureMessage = %s; $sureSubmitLabel = %s; $sureCancelLabel = %s; $sureMethod = 'delete'; $sureURL = '/groups/%s/viewers/%s'; $sureTriggerID = %s",
+						utils.JSONString(ctxi18n.T(ctx, "groups.remove_viewer_confirm")),
+						utils.JSONString(ctxi18n.T(ctx, "confirm.destructive_message")),
+						utils.JSONString(ctxi18n.T(ctx, "actions.delete")),
+						utils.JSONString(ctxi18n.T(ctx, "actions.cancel")),
+						data.Group.ID,
+						viewer.ID,
+						utils.JSONString("viewer-remove-"+viewer.ID),
+					), DisabledExpr: "$_fetching", AriaLabel: ctxi18n.T(ctx, "actions.delete"), Title: ctxi18n.T(ctx, "actions.delete"), IconName: icons.IconTrash2}).Render(ctx, templ_7745c5c3_Buffer)
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
@@ -580,7 +566,7 @@ func GroupViewersMain(data ViewersPageData) templ.Component {
 				var templ_7745c5c3_Var23 string
 				templ_7745c5c3_Var23, templ_7745c5c3_Err = templ.JoinStringErrs(ctxi18n.T(ctx, "table.empty"))
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/group/page_viewers.templ`, Line: 172, Col: 56}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/group/page_viewers.templ`, Line: 158, Col: 56}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var23))
 				if templ_7745c5c3_Err != nil {
@@ -628,7 +614,7 @@ func ViewersTablePagination(data ViewersPageData) templ.Component {
 		var templ_7745c5c3_Var25 string
 		templ_7745c5c3_Var25, templ_7745c5c3_Err = templ.JoinStringErrs(ctxi18n.T(ctx, "table.page_size"))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/group/page_viewers.templ`, Line: 182, Col: 44}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/group/page_viewers.templ`, Line: 168, Col: 44}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var25))
 		if templ_7745c5c3_Err != nil {
@@ -664,7 +650,7 @@ func ViewersTablePagination(data ViewersPageData) templ.Component {
 			var templ_7745c5c3_Var28 string
 			templ_7745c5c3_Var28, templ_7745c5c3_Err = templ.JoinStringErrs(utils.BuildTableQueryDatastarAction(utils.BuildTablePageSizeURL(viewersTablePath(data.GroupID, data.Tab), data.Query, pageSize)))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/group/page_viewers.templ`, Line: 187, Col: 149}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/group/page_viewers.templ`, Line: 173, Col: 149}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var28))
 			if templ_7745c5c3_Err != nil {
@@ -677,7 +663,7 @@ func ViewersTablePagination(data ViewersPageData) templ.Component {
 			var templ_7745c5c3_Var29 string
 			templ_7745c5c3_Var29, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("%d", pageSize))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/group/page_viewers.templ`, Line: 189, Col: 34}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/group/page_viewers.templ`, Line: 175, Col: 34}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var29))
 			if templ_7745c5c3_Err != nil {
@@ -732,7 +718,7 @@ func GroupViewersSidebar(data ViewersPageData) templ.Component {
 		var templ_7745c5c3_Var31 string
 		templ_7745c5c3_Var31, templ_7745c5c3_Err = templ.JoinStringErrs(templ.JSONString(map[string]any{"sidebarLoadingAction": ""}))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/group/page_viewers.templ`, Line: 198, Col: 81}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/group/page_viewers.templ`, Line: 184, Col: 81}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var31))
 		if templ_7745c5c3_Err != nil {
@@ -750,7 +736,7 @@ func GroupViewersSidebar(data ViewersPageData) templ.Component {
 			var templ_7745c5c3_Var32 string
 			templ_7745c5c3_Var32, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("@post('/groups/%s/viewers')", data.Group.ID))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/group/page_viewers.templ`, Line: 201, Col: 95}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/group/page_viewers.templ`, Line: 187, Col: 95}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var32))
 			if templ_7745c5c3_Err != nil {
@@ -763,7 +749,7 @@ func GroupViewersSidebar(data ViewersPageData) templ.Component {
 			var templ_7745c5c3_Var33 string
 			templ_7745c5c3_Var33, templ_7745c5c3_Err = templ.JoinStringErrs(ctxi18n.T(ctx, "auth.email"))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/group/page_viewers.templ`, Line: 203, Col: 42}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/group/page_viewers.templ`, Line: 189, Col: 42}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var33))
 			if templ_7745c5c3_Err != nil {
@@ -776,7 +762,7 @@ func GroupViewersSidebar(data ViewersPageData) templ.Component {
 			var templ_7745c5c3_Var34 string
 			templ_7745c5c3_Var34, templ_7745c5c3_Err = templ.JoinStringErrs(ctxi18n.T(ctx, "groups.viewer_email_placeholder"))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/group/page_viewers.templ`, Line: 204, Col: 115}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/group/page_viewers.templ`, Line: 190, Col: 115}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var34))
 			if templ_7745c5c3_Err != nil {
@@ -786,11 +772,11 @@ func GroupViewersSidebar(data ViewersPageData) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = shared.SidebarLoadingSubmitButton("btn", ctxi18n.T(ctx, "groups.add_viewer"), icons.IconSave, "viewer-add").Render(ctx, templ_7745c5c3_Buffer)
+			templ_7745c5c3_Err = shared.SidebarLoadingSubmitButton(shared.SidebarLoadingSubmitButtonProps{ClassName: "btn", Label: ctxi18n.T(ctx, "groups.add_viewer"), IconName: icons.IconSave, ActionID: "viewer-add"}).Render(ctx, templ_7745c5c3_Buffer)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = shared.ActionButton("btn", "$formState = ''; $formData = {email: ''}", "$_fetching", ctxi18n.T(ctx, "actions.cancel"), icons.IconX).Render(ctx, templ_7745c5c3_Buffer)
+			templ_7745c5c3_Err = shared.ActionButton(shared.ActionButtonProps{ClassName: "btn", OnClick: "$formState = ''; $formData = {email: ''}", DisabledExpr: "$_fetching", Label: ctxi18n.T(ctx, "actions.cancel"), IconName: icons.IconX}).Render(ctx, templ_7745c5c3_Buffer)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}

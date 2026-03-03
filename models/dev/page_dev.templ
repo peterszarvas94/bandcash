@@ -52,10 +52,10 @@ templ ButtonVariantsContent() {
 templ TableQueryTestContent() {
 	<p>Run hardcoded query examples and inspect parsed + backend response.</p>
 	<div class="row row-wrap">
-		@shared.IDActionButton("query-test-events-valid", "btn", "Events valid query")
-		@shared.IDActionButton("query-test-events-invalid", "btn", "Events invalid values")
-		@shared.IDActionButton("query-test-members-valid", "btn", "Members valid query")
-		@shared.IDActionButton("query-test-expenses-valid", "btn", "Expenses valid query")
+		@shared.IDActionButton(shared.IDActionButtonProps{ID: "query-test-events-valid", ClassName: "btn", Label: "Events valid query"})
+		@shared.IDActionButton(shared.IDActionButtonProps{ID: "query-test-events-invalid", ClassName: "btn", Label: "Events invalid values"})
+		@shared.IDActionButton(shared.IDActionButtonProps{ID: "query-test-members-valid", ClassName: "btn", Label: "Members valid query"})
+		@shared.IDActionButton(shared.IDActionButtonProps{ID: "query-test-expenses-valid", ClassName: "btn", Label: "Expenses valid query"})
 	</div>
 	<pre id="query-test-output">Ready.</pre>
 }
@@ -114,24 +114,24 @@ templ NotificationsContent() {
 			<label>Required field</label>
 			<div class="row">
 				<input type="text" data-bind="formData.name" placeholder="Type anything" class="input"/>
-				@shared.LoadingSubmitButtonWithSignal("btn", "Inline validation", icons.IconSave, "_notifyInline")
+				@shared.LoadingSubmitButtonWithSignal(shared.LoadingSubmitButtonWithSignalProps{ClassName: "btn", Label: "Inline validation", IconName: icons.IconSave, LoadingSignal: "_notifyInline"})
 			</div>
 			<div data-show="$errors && $errors.name" class="color-error" data-text="$errors.name"></div>
 		</div>
 	</form>
 	<div class="row row-wrap">
-		@shared.LoadingActionButtonWithSignal("btn", "@post('/dev/notifications/info')", "$_notifyInfo", "Info", icons.IconInfo, "_notifyInfo")
-		@shared.LoadingActionButtonWithSignal("btn", "@post('/dev/notifications/success')", "$_notifySuccess", "Success", icons.IconCheck, "_notifySuccess")
-		@shared.LoadingActionButtonWithSignal("btn", "@post('/dev/notifications/warning')", "$_notifyWarning", "Warning", icons.IconTriangleAlert, "_notifyWarning")
-		@shared.LoadingActionButtonWithSignal("btn btn-danger", "@post('/dev/notifications/error')", "$_notifyError", "Error", icons.IconCircleX, "_notifyError")
+		@shared.LoadingActionButtonWithSignal(shared.LoadingActionButtonWithSignalProps{ClassName: "btn", OnClick: "@post('/dev/notifications/info')", DisabledExpr: "$_notifyInfo", Label: "Info", IconName: icons.IconInfo, LoadingSignal: "_notifyInfo"})
+		@shared.LoadingActionButtonWithSignal(shared.LoadingActionButtonWithSignalProps{ClassName: "btn", OnClick: "@post('/dev/notifications/success')", DisabledExpr: "$_notifySuccess", Label: "Success", IconName: icons.IconCheck, LoadingSignal: "_notifySuccess"})
+		@shared.LoadingActionButtonWithSignal(shared.LoadingActionButtonWithSignalProps{ClassName: "btn", OnClick: "@post('/dev/notifications/warning')", DisabledExpr: "$_notifyWarning", Label: "Warning", IconName: icons.IconTriangleAlert, LoadingSignal: "_notifyWarning"})
+		@shared.LoadingActionButtonWithSignal(shared.LoadingActionButtonWithSignalProps{ClassName: "btn btn-danger", OnClick: "@post('/dev/notifications/error')", DisabledExpr: "$_notifyError", Label: "Error", IconName: icons.IconCircleX, LoadingSignal: "_notifyError"})
 	</div>
 }
 
 templ RateLimitContent() {
 	<p>Fire repeated requests to inspect rate-limit behavior from the browser.</p>
 	<div class="row row-wrap">
-		@shared.IDActionButton("spam-health", "btn", "Spam /health")
-		@shared.IDActionButton("spam-auth", "btn", "Spam /auth/login")
+		@shared.IDActionButton(shared.IDActionButtonProps{ID: "spam-health", ClassName: "btn", Label: "Spam /health"})
+		@shared.IDActionButton(shared.IDActionButtonProps{ID: "spam-auth", ClassName: "btn", Label: "Spam /auth/login"})
 	</div>
 	<input id="rate-limit-csrf" type="hidden" value={ utils.CSRFTokenFromContext(ctx) }/>
 	<span id="rate-limit-msg-start-health" hidden>Running /health burst...</span>
@@ -144,10 +144,10 @@ templ RateLimitContent() {
 templ BodyLimitContent() {
 	<p>Send small and oversized payloads to verify body-size limits.</p>
 	<div class="row row-wrap">
-		@shared.IDActionButton("body-limit-global-ok", "btn", "POST /health (small body)")
-		@shared.IDActionButton("body-limit-global-big", "btn btn-danger", "POST /health (too large)")
-		@shared.IDActionButton("body-limit-auth-ok", "btn", "POST /auth/login (small body)")
-		@shared.IDActionButton("body-limit-auth-big", "btn btn-danger", "POST /auth/login (too large)")
+		@shared.IDActionButton(shared.IDActionButtonProps{ID: "body-limit-global-ok", ClassName: "btn", Label: "POST /health (small body)"})
+		@shared.IDActionButton(shared.IDActionButtonProps{ID: "body-limit-global-big", ClassName: "btn btn-danger", Label: "POST /health (too large)"})
+		@shared.IDActionButton(shared.IDActionButtonProps{ID: "body-limit-auth-ok", ClassName: "btn", Label: "POST /auth/login (small body)"})
+		@shared.IDActionButton(shared.IDActionButtonProps{ID: "body-limit-auth-big", ClassName: "btn btn-danger", Label: "POST /auth/login (too large)"})
 	</div>
 	<input id="body-limit-csrf" type="hidden" value={ utils.CSRFTokenFromContext(ctx) }/>
 	<span id="body-limit-msg-global-ok" hidden>Sending small payload to /health...</span>

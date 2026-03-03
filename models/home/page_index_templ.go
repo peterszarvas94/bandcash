@@ -144,7 +144,7 @@ func HomeIndex(data HomeData) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = shared.LoadingSubmitButton("btn", ctxi18n.T(ctx, "auth.send_link"), icons.IconSend).Render(ctx, templ_7745c5c3_Buffer)
+		templ_7745c5c3_Err = shared.LoadingSubmitButton(shared.LoadingSubmitButtonProps{ClassName: "btn", Label: ctxi18n.T(ctx, "auth.send_link"), IconName: icons.IconSend}).Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -178,7 +178,7 @@ func HomeIndex(data HomeData) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = shared.LoadingActionButton("btn", "@post('/auth/login')", "$_fetching || $resendRemaining > 0", ctxi18n.T(ctx, "auth.resend_email"), icons.IconSend).Render(ctx, templ_7745c5c3_Buffer)
+		templ_7745c5c3_Err = shared.LoadingActionButton(shared.LoadingActionButtonProps{ClassName: "btn", OnClick: "@post('/auth/login')", DisabledExpr: "$_fetching || $resendRemaining > 0", Label: ctxi18n.T(ctx, "auth.resend_email"), IconName: icons.IconSend}).Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -186,7 +186,7 @@ func HomeIndex(data HomeData) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = shared.LoadingActionButton("btn", "$authState = 'form'; $authError = ''; $authServerError = ''; $formData.email = $submittedEmail", "$_fetching", ctxi18n.T(ctx, "auth.use_different_email"), icons.IconPencil).Render(ctx, templ_7745c5c3_Buffer)
+		templ_7745c5c3_Err = shared.LoadingActionButton(shared.LoadingActionButtonProps{ClassName: "btn", OnClick: "$authState = 'form'; $authError = ''; $authServerError = ''; $formData.email = $submittedEmail", DisabledExpr: "$_fetching", Label: ctxi18n.T(ctx, "auth.use_different_email"), IconName: icons.IconPencil}).Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

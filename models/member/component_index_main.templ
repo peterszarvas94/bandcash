@@ -38,7 +38,7 @@ templ MemberIndexMain(data MembersData) {
 				if data.IsAdmin {
 					<th data-actions-col>
 						<div class="row row-right row-tight">
-							@shared.IconActionButton("btn btn-ghost btn-sm btn-icon", "$formState = 'add'; $editingId = 0; $formData = {name: '', description: ''}; $errors = {name: '', description: ''}", "$formState !== '' || $_fetching", ctxi18n.T(ctx, "members.add"), ctxi18n.T(ctx, "members.add"), icons.IconPlus)
+							@shared.IconActionButton(shared.IconActionButtonProps{ClassName: "btn btn-ghost btn-sm btn-icon", OnClick: "$formState = 'add'; $editingId = 0; $formData = {name: '', description: ''}; $errors = {name: '', description: ''}", DisabledExpr: "$formState !== '' || $_fetching", AriaLabel: ctxi18n.T(ctx, "members.add"), Title: ctxi18n.T(ctx, "members.add"), IconName: icons.IconPlus})
 						</div>
 					</th>
 				}
@@ -52,17 +52,8 @@ templ MemberIndexMain(data MembersData) {
 					if data.IsAdmin {
 						<td data-actions-col>
 							<div class="row row-tight">
-								@shared.IconActionButton(
-									"btn btn-ghost btn-sm btn-icon",
-									fmt.Sprintf("$formState = 'edit'; $editingId = %q; $formData = {name: el.closest('tr').dataset.memberName, description: el.closest('tr').dataset.memberDescription}", member.ID),
-									"$formState !== '' || $_fetching",
-									ctxi18n.T(ctx, "actions.edit"),
-									ctxi18n.T(ctx, "actions.edit"),
-									icons.IconPencil,
-								)
-								@shared.IconActionButton(
-									"btn btn-ghost btn-sm btn-danger btn-icon",
-									fmt.Sprintf(
+								@shared.IconActionButton(shared.IconActionButtonProps{ClassName: "btn btn-ghost btn-sm btn-icon", OnClick: fmt.Sprintf("$formState = 'edit'; $editingId = %q; $formData = {name: el.closest('tr').dataset.memberName, description: el.closest('tr').dataset.memberDescription}", member.ID), DisabledExpr: "$formState !== '' || $_fetching", AriaLabel: ctxi18n.T(ctx, "actions.edit"), Title: ctxi18n.T(ctx, "actions.edit"), IconName: icons.IconPencil})
+								@shared.IconActionButton(shared.IconActionButtonProps{ClassName: "btn btn-ghost btn-sm btn-danger btn-icon", OnClick: fmt.Sprintf(
 										"$sureOpen = true; $sureTitle = %s; $sureMessage = %s; $sureSubmitLabel = %s; $sureCancelLabel = %s; $sureMethod = 'delete'; $sureURL = '/groups/%s/members/%s'; $sureTriggerID = %s",
 										utils.JSONString(ctxi18n.T(ctx, "members.delete_confirm")),
 										utils.JSONString(ctxi18n.T(ctx, "confirm.destructive_message")),
@@ -71,12 +62,7 @@ templ MemberIndexMain(data MembersData) {
 										data.GroupID,
 										member.ID,
 										utils.JSONString("member-delete-"+member.ID),
-									),
-									"$formState !== '' || $_fetching",
-									ctxi18n.T(ctx, "actions.delete"),
-									ctxi18n.T(ctx, "actions.delete"),
-									icons.IconTrash2,
-								)
+									), DisabledExpr: "$formState !== '' || $_fetching", AriaLabel: ctxi18n.T(ctx, "actions.delete"), Title: ctxi18n.T(ctx, "actions.delete"), IconName: icons.IconTrash2})
 						</div>
 					</td>
 					}

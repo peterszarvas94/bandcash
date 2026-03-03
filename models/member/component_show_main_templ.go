@@ -64,26 +64,25 @@ func MemberShowMain(data MemberData) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = shared.ActionButton("btn", "$formState = 'edit'; $errors = {name: '', description: ''}", "$formState !== '' || $_fetching", ctxi18n.T(ctx, "members.edit"), icons.IconPencil).Render(ctx, templ_7745c5c3_Buffer)
+			templ_7745c5c3_Err = shared.ActionButton(shared.ActionButtonProps{ClassName: "btn", OnClick: "$formState = 'edit'; $errors = {name: '', description: ''}", DisabledExpr: "$formState !== '' || $_fetching", Label: ctxi18n.T(ctx, "members.edit"), IconName: icons.IconPencil}).Render(ctx, templ_7745c5c3_Buffer)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = shared.SureActionButton(
-				"btn btn-danger",
-				fmt.Sprintf(
-					"$sureOpen = true; $sureTitle = %s; $sureMessage = %s; $sureSubmitLabel = %s; $sureCancelLabel = %s; $sureMethod = 'delete'; $sureURL = '/groups/%s/members/%s'; $sureTriggerID = 'member-show-delete'",
-					utils.JSONString(ctxi18n.T(ctx, "members.delete_confirm")),
-					utils.JSONString(ctxi18n.T(ctx, "confirm.destructive_message")),
-					utils.JSONString(ctxi18n.T(ctx, "actions.delete")),
-					utils.JSONString(ctxi18n.T(ctx, "actions.cancel")),
-					data.GroupID,
-					data.Member.ID,
-				),
-				"$formState !== '' || $_fetching",
-				ctxi18n.T(ctx, "actions.delete"),
-				icons.IconTrash2,
-				"member-show-delete",
-			).Render(ctx, templ_7745c5c3_Buffer)
+			templ_7745c5c3_Err = shared.SureActionButton(shared.SureActionButtonProps{
+				ClassName:    "btn btn-danger",
+				DisabledExpr: "$formState !== '' || $_fetching",
+				Label:        ctxi18n.T(ctx, "actions.delete"),
+				IconName:     icons.IconTrash2,
+				Dialog: shared.SureDialogProps{
+					Title:       ctxi18n.T(ctx, "members.delete_confirm"),
+					Message:     ctxi18n.T(ctx, "confirm.destructive_message"),
+					SubmitLabel: ctxi18n.T(ctx, "actions.delete"),
+					CancelLabel: ctxi18n.T(ctx, "actions.cancel"),
+					Method:      "delete",
+					URL:         fmt.Sprintf("/groups/%s/members/%s", data.GroupID, data.Member.ID),
+					TriggerID:   "member-show-delete",
+				},
+			}).Render(ctx, templ_7745c5c3_Buffer)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -99,7 +98,7 @@ func MemberShowMain(data MemberData) templ.Component {
 		var templ_7745c5c3_Var3 string
 		templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.JoinStringErrs(ctxi18n.T(ctx, "members.events"))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/member/component_show_main.templ`, Line: 36, Col: 39}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/member/component_show_main.templ`, Line: 35, Col: 39}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var3))
 		if templ_7745c5c3_Err != nil {
@@ -112,7 +111,7 @@ func MemberShowMain(data MemberData) templ.Component {
 		var templ_7745c5c3_Var4 string
 		templ_7745c5c3_Var4, templ_7745c5c3_Err = templ.JoinStringErrs(ctxi18n.T(ctx, "fields.title"))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/member/component_show_main.templ`, Line: 40, Col: 40}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/member/component_show_main.templ`, Line: 39, Col: 40}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var4))
 		if templ_7745c5c3_Err != nil {
@@ -125,7 +124,7 @@ func MemberShowMain(data MemberData) templ.Component {
 		var templ_7745c5c3_Var5 string
 		templ_7745c5c3_Var5, templ_7745c5c3_Err = templ.JoinStringErrs(ctxi18n.T(ctx, "fields.time"))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/member/component_show_main.templ`, Line: 41, Col: 39}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/member/component_show_main.templ`, Line: 40, Col: 39}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var5))
 		if templ_7745c5c3_Err != nil {
@@ -138,7 +137,7 @@ func MemberShowMain(data MemberData) templ.Component {
 		var templ_7745c5c3_Var6 string
 		templ_7745c5c3_Var6, templ_7745c5c3_Err = templ.JoinStringErrs(ctxi18n.T(ctx, "fields.description"))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/member/component_show_main.templ`, Line: 42, Col: 46}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/member/component_show_main.templ`, Line: 41, Col: 46}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var6))
 		if templ_7745c5c3_Err != nil {
@@ -151,7 +150,7 @@ func MemberShowMain(data MemberData) templ.Component {
 		var templ_7745c5c3_Var7 string
 		templ_7745c5c3_Var7, templ_7745c5c3_Err = templ.JoinStringErrs(ctxi18n.T(ctx, "members.table.event_amount"))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/member/component_show_main.templ`, Line: 43, Col: 54}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/member/component_show_main.templ`, Line: 42, Col: 54}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var7))
 		if templ_7745c5c3_Err != nil {
@@ -164,7 +163,7 @@ func MemberShowMain(data MemberData) templ.Component {
 		var templ_7745c5c3_Var8 string
 		templ_7745c5c3_Var8, templ_7745c5c3_Err = templ.JoinStringErrs(ctxi18n.T(ctx, "participants.cut"))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/member/component_show_main.templ`, Line: 44, Col: 44}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/member/component_show_main.templ`, Line: 43, Col: 44}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var8))
 		if templ_7745c5c3_Err != nil {
@@ -177,7 +176,7 @@ func MemberShowMain(data MemberData) templ.Component {
 		var templ_7745c5c3_Var9 string
 		templ_7745c5c3_Var9, templ_7745c5c3_Err = templ.JoinStringErrs(ctxi18n.T(ctx, "participants.expense"))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/member/component_show_main.templ`, Line: 45, Col: 48}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/member/component_show_main.templ`, Line: 44, Col: 48}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var9))
 		if templ_7745c5c3_Err != nil {
@@ -190,7 +189,7 @@ func MemberShowMain(data MemberData) templ.Component {
 		var templ_7745c5c3_Var10 string
 		templ_7745c5c3_Var10, templ_7745c5c3_Err = templ.JoinStringErrs(ctxi18n.T(ctx, "participants.total"))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/member/component_show_main.templ`, Line: 46, Col: 46}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/member/component_show_main.templ`, Line: 45, Col: 46}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var10))
 		if templ_7745c5c3_Err != nil {
@@ -208,7 +207,7 @@ func MemberShowMain(data MemberData) templ.Component {
 			var templ_7745c5c3_Var11 templ.SafeURL
 			templ_7745c5c3_Var11, templ_7745c5c3_Err = templ.JoinURLErrs(fmt.Sprintf("/groups/%s/events/%s", data.GroupID, event.ID))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/member/component_show_main.templ`, Line: 52, Col: 91}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/member/component_show_main.templ`, Line: 51, Col: 91}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var11))
 			if templ_7745c5c3_Err != nil {
@@ -221,7 +220,7 @@ func MemberShowMain(data MemberData) templ.Component {
 			var templ_7745c5c3_Var12 string
 			templ_7745c5c3_Var12, templ_7745c5c3_Err = templ.JoinStringErrs(event.Title)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/member/component_show_main.templ`, Line: 52, Col: 107}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/member/component_show_main.templ`, Line: 51, Col: 107}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var12))
 			if templ_7745c5c3_Err != nil {
@@ -234,7 +233,7 @@ func MemberShowMain(data MemberData) templ.Component {
 			var templ_7745c5c3_Var13 string
 			templ_7745c5c3_Var13, templ_7745c5c3_Err = templ.JoinStringErrs(utils.FormatDateTimeLocalized(ctx, event.Time))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/member/component_show_main.templ`, Line: 53, Col: 57}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/member/component_show_main.templ`, Line: 52, Col: 57}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var13))
 			if templ_7745c5c3_Err != nil {
@@ -247,7 +246,7 @@ func MemberShowMain(data MemberData) templ.Component {
 			var templ_7745c5c3_Var14 string
 			templ_7745c5c3_Var14, templ_7745c5c3_Err = templ.JoinStringErrs(event.Description)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/member/component_show_main.templ`, Line: 54, Col: 56}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/member/component_show_main.templ`, Line: 53, Col: 56}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var14))
 			if templ_7745c5c3_Err != nil {
@@ -260,7 +259,7 @@ func MemberShowMain(data MemberData) templ.Component {
 			var templ_7745c5c3_Var15 string
 			templ_7745c5c3_Var15, templ_7745c5c3_Err = templ.JoinStringErrs(utils.FormatNumberLocalized(ctx, event.Amount))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/member/component_show_main.templ`, Line: 55, Col: 76}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/member/component_show_main.templ`, Line: 54, Col: 76}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var15))
 			if templ_7745c5c3_Err != nil {
@@ -273,7 +272,7 @@ func MemberShowMain(data MemberData) templ.Component {
 			var templ_7745c5c3_Var16 string
 			templ_7745c5c3_Var16, templ_7745c5c3_Err = templ.JoinStringErrs(utils.FormatNumberLocalized(ctx, event.ParticipantAmount))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/member/component_show_main.templ`, Line: 56, Col: 87}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/member/component_show_main.templ`, Line: 55, Col: 87}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var16))
 			if templ_7745c5c3_Err != nil {
@@ -286,7 +285,7 @@ func MemberShowMain(data MemberData) templ.Component {
 			var templ_7745c5c3_Var17 string
 			templ_7745c5c3_Var17, templ_7745c5c3_Err = templ.JoinStringErrs(utils.FormatNumberLocalized(ctx, event.ParticipantExpense))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/member/component_show_main.templ`, Line: 57, Col: 88}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/member/component_show_main.templ`, Line: 56, Col: 88}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var17))
 			if templ_7745c5c3_Err != nil {
@@ -299,7 +298,7 @@ func MemberShowMain(data MemberData) templ.Component {
 			var templ_7745c5c3_Var18 string
 			templ_7745c5c3_Var18, templ_7745c5c3_Err = templ.JoinStringErrs(utils.FormatNumberLocalized(ctx, event.ParticipantAmount+event.ParticipantExpense))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/member/component_show_main.templ`, Line: 58, Col: 112}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/member/component_show_main.templ`, Line: 57, Col: 112}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var18))
 			if templ_7745c5c3_Err != nil {
@@ -318,7 +317,7 @@ func MemberShowMain(data MemberData) templ.Component {
 			var templ_7745c5c3_Var19 string
 			templ_7745c5c3_Var19, templ_7745c5c3_Err = templ.JoinStringErrs(ctxi18n.T(ctx, "table.empty"))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/member/component_show_main.templ`, Line: 63, Col: 52}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/member/component_show_main.templ`, Line: 62, Col: 52}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var19))
 			if templ_7745c5c3_Err != nil {

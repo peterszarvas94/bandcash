@@ -632,12 +632,12 @@ func UsersTableSection(data DashboardData) templ.Component {
 				return templ_7745c5c3_Err
 			}
 			if user.IsBanned {
-				templ_7745c5c3_Err = shared.LoadingActionButton("btn btn-sm", fmt.Sprintf("@post('/admin/users/%s/unban')", user.ID), "$_fetching", ctxi18n.T(ctx, "admin.users.unban"), icons.IconCheck).Render(ctx, templ_7745c5c3_Buffer)
+				templ_7745c5c3_Err = shared.LoadingActionButton(shared.LoadingActionButtonProps{ClassName: "btn btn-sm", OnClick: fmt.Sprintf("@post('/admin/users/%s/unban')", user.ID), DisabledExpr: "$_fetching", Label: ctxi18n.T(ctx, "admin.users.unban"), IconName: icons.IconCheck}).Render(ctx, templ_7745c5c3_Buffer)
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
 			} else {
-				templ_7745c5c3_Err = shared.LoadingActionButton("btn btn-sm btn-danger", fmt.Sprintf("@post('/admin/users/%s/ban')", user.ID), "$_fetching", ctxi18n.T(ctx, "admin.users.ban"), icons.IconTrash2).Render(ctx, templ_7745c5c3_Buffer)
+				templ_7745c5c3_Err = shared.LoadingActionButton(shared.LoadingActionButtonProps{ClassName: "btn btn-sm btn-danger", OnClick: fmt.Sprintf("@post('/admin/users/%s/ban')", user.ID), DisabledExpr: "$_fetching", Label: ctxi18n.T(ctx, "admin.users.ban"), IconName: icons.IconTrash2}).Render(ctx, templ_7745c5c3_Buffer)
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}

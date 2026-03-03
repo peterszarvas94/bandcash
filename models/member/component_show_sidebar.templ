@@ -26,8 +26,8 @@ templ MemberShowSidebar(data MemberData) {
 					<div data-show="$errors && $errors.description" class="color-error" data-text="$errors.description"></div>
 				</div>
 				<div class="sidebar-actions">
-				@shared.SidebarLoadingActionButton("btn", fmt.Sprintf("@put('/groups/%s/members/%s')", data.GroupID, data.Member.ID), ctxi18n.T(ctx, "members.update"), icons.IconSave, "member-details-update")
-					@shared.ActionButton("btn", "$formState = ''; $formData = {name: "+utils.JSONString(data.Member.Name)+", description: "+utils.JSONString(data.Member.Description)+"}; $errors = {name: '', description: ''}", "$_fetching", ctxi18n.T(ctx, "actions.cancel"), icons.IconX)
+				@shared.SidebarLoadingActionButton(shared.SidebarLoadingActionButtonProps{ClassName: "btn", OnClick: fmt.Sprintf("@put('/groups/%s/members/%s')", data.GroupID, data.Member.ID), Label: ctxi18n.T(ctx, "members.update"), IconName: icons.IconSave, ActionID: "member-details-update"})
+					@shared.ActionButton(shared.ActionButtonProps{ClassName: "btn", OnClick: "$formState = ''; $formData = {name: "+utils.JSONString(data.Member.Name)+", description: "+utils.JSONString(data.Member.Description)+"}; $errors = {name: '', description: ''}", DisabledExpr: "$_fetching", Label: ctxi18n.T(ctx, "actions.cancel"), IconName: icons.IconX})
 				</div>
 			</form>
 		</div>

@@ -158,7 +158,7 @@ func EventIndexMain(data EventsData) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = shared.IconActionButton("btn btn-ghost btn-sm btn-icon", "$formState = 'add'; $editingId = 0; $formData = {title: '', time: '', description: '', amount: 0}; $errors = {title: '', time: '', description: '', amount: ''}", "$formState !== '' || $_fetching", ctxi18n.T(ctx, "events.add"), ctxi18n.T(ctx, "events.add"), icons.IconPlus).Render(ctx, templ_7745c5c3_Buffer)
+			templ_7745c5c3_Err = shared.IconActionButton(shared.IconActionButtonProps{ClassName: "btn btn-ghost btn-sm btn-icon", OnClick: "$formState = 'add'; $editingId = 0; $formData = {title: '', time: '', description: '', amount: 0}; $errors = {title: '', time: '', description: '', amount: ''}", DisabledExpr: "$formState !== '' || $_fetching", AriaLabel: ctxi18n.T(ctx, "events.add"), Title: ctxi18n.T(ctx, "events.add"), IconName: icons.IconPlus}).Render(ctx, templ_7745c5c3_Buffer)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -298,34 +298,20 @@ func EventIndexMain(data EventsData) templ.Component {
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				templ_7745c5c3_Err = shared.IconActionButton(
-					"btn btn-ghost btn-sm btn-icon",
-					fmt.Sprintf("$formState = 'edit'; $editingId = %q; $formData = {title: el.closest('tr').dataset.eventTitle, time: el.closest('tr').dataset.eventTime, description: el.closest('tr').dataset.eventDescription, amount: Number(el.closest('tr').dataset.eventAmount)}", event.ID),
-					"$formState !== '' || $_fetching",
-					ctxi18n.T(ctx, "actions.edit"),
-					ctxi18n.T(ctx, "actions.edit"),
-					icons.IconPencil,
-				).Render(ctx, templ_7745c5c3_Buffer)
+				templ_7745c5c3_Err = shared.IconActionButton(shared.IconActionButtonProps{ClassName: "btn btn-ghost btn-sm btn-icon", OnClick: fmt.Sprintf("$formState = 'edit'; $editingId = %q; $formData = {title: el.closest('tr').dataset.eventTitle, time: el.closest('tr').dataset.eventTime, description: el.closest('tr').dataset.eventDescription, amount: Number(el.closest('tr').dataset.eventAmount)}", event.ID), DisabledExpr: "$formState !== '' || $_fetching", AriaLabel: ctxi18n.T(ctx, "actions.edit"), Title: ctxi18n.T(ctx, "actions.edit"), IconName: icons.IconPencil}).Render(ctx, templ_7745c5c3_Buffer)
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				templ_7745c5c3_Err = shared.IconActionButton(
-					"btn btn-ghost btn-sm btn-danger btn-icon",
-					fmt.Sprintf(
-						"$sureOpen = true; $sureTitle = %s; $sureMessage = %s; $sureSubmitLabel = %s; $sureCancelLabel = %s; $sureMethod = 'delete'; $sureURL = '/groups/%s/events/%s'; $sureTriggerID = %s",
-						utils.JSONString(ctxi18n.T(ctx, "events.delete_confirm")),
-						utils.JSONString(ctxi18n.T(ctx, "confirm.destructive_message")),
-						utils.JSONString(ctxi18n.T(ctx, "actions.delete")),
-						utils.JSONString(ctxi18n.T(ctx, "actions.cancel")),
-						data.GroupID,
-						event.ID,
-						utils.JSONString("event-delete-"+event.ID),
-					),
-					"$formState !== '' || $_fetching",
-					ctxi18n.T(ctx, "actions.delete"),
-					ctxi18n.T(ctx, "actions.delete"),
-					icons.IconTrash2,
-				).Render(ctx, templ_7745c5c3_Buffer)
+				templ_7745c5c3_Err = shared.IconActionButton(shared.IconActionButtonProps{ClassName: "btn btn-ghost btn-sm btn-danger btn-icon", OnClick: fmt.Sprintf(
+					"$sureOpen = true; $sureTitle = %s; $sureMessage = %s; $sureSubmitLabel = %s; $sureCancelLabel = %s; $sureMethod = 'delete'; $sureURL = '/groups/%s/events/%s'; $sureTriggerID = %s",
+					utils.JSONString(ctxi18n.T(ctx, "events.delete_confirm")),
+					utils.JSONString(ctxi18n.T(ctx, "confirm.destructive_message")),
+					utils.JSONString(ctxi18n.T(ctx, "actions.delete")),
+					utils.JSONString(ctxi18n.T(ctx, "actions.cancel")),
+					data.GroupID,
+					event.ID,
+					utils.JSONString("event-delete-"+event.ID),
+				), DisabledExpr: "$formState !== '' || $_fetching", AriaLabel: ctxi18n.T(ctx, "actions.delete"), Title: ctxi18n.T(ctx, "actions.delete"), IconName: icons.IconTrash2}).Render(ctx, templ_7745c5c3_Buffer)
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
@@ -352,7 +338,7 @@ func EventIndexMain(data EventsData) templ.Component {
 				var templ_7745c5c3_Var16 string
 				templ_7745c5c3_Var16, templ_7745c5c3_Err = templ.JoinStringErrs(ctxi18n.T(ctx, "table.empty"))
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/event/component_index_main.templ`, Line: 101, Col: 53}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/event/component_index_main.templ`, Line: 87, Col: 53}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var16))
 				if templ_7745c5c3_Err != nil {
@@ -370,7 +356,7 @@ func EventIndexMain(data EventsData) templ.Component {
 				var templ_7745c5c3_Var17 string
 				templ_7745c5c3_Var17, templ_7745c5c3_Err = templ.JoinStringErrs(ctxi18n.T(ctx, "table.empty"))
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/event/component_index_main.templ`, Line: 103, Col: 53}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/event/component_index_main.templ`, Line: 89, Col: 53}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var17))
 				if templ_7745c5c3_Err != nil {
