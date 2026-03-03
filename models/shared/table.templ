@@ -7,14 +7,11 @@ import (
 	icons "bandcash/models/shared/icons"
 )
 
-templ TableSearchForm(onSubmitAction string, searchHintKey string) {
-	<div class="pt">
-		<form class="row row-wrap" data-on:submit={ onSubmitAction }>
-			<input type="search" data-bind="tableQuery.search" placeholder={ ctxi18n.T(ctx, "table.search_placeholder") }/>
-			<button class="btn btn-sm" type="submit">{ ctxi18n.T(ctx, "table.search") }</button>
-		</form>
-		<p class="text-sm color-muted">{ ctxi18n.T(ctx, searchHintKey) }</p>
-	</div>
+templ TableSearchForm(onSubmitAction string, placeholderKey string) {
+	<form class="row row-wrap pt" data-on:submit={ onSubmitAction }>
+		<input type="search" data-bind="tableQuery.search" placeholder={ ctxi18n.T(ctx, placeholderKey) } class="input-wide"/>
+		<button class="btn btn-sm" type="submit">{ ctxi18n.T(ctx, "table.search") }</button>
+	</form>
 }
 
 templ TableSortHeader(label string, column string, query utils.TableQuery, actionURL string) {
