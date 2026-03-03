@@ -75,6 +75,7 @@ templ GroupViewersMain(data ViewersPageData) {
 		</table>
 	} else if data.Tab == "pending" {
 		@shared.TableSearchForm(utils.BuildTableSearchDatastarAction(viewersTablePath(data.GroupID, data.Tab), utils.DefaultTablePageSize), "table.search_placeholder_pending")
+		@ViewersTablePagination(data)
 		<table class="table table-sticky-actions pt">
 			<thead>
 				<tr>
@@ -113,9 +114,9 @@ templ GroupViewersMain(data ViewersPageData) {
 				}
 			</tbody>
 		</table>
-		@ViewersTablePagination(data)
 	} else {
 		@shared.TableSearchForm(utils.BuildTableSearchDatastarAction(viewersTablePath(data.GroupID, data.Tab), utils.DefaultTablePageSize), "table.search_placeholder_viewers")
+		@ViewersTablePagination(data)
 		<table class="table table-sticky-actions pt">
 			<thead>
 				<tr>
@@ -154,7 +155,6 @@ templ GroupViewersMain(data ViewersPageData) {
 				}
 			</tbody>
 		</table>
-		@ViewersTablePagination(data)
 	}
 }
 

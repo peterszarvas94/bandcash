@@ -11,6 +11,15 @@ import (
 
 templ ExpenseIndexMain(data ExpensesData) {
 	@shared.TableSearchForm(utils.BuildTableSearchDatastarAction(fmt.Sprintf("/groups/%s/expenses", data.GroupID), utils.DefaultTablePageSize), "table.search_placeholder_expenses")
+	<div class="row row-wrap justify-between pt">
+		<div class="row row-wrap">
+			<span>{ ctxi18n.T(ctx, "table.page_size") }</span>
+			for _, pageSize := range utils.StandardTablePageSizes {
+				<button class={ utils.PageSizeButtonClass(data.Query.PageSize, pageSize) } type="button" data-on:click={ utils.BuildTableQueryDatastarAction(utils.BuildTablePageSizeURL(fmt.Sprintf("/groups/%s/expenses", data.GroupID), data.Query, pageSize)) }>{ fmt.Sprintf("%d", pageSize) }</button>
+			}
+		</div>
+		@shared.TablePaginationControls(fmt.Sprintf("/groups/%s/expenses", data.GroupID), data.Query, data.Pager)
+	</div>
 	<table class="table table-sticky-actions pt">
 		<thead>
 			<tr>
@@ -62,13 +71,4 @@ templ ExpenseIndexMain(data ExpensesData) {
 			}
 		</tbody>
 	</table>
-	<div class="row row-wrap justify-between pt">
-		<div class="row row-wrap">
-			<span>{ ctxi18n.T(ctx, "table.page_size") }</span>
-			for _, pageSize := range utils.StandardTablePageSizes {
-				<button class={ utils.PageSizeButtonClass(data.Query.PageSize, pageSize) } type="button" data-on:click={ utils.BuildTableQueryDatastarAction(utils.BuildTablePageSizeURL(fmt.Sprintf("/groups/%s/expenses", data.GroupID), data.Query, pageSize)) }>{ fmt.Sprintf("%d", pageSize) }</button>
-			}
-		</div>
-		@shared.TablePaginationControls(fmt.Sprintf("/groups/%s/expenses", data.GroupID), data.Query, data.Pager)
-	</div>
 }
