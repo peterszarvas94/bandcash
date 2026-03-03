@@ -10,7 +10,7 @@ import (
 )
 
 templ MemberIndexMain(data MembersData) {
-	@shared.TableSearchForm(utils.BuildTableSearchDatastarAction(fmt.Sprintf("/groups/%s/members", data.GroupID), utils.DefaultTablePageSize), "Searches: name, description")
+	@shared.TableSearchForm(utils.BuildTableSearchDatastarAction(fmt.Sprintf("/groups/%s/members", data.GroupID), utils.DefaultTablePageSize), "table.search_hint_members")
 	<table class="table table-sticky-actions pt">
 		<thead>
 			<tr>

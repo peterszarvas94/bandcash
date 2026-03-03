@@ -84,6 +84,12 @@ hu:
     prev: "Előző"
     next: "Következő"
     page_size: "Oldalméret"
+    search_hint_groups: "Keresés: név, admin email"
+    search_hint_events: "Keresés: cím, leírás"
+    search_hint_expenses: "Keresés: cím, leírás"
+    search_hint_members: "Keresés: név, leírás"
+    search_hint_admin_users: "Keresés: email"
+    search_hint_admin_groups: "Keresés: csoport név"
   fields:
     title: "Cím"
     time: "Idő"

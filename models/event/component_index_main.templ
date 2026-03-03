@@ -10,7 +10,7 @@ import (
 )
 
 templ EventIndexMain(data EventsData) {
-	@shared.TableSearchForm(utils.BuildTableSearchDatastarAction(fmt.Sprintf("/groups/%s/events", data.GroupID), utils.DefaultTablePageSize), "Searches: title, description")
+	@shared.TableSearchForm(utils.BuildTableSearchDatastarAction(fmt.Sprintf("/groups/%s/events", data.GroupID), utils.DefaultTablePageSize), "table.search_hint_events")
 	<table class="table table-sticky-actions pt">
 		<thead>
 			<tr>

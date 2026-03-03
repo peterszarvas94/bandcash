@@ -84,6 +84,12 @@ en:
     prev: "Previous"
     next: "Next"
     page_size: "Page size"
+    search_hint_groups: "Searches: name, admin email"
+    search_hint_events: "Searches: title, description"
+    search_hint_expenses: "Searches: title, description"
+    search_hint_members: "Searches: name, description"
+    search_hint_admin_users: "Searches: email"
+    search_hint_admin_groups: "Searches: group name"
   fields:
     title: "Title"
     time: "Time"

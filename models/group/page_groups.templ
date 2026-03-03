@@ -28,7 +28,7 @@ templ GroupsPage(data GroupsPageData) {
 
 templ GroupsMain(data GroupsPageData) {
 	<p>{ ctxi18n.T(ctx, "groups.subtitle") }</p>
-	@shared.TableSearchForm(utils.BuildTableSearchDatastarAction("/dashboard", utils.DefaultTablePageSize), "Searches: name, admin email")
+	@shared.TableSearchForm(utils.BuildTableSearchDatastarAction("/dashboard", utils.DefaultTablePageSize), "table.search_hint_groups")
 	<table class="table table-sticky-actions pt">
 		<thead>
 			<tr>

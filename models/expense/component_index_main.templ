@@ -10,7 +10,7 @@ import (
 )
 
 templ ExpenseIndexMain(data ExpensesData) {
-	@shared.TableSearchForm(utils.BuildTableSearchDatastarAction(fmt.Sprintf("/groups/%s/expenses", data.GroupID), utils.DefaultTablePageSize), "Searches: title, description")
+	@shared.TableSearchForm(utils.BuildTableSearchDatastarAction(fmt.Sprintf("/groups/%s/expenses", data.GroupID), utils.DefaultTablePageSize), "table.search_hint_expenses")
 	<table class="table table-sticky-actions pt">
 		<thead>
 			<tr>
