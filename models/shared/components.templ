@@ -4,6 +4,7 @@ import (
 	ctxi18n "github.com/invopop/ctxi18n/i18n"
 
 	"bandcash/internal/utils"
+	"bandcash/models/shared/icons"
 )
 
 templ Head(title string) {
@@ -51,18 +52,30 @@ templ Notifications() {
 			"sureMethod": "post",
 			"sureURL": "",
 			"sureTriggerID": "",
+			"sureFetching": false,
 		}) }
 		data-show="$sureOpen"
 		style="display: none"
-		data-on:click="evt.target === el && ($sureOpen = false; $sureTriggerID = '')"
-		data-on:keydown__window="evt.key === 'Escape' && $sureOpen && ($sureOpen = false; $sureTriggerID = '')"
+		data-on:click="evt.target === el && !$sureFetching && (($sureOpen = false), ($sureTriggerID = ''))"
+		data-on:keydown__window="evt.key === 'Escape' && $sureOpen && !$sureFetching && (($sureOpen = false), ($sureTriggerID = ''))"
 	>
 		<section class="sure-dialog" role="dialog" aria-modal="true" aria-labelledby="sure-title" aria-describedby="sure-message">
 			<h3 id="sure-title" data-text="$sureTitle"></h3>
 			<p id="sure-message" data-show="$sureMessage !== ''" style="display: none" data-text="$sureMessage"></p>
 			<div class="row row-right row-wrap">
-				<button id="sure-cancel" type="button" class="btn" data-on:click="$sureOpen = false; $sureTriggerID = ''" data-text="$sureCancelLabel"></button>
-				<button id="sure-submit" type="button" class="btn btn-danger" data-indicator:_fetching data-on:click="$sureOpen = false; ($sureMethod === 'delete' ? @delete($sureURL) : ($sureMethod === 'put' ? @put($sureURL) : @post($sureURL)))" data-on:datastar-fetch="(evt.detail.type === 'finished' || evt.detail.type === 'error' || evt.detail.type === 'retries-failed') && ($sureTriggerID = '')" data-text="$sureSubmitLabel"></button>
+				<button id="sure-cancel" type="button" class="btn" data-attr:disabled="$sureFetching" data-on:click="!$sureFetching && (($sureOpen = false), ($sureTriggerID = ''))">
+					@icons.Icon(icons.IconX, templ.Attributes{"class": "icon"})
+					<span data-text="$sureCancelLabel"></span>
+				</button>
+				<button id="sure-submit" type="button" class="btn btn-danger" data-attr:disabled="$sureFetching" data-on:click="!$sureFetching && (($sureFetching = true), ($sureMethod === 'delete' ? @delete($sureURL) : ($sureMethod === 'put' ? @put($sureURL) : @post($sureURL))))" data-on:datastar-fetch="(evt.detail.type === 'finished' || evt.detail.type === 'error' || evt.detail.type === 'retries-failed') && (($sureFetching = false), ($sureTriggerID = ''), ($sureOpen = false))">
+					<span data-show="!$sureFetching">
+						@icons.Icon(icons.IconTrash2, templ.Attributes{"class": "icon"})
+					</span>
+					<span data-show="$sureFetching" style="display: none">
+						@icons.LoaderCircle(templ.Attributes{"class": "icon icon-spin"})
+					</span>
+					<span data-text="$sureSubmitLabel"></span>
+				</button>
 			</div>
 		</section>
 	</div>

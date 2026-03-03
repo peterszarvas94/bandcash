@@ -46,13 +46,20 @@ templ EventShowSidebar(data EventData) {
 		<div data-show="$formState !== '' && $eventFormState === ''" style="display: none" class="pb">
 			<div class="row justify-between" data-show="$formState === 'edit'">
 				<h3>{ctxi18n.T(ctx, "participants.edit")}</h3>
-				@shared.SureActionButton(
+				@shared.ActionButton(
 					"btn btn-danger",
-					fmt.Sprintf("$sureOpen = true; $sureTitle = %s; $sureMessage = %s; $sureSubmitLabel = %s; $sureCancelLabel = %s; $sureMethod = 'delete'; $sureURL = '/groups/%s/events/%s/participants/' + $editingId; $sureTriggerID = 'participant-sidebar-delete'", utils.JSONString(ctxi18n.T(ctx, "participants.delete_confirm")), utils.JSONString(ctxi18n.T(ctx, "confirm.destructive_message")), utils.JSONString(ctxi18n.T(ctx, "actions.delete")), utils.JSONString(ctxi18n.T(ctx, "actions.cancel")), data.GroupID, data.Event.ID),
+					fmt.Sprintf(
+						"$sureOpen = true; $sureTitle = %s; $sureMessage = %s; $sureSubmitLabel = %s; $sureCancelLabel = %s; $sureMethod = 'delete'; $sureURL = '/groups/%s/events/%s/participants/' + $editingId; $sureTriggerID = 'participant-sidebar-delete'",
+						utils.JSONString(ctxi18n.T(ctx, "participants.delete_confirm")),
+						utils.JSONString(ctxi18n.T(ctx, "confirm.destructive_message")),
+						utils.JSONString(ctxi18n.T(ctx, "actions.delete")),
+						utils.JSONString(ctxi18n.T(ctx, "actions.cancel")),
+						data.GroupID,
+						data.Event.ID,
+					),
 					"$_fetching",
 					ctxi18n.T(ctx, "actions.delete"),
 					icons.IconTrash2,
-					"participant-sidebar-delete",
 				)
 			</div>
 			<form class="form">

@@ -17,7 +17,15 @@ templ MemberShowMain(data MemberData) {
 			@shared.ActionButton("btn", "$formState = 'edit'; $errors = {name: '', description: ''}", "$formState !== '' || $_fetching", ctxi18n.T(ctx, "members.edit"), icons.IconPencil)
 			@shared.SureActionButton(
 				"btn btn-danger",
-				fmt.Sprintf("$sureOpen = true; $sureTitle = %s; $sureMessage = %s; $sureSubmitLabel = %s; $sureCancelLabel = %s; $sureMethod = 'delete'; $sureURL = '/groups/%s/members/%s'; $sureTriggerID = 'member-show-delete'", utils.JSONString(ctxi18n.T(ctx, "members.delete_confirm")), utils.JSONString(ctxi18n.T(ctx, "confirm.destructive_message")), utils.JSONString(ctxi18n.T(ctx, "actions.delete")), utils.JSONString(ctxi18n.T(ctx, "actions.cancel")), data.GroupID, data.Member.ID),
+				fmt.Sprintf(
+					"$sureOpen = true; $sureTitle = %s; $sureMessage = %s; $sureSubmitLabel = %s; $sureCancelLabel = %s; $sureMethod = 'delete'; $sureURL = '/groups/%s/members/%s'; $sureTriggerID = 'member-show-delete'",
+					utils.JSONString(ctxi18n.T(ctx, "members.delete_confirm")),
+					utils.JSONString(ctxi18n.T(ctx, "confirm.destructive_message")),
+					utils.JSONString(ctxi18n.T(ctx, "actions.delete")),
+					utils.JSONString(ctxi18n.T(ctx, "actions.cancel")),
+					data.GroupID,
+					data.Member.ID,
+				),
 				"$formState !== '' || $_fetching",
 				ctxi18n.T(ctx, "actions.delete"),
 				icons.IconTrash2,

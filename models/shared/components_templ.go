@@ -12,6 +12,7 @@ import (
 	ctxi18n "github.com/invopop/ctxi18n/i18n"
 
 	"bandcash/internal/utils"
+	"bandcash/models/shared/icons"
 )
 
 func Head(title string) templ.Component {
@@ -42,7 +43,7 @@ func Head(title string) templ.Component {
 		var templ_7745c5c3_Var2 string
 		templ_7745c5c3_Var2, templ_7745c5c3_Err = templ.JoinStringErrs(title)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/shared/components.templ`, Line: 13, Col: 16}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/shared/components.templ`, Line: 14, Col: 16}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var2))
 		if templ_7745c5c3_Err != nil {
@@ -94,7 +95,7 @@ func Notifications() templ.Component {
 			var templ_7745c5c3_Var5 string
 			templ_7745c5c3_Var5, templ_7745c5c3_Err = templ.JoinStringErrs("notification-item-" + item.ID)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/shared/components.templ`, Line: 36, Col: 43}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/shared/components.templ`, Line: 37, Col: 43}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var5))
 			if templ_7745c5c3_Err != nil {
@@ -120,7 +121,7 @@ func Notifications() templ.Component {
 			var templ_7745c5c3_Var7 string
 			templ_7745c5c3_Var7, templ_7745c5c3_Err = templ.JoinStringErrs(item.ID)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/shared/components.templ`, Line: 36, Col: 127}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/shared/components.templ`, Line: 37, Col: 127}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var7))
 			if templ_7745c5c3_Err != nil {
@@ -133,7 +134,7 @@ func Notifications() templ.Component {
 			var templ_7745c5c3_Var8 string
 			templ_7745c5c3_Var8, templ_7745c5c3_Err = templ.JoinStringErrs(item.Created.UnixMilli())
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/shared/components.templ`, Line: 36, Col: 175}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/shared/components.templ`, Line: 37, Col: 175}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var8))
 			if templ_7745c5c3_Err != nil {
@@ -146,7 +147,7 @@ func Notifications() templ.Component {
 			var templ_7745c5c3_Var9 string
 			templ_7745c5c3_Var9, templ_7745c5c3_Err = templ.JoinStringErrs(item.Message)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/shared/components.templ`, Line: 37, Col: 22}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/shared/components.templ`, Line: 38, Col: 22}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var9))
 			if templ_7745c5c3_Err != nil {
@@ -171,15 +172,40 @@ func Notifications() templ.Component {
 			"sureMethod":      "post",
 			"sureURL":         "",
 			"sureTriggerID":   "",
+			"sureFetching":    false,
 		}))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/shared/components.templ`, Line: 54, Col: 4}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/shared/components.templ`, Line: 56, Col: 4}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var10))
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 11, "\" data-show=\"$sureOpen\" style=\"display: none\" data-on:click=\"evt.target === el && ($sureOpen = false; $sureTriggerID = '')\" data-on:keydown__window=\"evt.key === 'Escape' && $sureOpen && ($sureOpen = false; $sureTriggerID = '')\"><section class=\"sure-dialog\" role=\"dialog\" aria-modal=\"true\" aria-labelledby=\"sure-title\" aria-describedby=\"sure-message\"><h3 id=\"sure-title\" data-text=\"$sureTitle\"></h3><p id=\"sure-message\" data-show=\"$sureMessage !== ''\" style=\"display: none\" data-text=\"$sureMessage\"></p><div class=\"row row-right row-wrap\"><button id=\"sure-cancel\" type=\"button\" class=\"btn\" data-on:click=\"$sureOpen = false; $sureTriggerID = ''\" data-text=\"$sureCancelLabel\"></button> <button id=\"sure-submit\" type=\"button\" class=\"btn btn-danger\" data-indicator:_fetching data-on:click=\"$sureOpen = false; ($sureMethod === 'delete' ? @delete($sureURL) : ($sureMethod === 'put' ? @put($sureURL) : @post($sureURL)))\" data-on:datastar-fetch=\"(evt.detail.type === 'finished' || evt.detail.type === 'error' || evt.detail.type === 'retries-failed') && ($sureTriggerID = '')\" data-text=\"$sureSubmitLabel\"></button></div></section></div>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 11, "\" data-show=\"$sureOpen\" style=\"display: none\" data-on:click=\"evt.target === el && !$sureFetching && (($sureOpen = false), ($sureTriggerID = ''))\" data-on:keydown__window=\"evt.key === 'Escape' && $sureOpen && !$sureFetching && (($sureOpen = false), ($sureTriggerID = ''))\"><section class=\"sure-dialog\" role=\"dialog\" aria-modal=\"true\" aria-labelledby=\"sure-title\" aria-describedby=\"sure-message\"><h3 id=\"sure-title\" data-text=\"$sureTitle\"></h3><p id=\"sure-message\" data-show=\"$sureMessage !== ''\" style=\"display: none\" data-text=\"$sureMessage\"></p><div class=\"row row-right row-wrap\"><button id=\"sure-cancel\" type=\"button\" class=\"btn\" data-attr:disabled=\"$sureFetching\" data-on:click=\"!$sureFetching && (($sureOpen = false), ($sureTriggerID = ''))\">")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Err = icons.Icon(icons.IconX, templ.Attributes{"class": "icon"}).Render(ctx, templ_7745c5c3_Buffer)
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 12, "<span data-text=\"$sureCancelLabel\"></span></button> <button id=\"sure-submit\" type=\"button\" class=\"btn btn-danger\" data-attr:disabled=\"$sureFetching\" data-on:click=\"!$sureFetching && (($sureFetching = true), ($sureMethod === 'delete' ? @delete($sureURL) : ($sureMethod === 'put' ? @put($sureURL) : @post($sureURL))))\" data-on:datastar-fetch=\"(evt.detail.type === 'finished' || evt.detail.type === 'error' || evt.detail.type === 'retries-failed') && (($sureFetching = false), ($sureTriggerID = ''), ($sureOpen = false))\"><span data-show=\"!$sureFetching\">")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Err = icons.Icon(icons.IconTrash2, templ.Attributes{"class": "icon"}).Render(ctx, templ_7745c5c3_Buffer)
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 13, "</span> <span data-show=\"$sureFetching\" style=\"display: none\">")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Err = icons.LoaderCircle(templ.Attributes{"class": "icon icon-spin"}).Render(ctx, templ_7745c5c3_Buffer)
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 14, "</span> <span data-text=\"$sureSubmitLabel\"></span></button></div></section></div>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
