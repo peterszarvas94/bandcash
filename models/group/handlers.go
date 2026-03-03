@@ -4,6 +4,8 @@ import (
 	"database/sql"
 	"log/slog"
 	"net/http"
+	"net/url"
+	"strconv"
 	"strings"
 	"time"
 
@@ -18,20 +20,40 @@ import (
 )
 
 type Group struct {
-	model        *GroupModel
-	viewersModel *ViewersModel
+	model               *GroupModel
+	viewersModel        *ViewersModel
+	adminsModel         *AdminsModel
+	pendingInvitesModel *PendingInvitesModel
 }
 
 type ViewersModel struct{}
+type AdminsModel struct{}
+type PendingInvitesModel struct{}
+
+const (
+	viewersTabViewers = "viewers"
+	viewersTabAdmins  = "admins"
+	viewersTabPending = "pending"
+)
 
 func (v *ViewersModel) TableQuerySpec() utils.TableQuerySpec {
 	return utils.StandardTableQuerySpec("email", "asc", "email")
 }
 
+func (a *AdminsModel) TableQuerySpec() utils.TableQuerySpec {
+	return utils.StandardTableQuerySpec("email", "asc", "email")
+}
+
+func (p *PendingInvitesModel) TableQuerySpec() utils.TableQuerySpec {
+	return utils.StandardTableQuerySpec("createdAt", "desc", "email", "createdAt")
+}
+
 func New() *Group {
 	return &Group{
-		model:        NewModel(),
-		viewersModel: &ViewersModel{},
+		model:               NewModel(),
+		viewersModel:        &ViewersModel{},
+		adminsModel:         &AdminsModel{},
+		pendingInvitesModel: &PendingInvitesModel{},
 	}
 }
 
@@ -284,102 +306,24 @@ func (g *Group) DeleteGroup(c echo.Context) error {
 
 // ViewersPage shows the current viewers and invite form
 func (g *Group) ViewersPage(c echo.Context) error {
+	return g.renderViewersTab(c, viewersTabViewers)
+}
+
+func (g *Group) ViewersAdminsPage(c echo.Context) error {
+	return g.renderViewersTab(c, viewersTabAdmins)
+}
+
+func (g *Group) ViewersPendingPage(c echo.Context) error {
+	return g.renderViewersTab(c, viewersTabPending)
+}
+
+func (g *Group) renderViewersTab(c echo.Context, tab string) error {
 	utils.EnsureClientID(c)
 	groupID := middleware.GetGroupID(c)
-	userEmail := getUserEmail(c)
-
-	group, err := db.Qry.GetGroupByID(c.Request().Context(), groupID)
+	data, err := g.viewersPageData(c, groupID, tab, c.QueryParams())
 	if err != nil {
-		return c.String(http.StatusNotFound, "Group not found")
-	}
-
-	// Parse table query
-	query := utils.ParseTableQuery(c, g.viewersModel)
-
-	// Get total count for pagination
-	total, err := db.Qry.CountGroupReadersFiltered(c.Request().Context(), db.CountGroupReadersFilteredParams{
-		GroupID: groupID,
-		Search:  query.Search,
-	})
-	if err != nil {
-		slog.Error("group: failed to count viewers", "err", err)
+		slog.Error("group: failed to load viewers page", "group_id", groupID, "tab", tab, "err", err)
 		return c.String(http.StatusInternalServerError, "Failed to load viewers")
-	}
-
-	// Adjust page if needed
-	query = utils.ClampPage(query, total)
-
-	// Fetch paginated viewers
-	var viewers []db.User
-	switch query.Sort {
-	case "email":
-		if query.Dir == "desc" {
-			viewers, err = db.Qry.ListGroupReadersByEmailDescFiltered(c.Request().Context(), db.ListGroupReadersByEmailDescFilteredParams{
-				GroupID: groupID,
-				Search:  query.Search,
-				Limit:   int64(query.PageSize),
-				Offset:  query.Offset(),
-			})
-		} else {
-			viewers, err = db.Qry.ListGroupReadersByEmailAscFiltered(c.Request().Context(), db.ListGroupReadersByEmailAscFilteredParams{
-				GroupID: groupID,
-				Search:  query.Search,
-				Limit:   int64(query.PageSize),
-				Offset:  query.Offset(),
-			})
-		}
-	default:
-		// Default to email asc
-		viewers, err = db.Qry.ListGroupReadersByEmailAscFiltered(c.Request().Context(), db.ListGroupReadersByEmailAscFilteredParams{
-			GroupID: groupID,
-			Search:  query.Search,
-			Limit:   int64(query.PageSize),
-			Offset:  query.Offset(),
-		})
-	}
-	if err != nil {
-		slog.Error("group: failed to load viewers", "err", err)
-		return c.String(http.StatusInternalServerError, "Failed to load viewers")
-	}
-
-	// Load invites (not paginated for now)
-	invites, err := db.Qry.ListGroupPendingInvites(c.Request().Context(), sql.NullString{String: groupID, Valid: true})
-	if err != nil {
-		slog.Error("group: failed to load pending invites", "err", err)
-		return c.String(http.StatusInternalServerError, "Failed to load group access")
-	}
-
-	admin, err := db.Qry.GetUserByID(c.Request().Context(), group.AdminUserID)
-	if err != nil {
-		slog.Error("group: failed to load group admin", "err", err)
-		return c.String(http.StatusInternalServerError, "Failed to load group access")
-	}
-
-	searchLower := strings.ToLower(strings.TrimSpace(query.Search))
-	showAdmin := searchLower == "" || strings.Contains(strings.ToLower(admin.Email), searchLower)
-	if searchLower != "" {
-		filteredInvites := make([]db.MagicLink, 0, len(invites))
-		for _, invite := range invites {
-			if strings.Contains(strings.ToLower(invite.Email), searchLower) {
-				filteredInvites = append(filteredInvites, invite)
-			}
-		}
-		invites = filteredInvites
-	}
-
-	data := ViewersPageData{
-		Title:       ctxi18n.T(c.Request().Context(), "groups.viewers"),
-		Breadcrumbs: []utils.Crumb{{Label: ctxi18n.T(c.Request().Context(), "groups.title"), Href: "/dashboard"}, {Label: group.Name, Href: "/groups/" + group.ID}, {Label: ctxi18n.T(c.Request().Context(), "groups.viewers")}},
-		UserEmail:   userEmail,
-		Group:       group,
-		Admin:       admin,
-		ShowAdmin:   showAdmin,
-		Viewers:     viewers,
-		Invites:     invites,
-		IsAdmin:     middleware.IsAdmin(c),
-		Query:       query,
-		Pager:       utils.BuildTablePagination(total, query),
-		GroupID:     groupID,
 	}
 
 	return utils.RenderPage(c, GroupViewersPage(data))
@@ -392,82 +336,11 @@ func (g *Group) patchViewersPage(c echo.Context, groupID, messageKey, errorKey s
 	if errorKey != "" {
 		utils.Notify(c, "error", ctxi18n.T(c.Request().Context(), errorKey))
 	}
-
-	group, err := db.Qry.GetGroupByID(c.Request().Context(), groupID)
+	tab, values := viewersTabAndQueryFromReferer(c)
+	data, err := g.viewersPageData(c, groupID, tab, values)
 	if err != nil {
-		slog.Error("group: failed to load group for viewers patch", "err", err)
+		slog.Error("group: failed to load viewers patch data", "group_id", groupID, "tab", tab, "err", err)
 		return c.NoContent(http.StatusInternalServerError)
-	}
-
-	query := utils.ParseTableQuery(c, g.viewersModel)
-	total, err := db.Qry.CountGroupReadersFiltered(c.Request().Context(), db.CountGroupReadersFilteredParams{
-		GroupID: groupID,
-		Search:  query.Search,
-	})
-	if err != nil {
-		slog.Error("group: failed to count viewers for patch", "err", err)
-		return c.NoContent(http.StatusInternalServerError)
-	}
-	query = utils.ClampPage(query, total)
-
-	var viewers []db.User
-	if query.Sort == "email" && query.Dir == "desc" {
-		viewers, err = db.Qry.ListGroupReadersByEmailDescFiltered(c.Request().Context(), db.ListGroupReadersByEmailDescFilteredParams{
-			GroupID: groupID,
-			Search:  query.Search,
-			Limit:   int64(query.PageSize),
-			Offset:  query.Offset(),
-		})
-	} else {
-		viewers, err = db.Qry.ListGroupReadersByEmailAscFiltered(c.Request().Context(), db.ListGroupReadersByEmailAscFilteredParams{
-			GroupID: groupID,
-			Search:  query.Search,
-			Limit:   int64(query.PageSize),
-			Offset:  query.Offset(),
-		})
-	}
-	if err != nil {
-		slog.Error("group: failed to load viewers for patch", "err", err)
-		return c.NoContent(http.StatusInternalServerError)
-	}
-
-	invites, err := db.Qry.ListGroupPendingInvites(c.Request().Context(), sql.NullString{String: groupID, Valid: true})
-	if err != nil {
-		slog.Error("group: failed to load pending invites for patch", "err", err)
-		return c.NoContent(http.StatusInternalServerError)
-	}
-
-	admin, err := db.Qry.GetUserByID(c.Request().Context(), group.AdminUserID)
-	if err != nil {
-		slog.Error("group: failed to load admin for patch", "err", err)
-		return c.NoContent(http.StatusInternalServerError)
-	}
-
-	searchLower := strings.ToLower(strings.TrimSpace(query.Search))
-	showAdmin := searchLower == "" || strings.Contains(strings.ToLower(admin.Email), searchLower)
-	if searchLower != "" {
-		filteredInvites := make([]db.MagicLink, 0, len(invites))
-		for _, invite := range invites {
-			if strings.Contains(strings.ToLower(invite.Email), searchLower) {
-				filteredInvites = append(filteredInvites, invite)
-			}
-		}
-		invites = filteredInvites
-	}
-
-	data := ViewersPageData{
-		Title:       ctxi18n.T(c.Request().Context(), "groups.viewers"),
-		Breadcrumbs: []utils.Crumb{{Label: ctxi18n.T(c.Request().Context(), "groups.title"), Href: "/dashboard"}, {Label: group.Name, Href: "/groups/" + group.ID}, {Label: ctxi18n.T(c.Request().Context(), "groups.viewers")}},
-		UserEmail:   getUserEmail(c),
-		Group:       group,
-		Admin:       admin,
-		ShowAdmin:   showAdmin,
-		Viewers:     viewers,
-		Invites:     invites,
-		IsAdmin:     middleware.IsAdmin(c),
-		Query:       query,
-		Pager:       utils.BuildTablePagination(total, query),
-		GroupID:     groupID,
 	}
 
 	html, err := utils.RenderHTMLForRequest(c, GroupViewersPage(data))
@@ -580,6 +453,218 @@ func (g *Group) CancelInvite(c echo.Context) error {
 	}
 
 	return g.patchViewersPage(c, groupID, "groups.messages.invite_cancelled", "")
+}
+
+func (g *Group) viewersPageData(c echo.Context, groupID, tab string, values url.Values) (ViewersPageData, error) {
+	ctx := c.Request().Context()
+	group, err := db.Qry.GetGroupByID(ctx, groupID)
+	if err != nil {
+		return ViewersPageData{}, err
+	}
+
+	admin, err := db.Qry.GetUserByID(ctx, group.AdminUserID)
+	if err != nil {
+		return ViewersPageData{}, err
+	}
+
+	admins := []db.User{admin}
+
+	var queryable utils.Queryable = g.viewersModel
+	switch tab {
+	case viewersTabAdmins:
+		queryable = g.adminsModel
+	case viewersTabPending:
+		queryable = g.pendingInvitesModel
+	default:
+		tab = viewersTabViewers
+	}
+
+	query := parseTableQueryFromValues(values, queryable)
+
+	var viewers []db.User
+	var invites []db.MagicLink
+	var total int64
+
+	switch tab {
+	case viewersTabAdmins:
+		filteredAdmins := filterAdminsByQuery(admins, query)
+		total = int64(len(filteredAdmins))
+		query = utils.ClampPage(query, total)
+		admins = pageAdmins(filteredAdmins, query)
+	case viewersTabPending:
+		total, err = db.Qry.CountGroupPendingInvitesFiltered(ctx, db.CountGroupPendingInvitesFilteredParams{
+			GroupID: sql.NullString{String: groupID, Valid: true},
+			Search:  query.Search,
+		})
+		if err != nil {
+			return ViewersPageData{}, err
+		}
+		query = utils.ClampPage(query, total)
+
+		switch query.Sort {
+		case "email":
+			if query.Dir == "desc" {
+				invites, err = db.Qry.ListGroupPendingInvitesByEmailDescFiltered(ctx, db.ListGroupPendingInvitesByEmailDescFilteredParams{
+					GroupID: sql.NullString{String: groupID, Valid: true},
+					Search:  query.Search,
+					Limit:   int64(query.PageSize),
+					Offset:  query.Offset(),
+				})
+			} else {
+				invites, err = db.Qry.ListGroupPendingInvitesByEmailAscFiltered(ctx, db.ListGroupPendingInvitesByEmailAscFilteredParams{
+					GroupID: sql.NullString{String: groupID, Valid: true},
+					Search:  query.Search,
+					Limit:   int64(query.PageSize),
+					Offset:  query.Offset(),
+				})
+			}
+		default:
+			if query.Dir == "asc" {
+				invites, err = db.Qry.ListGroupPendingInvitesByCreatedAscFiltered(ctx, db.ListGroupPendingInvitesByCreatedAscFilteredParams{
+					GroupID: sql.NullString{String: groupID, Valid: true},
+					Search:  query.Search,
+					Limit:   int64(query.PageSize),
+					Offset:  query.Offset(),
+				})
+			} else {
+				invites, err = db.Qry.ListGroupPendingInvitesByCreatedDescFiltered(ctx, db.ListGroupPendingInvitesByCreatedDescFilteredParams{
+					GroupID: sql.NullString{String: groupID, Valid: true},
+					Search:  query.Search,
+					Limit:   int64(query.PageSize),
+					Offset:  query.Offset(),
+				})
+			}
+		}
+		if err != nil {
+			return ViewersPageData{}, err
+		}
+	default:
+		total, err = db.Qry.CountGroupReadersFiltered(ctx, db.CountGroupReadersFilteredParams{
+			GroupID: groupID,
+			Search:  query.Search,
+		})
+		if err != nil {
+			return ViewersPageData{}, err
+		}
+		query = utils.ClampPage(query, total)
+
+		if query.Dir == "desc" {
+			viewers, err = db.Qry.ListGroupReadersByEmailDescFiltered(ctx, db.ListGroupReadersByEmailDescFilteredParams{
+				GroupID: groupID,
+				Search:  query.Search,
+				Limit:   int64(query.PageSize),
+				Offset:  query.Offset(),
+			})
+		} else {
+			viewers, err = db.Qry.ListGroupReadersByEmailAscFiltered(ctx, db.ListGroupReadersByEmailAscFilteredParams{
+				GroupID: groupID,
+				Search:  query.Search,
+				Limit:   int64(query.PageSize),
+				Offset:  query.Offset(),
+			})
+		}
+		if err != nil {
+			return ViewersPageData{}, err
+		}
+	}
+
+	return ViewersPageData{
+		Title:       ctxi18n.T(ctx, "groups.viewers"),
+		Breadcrumbs: []utils.Crumb{{Label: ctxi18n.T(ctx, "groups.title"), Href: "/dashboard"}, {Label: group.Name, Href: "/groups/" + group.ID}, {Label: ctxi18n.T(ctx, "groups.viewers")}},
+		UserEmail:   getUserEmail(c),
+		Group:       group,
+		Admins:      admins,
+		Viewers:     viewers,
+		Invites:     invites,
+		IsAdmin:     middleware.IsAdmin(c),
+		Query:       query,
+		Pager:       utils.BuildTablePagination(total, query),
+		GroupID:     groupID,
+		Tab:         tab,
+	}, nil
+}
+
+func viewersTabAndQueryFromReferer(c echo.Context) (string, url.Values) {
+	referer := c.Request().Referer()
+	if referer == "" {
+		return viewersTabViewers, url.Values{}
+	}
+
+	u, err := url.Parse(referer)
+	if err != nil {
+		return viewersTabViewers, url.Values{}
+	}
+
+	return viewersTabFromPath(u.Path), u.Query()
+}
+
+func viewersTabFromPath(path string) string {
+	switch {
+	case strings.HasSuffix(path, "/viewers/admins"):
+		return viewersTabAdmins
+	case strings.HasSuffix(path, "/viewers/pending"):
+		return viewersTabPending
+	default:
+		return viewersTabViewers
+	}
+}
+
+func parseTableQueryFromValues(values url.Values, queryable utils.Queryable) utils.TableQuery {
+	query := utils.TableQuery{
+		Page:     parsePositiveInt(values.Get("page"), 1),
+		PageSize: parsePositiveInt(values.Get("pageSize"), utils.DefaultTablePageSize),
+		Search:   strings.TrimSpace(values.Get("q")),
+		Sort:     values.Get("sort"),
+		Dir:      values.Get("dir"),
+		SortSet:  values.Get("sort") != "",
+	}
+
+	return utils.NormalizeTableQuery(query, queryable.TableQuerySpec())
+}
+
+func parsePositiveInt(value string, fallback int) int {
+	if value == "" {
+		return fallback
+	}
+	parsed, err := strconv.Atoi(value)
+	if err != nil || parsed < 1 {
+		return fallback
+	}
+	return parsed
+}
+
+func filterAdminsByQuery(admins []db.User, query utils.TableQuery) []db.User {
+	if query.Search == "" {
+		return admins
+	}
+
+	filtered := make([]db.User, 0, len(admins))
+	needle := strings.ToLower(query.Search)
+	for _, admin := range admins {
+		if strings.Contains(strings.ToLower(admin.Email), needle) {
+			filtered = append(filtered, admin)
+		}
+	}
+
+	return filtered
+}
+
+func pageAdmins(admins []db.User, query utils.TableQuery) []db.User {
+	if len(admins) == 0 {
+		return admins
+	}
+
+	start := int(query.Offset())
+	if start >= len(admins) {
+		return []db.User{}
+	}
+
+	end := start + query.PageSize
+	if end > len(admins) {
+		end = len(admins)
+	}
+
+	return admins[start:end]
 }
 
 func getUserEmail(c echo.Context) string {

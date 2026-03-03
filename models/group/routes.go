@@ -18,6 +18,8 @@ func RegisterRoutes(e *echo.Echo) *Group {
 	leave := e.Group("/groups/:groupId", middleware.RequireAuth(), middleware.RequireGroup())
 	leave.GET("", grp.GroupPage)
 	leave.GET("/viewers", grp.ViewersPage)
+	leave.GET("/viewers/admins", grp.ViewersAdminsPage)
+	leave.GET("/viewers/pending", grp.ViewersPendingPage)
 	leave.POST("/leave", grp.LeaveGroup)
 
 	// Viewer management (admin only)

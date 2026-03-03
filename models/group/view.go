@@ -40,14 +40,14 @@ type ViewersPageData struct {
 	Breadcrumbs []utils.Crumb
 	UserEmail   string
 	Group       db.Group
-	Admin       db.User
-	ShowAdmin   bool
+	Admins      []db.User
 	Viewers     []db.User
 	Invites     []db.MagicLink
 	IsAdmin     bool
 	Query       utils.TableQuery
 	Pager       utils.TablePagination
 	GroupID     string
+	Tab         string
 }
 
 type GroupPageData struct {

@@ -140,6 +140,69 @@ WHERE action = 'invite'
   AND expires_at >= CURRENT_TIMESTAMP
 ORDER BY created_at DESC;
 
+-- name: CountGroupPendingInvitesFiltered :one
+SELECT COUNT(*) FROM magic_links
+WHERE action = 'invite'
+  AND group_id = sqlc.arg(group_id)
+  AND used_at IS NULL
+  AND expires_at >= CURRENT_TIMESTAMP
+  AND (
+    sqlc.arg(search) = ''
+    OR LOWER(email) LIKE '%' || LOWER(sqlc.arg(search)) || '%'
+  );
+
+-- name: ListGroupPendingInvitesByEmailAscFiltered :many
+SELECT * FROM magic_links
+WHERE action = 'invite'
+  AND group_id = sqlc.arg(group_id)
+  AND used_at IS NULL
+  AND expires_at >= CURRENT_TIMESTAMP
+  AND (
+    sqlc.arg(search) = ''
+    OR LOWER(email) LIKE '%' || LOWER(sqlc.arg(search)) || '%'
+  )
+ORDER BY LOWER(email) ASC, created_at DESC
+LIMIT sqlc.arg(limit) OFFSET sqlc.arg(offset);
+
+-- name: ListGroupPendingInvitesByEmailDescFiltered :many
+SELECT * FROM magic_links
+WHERE action = 'invite'
+  AND group_id = sqlc.arg(group_id)
+  AND used_at IS NULL
+  AND expires_at >= CURRENT_TIMESTAMP
+  AND (
+    sqlc.arg(search) = ''
+    OR LOWER(email) LIKE '%' || LOWER(sqlc.arg(search)) || '%'
+  )
+ORDER BY LOWER(email) DESC, created_at DESC
+LIMIT sqlc.arg(limit) OFFSET sqlc.arg(offset);
+
+-- name: ListGroupPendingInvitesByCreatedAscFiltered :many
+SELECT * FROM magic_links
+WHERE action = 'invite'
+  AND group_id = sqlc.arg(group_id)
+  AND used_at IS NULL
+  AND expires_at >= CURRENT_TIMESTAMP
+  AND (
+    sqlc.arg(search) = ''
+    OR LOWER(email) LIKE '%' || LOWER(sqlc.arg(search)) || '%'
+  )
+ORDER BY created_at ASC, LOWER(email) ASC
+LIMIT sqlc.arg(limit) OFFSET sqlc.arg(offset);
+
+-- name: ListGroupPendingInvitesByCreatedDescFiltered :many
+SELECT * FROM magic_links
+WHERE action = 'invite'
+  AND group_id = sqlc.arg(group_id)
+  AND used_at IS NULL
+  AND expires_at >= CURRENT_TIMESTAMP
+  AND (
+    sqlc.arg(search) = ''
+    OR LOWER(email) LIKE '%' || LOWER(sqlc.arg(search)) || '%'
+  )
+ORDER BY created_at DESC, LOWER(email) ASC
+LIMIT sqlc.arg(limit) OFFSET sqlc.arg(offset);
+
 -- name: DeleteGroupPendingInvite :exec
 DELETE FROM magic_links
 WHERE id = ?

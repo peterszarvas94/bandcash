@@ -27,6 +27,30 @@ func (q *Queries) BanUser(ctx context.Context, arg BanUserParams) error {
 	return err
 }
 
+const countGroupPendingInvitesFiltered = `-- name: CountGroupPendingInvitesFiltered :one
+SELECT COUNT(*) FROM magic_links
+WHERE action = 'invite'
+  AND group_id = ?1
+  AND used_at IS NULL
+  AND expires_at >= CURRENT_TIMESTAMP
+  AND (
+    ?2 = ''
+    OR LOWER(email) LIKE '%' || LOWER(?2) || '%'
+  )
+`
+
+type CountGroupPendingInvitesFilteredParams struct {
+	GroupID sql.NullString `json:"group_id"`
+	Search  interface{}    `json:"search"`
+}
+
+func (q *Queries) CountGroupPendingInvitesFiltered(ctx context.Context, arg CountGroupPendingInvitesFilteredParams) (int64, error) {
+	row := q.db.QueryRowContext(ctx, countGroupPendingInvitesFiltered, arg.GroupID, arg.Search)
+	var count int64
+	err := row.Scan(&count)
+	return count, err
+}
+
 const countGroupReadersFiltered = `-- name: CountGroupReadersFiltered :one
 SELECT COUNT(*) FROM users
 JOIN group_readers ON group_readers.user_id = users.id
@@ -375,6 +399,238 @@ ORDER BY created_at DESC
 
 func (q *Queries) ListGroupPendingInvites(ctx context.Context, groupID sql.NullString) ([]MagicLink, error) {
 	rows, err := q.db.QueryContext(ctx, listGroupPendingInvites, groupID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []MagicLink{}
+	for rows.Next() {
+		var i MagicLink
+		if err := rows.Scan(
+			&i.ID,
+			&i.Token,
+			&i.Email,
+			&i.Action,
+			&i.GroupID,
+			&i.ExpiresAt,
+			&i.UsedAt,
+			&i.CreatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const listGroupPendingInvitesByCreatedAscFiltered = `-- name: ListGroupPendingInvitesByCreatedAscFiltered :many
+SELECT id, token, email, "action", group_id, expires_at, used_at, created_at FROM magic_links
+WHERE action = 'invite'
+  AND group_id = ?1
+  AND used_at IS NULL
+  AND expires_at >= CURRENT_TIMESTAMP
+  AND (
+    ?2 = ''
+    OR LOWER(email) LIKE '%' || LOWER(?2) || '%'
+  )
+ORDER BY created_at ASC, LOWER(email) ASC
+LIMIT ?4 OFFSET ?3
+`
+
+type ListGroupPendingInvitesByCreatedAscFilteredParams struct {
+	GroupID sql.NullString `json:"group_id"`
+	Search  interface{}    `json:"search"`
+	Offset  int64          `json:"offset"`
+	Limit   int64          `json:"limit"`
+}
+
+func (q *Queries) ListGroupPendingInvitesByCreatedAscFiltered(ctx context.Context, arg ListGroupPendingInvitesByCreatedAscFilteredParams) ([]MagicLink, error) {
+	rows, err := q.db.QueryContext(ctx, listGroupPendingInvitesByCreatedAscFiltered,
+		arg.GroupID,
+		arg.Search,
+		arg.Offset,
+		arg.Limit,
+	)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []MagicLink{}
+	for rows.Next() {
+		var i MagicLink
+		if err := rows.Scan(
+			&i.ID,
+			&i.Token,
+			&i.Email,
+			&i.Action,
+			&i.GroupID,
+			&i.ExpiresAt,
+			&i.UsedAt,
+			&i.CreatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const listGroupPendingInvitesByCreatedDescFiltered = `-- name: ListGroupPendingInvitesByCreatedDescFiltered :many
+SELECT id, token, email, "action", group_id, expires_at, used_at, created_at FROM magic_links
+WHERE action = 'invite'
+  AND group_id = ?1
+  AND used_at IS NULL
+  AND expires_at >= CURRENT_TIMESTAMP
+  AND (
+    ?2 = ''
+    OR LOWER(email) LIKE '%' || LOWER(?2) || '%'
+  )
+ORDER BY created_at DESC, LOWER(email) ASC
+LIMIT ?4 OFFSET ?3
+`
+
+type ListGroupPendingInvitesByCreatedDescFilteredParams struct {
+	GroupID sql.NullString `json:"group_id"`
+	Search  interface{}    `json:"search"`
+	Offset  int64          `json:"offset"`
+	Limit   int64          `json:"limit"`
+}
+
+func (q *Queries) ListGroupPendingInvitesByCreatedDescFiltered(ctx context.Context, arg ListGroupPendingInvitesByCreatedDescFilteredParams) ([]MagicLink, error) {
+	rows, err := q.db.QueryContext(ctx, listGroupPendingInvitesByCreatedDescFiltered,
+		arg.GroupID,
+		arg.Search,
+		arg.Offset,
+		arg.Limit,
+	)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []MagicLink{}
+	for rows.Next() {
+		var i MagicLink
+		if err := rows.Scan(
+			&i.ID,
+			&i.Token,
+			&i.Email,
+			&i.Action,
+			&i.GroupID,
+			&i.ExpiresAt,
+			&i.UsedAt,
+			&i.CreatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const listGroupPendingInvitesByEmailAscFiltered = `-- name: ListGroupPendingInvitesByEmailAscFiltered :many
+SELECT id, token, email, "action", group_id, expires_at, used_at, created_at FROM magic_links
+WHERE action = 'invite'
+  AND group_id = ?1
+  AND used_at IS NULL
+  AND expires_at >= CURRENT_TIMESTAMP
+  AND (
+    ?2 = ''
+    OR LOWER(email) LIKE '%' || LOWER(?2) || '%'
+  )
+ORDER BY LOWER(email) ASC, created_at DESC
+LIMIT ?4 OFFSET ?3
+`
+
+type ListGroupPendingInvitesByEmailAscFilteredParams struct {
+	GroupID sql.NullString `json:"group_id"`
+	Search  interface{}    `json:"search"`
+	Offset  int64          `json:"offset"`
+	Limit   int64          `json:"limit"`
+}
+
+func (q *Queries) ListGroupPendingInvitesByEmailAscFiltered(ctx context.Context, arg ListGroupPendingInvitesByEmailAscFilteredParams) ([]MagicLink, error) {
+	rows, err := q.db.QueryContext(ctx, listGroupPendingInvitesByEmailAscFiltered,
+		arg.GroupID,
+		arg.Search,
+		arg.Offset,
+		arg.Limit,
+	)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []MagicLink{}
+	for rows.Next() {
+		var i MagicLink
+		if err := rows.Scan(
+			&i.ID,
+			&i.Token,
+			&i.Email,
+			&i.Action,
+			&i.GroupID,
+			&i.ExpiresAt,
+			&i.UsedAt,
+			&i.CreatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const listGroupPendingInvitesByEmailDescFiltered = `-- name: ListGroupPendingInvitesByEmailDescFiltered :many
+SELECT id, token, email, "action", group_id, expires_at, used_at, created_at FROM magic_links
+WHERE action = 'invite'
+  AND group_id = ?1
+  AND used_at IS NULL
+  AND expires_at >= CURRENT_TIMESTAMP
+  AND (
+    ?2 = ''
+    OR LOWER(email) LIKE '%' || LOWER(?2) || '%'
+  )
+ORDER BY LOWER(email) DESC, created_at DESC
+LIMIT ?4 OFFSET ?3
+`
+
+type ListGroupPendingInvitesByEmailDescFilteredParams struct {
+	GroupID sql.NullString `json:"group_id"`
+	Search  interface{}    `json:"search"`
+	Offset  int64          `json:"offset"`
+	Limit   int64          `json:"limit"`
+}
+
+func (q *Queries) ListGroupPendingInvitesByEmailDescFiltered(ctx context.Context, arg ListGroupPendingInvitesByEmailDescFilteredParams) ([]MagicLink, error) {
+	rows, err := q.db.QueryContext(ctx, listGroupPendingInvitesByEmailDescFiltered,
+		arg.GroupID,
+		arg.Search,
+		arg.Offset,
+		arg.Limit,
+	)
 	if err != nil {
 		return nil, err
 	}
