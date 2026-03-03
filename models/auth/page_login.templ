@@ -30,7 +30,7 @@ templ LoginMain() {
 				<div data-show="$authError !== ''" class="color-error" data-text="$authError"></div>
 				<div data-show="$authServerError !== ''" class="color-error" data-text="$authServerError"></div>
 			</div>
-			@shared.LoadingSubmitButton("btn btn-primary", ctxi18n.T(ctx, "auth.send_link"), icons.IconSend)
+			@shared.LoadingSubmitButton("btn", ctxi18n.T(ctx, "auth.send_link"), icons.IconSend)
 		</form>
 	</div>
 	<div data-show="$authState === 'sent'" style="display: none" class="form">
@@ -38,7 +38,7 @@ templ LoginMain() {
 		<p>{ ctxi18n.T(ctx, "auth.check_email_safe") }</p>
 		<p><strong>{ ctxi18n.T(ctx, "auth.masked_email") }:</strong> <span data-text="$submittedEmailMasked"></span></p>
 		<div class="row row-wrap">
-			@shared.LoadingActionButton("btn btn-primary", "@post('/auth/login')", "$_fetching || $resendRemaining > 0", ctxi18n.T(ctx, "auth.resend_email"), icons.IconSend)
+			@shared.LoadingActionButton("btn", "@post('/auth/login')", "$_fetching || $resendRemaining > 0", ctxi18n.T(ctx, "auth.resend_email"), icons.IconSend)
 			<span data-show="$resendRemaining > 0" data-text="'(' + $resendRemaining + 's)'"></span>
 			@shared.LoadingActionButton("btn", "$authState = 'form'; $authError = ''; $authServerError = ''; $formData.email = $submittedEmail", "$_fetching", ctxi18n.T(ctx, "auth.use_different_email"), icons.IconPencil)
 		</div>

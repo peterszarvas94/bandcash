@@ -38,7 +38,7 @@ templ EventShowSidebar(data EventData) {
 					<div data-show="$errors && $errors.amount" class="color-error" data-text="$errors.amount"></div>
 				</div>
 				<div class="sidebar-actions">
-					@shared.SidebarLoadingActionButton("btn btn-primary", fmt.Sprintf("@put('/groups/%s/events/%s')", data.GroupID, data.Event.ID), ctxi18n.T(ctx, "events.update"), icons.IconSave, "event-details-update")
+					@shared.SidebarLoadingActionButton("btn", fmt.Sprintf("@put('/groups/%s/events/%s')", data.GroupID, data.Event.ID), ctxi18n.T(ctx, "events.update"), icons.IconSave, "event-details-update")
 					@shared.ActionButton("btn", "$eventFormState = ''; $eventFormData = {title: "+utils.JSONString(data.Event.Title)+", time: "+utils.JSONString(data.Event.Time)+", description: "+utils.JSONString(data.Event.Description)+", amount: "+fmt.Sprintf("%d", data.Event.Amount)+"}; $errors = {title: '', time: '', description: '', amount: ''}", "$_fetching", ctxi18n.T(ctx, "actions.cancel"), icons.IconX)
 				</div>
 			</form>
@@ -94,8 +94,8 @@ templ EventShowSidebar(data EventData) {
 					<span data-text="$formData.amount + $formData.expense"></span>
 				</div>
 				<div class="sidebar-actions">
-					<span data-show="$formState === 'add'">@shared.SidebarLoadingActionButton("btn btn-primary", fmt.Sprintf("@post('/groups/%s/events/%s/participants')", data.GroupID, data.Event.ID), ctxi18n.T(ctx, "participants.add"), icons.IconSave, "participant-add")</span>
-					<span data-show="$formState === 'edit'">@shared.SidebarLoadingActionButton("btn btn-primary", fmt.Sprintf("@put('/groups/%s/events/%s/participants/' + $editingId)", data.GroupID, data.Event.ID), ctxi18n.T(ctx, "participants.update"), icons.IconSave, "participant-update")</span>
+					<span data-show="$formState === 'add'">@shared.SidebarLoadingActionButton("btn", fmt.Sprintf("@post('/groups/%s/events/%s/participants')", data.GroupID, data.Event.ID), ctxi18n.T(ctx, "participants.add"), icons.IconSave, "participant-add")</span>
+					<span data-show="$formState === 'edit'">@shared.SidebarLoadingActionButton("btn", fmt.Sprintf("@put('/groups/%s/events/%s/participants/' + $editingId)", data.GroupID, data.Event.ID), ctxi18n.T(ctx, "participants.update"), icons.IconSave, "participant-update")</span>
 					@shared.ActionButton("btn", "$formState = ''; $editingId = ''; $calcPercent = 0; $formData = {memberId: '', memberName: '', amount: 0, expense: 0}; $errors = {memberId: '', amount: '', expense: ''}", "$_fetching", ctxi18n.T(ctx, "actions.cancel"), icons.IconX)
 				</div>
 			</form>

@@ -47,8 +47,8 @@ templ ExpenseIndexSidebar(data ExpensesData) {
 						</div>
 					</div>
 					<div class="sidebar-actions">
-						<span data-show="$formState === 'add'">@shared.SidebarLoadingActionButton("btn btn-primary", fmt.Sprintf("@post('/groups/%s/expenses')", data.GroupID), ctxi18n.T(ctx, "expenses.create"), icons.IconSave, "expense-create")</span>
-						<span data-show="$formState === 'edit'">@shared.SidebarLoadingActionButton("btn btn-primary", fmt.Sprintf("@put('/groups/%s/expenses/' + $editingId)", data.GroupID), ctxi18n.T(ctx, "expenses.update"), icons.IconSave, "expense-update")</span>
+					<span data-show="$formState === 'add'">@shared.SidebarLoadingActionButton("btn", fmt.Sprintf("@post('/groups/%s/expenses')", data.GroupID), ctxi18n.T(ctx, "expenses.create"), icons.IconSave, "expense-create")</span>
+					<span data-show="$formState === 'edit'">@shared.SidebarLoadingActionButton("btn", fmt.Sprintf("@put('/groups/%s/expenses/' + $editingId)", data.GroupID), ctxi18n.T(ctx, "expenses.update"), icons.IconSave, "expense-update")</span>
 						@shared.ActionButton("btn", "$formState = ''; $editingId = 0; $formData = {title: '', description: '', amount: 0, date: ''}; $errors = {title: '', description: '', amount: '', date: ''}", "$_fetching", ctxi18n.T(ctx, "actions.cancel"), icons.IconX)
 					</div>
 				</form>

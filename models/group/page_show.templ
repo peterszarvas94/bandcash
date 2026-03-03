@@ -72,7 +72,7 @@ templ GroupSidebar(data GroupPageData) {
 					<div data-show="$errors && $errors.name" class="color-error" data-text="$errors.name"></div>
 				</div>
 				<div class="sidebar-actions">
-					@shared.SidebarLoadingSubmitButton("btn btn-primary", ctxi18n.T(ctx, "groups.update"), icons.IconSave, "group-update")
+					@shared.SidebarLoadingSubmitButton("btn", ctxi18n.T(ctx, "groups.update"), icons.IconSave, "group-update")
 					@shared.ActionButton("btn", "$formState = ''; $formData = {name: "+utils.JSONString(data.Group.Name)+"}; $errors = {name: ''}", "$_fetching", ctxi18n.T(ctx, "actions.cancel"), icons.IconX)
 				</div>
 			</form>

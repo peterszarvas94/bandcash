@@ -141,7 +141,7 @@ templ GroupsSidebar(data GroupsPageData) {
 				<input type="text" data-bind="formData.name" placeholder={ ctxi18n.T(ctx, "groups.name_placeholder") }/>
 			</div>
 			<div class="sidebar-actions">
-				@shared.SidebarLoadingSubmitButton("btn btn-primary", ctxi18n.T(ctx, "groups.create"), icons.IconSave, "group-create")
+				@shared.SidebarLoadingSubmitButton("btn", ctxi18n.T(ctx, "groups.create"), icons.IconSave, "group-create")
 				@shared.ActionButton("btn", "$formState = ''; $formData = {name: ''}", "$_fetching", ctxi18n.T(ctx, "actions.cancel"), icons.IconX)
 			</div>
 		</form>
@@ -166,7 +166,7 @@ templ GroupsSidebar(data GroupsPageData) {
 				<div data-show="$errors && $errors.name" class="color-error" data-text="$errors.name"></div>
 			</div>
 			<div class="sidebar-actions">
-				@shared.SidebarLoadingSubmitButton("btn btn-primary", ctxi18n.T(ctx, "groups.update"), icons.IconSave, "group-update")
+				@shared.SidebarLoadingSubmitButton("btn", ctxi18n.T(ctx, "groups.update"), icons.IconSave, "group-update")
 				@shared.ActionButton("btn", "$formState = ''; $selectedGroupId = ''; $formData = {name: ''}; $errors = {name: ''}", "$_fetching", ctxi18n.T(ctx, "actions.cancel"), icons.IconX)
 			</div>
 		</form>
