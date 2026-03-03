@@ -1,0 +1,77 @@
+package shared
+
+import (
+	"bandcash/internal/utils"
+	"bandcash/models/shared/icons"
+)
+
+templ Notifications() {
+	{{
+		sureCloseExpr := `!$sureFetching && ($sureOpen = false, $sureTriggerID = '')`
+		sureOverlayCloseExpr := `evt.target === el && !$sureFetching && ($sureOpen = false, $sureTriggerID = '')`
+		sureEscapeCloseExpr := `evt.key === 'Escape' && $sureOpen && !$sureFetching && ($sureOpen = false, $sureTriggerID = '')`
+		sureSubmitExpr := `!$sureFetching && (
+			$sureFetching = true,
+			($sureMethod === 'delete' ? @delete($sureURL) : ($sureMethod === 'put' ? @put($sureURL) : @post($sureURL)))
+		)`
+		sureFetchDoneExpr := `(evt.detail.type === 'finished' || evt.detail.type === 'error' || evt.detail.type === 'retries-failed') && (
+			$sureFetching = false,
+			$sureTriggerID = '',
+			$sureOpen = false
+		)`
+	}}
+	<div id="notifications-popover" class="notifications-popover">
+		<ul class="notifications-list">
+			for _, item := range utils.NotificationsFromContext(ctx) {
+				<li id={ "notification-item-" + item.ID } class={ "notification notification-" + item.Kind } data-notification-id={ item.ID } data-created-at-ms={ item.Created.UnixMilli() }>
+					<p>{ item.Message }</p>
+				</li>
+			}
+		</ul>
+	</div>
+	<div
+		id="sure-popover"
+		class="sure-popover"
+		data-signals={ templ.JSONString(map[string]any{
+			"sureOpen": false,
+			"sureFetching": false,
+		}) }
+		data-show="$sureOpen"
+		style="display: none"
+		data-on:click={ sureOverlayCloseExpr }
+		data-on:keydown__window={ sureEscapeCloseExpr }
+	>
+		<section class="sure-dialog" role="dialog" aria-modal="true" aria-labelledby="sure-title" aria-describedby="sure-message">
+			<h3 id="sure-title" data-text="$sureTitle"></h3>
+			<p id="sure-message" data-show="$sureMessage !== ''" style="display: none" data-text="$sureMessage"></p>
+			<div class="row row-right row-wrap">
+				<button
+					id="sure-cancel"
+					type="button"
+					class="btn"
+					data-attr:disabled="$sureFetching"
+					data-on:click={ sureCloseExpr }
+				>
+					@icons.Icon(icons.IconX, templ.Attributes{"class": "icon"})
+					<span data-text="$sureCancelLabel"></span>
+				</button>
+				<button
+					id="sure-submit"
+					type="button"
+					class="btn btn-danger"
+					data-attr:disabled="$sureFetching"
+					data-on:click={ sureSubmitExpr }
+					data-on:datastar-fetch={ sureFetchDoneExpr }
+				>
+					<span data-show="!$sureFetching">
+						@icons.Icon(icons.IconTrash2, templ.Attributes{"class": "icon"})
+					</span>
+					<span data-show="$sureFetching" style="display: none">
+						@icons.LoaderCircle(templ.Attributes{"class": "icon icon-spin"})
+					</span>
+					<span data-text="$sureSubmitLabel"></span>
+				</button>
+			</div>
+		</section>
+	</div>
+}

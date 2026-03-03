@@ -40,7 +40,7 @@ templ TablePaginationControls(basePath string, query utils.TableQuery, pager uti
 				1
 			</button>
 			<button
-				class="btn btn-ghost btn-sm btn-icon"
+				class="btn btn-sm btn-icon"
 				type="button"
 				data-on:click={ utils.BuildTableQueryDatastarAction(utils.BuildTablePageURL(basePath, query, pager.Page-1, pager.TotalPages)) }
 				aria-label={ ctxi18n.T(ctx, "table.prev") }
@@ -52,20 +52,20 @@ templ TablePaginationControls(basePath string, query utils.TableQuery, pager uti
 			<button type="button" class="btn btn-sm" aria-label={ ctxi18n.T(ctx, "table.first") } title={ ctxi18n.T(ctx, "table.first") } disabled>
 				1
 			</button>
-			<button type="button" class="btn btn-ghost btn-sm btn-icon" aria-label={ ctxi18n.T(ctx, "table.prev") } title={ ctxi18n.T(ctx, "table.prev") } disabled>
+			<button type="button" class="btn btn-sm btn-icon" aria-label={ ctxi18n.T(ctx, "table.prev") } title={ ctxi18n.T(ctx, "table.prev") } disabled>
 				@icons.ArrowLeft(templ.Attributes{"class": "icon"})
 			</button>
 		}
 		<label class="row">
 			<span>{ ctxi18n.T(ctx, "table.page") }</span>
 			<input type="number" min="1" max={ fmt.Sprintf("%d", pager.TotalPages) } step="1" data-bind="tableQuery.page" aria-label={ ctxi18n.T(ctx, "table.page") } class="input input-thin"/>
-			<button class="btn btn-ghost btn-sm btn-icon" type="submit" aria-label={ ctxi18n.T(ctx, "table.go") } title={ ctxi18n.T(ctx, "table.go") }>
+			<button class="btn btn-sm btn-icon" type="submit" aria-label={ ctxi18n.T(ctx, "table.go") } title={ ctxi18n.T(ctx, "table.go") }>
 				@icons.FileInput(templ.Attributes{"class": "icon"})
 			</button>
 		</label>
 		if pager.HasNext {
 			<button
-				class="btn btn-ghost btn-sm btn-icon"
+				class="btn btn-sm btn-icon"
 				type="button"
 				data-on:click={ utils.BuildTableQueryDatastarAction(utils.BuildTablePageURL(basePath, query, pager.Page+1, pager.TotalPages)) }
 				aria-label={ ctxi18n.T(ctx, "table.next") }
@@ -83,7 +83,7 @@ templ TablePaginationControls(basePath string, query utils.TableQuery, pager uti
 				{ fmt.Sprintf("%d", pager.TotalPages) }
 			</button>
 		} else {
-			<button type="button" class="btn btn-ghost btn-sm btn-icon" aria-label={ ctxi18n.T(ctx, "table.next") } title={ ctxi18n.T(ctx, "table.next") } disabled>
+			<button type="button" class="btn btn-sm btn-icon" aria-label={ ctxi18n.T(ctx, "table.next") } title={ ctxi18n.T(ctx, "table.next") } disabled>
 				@icons.ArrowRight(templ.Attributes{"class": "icon"})
 			</button>
 			<button type="button" class="btn btn-sm" aria-label={ ctxi18n.T(ctx, "table.last") } title={ ctxi18n.T(ctx, "table.last") } disabled>

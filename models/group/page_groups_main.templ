@@ -1,0 +1,83 @@
+package group
+
+import (
+	"fmt"
+
+	ctxi18n "github.com/invopop/ctxi18n/i18n"
+
+	"bandcash/internal/utils"
+	shared "bandcash/models/shared"
+	icons "bandcash/models/shared/icons"
+)
+
+templ GroupsMain(data GroupsPageData) {
+	<p>{ ctxi18n.T(ctx, "groups.subtitle") }</p>
+	@shared.TableSearchForm(utils.BuildTableSearchDatastarAction("/dashboard", utils.DefaultTablePageSize), "table.search_placeholder")
+	<div class="row row-wrap justify-between pt">
+		<div class="row row-wrap">
+			<span>{ ctxi18n.T(ctx, "table.page_size") }</span>
+			for _, pageSize := range utils.StandardTablePageSizes {
+				<button
+					class={ utils.PageSizeButtonClass(data.Query.PageSize, pageSize) }
+					type="button"
+					data-on:click={ utils.BuildTableQueryDatastarAction(utils.BuildTablePageSizeURL("/dashboard", data.Query, pageSize)) }
+				>
+					{ fmt.Sprintf("%d", pageSize) }
+				</button>
+			}
+		</div>
+		@shared.TablePaginationControls("/dashboard", data.Query, data.Pagination)
+	</div>
+	<table class="table table-sticky-actions pt">
+		<thead>
+			<tr>
+				<th>
+					@shared.TableSortHeader(ctxi18n.T(ctx, "fields.name"), "name", data.Query, utils.BuildTableSortURL("/dashboard", data.Query, "name"))
+				</th>
+				<th>{ ctxi18n.T(ctx, "fields.role") }</th>
+				<th>
+					@shared.TableSortHeader(ctxi18n.T(ctx, "fields.created"), "createdAt", data.Query, utils.BuildTableSortURL("/dashboard", data.Query, "createdAt"))
+				</th>
+				<th>
+					@shared.TableSortHeader(ctxi18n.T(ctx, "fields.admin"), "admin", data.Query, utils.BuildTableSortURL("/dashboard", data.Query, "admin"))
+				</th>
+				<th data-actions-col>
+					<div class="row row-right row-tight">
+						@shared.LoadingIconActionButton(shared.LoadingIconActionButtonProps{ClassName: "btn btn-ghost btn-sm btn-icon", OnClick: "$formState = 'add'; $formData = {name: ''}; $selectedGroupId = ''", DisabledExpr: "$formState !== ''", AriaLabel: ctxi18n.T(ctx, "groups.create"), Title: ctxi18n.T(ctx, "groups.create"), IconName: icons.IconPlus})
+					</div>
+				</th>
+			</tr>
+		</thead>
+		<tbody>
+			if len(data.AllGroups) == 0 {
+				<tr><td colspan="5">{ ctxi18n.T(ctx, "table.empty") }</td></tr>
+			} else {
+				for _, group := range data.AllGroups {
+					<tr>
+						<td>
+							<a class="link" href={ "/groups/" + group.Group.ID }>{ group.Group.Name }</a>
+						</td>
+						<td>
+							if group.Role == "admin" {
+								<span class="badge badge-primary">{ ctxi18n.T(ctx, "groups.role_admin") }</span>
+							} else {
+								<span class="badge">{ ctxi18n.T(ctx, "groups.role_viewer") }</span>
+							}
+						</td>
+						<td>{ group.Group.CreatedAt.Time.Format("2006-01-02") }</td>
+						<td>{ group.AdminEmail }</td>
+						<td data-actions-col>
+							<div class="row row-right row-tight">
+								if group.Role == "admin" {
+									@shared.LoadingIconActionButton(shared.LoadingIconActionButtonProps{ClassName: "btn btn-ghost btn-sm btn-icon", OnClick: fmt.Sprintf("$formState = 'edit'; $selectedGroupId = '%s'; $formData = {name: %s}; $errors = {name: ''}", group.Group.ID, utils.JSONString(group.Group.Name)), DisabledExpr: "$formState !== ''", AriaLabel: ctxi18n.T(ctx, "actions.edit"), Title: ctxi18n.T(ctx, "actions.edit"), IconName: icons.IconPencil})
+								} else {
+									@shared.LoadingIconActionButton(shared.LoadingIconActionButtonProps{ClassName: "btn btn-ghost btn-sm btn-icon", OnClick: fmt.Sprintf("$formState = 'leave'; $selectedGroupId = '%s'", group.Group.ID), DisabledExpr: "$formState !== ''", AriaLabel: ctxi18n.T(ctx, "groups.leave"), Title: ctxi18n.T(ctx, "groups.leave"), IconName: icons.IconSquareArrowRightExit})
+								}
+							</div>
+						</td>
+					</tr>
+				}
+			}
+		</tbody>
+	</table>
+}

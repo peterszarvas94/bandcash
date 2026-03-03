@@ -1,0 +1,68 @@
+package group
+
+import (
+	"fmt"
+
+	ctxi18n "github.com/invopop/ctxi18n/i18n"
+
+	"bandcash/internal/utils"
+	shared "bandcash/models/shared"
+	icons "bandcash/models/shared/icons"
+)
+
+templ GroupsSidebar(data GroupsPageData) {
+	<div data-signals={ templ.JSONString(map[string]any{"sidebarLoadingAction": ""}) }>
+		<div data-show="$formState === 'add'" style="display: none" class="pb">
+			<h3>{ ctxi18n.T(ctx, "groups.new") }</h3>
+			<form class="form" data-on:submit="@post('/groups')" data-indicator:_fetching>
+				<div class="field">
+					<label>{ ctxi18n.T(ctx, "groups.name") } <span class="required-mark">*</span></label>
+					<input type="text" data-bind="formData.name" placeholder={ ctxi18n.T(ctx, "groups.name_placeholder") } class="input"/>
+				</div>
+				<div class="sidebar-actions">
+					@shared.SidebarLoadingSubmitButton(shared.SidebarLoadingSubmitButtonProps{ClassName: "btn", Label: ctxi18n.T(ctx, "groups.create"), IconName: icons.IconSave, ActionID: "group-create"})
+					@shared.ActionButton(shared.ActionButtonProps{ClassName: "btn", OnClick: "$formState = ''; $formData = {name: ''}", DisabledExpr: "$_fetching", Label: ctxi18n.T(ctx, "actions.cancel"), IconName: icons.IconX})
+				</div>
+			</form>
+		</div>
+		<div data-show="$formState === 'edit' && $selectedGroupId !== ''" style="display: none" class="pb">
+			<div class="row justify-between">
+				<h3>{ ctxi18n.T(ctx, "groups.edit") }</h3>
+				<div class="row row-wrap">
+					@shared.ActionButton(shared.ActionButtonProps{ClassName: "btn btn-danger", OnClick: fmt.Sprintf(
+						"$sureOpen = true; $sureTitle = %s; $sureMessage = %s; $sureSubmitLabel = %s; $sureCancelLabel = %s; $sureMethod = 'post'; $sureURL = '/groups/' + $selectedGroupId + '/delete'; $sureTriggerID = 'groups-sidebar-delete'",
+						utils.JSONString(ctxi18n.T(ctx, "groups.delete_confirm")),
+						utils.JSONString(ctxi18n.T(ctx, "confirm.destructive_message")),
+						utils.JSONString(ctxi18n.T(ctx, "groups.delete")),
+						utils.JSONString(ctxi18n.T(ctx, "actions.cancel")),
+					), DisabledExpr: "$_fetching", Label: ctxi18n.T(ctx, "actions.delete"), IconName: icons.IconTrash2})
+				</div>
+			</div>
+			<form class="form" data-on:submit="@put('/groups/' + $selectedGroupId)" data-indicator:_fetching>
+				<div class="field">
+					<label>{ ctxi18n.T(ctx, "groups.name") } <span class="required-mark">*</span></label>
+					<input type="text" data-bind="formData.name" placeholder={ ctxi18n.T(ctx, "groups.name_placeholder") } class="input"/>
+					<div data-show="$errors && $errors.name" class="color-error" data-text="$errors.name"></div>
+				</div>
+				<div class="sidebar-actions">
+					@shared.SidebarLoadingSubmitButton(shared.SidebarLoadingSubmitButtonProps{ClassName: "btn", Label: ctxi18n.T(ctx, "groups.update"), IconName: icons.IconSave, ActionID: "group-update"})
+					@shared.ActionButton(shared.ActionButtonProps{ClassName: "btn", OnClick: "$formState = ''; $selectedGroupId = ''; $formData = {name: ''}; $errors = {name: ''}", DisabledExpr: "$_fetching", Label: ctxi18n.T(ctx, "actions.cancel"), IconName: icons.IconX})
+				</div>
+			</form>
+		</div>
+		<div data-show="$formState === 'leave' && $selectedGroupId !== ''" style="display: none" class="pb">
+			<h3>{ ctxi18n.T(ctx, "groups.leave") }</h3>
+			<p>{ ctxi18n.T(ctx, "groups.leave_confirm") }</p>
+			<div class="sidebar-actions">
+				@shared.ActionButton(shared.ActionButtonProps{ClassName: "btn btn-danger", OnClick: fmt.Sprintf(
+					"$sureOpen = true; $sureTitle = %s; $sureMessage = %s; $sureSubmitLabel = %s; $sureCancelLabel = %s; $sureMethod = 'post'; $sureURL = '/groups/' + $selectedGroupId + '/leave'; $sureTriggerID = 'groups-sidebar-leave'",
+					utils.JSONString(ctxi18n.T(ctx, "groups.leave_confirm")),
+					utils.JSONString(ctxi18n.T(ctx, "confirm.leave_message")),
+					utils.JSONString(ctxi18n.T(ctx, "groups.leave")),
+					utils.JSONString(ctxi18n.T(ctx, "actions.cancel")),
+				), DisabledExpr: "$_fetching", Label: ctxi18n.T(ctx, "groups.leave"), IconName: icons.IconSquareArrowRightExit})
+				@shared.ActionButton(shared.ActionButtonProps{ClassName: "btn", OnClick: "$formState = ''; $selectedGroupId = ''", DisabledExpr: "$_fetching", Label: ctxi18n.T(ctx, "actions.cancel"), IconName: icons.IconX})
+			</div>
+		</div>
+	</div>
+}

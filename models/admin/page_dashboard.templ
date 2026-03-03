@@ -2,14 +2,12 @@ package admin
 
 import (
 	"fmt"
-	"strconv"
 
 	ctxi18n "github.com/invopop/ctxi18n/i18n"
 
 	appi18n "bandcash/internal/i18n"
 	"bandcash/internal/utils"
 	shared "bandcash/models/shared"
-	icons "bandcash/models/shared/icons"
 )
 
 func tabClass(currentTab, targetTab string) string {
@@ -63,163 +61,6 @@ templ DashboardMain(data DashboardData) {
 		} else if data.Tab == "groups" {
 			@shared.Section(ctxi18n.T(ctx, "admin.groups.title"), GroupsTableSection(data))
 		}
-	</div>
-}
-
-templ FlagsContent(signupEnabled bool) {
-	<div id="admin-flags" class="detail-table">
-		<div class="detail-row">
-			<p class="detail-key">{ ctxi18n.T(ctx, "admin.flags.signup") }</p>
-			<div class="detail-val">
-				<input
-					class="native-checkbox"
-					type="checkbox"
-					checked?={ signupEnabled }
-					data-on:change="@post('/admin/flags/signup?value=' + (el.checked ? '1' : '0'))"
-					aria-label={ ctxi18n.T(ctx, "admin.flags.signup") }
-				/>
-			</div>
-		</div>
-	</div>
-}
-
-templ DashboardStats(data DashboardData) {
-	@shared.DetailTable(DashboardStatsRows(data))
-}
-
-templ DashboardStatsRows(data DashboardData) {
-	@shared.DetailRow(ctxi18n.T(ctx, "admin.total_users"), utils.FormatNumberLocalized(ctx, data.UsersCount))
-	@shared.DetailRow(ctxi18n.T(ctx, "admin.total_groups"), utils.FormatNumberLocalized(ctx, data.GroupsCount))
-	@shared.DetailRow(ctxi18n.T(ctx, "admin.total_events"), utils.FormatNumberLocalized(ctx, data.EventsCount))
-	@shared.DetailRow(ctxi18n.T(ctx, "admin.total_members"), utils.FormatNumberLocalized(ctx, data.MembersCount))
-}
-
-// Users Table Section with controls
-templ UsersTableSection(data DashboardData) {
-		<div class="table-section">
-			// Search
-			@shared.TableSearchForm(adminSearchAction("users"), "table.search_placeholder_admin_users")
-		// Pagination
-		@adminTablePagination(data.UserPager, data.UserQuery, "users")
-		// Table
-		<table id="admin-users" class="table table-sticky-actions pt">
-			<thead>
-				<tr>
-					<th>
-						@shared.TableSortHeader(ctxi18n.T(ctx, "auth.email"), "email", data.UserQuery, adminUsersSortURL(data, "email"))
-					</th>
-					<th>
-						@shared.TableSortHeader(ctxi18n.T(ctx, "groups.created"), "createdAt", data.UserQuery, adminUsersSortURL(data, "createdAt"))
-					</th>
-					<th>{ ctxi18n.T(ctx, "admin.users.status") }</th>
-					<th data-actions-col></th>
-				</tr>
-			</thead>
-			<tbody>
-				for _, user := range data.Users {
-					<tr>
-						<td>{ user.Email }</td>
-						<td>
-							if user.CreatedAt.Valid {
-								{ utils.FormatTimeLocalized(ctx, user.CreatedAt.Time) }
-							} else {
-								{ "-" }
-							}
-						</td>
-						<td>
-							if user.IsBanned {
-								{ ctxi18n.T(ctx, "admin.users.banned_status") }
-							} else {
-								{ ctxi18n.T(ctx, "admin.users.active_status") }
-							}
-						</td>
-						<td data-actions-col>
-							<div class="row row-right">
-								if user.IsBanned {
-									@shared.LoadingActionButton(shared.LoadingActionButtonProps{ClassName: "btn btn-sm", OnClick: fmt.Sprintf("@post('/admin/users/%s/unban')", user.ID), DisabledExpr: "$_fetching", Label: ctxi18n.T(ctx, "admin.users.unban"), IconName: icons.IconCheck})
-								} else {
-									@shared.LoadingActionButton(shared.LoadingActionButtonProps{ClassName: "btn btn-sm btn-danger", OnClick: fmt.Sprintf("@post('/admin/users/%s/ban')", user.ID), DisabledExpr: "$_fetching", Label: ctxi18n.T(ctx, "admin.users.ban"), IconName: icons.IconTrash2})
-								}
-							</div>
-						</td>
-					</tr>
-				}
-				if len(data.Users) == 0 {
-					<tr>
-						<td colspan="4">{ ctxi18n.T(ctx, "table.empty") }</td>
-					</tr>
-				}
-			</tbody>
-		</table>
-	</div>
-}
-
-// Groups Table Section with controls
-templ GroupsTableSection(data DashboardData) {
-		<div class="table-section">
-			// Search
-			@shared.TableSearchForm(adminSearchAction("groups"), "table.search_placeholder_admin_groups")
-		// Pagination
-		@adminTablePagination(data.GroupPager, data.GroupQuery, "groups")
-		// Table
-		<table class="table pt">
-			<thead>
-				<tr>
-					<th>
-						@shared.TableSortHeader(ctxi18n.T(ctx, "groups.name"), "name", data.GroupQuery, adminGroupsSortURL(data, "name"))
-					</th>
-					<th>{ ctxi18n.T(ctx, "groups.admin") }</th>
-					<th>{ ctxi18n.T(ctx, "groups.viewers") }</th>
-					<th>
-						@shared.TableSortHeader(ctxi18n.T(ctx, "groups.created"), "createdAt", data.GroupQuery, adminGroupsSortURL(data, "createdAt"))
-					</th>
-				</tr>
-			</thead>
-			<tbody>
-				for _, group := range data.Groups {
-					<tr>
-						<td><a class="link" href={ fmt.Sprintf("/groups/%s/events", group.ID) }>{ group.Name }</a></td>
-						<td>
-							{ group.AdminUserID }
-						</td>
-						<td>
-							// TODO: viewer count
-						</td>
-						<td>
-							if group.CreatedAt.Valid {
-								{ utils.FormatTimeLocalized(ctx, group.CreatedAt.Time) }
-							} else {
-								{ "-" }
-							}
-						</td>
-					</tr>
-				}
-				if len(data.Groups) == 0 {
-					<tr>
-						<td colspan="4">{ ctxi18n.T(ctx, "table.empty") }</td>
-					</tr>
-				}
-			</tbody>
-		</table>
-	</div>
-}
-
-// Pagination component
-templ adminTablePagination(pager utils.TablePagination, query utils.TableQuery, tab string) {
-	<div class="row row-wrap justify-between pt">
-		@shared.TablePaginationControls(fmt.Sprintf("/admin?tab=%s", tab), query, pager)
-		<div class="row row-wrap">
-			<span>{ ctxi18n.T(ctx, "table.page_size") }</span>
-			for _, pageSize := range utils.StandardTablePageSizes {
-				<button
-					class={ utils.PageSizeButtonClass(query.PageSize, pageSize) }
-					type="button"
-					data-on:click={ utils.BuildTableQueryDatastarAction(adminPageSizeURL(query, tab, pageSize)) }
-				>
-					{ strconv.Itoa(pageSize) }
-				</button>
-			}
-		</div>
 	</div>
 }
 
