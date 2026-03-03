@@ -4,7 +4,6 @@ import (
 	"fmt"
 
 	ctxi18n "github.com/invopop/ctxi18n/i18n"
-	"bandcash/internal/utils"
 	shared "bandcash/models/shared"
 	icons "bandcash/models/shared/icons"
 
@@ -14,23 +13,7 @@ templ MemberIndexSidebar(data MembersData) {
 	if data.IsAdmin {
 		<div data-signals={ templ.JSONString(map[string]any{"sidebarLoadingAction": ""}) }>
 		<div data-show="$formState !== ''" style="display: none" class="pb">
-			<div class="row justify-between" data-show="$formState === 'edit'">
-				<h3>{ctxi18n.T(ctx, "members.edit")}</h3>
-				@shared.ActionButton(
-					"btn btn-danger",
-					fmt.Sprintf(
-						"$sureOpen = true; $sureTitle = %s; $sureMessage = %s; $sureSubmitLabel = %s; $sureCancelLabel = %s; $sureMethod = 'delete'; $sureURL = '/groups/%s/members/' + $editingId; $sureTriggerID = 'member-sidebar-delete'",
-						utils.JSONString(ctxi18n.T(ctx, "members.delete_confirm")),
-						utils.JSONString(ctxi18n.T(ctx, "confirm.destructive_message")),
-						utils.JSONString(ctxi18n.T(ctx, "actions.delete")),
-						utils.JSONString(ctxi18n.T(ctx, "actions.cancel")),
-						data.GroupID,
-					),
-					"$_fetching",
-					ctxi18n.T(ctx, "actions.delete"),
-					icons.IconTrash2,
-				)
-			</div>
+			<h3 data-show="$formState === 'edit'">{ctxi18n.T(ctx, "members.edit")}</h3>
 			<form class="form">
 				<div>
 					<label>{ctxi18n.T(ctx, "fields.name")} <span class="required-mark">*</span></label>
@@ -43,9 +26,13 @@ templ MemberIndexSidebar(data MembersData) {
 					<div data-show="$errors && $errors.description" class="color-error" data-text="$errors.description"></div>
 				</div>
 				<div class="sidebar-actions">
-				<span data-show="$formState === 'add'">@shared.SidebarLoadingActionButton("btn", fmt.Sprintf("@post('/groups/%s/members')", data.GroupID), ctxi18n.T(ctx, "members.create"), icons.IconSave, "member-create")</span>
-				<span data-show="$formState === 'edit'">@shared.SidebarLoadingActionButton("btn", fmt.Sprintf("@put('/groups/%s/members/' + $editingId)", data.GroupID), ctxi18n.T(ctx, "members.update"), icons.IconSave, "member-update")</span>
-				@shared.ActionButton("btn", "$formState = ''; $editingId = 0; $formData = {name: '', description: ''}; $errors = {name: '', description: ''}", "$_fetching", ctxi18n.T(ctx, "actions.cancel"), icons.IconX)
+					<span data-show="$formState === 'add'">
+						@shared.SidebarLoadingActionButton("btn", fmt.Sprintf("@post('/groups/%s/members')", data.GroupID), ctxi18n.T(ctx, "members.create"), icons.IconSave, "member-create")
+					</span>
+					<span data-show="$formState === 'edit'">
+						@shared.SidebarLoadingActionButton("btn", fmt.Sprintf("@put('/groups/%s/members/' + $editingId)", data.GroupID), ctxi18n.T(ctx, "members.update"), icons.IconSave, "member-update")
+					</span>
+					@shared.ActionButton("btn", "$formState = ''; $editingId = 0; $formData = {name: '', description: ''}; $errors = {name: '', description: ''}", "$_fetching", ctxi18n.T(ctx, "actions.cancel"), icons.IconX)
 				</div>
 			</form>
 		</div>

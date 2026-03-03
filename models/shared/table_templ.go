@@ -201,7 +201,7 @@ func TablePaginationControls(basePath string, query utils.TableQuery, pager util
 			var templ_7745c5c3_Var10 string
 			templ_7745c5c3_Var10, templ_7745c5c3_Err = templ.JoinStringErrs(utils.BuildTableQueryDatastarAction(utils.BuildTablePageURL(basePath, query, 1, pager.TotalPages)))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/shared/table.templ`, Line: 33, Col: 158}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/shared/table.templ`, Line: 36, Col: 118}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var10))
 			if templ_7745c5c3_Err != nil {
@@ -214,7 +214,7 @@ func TablePaginationControls(basePath string, query utils.TableQuery, pager util
 			var templ_7745c5c3_Var11 string
 			templ_7745c5c3_Var11, templ_7745c5c3_Err = templ.JoinStringErrs(ctxi18n.T(ctx, "table.first"))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/shared/table.templ`, Line: 33, Col: 203}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/shared/table.templ`, Line: 37, Col: 46}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var11))
 			if templ_7745c5c3_Err != nil {
@@ -227,7 +227,7 @@ func TablePaginationControls(basePath string, query utils.TableQuery, pager util
 			var templ_7745c5c3_Var12 string
 			templ_7745c5c3_Var12, templ_7745c5c3_Err = templ.JoinStringErrs(ctxi18n.T(ctx, "table.first"))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/shared/table.templ`, Line: 33, Col: 243}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/shared/table.templ`, Line: 38, Col: 41}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var12))
 			if templ_7745c5c3_Err != nil {
@@ -240,7 +240,7 @@ func TablePaginationControls(basePath string, query utils.TableQuery, pager util
 			var templ_7745c5c3_Var13 string
 			templ_7745c5c3_Var13, templ_7745c5c3_Err = templ.JoinStringErrs(utils.BuildTableQueryDatastarAction(utils.BuildTablePageURL(basePath, query, pager.Page-1, pager.TotalPages)))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/shared/table.templ`, Line: 36, Col: 178}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/shared/table.templ`, Line: 45, Col: 129}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var13))
 			if templ_7745c5c3_Err != nil {
@@ -253,7 +253,7 @@ func TablePaginationControls(basePath string, query utils.TableQuery, pager util
 			var templ_7745c5c3_Var14 string
 			templ_7745c5c3_Var14, templ_7745c5c3_Err = templ.JoinStringErrs(ctxi18n.T(ctx, "table.prev"))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/shared/table.templ`, Line: 36, Col: 222}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/shared/table.templ`, Line: 46, Col: 45}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var14))
 			if templ_7745c5c3_Err != nil {
@@ -266,7 +266,7 @@ func TablePaginationControls(basePath string, query utils.TableQuery, pager util
 			var templ_7745c5c3_Var15 string
 			templ_7745c5c3_Var15, templ_7745c5c3_Err = templ.JoinStringErrs(ctxi18n.T(ctx, "table.prev"))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/shared/table.templ`, Line: 36, Col: 261}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/shared/table.templ`, Line: 47, Col: 40}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var15))
 			if templ_7745c5c3_Err != nil {
@@ -292,7 +292,7 @@ func TablePaginationControls(basePath string, query utils.TableQuery, pager util
 			var templ_7745c5c3_Var16 string
 			templ_7745c5c3_Var16, templ_7745c5c3_Err = templ.JoinStringErrs(ctxi18n.T(ctx, "table.first"))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/shared/table.templ`, Line: 40, Col: 86}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/shared/table.templ`, Line: 52, Col: 86}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var16))
 			if templ_7745c5c3_Err != nil {
@@ -305,7 +305,7 @@ func TablePaginationControls(basePath string, query utils.TableQuery, pager util
 			var templ_7745c5c3_Var17 string
 			templ_7745c5c3_Var17, templ_7745c5c3_Err = templ.JoinStringErrs(ctxi18n.T(ctx, "table.first"))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/shared/table.templ`, Line: 40, Col: 126}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/shared/table.templ`, Line: 52, Col: 126}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var17))
 			if templ_7745c5c3_Err != nil {
@@ -318,7 +318,7 @@ func TablePaginationControls(basePath string, query utils.TableQuery, pager util
 			var templ_7745c5c3_Var18 string
 			templ_7745c5c3_Var18, templ_7745c5c3_Err = templ.JoinStringErrs(ctxi18n.T(ctx, "table.prev"))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/shared/table.templ`, Line: 43, Col: 94}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/shared/table.templ`, Line: 55, Col: 94}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var18))
 			if templ_7745c5c3_Err != nil {
@@ -331,7 +331,7 @@ func TablePaginationControls(basePath string, query utils.TableQuery, pager util
 			var templ_7745c5c3_Var19 string
 			templ_7745c5c3_Var19, templ_7745c5c3_Err = templ.JoinStringErrs(ctxi18n.T(ctx, "table.prev"))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/shared/table.templ`, Line: 43, Col: 133}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/shared/table.templ`, Line: 55, Col: 133}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var19))
 			if templ_7745c5c3_Err != nil {
@@ -357,7 +357,7 @@ func TablePaginationControls(basePath string, query utils.TableQuery, pager util
 		var templ_7745c5c3_Var20 string
 		templ_7745c5c3_Var20, templ_7745c5c3_Err = templ.JoinStringErrs(ctxi18n.T(ctx, "table.page"))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/shared/table.templ`, Line: 48, Col: 39}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/shared/table.templ`, Line: 60, Col: 39}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var20))
 		if templ_7745c5c3_Err != nil {
@@ -370,7 +370,7 @@ func TablePaginationControls(basePath string, query utils.TableQuery, pager util
 		var templ_7745c5c3_Var21 string
 		templ_7745c5c3_Var21, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("%d", pager.TotalPages))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/shared/table.templ`, Line: 49, Col: 73}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/shared/table.templ`, Line: 61, Col: 73}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var21))
 		if templ_7745c5c3_Err != nil {
@@ -383,7 +383,7 @@ func TablePaginationControls(basePath string, query utils.TableQuery, pager util
 		var templ_7745c5c3_Var22 string
 		templ_7745c5c3_Var22, templ_7745c5c3_Err = templ.JoinStringErrs(ctxi18n.T(ctx, "table.page"))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/shared/table.templ`, Line: 49, Col: 154}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/shared/table.templ`, Line: 61, Col: 154}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var22))
 		if templ_7745c5c3_Err != nil {
@@ -396,7 +396,7 @@ func TablePaginationControls(basePath string, query utils.TableQuery, pager util
 		var templ_7745c5c3_Var23 string
 		templ_7745c5c3_Var23, templ_7745c5c3_Err = templ.JoinStringErrs(ctxi18n.T(ctx, "table.go"))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/shared/table.templ`, Line: 50, Col: 92}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/shared/table.templ`, Line: 62, Col: 92}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var23))
 		if templ_7745c5c3_Err != nil {
@@ -409,7 +409,7 @@ func TablePaginationControls(basePath string, query utils.TableQuery, pager util
 		var templ_7745c5c3_Var24 string
 		templ_7745c5c3_Var24, templ_7745c5c3_Err = templ.JoinStringErrs(ctxi18n.T(ctx, "table.go"))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/shared/table.templ`, Line: 50, Col: 129}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/shared/table.templ`, Line: 62, Col: 129}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var24))
 		if templ_7745c5c3_Err != nil {
@@ -435,7 +435,7 @@ func TablePaginationControls(basePath string, query utils.TableQuery, pager util
 			var templ_7745c5c3_Var25 string
 			templ_7745c5c3_Var25, templ_7745c5c3_Err = templ.JoinStringErrs(utils.BuildTableQueryDatastarAction(utils.BuildTablePageURL(basePath, query, pager.Page+1, pager.TotalPages)))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/shared/table.templ`, Line: 55, Col: 178}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/shared/table.templ`, Line: 70, Col: 129}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var25))
 			if templ_7745c5c3_Err != nil {
@@ -448,7 +448,7 @@ func TablePaginationControls(basePath string, query utils.TableQuery, pager util
 			var templ_7745c5c3_Var26 string
 			templ_7745c5c3_Var26, templ_7745c5c3_Err = templ.JoinStringErrs(ctxi18n.T(ctx, "table.next"))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/shared/table.templ`, Line: 55, Col: 222}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/shared/table.templ`, Line: 71, Col: 45}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var26))
 			if templ_7745c5c3_Err != nil {
@@ -461,7 +461,7 @@ func TablePaginationControls(basePath string, query utils.TableQuery, pager util
 			var templ_7745c5c3_Var27 string
 			templ_7745c5c3_Var27, templ_7745c5c3_Err = templ.JoinStringErrs(ctxi18n.T(ctx, "table.next"))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/shared/table.templ`, Line: 55, Col: 261}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/shared/table.templ`, Line: 72, Col: 40}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var27))
 			if templ_7745c5c3_Err != nil {
@@ -482,7 +482,7 @@ func TablePaginationControls(basePath string, query utils.TableQuery, pager util
 			var templ_7745c5c3_Var28 string
 			templ_7745c5c3_Var28, templ_7745c5c3_Err = templ.JoinStringErrs(utils.BuildTableQueryDatastarAction(utils.BuildTablePageURL(basePath, query, pager.TotalPages, pager.TotalPages)))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/shared/table.templ`, Line: 58, Col: 173}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/shared/table.templ`, Line: 79, Col: 133}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var28))
 			if templ_7745c5c3_Err != nil {
@@ -495,7 +495,7 @@ func TablePaginationControls(basePath string, query utils.TableQuery, pager util
 			var templ_7745c5c3_Var29 string
 			templ_7745c5c3_Var29, templ_7745c5c3_Err = templ.JoinStringErrs(ctxi18n.T(ctx, "table.last"))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/shared/table.templ`, Line: 58, Col: 217}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/shared/table.templ`, Line: 80, Col: 45}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var29))
 			if templ_7745c5c3_Err != nil {
@@ -508,7 +508,7 @@ func TablePaginationControls(basePath string, query utils.TableQuery, pager util
 			var templ_7745c5c3_Var30 string
 			templ_7745c5c3_Var30, templ_7745c5c3_Err = templ.JoinStringErrs(ctxi18n.T(ctx, "table.last"))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/shared/table.templ`, Line: 58, Col: 256}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/shared/table.templ`, Line: 81, Col: 40}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var30))
 			if templ_7745c5c3_Err != nil {
@@ -521,7 +521,7 @@ func TablePaginationControls(basePath string, query utils.TableQuery, pager util
 			var templ_7745c5c3_Var31 string
 			templ_7745c5c3_Var31, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("%d", pager.TotalPages))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/shared/table.templ`, Line: 59, Col: 41}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/shared/table.templ`, Line: 83, Col: 41}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var31))
 			if templ_7745c5c3_Err != nil {
@@ -539,7 +539,7 @@ func TablePaginationControls(basePath string, query utils.TableQuery, pager util
 			var templ_7745c5c3_Var32 string
 			templ_7745c5c3_Var32, templ_7745c5c3_Err = templ.JoinStringErrs(ctxi18n.T(ctx, "table.next"))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/shared/table.templ`, Line: 62, Col: 94}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/shared/table.templ`, Line: 86, Col: 94}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var32))
 			if templ_7745c5c3_Err != nil {
@@ -552,7 +552,7 @@ func TablePaginationControls(basePath string, query utils.TableQuery, pager util
 			var templ_7745c5c3_Var33 string
 			templ_7745c5c3_Var33, templ_7745c5c3_Err = templ.JoinStringErrs(ctxi18n.T(ctx, "table.next"))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/shared/table.templ`, Line: 62, Col: 133}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/shared/table.templ`, Line: 86, Col: 133}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var33))
 			if templ_7745c5c3_Err != nil {
@@ -573,7 +573,7 @@ func TablePaginationControls(basePath string, query utils.TableQuery, pager util
 			var templ_7745c5c3_Var34 string
 			templ_7745c5c3_Var34, templ_7745c5c3_Err = templ.JoinStringErrs(ctxi18n.T(ctx, "table.last"))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/shared/table.templ`, Line: 65, Col: 85}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/shared/table.templ`, Line: 89, Col: 85}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var34))
 			if templ_7745c5c3_Err != nil {
@@ -586,7 +586,7 @@ func TablePaginationControls(basePath string, query utils.TableQuery, pager util
 			var templ_7745c5c3_Var35 string
 			templ_7745c5c3_Var35, templ_7745c5c3_Err = templ.JoinStringErrs(ctxi18n.T(ctx, "table.last"))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/shared/table.templ`, Line: 65, Col: 124}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/shared/table.templ`, Line: 89, Col: 124}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var35))
 			if templ_7745c5c3_Err != nil {
@@ -599,7 +599,7 @@ func TablePaginationControls(basePath string, query utils.TableQuery, pager util
 			var templ_7745c5c3_Var36 string
 			templ_7745c5c3_Var36, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("%d", pager.TotalPages))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/shared/table.templ`, Line: 66, Col: 41}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/shared/table.templ`, Line: 90, Col: 41}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var36))
 			if templ_7745c5c3_Err != nil {

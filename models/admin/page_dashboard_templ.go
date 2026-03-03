@@ -924,7 +924,7 @@ func adminTablePagination(pager utils.TablePagination, query utils.TableQuery, t
 			var templ_7745c5c3_Var47 string
 			templ_7745c5c3_Var47, templ_7745c5c3_Err = templ.JoinStringErrs(utils.BuildTableQueryDatastarAction(adminPageSizeURL(query, tab, pageSize)))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/admin/page_dashboard.templ`, Line: 214, Col: 179}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/admin/page_dashboard.templ`, Line: 217, Col: 96}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var47))
 			if templ_7745c5c3_Err != nil {
@@ -937,7 +937,7 @@ func adminTablePagination(pager utils.TablePagination, query utils.TableQuery, t
 			var templ_7745c5c3_Var48 string
 			templ_7745c5c3_Var48, templ_7745c5c3_Err = templ.JoinStringErrs(strconv.Itoa(pageSize))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/admin/page_dashboard.templ`, Line: 214, Col: 206}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/admin/page_dashboard.templ`, Line: 219, Col: 29}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var48))
 			if templ_7745c5c3_Err != nil {

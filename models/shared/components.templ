@@ -63,11 +63,24 @@ templ Notifications() {
 			<h3 id="sure-title" data-text="$sureTitle"></h3>
 			<p id="sure-message" data-show="$sureMessage !== ''" style="display: none" data-text="$sureMessage"></p>
 			<div class="row row-right row-wrap">
-				<button id="sure-cancel" type="button" class="btn" data-attr:disabled="$sureFetching" data-on:click="!$sureFetching && (($sureOpen = false), ($sureTriggerID = ''))">
+				<button
+					id="sure-cancel"
+					type="button"
+					class="btn"
+					data-attr:disabled="$sureFetching"
+					data-on:click="!$sureFetching && (($sureOpen = false), ($sureTriggerID = ''))"
+				>
 					@icons.Icon(icons.IconX, templ.Attributes{"class": "icon"})
 					<span data-text="$sureCancelLabel"></span>
 				</button>
-				<button id="sure-submit" type="button" class="btn btn-danger" data-attr:disabled="$sureFetching" data-on:click="!$sureFetching && (($sureFetching = true), ($sureMethod === 'delete' ? @delete($sureURL) : ($sureMethod === 'put' ? @put($sureURL) : @post($sureURL))))" data-on:datastar-fetch="(evt.detail.type === 'finished' || evt.detail.type === 'error' || evt.detail.type === 'retries-failed') && (($sureFetching = false), ($sureTriggerID = ''), ($sureOpen = false))">
+				<button
+					id="sure-submit"
+					type="button"
+					class="btn btn-danger"
+					data-attr:disabled="$sureFetching"
+					data-on:click="!$sureFetching && (($sureFetching = true), ($sureMethod === 'delete' ? @delete($sureURL) : ($sureMethod === 'put' ? @put($sureURL) : @post($sureURL))))"
+					data-on:datastar-fetch="(evt.detail.type === 'finished' || evt.detail.type === 'error' || evt.detail.type === 'retries-failed') && (($sureFetching = false), ($sureTriggerID = ''), ($sureOpen = false))"
+				>
 					<span data-show="!$sureFetching">
 						@icons.Icon(icons.IconTrash2, templ.Attributes{"class": "icon"})
 					</span>

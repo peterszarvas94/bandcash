@@ -181,7 +181,13 @@ templ ViewersTablePagination(data ViewersPageData) {
 		<div class="row row-wrap">
 			<span>{ ctxi18n.T(ctx, "table.page_size") }</span>
 			for _, pageSize := range utils.StandardTablePageSizes {
-				<button class={ utils.PageSizeButtonClass(data.Query.PageSize, pageSize) } type="button" data-on:click={ utils.BuildTableQueryDatastarAction(utils.BuildTablePageSizeURL(viewersTablePath(data.GroupID, data.Tab), data.Query, pageSize)) }>{ fmt.Sprintf("%d", pageSize) }</button>
+				<button
+					class={ utils.PageSizeButtonClass(data.Query.PageSize, pageSize) }
+					type="button"
+					data-on:click={ utils.BuildTableQueryDatastarAction(utils.BuildTablePageSizeURL(viewersTablePath(data.GroupID, data.Tab), data.Query, pageSize)) }
+				>
+					{ fmt.Sprintf("%d", pageSize) }
+				</button>
 			}
 		</div>
 		@shared.TablePaginationControls(viewersTablePath(data.GroupID, data.Tab), data.Query, data.Pager)

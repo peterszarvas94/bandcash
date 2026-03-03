@@ -211,7 +211,13 @@ templ adminTablePagination(pager utils.TablePagination, query utils.TableQuery, 
 		<div class="row row-wrap">
 			<span>{ ctxi18n.T(ctx, "table.page_size") }</span>
 			for _, pageSize := range utils.StandardTablePageSizes {
-				<button class={ utils.PageSizeButtonClass(query.PageSize, pageSize) } type="button" data-on:click={ utils.BuildTableQueryDatastarAction(adminPageSizeURL(query, tab, pageSize)) }>{ strconv.Itoa(pageSize) }</button>
+				<button
+					class={ utils.PageSizeButtonClass(query.PageSize, pageSize) }
+					type="button"
+					data-on:click={ utils.BuildTableQueryDatastarAction(adminPageSizeURL(query, tab, pageSize)) }
+				>
+					{ strconv.Itoa(pageSize) }
+				</button>
 			}
 		</div>
 	</div>

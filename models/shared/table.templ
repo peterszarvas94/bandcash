@@ -30,10 +30,22 @@ templ TableSortHeader(label string, column string, query utils.TableQuery, actio
 templ TablePaginationControls(basePath string, query utils.TableQuery, pager utils.TablePagination) {
 	<form class="row row-wrap" data-on:submit={ utils.BuildTablePageDatastarAction(basePath, pager.TotalPages, utils.DefaultTablePageSize) }>
 		if pager.HasPrev {
-			<button class="btn btn-sm" type="button" data-on:click={ utils.BuildTableQueryDatastarAction(utils.BuildTablePageURL(basePath, query, 1, pager.TotalPages)) } aria-label={ ctxi18n.T(ctx, "table.first") } title={ ctxi18n.T(ctx, "table.first") }>
+			<button
+				class="btn btn-sm"
+				type="button"
+				data-on:click={ utils.BuildTableQueryDatastarAction(utils.BuildTablePageURL(basePath, query, 1, pager.TotalPages)) }
+				aria-label={ ctxi18n.T(ctx, "table.first") }
+				title={ ctxi18n.T(ctx, "table.first") }
+			>
 				1
 			</button>
-			<button class="btn btn-sm btn-icon" type="button" data-on:click={ utils.BuildTableQueryDatastarAction(utils.BuildTablePageURL(basePath, query, pager.Page-1, pager.TotalPages)) } aria-label={ ctxi18n.T(ctx, "table.prev") } title={ ctxi18n.T(ctx, "table.prev") }>
+			<button
+				class="btn btn-sm btn-icon"
+				type="button"
+				data-on:click={ utils.BuildTableQueryDatastarAction(utils.BuildTablePageURL(basePath, query, pager.Page-1, pager.TotalPages)) }
+				aria-label={ ctxi18n.T(ctx, "table.prev") }
+				title={ ctxi18n.T(ctx, "table.prev") }
+			>
 				@icons.ArrowLeft(templ.Attributes{"class": "icon"})
 			</button>
 		} else {
@@ -52,10 +64,22 @@ templ TablePaginationControls(basePath string, query utils.TableQuery, pager uti
 			</button>
 		</label>
 		if pager.HasNext {
-			<button class="btn btn-sm btn-icon" type="button" data-on:click={ utils.BuildTableQueryDatastarAction(utils.BuildTablePageURL(basePath, query, pager.Page+1, pager.TotalPages)) } aria-label={ ctxi18n.T(ctx, "table.next") } title={ ctxi18n.T(ctx, "table.next") }>
+			<button
+				class="btn btn-sm btn-icon"
+				type="button"
+				data-on:click={ utils.BuildTableQueryDatastarAction(utils.BuildTablePageURL(basePath, query, pager.Page+1, pager.TotalPages)) }
+				aria-label={ ctxi18n.T(ctx, "table.next") }
+				title={ ctxi18n.T(ctx, "table.next") }
+			>
 				@icons.ArrowRight(templ.Attributes{"class": "icon"})
 			</button>
-			<button class="btn btn-sm" type="button" data-on:click={ utils.BuildTableQueryDatastarAction(utils.BuildTablePageURL(basePath, query, pager.TotalPages, pager.TotalPages)) } aria-label={ ctxi18n.T(ctx, "table.last") } title={ ctxi18n.T(ctx, "table.last") }>
+			<button
+				class="btn btn-sm"
+				type="button"
+				data-on:click={ utils.BuildTableQueryDatastarAction(utils.BuildTablePageURL(basePath, query, pager.TotalPages, pager.TotalPages)) }
+				aria-label={ ctxi18n.T(ctx, "table.last") }
+				title={ ctxi18n.T(ctx, "table.last") }
+			>
 				{ fmt.Sprintf("%d", pager.TotalPages) }
 			</button>
 		} else {

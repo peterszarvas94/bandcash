@@ -23,7 +23,14 @@ templ LoadingActionButton(className string, onClick string, disabledExpr string,
 }
 
 templ LoadingActionButtonWithSignal(className string, onClick string, disabledExpr string, label string, iconName icons.IconName, loadingSignal string) {
-	<button { templ.Attributes{fmt.Sprintf("data-indicator:%s", loadingSignal): ""}... } class={ className } type="button" data-signals={ templ.JSONString(map[string]any{loadingSignal: false}) } data-attr:disabled={ disabledExpr } data-on:click={ onClick }>
+	<button
+		{ templ.Attributes{fmt.Sprintf("data-indicator:%s", loadingSignal): ""}... }
+		class={ className }
+		type="button"
+		data-signals={ templ.JSONString(map[string]any{loadingSignal: false}) }
+		data-attr:disabled={ disabledExpr }
+		data-on:click={ onClick }
+	>
 		<span data-show={ fmt.Sprintf("!$%s", loadingSignal) }>@icons.Icon(iconName, templ.Attributes{"class": "icon"})</span>
 		<span data-show={ fmt.Sprintf("$%s", loadingSignal) } style="display: none">@icons.LoaderCircle(templ.Attributes{"class": "icon icon-spin"})</span>
 		<span>{ label }</span>
@@ -38,7 +45,12 @@ templ ActionButton(className string, onClick string, disabledExpr string, label 
 }
 
 templ SureActionButton(className string, onClick string, disabledExpr string, label string, iconName icons.IconName, triggerID string) {
-	<button class={ className } type="button" data-attr:disabled={ fmt.Sprintf("(%s) || $sureTriggerID === %q", disabledExpr, triggerID) } data-on:click={ onClick }>
+	<button
+		class={ className }
+		type="button"
+		data-attr:disabled={ fmt.Sprintf("(%s) || $sureTriggerID === %q", disabledExpr, triggerID) }
+		data-on:click={ onClick }
+	>
 		<span data-show={ fmt.Sprintf("$sureTriggerID !== %q", triggerID) }>@icons.Icon(iconName, templ.Attributes{"class": "icon"})</span>
 		<span data-show={ fmt.Sprintf("$sureTriggerID === %q", triggerID) } style="display: none">@icons.LoaderCircle(templ.Attributes{"class": "icon icon-spin"})</span>
 		<span>{ label }</span>
@@ -81,20 +93,42 @@ templ SidebarLoadingActionButton(className string, onClick string, label string,
 }
 
 templ LoadingIconActionButton(className string, onClick string, disabledExpr string, ariaLabel string, title string, iconName icons.IconName) {
-	<button class={ className } type="button" aria-label={ ariaLabel } title={ title } data-indicator:_fetching data-attr:disabled={ disabledExpr } data-on:click={ onClick }>
+	<button
+		class={ className }
+		type="button"
+		aria-label={ ariaLabel }
+		title={ title }
+		data-indicator:_fetching
+		data-attr:disabled={ disabledExpr }
+		data-on:click={ onClick }
+	>
 		<span data-show="!$_fetching">@icons.Icon(iconName, templ.Attributes{"class": "icon"})</span>
 		<span data-show="$_fetching" style="display: none">@icons.LoaderCircle(templ.Attributes{"class": "icon icon-spin"})</span>
 	</button>
 }
 
 templ IconActionButton(className string, onClick string, disabledExpr string, ariaLabel string, title string, iconName icons.IconName) {
-	<button class={ className } type="button" aria-label={ ariaLabel } title={ title } data-attr:disabled={ disabledExpr } data-on:click={ onClick }>
+	<button
+		class={ className }
+		type="button"
+		aria-label={ ariaLabel }
+		title={ title }
+		data-attr:disabled={ disabledExpr }
+		data-on:click={ onClick }
+	>
 		@icons.Icon(iconName, templ.Attributes{"class": "icon"})
 	</button>
 }
 
 templ SureIconActionButton(className string, onClick string, disabledExpr string, ariaLabel string, title string, iconName icons.IconName, triggerID string) {
-	<button class={ className } type="button" aria-label={ ariaLabel } title={ title } data-attr:disabled={ fmt.Sprintf("(%s) || $sureTriggerID === %q", disabledExpr, triggerID) } data-on:click={ onClick }>
+	<button
+		class={ className }
+		type="button"
+		aria-label={ ariaLabel }
+		title={ title }
+		data-attr:disabled={ fmt.Sprintf("(%s) || $sureTriggerID === %q", disabledExpr, triggerID) }
+		data-on:click={ onClick }
+	>
 		<span data-show={ fmt.Sprintf("$sureTriggerID !== %q", triggerID) }>@icons.Icon(iconName, templ.Attributes{"class": "icon"})</span>
 		<span data-show={ fmt.Sprintf("$sureTriggerID === %q", triggerID) } style="display: none">@icons.LoaderCircle(templ.Attributes{"class": "icon icon-spin"})</span>
 	</button>

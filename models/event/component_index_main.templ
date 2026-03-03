@@ -15,7 +15,13 @@ templ EventIndexMain(data EventsData) {
 		<div class="row row-wrap">
 			<span>{ ctxi18n.T(ctx, "table.page_size") }</span>
 			for _, pageSize := range utils.StandardTablePageSizes {
-				<button class={ utils.PageSizeButtonClass(data.Query.PageSize, pageSize) } type="button" data-on:click={ utils.BuildTableQueryDatastarAction(utils.BuildTablePageSizeURL(fmt.Sprintf("/groups/%s/events", data.GroupID), data.Query, pageSize)) }>{ fmt.Sprintf("%d", pageSize) }</button>
+				<button
+					class={ utils.PageSizeButtonClass(data.Query.PageSize, pageSize) }
+					type="button"
+					data-on:click={ utils.BuildTableQueryDatastarAction(utils.BuildTablePageSizeURL(fmt.Sprintf("/groups/%s/events", data.GroupID), data.Query, pageSize)) }
+				>
+					{ fmt.Sprintf("%d", pageSize) }
+				</button>
 			}
 		</div>
 		@shared.TablePaginationControls(fmt.Sprintf("/groups/%s/events", data.GroupID), data.Query, data.Pager)
@@ -59,7 +65,31 @@ templ EventIndexMain(data EventsData) {
 					if data.IsAdmin {
 						<td data-actions-col>
 							<div class="row row-right">
-							@shared.IconActionButton("btn btn-sm btn-icon", fmt.Sprintf("$formState = 'edit'; $editingId = %q; $formData = {title: el.closest('tr').dataset.eventTitle, time: el.closest('tr').dataset.eventTime, description: el.closest('tr').dataset.eventDescription, amount: Number(el.closest('tr').dataset.eventAmount)}", event.ID), "$formState !== '' || $_fetching", ctxi18n.T(ctx, "actions.edit"), ctxi18n.T(ctx, "actions.edit"), icons.IconPencil)
+								@shared.IconActionButton(
+									"btn btn-sm btn-icon",
+									fmt.Sprintf("$formState = 'edit'; $editingId = %q; $formData = {title: el.closest('tr').dataset.eventTitle, time: el.closest('tr').dataset.eventTime, description: el.closest('tr').dataset.eventDescription, amount: Number(el.closest('tr').dataset.eventAmount)}", event.ID),
+									"$formState !== '' || $_fetching",
+									ctxi18n.T(ctx, "actions.edit"),
+									ctxi18n.T(ctx, "actions.edit"),
+									icons.IconPencil,
+								)
+								@shared.IconActionButton(
+									"btn btn-sm btn-danger btn-icon",
+									fmt.Sprintf(
+										"$sureOpen = true; $sureTitle = %s; $sureMessage = %s; $sureSubmitLabel = %s; $sureCancelLabel = %s; $sureMethod = 'delete'; $sureURL = '/groups/%s/events/%s'; $sureTriggerID = %s",
+										utils.JSONString(ctxi18n.T(ctx, "events.delete_confirm")),
+										utils.JSONString(ctxi18n.T(ctx, "confirm.destructive_message")),
+										utils.JSONString(ctxi18n.T(ctx, "actions.delete")),
+										utils.JSONString(ctxi18n.T(ctx, "actions.cancel")),
+										data.GroupID,
+										event.ID,
+										utils.JSONString("event-delete-"+event.ID),
+									),
+									"$formState !== '' || $_fetching",
+									ctxi18n.T(ctx, "actions.delete"),
+									ctxi18n.T(ctx, "actions.delete"),
+									icons.IconTrash2,
+								)
 						</div>
 					</td>
 					}

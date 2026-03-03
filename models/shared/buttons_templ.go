@@ -241,7 +241,7 @@ func LoadingActionButtonWithSignal(className string, onClick string, disabledExp
 		var templ_7745c5c3_Var13 string
 		templ_7745c5c3_Var13, templ_7745c5c3_Err = templ.JoinStringErrs(templ.JSONString(map[string]any{loadingSignal: false}))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/shared/buttons.templ`, Line: 26, Col: 189}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/shared/buttons.templ`, Line: 30, Col: 71}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var13))
 		if templ_7745c5c3_Err != nil {
@@ -254,7 +254,7 @@ func LoadingActionButtonWithSignal(className string, onClick string, disabledExp
 		var templ_7745c5c3_Var14 string
 		templ_7745c5c3_Var14, templ_7745c5c3_Err = templ.JoinStringErrs(disabledExpr)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/shared/buttons.templ`, Line: 26, Col: 225}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/shared/buttons.templ`, Line: 31, Col: 35}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var14))
 		if templ_7745c5c3_Err != nil {
@@ -267,7 +267,7 @@ func LoadingActionButtonWithSignal(className string, onClick string, disabledExp
 		var templ_7745c5c3_Var15 string
 		templ_7745c5c3_Var15, templ_7745c5c3_Err = templ.JoinStringErrs(onClick)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/shared/buttons.templ`, Line: 26, Col: 251}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/shared/buttons.templ`, Line: 32, Col: 25}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var15))
 		if templ_7745c5c3_Err != nil {
@@ -280,7 +280,7 @@ func LoadingActionButtonWithSignal(className string, onClick string, disabledExp
 		var templ_7745c5c3_Var16 string
 		templ_7745c5c3_Var16, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("!$%s", loadingSignal))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/shared/buttons.templ`, Line: 27, Col: 54}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/shared/buttons.templ`, Line: 34, Col: 54}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var16))
 		if templ_7745c5c3_Err != nil {
@@ -301,7 +301,7 @@ func LoadingActionButtonWithSignal(className string, onClick string, disabledExp
 		var templ_7745c5c3_Var17 string
 		templ_7745c5c3_Var17, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("$%s", loadingSignal))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/shared/buttons.templ`, Line: 28, Col: 53}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/shared/buttons.templ`, Line: 35, Col: 53}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var17))
 		if templ_7745c5c3_Err != nil {
@@ -322,7 +322,7 @@ func LoadingActionButtonWithSignal(className string, onClick string, disabledExp
 		var templ_7745c5c3_Var18 string
 		templ_7745c5c3_Var18, templ_7745c5c3_Err = templ.JoinStringErrs(label)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/shared/buttons.templ`, Line: 29, Col: 15}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/shared/buttons.templ`, Line: 36, Col: 15}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var18))
 		if templ_7745c5c3_Err != nil {
@@ -382,7 +382,7 @@ func ActionButton(className string, onClick string, disabledExpr string, label s
 		var templ_7745c5c3_Var22 string
 		templ_7745c5c3_Var22, templ_7745c5c3_Err = templ.JoinStringErrs(disabledExpr)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/shared/buttons.templ`, Line: 34, Col: 76}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/shared/buttons.templ`, Line: 41, Col: 76}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var22))
 		if templ_7745c5c3_Err != nil {
@@ -395,7 +395,7 @@ func ActionButton(className string, onClick string, disabledExpr string, label s
 		var templ_7745c5c3_Var23 string
 		templ_7745c5c3_Var23, templ_7745c5c3_Err = templ.JoinStringErrs(onClick)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/shared/buttons.templ`, Line: 34, Col: 102}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/shared/buttons.templ`, Line: 41, Col: 102}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var23))
 		if templ_7745c5c3_Err != nil {
@@ -416,7 +416,7 @@ func ActionButton(className string, onClick string, disabledExpr string, label s
 		var templ_7745c5c3_Var24 string
 		templ_7745c5c3_Var24, templ_7745c5c3_Err = templ.JoinStringErrs(label)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/shared/buttons.templ`, Line: 36, Col: 15}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/shared/buttons.templ`, Line: 43, Col: 15}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var24))
 		if templ_7745c5c3_Err != nil {
@@ -476,7 +476,7 @@ func SureActionButton(className string, onClick string, disabledExpr string, lab
 		var templ_7745c5c3_Var28 string
 		templ_7745c5c3_Var28, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("(%s) || $sureTriggerID === %q", disabledExpr, triggerID))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/shared/buttons.templ`, Line: 41, Col: 133}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/shared/buttons.templ`, Line: 51, Col: 92}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var28))
 		if templ_7745c5c3_Err != nil {
@@ -489,7 +489,7 @@ func SureActionButton(className string, onClick string, disabledExpr string, lab
 		var templ_7745c5c3_Var29 string
 		templ_7745c5c3_Var29, templ_7745c5c3_Err = templ.JoinStringErrs(onClick)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/shared/buttons.templ`, Line: 41, Col: 159}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/shared/buttons.templ`, Line: 52, Col: 25}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var29))
 		if templ_7745c5c3_Err != nil {
@@ -502,7 +502,7 @@ func SureActionButton(className string, onClick string, disabledExpr string, lab
 		var templ_7745c5c3_Var30 string
 		templ_7745c5c3_Var30, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("$sureTriggerID !== %q", triggerID))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/shared/buttons.templ`, Line: 42, Col: 67}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/shared/buttons.templ`, Line: 54, Col: 67}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var30))
 		if templ_7745c5c3_Err != nil {
@@ -523,7 +523,7 @@ func SureActionButton(className string, onClick string, disabledExpr string, lab
 		var templ_7745c5c3_Var31 string
 		templ_7745c5c3_Var31, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("$sureTriggerID === %q", triggerID))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/shared/buttons.templ`, Line: 43, Col: 67}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/shared/buttons.templ`, Line: 55, Col: 67}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var31))
 		if templ_7745c5c3_Err != nil {
@@ -544,7 +544,7 @@ func SureActionButton(className string, onClick string, disabledExpr string, lab
 		var templ_7745c5c3_Var32 string
 		templ_7745c5c3_Var32, templ_7745c5c3_Err = templ.JoinStringErrs(label)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/shared/buttons.templ`, Line: 44, Col: 15}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/shared/buttons.templ`, Line: 56, Col: 15}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var32))
 		if templ_7745c5c3_Err != nil {
@@ -604,7 +604,7 @@ func SidebarLoadingSubmitButton(className string, label string, iconName icons.I
 		var templ_7745c5c3_Var36 string
 		templ_7745c5c3_Var36, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("$sidebarLoadingAction = %q", actionID))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/shared/buttons.templ`, Line: 53, Col: 69}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/shared/buttons.templ`, Line: 65, Col: 69}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var36))
 		if templ_7745c5c3_Err != nil {
@@ -617,7 +617,7 @@ func SidebarLoadingSubmitButton(className string, label string, iconName icons.I
 		var templ_7745c5c3_Var37 string
 		templ_7745c5c3_Var37, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("!($_fetching && $sidebarLoadingAction === %q)", actionID))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/shared/buttons.templ`, Line: 55, Col: 90}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/shared/buttons.templ`, Line: 67, Col: 90}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var37))
 		if templ_7745c5c3_Err != nil {
@@ -638,7 +638,7 @@ func SidebarLoadingSubmitButton(className string, label string, iconName icons.I
 		var templ_7745c5c3_Var38 string
 		templ_7745c5c3_Var38, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("$_fetching && $sidebarLoadingAction === %q", actionID))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/shared/buttons.templ`, Line: 58, Col: 87}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/shared/buttons.templ`, Line: 70, Col: 87}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var38))
 		if templ_7745c5c3_Err != nil {
@@ -659,7 +659,7 @@ func SidebarLoadingSubmitButton(className string, label string, iconName icons.I
 		var templ_7745c5c3_Var39 string
 		templ_7745c5c3_Var39, templ_7745c5c3_Err = templ.JoinStringErrs(label)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/shared/buttons.templ`, Line: 61, Col: 15}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/shared/buttons.templ`, Line: 73, Col: 15}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var39))
 		if templ_7745c5c3_Err != nil {
@@ -719,7 +719,7 @@ func SidebarLoadingActionButton(className string, onClick string, label string, 
 		var templ_7745c5c3_Var43 string
 		templ_7745c5c3_Var43, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("$sidebarLoadingAction = %q; %s", actionID, onClick))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/shared/buttons.templ`, Line: 71, Col: 82}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/shared/buttons.templ`, Line: 83, Col: 82}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var43))
 		if templ_7745c5c3_Err != nil {
@@ -732,7 +732,7 @@ func SidebarLoadingActionButton(className string, onClick string, label string, 
 		var templ_7745c5c3_Var44 string
 		templ_7745c5c3_Var44, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("!($_fetching && $sidebarLoadingAction === %q)", actionID))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/shared/buttons.templ`, Line: 73, Col: 90}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/shared/buttons.templ`, Line: 85, Col: 90}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var44))
 		if templ_7745c5c3_Err != nil {
@@ -753,7 +753,7 @@ func SidebarLoadingActionButton(className string, onClick string, label string, 
 		var templ_7745c5c3_Var45 string
 		templ_7745c5c3_Var45, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("$_fetching && $sidebarLoadingAction === %q", actionID))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/shared/buttons.templ`, Line: 76, Col: 87}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/shared/buttons.templ`, Line: 88, Col: 87}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var45))
 		if templ_7745c5c3_Err != nil {
@@ -774,7 +774,7 @@ func SidebarLoadingActionButton(className string, onClick string, label string, 
 		var templ_7745c5c3_Var46 string
 		templ_7745c5c3_Var46, templ_7745c5c3_Err = templ.JoinStringErrs(label)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/shared/buttons.templ`, Line: 79, Col: 15}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/shared/buttons.templ`, Line: 91, Col: 15}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var46))
 		if templ_7745c5c3_Err != nil {
@@ -834,7 +834,7 @@ func LoadingIconActionButton(className string, onClick string, disabledExpr stri
 		var templ_7745c5c3_Var50 string
 		templ_7745c5c3_Var50, templ_7745c5c3_Err = templ.JoinStringErrs(ariaLabel)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/shared/buttons.templ`, Line: 84, Col: 65}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/shared/buttons.templ`, Line: 99, Col: 24}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var50))
 		if templ_7745c5c3_Err != nil {
@@ -847,7 +847,7 @@ func LoadingIconActionButton(className string, onClick string, disabledExpr stri
 		var templ_7745c5c3_Var51 string
 		templ_7745c5c3_Var51, templ_7745c5c3_Err = templ.JoinStringErrs(title)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/shared/buttons.templ`, Line: 84, Col: 81}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/shared/buttons.templ`, Line: 100, Col: 15}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var51))
 		if templ_7745c5c3_Err != nil {
@@ -860,7 +860,7 @@ func LoadingIconActionButton(className string, onClick string, disabledExpr stri
 		var templ_7745c5c3_Var52 string
 		templ_7745c5c3_Var52, templ_7745c5c3_Err = templ.JoinStringErrs(disabledExpr)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/shared/buttons.templ`, Line: 84, Col: 142}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/shared/buttons.templ`, Line: 102, Col: 35}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var52))
 		if templ_7745c5c3_Err != nil {
@@ -873,7 +873,7 @@ func LoadingIconActionButton(className string, onClick string, disabledExpr stri
 		var templ_7745c5c3_Var53 string
 		templ_7745c5c3_Var53, templ_7745c5c3_Err = templ.JoinStringErrs(onClick)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/shared/buttons.templ`, Line: 84, Col: 168}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/shared/buttons.templ`, Line: 103, Col: 25}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var53))
 		if templ_7745c5c3_Err != nil {
@@ -949,7 +949,7 @@ func IconActionButton(className string, onClick string, disabledExpr string, ari
 		var templ_7745c5c3_Var57 string
 		templ_7745c5c3_Var57, templ_7745c5c3_Err = templ.JoinStringErrs(ariaLabel)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/shared/buttons.templ`, Line: 91, Col: 65}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/shared/buttons.templ`, Line: 114, Col: 24}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var57))
 		if templ_7745c5c3_Err != nil {
@@ -962,7 +962,7 @@ func IconActionButton(className string, onClick string, disabledExpr string, ari
 		var templ_7745c5c3_Var58 string
 		templ_7745c5c3_Var58, templ_7745c5c3_Err = templ.JoinStringErrs(title)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/shared/buttons.templ`, Line: 91, Col: 81}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/shared/buttons.templ`, Line: 115, Col: 15}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var58))
 		if templ_7745c5c3_Err != nil {
@@ -975,7 +975,7 @@ func IconActionButton(className string, onClick string, disabledExpr string, ari
 		var templ_7745c5c3_Var59 string
 		templ_7745c5c3_Var59, templ_7745c5c3_Err = templ.JoinStringErrs(disabledExpr)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/shared/buttons.templ`, Line: 91, Col: 117}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/shared/buttons.templ`, Line: 116, Col: 35}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var59))
 		if templ_7745c5c3_Err != nil {
@@ -988,7 +988,7 @@ func IconActionButton(className string, onClick string, disabledExpr string, ari
 		var templ_7745c5c3_Var60 string
 		templ_7745c5c3_Var60, templ_7745c5c3_Err = templ.JoinStringErrs(onClick)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/shared/buttons.templ`, Line: 91, Col: 143}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/shared/buttons.templ`, Line: 117, Col: 25}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var60))
 		if templ_7745c5c3_Err != nil {
@@ -1056,7 +1056,7 @@ func SureIconActionButton(className string, onClick string, disabledExpr string,
 		var templ_7745c5c3_Var64 string
 		templ_7745c5c3_Var64, templ_7745c5c3_Err = templ.JoinStringErrs(ariaLabel)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/shared/buttons.templ`, Line: 97, Col: 65}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/shared/buttons.templ`, Line: 127, Col: 24}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var64))
 		if templ_7745c5c3_Err != nil {
@@ -1069,7 +1069,7 @@ func SureIconActionButton(className string, onClick string, disabledExpr string,
 		var templ_7745c5c3_Var65 string
 		templ_7745c5c3_Var65, templ_7745c5c3_Err = templ.JoinStringErrs(title)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/shared/buttons.templ`, Line: 97, Col: 81}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/shared/buttons.templ`, Line: 128, Col: 15}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var65))
 		if templ_7745c5c3_Err != nil {
@@ -1082,7 +1082,7 @@ func SureIconActionButton(className string, onClick string, disabledExpr string,
 		var templ_7745c5c3_Var66 string
 		templ_7745c5c3_Var66, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("(%s) || $sureTriggerID === %q", disabledExpr, triggerID))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/shared/buttons.templ`, Line: 97, Col: 174}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/shared/buttons.templ`, Line: 129, Col: 92}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var66))
 		if templ_7745c5c3_Err != nil {
@@ -1095,7 +1095,7 @@ func SureIconActionButton(className string, onClick string, disabledExpr string,
 		var templ_7745c5c3_Var67 string
 		templ_7745c5c3_Var67, templ_7745c5c3_Err = templ.JoinStringErrs(onClick)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/shared/buttons.templ`, Line: 97, Col: 200}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/shared/buttons.templ`, Line: 130, Col: 25}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var67))
 		if templ_7745c5c3_Err != nil {
@@ -1108,7 +1108,7 @@ func SureIconActionButton(className string, onClick string, disabledExpr string,
 		var templ_7745c5c3_Var68 string
 		templ_7745c5c3_Var68, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("$sureTriggerID !== %q", triggerID))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/shared/buttons.templ`, Line: 98, Col: 67}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/shared/buttons.templ`, Line: 132, Col: 67}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var68))
 		if templ_7745c5c3_Err != nil {
@@ -1129,7 +1129,7 @@ func SureIconActionButton(className string, onClick string, disabledExpr string,
 		var templ_7745c5c3_Var69 string
 		templ_7745c5c3_Var69, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("$sureTriggerID === %q", triggerID))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/shared/buttons.templ`, Line: 99, Col: 67}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/shared/buttons.templ`, Line: 133, Col: 67}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var69))
 		if templ_7745c5c3_Err != nil {
@@ -1226,7 +1226,7 @@ func ButtonLink(href string, className string, label string, iconName icons.Icon
 		var templ_7745c5c3_Var74 templ.SafeURL
 		templ_7745c5c3_Var74, templ_7745c5c3_Err = templ.JoinURLErrs(href)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/shared/buttons.templ`, Line: 108, Col: 35}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/shared/buttons.templ`, Line: 142, Col: 35}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var74))
 		if templ_7745c5c3_Err != nil {
@@ -1247,7 +1247,7 @@ func ButtonLink(href string, className string, label string, iconName icons.Icon
 		var templ_7745c5c3_Var75 string
 		templ_7745c5c3_Var75, templ_7745c5c3_Err = templ.JoinStringErrs(label)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/shared/buttons.templ`, Line: 110, Col: 15}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/shared/buttons.templ`, Line: 144, Col: 15}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var75))
 		if templ_7745c5c3_Err != nil {
@@ -1294,7 +1294,7 @@ func IDActionButton(id string, className string, label string) templ.Component {
 		var templ_7745c5c3_Var78 string
 		templ_7745c5c3_Var78, templ_7745c5c3_Err = templ.JoinStringErrs(id)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/shared/buttons.templ`, Line: 115, Col: 16}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/shared/buttons.templ`, Line: 149, Col: 16}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var78))
 		if templ_7745c5c3_Err != nil {
@@ -1320,7 +1320,7 @@ func IDActionButton(id string, className string, label string) templ.Component {
 		var templ_7745c5c3_Var80 string
 		templ_7745c5c3_Var80, templ_7745c5c3_Err = templ.JoinStringErrs(label)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/shared/buttons.templ`, Line: 116, Col: 15}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/shared/buttons.templ`, Line: 150, Col: 15}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var80))
 		if templ_7745c5c3_Err != nil {

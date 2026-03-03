@@ -179,7 +179,7 @@ func GroupsMain(data GroupsPageData) templ.Component {
 			var templ_7745c5c3_Var9 string
 			templ_7745c5c3_Var9, templ_7745c5c3_Err = templ.JoinStringErrs(utils.BuildTableQueryDatastarAction(utils.BuildTablePageSizeURL("/dashboard", data.Query, pageSize)))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/group/page_groups.templ`, Line: 36, Col: 209}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/group/page_groups.templ`, Line: 39, Col: 121}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var9))
 			if templ_7745c5c3_Err != nil {
@@ -192,7 +192,7 @@ func GroupsMain(data GroupsPageData) templ.Component {
 			var templ_7745c5c3_Var10 string
 			templ_7745c5c3_Var10, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("%d", pageSize))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/group/page_groups.templ`, Line: 36, Col: 241}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/group/page_groups.templ`, Line: 41, Col: 34}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var10))
 			if templ_7745c5c3_Err != nil {
@@ -226,7 +226,7 @@ func GroupsMain(data GroupsPageData) templ.Component {
 		var templ_7745c5c3_Var11 string
 		templ_7745c5c3_Var11, templ_7745c5c3_Err = templ.JoinStringErrs(ctxi18n.T(ctx, "fields.role"))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/group/page_groups.templ`, Line: 47, Col: 39}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/group/page_groups.templ`, Line: 53, Col: 39}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var11))
 		if templ_7745c5c3_Err != nil {
@@ -275,7 +275,7 @@ func GroupsMain(data GroupsPageData) templ.Component {
 			var templ_7745c5c3_Var12 string
 			templ_7745c5c3_Var12, templ_7745c5c3_Err = templ.JoinStringErrs(ctxi18n.T(ctx, "table.empty"))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/group/page_groups.templ`, Line: 70, Col: 55}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/group/page_groups.templ`, Line: 76, Col: 55}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var12))
 			if templ_7745c5c3_Err != nil {
@@ -294,7 +294,7 @@ func GroupsMain(data GroupsPageData) templ.Component {
 				var templ_7745c5c3_Var13 templ.SafeURL
 				templ_7745c5c3_Var13, templ_7745c5c3_Err = templ.JoinURLErrs("/groups/" + group.Group.ID)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/group/page_groups.templ`, Line: 75, Col: 57}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/group/page_groups.templ`, Line: 81, Col: 57}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var13))
 				if templ_7745c5c3_Err != nil {
@@ -307,7 +307,7 @@ func GroupsMain(data GroupsPageData) templ.Component {
 				var templ_7745c5c3_Var14 string
 				templ_7745c5c3_Var14, templ_7745c5c3_Err = templ.JoinStringErrs(group.Group.Name)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/group/page_groups.templ`, Line: 75, Col: 78}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/group/page_groups.templ`, Line: 81, Col: 78}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var14))
 				if templ_7745c5c3_Err != nil {
@@ -325,7 +325,7 @@ func GroupsMain(data GroupsPageData) templ.Component {
 					var templ_7745c5c3_Var15 string
 					templ_7745c5c3_Var15, templ_7745c5c3_Err = templ.JoinStringErrs(ctxi18n.T(ctx, "groups.role_admin"))
 					if templ_7745c5c3_Err != nil {
-						return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/group/page_groups.templ`, Line: 79, Col: 79}
+						return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/group/page_groups.templ`, Line: 85, Col: 79}
 					}
 					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var15))
 					if templ_7745c5c3_Err != nil {
@@ -343,7 +343,7 @@ func GroupsMain(data GroupsPageData) templ.Component {
 					var templ_7745c5c3_Var16 string
 					templ_7745c5c3_Var16, templ_7745c5c3_Err = templ.JoinStringErrs(ctxi18n.T(ctx, "groups.role_viewer"))
 					if templ_7745c5c3_Err != nil {
-						return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/group/page_groups.templ`, Line: 81, Col: 66}
+						return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/group/page_groups.templ`, Line: 87, Col: 66}
 					}
 					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var16))
 					if templ_7745c5c3_Err != nil {
@@ -361,7 +361,7 @@ func GroupsMain(data GroupsPageData) templ.Component {
 				var templ_7745c5c3_Var17 string
 				templ_7745c5c3_Var17, templ_7745c5c3_Err = templ.JoinStringErrs(group.Group.CreatedAt.Time.Format("2006-01-02"))
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/group/page_groups.templ`, Line: 84, Col: 59}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/group/page_groups.templ`, Line: 90, Col: 59}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var17))
 				if templ_7745c5c3_Err != nil {
@@ -374,7 +374,7 @@ func GroupsMain(data GroupsPageData) templ.Component {
 				var templ_7745c5c3_Var18 string
 				templ_7745c5c3_Var18, templ_7745c5c3_Err = templ.JoinStringErrs(group.AdminEmail)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/group/page_groups.templ`, Line: 85, Col: 28}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/group/page_groups.templ`, Line: 91, Col: 28}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var18))
 				if templ_7745c5c3_Err != nil {
@@ -451,7 +451,7 @@ func GroupsSidebar(data GroupsPageData) templ.Component {
 		var templ_7745c5c3_Var20 string
 		templ_7745c5c3_Var20, templ_7745c5c3_Err = templ.JoinStringErrs(templ.JSONString(map[string]any{"sidebarLoadingAction": ""}))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/group/page_groups.templ`, Line: 117, Col: 81}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/group/page_groups.templ`, Line: 123, Col: 81}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var20))
 		if templ_7745c5c3_Err != nil {
@@ -464,7 +464,7 @@ func GroupsSidebar(data GroupsPageData) templ.Component {
 		var templ_7745c5c3_Var21 string
 		templ_7745c5c3_Var21, templ_7745c5c3_Err = templ.JoinStringErrs(ctxi18n.T(ctx, "groups.new"))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/group/page_groups.templ`, Line: 119, Col: 36}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/group/page_groups.templ`, Line: 125, Col: 36}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var21))
 		if templ_7745c5c3_Err != nil {
@@ -477,7 +477,7 @@ func GroupsSidebar(data GroupsPageData) templ.Component {
 		var templ_7745c5c3_Var22 string
 		templ_7745c5c3_Var22, templ_7745c5c3_Err = templ.JoinStringErrs(ctxi18n.T(ctx, "groups.name"))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/group/page_groups.templ`, Line: 122, Col: 42}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/group/page_groups.templ`, Line: 128, Col: 42}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var22))
 		if templ_7745c5c3_Err != nil {
@@ -490,7 +490,7 @@ func GroupsSidebar(data GroupsPageData) templ.Component {
 		var templ_7745c5c3_Var23 string
 		templ_7745c5c3_Var23, templ_7745c5c3_Err = templ.JoinStringErrs(ctxi18n.T(ctx, "groups.name_placeholder"))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/group/page_groups.templ`, Line: 123, Col: 104}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/group/page_groups.templ`, Line: 129, Col: 104}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var23))
 		if templ_7745c5c3_Err != nil {
@@ -515,7 +515,7 @@ func GroupsSidebar(data GroupsPageData) templ.Component {
 		var templ_7745c5c3_Var24 string
 		templ_7745c5c3_Var24, templ_7745c5c3_Err = templ.JoinStringErrs(ctxi18n.T(ctx, "groups.edit"))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/group/page_groups.templ`, Line: 133, Col: 38}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/group/page_groups.templ`, Line: 139, Col: 38}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var24))
 		if templ_7745c5c3_Err != nil {
@@ -548,7 +548,7 @@ func GroupsSidebar(data GroupsPageData) templ.Component {
 		var templ_7745c5c3_Var25 string
 		templ_7745c5c3_Var25, templ_7745c5c3_Err = templ.JoinStringErrs(ctxi18n.T(ctx, "groups.name"))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/group/page_groups.templ`, Line: 152, Col: 42}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/group/page_groups.templ`, Line: 158, Col: 42}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var25))
 		if templ_7745c5c3_Err != nil {
@@ -561,7 +561,7 @@ func GroupsSidebar(data GroupsPageData) templ.Component {
 		var templ_7745c5c3_Var26 string
 		templ_7745c5c3_Var26, templ_7745c5c3_Err = templ.JoinStringErrs(ctxi18n.T(ctx, "groups.name_placeholder"))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/group/page_groups.templ`, Line: 153, Col: 104}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/group/page_groups.templ`, Line: 159, Col: 104}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var26))
 		if templ_7745c5c3_Err != nil {
@@ -586,7 +586,7 @@ func GroupsSidebar(data GroupsPageData) templ.Component {
 		var templ_7745c5c3_Var27 string
 		templ_7745c5c3_Var27, templ_7745c5c3_Err = templ.JoinStringErrs(ctxi18n.T(ctx, "groups.leave"))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/group/page_groups.templ`, Line: 163, Col: 38}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/group/page_groups.templ`, Line: 169, Col: 38}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var27))
 		if templ_7745c5c3_Err != nil {
@@ -599,7 +599,7 @@ func GroupsSidebar(data GroupsPageData) templ.Component {
 		var templ_7745c5c3_Var28 string
 		templ_7745c5c3_Var28, templ_7745c5c3_Err = templ.JoinStringErrs(ctxi18n.T(ctx, "groups.leave_confirm"))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/group/page_groups.templ`, Line: 164, Col: 45}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/group/page_groups.templ`, Line: 170, Col: 45}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var28))
 		if templ_7745c5c3_Err != nil {
