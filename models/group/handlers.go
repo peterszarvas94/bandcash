@@ -355,12 +355,25 @@ func (g *Group) ViewersPage(c echo.Context) error {
 		return c.String(http.StatusInternalServerError, "Failed to load group access")
 	}
 
+	searchLower := strings.ToLower(strings.TrimSpace(query.Search))
+	showAdmin := searchLower == "" || strings.Contains(strings.ToLower(admin.Email), searchLower)
+	if searchLower != "" {
+		filteredInvites := make([]db.MagicLink, 0, len(invites))
+		for _, invite := range invites {
+			if strings.Contains(strings.ToLower(invite.Email), searchLower) {
+				filteredInvites = append(filteredInvites, invite)
+			}
+		}
+		invites = filteredInvites
+	}
+
 	data := ViewersPageData{
 		Title:       ctxi18n.T(c.Request().Context(), "groups.viewers"),
 		Breadcrumbs: []utils.Crumb{{Label: ctxi18n.T(c.Request().Context(), "groups.title"), Href: "/dashboard"}, {Label: group.Name, Href: "/groups/" + group.ID}, {Label: ctxi18n.T(c.Request().Context(), "groups.viewers")}},
 		UserEmail:   userEmail,
 		Group:       group,
 		Admin:       admin,
+		ShowAdmin:   showAdmin,
 		Viewers:     viewers,
 		Invites:     invites,
 		IsAdmin:     middleware.IsAdmin(c),
@@ -386,7 +399,33 @@ func (g *Group) patchViewersPage(c echo.Context, groupID, messageKey, errorKey s
 		return c.NoContent(http.StatusInternalServerError)
 	}
 
-	viewers, err := db.Qry.GetGroupReaders(c.Request().Context(), groupID)
+	query := utils.ParseTableQuery(c, g.viewersModel)
+	total, err := db.Qry.CountGroupReadersFiltered(c.Request().Context(), db.CountGroupReadersFilteredParams{
+		GroupID: groupID,
+		Search:  query.Search,
+	})
+	if err != nil {
+		slog.Error("group: failed to count viewers for patch", "err", err)
+		return c.NoContent(http.StatusInternalServerError)
+	}
+	query = utils.ClampPage(query, total)
+
+	var viewers []db.User
+	if query.Sort == "email" && query.Dir == "desc" {
+		viewers, err = db.Qry.ListGroupReadersByEmailDescFiltered(c.Request().Context(), db.ListGroupReadersByEmailDescFilteredParams{
+			GroupID: groupID,
+			Search:  query.Search,
+			Limit:   int64(query.PageSize),
+			Offset:  query.Offset(),
+		})
+	} else {
+		viewers, err = db.Qry.ListGroupReadersByEmailAscFiltered(c.Request().Context(), db.ListGroupReadersByEmailAscFilteredParams{
+			GroupID: groupID,
+			Search:  query.Search,
+			Limit:   int64(query.PageSize),
+			Offset:  query.Offset(),
+		})
+	}
 	if err != nil {
 		slog.Error("group: failed to load viewers for patch", "err", err)
 		return c.NoContent(http.StatusInternalServerError)
@@ -404,15 +443,31 @@ func (g *Group) patchViewersPage(c echo.Context, groupID, messageKey, errorKey s
 		return c.NoContent(http.StatusInternalServerError)
 	}
 
+	searchLower := strings.ToLower(strings.TrimSpace(query.Search))
+	showAdmin := searchLower == "" || strings.Contains(strings.ToLower(admin.Email), searchLower)
+	if searchLower != "" {
+		filteredInvites := make([]db.MagicLink, 0, len(invites))
+		for _, invite := range invites {
+			if strings.Contains(strings.ToLower(invite.Email), searchLower) {
+				filteredInvites = append(filteredInvites, invite)
+			}
+		}
+		invites = filteredInvites
+	}
+
 	data := ViewersPageData{
 		Title:       ctxi18n.T(c.Request().Context(), "groups.viewers"),
 		Breadcrumbs: []utils.Crumb{{Label: ctxi18n.T(c.Request().Context(), "groups.title"), Href: "/dashboard"}, {Label: group.Name, Href: "/groups/" + group.ID}, {Label: ctxi18n.T(c.Request().Context(), "groups.viewers")}},
 		UserEmail:   getUserEmail(c),
 		Group:       group,
 		Admin:       admin,
+		ShowAdmin:   showAdmin,
 		Viewers:     viewers,
 		Invites:     invites,
 		IsAdmin:     middleware.IsAdmin(c),
+		Query:       query,
+		Pager:       utils.BuildTablePagination(total, query),
+		GroupID:     groupID,
 	}
 
 	html, err := utils.RenderHTMLForRequest(c, GroupViewersPage(data))

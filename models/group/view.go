@@ -41,6 +41,7 @@ type ViewersPageData struct {
 	UserEmail   string
 	Group       db.Group
 	Admin       db.User
+	ShowAdmin   bool
 	Viewers     []db.User
 	Invites     []db.MagicLink
 	IsAdmin     bool

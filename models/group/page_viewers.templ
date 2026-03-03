@@ -41,12 +41,14 @@ templ GroupViewersMain(data ViewersPageData) {
 			</tr>
 		</thead>
 		<tbody>
-			<tr>
-				<td>{ data.Admin.Email } <span>({ ctxi18n.T(ctx, "groups.admin") })</span></td>
-				if data.IsAdmin {
-					<td data-actions-col></td>
-				}
-			</tr>
+			if data.ShowAdmin {
+				<tr>
+					<td>{ data.Admin.Email } <span>({ ctxi18n.T(ctx, "groups.admin") })</span></td>
+					if data.IsAdmin {
+						<td data-actions-col></td>
+					}
+				</tr>
+			}
 			for _, viewer := range data.Viewers {
 				<tr>
 					<td>{ viewer.Email }</td>
@@ -81,7 +83,7 @@ templ GroupViewersMain(data ViewersPageData) {
 					}
 				</tr>
 			}
-			if len(data.Viewers) == 0 && len(data.Invites) == 0 {
+			if !data.ShowAdmin && len(data.Viewers) == 0 && len(data.Invites) == 0 {
 				<tr>
 					<td colspan="2">{ ctxi18n.T(ctx, "table.empty") }</td>
 				</tr>
