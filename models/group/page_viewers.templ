@@ -47,7 +47,7 @@ templ GroupViewersPage(data ViewersPageData) {
 
 templ GroupViewersMain(data ViewersPageData) {
 	<div class="tabs pt">
-		<a href={ viewersTabURL(data.GroupID, "admins") } class={ viewersTabClass(data.Tab, "admins") }>{ ctxi18n.T(ctx, "groups.admin") }</a>
+		<a href={ viewersTabURL(data.GroupID, "admins") } class={ viewersTabClass(data.Tab, "admins") }>{ ctxi18n.T(ctx, "groups.admins") }</a>
 		<a href={ viewersTabURL(data.GroupID, "viewers") } class={ viewersTabClass(data.Tab, "viewers") }>{ ctxi18n.T(ctx, "groups.viewers") }</a>
 		<a href={ viewersTabURL(data.GroupID, "pending") } class={ viewersTabClass(data.Tab, "pending") }>{ ctxi18n.T(ctx, "groups.pending_invitations") }</a>
 	</div>

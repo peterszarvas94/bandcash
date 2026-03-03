@@ -203,6 +203,7 @@ hu:
     viewers: "Nézők"
     read_only: "Nézői hozzáférés"
     admin: "Admin"
+    admins: "Adminok"
     role_admin: "admin"
     role_viewer: "néző"
     created: "Létrehozva"

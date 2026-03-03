@@ -203,6 +203,7 @@ en:
     viewers: "Viewers"
     read_only: "Viewer access"
     admin: "Admin"
+    admins: "Admins"
     role_admin: "admin"
     role_viewer: "viewer"
     created: "Created"

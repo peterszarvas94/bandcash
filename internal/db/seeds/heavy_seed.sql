@@ -7,10 +7,38 @@ VALUES
   ('usr_SuperAdminSeed000001', 'superadmin@bandcash.local'),
   ('usr_AdminUserOneSeed0001', 'admin1@bandcash.local'),
   ('usr_AdminUserTwoSeed0002', 'admin2@bandcash.local'),
-  ('usr_AdminUserTriSeed0003', 'admin3@bandcash.local');
+  ('usr_AdminUserTriSeed0003', 'admin3@bandcash.local'),
+  ('usr_ViewerSeedUser00001', 'viewer01@bandcash.local'),
+  ('usr_ViewerSeedUser00002', 'viewer02@bandcash.local'),
+  ('usr_ViewerSeedUser00003', 'viewer03@bandcash.local'),
+  ('usr_ViewerSeedUser00004', 'viewer04@bandcash.local'),
+  ('usr_ViewerSeedUser00005', 'viewer05@bandcash.local'),
+  ('usr_ViewerSeedUser00006', 'viewer06@bandcash.local'),
+  ('usr_ViewerSeedUser00007', 'viewer07@bandcash.local'),
+  ('usr_ViewerSeedUser00008', 'viewer08@bandcash.local');
 
 INSERT OR IGNORE INTO groups (id, name, admin_user_id)
 VALUES ('grp_SeedDataLabGroup0001', 'Seed Data Lab', 'usr_SuperAdminSeed000001');
+
+INSERT OR IGNORE INTO group_readers (id, user_id, group_id)
+VALUES
+  ('grr_SeedReaderLink00001', 'usr_ViewerSeedUser00001', 'grp_SeedDataLabGroup0001'),
+  ('grr_SeedReaderLink00002', 'usr_ViewerSeedUser00002', 'grp_SeedDataLabGroup0001'),
+  ('grr_SeedReaderLink00003', 'usr_ViewerSeedUser00003', 'grp_SeedDataLabGroup0001'),
+  ('grr_SeedReaderLink00004', 'usr_ViewerSeedUser00004', 'grp_SeedDataLabGroup0001'),
+  ('grr_SeedReaderLink00005', 'usr_ViewerSeedUser00005', 'grp_SeedDataLabGroup0001'),
+  ('grr_SeedReaderLink00006', 'usr_ViewerSeedUser00006', 'grp_SeedDataLabGroup0001'),
+  ('grr_SeedReaderLink00007', 'usr_ViewerSeedUser00007', 'grp_SeedDataLabGroup0001'),
+  ('grr_SeedReaderLink00008', 'usr_ViewerSeedUser00008', 'grp_SeedDataLabGroup0001');
+
+INSERT OR IGNORE INTO magic_links (id, token, email, action, group_id, expires_at)
+VALUES
+  ('mag_SeedInviteLink00001', 'tok_SeedPendingInvite001', 'pending01@bandcash.local', 'invite', 'grp_SeedDataLabGroup0001', datetime('now', '+2 days')),
+  ('mag_SeedInviteLink00002', 'tok_SeedPendingInvite002', 'pending02@bandcash.local', 'invite', 'grp_SeedDataLabGroup0001', datetime('now', '+2 days')),
+  ('mag_SeedInviteLink00003', 'tok_SeedPendingInvite003', 'pending03@bandcash.local', 'invite', 'grp_SeedDataLabGroup0001', datetime('now', '+2 days')),
+  ('mag_SeedInviteLink00004', 'tok_SeedPendingInvite004', 'pending04@bandcash.local', 'invite', 'grp_SeedDataLabGroup0001', datetime('now', '+2 days')),
+  ('mag_SeedInviteLink00005', 'tok_SeedPendingInvite005', 'pending05@bandcash.local', 'invite', 'grp_SeedDataLabGroup0001', datetime('now', '+2 days')),
+  ('mag_SeedInviteLink00006', 'tok_SeedPendingInvite006', 'pending06@bandcash.local', 'invite', 'grp_SeedDataLabGroup0001', datetime('now', '+2 days'));
 
 INSERT OR REPLACE INTO app_flags (key, bool_value)
 VALUES ('enable_signup', 1);
