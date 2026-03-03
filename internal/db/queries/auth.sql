@@ -75,6 +75,37 @@ SELECT users.* FROM users
 JOIN group_readers ON group_readers.user_id = users.id
 WHERE group_readers.group_id = ?;
 
+-- name: CountGroupReadersFiltered :one
+SELECT COUNT(*) FROM users
+JOIN group_readers ON group_readers.user_id = users.id
+WHERE group_readers.group_id = sqlc.arg(group_id)
+  AND (
+    sqlc.arg(search) = ''
+    OR LOWER(users.email) LIKE '%' || LOWER(sqlc.arg(search)) || '%'
+  );
+
+-- name: ListGroupReadersByEmailAscFiltered :many
+SELECT users.* FROM users
+JOIN group_readers ON group_readers.user_id = users.id
+WHERE group_readers.group_id = sqlc.arg(group_id)
+  AND (
+    sqlc.arg(search) = ''
+    OR LOWER(users.email) LIKE '%' || LOWER(sqlc.arg(search)) || '%'
+  )
+ORDER BY LOWER(users.email) ASC
+LIMIT sqlc.arg(limit) OFFSET sqlc.arg(offset);
+
+-- name: ListGroupReadersByEmailDescFiltered :many
+SELECT users.* FROM users
+JOIN group_readers ON group_readers.user_id = users.id
+WHERE group_readers.group_id = sqlc.arg(group_id)
+  AND (
+    sqlc.arg(search) = ''
+    OR LOWER(users.email) LIKE '%' || LOWER(sqlc.arg(search)) || '%'
+  )
+ORDER BY LOWER(users.email) DESC
+LIMIT sqlc.arg(limit) OFFSET sqlc.arg(offset);
+
 -- name: IsGroupReader :one
 SELECT COUNT(*) FROM group_readers
 WHERE user_id = ? AND group_id = ?;

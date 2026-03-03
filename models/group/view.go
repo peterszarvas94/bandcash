@@ -44,6 +44,9 @@ type ViewersPageData struct {
 	Viewers     []db.User
 	Invites     []db.MagicLink
 	IsAdmin     bool
+	Query       utils.TableQuery
+	Pager       utils.TablePagination
+	GroupID     string
 }
 
 type GroupPageData struct {

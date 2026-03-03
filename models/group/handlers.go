@@ -18,7 +18,21 @@ import (
 )
 
 type Group struct {
-	model *GroupModel
+	model        *GroupModel
+	viewersModel *ViewersModel
+}
+
+type ViewersModel struct{}
+
+func (v *ViewersModel) TableQuerySpec() utils.TableQuerySpec {
+	return utils.StandardTableQuerySpec("email", "asc", "email")
+}
+
+func New() *Group {
+	return &Group{
+		model:        NewModel(),
+		viewersModel: &ViewersModel{},
+	}
 }
 
 type createGroupSignals struct {
@@ -37,12 +51,6 @@ type updateGroupSignals struct {
 	FormData struct {
 		Name string `json:"name" validate:"required,min=1,max=255"`
 	} `json:"formData"`
-}
-
-func New() *Group {
-	return &Group{
-		model: NewModel(),
-	}
 }
 
 // NewGroupPage shows the form to create a new group
@@ -285,12 +293,56 @@ func (g *Group) ViewersPage(c echo.Context) error {
 		return c.String(http.StatusNotFound, "Group not found")
 	}
 
-	viewers, err := db.Qry.GetGroupReaders(c.Request().Context(), groupID)
+	// Parse table query
+	query := utils.ParseTableQuery(c, g.viewersModel)
+
+	// Get total count for pagination
+	total, err := db.Qry.CountGroupReadersFiltered(c.Request().Context(), db.CountGroupReadersFilteredParams{
+		GroupID: groupID,
+		Search:  query.Search,
+	})
+	if err != nil {
+		slog.Error("group: failed to count viewers", "err", err)
+		return c.String(http.StatusInternalServerError, "Failed to load viewers")
+	}
+
+	// Adjust page if needed
+	query = utils.ClampPage(query, total)
+
+	// Fetch paginated viewers
+	var viewers []db.User
+	switch query.Sort {
+	case "email":
+		if query.Dir == "desc" {
+			viewers, err = db.Qry.ListGroupReadersByEmailDescFiltered(c.Request().Context(), db.ListGroupReadersByEmailDescFilteredParams{
+				GroupID: groupID,
+				Search:  query.Search,
+				Limit:   int64(query.PageSize),
+				Offset:  query.Offset(),
+			})
+		} else {
+			viewers, err = db.Qry.ListGroupReadersByEmailAscFiltered(c.Request().Context(), db.ListGroupReadersByEmailAscFilteredParams{
+				GroupID: groupID,
+				Search:  query.Search,
+				Limit:   int64(query.PageSize),
+				Offset:  query.Offset(),
+			})
+		}
+	default:
+		// Default to email asc
+		viewers, err = db.Qry.ListGroupReadersByEmailAscFiltered(c.Request().Context(), db.ListGroupReadersByEmailAscFilteredParams{
+			GroupID: groupID,
+			Search:  query.Search,
+			Limit:   int64(query.PageSize),
+			Offset:  query.Offset(),
+		})
+	}
 	if err != nil {
 		slog.Error("group: failed to load viewers", "err", err)
 		return c.String(http.StatusInternalServerError, "Failed to load viewers")
 	}
 
+	// Load invites (not paginated for now)
 	invites, err := db.Qry.ListGroupPendingInvites(c.Request().Context(), sql.NullString{String: groupID, Valid: true})
 	if err != nil {
 		slog.Error("group: failed to load pending invites", "err", err)
@@ -312,6 +364,9 @@ func (g *Group) ViewersPage(c echo.Context) error {
 		Viewers:     viewers,
 		Invites:     invites,
 		IsAdmin:     middleware.IsAdmin(c),
+		Query:       query,
+		Pager:       utils.BuildTablePagination(total, query),
+		GroupID:     groupID,
 	}
 
 	return utils.RenderPage(c, GroupViewersPage(data))

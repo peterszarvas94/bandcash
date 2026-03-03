@@ -83,6 +83,7 @@ hu:
     search_placeholder_events: "Cím, Leírás"
     search_placeholder_expenses: "Cím, Leírás"
     search_placeholder_members: "Név, Leírás"
+    search_placeholder_viewers: "Email"
     search_placeholder_admin_users: "Email"
     search_placeholder_admin_groups: "Csoport név"
     page: "Oldal"

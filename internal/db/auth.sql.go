@@ -27,6 +27,28 @@ func (q *Queries) BanUser(ctx context.Context, arg BanUserParams) error {
 	return err
 }
 
+const countGroupReadersFiltered = `-- name: CountGroupReadersFiltered :one
+SELECT COUNT(*) FROM users
+JOIN group_readers ON group_readers.user_id = users.id
+WHERE group_readers.group_id = ?1
+  AND (
+    ?2 = ''
+    OR LOWER(users.email) LIKE '%' || LOWER(?2) || '%'
+  )
+`
+
+type CountGroupReadersFilteredParams struct {
+	GroupID string      `json:"group_id"`
+	Search  interface{} `json:"search"`
+}
+
+func (q *Queries) CountGroupReadersFiltered(ctx context.Context, arg CountGroupReadersFilteredParams) (int64, error) {
+	row := q.db.QueryRowContext(ctx, countGroupReadersFiltered, arg.GroupID, arg.Search)
+	var count int64
+	err := row.Scan(&count)
+	return count, err
+}
+
 const countUserGroupsFiltered = `-- name: CountUserGroupsFiltered :one
 SELECT COUNT(*) FROM (
   SELECT g.id FROM groups g
@@ -370,6 +392,100 @@ func (q *Queries) ListGroupPendingInvites(ctx context.Context, groupID sql.NullS
 			&i.UsedAt,
 			&i.CreatedAt,
 		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const listGroupReadersByEmailAscFiltered = `-- name: ListGroupReadersByEmailAscFiltered :many
+SELECT users.id, users.email, users.created_at FROM users
+JOIN group_readers ON group_readers.user_id = users.id
+WHERE group_readers.group_id = ?1
+  AND (
+    ?2 = ''
+    OR LOWER(users.email) LIKE '%' || LOWER(?2) || '%'
+  )
+ORDER BY LOWER(users.email) ASC
+LIMIT ?4 OFFSET ?3
+`
+
+type ListGroupReadersByEmailAscFilteredParams struct {
+	GroupID string      `json:"group_id"`
+	Search  interface{} `json:"search"`
+	Offset  int64       `json:"offset"`
+	Limit   int64       `json:"limit"`
+}
+
+func (q *Queries) ListGroupReadersByEmailAscFiltered(ctx context.Context, arg ListGroupReadersByEmailAscFilteredParams) ([]User, error) {
+	rows, err := q.db.QueryContext(ctx, listGroupReadersByEmailAscFiltered,
+		arg.GroupID,
+		arg.Search,
+		arg.Offset,
+		arg.Limit,
+	)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []User{}
+	for rows.Next() {
+		var i User
+		if err := rows.Scan(&i.ID, &i.Email, &i.CreatedAt); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const listGroupReadersByEmailDescFiltered = `-- name: ListGroupReadersByEmailDescFiltered :many
+SELECT users.id, users.email, users.created_at FROM users
+JOIN group_readers ON group_readers.user_id = users.id
+WHERE group_readers.group_id = ?1
+  AND (
+    ?2 = ''
+    OR LOWER(users.email) LIKE '%' || LOWER(?2) || '%'
+  )
+ORDER BY LOWER(users.email) DESC
+LIMIT ?4 OFFSET ?3
+`
+
+type ListGroupReadersByEmailDescFilteredParams struct {
+	GroupID string      `json:"group_id"`
+	Search  interface{} `json:"search"`
+	Offset  int64       `json:"offset"`
+	Limit   int64       `json:"limit"`
+}
+
+func (q *Queries) ListGroupReadersByEmailDescFiltered(ctx context.Context, arg ListGroupReadersByEmailDescFilteredParams) ([]User, error) {
+	rows, err := q.db.QueryContext(ctx, listGroupReadersByEmailDescFiltered,
+		arg.GroupID,
+		arg.Search,
+		arg.Offset,
+		arg.Limit,
+	)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []User{}
+	for rows.Next() {
+		var i User
+		if err := rows.Scan(&i.ID, &i.Email, &i.CreatedAt); err != nil {
 			return nil, err
 		}
 		items = append(items, i)
