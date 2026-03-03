@@ -98,7 +98,7 @@ templ GroupViewersMain(data ViewersPageData) {
 						if data.IsAdmin {
 							<td data-actions-col>
 							@shared.IconActionButton(
-								"btn btn-sm btn-danger btn-icon",
+								"btn btn-ghost btn-sm btn-danger btn-icon",
 								fmt.Sprintf(
 									"$sureOpen = true; $sureTitle = %s; $sureMessage = %s; $sureSubmitLabel = %s; $sureCancelLabel = %s; $sureMethod = 'delete'; $sureURL = '/groups/%s/invites/%s'; $sureTriggerID = %s",
 									utils.JSONString(ctxi18n.T(ctx, "groups.cancel_invite_confirm")),
@@ -134,8 +134,8 @@ templ GroupViewersMain(data ViewersPageData) {
 					</th>
 					if data.IsAdmin {
 						<th data-actions-col>
-							<div class="row row-right">
-								@shared.IconActionButton("btn btn-sm btn-icon", "$formState = 'add'; $formData = {email: ''}", "$formState !== '' || $_fetching", ctxi18n.T(ctx, "groups.add_viewer"), ctxi18n.T(ctx, "groups.add_viewer"), icons.IconPlus)
+							<div class="row row-right row-tight">
+							@shared.IconActionButton("btn btn-ghost btn-sm btn-icon", "$formState = 'add'; $formData = {email: ''}", "$formState !== '' || $_fetching", ctxi18n.T(ctx, "groups.add_viewer"), ctxi18n.T(ctx, "groups.add_viewer"), icons.IconPlus)
 							</div>
 						</th>
 					}
@@ -148,7 +148,7 @@ templ GroupViewersMain(data ViewersPageData) {
 						if data.IsAdmin {
 							<td data-actions-col>
 							@shared.IconActionButton(
-								"btn btn-sm btn-danger btn-icon",
+								"btn btn-ghost btn-sm btn-danger btn-icon",
 								fmt.Sprintf(
 									"$sureOpen = true; $sureTitle = %s; $sureMessage = %s; $sureSubmitLabel = %s; $sureCancelLabel = %s; $sureMethod = 'delete'; $sureURL = '/groups/%s/viewers/%s'; $sureTriggerID = %s",
 									utils.JSONString(ctxi18n.T(ctx, "groups.remove_viewer_confirm")),

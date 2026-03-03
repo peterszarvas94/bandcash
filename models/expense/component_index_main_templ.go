@@ -154,11 +154,11 @@ func ExpenseIndexMain(data ExpensesData) templ.Component {
 			return templ_7745c5c3_Err
 		}
 		if data.IsAdmin {
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 13, "<th data-actions-col><div class=\"row row-right\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 13, "<th data-actions-col><div class=\"row row-right row-tight\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = shared.IconActionButton("btn btn-sm btn-icon", "$formState = 'add'; $editingId = 0; $formData = {title: '', description: '', amount: 0, date: ''}; $errors = {title: '', description: '', amount: '', date: ''}", "$formState !== '' || $_fetching", ctxi18n.T(ctx, "expenses.add"), ctxi18n.T(ctx, "expenses.add"), icons.IconPlus).Render(ctx, templ_7745c5c3_Buffer)
+			templ_7745c5c3_Err = shared.IconActionButton("btn btn-ghost btn-sm btn-icon", "$formState = 'add'; $editingId = 0; $formData = {title: '', description: '', amount: 0, date: ''}; $errors = {title: '', description: '', amount: '', date: ''}", "$formState !== '' || $_fetching", ctxi18n.T(ctx, "expenses.add"), ctxi18n.T(ctx, "expenses.add"), icons.IconPlus).Render(ctx, templ_7745c5c3_Buffer)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -281,12 +281,12 @@ func ExpenseIndexMain(data ExpensesData) templ.Component {
 				return templ_7745c5c3_Err
 			}
 			if data.IsAdmin {
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 25, "<td data-actions-col><div class=\"row\">")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 25, "<td data-actions-col><div class=\"row row-tight\">")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
 				templ_7745c5c3_Err = shared.IconActionButton(
-					"btn btn-sm btn-icon",
+					"btn btn-ghost btn-sm btn-icon",
 					fmt.Sprintf("$formState = 'edit'; $editingId = %q; $formData = {title: el.closest('tr').dataset.expenseTitle, description: el.closest('tr').dataset.expenseDescription, amount: Number(el.closest('tr').dataset.expenseAmount), date: el.closest('tr').dataset.expenseDate}", expense.ID),
 					"$formState !== '' || $_fetching",
 					ctxi18n.T(ctx, "actions.edit"),
@@ -297,7 +297,7 @@ func ExpenseIndexMain(data ExpensesData) templ.Component {
 					return templ_7745c5c3_Err
 				}
 				templ_7745c5c3_Err = shared.IconActionButton(
-					"btn btn-sm btn-danger btn-icon",
+					"btn btn-ghost btn-sm btn-danger btn-icon",
 					fmt.Sprintf(
 						"$sureOpen = true; $sureTitle = %s; $sureMessage = %s; $sureSubmitLabel = %s; $sureCancelLabel = %s; $sureMethod = 'delete'; $sureURL = '/groups/%s/expenses/%s'; $sureTriggerID = %s",
 						utils.JSONString(ctxi18n.T(ctx, "expenses.delete_confirm")),

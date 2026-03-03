@@ -248,12 +248,12 @@ func GroupsMain(data GroupsPageData) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 19, "</th><th data-actions-col><div class=\"row row-right\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 19, "</th><th data-actions-col><div class=\"row row-right row-tight\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		templ_7745c5c3_Err = shared.LoadingIconActionButton(
-			"btn btn-sm btn-icon",
+			"btn btn-ghost btn-sm btn-icon",
 			"$formState = 'add'; $formData = {name: ''}; $selectedGroupId = ''",
 			"$formState !== ''",
 			ctxi18n.T(ctx, "groups.create"),
@@ -380,13 +380,13 @@ func GroupsMain(data GroupsPageData) templ.Component {
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 32, "</td><td data-actions-col><div class=\"row row-right\">")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 32, "</td><td data-actions-col><div class=\"row row-right row-tight\">")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
 				if group.Role == "admin" {
 					templ_7745c5c3_Err = shared.LoadingIconActionButton(
-						"btn btn-sm btn-icon",
+						"btn btn-ghost btn-sm btn-icon",
 						fmt.Sprintf("$formState = 'edit'; $selectedGroupId = '%s'; $formData = {name: %s}; $errors = {name: ''}", group.Group.ID, utils.JSONString(group.Group.Name)),
 						"$formState !== ''",
 						ctxi18n.T(ctx, "actions.edit"),
@@ -398,7 +398,7 @@ func GroupsMain(data GroupsPageData) templ.Component {
 					}
 				} else {
 					templ_7745c5c3_Err = shared.LoadingIconActionButton(
-						"btn btn-sm btn-icon",
+						"btn btn-ghost btn-sm btn-icon",
 						fmt.Sprintf("$formState = 'leave'; $selectedGroupId = '%s'", group.Group.ID),
 						"$formState !== ''",
 						ctxi18n.T(ctx, "groups.leave"),

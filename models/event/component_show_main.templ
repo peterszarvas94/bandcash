@@ -42,8 +42,8 @@ templ EventShowMain(data EventData) {
 				<th>{ ctxi18n.T(ctx, "participants.expense") }</th>
 				if data.IsAdmin {
 					<th data-actions-col>
-						<div class="row row-right">
-							@shared.IconActionButton("btn btn-sm btn-icon", "$formState = 'add'; $editingId = ''; $calcPercent = 0; $formData = {memberId: '', memberName: '', amount: 0, expense: 0}; $errors = {memberId: '', amount: '', expense: ''}", "$formState !== '' || $eventFormState !== '' || $_fetching", ctxi18n.T(ctx, "participants.add"), ctxi18n.T(ctx, "participants.add"), icons.IconPlus)
+						<div class="row row-right row-tight">
+							@shared.IconActionButton("btn btn-ghost btn-sm btn-icon", "$formState = 'add'; $editingId = ''; $calcPercent = 0; $formData = {memberId: '', memberName: '', amount: 0, expense: 0}; $errors = {memberId: '', amount: '', expense: ''}", "$formState !== '' || $eventFormState !== '' || $_fetching", ctxi18n.T(ctx, "participants.add"), ctxi18n.T(ctx, "participants.add"), icons.IconPlus)
 						</div>
 					</th>
 				}
@@ -63,9 +63,9 @@ templ EventShowMain(data EventData) {
 					<td class="text-right">{ utils.FormatNumberLocalized(ctx, participant.ParticipantExpense) }</td>
 					if data.IsAdmin {
 						<td class="text-right" data-actions-col>
-							<div class="row">
+							<div class="row row-tight">
 								@shared.IconActionButton(
-									"btn btn-sm btn-icon",
+									"btn btn-ghost btn-sm btn-icon",
 									fmt.Sprintf("$formState = 'edit'; $editingId = %q; $formData = {memberId: el.closest('tr').dataset.memberId, memberName: el.closest('tr').dataset.memberName, amount: Number(el.closest('tr').dataset.participantAmount), expense: Number(el.closest('tr').dataset.participantExpense)}", participant.ID),
 									"$formState !== '' || $eventFormState !== '' || $_fetching",
 									ctxi18n.T(ctx, "actions.edit"),
@@ -73,7 +73,7 @@ templ EventShowMain(data EventData) {
 									icons.IconPencil,
 								)
 								@shared.IconActionButton(
-									"btn btn-sm btn-danger btn-icon",
+									"btn btn-ghost btn-sm btn-danger btn-icon",
 									fmt.Sprintf(
 										"$sureOpen = true; $sureTitle = %s; $sureMessage = %s; $sureSubmitLabel = %s; $sureCancelLabel = %s; $sureMethod = 'delete'; $sureURL = '/groups/%s/events/%s/participants/%s'; $sureTriggerID = %s",
 										utils.JSONString(ctxi18n.T(ctx, "participants.delete_confirm")),

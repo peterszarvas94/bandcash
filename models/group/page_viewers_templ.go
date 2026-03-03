@@ -424,7 +424,7 @@ func GroupViewersMain(data ViewersPageData) templ.Component {
 						return templ_7745c5c3_Err
 					}
 					templ_7745c5c3_Err = shared.IconActionButton(
-						"btn btn-sm btn-danger btn-icon",
+						"btn btn-ghost btn-sm btn-danger btn-icon",
 						fmt.Sprintf(
 							"$sureOpen = true; $sureTitle = %s; $sureMessage = %s; $sureSubmitLabel = %s; $sureCancelLabel = %s; $sureMethod = 'delete'; $sureURL = '/groups/%s/invites/%s'; $sureTriggerID = %s",
 							utils.JSONString(ctxi18n.T(ctx, "groups.cancel_invite_confirm")),
@@ -502,11 +502,11 @@ func GroupViewersMain(data ViewersPageData) templ.Component {
 				return templ_7745c5c3_Err
 			}
 			if data.IsAdmin {
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 44, "<th data-actions-col><div class=\"row row-right\">")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 44, "<th data-actions-col><div class=\"row row-right row-tight\">")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				templ_7745c5c3_Err = shared.IconActionButton("btn btn-sm btn-icon", "$formState = 'add'; $formData = {email: ''}", "$formState !== '' || $_fetching", ctxi18n.T(ctx, "groups.add_viewer"), ctxi18n.T(ctx, "groups.add_viewer"), icons.IconPlus).Render(ctx, templ_7745c5c3_Buffer)
+				templ_7745c5c3_Err = shared.IconActionButton("btn btn-ghost btn-sm btn-icon", "$formState = 'add'; $formData = {email: ''}", "$formState !== '' || $_fetching", ctxi18n.T(ctx, "groups.add_viewer"), ctxi18n.T(ctx, "groups.add_viewer"), icons.IconPlus).Render(ctx, templ_7745c5c3_Buffer)
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
@@ -543,7 +543,7 @@ func GroupViewersMain(data ViewersPageData) templ.Component {
 						return templ_7745c5c3_Err
 					}
 					templ_7745c5c3_Err = shared.IconActionButton(
-						"btn btn-sm btn-danger btn-icon",
+						"btn btn-ghost btn-sm btn-danger btn-icon",
 						fmt.Sprintf(
 							"$sureOpen = true; $sureTitle = %s; $sureMessage = %s; $sureSubmitLabel = %s; $sureCancelLabel = %s; $sureMethod = 'delete'; $sureURL = '/groups/%s/viewers/%s'; $sureTriggerID = %s",
 							utils.JSONString(ctxi18n.T(ctx, "groups.remove_viewer_confirm")),

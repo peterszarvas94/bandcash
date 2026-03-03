@@ -43,8 +43,8 @@ templ ExpenseIndexMain(data ExpensesData) {
 				</th>
 				if data.IsAdmin {
 					<th data-actions-col>
-						<div class="row row-right">
-							@shared.IconActionButton("btn btn-sm btn-icon", "$formState = 'add'; $editingId = 0; $formData = {title: '', description: '', amount: 0, date: ''}; $errors = {title: '', description: '', amount: '', date: ''}", "$formState !== '' || $_fetching", ctxi18n.T(ctx, "expenses.add"), ctxi18n.T(ctx, "expenses.add"), icons.IconPlus)
+						<div class="row row-right row-tight">
+							@shared.IconActionButton("btn btn-ghost btn-sm btn-icon", "$formState = 'add'; $editingId = 0; $formData = {title: '', description: '', amount: 0, date: ''}; $errors = {title: '', description: '', amount: '', date: ''}", "$formState !== '' || $_fetching", ctxi18n.T(ctx, "expenses.add"), ctxi18n.T(ctx, "expenses.add"), icons.IconPlus)
 						</div>
 					</th>
 				}
@@ -59,9 +59,9 @@ templ ExpenseIndexMain(data ExpensesData) {
 					<td>{ utils.FormatDateLocalized(ctx, expense.Date) }</td>
 					if data.IsAdmin {
 						<td data-actions-col>
-							<div class="row">
+							<div class="row row-tight">
 								@shared.IconActionButton(
-									"btn btn-sm btn-icon",
+									"btn btn-ghost btn-sm btn-icon",
 									fmt.Sprintf("$formState = 'edit'; $editingId = %q; $formData = {title: el.closest('tr').dataset.expenseTitle, description: el.closest('tr').dataset.expenseDescription, amount: Number(el.closest('tr').dataset.expenseAmount), date: el.closest('tr').dataset.expenseDate}", expense.ID),
 									"$formState !== '' || $_fetching",
 									ctxi18n.T(ctx, "actions.edit"),
@@ -69,7 +69,7 @@ templ ExpenseIndexMain(data ExpensesData) {
 									icons.IconPencil,
 								)
 								@shared.IconActionButton(
-									"btn btn-sm btn-danger btn-icon",
+									"btn btn-ghost btn-sm btn-danger btn-icon",
 									fmt.Sprintf(
 										"$sureOpen = true; $sureTitle = %s; $sureMessage = %s; $sureSubmitLabel = %s; $sureCancelLabel = %s; $sureMethod = 'delete'; $sureURL = '/groups/%s/expenses/%s'; $sureTriggerID = %s",
 										utils.JSONString(ctxi18n.T(ctx, "expenses.delete_confirm")),

@@ -161,11 +161,11 @@ func EventShowMain(data EventData) templ.Component {
 			return templ_7745c5c3_Err
 		}
 		if data.IsAdmin {
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 11, "<th data-actions-col><div class=\"row row-right\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 11, "<th data-actions-col><div class=\"row row-right row-tight\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = shared.IconActionButton("btn btn-sm btn-icon", "$formState = 'add'; $editingId = ''; $calcPercent = 0; $formData = {memberId: '', memberName: '', amount: 0, expense: 0}; $errors = {memberId: '', amount: '', expense: ''}", "$formState !== '' || $eventFormState !== '' || $_fetching", ctxi18n.T(ctx, "participants.add"), ctxi18n.T(ctx, "participants.add"), icons.IconPlus).Render(ctx, templ_7745c5c3_Buffer)
+			templ_7745c5c3_Err = shared.IconActionButton("btn btn-ghost btn-sm btn-icon", "$formState = 'add'; $editingId = ''; $calcPercent = 0; $formData = {memberId: '', memberName: '', amount: 0, expense: 0}; $errors = {memberId: '', amount: '', expense: ''}", "$formState !== '' || $eventFormState !== '' || $_fetching", ctxi18n.T(ctx, "participants.add"), ctxi18n.T(ctx, "participants.add"), icons.IconPlus).Render(ctx, templ_7745c5c3_Buffer)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -301,12 +301,12 @@ func EventShowMain(data EventData) templ.Component {
 				return templ_7745c5c3_Err
 			}
 			if data.IsAdmin {
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 24, "<td class=\"text-right\" data-actions-col><div class=\"row\">")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 24, "<td class=\"text-right\" data-actions-col><div class=\"row row-tight\">")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
 				templ_7745c5c3_Err = shared.IconActionButton(
-					"btn btn-sm btn-icon",
+					"btn btn-ghost btn-sm btn-icon",
 					fmt.Sprintf("$formState = 'edit'; $editingId = %q; $formData = {memberId: el.closest('tr').dataset.memberId, memberName: el.closest('tr').dataset.memberName, amount: Number(el.closest('tr').dataset.participantAmount), expense: Number(el.closest('tr').dataset.participantExpense)}", participant.ID),
 					"$formState !== '' || $eventFormState !== '' || $_fetching",
 					ctxi18n.T(ctx, "actions.edit"),
@@ -317,7 +317,7 @@ func EventShowMain(data EventData) templ.Component {
 					return templ_7745c5c3_Err
 				}
 				templ_7745c5c3_Err = shared.IconActionButton(
-					"btn btn-sm btn-danger btn-icon",
+					"btn btn-ghost btn-sm btn-danger btn-icon",
 					fmt.Sprintf(
 						"$sureOpen = true; $sureTitle = %s; $sureMessage = %s; $sureSubmitLabel = %s; $sureCancelLabel = %s; $sureMethod = 'delete'; $sureURL = '/groups/%s/events/%s/participants/%s'; $sureTriggerID = %s",
 						utils.JSONString(ctxi18n.T(ctx, "participants.delete_confirm")),
