@@ -98,7 +98,7 @@ templ DashboardStatsRows(data DashboardData) {
 templ UsersTableSection(data DashboardData) {
 		<div class="table-section">
 			// Search
-			@shared.TableSearchForm(adminSearchAction("users"))
+			@shared.TableSearchForm(adminSearchAction("users"), "Searches: email")
 		// Table
 		<table id="admin-users" class="table table-sticky-actions pt">
 			<thead>
@@ -158,7 +158,7 @@ templ UsersTableSection(data DashboardData) {
 templ GroupsTableSection(data DashboardData) {
 		<div class="table-section">
 			// Search
-			@shared.TableSearchForm(adminSearchAction("groups"))
+			@shared.TableSearchForm(adminSearchAction("groups"), "Searches: group name")
 		// Table
 		<table class="table pt">
 			<thead>
