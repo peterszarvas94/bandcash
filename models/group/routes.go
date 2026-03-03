@@ -26,8 +26,8 @@ func RegisterRoutes(e *echo.Echo) *Group {
 	g := e.Group("/groups/:groupId", middleware.RequireAuth(), middleware.RequireGroup(), middleware.RequireAdmin())
 	g.PUT("", grp.UpdateGroup)
 	g.POST("/viewers", grp.AddViewer)
-	g.POST("/viewers/:userId/remove", grp.RemoveViewer)
-	g.POST("/invites/:inviteId/remove", grp.CancelInvite)
+	g.DELETE("/viewers/:userId", grp.RemoveViewer)
+	g.DELETE("/invites/:inviteId", grp.CancelInvite)
 	g.POST("/delete", grp.DeleteGroup)
 
 	return grp

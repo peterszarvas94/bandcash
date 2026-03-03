@@ -97,10 +97,10 @@ templ GroupViewersMain(data ViewersPageData) {
 						<td>{ utils.FormatTimeLocalized(ctx, invite.CreatedAt.Time) }</td>
 						if data.IsAdmin {
 							<td data-actions-col>
-							@shared.SureIconActionButton(
+							@shared.IconActionButton(
 								"btn btn-sm btn-danger btn-icon",
 								fmt.Sprintf(
-									"$sureOpen = true; $sureTitle = %s; $sureMessage = %s; $sureSubmitLabel = %s; $sureCancelLabel = %s; $sureMethod = 'post'; $sureURL = '/groups/%s/invites/%s/remove'; $sureTriggerID = %s",
+									"$sureOpen = true; $sureTitle = %s; $sureMessage = %s; $sureSubmitLabel = %s; $sureCancelLabel = %s; $sureMethod = 'delete'; $sureURL = '/groups/%s/invites/%s'; $sureTriggerID = %s",
 									utils.JSONString(ctxi18n.T(ctx, "groups.cancel_invite_confirm")),
 									utils.JSONString(ctxi18n.T(ctx, "confirm.destructive_message")),
 									utils.JSONString(ctxi18n.T(ctx, "actions.delete")),
@@ -113,7 +113,6 @@ templ GroupViewersMain(data ViewersPageData) {
 								ctxi18n.T(ctx, "actions.delete"),
 								ctxi18n.T(ctx, "actions.delete"),
 								icons.IconTrash2,
-								"invite-remove-" + invite.ID,
 							)
 							</td>
 						}
@@ -148,10 +147,10 @@ templ GroupViewersMain(data ViewersPageData) {
 						<td>{ viewer.Email }</td>
 						if data.IsAdmin {
 							<td data-actions-col>
-							@shared.SureIconActionButton(
+							@shared.IconActionButton(
 								"btn btn-sm btn-danger btn-icon",
 								fmt.Sprintf(
-									"$sureOpen = true; $sureTitle = %s; $sureMessage = %s; $sureSubmitLabel = %s; $sureCancelLabel = %s; $sureMethod = 'post'; $sureURL = '/groups/%s/viewers/%s/remove'; $sureTriggerID = %s",
+									"$sureOpen = true; $sureTitle = %s; $sureMessage = %s; $sureSubmitLabel = %s; $sureCancelLabel = %s; $sureMethod = 'delete'; $sureURL = '/groups/%s/viewers/%s'; $sureTriggerID = %s",
 									utils.JSONString(ctxi18n.T(ctx, "groups.remove_viewer_confirm")),
 									utils.JSONString(ctxi18n.T(ctx, "confirm.destructive_message")),
 									utils.JSONString(ctxi18n.T(ctx, "actions.delete")),
@@ -164,7 +163,6 @@ templ GroupViewersMain(data ViewersPageData) {
 								ctxi18n.T(ctx, "actions.delete"),
 								ctxi18n.T(ctx, "actions.delete"),
 								icons.IconTrash2,
-								"viewer-remove-" + viewer.ID,
 							)
 							</td>
 						}
