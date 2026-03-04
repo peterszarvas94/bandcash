@@ -9,8 +9,8 @@ import (
 
 templ AppShell(id string, crumbs []utils.Crumb, userEmail string, nav templ.Component, main templ.Component, sidebar templ.Component) {
 	<div id={ id } class="app-shell">
-		<input id={ id + "-nav-toggle" } class="shell-toggle" type="checkbox"/>
-		<input id={ id + "-panel-toggle" } class="shell-toggle" type="checkbox"/>
+		<input id={ id + "-nav-toggle" } class="shell-toggle" type="checkbox" aria-label={ ctxi18n.T(ctx, "nav.menu") }/>
+		<input id={ id + "-panel-toggle" } class="shell-toggle" type="checkbox" aria-label={ ctxi18n.T(ctx, "nav.actions") }/>
 		<header class="app-shell-top">
 			<div class="app-shell-mobile-toggles">
 				<label for={ id + "-nav-toggle" } class="btn">
@@ -42,7 +42,7 @@ templ AppShell(id string, crumbs []utils.Crumb, userEmail string, nav templ.Comp
 
 templ AppShellMainOnly(id string, crumbs []utils.Crumb, userEmail string, nav templ.Component, main templ.Component) {
 	<div id={ id } class="app-shell-main-only">
-		<input id={ id + "-nav-toggle" } class="shell-toggle" type="checkbox"/>
+		<input id={ id + "-nav-toggle" } class="shell-toggle" type="checkbox" aria-label={ ctxi18n.T(ctx, "nav.menu") }/>
 		<header class="app-shell-top">
 			<div class="app-shell-mobile-toggles">
 				<label for={ id + "-nav-toggle" } class="btn">

@@ -17,24 +17,24 @@ templ EventShowSidebar(data EventData) {
 			<form class="form">
 				<div class="form-row">
 					<div class="field">
-						<label>{ctxi18n.T(ctx, "fields.title")} <span class="required-mark">*</span></label>
-						<input type="text" data-bind="eventFormData.title" class="input"/>
+						<label for="event-show-title">{ctxi18n.T(ctx, "fields.title")} <span class="required-mark">*</span></label>
+						<input id="event-show-title" type="text" data-bind="eventFormData.title" class="input"/>
 						<div data-show="$errors && $errors.title" class="color-error" data-text="$errors.title"></div>
 					</div>
 					<div class="field">
-						<label>{ctxi18n.T(ctx, "fields.time")} <span class="required-mark">*</span></label>
-						<input type="datetime-local" data-bind="eventFormData.time" class="input"/>
+						<label for="event-show-time">{ctxi18n.T(ctx, "fields.time")} <span class="required-mark">*</span></label>
+						<input id="event-show-time" type="datetime-local" data-bind="eventFormData.time" class="input"/>
 						<div data-show="$errors && $errors.time" class="color-error" data-text="$errors.time"></div>
 					</div>
 				</div>
 				<div class="field">
-				<label>{ctxi18n.T(ctx, "fields.description")}</label>
-					<textarea data-bind="eventFormData.description" rows="3" class="input"></textarea>
+				<label for="event-show-description">{ctxi18n.T(ctx, "fields.description")}</label>
+					<textarea id="event-show-description" data-bind="eventFormData.description" rows="3" class="input"></textarea>
 					<div data-show="$errors && $errors.description" class="color-error" data-text="$errors.description"></div>
 				</div>
 				<div class="field">
-				<label>{ctxi18n.T(ctx, "fields.amount")} <span class="required-mark">*</span></label>
-					<input type="number" data-bind="eventFormData.amount" step="1" class="input"/>
+				<label for="event-show-amount">{ctxi18n.T(ctx, "fields.amount")} <span class="required-mark">*</span></label>
+					<input id="event-show-amount" type="number" data-bind="eventFormData.amount" step="1" class="input"/>
 					<div data-show="$errors && $errors.amount" class="color-error" data-text="$errors.amount"></div>
 				</div>
 				<div class="sidebar-actions">
@@ -47,8 +47,8 @@ templ EventShowSidebar(data EventData) {
 			<h3 data-show="$formState === 'edit'">{ctxi18n.T(ctx, "participants.edit")}</h3>
 			<form class="form">
 				<div data-show="$formState === 'add'">
-				<label>{ctxi18n.T(ctx, "participants.member")} <span class="required-mark">*</span></label>
-				<select data-bind="formData.memberId" class="input">
+				<label for="event-participant-member-add">{ctxi18n.T(ctx, "participants.member")} <span class="required-mark">*</span></label>
+				<select id="event-participant-member-add" data-bind="formData.memberId" class="input">
 					<option value="">{ctxi18n.T(ctx, "participants.select_member")}</option>
 					for _, member := range data.Members {
 						<option value={ fmt.Sprintf("%s", member.ID) }>{ member.Name }</option>
@@ -57,27 +57,27 @@ templ EventShowSidebar(data EventData) {
 				<div data-show="$errors && $errors.memberId" class="color-error" data-text="$errors.memberId"></div>
 			</div>
 			<div data-show="$formState === 'edit'">
-				<label>{ctxi18n.T(ctx, "participants.member")}</label>
-				<input type="text" data-bind="formData.memberName" disabled class="input"/>
+				<label for="event-participant-member-edit">{ctxi18n.T(ctx, "participants.member")}</label>
+				<input id="event-participant-member-edit" type="text" data-bind="formData.memberName" disabled class="input"/>
 			</div>
 			<div>
-				<label>{ctxi18n.T(ctx, "participants.cut_amount")} <span class="required-mark">*</span></label>
+				<label for="event-participant-cut-amount">{ctxi18n.T(ctx, "participants.cut_amount")} <span class="required-mark">*</span></label>
 					<div class="row">
-						<input type="number" data-bind="formData.amount" step="1" class="input input-grow"/>
+						<input id="event-participant-cut-amount" type="number" data-bind="formData.amount" step="1" class="input input-grow"/>
 						@shared.ActionButton(shared.ActionButtonProps{ClassName: "btn", OnClick: fmt.Sprintf("$calcPercent = $formData.amount > 0 ? Math.round($formData.amount / %d * 10000) / 100 : 0", data.Event.Amount), DisabledExpr: "false", Label: ctxi18n.T(ctx, "participants.calc_percent"), IconName: icons.IconCalculator})
 					</div>
 					<div data-show="$errors && $errors.amount" class="color-error" data-text="$errors.amount"></div>
 				</div>
 				<div>
-				<label>{ctxi18n.T(ctx, "participants.quick_calc")}</label>
+				<label for="event-participant-quick-calc">{ctxi18n.T(ctx, "participants.quick_calc")}</label>
 					<div class="row">
-					<input type="number" data-bind="calcPercent" step="0.01" min="0" placeholder={ctxi18n.T(ctx, "participants.quick_calc_placeholder")} class="input input-grow"/>
+					<input id="event-participant-quick-calc" type="number" data-bind="calcPercent" step="0.01" min="0" placeholder={ctxi18n.T(ctx, "participants.quick_calc_placeholder")} class="input input-grow"/>
 						@shared.ActionButton(shared.ActionButtonProps{ClassName: "btn", OnClick: fmt.Sprintf("$formData.amount = Math.round(%d * $calcPercent / 100)", data.Event.Amount), DisabledExpr: "false", Label: ctxi18n.T(ctx, "participants.calc_amount"), IconName: icons.IconCalculator})
 					</div>
 				</div>
 				<div>
-				<label>{ctxi18n.T(ctx, "participants.expense")}</label>
-					<input type="number" data-bind="formData.expense" step="1" class="input"/>
+				<label for="event-participant-expense">{ctxi18n.T(ctx, "participants.expense")}</label>
+					<input id="event-participant-expense" type="number" data-bind="formData.expense" step="1" class="input"/>
 					<div data-show="$errors && $errors.expense" class="color-error" data-text="$errors.expense"></div>
 				</div>
 				<div class="pt pb">

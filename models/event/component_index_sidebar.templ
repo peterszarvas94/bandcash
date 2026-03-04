@@ -16,24 +16,24 @@ templ EventIndexSidebar(data EventsData) {
 			<form class="form">
 				<div class="form-row">
 					<div class="field">
-						<label>{ctxi18n.T(ctx, "fields.title")} <span class="required-mark">*</span></label>
-						<input type="text" data-bind="formData.title" class="input"/>
+						<label for="event-sidebar-title">{ctxi18n.T(ctx, "fields.title")} <span class="required-mark">*</span></label>
+						<input id="event-sidebar-title" type="text" data-bind="formData.title" class="input"/>
 						<div data-show="$errors && $errors.title" class="color-error" data-text="$errors.title"></div>
 					</div>
 					<div class="field">
-						<label>{ctxi18n.T(ctx, "fields.time")} <span class="required-mark">*</span></label>
-						<input type="datetime-local" data-bind="formData.time" class="input"/>
+						<label for="event-sidebar-time">{ctxi18n.T(ctx, "fields.time")} <span class="required-mark">*</span></label>
+						<input id="event-sidebar-time" type="datetime-local" data-bind="formData.time" class="input"/>
 						<div data-show="$errors && $errors.time" class="color-error" data-text="$errors.time"></div>
 					</div>
 				</div>
 				<div class="field">
-					<label>{ctxi18n.T(ctx, "fields.description")}</label>
-					<textarea data-bind="formData.description" rows="3" class="input"></textarea>
+					<label for="event-sidebar-description">{ctxi18n.T(ctx, "fields.description")}</label>
+					<textarea id="event-sidebar-description" data-bind="formData.description" rows="3" class="input"></textarea>
 					<div data-show="$errors && $errors.description" class="color-error" data-text="$errors.description"></div>
 				</div>
 				<div class="field">
-					<label>{ctxi18n.T(ctx, "fields.amount")} <span class="required-mark">*</span></label>
-					<input type="number" data-bind="formData.amount" step="1" class="input"/>
+					<label for="event-sidebar-amount">{ctxi18n.T(ctx, "fields.amount")} <span class="required-mark">*</span></label>
+					<input id="event-sidebar-amount" type="number" data-bind="formData.amount" step="1" class="input"/>
 					<div data-show="$errors && $errors.amount" class="color-error" data-text="$errors.amount"></div>
 				</div>
 				<div class="sidebar-actions">

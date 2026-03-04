@@ -16,8 +16,8 @@ templ GroupsSidebar(data GroupsPageData) {
 			<h3>{ ctxi18n.T(ctx, "groups.new") }</h3>
 			<form class="form" data-on:submit="@post('/groups')" data-indicator:_fetching>
 				<div class="field">
-					<label>{ ctxi18n.T(ctx, "groups.name") } <span class="required-mark">*</span></label>
-					<input type="text" data-bind="formData.name" placeholder={ ctxi18n.T(ctx, "groups.name_placeholder") } class="input"/>
+					<label for="groups-sidebar-add-name">{ ctxi18n.T(ctx, "groups.name") } <span class="required-mark">*</span></label>
+					<input id="groups-sidebar-add-name" type="text" data-bind="formData.name" placeholder={ ctxi18n.T(ctx, "groups.name_placeholder") } class="input"/>
 				</div>
 				<div class="sidebar-actions">
 					@shared.SidebarLoadingSubmitButton(shared.SidebarLoadingSubmitButtonProps{ClassName: "btn", Label: ctxi18n.T(ctx, "groups.create"), IconName: icons.IconSave, ActionID: "group-create"})
@@ -40,8 +40,8 @@ templ GroupsSidebar(data GroupsPageData) {
 			</div>
 			<form class="form" data-on:submit="@put('/groups/' + $selectedGroupId)" data-indicator:_fetching>
 				<div class="field">
-					<label>{ ctxi18n.T(ctx, "groups.name") } <span class="required-mark">*</span></label>
-					<input type="text" data-bind="formData.name" placeholder={ ctxi18n.T(ctx, "groups.name_placeholder") } class="input"/>
+					<label for="groups-sidebar-edit-name">{ ctxi18n.T(ctx, "groups.name") } <span class="required-mark">*</span></label>
+					<input id="groups-sidebar-edit-name" type="text" data-bind="formData.name" placeholder={ ctxi18n.T(ctx, "groups.name_placeholder") } class="input"/>
 					<div data-show="$errors && $errors.name" class="color-error" data-text="$errors.name"></div>
 				</div>
 				<div class="sidebar-actions">

@@ -1,9 +1,30 @@
 package shared
 
 templ Head(title string) {
+	{{
+		siteName := "Bandcash"
+		description := "Track shared group money, events, expenses, and payouts with BandCash."
+		siteURL := "https://bandcash.app/"
+		socialImageURL := "https://bandcash.app/static/img/bandcash.png"
+	}}
 	<head>
 		<meta charset="UTF-8"/>
 		<meta name="viewport" content="width=device-width, initial-scale=1"/>
+		<meta name="title" content={ siteName }/>
+		<meta name="description" content={ description }/>
+		<meta name="robots" content="index,follow"/>
+		<meta property="og:type" content="website"/>
+		<meta property="og:site_name" content={ siteName }/>
+		<meta property="og:url" content={ siteURL }/>
+		<meta property="og:title" content={ siteName }/>
+		<meta property="og:description" content={ description }/>
+		<meta property="og:image" content={ socialImageURL }/>
+		<meta property="twitter:card" content="summary_large_image"/>
+		<meta property="twitter:url" content={ siteURL }/>
+		<meta property="twitter:title" content={ siteName }/>
+		<meta property="twitter:description" content={ description }/>
+		<meta property="twitter:image" content={ socialImageURL }/>
+		<meta name="application-name" content={ siteName }/>
 		<title>{ title }</title>
 		<link rel="stylesheet" href="/static/css/style.css"/>
 		<script type="importmap">

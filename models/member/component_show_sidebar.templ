@@ -16,13 +16,13 @@ templ MemberShowSidebar(data MemberData) {
 		<div data-show="$formState === 'edit'" style="display: none" class="pb">
 		<form class="form">
 			<div>
-				<label>{ctxi18n.T(ctx, "fields.name")} <span class="required-mark">*</span></label>
-					<input type="text" data-bind="formData.name" class="input"/>
+				<label for="member-show-name">{ctxi18n.T(ctx, "fields.name")} <span class="required-mark">*</span></label>
+					<input id="member-show-name" type="text" data-bind="formData.name" class="input"/>
 					<div data-show="$errors && $errors.name" class="color-error" data-text="$errors.name"></div>
 				</div>
 				<div>
-				<label>{ctxi18n.T(ctx, "fields.description")}</label>
-					<textarea data-bind="formData.description" rows="3" class="input"></textarea>
+				<label for="member-show-description">{ctxi18n.T(ctx, "fields.description")}</label>
+					<textarea id="member-show-description" data-bind="formData.description" rows="3" class="input"></textarea>
 					<div data-show="$errors && $errors.description" class="color-error" data-text="$errors.description"></div>
 				</div>
 				<div class="sidebar-actions">
