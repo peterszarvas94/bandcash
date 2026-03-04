@@ -11,11 +11,10 @@ import (
 )
 
 templ GroupsMain(data GroupsPageData) {
-	<p>{ ctxi18n.T(ctx, "groups.subtitle") }</p>
 	@shared.TableSearchForm(utils.BuildTableSearchDatastarAction("/dashboard", utils.DefaultTablePageSize), "table.search_placeholder")
-	<div class="row row-wrap justify-between pt">
+	<div class="row row-wrap justify-between pt pb">
 		<div class="row row-wrap">
-			<span>{ ctxi18n.T(ctx, "table.page_size") }</span>
+			<span class="hide-tablet text-sm">{ ctxi18n.T(ctx, "table.page_size") }</span>
 			for _, pageSize := range utils.StandardTablePageSizes {
 				<button
 					class={ utils.PageSizeButtonClass(data.Query.PageSize, pageSize) }

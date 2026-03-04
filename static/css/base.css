@@ -28,6 +28,7 @@
     --page-padding-inline: var(--space);
     --page-padding-top: calc(var(--space) * 2);
     --page-padding-bottom: var(--space);
+    --z-index-modal: 1100;
 
     /* Semantic aliases used by existing styles */
     --link-color: var(--color-primary);
@@ -204,6 +205,22 @@
   canvas {
     max-width: 100%;
     display: block;
+  }
+
+  @media (max-width: 730px) {
+    .hide-tablet {
+      display: none !important;
+    }
+
+    .show-table {
+      display: inline !important;
+    }
+  }
+
+  @media (max-width: 680px) {
+    .hide-mobile {
+      display: none !important;
+    }
   }
 
 }

@@ -98,7 +98,11 @@
     }
 
     &:not(:disabled):not([disabled]):active {
-      border-color: color-mix(in srgb, var(--border-color) 50%, var(--page-bg) 50%);
+      border-color: color-mix(
+        in srgb,
+        var(--border-color) 50%,
+        var(--page-bg) 50%
+      );
     }
 
     &:focus-visible {
@@ -177,7 +181,8 @@
     box-shadow:
       inset 0 1px 0 color-mix(in srgb, var(--text-color) 7%, transparent),
       inset 1px 0 0 color-mix(in srgb, var(--text-color) 5%, transparent),
-      inset 0 -1px 0 color-mix(in srgb, var(--page-bg) 75%, var(--text-color) 25%);
+      inset 0 -1px 0
+        color-mix(in srgb, var(--page-bg) 75%, var(--text-color) 25%);
     transition:
       border-color 120ms ease,
       box-shadow 120ms ease,
@@ -187,14 +192,19 @@
       outline: var(--focus-ring);
       outline-offset: var(--focus-ring-offset);
       border-radius: 0;
-      border-color: color-mix(in srgb, var(--border-color) 40%, var(--link-color) 60%);
+      border-color: color-mix(
+        in srgb,
+        var(--border-color) 40%,
+        var(--link-color) 60%
+      );
     }
 
     &:active {
       box-shadow:
         inset 0 1px 0 color-mix(in srgb, var(--text-color) 12%, transparent),
         inset 1px 0 0 color-mix(in srgb, var(--text-color) 10%, transparent),
-        inset 0 -1px 0 color-mix(in srgb, var(--page-bg) 70%, var(--text-color) 30%);
+        inset 0 -1px 0
+          color-mix(in srgb, var(--page-bg) 70%, var(--text-color) 30%);
     }
 
     &.input-grow {
@@ -270,7 +280,11 @@
 
   .btn-active {
     background: var(--surface-hover);
-    border-color: color-mix(in srgb, var(--border-color) 50%, var(--page-bg) 50%);
+    border-color: color-mix(
+      in srgb,
+      var(--border-color) 50%,
+      var(--page-bg) 50%
+    );
   }
 
   .btn-danger {
@@ -282,7 +296,11 @@
     }
 
     &:not(:disabled):not([disabled]):active {
-      border-color: color-mix(in srgb, var(--error-color) 50%, var(--page-bg) 50%);
+      border-color: color-mix(
+        in srgb,
+        var(--error-color) 50%,
+        var(--page-bg) 50%
+      );
     }
 
     &:focus-visible {
@@ -480,7 +498,7 @@
   .sure-popover {
     position: fixed;
     inset: 0;
-    z-index: 1100;
+    z-index: var(--z-index-modal);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -511,9 +529,8 @@
 
   @media (max-width: 680px) {
     .sure-dialog {
-      width: calc(100vw - 1rem);
-      min-height: calc(100vh - 1rem);
-      border-radius: calc(var(--border) * 3);
+      width: 100vw;
+      min-height: 100vh;
       align-content: center;
     }
   }
@@ -886,6 +903,5 @@
     .breadcrumbs .crumb.current {
       display: inline;
     }
-
   }
 }

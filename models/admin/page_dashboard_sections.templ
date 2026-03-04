@@ -136,10 +136,10 @@ templ GroupsTableSection(data DashboardData) {
 }
 
 templ adminTablePagination(pager utils.TablePagination, query utils.TableQuery, tab string) {
-	<div class="row row-wrap justify-between pt">
+	<div class="row row-wrap justify-between pt pb">
 		@shared.TablePaginationControls(fmt.Sprintf("/admin?tab=%s", tab), query, pager)
 		<div class="row row-wrap">
-			<span>{ ctxi18n.T(ctx, "table.page_size") }</span>
+			<span class="hide-tablet text-sm">{ ctxi18n.T(ctx, "table.page_size") }</span>
 			for _, pageSize := range utils.StandardTablePageSizes {
 				<button
 					class={ utils.PageSizeButtonClass(query.PageSize, pageSize) }

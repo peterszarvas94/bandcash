@@ -6,8 +6,8 @@ import (
 	ctxi18n "github.com/invopop/ctxi18n/i18n"
 
 	"bandcash/internal/utils"
-	icons "bandcash/models/shared/icons"
 	shared "bandcash/models/shared"
+	icons "bandcash/models/shared/icons"
 )
 
 templ GroupViewersMain(data ViewersPageData) {
@@ -16,7 +16,6 @@ templ GroupViewersMain(data ViewersPageData) {
 		<a href={ viewersTabURL(data.GroupID, "viewers") } class={ viewersTabClass(data.Tab, "viewers") }>{ ctxi18n.T(ctx, "groups.viewers") }</a>
 		<a href={ viewersTabURL(data.GroupID, "pending") } class={ viewersTabClass(data.Tab, "pending") }>{ ctxi18n.T(ctx, "groups.pending_invitations") }</a>
 	</div>
-
 	if data.Tab == "admins" {
 		@shared.TableSearchForm(utils.BuildTableSearchDatastarAction(viewersTablePath(data.GroupID, data.Tab), utils.DefaultTablePageSize), "table.search_placeholder_admins")
 		<table class="table table-sticky-actions pt">
@@ -128,9 +127,9 @@ templ GroupViewersMain(data ViewersPageData) {
 }
 
 templ ViewersTablePagination(data ViewersPageData) {
-	<div class="row row-wrap justify-between pt">
+	<div class="row row-wrap justify-between pt pb">
 		<div class="row row-wrap">
-			<span>{ ctxi18n.T(ctx, "table.page_size") }</span>
+			<span class="hide-tablet text-sm">{ ctxi18n.T(ctx, "table.page_size") }</span>
 			for _, pageSize := range utils.StandardTablePageSizes {
 				<button
 					class={ utils.PageSizeButtonClass(data.Query.PageSize, pageSize) }

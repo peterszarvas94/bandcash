@@ -10,8 +10,8 @@ import (
 )
 
 templ TableSearchForm(onSubmitAction string, placeholderKey string) {
-	<form class="row row-wrap pt" data-on:submit={ onSubmitAction }>
-		<input type="search" data-bind="tableQuery.search" placeholder={ ctxi18n.T(ctx, placeholderKey) } class="input input-wide"/>
+	<form class="row row-wrap pt pb" data-on:submit={ onSubmitAction }>
+		<input type="search" data-bind="tableQuery.search" placeholder={ ctxi18n.T(ctx, placeholderKey) } class="input input-wide input-sm"/>
 		<button class="btn btn-sm" type="submit">{ ctxi18n.T(ctx, "table.search") }</button>
 	</form>
 }
@@ -31,7 +31,7 @@ templ TablePaginationControls(basePath string, query utils.TableQuery, pager uti
 	<form class="row row-wrap" data-on:submit={ utils.BuildTablePageDatastarAction(basePath, pager.TotalPages, utils.DefaultTablePageSize) }>
 		if pager.HasPrev {
 			<button
-				class="btn btn-sm"
+				class="btn btn-sm btn-icon hide-tablet"
 				type="button"
 				data-on:click={ utils.BuildTableQueryDatastarAction(utils.BuildTablePageURL(basePath, query, 1, pager.TotalPages)) }
 				aria-label={ ctxi18n.T(ctx, "table.first") }
@@ -49,7 +49,7 @@ templ TablePaginationControls(basePath string, query utils.TableQuery, pager uti
 				@icons.ArrowLeft(templ.Attributes{"class": "icon"})
 			</button>
 		} else {
-			<button type="button" class="btn btn-sm" aria-label={ ctxi18n.T(ctx, "table.first") } title={ ctxi18n.T(ctx, "table.first") } disabled>
+			<button type="button" class="btn btn-sm btn-icon hide-tablet" aria-label={ ctxi18n.T(ctx, "table.first") } title={ ctxi18n.T(ctx, "table.first") } disabled>
 				1
 			</button>
 			<button type="button" class="btn btn-sm btn-icon" aria-label={ ctxi18n.T(ctx, "table.prev") } title={ ctxi18n.T(ctx, "table.prev") } disabled>
@@ -57,11 +57,12 @@ templ TablePaginationControls(basePath string, query utils.TableQuery, pager uti
 			</button>
 		}
 		<label class="row">
-			<span>{ ctxi18n.T(ctx, "table.page") }</span>
-			<input type="number" min="1" max={ fmt.Sprintf("%d", pager.TotalPages) } step="1" data-bind="tableQuery.page" aria-label={ ctxi18n.T(ctx, "table.page") } class="input input-thin"/>
-			<button class="btn btn-sm btn-icon" type="submit" aria-label={ ctxi18n.T(ctx, "table.go") } title={ ctxi18n.T(ctx, "table.go") }>
+			<span class="text-sm hide-tablet">{ ctxi18n.T(ctx, "table.page") }</span>
+			<input type="number" min="1" max={ fmt.Sprintf("%d", pager.TotalPages) } step="1" data-bind="tableQuery.page" aria-label={ ctxi18n.T(ctx, "table.page") } class="input input-thin input-sm hide-tablet"/>
+			<button class="btn btn-sm btn-icon hide-tablet" type="submit" aria-label={ ctxi18n.T(ctx, "table.go") } title={ ctxi18n.T(ctx, "table.go") }>
 				@icons.FileInput(templ.Attributes{"class": "icon"})
 			</button>
+			<span class="text-sm show-table">{ fmt.Sprintf("%d/%d", pager.Page, pager.TotalPages) }</span>
 		</label>
 		if pager.HasNext {
 			<button
@@ -74,7 +75,7 @@ templ TablePaginationControls(basePath string, query utils.TableQuery, pager uti
 				@icons.ArrowRight(templ.Attributes{"class": "icon"})
 			</button>
 			<button
-				class="btn btn-sm"
+				class="btn btn-sm btn-icon hide-tablet"
 				type="button"
 				data-on:click={ utils.BuildTableQueryDatastarAction(utils.BuildTablePageURL(basePath, query, pager.TotalPages, pager.TotalPages)) }
 				aria-label={ ctxi18n.T(ctx, "table.last") }
@@ -86,7 +87,7 @@ templ TablePaginationControls(basePath string, query utils.TableQuery, pager uti
 			<button type="button" class="btn btn-sm btn-icon" aria-label={ ctxi18n.T(ctx, "table.next") } title={ ctxi18n.T(ctx, "table.next") } disabled>
 				@icons.ArrowRight(templ.Attributes{"class": "icon"})
 			</button>
-			<button type="button" class="btn btn-sm" aria-label={ ctxi18n.T(ctx, "table.last") } title={ ctxi18n.T(ctx, "table.last") } disabled>
+			<button type="button" class="btn btn-sm btn-icon hide-tablet" aria-label={ ctxi18n.T(ctx, "table.last") } title={ ctxi18n.T(ctx, "table.last") } disabled>
 				{ fmt.Sprintf("%d", pager.TotalPages) }
 			</button>
 		}

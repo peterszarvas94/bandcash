@@ -34,6 +34,15 @@
     text-align: right;
   }
 
+  .text-sm {
+    font-size: 0.875rem;
+  }
+
+  .input-sm {
+    height: 2rem;
+    padding: calc(var(--space) * 0.5) calc(var(--space) * 1.25);
+  }
+
   .pb {
     padding-bottom: var(--space);
   }
@@ -52,6 +61,10 @@
 
   .w-fit {
     width: fit-content;
+  }
+
+  .show-table {
+    display: none !important;
   }
 
 }

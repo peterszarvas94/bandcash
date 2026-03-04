@@ -253,7 +253,6 @@ hu:
     leave_confirm: "Kilépsz ebből a csoportból?"
     delete: "Törlés"
     delete_confirm: "Törlöd ezt a csoportot?"
-    subtitle: "Az admin csoportok szerkeszthetők, a nézői csoportok csak olvashatók."
     admin_list: "Admin csoportok"
     viewer_list: "Nézői csoportok"
     none: "Még nincs csoport."

@@ -212,7 +212,7 @@ func GroupViewersMain(data ViewersPageData) templ.Component {
 				var templ_7745c5c3_Var14 string
 				templ_7745c5c3_Var14, templ_7745c5c3_Err = templ.JoinStringErrs(admin.Email)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/group/page_viewers_main.templ`, Line: 33, Col: 23}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/group/page_viewers_main.templ`, Line: 32, Col: 23}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var14))
 				if templ_7745c5c3_Err != nil {
@@ -231,7 +231,7 @@ func GroupViewersMain(data ViewersPageData) templ.Component {
 				var templ_7745c5c3_Var15 string
 				templ_7745c5c3_Var15, templ_7745c5c3_Err = templ.JoinStringErrs(ctxi18n.T(ctx, "table.empty"))
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/group/page_viewers_main.templ`, Line: 37, Col: 44}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/group/page_viewers_main.templ`, Line: 36, Col: 44}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var15))
 				if templ_7745c5c3_Err != nil {
@@ -297,7 +297,7 @@ func GroupViewersMain(data ViewersPageData) templ.Component {
 				var templ_7745c5c3_Var16 string
 				templ_7745c5c3_Var16, templ_7745c5c3_Err = templ.JoinStringErrs(invite.Email)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/group/page_viewers_main.templ`, Line: 61, Col: 24}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/group/page_viewers_main.templ`, Line: 60, Col: 24}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var16))
 				if templ_7745c5c3_Err != nil {
@@ -310,7 +310,7 @@ func GroupViewersMain(data ViewersPageData) templ.Component {
 				var templ_7745c5c3_Var17 string
 				templ_7745c5c3_Var17, templ_7745c5c3_Err = templ.JoinStringErrs(utils.FormatTimeLocalized(ctx, invite.CreatedAt.Time))
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/group/page_viewers_main.templ`, Line: 62, Col: 65}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/group/page_viewers_main.templ`, Line: 61, Col: 65}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var17))
 				if templ_7745c5c3_Err != nil {
@@ -356,7 +356,7 @@ func GroupViewersMain(data ViewersPageData) templ.Component {
 				var templ_7745c5c3_Var18 string
 				templ_7745c5c3_Var18, templ_7745c5c3_Err = templ.JoinStringErrs(ctxi18n.T(ctx, "table.empty"))
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/group/page_viewers_main.templ`, Line: 80, Col: 56}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/group/page_viewers_main.templ`, Line: 79, Col: 56}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var18))
 				if templ_7745c5c3_Err != nil {
@@ -422,7 +422,7 @@ func GroupViewersMain(data ViewersPageData) templ.Component {
 				var templ_7745c5c3_Var19 string
 				templ_7745c5c3_Var19, templ_7745c5c3_Err = templ.JoinStringErrs(viewer.Email)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/group/page_viewers_main.templ`, Line: 105, Col: 24}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/group/page_viewers_main.templ`, Line: 104, Col: 24}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var19))
 				if templ_7745c5c3_Err != nil {
@@ -468,7 +468,7 @@ func GroupViewersMain(data ViewersPageData) templ.Component {
 				var templ_7745c5c3_Var20 string
 				templ_7745c5c3_Var20, templ_7745c5c3_Err = templ.JoinStringErrs(ctxi18n.T(ctx, "table.empty"))
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/group/page_viewers_main.templ`, Line: 123, Col: 56}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/group/page_viewers_main.templ`, Line: 122, Col: 56}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var20))
 				if templ_7745c5c3_Err != nil {
@@ -509,14 +509,14 @@ func ViewersTablePagination(data ViewersPageData) templ.Component {
 			templ_7745c5c3_Var21 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 50, "<div class=\"row row-wrap justify-between pt\"><div class=\"row row-wrap\"><span>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 50, "<div class=\"row row-wrap justify-between pt pb\"><div class=\"row row-wrap\"><span class=\"hide-tablet text-sm\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var22 string
 		templ_7745c5c3_Var22, templ_7745c5c3_Err = templ.JoinStringErrs(ctxi18n.T(ctx, "table.page_size"))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/group/page_viewers_main.templ`, Line: 133, Col: 44}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/group/page_viewers_main.templ`, Line: 132, Col: 72}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var22))
 		if templ_7745c5c3_Err != nil {
@@ -552,7 +552,7 @@ func ViewersTablePagination(data ViewersPageData) templ.Component {
 			var templ_7745c5c3_Var25 string
 			templ_7745c5c3_Var25, templ_7745c5c3_Err = templ.JoinStringErrs(utils.BuildTableQueryDatastarAction(utils.BuildTablePageSizeURL(viewersTablePath(data.GroupID, data.Tab), data.Query, pageSize)))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/group/page_viewers_main.templ`, Line: 138, Col: 149}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/group/page_viewers_main.templ`, Line: 137, Col: 149}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var25))
 			if templ_7745c5c3_Err != nil {
@@ -565,7 +565,7 @@ func ViewersTablePagination(data ViewersPageData) templ.Component {
 			var templ_7745c5c3_Var26 string
 			templ_7745c5c3_Var26, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("%d", pageSize))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/group/page_viewers_main.templ`, Line: 140, Col: 34}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/group/page_viewers_main.templ`, Line: 139, Col: 34}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var26))
 			if templ_7745c5c3_Err != nil {
