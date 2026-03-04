@@ -4,7 +4,7 @@ func expenseIndexSignals(csrfToken string, query map[string]any) map[string]any 
 	return map[string]any{
 		"csrf":           csrfToken,
 		"tableQuery":     query,
-		"mode":           "",
+		"mode":           "table",
 		"formState":      "",
 		"eventFormState": "",
 		"editingId":      0,

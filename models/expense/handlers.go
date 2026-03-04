@@ -34,7 +34,7 @@ type modeParams struct {
 
 var (
 	defaultExpenseSignals = map[string]any{
-		"mode":      "",
+		"mode":      "table",
 		"formState": "",
 		"editingId": "",
 		"formData":  map[string]any{"title": "", "description": "", "amount": 0, "date": ""},

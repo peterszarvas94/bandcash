@@ -33,7 +33,7 @@ type modeParams struct {
 // Default signal state for resetting member forms on success
 var (
 	defaultMemberSignals = map[string]any{
-		"mode":      "",
+		"mode":      "table",
 		"formState": "",
 		"editingId": "",
 		"formData":  map[string]any{"name": "", "description": ""},
@@ -189,10 +189,30 @@ func (p *Members) Update(c echo.Context) error {
 	utils.Notify(c, "success", ctxi18n.T(c.Request().Context(), "members.notifications.updated"))
 
 	if signals.Mode == "single" {
-		err = utils.SSEHub.Redirect(c, "/groups/"+groupID+"/members/"+id)
+		utils.SSEHub.PatchSignals(c, map[string]any{
+			"formState": "",
+			"formData": map[string]any{
+				"name":        signals.FormData.Name,
+				"description": signals.FormData.Description,
+			},
+			"errors": map[string]any{"name": "", "description": ""},
+		})
+
+		data, err := p.GetShowData(c.Request().Context(), groupID, id)
 		if err != nil {
-			slog.Warn("member.update: failed to redirect", "err", err)
+			slog.Error("member.update: failed to get show data", "err", err)
+			return c.NoContent(http.StatusInternalServerError)
 		}
+		data.IsAdmin = middleware.IsAdmin(c)
+		data.UserEmail = userEmail
+
+		html, err := utils.RenderHTMLForRequest(c, MemberShow(data))
+		if err != nil {
+			slog.Error("member.update: failed to render show page", "err", err)
+			return c.NoContent(http.StatusInternalServerError)
+		}
+
+		utils.SSEHub.PatchHTML(c, html)
 		return c.NoContent(http.StatusOK)
 	}
 

@@ -60,7 +60,7 @@ func parseParticipantTableQuery(c echo.Context, e *Events) utils.TableQuery {
 // Default signal states for resetting forms on success
 var (
 	defaultEventSignals = map[string]any{
-		"mode":      "",
+		"mode":      "table",
 		"formState": "",
 		"editingId": "",
 		"formData":  map[string]any{"title": "", "time": "", "description": "", "amount": 0},

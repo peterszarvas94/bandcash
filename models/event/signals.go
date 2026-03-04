@@ -6,7 +6,7 @@ func eventIndexSignals(csrfToken string, query map[string]any) map[string]any {
 	return map[string]any{
 		"csrf":           csrfToken,
 		"tableQuery":     query,
-		"mode":           "",
+		"mode":           "table",
 		"formState":      "",
 		"editingId":      0,
 		"formData":       map[string]any{"title": "", "time": "", "description": "", "amount": 0},
