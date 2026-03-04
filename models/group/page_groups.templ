@@ -12,7 +12,7 @@ templ GroupsPage(data GroupsPageData) {
 		@shared.Head(data.Title)
 		<body>
 			<div
-				data-signals={ templ.JSONString(map[string]any{"csrf": utils.CSRFTokenFromContext(ctx), "formState": "", "selectedGroupId": "", "formData": map[string]any{"name": ""}, "errors": map[string]any{"name": ""}, "tableQuery": utils.TableQuerySignals(data.Query)}) }
+				data-signals={ templ.JSONString(map[string]any{"csrf": utils.CSRFTokenFromContext(ctx), "mode": "table", "formState": "", "selectedGroupId": "", "formData": map[string]any{"name": ""}, "errors": map[string]any{"name": ""}, "tableQuery": utils.TableQuerySignals(data.Query)}) }
 				data-init="@get('/sse')"
 			></div>
 			@shared.Notifications()

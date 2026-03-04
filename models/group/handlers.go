@@ -70,9 +70,16 @@ type addViewerSignals struct {
 }
 
 type updateGroupSignals struct {
-	FormData struct {
+	Mode       string           `json:"mode"`
+	TableQuery utils.TableQuery `json:"tableQuery"`
+	FormData   struct {
 		Name string `json:"name" validate:"required,min=1,max=255"`
 	} `json:"formData"`
+}
+
+type deleteGroupSignals struct {
+	Mode       string           `json:"mode"`
+	TableQuery utils.TableQuery `json:"tableQuery"`
 }
 
 // NewGroupPage shows the form to create a new group
@@ -178,6 +185,7 @@ func (g *Group) GroupPage(c echo.Context) error {
 // UpdateGroup updates group name (admin only).
 func (g *Group) UpdateGroup(c echo.Context) error {
 	groupID := middleware.GetGroupID(c)
+	userID := middleware.GetUserID(c)
 
 	signals := updateGroupSignals{}
 	if err := datastar.ReadSignals(c.Request(), &signals); err != nil {
@@ -200,6 +208,28 @@ func (g *Group) UpdateGroup(c echo.Context) error {
 	}
 
 	utils.Notify(c, "success", ctxi18n.T(c.Request().Context(), "groups.messages.updated"))
+	if signals.Mode == "table" {
+		query := utils.NormalizeTableQuery(signals.TableQuery, g.model.TableQuerySpec())
+		data, err := g.model.GetGroupsPageData(c.Request().Context(), userID, query)
+		if err != nil {
+			slog.Error("group.update: failed to load dashboard data", "group_id", groupID, "err", err)
+			return c.NoContent(http.StatusInternalServerError)
+		}
+
+		data.Title = ctxi18n.T(c.Request().Context(), "groups.title")
+		data.Breadcrumbs = []utils.Crumb{{Label: ctxi18n.T(c.Request().Context(), "groups.title")}}
+		data.UserEmail = getUserEmail(c)
+
+		html, err := utils.RenderHTMLForRequest(c, GroupsPage(data))
+		if err != nil {
+			slog.Error("group.update: failed to render dashboard", "group_id", groupID, "err", err)
+			return c.NoContent(http.StatusInternalServerError)
+		}
+
+		utils.SSEHub.PatchHTML(c, html)
+		return c.NoContent(http.StatusOK)
+	}
+
 	err = utils.SSEHub.Redirect(c, "/groups/"+groupID)
 	if err != nil {
 		return c.NoContent(http.StatusInternalServerError)
@@ -265,6 +295,10 @@ func (g *Group) LeaveGroup(c echo.Context) error {
 func (g *Group) DeleteGroup(c echo.Context) error {
 	groupID := middleware.GetGroupID(c)
 	userID := middleware.GetUserID(c)
+	signals := deleteGroupSignals{}
+	if err := datastar.ReadSignals(c.Request(), &signals); err != nil {
+		signals = deleteGroupSignals{}
+	}
 	var err error
 	if userID == "" {
 		err = utils.SSEHub.Redirect(c, "/auth/login")
@@ -303,6 +337,28 @@ func (g *Group) DeleteGroup(c echo.Context) error {
 	}
 
 	utils.Notify(c, "success", ctxi18n.T(c.Request().Context(), "groups.messages.deleted"))
+	if signals.Mode == "table" {
+		query := utils.NormalizeTableQuery(signals.TableQuery, g.model.TableQuerySpec())
+		data, err := g.model.GetGroupsPageData(c.Request().Context(), userID, query)
+		if err != nil {
+			slog.Error("group.delete: failed to load dashboard data", "group_id", groupID, "err", err)
+			return c.NoContent(http.StatusInternalServerError)
+		}
+
+		data.Title = ctxi18n.T(c.Request().Context(), "groups.title")
+		data.Breadcrumbs = []utils.Crumb{{Label: ctxi18n.T(c.Request().Context(), "groups.title")}}
+		data.UserEmail = getUserEmail(c)
+
+		html, err := utils.RenderHTMLForRequest(c, GroupsPage(data))
+		if err != nil {
+			slog.Error("group.delete: failed to render dashboard", "group_id", groupID, "err", err)
+			return c.NoContent(http.StatusInternalServerError)
+		}
+
+		utils.SSEHub.PatchHTML(c, html)
+		return c.NoContent(http.StatusOK)
+	}
+
 	err = utils.SSEHub.Redirect(c, "/dashboard")
 	if err != nil {
 		return c.NoContent(http.StatusInternalServerError)

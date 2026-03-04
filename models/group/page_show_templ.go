@@ -66,9 +66,9 @@ func GroupPage(data GroupPageData) templ.Component {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var3 string
-		templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.JoinStringErrs(templ.JSONString(map[string]any{"csrf": utils.CSRFTokenFromContext(ctx), "formState": "", "eventFormState": "", "formData": map[string]any{"name": data.Group.Name}, "errors": map[string]any{"name": ""}}))
+		templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.JoinStringErrs(templ.JSONString(map[string]any{"csrf": utils.CSRFTokenFromContext(ctx), "mode": "single", "formState": "", "eventFormState": "", "formData": map[string]any{"name": data.Group.Name}, "errors": map[string]any{"name": ""}}))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/group/page_show.templ`, Line: 19, Col: 226}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/group/page_show.templ`, Line: 19, Col: 244}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var3))
 		if templ_7745c5c3_Err != nil {
@@ -138,8 +138,8 @@ func GroupMain(data GroupPageData) templ.Component {
 					Message:     ctxi18n.T(ctx, "confirm.destructive_message"),
 					SubmitLabel: ctxi18n.T(ctx, "groups.delete"),
 					CancelLabel: ctxi18n.T(ctx, "actions.cancel"),
-					Method:      "post",
-					URL:         fmt.Sprintf("/groups/%s/delete", data.Group.ID),
+					Method:      "delete",
+					URL:         fmt.Sprintf("/groups/%s", data.Group.ID),
 					TriggerID:   "group-show-delete",
 				},
 			}).Render(ctx, templ_7745c5c3_Buffer)

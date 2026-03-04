@@ -159,7 +159,7 @@ func GroupsMain(data GroupsPageData) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = shared.LoadingIconActionButton(shared.LoadingIconActionButtonProps{ClassName: "btn btn-ghost btn-sm btn-icon", OnClick: "$formState = 'add'; $formData = {name: ''}; $selectedGroupId = ''", DisabledExpr: "$formState !== ''", AriaLabel: ctxi18n.T(ctx, "groups.create"), Title: ctxi18n.T(ctx, "groups.create"), IconName: icons.IconPlus}).Render(ctx, templ_7745c5c3_Buffer)
+		templ_7745c5c3_Err = shared.IconActionButton(shared.IconActionButtonProps{ClassName: "btn btn-ghost btn-sm btn-icon", OnClick: "$formState = 'add'; $formData = {name: ''}; $selectedGroupId = ''", DisabledExpr: "$formState !== '' || $_fetching", AriaLabel: ctxi18n.T(ctx, "groups.create"), Title: ctxi18n.T(ctx, "groups.create"), IconName: icons.IconPlus}).Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -285,23 +285,39 @@ func GroupsMain(data GroupsPageData) templ.Component {
 					return templ_7745c5c3_Err
 				}
 				if group.Role == "admin" {
-					templ_7745c5c3_Err = shared.LoadingIconActionButton(shared.LoadingIconActionButtonProps{ClassName: "btn btn-ghost btn-sm btn-icon", OnClick: fmt.Sprintf("$formState = 'edit'; $selectedGroupId = '%s'; $formData = {name: %s}; $errors = {name: ''}", group.Group.ID, utils.JSONString(group.Group.Name)), DisabledExpr: "$formState !== ''", AriaLabel: ctxi18n.T(ctx, "actions.edit"), Title: ctxi18n.T(ctx, "actions.edit"), IconName: icons.IconPencil}).Render(ctx, templ_7745c5c3_Buffer)
+					templ_7745c5c3_Err = shared.IconActionButton(shared.IconActionButtonProps{ClassName: "btn btn-ghost btn-sm btn-icon", OnClick: fmt.Sprintf("$formState = 'edit'; $selectedGroupId = '%s'; $formData = {name: %s}; $errors = {name: ''}", group.Group.ID, utils.JSONString(group.Group.Name)), DisabledExpr: "$formState !== '' || $_fetching", AriaLabel: ctxi18n.T(ctx, "actions.edit"), Title: ctxi18n.T(ctx, "actions.edit"), IconName: icons.IconPencil}).Render(ctx, templ_7745c5c3_Buffer)
+					if templ_7745c5c3_Err != nil {
+						return templ_7745c5c3_Err
+					}
+					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 26, " ")
+					if templ_7745c5c3_Err != nil {
+						return templ_7745c5c3_Err
+					}
+					templ_7745c5c3_Err = shared.IconActionButton(shared.IconActionButtonProps{ClassName: "btn btn-ghost btn-sm btn-danger btn-icon", OnClick: fmt.Sprintf(
+						"$sureOpen = true; $sureTitle = %s; $sureMessage = %s; $sureSubmitLabel = %s; $sureCancelLabel = %s; $sureMethod = 'delete'; $sureURL = '/groups/%s'; $sureTriggerID = %s",
+						utils.JSONString(ctxi18n.T(ctx, "groups.delete_confirm")),
+						utils.JSONString(ctxi18n.T(ctx, "confirm.destructive_message")),
+						utils.JSONString(ctxi18n.T(ctx, "groups.delete")),
+						utils.JSONString(ctxi18n.T(ctx, "actions.cancel")),
+						group.Group.ID,
+						utils.JSONString("group-delete-"+group.Group.ID),
+					), DisabledExpr: "$formState !== '' || $_fetching", AriaLabel: ctxi18n.T(ctx, "actions.delete"), Title: ctxi18n.T(ctx, "actions.delete"), IconName: icons.IconTrash2}).Render(ctx, templ_7745c5c3_Buffer)
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
 				} else {
-					templ_7745c5c3_Err = shared.LoadingIconActionButton(shared.LoadingIconActionButtonProps{ClassName: "btn btn-ghost btn-sm btn-icon", OnClick: fmt.Sprintf("$formState = 'leave'; $selectedGroupId = '%s'", group.Group.ID), DisabledExpr: "$formState !== ''", AriaLabel: ctxi18n.T(ctx, "groups.leave"), Title: ctxi18n.T(ctx, "groups.leave"), IconName: icons.IconSquareArrowRightExit}).Render(ctx, templ_7745c5c3_Buffer)
+					templ_7745c5c3_Err = shared.IconActionButton(shared.IconActionButtonProps{ClassName: "btn btn-ghost btn-sm btn-icon", OnClick: fmt.Sprintf("$formState = 'leave'; $selectedGroupId = '%s'", group.Group.ID), DisabledExpr: "$formState !== '' || $_fetching", AriaLabel: ctxi18n.T(ctx, "groups.leave"), Title: ctxi18n.T(ctx, "groups.leave"), IconName: icons.IconSquareArrowRightExit}).Render(ctx, templ_7745c5c3_Buffer)
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
 				}
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 26, "</div></td></tr>")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 27, "</div></td></tr>")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
 			}
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 27, "</tbody></table>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 28, "</tbody></table>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

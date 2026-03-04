@@ -61,9 +61,9 @@ func GroupsPage(data GroupsPageData) templ.Component {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var3 string
-		templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.JoinStringErrs(templ.JSONString(map[string]any{"csrf": utils.CSRFTokenFromContext(ctx), "formState": "", "selectedGroupId": "", "formData": map[string]any{"name": ""}, "errors": map[string]any{"name": ""}, "tableQuery": utils.TableQuerySignals(data.Query)}))
+		templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.JoinStringErrs(templ.JSONString(map[string]any{"csrf": utils.CSRFTokenFromContext(ctx), "mode": "table", "formState": "", "selectedGroupId": "", "formData": map[string]any{"name": ""}, "errors": map[string]any{"name": ""}, "tableQuery": utils.TableQuerySignals(data.Query)}))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/group/page_groups.templ`, Line: 15, Col: 261}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/group/page_groups.templ`, Line: 15, Col: 278}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var3))
 		if templ_7745c5c3_Err != nil {

@@ -26,10 +26,10 @@ func RegisterRoutes(e *echo.Echo) *Group {
 	// Access management (admin only)
 	adminAccessRoutes := e.Group("/groups/:groupId", middleware.RequireAuth(), middleware.RequireGroup(), middleware.RequireAdmin())
 	adminAccessRoutes.PUT("", grp.UpdateGroup)
+	adminAccessRoutes.DELETE("", grp.DeleteGroup)
 	adminAccessRoutes.POST("/access/viewers", grp.AddViewer)
 	adminAccessRoutes.DELETE("/access/viewers/:userId", grp.RemoveViewer)
 	adminAccessRoutes.DELETE("/invites/:inviteId", grp.CancelInvite)
-	adminAccessRoutes.POST("/delete", grp.DeleteGroup)
 
 	return grp
 }
