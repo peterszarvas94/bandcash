@@ -82,7 +82,7 @@ func GroupPage(data GroupPageData) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = shared.AppShell("group-show", data.Breadcrumbs, data.UserEmail, shared.GroupPrimaryNav(data.Group.ID, "overview"), GroupMain(data), GroupSidebar(data)).Render(ctx, templ_7745c5c3_Buffer)
+		templ_7745c5c3_Err = shared.AppShell("group-show", data.Breadcrumbs, data.UserEmail, shared.GroupPrimaryNav(data.Group.ID, "overview", data.UserEmail), GroupMain(data), GroupSidebar(data)).Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

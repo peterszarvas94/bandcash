@@ -13,7 +13,7 @@ templ MemberIndex(data MembersData) {
 		<body>
 			<div data-signals={templ.JSONString(memberIndexSignals(utils.CSRFTokenFromContext(ctx), utils.TableQuerySignals(data.Query)))} data-init="@get('/sse')"></div>
 			@shared.Notifications()
-			@shared.AppShell("member-index", data.Breadcrumbs, data.UserEmail, shared.GroupPrimaryNav(data.GroupID, "members"), MemberIndexMain(data), MemberIndexSidebar(data))
+			@shared.AppShell("member-index", data.Breadcrumbs, data.UserEmail, shared.GroupPrimaryNav(data.GroupID, "members", data.UserEmail), MemberIndexMain(data), MemberIndexSidebar(data))
 		</body>
 	</html>
 }

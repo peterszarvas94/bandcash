@@ -39,7 +39,7 @@ templ GroupViewersPage(data ViewersPageData) {
 		<body>
 			<div data-signals={ templ.JSONString(map[string]any{"csrf": utils.CSRFTokenFromContext(ctx), "formState": "", "eventFormState": "", "formData": map[string]any{"email": ""}, "tableQuery": utils.TableQuerySignals(data.Query)}) } data-init="@get('/sse')"></div>
 			@shared.Notifications()
-			@shared.AppShell("group-access", data.Breadcrumbs, data.UserEmail, shared.GroupPrimaryNav(data.Group.ID, "viewers"), GroupViewersMain(data), GroupViewersSidebar(data))
+			@shared.AppShell("group-access", data.Breadcrumbs, data.UserEmail, shared.GroupPrimaryNav(data.Group.ID, "viewers", data.UserEmail), GroupViewersMain(data), GroupViewersSidebar(data))
 		</body>
 	</html>
 }

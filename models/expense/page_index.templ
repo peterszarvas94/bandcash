@@ -13,7 +13,7 @@ templ ExpenseIndex(data ExpensesData) {
 		<body>
 			<div data-signals={templ.JSONString(expenseIndexSignals(utils.CSRFTokenFromContext(ctx), utils.TableQuerySignals(data.Query)))} data-init="@get('/sse')"></div>
 			@shared.Notifications()
-			@shared.AppShell("expense-index", data.Breadcrumbs, data.UserEmail, shared.GroupPrimaryNav(data.GroupID, "expenses"), ExpenseIndexMain(data), ExpenseIndexSidebar(data))
+			@shared.AppShell("expense-index", data.Breadcrumbs, data.UserEmail, shared.GroupPrimaryNav(data.GroupID, "expenses", data.UserEmail), ExpenseIndexMain(data), ExpenseIndexSidebar(data))
 		</body>
 	</html>
 }

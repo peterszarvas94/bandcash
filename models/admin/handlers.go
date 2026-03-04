@@ -1,6 +1,7 @@
 package admin
 
 import (
+	"context"
 	"log/slog"
 	"net/http"
 	"strconv"
@@ -87,8 +88,11 @@ func (a *Admin) renderDashboard(c echo.Context, tab string) error {
 
 	// Prepare data for tabs
 	data := DashboardData{
-		Title:         ctxi18n.T(c.Request().Context(), "admin.title"),
-		Breadcrumbs:   []utils.Crumb{{Label: ctxi18n.T(c.Request().Context(), "admin.dashboard")}},
+		Title: ctxi18n.T(c.Request().Context(), "admin.title"),
+		Breadcrumbs: []utils.Crumb{
+			{Label: ctxi18n.T(c.Request().Context(), "admin.dashboard"), Href: "/admin/overview"},
+			{Label: adminTabLabel(c.Request().Context(), tab)},
+		},
 		UserEmail:     user.Email,
 		Tab:           tab,
 		UsersCount:    usersCount,
@@ -261,6 +265,19 @@ func (a *Admin) renderDashboard(c echo.Context, tab string) error {
 	}
 
 	return utils.RenderPage(c, DashboardPage(data))
+}
+
+func adminTabLabel(ctx context.Context, tab string) string {
+	switch tab {
+	case "flags":
+		return ctxi18n.T(ctx, "admin.tab.flags")
+	case "users":
+		return ctxi18n.T(ctx, "admin.tab.users")
+	case "groups":
+		return ctxi18n.T(ctx, "admin.tab.groups")
+	default:
+		return ctxi18n.T(ctx, "admin.tab.overview")
+	}
 }
 
 func mapEmailDescUserRows(rows []db.ListUsersByEmailDescFilteredRow) []RecentUserRow {

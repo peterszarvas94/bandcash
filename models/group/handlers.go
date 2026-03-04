@@ -1,6 +1,7 @@
 package group
 
 import (
+	"context"
 	"database/sql"
 	"log/slog"
 	"net/http"
@@ -385,7 +386,7 @@ func (g *Group) renderViewersTab(c echo.Context, tab string) error {
 	data, err := g.viewersPageData(c, groupID, tab, c.QueryParams())
 	if err != nil {
 		slog.Error("group: failed to load viewers page", "group_id", groupID, "tab", tab, "err", err)
-		return c.String(http.StatusInternalServerError, "Failed to load users")
+		return c.String(http.StatusInternalServerError, "Failed to load viewers")
 	}
 
 	return utils.RenderPage(c, GroupViewersPage(data))
@@ -631,19 +632,35 @@ func (g *Group) viewersPageData(c echo.Context, groupID, tab string, values url.
 	}
 
 	return ViewersPageData{
-		Title:       ctxi18n.T(ctx, "groups.access"),
-		Breadcrumbs: []utils.Crumb{{Label: ctxi18n.T(ctx, "groups.title"), Href: "/dashboard"}, {Label: group.Name, Href: "/groups/" + group.ID}, {Label: ctxi18n.T(ctx, "groups.access"), Href: accessTabPath(group.ID, tab)}},
-		UserEmail:   getUserEmail(c),
-		Group:       group,
-		Admins:      admins,
-		Viewers:     viewers,
-		Invites:     invites,
-		IsAdmin:     middleware.IsAdmin(c),
-		Query:       query,
-		Pager:       utils.BuildTablePagination(total, query),
-		GroupID:     groupID,
-		Tab:         tab,
+		Title: ctxi18n.T(ctx, "groups.access"),
+		Breadcrumbs: []utils.Crumb{
+			{Label: ctxi18n.T(ctx, "groups.title"), Href: "/dashboard"},
+			{Label: group.Name, Href: "/groups/" + group.ID},
+			{Label: ctxi18n.T(ctx, "groups.access"), Href: "/groups/" + group.ID + "/access/viewers"},
+			{Label: accessTabLabel(ctx, tab)},
+		},
+		UserEmail: getUserEmail(c),
+		Group:     group,
+		Admins:    admins,
+		Viewers:   viewers,
+		Invites:   invites,
+		IsAdmin:   middleware.IsAdmin(c),
+		Query:     query,
+		Pager:     utils.BuildTablePagination(total, query),
+		GroupID:   groupID,
+		Tab:       tab,
 	}, nil
+}
+
+func accessTabLabel(ctx context.Context, tab string) string {
+	switch tab {
+	case viewersTabAdmins:
+		return ctxi18n.T(ctx, "groups.admins")
+	case viewersTabPending:
+		return ctxi18n.T(ctx, "groups.pending_invitations")
+	default:
+		return ctxi18n.T(ctx, "groups.viewers")
+	}
 }
 
 func accessTabPath(groupID, tab string) string {

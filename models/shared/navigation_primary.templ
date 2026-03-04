@@ -115,7 +115,7 @@ templ DevPrimaryNav(active string) {
 	</nav>
 }
 
-templ GroupPrimaryNav(groupID string, active string) {
+templ GroupPrimaryNav(groupID string, active string, userEmail string) {
 	<nav class="app-nav" aria-label={ ctxi18n.T(ctx, "groups.actions") }>
 		<div class="app-nav-primary">
 			<a class="btn app-nav-link" href="/dashboard">
@@ -131,6 +131,12 @@ templ GroupPrimaryNav(groupID string, active string) {
 				<a class="btn app-nav-link" href="/settings">
 					@icons.Settings(templ.Attributes{"class": "icon"})
 					<span>{ ctxi18n.T(ctx, "settings.title") }</span>
+				</a>
+			}
+			if utils.Env().SuperadminEmail != "" && userEmail != "" && userEmail == utils.Env().SuperadminEmail {
+				<a class="btn app-nav-link" href="/admin/overview">
+					@icons.Shield(templ.Attributes{"class": "icon"})
+					<span>{ ctxi18n.T(ctx, "nav.admin") }</span>
 				</a>
 			}
 			if utils.Env().AppEnv == "development" {
@@ -187,12 +193,12 @@ templ GroupPrimaryNav(groupID string, active string) {
 			}
 			if active == "viewers" {
 				<a class="btn app-nav-link active" href={ "/groups/" + groupID + "/access/viewers" }>
-					@icons.Eye(templ.Attributes{"class": "icon"})
+					@icons.Lock(templ.Attributes{"class": "icon"})
 					<span>{ ctxi18n.T(ctx, "groups.access") }</span>
 				</a>
 			} else {
 				<a class="btn app-nav-link" href={ "/groups/" + groupID + "/access/viewers" }>
-					@icons.Eye(templ.Attributes{"class": "icon"})
+					@icons.Lock(templ.Attributes{"class": "icon"})
 					<span>{ ctxi18n.T(ctx, "groups.access") }</span>
 				</a>
 			}
