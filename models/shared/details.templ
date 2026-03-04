@@ -6,7 +6,7 @@ type DetailGridRow struct {
 }
 
 templ DetailGrid(rows []DetailGridRow) {
-	<div class="detail-grid">
+	<div class="detail-grid pb">
 		for _, row := range rows {
 			<div class="detail-row">
 				<p class="detail-key">{ row.Label }</p>

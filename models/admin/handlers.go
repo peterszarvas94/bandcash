@@ -21,7 +21,27 @@ func New() *Admin {
 	return &Admin{}
 }
 
+func (a *Admin) OverviewPage(c echo.Context) error {
+	return a.renderDashboard(c, "overview")
+}
+
+func (a *Admin) FlagsPage(c echo.Context) error {
+	return a.renderDashboard(c, "flags")
+}
+
+func (a *Admin) UsersPage(c echo.Context) error {
+	return a.renderDashboard(c, "users")
+}
+
+func (a *Admin) GroupsPage(c echo.Context) error {
+	return a.renderDashboard(c, "groups")
+}
+
 func (a *Admin) Dashboard(c echo.Context) error {
+	return c.Redirect(http.StatusFound, "/admin/overview")
+}
+
+func (a *Admin) renderDashboard(c echo.Context, tab string) error {
 	utils.EnsureClientID(c)
 
 	userID := middleware.GetUserID(c)
@@ -30,8 +50,6 @@ func (a *Admin) Dashboard(c echo.Context) error {
 		return c.Redirect(http.StatusFound, "/auth/login")
 	}
 
-	// Get active tab (default: overview)
-	tab := c.QueryParam("tab")
 	if tab != "flags" && tab != "users" && tab != "groups" {
 		tab = "overview"
 	}

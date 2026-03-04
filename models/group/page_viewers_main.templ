@@ -12,9 +12,9 @@ import (
 
 templ GroupViewersMain(data ViewersPageData) {
 	<div class="tabs pt">
-		<a href={ viewersTabURL(data.GroupID, "admins") } class={ viewersTabClass(data.Tab, "admins") }>{ ctxi18n.T(ctx, "groups.admins") }</a>
 		<a href={ viewersTabURL(data.GroupID, "viewers") } class={ viewersTabClass(data.Tab, "viewers") }>{ ctxi18n.T(ctx, "groups.viewers") }</a>
 		<a href={ viewersTabURL(data.GroupID, "pending") } class={ viewersTabClass(data.Tab, "pending") }>{ ctxi18n.T(ctx, "groups.pending_invitations") }</a>
+		<a href={ viewersTabURL(data.GroupID, "admins") } class={ viewersTabClass(data.Tab, "admins") }>{ ctxi18n.T(ctx, "groups.admins") }</a>
 	</div>
 	if data.Tab == "admins" {
 		@shared.TableSearchForm(utils.BuildTableSearchDatastarAction(viewersTablePath(data.GroupID, data.Tab), utils.DefaultTablePageSize), "table.search_placeholder_admins")
@@ -105,7 +105,7 @@ templ GroupViewersMain(data ViewersPageData) {
 						if data.IsAdmin {
 							<td data-actions-col>
 								@shared.IconActionButton(shared.IconActionButtonProps{ClassName: "btn btn-ghost btn-sm btn-danger btn-icon", OnClick: fmt.Sprintf(
-									"$sureOpen = true; $sureTitle = %s; $sureMessage = %s; $sureSubmitLabel = %s; $sureCancelLabel = %s; $sureMethod = 'delete'; $sureURL = '/groups/%s/viewers/%s'; $sureTriggerID = %s",
+									"$sureOpen = true; $sureTitle = %s; $sureMessage = %s; $sureSubmitLabel = %s; $sureCancelLabel = %s; $sureMethod = 'delete'; $sureURL = '/groups/%s/access/viewers/%s'; $sureTriggerID = %s",
 									utils.JSONString(ctxi18n.T(ctx, "groups.remove_viewer_confirm")),
 									utils.JSONString(ctxi18n.T(ctx, "confirm.destructive_message")),
 									utils.JSONString(ctxi18n.T(ctx, "actions.delete")),

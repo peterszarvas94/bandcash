@@ -17,12 +17,14 @@ func viewersTabClass(currentTab, targetTab string) string {
 
 func viewersTabURL(groupID, tab string) string {
 	switch tab {
-	case "admins":
-		return fmt.Sprintf("/groups/%s/viewers/admins", groupID)
+	case "viewers":
+		return fmt.Sprintf("/groups/%s/access/viewers", groupID)
 	case "pending":
-		return fmt.Sprintf("/groups/%s/viewers/pending", groupID)
+		return fmt.Sprintf("/groups/%s/access/pending", groupID)
+	case "admins":
+		return fmt.Sprintf("/groups/%s/access/admins", groupID)
 	default:
-		return fmt.Sprintf("/groups/%s/viewers", groupID)
+		return fmt.Sprintf("/groups/%s/access/viewers", groupID)
 	}
 }
 
@@ -37,7 +39,7 @@ templ GroupViewersPage(data ViewersPageData) {
 		<body>
 			<div data-signals={ templ.JSONString(map[string]any{"csrf": utils.CSRFTokenFromContext(ctx), "formState": "", "eventFormState": "", "formData": map[string]any{"email": ""}, "tableQuery": utils.TableQuerySignals(data.Query)}) } data-init="@get('/sse')"></div>
 			@shared.Notifications()
-			@shared.AppShell("group-viewers", data.Breadcrumbs, data.UserEmail, shared.GroupPrimaryNav(data.Group.ID, "viewers"), GroupViewersMain(data), GroupViewersSidebar(data))
+			@shared.AppShell("group-access", data.Breadcrumbs, data.UserEmail, shared.GroupPrimaryNav(data.Group.ID, "viewers"), GroupViewersMain(data), GroupViewersSidebar(data))
 		</body>
 	</html>
 }

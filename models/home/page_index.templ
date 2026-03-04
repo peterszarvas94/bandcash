@@ -16,9 +16,14 @@ templ HomeIndex(data HomeData) {
 		<body>
 			<div data-signals={ templ.JSONString(map[string]any{"csrf": utils.CSRFTokenFromContext(ctx), "_langFetching": false, "authError": "", "authServerError": "", "authState": "form", "submittedEmail": "", "submittedEmailMasked": "", "resendRemaining": 0, "formData": map[string]any{"email": "", "lang": data.CurrentLang}}) } data-init="@get('/sse')"></div>
 			@shared.Notifications()
-			<main id="app" class="single-col">
-				<h1>{ data.Title }</h1>
-				<p>{ ctxi18n.T(ctx, "home.tagline") }</p>
+			<main id="app" class="single-col home-page">
+				<figure class="home-hero">
+					<img src="/static/img/bandcash.png" alt="Bandcash app preview" class="home-hero-image"/>
+					<figcaption class="home-hero-content">
+						<h1>{ data.Title }</h1>
+						<p class="home-hero-quote">{ ctxi18n.T(ctx, "home.tagline") }</p>
+					</figcaption>
+				</figure>
 				<form class="form" data-on:change="@post('/settings/language')" data-indicator:_langFetching>
 					@shared.LanguageSelect("home-lang", data.CurrentLang, "_langFetching")
 				</form>
@@ -26,11 +31,13 @@ templ HomeIndex(data HomeData) {
 					<form class="form pt" data-on:submit="@post('/auth/login')" data-indicator:_fetching>
 						<div class="field">
 							<label for="home-auth-email">{ ctxi18n.T(ctx, "auth.email") } <span class="required-mark">*</span></label>
-							<input id="home-auth-email" type="email" class="input w-fit" data-bind="formData.email" placeholder={ ctxi18n.T(ctx, "auth.email_placeholder") }/>
+							<div class="row row-wrap">
+								<input id="home-auth-email" type="email" class="input input-grow" data-bind="formData.email" placeholder={ ctxi18n.T(ctx, "auth.email_placeholder") }/>
+								@shared.LoadingSubmitButton(shared.LoadingSubmitButtonProps{ClassName: "btn", Label: ctxi18n.T(ctx, "auth.send_link"), IconName: icons.IconSend})
+							</div>
 							<div data-show="$authError !== ''" class="color-error" data-text="$authError"></div>
 							<div data-show="$authServerError !== ''" class="color-error" data-text="$authServerError"></div>
 						</div>
-						@shared.LoadingSubmitButton(shared.LoadingSubmitButtonProps{ClassName: "btn", Label: ctxi18n.T(ctx, "auth.send_link"), IconName: icons.IconSend})
 					</form>
 				</div>
 				<div data-show="$authState === 'sent'" style="display: none" class="form pt">

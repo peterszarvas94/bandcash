@@ -9,6 +9,8 @@ type EventData struct {
 	Title            string
 	Event            *db.Event
 	Participants     []db.ListParticipantsByEventRow
+	Query            utils.TableQuery
+	Pager            utils.TablePagination
 	Members          []db.Member
 	Breadcrumbs      []utils.Crumb
 	Leftover         int64

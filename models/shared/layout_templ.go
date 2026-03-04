@@ -641,9 +641,9 @@ func GroupTabs(groupID string, activeTab string) templ.Component {
 				return templ_7745c5c3_Err
 			}
 			var templ_7745c5c3_Var36 templ.SafeURL
-			templ_7745c5c3_Var36, templ_7745c5c3_Err = templ.JoinURLErrs("/groups/" + groupID + "/viewers")
+			templ_7745c5c3_Var36, templ_7745c5c3_Err = templ.JoinURLErrs("/groups/" + groupID + "/access/viewers")
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/shared/layout.templ`, Line: 89, Col: 69}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/shared/layout.templ`, Line: 89, Col: 76}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var36))
 			if templ_7745c5c3_Err != nil {
@@ -654,9 +654,9 @@ func GroupTabs(groupID string, activeTab string) templ.Component {
 				return templ_7745c5c3_Err
 			}
 			var templ_7745c5c3_Var37 string
-			templ_7745c5c3_Var37, templ_7745c5c3_Err = templ.JoinStringErrs(ctxi18n.T(ctx, "groups.viewers"))
+			templ_7745c5c3_Var37, templ_7745c5c3_Err = templ.JoinStringErrs(ctxi18n.T(ctx, "groups.access"))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/shared/layout.templ`, Line: 89, Col: 106}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/shared/layout.templ`, Line: 89, Col: 112}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var37))
 			if templ_7745c5c3_Err != nil {
@@ -672,9 +672,9 @@ func GroupTabs(groupID string, activeTab string) templ.Component {
 				return templ_7745c5c3_Err
 			}
 			var templ_7745c5c3_Var38 templ.SafeURL
-			templ_7745c5c3_Var38, templ_7745c5c3_Err = templ.JoinURLErrs("/groups/" + groupID + "/viewers")
+			templ_7745c5c3_Var38, templ_7745c5c3_Err = templ.JoinURLErrs("/groups/" + groupID + "/access/viewers")
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/shared/layout.templ`, Line: 91, Col: 58}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/shared/layout.templ`, Line: 91, Col: 65}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var38))
 			if templ_7745c5c3_Err != nil {
@@ -685,9 +685,9 @@ func GroupTabs(groupID string, activeTab string) templ.Component {
 				return templ_7745c5c3_Err
 			}
 			var templ_7745c5c3_Var39 string
-			templ_7745c5c3_Var39, templ_7745c5c3_Err = templ.JoinStringErrs(ctxi18n.T(ctx, "groups.viewers"))
+			templ_7745c5c3_Var39, templ_7745c5c3_Err = templ.JoinStringErrs(ctxi18n.T(ctx, "groups.access"))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/shared/layout.templ`, Line: 91, Col: 95}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/shared/layout.templ`, Line: 91, Col: 101}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var39))
 			if templ_7745c5c3_Err != nil {

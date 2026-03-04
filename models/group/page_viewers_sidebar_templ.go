@@ -61,9 +61,9 @@ func GroupViewersSidebar(data ViewersPageData) templ.Component {
 				return templ_7745c5c3_Err
 			}
 			var templ_7745c5c3_Var3 string
-			templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("@post('/groups/%s/viewers')", data.Group.ID))
+			templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("@post('/groups/%s/access/viewers')", data.Group.ID))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/group/page_viewers_sidebar.templ`, Line: 16, Col: 97}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/group/page_viewers_sidebar.templ`, Line: 16, Col: 104}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var3))
 			if templ_7745c5c3_Err != nil {

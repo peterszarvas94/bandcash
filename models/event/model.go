@@ -3,6 +3,8 @@ package event
 import (
 	"context"
 	"log/slog"
+	"sort"
+	"strings"
 
 	ctxi18n "github.com/invopop/ctxi18n/i18n"
 
@@ -21,7 +23,11 @@ func New() *Events {
 	return &Events{}
 }
 
-func (e *Events) GetShowData(ctx context.Context, groupID, eventID string) (EventData, error) {
+func (e *Events) ParticipantTableQuerySpec() utils.TableQuerySpec {
+	return utils.StandardTableQuerySpec("name", "asc", "name", "total", "amount", "expense")
+}
+
+func (e *Events) GetShowData(ctx context.Context, groupID, eventID string, query utils.TableQuery) (EventData, error) {
 	group, err := db.Qry.GetGroupByID(ctx, groupID)
 	if err != nil {
 		return EventData{}, err
@@ -35,7 +41,7 @@ func (e *Events) GetShowData(ctx context.Context, groupID, eventID string) (Even
 		return EventData{}, err
 	}
 
-	participants, err := db.Qry.ListParticipantsByEvent(ctx, db.ListParticipantsByEventParams{
+	allParticipants, err := db.Qry.ListParticipantsByEvent(ctx, db.ListParticipantsByEventParams{
 		EventID: eventID,
 		GroupID: groupID,
 	})
@@ -48,8 +54,8 @@ func (e *Events) GetShowData(ctx context.Context, groupID, eventID string) (Even
 		return EventData{}, err
 	}
 
-	participantMemberIDs := make(map[string]bool, len(participants))
-	for _, participant := range participants {
+	participantMemberIDs := make(map[string]bool, len(allParticipants))
+	for _, participant := range allParticipants {
 		participantMemberIDs[participant.ID] = true
 	}
 
@@ -61,9 +67,88 @@ func (e *Events) GetShowData(ctx context.Context, groupID, eventID string) (Even
 		filteredMembers = append(filteredMembers, member)
 	}
 
+	participants := allParticipants
+	if query.Search != "" {
+		search := strings.ToLower(strings.TrimSpace(query.Search))
+		filtered := make([]db.ListParticipantsByEventRow, 0, len(allParticipants))
+		for _, participant := range allParticipants {
+			if strings.Contains(strings.ToLower(participant.Name), search) {
+				filtered = append(filtered, participant)
+			}
+		}
+		participants = filtered
+	}
+
+	sort.SliceStable(participants, func(i, j int) bool {
+		left := participants[i]
+		right := participants[j]
+
+		less := false
+		equal := false
+
+		switch query.Sort {
+		case "total":
+			leftTotal := left.ParticipantAmount + left.ParticipantExpense
+			rightTotal := right.ParticipantAmount + right.ParticipantExpense
+			if leftTotal == rightTotal {
+				leftName := strings.ToLower(left.Name)
+				rightName := strings.ToLower(right.Name)
+				less = leftName < rightName
+				equal = leftName == rightName
+			} else {
+				less = leftTotal < rightTotal
+			}
+		case "amount":
+			if left.ParticipantAmount == right.ParticipantAmount {
+				leftName := strings.ToLower(left.Name)
+				rightName := strings.ToLower(right.Name)
+				less = leftName < rightName
+				equal = leftName == rightName
+			} else {
+				less = left.ParticipantAmount < right.ParticipantAmount
+			}
+		case "expense":
+			if left.ParticipantExpense == right.ParticipantExpense {
+				leftName := strings.ToLower(left.Name)
+				rightName := strings.ToLower(right.Name)
+				less = leftName < rightName
+				equal = leftName == rightName
+			} else {
+				less = left.ParticipantExpense < right.ParticipantExpense
+			}
+		default:
+			leftName := strings.ToLower(left.Name)
+			rightName := strings.ToLower(right.Name)
+			less = leftName < rightName
+			equal = leftName == rightName
+		}
+
+		if equal {
+			return false
+		}
+
+		if query.Dir != "desc" {
+			return less
+		}
+		return !less
+	})
+
+	totalItems := int64(len(participants))
+	query = utils.ClampPage(query, totalItems)
+
+	start := int(query.Offset())
+	if start > len(participants) {
+		start = len(participants)
+	}
+	end := start + query.PageSize
+	if end > len(participants) {
+		end = len(participants)
+	}
+	displayParticipants := participants[start:end]
+
 	// Calculate total distributed and leftover
 	var totalDistributed int64
-	for _, p := range participants {
+	for _, p := range allParticipants {
 		totalDistributed += p.ParticipantAmount + p.ParticipantExpense
 	}
 	leftover := event.Amount - totalDistributed
@@ -73,7 +158,9 @@ func (e *Events) GetShowData(ctx context.Context, groupID, eventID string) (Even
 	return EventData{
 		Title:            event.Title,
 		Event:            &event,
-		Participants:     participants,
+		Participants:     displayParticipants,
+		Query:            query,
+		Pager:            utils.BuildTablePagination(totalItems, query),
 		Members:          filteredMembers,
 		Leftover:         leftover,
 		TotalDistributed: totalDistributed,

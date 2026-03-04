@@ -148,7 +148,7 @@ func AppPrimaryNav(active string, userEmail string) templ.Component {
 		}
 		if utils.Env().SuperadminEmail != "" && userEmail != "" && userEmail == utils.Env().SuperadminEmail {
 			if active == "admin" {
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 14, "<a class=\"btn app-nav-link active\" href=\"/admin\">")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 14, "<a class=\"btn app-nav-link active\" href=\"/admin/overview\">")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
@@ -174,7 +174,7 @@ func AppPrimaryNav(active string, userEmail string) templ.Component {
 					return templ_7745c5c3_Err
 				}
 			} else {
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 17, "<a class=\"btn app-nav-link\" href=\"/admin\">")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 17, "<a class=\"btn app-nav-link\" href=\"/admin/overview\">")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
@@ -886,9 +886,9 @@ func GroupPrimaryNav(groupID string, active string) templ.Component {
 				return templ_7745c5c3_Err
 			}
 			var templ_7745c5c3_Var34 templ.SafeURL
-			templ_7745c5c3_Var34, templ_7745c5c3_Err = templ.JoinURLErrs("/groups/" + groupID + "/viewers")
+			templ_7745c5c3_Var34, templ_7745c5c3_Err = templ.JoinURLErrs("/groups/" + groupID + "/access/viewers")
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/shared/navigation_primary.templ`, Line: 189, Col: 79}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/shared/navigation_primary.templ`, Line: 189, Col: 86}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var34))
 			if templ_7745c5c3_Err != nil {
@@ -907,9 +907,9 @@ func GroupPrimaryNav(groupID string, active string) templ.Component {
 				return templ_7745c5c3_Err
 			}
 			var templ_7745c5c3_Var35 string
-			templ_7745c5c3_Var35, templ_7745c5c3_Err = templ.JoinStringErrs(ctxi18n.T(ctx, "groups.viewers"))
+			templ_7745c5c3_Var35, templ_7745c5c3_Err = templ.JoinStringErrs(ctxi18n.T(ctx, "groups.access"))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/shared/navigation_primary.templ`, Line: 191, Col: 45}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/shared/navigation_primary.templ`, Line: 191, Col: 44}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var35))
 			if templ_7745c5c3_Err != nil {
@@ -925,9 +925,9 @@ func GroupPrimaryNav(groupID string, active string) templ.Component {
 				return templ_7745c5c3_Err
 			}
 			var templ_7745c5c3_Var36 templ.SafeURL
-			templ_7745c5c3_Var36, templ_7745c5c3_Err = templ.JoinURLErrs("/groups/" + groupID + "/viewers")
+			templ_7745c5c3_Var36, templ_7745c5c3_Err = templ.JoinURLErrs("/groups/" + groupID + "/access/viewers")
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/shared/navigation_primary.templ`, Line: 194, Col: 72}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/shared/navigation_primary.templ`, Line: 194, Col: 79}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var36))
 			if templ_7745c5c3_Err != nil {
@@ -946,9 +946,9 @@ func GroupPrimaryNav(groupID string, active string) templ.Component {
 				return templ_7745c5c3_Err
 			}
 			var templ_7745c5c3_Var37 string
-			templ_7745c5c3_Var37, templ_7745c5c3_Err = templ.JoinStringErrs(ctxi18n.T(ctx, "groups.viewers"))
+			templ_7745c5c3_Var37, templ_7745c5c3_Err = templ.JoinStringErrs(ctxi18n.T(ctx, "groups.access"))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/shared/navigation_primary.templ`, Line: 196, Col: 45}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/shared/navigation_primary.templ`, Line: 196, Col: 44}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var37))
 			if templ_7745c5c3_Err != nil {

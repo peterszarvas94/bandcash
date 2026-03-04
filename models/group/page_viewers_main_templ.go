@@ -43,7 +43,7 @@ func GroupViewersMain(data ViewersPageData) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		var templ_7745c5c3_Var2 = []any{viewersTabClass(data.Tab, "admins")}
+		var templ_7745c5c3_Var2 = []any{viewersTabClass(data.Tab, "viewers")}
 		templ_7745c5c3_Err = templ.RenderCSSItems(ctx, templ_7745c5c3_Buffer, templ_7745c5c3_Var2...)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
@@ -53,9 +53,9 @@ func GroupViewersMain(data ViewersPageData) templ.Component {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var3 templ.SafeURL
-		templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.JoinURLErrs(viewersTabURL(data.GroupID, "admins"))
+		templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.JoinURLErrs(viewersTabURL(data.GroupID, "viewers"))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/group/page_viewers_main.templ`, Line: 15, Col: 49}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/group/page_viewers_main.templ`, Line: 15, Col: 50}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var3))
 		if templ_7745c5c3_Err != nil {
@@ -79,9 +79,9 @@ func GroupViewersMain(data ViewersPageData) templ.Component {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var5 string
-		templ_7745c5c3_Var5, templ_7745c5c3_Err = templ.JoinStringErrs(ctxi18n.T(ctx, "groups.admins"))
+		templ_7745c5c3_Var5, templ_7745c5c3_Err = templ.JoinStringErrs(ctxi18n.T(ctx, "groups.viewers"))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/group/page_viewers_main.templ`, Line: 15, Col: 131}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/group/page_viewers_main.templ`, Line: 15, Col: 134}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var5))
 		if templ_7745c5c3_Err != nil {
@@ -91,7 +91,7 @@ func GroupViewersMain(data ViewersPageData) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		var templ_7745c5c3_Var6 = []any{viewersTabClass(data.Tab, "viewers")}
+		var templ_7745c5c3_Var6 = []any{viewersTabClass(data.Tab, "pending")}
 		templ_7745c5c3_Err = templ.RenderCSSItems(ctx, templ_7745c5c3_Buffer, templ_7745c5c3_Var6...)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
@@ -101,7 +101,7 @@ func GroupViewersMain(data ViewersPageData) templ.Component {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var7 templ.SafeURL
-		templ_7745c5c3_Var7, templ_7745c5c3_Err = templ.JoinURLErrs(viewersTabURL(data.GroupID, "viewers"))
+		templ_7745c5c3_Var7, templ_7745c5c3_Err = templ.JoinURLErrs(viewersTabURL(data.GroupID, "pending"))
 		if templ_7745c5c3_Err != nil {
 			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/group/page_viewers_main.templ`, Line: 16, Col: 50}
 		}
@@ -127,9 +127,9 @@ func GroupViewersMain(data ViewersPageData) templ.Component {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var9 string
-		templ_7745c5c3_Var9, templ_7745c5c3_Err = templ.JoinStringErrs(ctxi18n.T(ctx, "groups.viewers"))
+		templ_7745c5c3_Var9, templ_7745c5c3_Err = templ.JoinStringErrs(ctxi18n.T(ctx, "groups.pending_invitations"))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/group/page_viewers_main.templ`, Line: 16, Col: 134}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/group/page_viewers_main.templ`, Line: 16, Col: 146}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var9))
 		if templ_7745c5c3_Err != nil {
@@ -139,7 +139,7 @@ func GroupViewersMain(data ViewersPageData) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		var templ_7745c5c3_Var10 = []any{viewersTabClass(data.Tab, "pending")}
+		var templ_7745c5c3_Var10 = []any{viewersTabClass(data.Tab, "admins")}
 		templ_7745c5c3_Err = templ.RenderCSSItems(ctx, templ_7745c5c3_Buffer, templ_7745c5c3_Var10...)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
@@ -149,9 +149,9 @@ func GroupViewersMain(data ViewersPageData) templ.Component {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var11 templ.SafeURL
-		templ_7745c5c3_Var11, templ_7745c5c3_Err = templ.JoinURLErrs(viewersTabURL(data.GroupID, "pending"))
+		templ_7745c5c3_Var11, templ_7745c5c3_Err = templ.JoinURLErrs(viewersTabURL(data.GroupID, "admins"))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/group/page_viewers_main.templ`, Line: 17, Col: 50}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/group/page_viewers_main.templ`, Line: 17, Col: 49}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var11))
 		if templ_7745c5c3_Err != nil {
@@ -175,9 +175,9 @@ func GroupViewersMain(data ViewersPageData) templ.Component {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var13 string
-		templ_7745c5c3_Var13, templ_7745c5c3_Err = templ.JoinStringErrs(ctxi18n.T(ctx, "groups.pending_invitations"))
+		templ_7745c5c3_Var13, templ_7745c5c3_Err = templ.JoinStringErrs(ctxi18n.T(ctx, "groups.admins"))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/group/page_viewers_main.templ`, Line: 17, Col: 146}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/group/page_viewers_main.templ`, Line: 17, Col: 131}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var13))
 		if templ_7745c5c3_Err != nil {
@@ -438,7 +438,7 @@ func GroupViewersMain(data ViewersPageData) templ.Component {
 						return templ_7745c5c3_Err
 					}
 					templ_7745c5c3_Err = shared.IconActionButton(shared.IconActionButtonProps{ClassName: "btn btn-ghost btn-sm btn-danger btn-icon", OnClick: fmt.Sprintf(
-						"$sureOpen = true; $sureTitle = %s; $sureMessage = %s; $sureSubmitLabel = %s; $sureCancelLabel = %s; $sureMethod = 'delete'; $sureURL = '/groups/%s/viewers/%s'; $sureTriggerID = %s",
+						"$sureOpen = true; $sureTitle = %s; $sureMessage = %s; $sureSubmitLabel = %s; $sureCancelLabel = %s; $sureMethod = 'delete'; $sureURL = '/groups/%s/access/viewers/%s'; $sureTriggerID = %s",
 						utils.JSONString(ctxi18n.T(ctx, "groups.remove_viewer_confirm")),
 						utils.JSONString(ctxi18n.T(ctx, "confirm.destructive_message")),
 						utils.JSONString(ctxi18n.T(ctx, "actions.delete")),

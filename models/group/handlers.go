@@ -329,7 +329,7 @@ func (g *Group) renderViewersTab(c echo.Context, tab string) error {
 	data, err := g.viewersPageData(c, groupID, tab, c.QueryParams())
 	if err != nil {
 		slog.Error("group: failed to load viewers page", "group_id", groupID, "tab", tab, "err", err)
-		return c.String(http.StatusInternalServerError, "Failed to load viewers")
+		return c.String(http.StatusInternalServerError, "Failed to load users")
 	}
 
 	return utils.RenderPage(c, GroupViewersPage(data))
@@ -575,8 +575,8 @@ func (g *Group) viewersPageData(c echo.Context, groupID, tab string, values url.
 	}
 
 	return ViewersPageData{
-		Title:       ctxi18n.T(ctx, "groups.viewers"),
-		Breadcrumbs: []utils.Crumb{{Label: ctxi18n.T(ctx, "groups.title"), Href: "/dashboard"}, {Label: group.Name, Href: "/groups/" + group.ID}, {Label: ctxi18n.T(ctx, "groups.viewers")}},
+		Title:       ctxi18n.T(ctx, "groups.access"),
+		Breadcrumbs: []utils.Crumb{{Label: ctxi18n.T(ctx, "groups.title"), Href: "/dashboard"}, {Label: group.Name, Href: "/groups/" + group.ID}, {Label: ctxi18n.T(ctx, "groups.access"), Href: accessTabPath(group.ID, tab)}},
 		UserEmail:   getUserEmail(c),
 		Group:       group,
 		Admins:      admins,
@@ -588,6 +588,17 @@ func (g *Group) viewersPageData(c echo.Context, groupID, tab string, values url.
 		GroupID:     groupID,
 		Tab:         tab,
 	}, nil
+}
+
+func accessTabPath(groupID, tab string) string {
+	switch tab {
+	case viewersTabAdmins:
+		return "/groups/" + groupID + "/access/admins"
+	case viewersTabPending:
+		return "/groups/" + groupID + "/access/pending"
+	default:
+		return "/groups/" + groupID + "/access/viewers"
+	}
 }
 
 func viewersTabAndQueryFromReferer(c echo.Context) (string, url.Values) {
@@ -606,10 +617,12 @@ func viewersTabAndQueryFromReferer(c echo.Context) (string, url.Values) {
 
 func viewersTabFromPath(path string) string {
 	switch {
-	case strings.HasSuffix(path, "/viewers/admins"):
+	case strings.HasSuffix(path, "/access/admins"):
 		return viewersTabAdmins
-	case strings.HasSuffix(path, "/viewers/pending"):
+	case strings.HasSuffix(path, "/access/pending"):
 		return viewersTabPending
+	case strings.HasSuffix(path, "/access/viewers"):
+		return viewersTabViewers
 	default:
 		return viewersTabViewers
 	}

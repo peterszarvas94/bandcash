@@ -41,7 +41,20 @@ type participantData struct {
 }
 
 type participantTableParams struct {
-	FormData participantData `json:"formData"`
+	FormData   participantData  `json:"formData"`
+	TableQuery utils.TableQuery `json:"tableQuery"`
+}
+
+type staticTableQueryable struct {
+	spec utils.TableQuerySpec
+}
+
+func (s staticTableQueryable) TableQuerySpec() utils.TableQuerySpec {
+	return s.spec
+}
+
+func parseParticipantTableQuery(c echo.Context, e *Events) utils.TableQuery {
+	return utils.ParseTableQuery(c, staticTableQueryable{spec: e.ParticipantTableQuerySpec()})
 }
 
 // Default signal states for resetting forms on success
@@ -99,6 +112,7 @@ func (e *Events) Show(c echo.Context) error {
 	utils.EnsureClientID(c)
 	groupID := middleware.GetGroupID(c)
 	userEmail := getUserEmail(c)
+	query := parseParticipantTableQuery(c, e)
 
 	id := c.Param("id")
 	if !utils.IsValidID(id, utils.PrefixEvent) {
@@ -106,7 +120,7 @@ func (e *Events) Show(c echo.Context) error {
 		return c.NoContent(http.StatusBadRequest)
 	}
 
-	data, err := e.GetShowData(c.Request().Context(), groupID, id)
+	data, err := e.GetShowData(c.Request().Context(), groupID, id, query)
 	if err != nil {
 		slog.Error("event.show: failed to get data", "err", err)
 		return c.NoContent(http.StatusInternalServerError)
@@ -240,7 +254,8 @@ func (e *Events) Update(c echo.Context) error {
 			},
 			"errors": map[string]any{"title": "", "time": "", "description": "", "amount": ""},
 		})
-		data, err := e.GetShowData(c.Request().Context(), groupID, id)
+		query := utils.NormalizeTableQuery(signals.TableQuery, e.ParticipantTableQuerySpec())
+		data, err := e.GetShowData(c.Request().Context(), groupID, id, query)
 		if err != nil {
 			slog.Error("event.update: failed to get data", "err", err)
 			return c.NoContent(http.StatusInternalServerError)
@@ -376,7 +391,8 @@ func (e *Events) CreateParticipant(c echo.Context) error {
 	}
 	utils.Notify(c, "success", ctxi18n.T(c.Request().Context(), "participants.notifications.added"))
 
-	data, err := e.GetShowData(c.Request().Context(), groupID, id)
+	query := utils.NormalizeTableQuery(signals.TableQuery, e.ParticipantTableQuerySpec())
+	data, err := e.GetShowData(c.Request().Context(), groupID, id, query)
 	if err != nil {
 		slog.Error("participant.create.table: failed to get data", "err", err)
 		return c.NoContent(http.StatusInternalServerError)
@@ -445,7 +461,8 @@ func (e *Events) UpdateParticipant(c echo.Context) error {
 	utils.Notify(c, "success", ctxi18n.T(c.Request().Context(), "participants.notifications.updated"))
 
 	utils.SSEHub.PatchSignals(c, defaultParticipantSignals)
-	data, err := e.GetShowData(c.Request().Context(), groupID, eventID)
+	query := utils.NormalizeTableQuery(signals.TableQuery, e.ParticipantTableQuerySpec())
+	data, err := e.GetShowData(c.Request().Context(), groupID, eventID, query)
 	if err != nil {
 		slog.Error("participant.update: failed to get data", "err", err)
 		return c.NoContent(http.StatusInternalServerError)
@@ -492,7 +509,13 @@ func (e *Events) DeleteParticipantTable(c echo.Context) error {
 	}
 	utils.Notify(c, "success", ctxi18n.T(c.Request().Context(), "participants.notifications.deleted"))
 
-	data, err := e.GetShowData(c.Request().Context(), groupID, eventID)
+	query := parseParticipantTableQuery(c, e)
+	var signals modeParams
+	if err := datastar.ReadSignals(c.Request(), &signals); err == nil {
+		query = utils.NormalizeTableQuery(signals.TableQuery, e.ParticipantTableQuerySpec())
+	}
+
+	data, err := e.GetShowData(c.Request().Context(), groupID, eventID, query)
 	if err != nil {
 		slog.Error("participant.delete: failed to get data", "err", err)
 		return c.NoContent(http.StatusInternalServerError)

@@ -34,12 +34,12 @@ templ AppPrimaryNav(active string, userEmail string) {
 			}
 			if utils.Env().SuperadminEmail != "" && userEmail != "" && userEmail == utils.Env().SuperadminEmail {
 				if active == "admin" {
-					<a class="btn app-nav-link active" href="/admin">
+					<a class="btn app-nav-link active" href="/admin/overview">
 						@icons.Shield(templ.Attributes{"class": "icon"})
 						<span>{ ctxi18n.T(ctx, "nav.admin") }</span>
 					</a>
 				} else {
-					<a class="btn app-nav-link" href="/admin">
+					<a class="btn app-nav-link" href="/admin/overview">
 						@icons.Shield(templ.Attributes{"class": "icon"})
 						<span>{ ctxi18n.T(ctx, "nav.admin") }</span>
 					</a>
@@ -186,14 +186,14 @@ templ GroupPrimaryNav(groupID string, active string) {
 				</a>
 			}
 			if active == "viewers" {
-				<a class="btn app-nav-link active" href={ "/groups/" + groupID + "/viewers" }>
+				<a class="btn app-nav-link active" href={ "/groups/" + groupID + "/access/viewers" }>
 					@icons.Eye(templ.Attributes{"class": "icon"})
-					<span>{ ctxi18n.T(ctx, "groups.viewers") }</span>
+					<span>{ ctxi18n.T(ctx, "groups.access") }</span>
 				</a>
 			} else {
-				<a class="btn app-nav-link" href={ "/groups/" + groupID + "/viewers" }>
+				<a class="btn app-nav-link" href={ "/groups/" + groupID + "/access/viewers" }>
 					@icons.Eye(templ.Attributes{"class": "icon"})
-					<span>{ ctxi18n.T(ctx, "groups.viewers") }</span>
+					<span>{ ctxi18n.T(ctx, "groups.access") }</span>
 				</a>
 			}
 		</div>

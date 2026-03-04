@@ -481,6 +481,52 @@
     padding-left: var(--page-padding-inline);
   }
 
+  .home-page {
+    display: grid;
+    gap: calc(var(--space) * 1.5);
+  }
+
+  .home-hero {
+    position: relative;
+    margin: 0;
+    border: var(--border) solid var(--border-color);
+    background: color-mix(in srgb, var(--page-bg) 94%, var(--text-color) 6%);
+    overflow: hidden;
+  }
+
+  .home-hero-image {
+    width: 100%;
+    height: auto;
+    aspect-ratio: 16 / 9;
+    object-fit: cover;
+    display: block;
+  }
+
+  .home-hero-content {
+    position: absolute;
+    inset: auto 0 0 0;
+    display: grid;
+    gap: calc(var(--space) * 0.5);
+    padding: calc(var(--space) * 2);
+    color: #fff;
+    background: linear-gradient(
+      to top,
+      color-mix(in srgb, #000 68%, transparent),
+      color-mix(in srgb, #000 8%, transparent)
+    );
+
+    h1,
+    p {
+      margin: 0;
+    }
+  }
+
+  .home-hero-quote {
+    max-width: 48ch;
+    font-size: 0.95rem;
+    line-height: 1.5;
+  }
+
   .notifications-popover {
     position: fixed;
     bottom: 1rem;

@@ -33,13 +33,37 @@ templ EventShowMain(data EventData) {
 		</div>
 	}
 	<h2 class="pb">{ ctxi18n.T(ctx, "events.participants") }</h2>
+	@shared.TableSearchForm(utils.BuildTableSearchDatastarAction(fmt.Sprintf("/groups/%s/events/%s", data.GroupID, data.Event.ID), utils.DefaultTablePageSize), "table.search_placeholder_members")
+	<div class="row row-wrap justify-between pt pb">
+		<div class="row row-wrap">
+			<span class="hide-tablet text-sm">{ ctxi18n.T(ctx, "table.page_size") }</span>
+			for _, pageSize := range utils.StandardTablePageSizes {
+				<button
+					class={ utils.PageSizeButtonClass(data.Query.PageSize, pageSize) }
+					type="button"
+					data-on:click={ utils.BuildTableQueryDatastarAction(utils.BuildTablePageSizeURL(fmt.Sprintf("/groups/%s/events/%s", data.GroupID, data.Event.ID), data.Query, pageSize)) }
+				>
+					{ fmt.Sprintf("%d", pageSize) }
+				</button>
+			}
+		</div>
+		@shared.TablePaginationControls(fmt.Sprintf("/groups/%s/events/%s", data.GroupID, data.Event.ID), data.Query, data.Pager)
+	</div>
 	<table class="table table-sticky-actions">
 		<thead>
 			<tr>
-				<th>{ ctxi18n.T(ctx, "participants.member") }</th>
-				<th>{ ctxi18n.T(ctx, "participants.total") }</th>
-				<th>{ ctxi18n.T(ctx, "participants.cut") }</th>
-				<th>{ ctxi18n.T(ctx, "participants.expense") }</th>
+				<th>
+					@shared.TableSortHeader(ctxi18n.T(ctx, "participants.member"), "name", data.Query, utils.BuildTableSortURL(fmt.Sprintf("/groups/%s/events/%s", data.GroupID, data.Event.ID), data.Query, "name"))
+				</th>
+				<th>
+					@shared.TableSortHeader(ctxi18n.T(ctx, "participants.total"), "total", data.Query, utils.BuildTableSortURL(fmt.Sprintf("/groups/%s/events/%s", data.GroupID, data.Event.ID), data.Query, "total"))
+				</th>
+				<th>
+					@shared.TableSortHeader(ctxi18n.T(ctx, "participants.cut"), "amount", data.Query, utils.BuildTableSortURL(fmt.Sprintf("/groups/%s/events/%s", data.GroupID, data.Event.ID), data.Query, "amount"))
+				</th>
+				<th>
+					@shared.TableSortHeader(ctxi18n.T(ctx, "participants.expense"), "expense", data.Query, utils.BuildTableSortURL(fmt.Sprintf("/groups/%s/events/%s", data.GroupID, data.Event.ID), data.Query, "expense"))
+				</th>
 				if data.IsAdmin {
 					<th data-actions-col>
 						<div class="row row-right row-tight">

@@ -26,7 +26,7 @@ func tabClass(currentTab, targetTab string) string {
 }
 
 func buildTabURL(tab string) string {
-	return fmt.Sprintf("/admin?tab=%s", tab)
+	return fmt.Sprintf("/admin/%s", tab)
 }
 
 func DashboardPage(data DashboardData) templ.Component {
@@ -361,19 +361,19 @@ func DashboardMain(data DashboardData) templ.Component {
 
 // URL builders for admin table controls
 func adminUsersSortURL(data DashboardData, column string) string {
-	return utils.BuildTableSortURL("/admin?tab=users", data.UserQuery, column)
+	return utils.BuildTableSortURL("/admin/users", data.UserQuery, column)
 }
 
 func adminGroupsSortURL(data DashboardData, column string) string {
-	return utils.BuildTableSortURL("/admin?tab=groups", data.GroupQuery, column)
+	return utils.BuildTableSortURL("/admin/groups", data.GroupQuery, column)
 }
 
 func adminPageSizeURL(query utils.TableQuery, tab string, pageSize int) string {
-	return utils.BuildTablePageSizeURL(fmt.Sprintf("/admin?tab=%s", tab), query, pageSize)
+	return utils.BuildTablePageSizeURL(fmt.Sprintf("/admin/%s", tab), query, pageSize)
 }
 
 func adminSearchAction(tab string) string {
-	baseURL := fmt.Sprintf("/admin?tab=%s", tab)
+	baseURL := fmt.Sprintf("/admin/%s", tab)
 	return utils.BuildTableSearchDatastarAction(baseURL, utils.DefaultTablePageSize)
 }
 

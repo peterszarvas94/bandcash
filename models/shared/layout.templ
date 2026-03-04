@@ -86,9 +86,9 @@ templ GroupTabs(groupID string, activeTab string) {
 			<a class="tab" href={ "/groups/" + groupID + "/members" }>{ ctxi18n.T(ctx, "members.title") }</a>
 		}
 		if activeTab == "viewers" {
-			<a class="tab tab-active" href={ "/groups/" + groupID + "/viewers" }>{ ctxi18n.T(ctx, "groups.viewers") }</a>
+			<a class="tab tab-active" href={ "/groups/" + groupID + "/access/viewers" }>{ ctxi18n.T(ctx, "groups.access") }</a>
 		} else {
-			<a class="tab" href={ "/groups/" + groupID + "/viewers" }>{ ctxi18n.T(ctx, "groups.viewers") }</a>
+			<a class="tab" href={ "/groups/" + groupID + "/access/viewers" }>{ ctxi18n.T(ctx, "groups.access") }</a>
 		}
 	</nav>
 }

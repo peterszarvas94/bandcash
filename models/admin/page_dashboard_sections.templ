@@ -12,18 +12,16 @@ import (
 )
 
 templ FlagsContent(signupEnabled bool) {
-	<div id="admin-flags" class="detail-grid">
-		<div class="detail-row">
-			<p class="detail-key">{ ctxi18n.T(ctx, "admin.flags.signup") }</p>
-			<div class="detail-val">
-				<input
-					class="native-checkbox"
-					type="checkbox"
-					checked?={ signupEnabled }
-					data-on:change="@post('/admin/flags/signup?value=' + (el.checked ? '1' : '0'))"
-					aria-label={ ctxi18n.T(ctx, "admin.flags.signup") }
-				/>
-			</div>
+	<div id="admin-flags" class="pb">
+		<div class="row justify-between">
+			<label for="admin-signup-enabled">{ ctxi18n.T(ctx, "admin.flags.signup") }</label>
+			<input
+				id="admin-signup-enabled"
+				class="native-checkbox"
+				type="checkbox"
+				checked?={ signupEnabled }
+				data-on:change="@post('/admin/flags/signup?value=' + (el.checked ? '1' : '0'))"
+			/>
 		</div>
 	</div>
 }
@@ -137,7 +135,7 @@ templ GroupsTableSection(data DashboardData) {
 
 templ adminTablePagination(pager utils.TablePagination, query utils.TableQuery, tab string) {
 	<div class="row row-wrap justify-between pt pb">
-		@shared.TablePaginationControls(fmt.Sprintf("/admin?tab=%s", tab), query, pager)
+		@shared.TablePaginationControls(fmt.Sprintf("/admin/%s", tab), query, pager)
 		<div class="row row-wrap">
 			<span class="hide-tablet text-sm">{ ctxi18n.T(ctx, "table.page_size") }</span>
 			for _, pageSize := range utils.StandardTablePageSizes {

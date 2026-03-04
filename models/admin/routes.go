@@ -10,6 +10,10 @@ func RegisterRoutes(e *echo.Echo) *Admin {
 	a := New()
 
 	g := e.Group("/admin", middleware.RequireAuth(), middleware.RequireSuperadmin())
+	g.GET("/overview", a.OverviewPage)
+	g.GET("/flags", a.FlagsPage)
+	g.GET("/users", a.UsersPage)
+	g.GET("/groups", a.GroupsPage)
 	g.GET("", a.Dashboard)
 	g.POST("/flags/signup", a.UpdateSignupFlag)
 	g.POST("/users/:userId/ban", a.BanUser)

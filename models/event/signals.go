@@ -1,5 +1,7 @@
 package event
 
+import "bandcash/internal/utils"
+
 func eventIndexSignals(csrfToken string, query map[string]any) map[string]any {
 	return map[string]any{
 		"csrf":           csrfToken,
@@ -17,6 +19,7 @@ func eventShowSignals(data EventData, csrfToken string) map[string]any {
 	return map[string]any{
 		"csrf":           csrfToken,
 		"mode":           "single",
+		"tableQuery":     utils.TableQuerySignals(data.Query),
 		"eventFormState": "",
 		"eventFormData": map[string]any{
 			"title":       data.Event.Title,
