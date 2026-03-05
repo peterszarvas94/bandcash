@@ -105,6 +105,7 @@ hu:
     empty: "nincs elem"
     actions: "Műveletek"
     all: "Mind"
+    date_filters: "Dátumszűrők"
     from: "Ettől"
     to: "Eddig"
     search: "Keresés"

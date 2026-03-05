@@ -11,10 +11,11 @@ import (
 
 templ EventIndexMain(data EventsData) {
 	@shared.TableSearchForm(utils.BuildTableSearchDatastarAction(fmt.Sprintf("/groups/%s/events", data.GroupID), utils.DefaultTablePageSize), "table.search_placeholder_events")
-	<div class="row row-wrap pt pb">
+	<div class="row row-wrap pt pb" role="group" aria-label={ ctxi18n.T(ctx, "table.date_filters") }>
 		<button
 			class={ utils.DateFilterAllButtonClass(data.Query) }
 			type="button"
+			aria-pressed={ fmt.Sprintf("%t", utils.DateFilterAllActive(data.Query)) }
 			data-on:click={ utils.BuildTableQueryDatastarAction(utils.BuildTableDateClearURL(fmt.Sprintf("/groups/%s/events", data.GroupID), data.Query)) }
 		>
 			{ ctxi18n.T(ctx, "table.all") }
@@ -23,6 +24,7 @@ templ EventIndexMain(data EventsData) {
 			<button
 				class={ utils.DateFilterYearButtonClass(data.Query, fmt.Sprintf("%d", year)) }
 				type="button"
+				aria-pressed={ fmt.Sprintf("%t", utils.DateFilterYearActive(data.Query, fmt.Sprintf("%d", year))) }
 				data-on:click={ utils.BuildTableQueryDatastarAction(utils.BuildTableDateYearURL(fmt.Sprintf("/groups/%s/events", data.GroupID), data.Query, fmt.Sprintf("%d", year))) }
 			>
 				{ fmt.Sprintf("%d", year) }

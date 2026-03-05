@@ -95,12 +95,20 @@
 
     &:not(:disabled):not([disabled]):hover {
       background: color-mix(in srgb, var(--page-bg) 90%, var(--text-color) 10%);
-      border-color: color-mix(in srgb, var(--page-bg) 72%, var(--text-color) 28%);
+      border-color: color-mix(
+        in srgb,
+        var(--page-bg) 72%,
+        var(--text-color) 28%
+      );
     }
 
     &:not(:disabled):not([disabled]):active {
       background: color-mix(in srgb, var(--page-bg) 86%, var(--text-color) 14%);
-      border-color: color-mix(in srgb, var(--page-bg) 62%, var(--text-color) 38%);
+      border-color: color-mix(
+        in srgb,
+        var(--page-bg) 62%,
+        var(--text-color) 38%
+      );
     }
 
     &:focus-visible {
@@ -146,7 +154,11 @@
       }
 
       &:not(:disabled):not([disabled]):active {
-        background: color-mix(in srgb, var(--page-bg) 88%, var(--text-color) 12%);
+        background: color-mix(
+          in srgb,
+          var(--page-bg) 88%,
+          var(--text-color) 12%
+        );
       }
     }
 
@@ -173,7 +185,8 @@
     min-width: 12ch;
     height: 2.5rem;
     padding: var(--space) calc(var(--space) * 2);
-    border: var(--border) solid color-mix(in srgb, var(--page-bg) 82%, var(--text-color) 18%);
+    border: var(--border) solid
+      color-mix(in srgb, var(--page-bg) 82%, var(--text-color) 18%);
     background: color-mix(in srgb, var(--page-bg) 95%, var(--text-color) 5%);
     color: var(--text-color);
     transition:
@@ -182,19 +195,31 @@
 
     &:hover {
       background: color-mix(in srgb, var(--page-bg) 92%, var(--text-color) 8%);
-      border-color: color-mix(in srgb, var(--page-bg) 76%, var(--text-color) 24%);
+      border-color: color-mix(
+        in srgb,
+        var(--page-bg) 76%,
+        var(--text-color) 24%
+      );
     }
 
     &:focus-visible {
       outline: var(--focus-ring);
       outline-offset: var(--focus-ring-offset);
       border-radius: 0;
-      border-color: color-mix(in srgb, var(--page-bg) 62%, var(--text-color) 38%);
+      border-color: color-mix(
+        in srgb,
+        var(--page-bg) 62%,
+        var(--text-color) 38%
+      );
     }
 
     &:active {
       background: color-mix(in srgb, var(--page-bg) 90%, var(--text-color) 10%);
-      border-color: color-mix(in srgb, var(--page-bg) 56%, var(--text-color) 44%);
+      border-color: color-mix(
+        in srgb,
+        var(--page-bg) 56%,
+        var(--text-color) 44%
+      );
     }
 
     &:disabled,
@@ -202,7 +227,11 @@
       opacity: 0.6;
       cursor: not-allowed;
       background: color-mix(in srgb, var(--page-bg) 98%, var(--text-color) 2%);
-      border-color: color-mix(in srgb, var(--page-bg) 88%, var(--text-color) 12%);
+      border-color: color-mix(
+        in srgb,
+        var(--page-bg) 88%,
+        var(--text-color) 12%
+      );
       color: var(--muted-text-color);
     }
 
@@ -219,7 +248,7 @@
     }
 
     &.input-thin {
-      width: 5rem;
+      min-width: 4rem;
     }
 
     &.input-tall {
@@ -299,13 +328,29 @@
     }
 
     &:not(:disabled):not([disabled]):hover {
-      background: color-mix(in srgb, var(--page-bg) 82%, var(--error-color) 18%);
-      border-color: color-mix(in srgb, var(--page-bg) 62%, var(--error-color) 38%);
+      background: color-mix(
+        in srgb,
+        var(--page-bg) 82%,
+        var(--error-color) 18%
+      );
+      border-color: color-mix(
+        in srgb,
+        var(--page-bg) 62%,
+        var(--error-color) 38%
+      );
     }
 
     &:not(:disabled):not([disabled]):active {
-      background: color-mix(in srgb, var(--page-bg) 78%, var(--error-color) 22%);
-      border-color: color-mix(in srgb, var(--page-bg) 52%, var(--error-color) 48%);
+      background: color-mix(
+        in srgb,
+        var(--page-bg) 78%,
+        var(--error-color) 22%
+      );
+      border-color: color-mix(
+        in srgb,
+        var(--page-bg) 52%,
+        var(--error-color) 48%
+      );
     }
 
     &:focus-visible {

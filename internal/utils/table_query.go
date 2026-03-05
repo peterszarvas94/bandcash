@@ -428,17 +428,25 @@ func BuildTableDateRangeDatastarAction(basePath string, defaultPageSize int) str
 }
 
 func DateFilterAllButtonClass(query TableQuery) string {
-	if query.Year == "" && !(query.From != "" && query.To != "") {
+	if DateFilterAllActive(query) {
 		return "btn btn-sm btn-active"
 	}
 	return "btn btn-sm"
 }
 
 func DateFilterYearButtonClass(query TableQuery, year string) string {
-	if query.Year == year && !(query.From != "" && query.To != "") {
+	if DateFilterYearActive(query, year) {
 		return "btn btn-sm btn-active"
 	}
 	return "btn btn-sm"
+}
+
+func DateFilterAllActive(query TableQuery) bool {
+	return query.Year == "" && !(query.From != "" && query.To != "")
+}
+
+func DateFilterYearActive(query TableQuery, year string) bool {
+	return query.Year == year && !(query.From != "" && query.To != "")
 }
 
 func BuildTablePageDatastarAction(basePath string, totalPages int, defaultPageSize int) string {
