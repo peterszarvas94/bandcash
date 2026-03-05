@@ -104,6 +104,9 @@ hu:
   table:
     empty: "nincs elem"
     actions: "Műveletek"
+    all: "Mind"
+    from: "Ettől"
+    to: "Eddig"
     search: "Keresés"
     search_placeholder: "Név, Admin"
     search_placeholder_events: "Cím, Leírás"

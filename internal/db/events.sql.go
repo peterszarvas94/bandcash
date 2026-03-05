@@ -17,15 +17,39 @@ WHERE group_id = ?1
     OR title LIKE '%' || ?2 || '%'
     OR description LIKE '%' || ?2 || '%'
   )
+  AND (
+    (
+      ?3 != ''
+      AND ?4 != ''
+      AND date(time) >= date(?3)
+      AND date(time) <= date(?4)
+    )
+    OR (
+      (?3 = '' OR ?4 = '')
+      AND (
+        ?5 = ''
+        OR strftime('%Y', time) = ?5
+      )
+    )
+  )
 `
 
 type CountEventsFilteredParams struct {
-	GroupID string      `json:"group_id"`
-	Search  interface{} `json:"search"`
+	GroupID    string      `json:"group_id"`
+	Search     interface{} `json:"search"`
+	FromDate   interface{} `json:"from_date"`
+	ToDate     interface{} `json:"to_date"`
+	YearFilter interface{} `json:"year_filter"`
 }
 
 func (q *Queries) CountEventsFiltered(ctx context.Context, arg CountEventsFilteredParams) (int64, error) {
-	row := q.db.QueryRowContext(ctx, countEventsFiltered, arg.GroupID, arg.Search)
+	row := q.db.QueryRowContext(ctx, countEventsFiltered,
+		arg.GroupID,
+		arg.Search,
+		arg.FromDate,
+		arg.ToDate,
+		arg.YearFilter,
+	)
 	var count int64
 	err := row.Scan(&count)
 	return count, err
@@ -165,21 +189,42 @@ WHERE group_id = ?1
     OR title LIKE '%' || ?2 || '%'
     OR description LIKE '%' || ?2 || '%'
   )
+  AND (
+    (
+      ?3 != ''
+      AND ?4 != ''
+      AND date(time) >= date(?3)
+      AND date(time) <= date(?4)
+    )
+    OR (
+      (?3 = '' OR ?4 = '')
+      AND (
+        ?5 = ''
+        OR strftime('%Y', time) = ?5
+      )
+    )
+  )
 ORDER BY amount ASC, created_at DESC
-LIMIT ?4 OFFSET ?3
+LIMIT ?7 OFFSET ?6
 `
 
 type ListEventsByAmountAscFilteredParams struct {
-	GroupID string      `json:"group_id"`
-	Search  interface{} `json:"search"`
-	Offset  int64       `json:"offset"`
-	Limit   int64       `json:"limit"`
+	GroupID    string      `json:"group_id"`
+	Search     interface{} `json:"search"`
+	FromDate   interface{} `json:"from_date"`
+	ToDate     interface{} `json:"to_date"`
+	YearFilter interface{} `json:"year_filter"`
+	Offset     int64       `json:"offset"`
+	Limit      int64       `json:"limit"`
 }
 
 func (q *Queries) ListEventsByAmountAscFiltered(ctx context.Context, arg ListEventsByAmountAscFilteredParams) ([]Event, error) {
 	rows, err := q.db.QueryContext(ctx, listEventsByAmountAscFiltered,
 		arg.GroupID,
 		arg.Search,
+		arg.FromDate,
+		arg.ToDate,
+		arg.YearFilter,
 		arg.Offset,
 		arg.Limit,
 	)
@@ -221,21 +266,42 @@ WHERE group_id = ?1
     OR title LIKE '%' || ?2 || '%'
     OR description LIKE '%' || ?2 || '%'
   )
+  AND (
+    (
+      ?3 != ''
+      AND ?4 != ''
+      AND date(time) >= date(?3)
+      AND date(time) <= date(?4)
+    )
+    OR (
+      (?3 = '' OR ?4 = '')
+      AND (
+        ?5 = ''
+        OR strftime('%Y', time) = ?5
+      )
+    )
+  )
 ORDER BY amount DESC, created_at DESC
-LIMIT ?4 OFFSET ?3
+LIMIT ?7 OFFSET ?6
 `
 
 type ListEventsByAmountDescFilteredParams struct {
-	GroupID string      `json:"group_id"`
-	Search  interface{} `json:"search"`
-	Offset  int64       `json:"offset"`
-	Limit   int64       `json:"limit"`
+	GroupID    string      `json:"group_id"`
+	Search     interface{} `json:"search"`
+	FromDate   interface{} `json:"from_date"`
+	ToDate     interface{} `json:"to_date"`
+	YearFilter interface{} `json:"year_filter"`
+	Offset     int64       `json:"offset"`
+	Limit      int64       `json:"limit"`
 }
 
 func (q *Queries) ListEventsByAmountDescFiltered(ctx context.Context, arg ListEventsByAmountDescFilteredParams) ([]Event, error) {
 	rows, err := q.db.QueryContext(ctx, listEventsByAmountDescFiltered,
 		arg.GroupID,
 		arg.Search,
+		arg.FromDate,
+		arg.ToDate,
+		arg.YearFilter,
 		arg.Offset,
 		arg.Limit,
 	)
@@ -277,21 +343,42 @@ WHERE group_id = ?1
     OR title LIKE '%' || ?2 || '%'
     OR description LIKE '%' || ?2 || '%'
   )
+  AND (
+    (
+      ?3 != ''
+      AND ?4 != ''
+      AND date(time) >= date(?3)
+      AND date(time) <= date(?4)
+    )
+    OR (
+      (?3 = '' OR ?4 = '')
+      AND (
+        ?5 = ''
+        OR strftime('%Y', time) = ?5
+      )
+    )
+  )
 ORDER BY description COLLATE NOCASE ASC, time ASC
-LIMIT ?4 OFFSET ?3
+LIMIT ?7 OFFSET ?6
 `
 
 type ListEventsByDescriptionAscFilteredParams struct {
-	GroupID string      `json:"group_id"`
-	Search  interface{} `json:"search"`
-	Offset  int64       `json:"offset"`
-	Limit   int64       `json:"limit"`
+	GroupID    string      `json:"group_id"`
+	Search     interface{} `json:"search"`
+	FromDate   interface{} `json:"from_date"`
+	ToDate     interface{} `json:"to_date"`
+	YearFilter interface{} `json:"year_filter"`
+	Offset     int64       `json:"offset"`
+	Limit      int64       `json:"limit"`
 }
 
 func (q *Queries) ListEventsByDescriptionAscFiltered(ctx context.Context, arg ListEventsByDescriptionAscFilteredParams) ([]Event, error) {
 	rows, err := q.db.QueryContext(ctx, listEventsByDescriptionAscFiltered,
 		arg.GroupID,
 		arg.Search,
+		arg.FromDate,
+		arg.ToDate,
+		arg.YearFilter,
 		arg.Offset,
 		arg.Limit,
 	)
@@ -333,21 +420,42 @@ WHERE group_id = ?1
     OR title LIKE '%' || ?2 || '%'
     OR description LIKE '%' || ?2 || '%'
   )
+  AND (
+    (
+      ?3 != ''
+      AND ?4 != ''
+      AND date(time) >= date(?3)
+      AND date(time) <= date(?4)
+    )
+    OR (
+      (?3 = '' OR ?4 = '')
+      AND (
+        ?5 = ''
+        OR strftime('%Y', time) = ?5
+      )
+    )
+  )
 ORDER BY description COLLATE NOCASE DESC, time ASC
-LIMIT ?4 OFFSET ?3
+LIMIT ?7 OFFSET ?6
 `
 
 type ListEventsByDescriptionDescFilteredParams struct {
-	GroupID string      `json:"group_id"`
-	Search  interface{} `json:"search"`
-	Offset  int64       `json:"offset"`
-	Limit   int64       `json:"limit"`
+	GroupID    string      `json:"group_id"`
+	Search     interface{} `json:"search"`
+	FromDate   interface{} `json:"from_date"`
+	ToDate     interface{} `json:"to_date"`
+	YearFilter interface{} `json:"year_filter"`
+	Offset     int64       `json:"offset"`
+	Limit      int64       `json:"limit"`
 }
 
 func (q *Queries) ListEventsByDescriptionDescFiltered(ctx context.Context, arg ListEventsByDescriptionDescFilteredParams) ([]Event, error) {
 	rows, err := q.db.QueryContext(ctx, listEventsByDescriptionDescFiltered,
 		arg.GroupID,
 		arg.Search,
+		arg.FromDate,
+		arg.ToDate,
+		arg.YearFilter,
 		arg.Offset,
 		arg.Limit,
 	)
@@ -389,21 +497,42 @@ WHERE group_id = ?1
     OR title LIKE '%' || ?2 || '%'
     OR description LIKE '%' || ?2 || '%'
   )
+  AND (
+    (
+      ?3 != ''
+      AND ?4 != ''
+      AND date(time) >= date(?3)
+      AND date(time) <= date(?4)
+    )
+    OR (
+      (?3 = '' OR ?4 = '')
+      AND (
+        ?5 = ''
+        OR strftime('%Y', time) = ?5
+      )
+    )
+  )
 ORDER BY time ASC, created_at DESC
-LIMIT ?4 OFFSET ?3
+LIMIT ?7 OFFSET ?6
 `
 
 type ListEventsByTimeAscFilteredParams struct {
-	GroupID string      `json:"group_id"`
-	Search  interface{} `json:"search"`
-	Offset  int64       `json:"offset"`
-	Limit   int64       `json:"limit"`
+	GroupID    string      `json:"group_id"`
+	Search     interface{} `json:"search"`
+	FromDate   interface{} `json:"from_date"`
+	ToDate     interface{} `json:"to_date"`
+	YearFilter interface{} `json:"year_filter"`
+	Offset     int64       `json:"offset"`
+	Limit      int64       `json:"limit"`
 }
 
 func (q *Queries) ListEventsByTimeAscFiltered(ctx context.Context, arg ListEventsByTimeAscFilteredParams) ([]Event, error) {
 	rows, err := q.db.QueryContext(ctx, listEventsByTimeAscFiltered,
 		arg.GroupID,
 		arg.Search,
+		arg.FromDate,
+		arg.ToDate,
+		arg.YearFilter,
 		arg.Offset,
 		arg.Limit,
 	)
@@ -445,21 +574,42 @@ WHERE group_id = ?1
     OR title LIKE '%' || ?2 || '%'
     OR description LIKE '%' || ?2 || '%'
   )
+  AND (
+    (
+      ?3 != ''
+      AND ?4 != ''
+      AND date(time) >= date(?3)
+      AND date(time) <= date(?4)
+    )
+    OR (
+      (?3 = '' OR ?4 = '')
+      AND (
+        ?5 = ''
+        OR strftime('%Y', time) = ?5
+      )
+    )
+  )
 ORDER BY time DESC, created_at DESC
-LIMIT ?4 OFFSET ?3
+LIMIT ?7 OFFSET ?6
 `
 
 type ListEventsByTimeDescFilteredParams struct {
-	GroupID string      `json:"group_id"`
-	Search  interface{} `json:"search"`
-	Offset  int64       `json:"offset"`
-	Limit   int64       `json:"limit"`
+	GroupID    string      `json:"group_id"`
+	Search     interface{} `json:"search"`
+	FromDate   interface{} `json:"from_date"`
+	ToDate     interface{} `json:"to_date"`
+	YearFilter interface{} `json:"year_filter"`
+	Offset     int64       `json:"offset"`
+	Limit      int64       `json:"limit"`
 }
 
 func (q *Queries) ListEventsByTimeDescFiltered(ctx context.Context, arg ListEventsByTimeDescFilteredParams) ([]Event, error) {
 	rows, err := q.db.QueryContext(ctx, listEventsByTimeDescFiltered,
 		arg.GroupID,
 		arg.Search,
+		arg.FromDate,
+		arg.ToDate,
+		arg.YearFilter,
 		arg.Offset,
 		arg.Limit,
 	)
@@ -501,21 +651,42 @@ WHERE group_id = ?1
     OR title LIKE '%' || ?2 || '%'
     OR description LIKE '%' || ?2 || '%'
   )
+  AND (
+    (
+      ?3 != ''
+      AND ?4 != ''
+      AND date(time) >= date(?3)
+      AND date(time) <= date(?4)
+    )
+    OR (
+      (?3 = '' OR ?4 = '')
+      AND (
+        ?5 = ''
+        OR strftime('%Y', time) = ?5
+      )
+    )
+  )
 ORDER BY title COLLATE NOCASE ASC, created_at DESC
-LIMIT ?4 OFFSET ?3
+LIMIT ?7 OFFSET ?6
 `
 
 type ListEventsByTitleAscFilteredParams struct {
-	GroupID string      `json:"group_id"`
-	Search  interface{} `json:"search"`
-	Offset  int64       `json:"offset"`
-	Limit   int64       `json:"limit"`
+	GroupID    string      `json:"group_id"`
+	Search     interface{} `json:"search"`
+	FromDate   interface{} `json:"from_date"`
+	ToDate     interface{} `json:"to_date"`
+	YearFilter interface{} `json:"year_filter"`
+	Offset     int64       `json:"offset"`
+	Limit      int64       `json:"limit"`
 }
 
 func (q *Queries) ListEventsByTitleAscFiltered(ctx context.Context, arg ListEventsByTitleAscFilteredParams) ([]Event, error) {
 	rows, err := q.db.QueryContext(ctx, listEventsByTitleAscFiltered,
 		arg.GroupID,
 		arg.Search,
+		arg.FromDate,
+		arg.ToDate,
+		arg.YearFilter,
 		arg.Offset,
 		arg.Limit,
 	)
@@ -557,21 +728,42 @@ WHERE group_id = ?1
     OR title LIKE '%' || ?2 || '%'
     OR description LIKE '%' || ?2 || '%'
   )
+  AND (
+    (
+      ?3 != ''
+      AND ?4 != ''
+      AND date(time) >= date(?3)
+      AND date(time) <= date(?4)
+    )
+    OR (
+      (?3 = '' OR ?4 = '')
+      AND (
+        ?5 = ''
+        OR strftime('%Y', time) = ?5
+      )
+    )
+  )
 ORDER BY title COLLATE NOCASE DESC, created_at DESC
-LIMIT ?4 OFFSET ?3
+LIMIT ?7 OFFSET ?6
 `
 
 type ListEventsByTitleDescFilteredParams struct {
-	GroupID string      `json:"group_id"`
-	Search  interface{} `json:"search"`
-	Offset  int64       `json:"offset"`
-	Limit   int64       `json:"limit"`
+	GroupID    string      `json:"group_id"`
+	Search     interface{} `json:"search"`
+	FromDate   interface{} `json:"from_date"`
+	ToDate     interface{} `json:"to_date"`
+	YearFilter interface{} `json:"year_filter"`
+	Offset     int64       `json:"offset"`
+	Limit      int64       `json:"limit"`
 }
 
 func (q *Queries) ListEventsByTitleDescFiltered(ctx context.Context, arg ListEventsByTitleDescFilteredParams) ([]Event, error) {
 	rows, err := q.db.QueryContext(ctx, listEventsByTitleDescFiltered,
 		arg.GroupID,
 		arg.Search,
+		arg.FromDate,
+		arg.ToDate,
+		arg.YearFilter,
 		arg.Offset,
 		arg.Limit,
 	)

@@ -5,6 +5,7 @@ import (
 	"net/url"
 	"strconv"
 	"strings"
+	"time"
 
 	"github.com/labstack/echo/v4"
 )
@@ -36,6 +37,9 @@ type TableQuery struct {
 	Sort     string `json:"sort"`
 	SortSet  bool   `json:"sortSet"`
 	Dir      string `json:"dir"`
+	Year     string `json:"year"`
+	From     string `json:"from"`
+	To       string `json:"to"`
 }
 
 type TableQueryParseResult struct {
@@ -99,6 +103,35 @@ func ParseTableQueryWithResult(c echo.Context, queryable Queryable) TableQueryPa
 		search = search[:maxSearchLen]
 	}
 	query.Search = search
+
+	year := strings.TrimSpace(c.QueryParam("year"))
+	if year != "" {
+		if isValidYear(year) {
+			query.Year = year
+		} else {
+			rejected["year"] = "must be YYYY"
+		}
+	}
+
+	from := strings.TrimSpace(c.QueryParam("from"))
+	if from != "" {
+		if isValidDateISO(from) {
+			query.From = from
+		} else {
+			rejected["from"] = "must be YYYY-MM-DD"
+		}
+	}
+
+	to := strings.TrimSpace(c.QueryParam("to"))
+	if to != "" {
+		if isValidDateISO(to) {
+			query.To = to
+		} else {
+			rejected["to"] = "must be YYYY-MM-DD"
+		}
+	}
+
+	query = normalizeDateFilterPriority(query)
 
 	rawSort := c.QueryParam("sort")
 	if rawSort != "" {
@@ -198,6 +231,9 @@ func NormalizeTableQuery(query TableQuery, spec TableQuerySpec) TableQuery {
 		PageSize: intDefault(spec.DefaultSize, 20),
 		Sort:     spec.DefaultSort,
 		Dir:      defaultDirection(spec.DefaultDir),
+		Year:     strings.TrimSpace(query.Year),
+		From:     strings.TrimSpace(query.From),
+		To:       strings.TrimSpace(query.To),
 	}
 
 	if query.Page > 0 {
@@ -234,6 +270,20 @@ func NormalizeTableQuery(query TableQuery, spec TableQuerySpec) TableQuery {
 		}
 	}
 
+	if !isValidYear(normalized.Year) {
+		normalized.Year = ""
+	}
+
+	if !isValidDateISO(normalized.From) {
+		normalized.From = ""
+	}
+
+	if !isValidDateISO(normalized.To) {
+		normalized.To = ""
+	}
+
+	normalized = normalizeDateFilterPriority(normalized)
+
 	return normalized
 }
 
@@ -243,6 +293,9 @@ type TableQueryPatch struct {
 	Dir      *string
 	Page     *int
 	PageSize *int
+	Year     *string
+	From     *string
+	To       *string
 }
 
 type SortCycle struct {
@@ -309,6 +362,9 @@ func TableQuerySignals(query TableQuery) map[string]any {
 		"dir":      dir,
 		"page":     query.Page,
 		"pageSize": query.PageSize,
+		"year":     query.Year,
+		"from":     query.From,
+		"to":       query.To,
 	}
 }
 
@@ -340,6 +396,51 @@ func BuildTableSearchDatastarAction(basePath string, defaultPageSize int) string
 	return fmt.Sprintf("const url = globalThis.tableSearchAction('%s', $tableQuery, %d); @get(url)", basePath, defaultPageSize)
 }
 
+func BuildTableDateYearURL(basePath string, query TableQuery, year string) string {
+	page := 1
+	from := ""
+	to := ""
+	trimmedYear := strings.TrimSpace(year)
+	return BuildTableQueryURLWith(basePath, query, TableQueryPatch{
+		Page: &page,
+		Year: &trimmedYear,
+		From: &from,
+		To:   &to,
+	})
+}
+
+func BuildTableDateClearURL(basePath string, query TableQuery) string {
+	page := 1
+	empty := ""
+	return BuildTableQueryURLWith(basePath, query, TableQueryPatch{
+		Page: &page,
+		Year: &empty,
+		From: &empty,
+		To:   &empty,
+	})
+}
+
+func BuildTableDateRangeDatastarAction(basePath string, defaultPageSize int) string {
+	if defaultPageSize <= 0 {
+		defaultPageSize = DefaultTablePageSize
+	}
+	return fmt.Sprintf("if ($dateRange.from !== '' && $dateRange.to !== '') { $tableQuery.year = ''; $tableQuery.from = $dateRange.from; $tableQuery.to = $dateRange.to; const url = globalThis.tableSearchAction('%s', $tableQuery, %d); @get(url) }", basePath, defaultPageSize)
+}
+
+func DateFilterAllButtonClass(query TableQuery) string {
+	if query.Year == "" && !(query.From != "" && query.To != "") {
+		return "btn btn-sm btn-active"
+	}
+	return "btn btn-sm"
+}
+
+func DateFilterYearButtonClass(query TableQuery, year string) string {
+	if query.Year == year && !(query.From != "" && query.To != "") {
+		return "btn btn-sm btn-active"
+	}
+	return "btn btn-sm"
+}
+
 func BuildTablePageDatastarAction(basePath string, totalPages int, defaultPageSize int) string {
 	if totalPages < 1 {
 		totalPages = 1
@@ -365,6 +466,7 @@ func PageSizeButtonClass(current, value int) string {
 
 func BuildTableQueryURLWith(basePath string, query TableQuery, patch TableQueryPatch) string {
 	resolved := query
+	yearPatched := false
 
 	if patch.Search != nil {
 		resolved.Search = strings.TrimSpace(*patch.Search)
@@ -391,6 +493,19 @@ func BuildTableQueryURLWith(basePath string, query TableQuery, patch TableQueryP
 		resolved.PageSize = *patch.PageSize
 	}
 
+	if patch.Year != nil {
+		resolved.Year = strings.TrimSpace(*patch.Year)
+		yearPatched = true
+	}
+
+	if patch.From != nil {
+		resolved.From = strings.TrimSpace(*patch.From)
+	}
+
+	if patch.To != nil {
+		resolved.To = strings.TrimSpace(*patch.To)
+	}
+
 	if resolved.Page < 1 {
 		resolved.Page = 1
 	}
@@ -398,6 +513,25 @@ func BuildTableQueryURLWith(basePath string, query TableQuery, patch TableQueryP
 	if resolved.PageSize < 1 {
 		resolved.PageSize = DefaultTablePageSize
 	}
+
+	if !isValidYear(resolved.Year) {
+		resolved.Year = ""
+	}
+
+	if !isValidDateISO(resolved.From) {
+		resolved.From = ""
+	}
+
+	if !isValidDateISO(resolved.To) {
+		resolved.To = ""
+	}
+
+	if yearPatched && resolved.Year != "" {
+		resolved.From = ""
+		resolved.To = ""
+	}
+
+	resolved = normalizeDateFilterPriority(resolved)
 
 	// Parse the basePath to handle existing query parameters properly
 	u, err := url.Parse(basePath)
@@ -416,6 +550,15 @@ func BuildTableQueryURLWith(basePath string, query TableQuery, patch TableQueryP
 		}
 		if resolved.PageSize != DefaultTablePageSize {
 			values.Set("pageSize", strconv.Itoa(resolved.PageSize))
+		}
+		if resolved.Year != "" {
+			values.Set("year", resolved.Year)
+		}
+		if resolved.From != "" {
+			values.Set("from", resolved.From)
+		}
+		if resolved.To != "" {
+			values.Set("to", resolved.To)
 		}
 		encoded := values.Encode()
 		if encoded == "" {
@@ -452,6 +595,57 @@ func BuildTableQueryURLWith(basePath string, query TableQuery, patch TableQueryP
 		values.Del("pageSize")
 	}
 
+	if resolved.Year != "" {
+		values.Set("year", resolved.Year)
+	} else {
+		values.Del("year")
+	}
+
+	if resolved.From != "" {
+		values.Set("from", resolved.From)
+	} else {
+		values.Del("from")
+	}
+
+	if resolved.To != "" {
+		values.Set("to", resolved.To)
+	} else {
+		values.Del("to")
+	}
+
 	u.RawQuery = values.Encode()
 	return u.String()
+}
+
+func isValidYear(year string) bool {
+	if year == "" || len(year) != 4 {
+		return false
+	}
+	value, err := strconv.Atoi(year)
+	if err != nil {
+		return false
+	}
+	return value >= 1900 && value <= 3000
+}
+
+func isValidDateISO(value string) bool {
+	if value == "" {
+		return false
+	}
+	_, err := time.Parse("2006-01-02", value)
+	return err == nil
+}
+
+func normalizeDateFilterPriority(query TableQuery) TableQuery {
+	if query.From != "" && query.To != "" {
+		query.Year = ""
+		return query
+	}
+
+	if query.Year != "" {
+		query.From = ""
+		query.To = ""
+	}
+
+	return query
 }

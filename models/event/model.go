@@ -181,8 +181,11 @@ func (e *Events) GetIndexData(ctx context.Context, groupID string, query utils.T
 	}
 
 	totalItems, err := db.Qry.CountEventsFiltered(ctx, db.CountEventsFilteredParams{
-		GroupID: groupID,
-		Search:  query.Search,
+		GroupID:    groupID,
+		Search:     query.Search,
+		YearFilter: query.Year,
+		FromDate:   query.From,
+		ToDate:     query.To,
 	})
 	if err != nil {
 		return EventsData{}, err
@@ -191,10 +194,13 @@ func (e *Events) GetIndexData(ctx context.Context, groupID string, query utils.T
 	query = utils.ClampPage(query, totalItems)
 
 	params := db.ListEventsByTimeAscFilteredParams{
-		GroupID: groupID,
-		Search:  query.Search,
-		Limit:   int64(query.PageSize),
-		Offset:  query.Offset(),
+		GroupID:    groupID,
+		Search:     query.Search,
+		YearFilter: query.Year,
+		FromDate:   query.From,
+		ToDate:     query.To,
+		Limit:      int64(query.PageSize),
+		Offset:     query.Offset(),
 	}
 
 	var events []db.Event
@@ -229,11 +235,12 @@ func (e *Events) GetIndexData(ctx context.Context, groupID string, query utils.T
 	}
 
 	return EventsData{
-		Title:   ctxi18n.T(ctx, "events.title"),
-		Events:  events,
-		Query:   query,
-		Pager:   utils.BuildTablePagination(totalItems, query),
-		GroupID: groupID,
+		Title:       ctxi18n.T(ctx, "events.title"),
+		Events:      events,
+		RecentYears: utils.RecentYears(3),
+		Query:       query,
+		Pager:       utils.BuildTablePagination(totalItems, query),
+		GroupID:     groupID,
 		Breadcrumbs: []utils.Crumb{
 			{Label: ctxi18n.T(ctx, "groups.title"), Href: "/dashboard"},
 			{Label: group.Name, Href: "/groups/" + groupID},

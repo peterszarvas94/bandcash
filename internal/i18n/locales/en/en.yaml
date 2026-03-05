@@ -104,6 +104,9 @@ en:
   table:
     empty: "no items"
     actions: "Actions"
+    all: "All"
+    from: "From"
+    to: "To"
     search: "Search"
     search_placeholder: "Name, Admin"
     search_placeholder_events: "Title, Description"

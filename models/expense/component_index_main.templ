@@ -11,6 +11,32 @@ import (
 
 templ ExpenseIndexMain(data ExpensesData) {
 	@shared.TableSearchForm(utils.BuildTableSearchDatastarAction(fmt.Sprintf("/groups/%s/expenses", data.GroupID), utils.DefaultTablePageSize), "table.search_placeholder_expenses")
+	<div class="row row-wrap pt pb">
+		<button
+			class={ utils.DateFilterAllButtonClass(data.Query) }
+			type="button"
+			data-on:click={ utils.BuildTableQueryDatastarAction(utils.BuildTableDateClearURL(fmt.Sprintf("/groups/%s/expenses", data.GroupID), data.Query)) }
+		>
+			{ ctxi18n.T(ctx, "table.all") }
+		</button>
+		for _, year := range data.RecentYears {
+			<button
+				class={ utils.DateFilterYearButtonClass(data.Query, fmt.Sprintf("%d", year)) }
+				type="button"
+				data-on:click={ utils.BuildTableQueryDatastarAction(utils.BuildTableDateYearURL(fmt.Sprintf("/groups/%s/expenses", data.GroupID), data.Query, fmt.Sprintf("%d", year))) }
+			>
+				{ fmt.Sprintf("%d", year) }
+			</button>
+		}
+		<label class="row">
+			<span class="text-sm">{ ctxi18n.T(ctx, "table.from") }</span>
+			<input type="date" class="input input-sm" data-bind="dateRange.from" data-on:change={ utils.BuildTableDateRangeDatastarAction(fmt.Sprintf("/groups/%s/expenses", data.GroupID), utils.DefaultTablePageSize) }/>
+		</label>
+		<label class="row">
+			<span class="text-sm">{ ctxi18n.T(ctx, "table.to") }</span>
+			<input type="date" class="input input-sm" data-bind="dateRange.to" data-on:change={ utils.BuildTableDateRangeDatastarAction(fmt.Sprintf("/groups/%s/expenses", data.GroupID), utils.DefaultTablePageSize) }/>
+		</label>
+	</div>
 	<div class="row row-wrap justify-between pt pb">
 		<div class="row row-wrap">
 			<span class="hide-tablet text-sm">{ ctxi18n.T(ctx, "table.page_size") }</span>

@@ -8,6 +8,7 @@ import (
 type ExpensesData struct {
 	Title       string
 	Expenses    []db.Expense
+	RecentYears []int
 	Query       utils.TableQuery
 	Pager       utils.TablePagination
 	Breadcrumbs []utils.Crumb

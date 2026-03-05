@@ -17,15 +17,39 @@ WHERE group_id = ?1
     OR title LIKE '%' || ?2 || '%'
     OR description LIKE '%' || ?2 || '%'
   )
+  AND (
+    (
+      ?3 != ''
+      AND ?4 != ''
+      AND date(expenses.date) >= date(?3)
+      AND date(expenses.date) <= date(?4)
+    )
+    OR (
+      (?3 = '' OR ?4 = '')
+      AND (
+        ?5 = ''
+        OR strftime('%Y', expenses.date) = ?5
+      )
+    )
+  )
 `
 
 type CountExpensesFilteredParams struct {
-	GroupID string      `json:"group_id"`
-	Search  interface{} `json:"search"`
+	GroupID    string      `json:"group_id"`
+	Search     interface{} `json:"search"`
+	FromDate   interface{} `json:"from_date"`
+	ToDate     interface{} `json:"to_date"`
+	YearFilter interface{} `json:"year_filter"`
 }
 
 func (q *Queries) CountExpensesFiltered(ctx context.Context, arg CountExpensesFilteredParams) (int64, error) {
-	row := q.db.QueryRowContext(ctx, countExpensesFiltered, arg.GroupID, arg.Search)
+	row := q.db.QueryRowContext(ctx, countExpensesFiltered,
+		arg.GroupID,
+		arg.Search,
+		arg.FromDate,
+		arg.ToDate,
+		arg.YearFilter,
+	)
 	var count int64
 	err := row.Scan(&count)
 	return count, err
@@ -130,21 +154,42 @@ WHERE group_id = ?1
     OR title LIKE '%' || ?2 || '%'
     OR description LIKE '%' || ?2 || '%'
   )
+  AND (
+    (
+      ?3 != ''
+      AND ?4 != ''
+      AND date(expenses.date) >= date(?3)
+      AND date(expenses.date) <= date(?4)
+    )
+    OR (
+      (?3 = '' OR ?4 = '')
+      AND (
+        ?5 = ''
+        OR strftime('%Y', expenses.date) = ?5
+      )
+    )
+  )
 ORDER BY amount ASC, created_at DESC
-LIMIT ?4 OFFSET ?3
+LIMIT ?7 OFFSET ?6
 `
 
 type ListExpensesByAmountAscFilteredParams struct {
-	GroupID string      `json:"group_id"`
-	Search  interface{} `json:"search"`
-	Offset  int64       `json:"offset"`
-	Limit   int64       `json:"limit"`
+	GroupID    string      `json:"group_id"`
+	Search     interface{} `json:"search"`
+	FromDate   interface{} `json:"from_date"`
+	ToDate     interface{} `json:"to_date"`
+	YearFilter interface{} `json:"year_filter"`
+	Offset     int64       `json:"offset"`
+	Limit      int64       `json:"limit"`
 }
 
 func (q *Queries) ListExpensesByAmountAscFiltered(ctx context.Context, arg ListExpensesByAmountAscFilteredParams) ([]Expense, error) {
 	rows, err := q.db.QueryContext(ctx, listExpensesByAmountAscFiltered,
 		arg.GroupID,
 		arg.Search,
+		arg.FromDate,
+		arg.ToDate,
+		arg.YearFilter,
 		arg.Offset,
 		arg.Limit,
 	)
@@ -186,21 +231,42 @@ WHERE group_id = ?1
     OR title LIKE '%' || ?2 || '%'
     OR description LIKE '%' || ?2 || '%'
   )
+  AND (
+    (
+      ?3 != ''
+      AND ?4 != ''
+      AND date(expenses.date) >= date(?3)
+      AND date(expenses.date) <= date(?4)
+    )
+    OR (
+      (?3 = '' OR ?4 = '')
+      AND (
+        ?5 = ''
+        OR strftime('%Y', expenses.date) = ?5
+      )
+    )
+  )
 ORDER BY amount DESC, created_at DESC
-LIMIT ?4 OFFSET ?3
+LIMIT ?7 OFFSET ?6
 `
 
 type ListExpensesByAmountDescFilteredParams struct {
-	GroupID string      `json:"group_id"`
-	Search  interface{} `json:"search"`
-	Offset  int64       `json:"offset"`
-	Limit   int64       `json:"limit"`
+	GroupID    string      `json:"group_id"`
+	Search     interface{} `json:"search"`
+	FromDate   interface{} `json:"from_date"`
+	ToDate     interface{} `json:"to_date"`
+	YearFilter interface{} `json:"year_filter"`
+	Offset     int64       `json:"offset"`
+	Limit      int64       `json:"limit"`
 }
 
 func (q *Queries) ListExpensesByAmountDescFiltered(ctx context.Context, arg ListExpensesByAmountDescFilteredParams) ([]Expense, error) {
 	rows, err := q.db.QueryContext(ctx, listExpensesByAmountDescFiltered,
 		arg.GroupID,
 		arg.Search,
+		arg.FromDate,
+		arg.ToDate,
+		arg.YearFilter,
 		arg.Offset,
 		arg.Limit,
 	)
@@ -242,21 +308,42 @@ WHERE group_id = ?1
     OR title LIKE '%' || ?2 || '%'
     OR description LIKE '%' || ?2 || '%'
   )
+  AND (
+    (
+      ?3 != ''
+      AND ?4 != ''
+      AND date(expenses.date) >= date(?3)
+      AND date(expenses.date) <= date(?4)
+    )
+    OR (
+      (?3 = '' OR ?4 = '')
+      AND (
+        ?5 = ''
+        OR strftime('%Y', expenses.date) = ?5
+      )
+    )
+  )
 ORDER BY date ASC, created_at DESC
-LIMIT ?4 OFFSET ?3
+LIMIT ?7 OFFSET ?6
 `
 
 type ListExpensesByDateAscFilteredParams struct {
-	GroupID string      `json:"group_id"`
-	Search  interface{} `json:"search"`
-	Offset  int64       `json:"offset"`
-	Limit   int64       `json:"limit"`
+	GroupID    string      `json:"group_id"`
+	Search     interface{} `json:"search"`
+	FromDate   interface{} `json:"from_date"`
+	ToDate     interface{} `json:"to_date"`
+	YearFilter interface{} `json:"year_filter"`
+	Offset     int64       `json:"offset"`
+	Limit      int64       `json:"limit"`
 }
 
 func (q *Queries) ListExpensesByDateAscFiltered(ctx context.Context, arg ListExpensesByDateAscFilteredParams) ([]Expense, error) {
 	rows, err := q.db.QueryContext(ctx, listExpensesByDateAscFiltered,
 		arg.GroupID,
 		arg.Search,
+		arg.FromDate,
+		arg.ToDate,
+		arg.YearFilter,
 		arg.Offset,
 		arg.Limit,
 	)
@@ -298,21 +385,42 @@ WHERE group_id = ?1
     OR title LIKE '%' || ?2 || '%'
     OR description LIKE '%' || ?2 || '%'
   )
+  AND (
+    (
+      ?3 != ''
+      AND ?4 != ''
+      AND date(expenses.date) >= date(?3)
+      AND date(expenses.date) <= date(?4)
+    )
+    OR (
+      (?3 = '' OR ?4 = '')
+      AND (
+        ?5 = ''
+        OR strftime('%Y', expenses.date) = ?5
+      )
+    )
+  )
 ORDER BY date DESC, created_at DESC
-LIMIT ?4 OFFSET ?3
+LIMIT ?7 OFFSET ?6
 `
 
 type ListExpensesByDateDescFilteredParams struct {
-	GroupID string      `json:"group_id"`
-	Search  interface{} `json:"search"`
-	Offset  int64       `json:"offset"`
-	Limit   int64       `json:"limit"`
+	GroupID    string      `json:"group_id"`
+	Search     interface{} `json:"search"`
+	FromDate   interface{} `json:"from_date"`
+	ToDate     interface{} `json:"to_date"`
+	YearFilter interface{} `json:"year_filter"`
+	Offset     int64       `json:"offset"`
+	Limit      int64       `json:"limit"`
 }
 
 func (q *Queries) ListExpensesByDateDescFiltered(ctx context.Context, arg ListExpensesByDateDescFilteredParams) ([]Expense, error) {
 	rows, err := q.db.QueryContext(ctx, listExpensesByDateDescFiltered,
 		arg.GroupID,
 		arg.Search,
+		arg.FromDate,
+		arg.ToDate,
+		arg.YearFilter,
 		arg.Offset,
 		arg.Limit,
 	)
@@ -354,21 +462,42 @@ WHERE group_id = ?1
     OR title LIKE '%' || ?2 || '%'
     OR description LIKE '%' || ?2 || '%'
   )
+  AND (
+    (
+      ?3 != ''
+      AND ?4 != ''
+      AND date(expenses.date) >= date(?3)
+      AND date(expenses.date) <= date(?4)
+    )
+    OR (
+      (?3 = '' OR ?4 = '')
+      AND (
+        ?5 = ''
+        OR strftime('%Y', expenses.date) = ?5
+      )
+    )
+  )
 ORDER BY description COLLATE NOCASE ASC, date DESC
-LIMIT ?4 OFFSET ?3
+LIMIT ?7 OFFSET ?6
 `
 
 type ListExpensesByDescriptionAscFilteredParams struct {
-	GroupID string      `json:"group_id"`
-	Search  interface{} `json:"search"`
-	Offset  int64       `json:"offset"`
-	Limit   int64       `json:"limit"`
+	GroupID    string      `json:"group_id"`
+	Search     interface{} `json:"search"`
+	FromDate   interface{} `json:"from_date"`
+	ToDate     interface{} `json:"to_date"`
+	YearFilter interface{} `json:"year_filter"`
+	Offset     int64       `json:"offset"`
+	Limit      int64       `json:"limit"`
 }
 
 func (q *Queries) ListExpensesByDescriptionAscFiltered(ctx context.Context, arg ListExpensesByDescriptionAscFilteredParams) ([]Expense, error) {
 	rows, err := q.db.QueryContext(ctx, listExpensesByDescriptionAscFiltered,
 		arg.GroupID,
 		arg.Search,
+		arg.FromDate,
+		arg.ToDate,
+		arg.YearFilter,
 		arg.Offset,
 		arg.Limit,
 	)
@@ -410,21 +539,42 @@ WHERE group_id = ?1
     OR title LIKE '%' || ?2 || '%'
     OR description LIKE '%' || ?2 || '%'
   )
+  AND (
+    (
+      ?3 != ''
+      AND ?4 != ''
+      AND date(expenses.date) >= date(?3)
+      AND date(expenses.date) <= date(?4)
+    )
+    OR (
+      (?3 = '' OR ?4 = '')
+      AND (
+        ?5 = ''
+        OR strftime('%Y', expenses.date) = ?5
+      )
+    )
+  )
 ORDER BY description COLLATE NOCASE DESC, date DESC
-LIMIT ?4 OFFSET ?3
+LIMIT ?7 OFFSET ?6
 `
 
 type ListExpensesByDescriptionDescFilteredParams struct {
-	GroupID string      `json:"group_id"`
-	Search  interface{} `json:"search"`
-	Offset  int64       `json:"offset"`
-	Limit   int64       `json:"limit"`
+	GroupID    string      `json:"group_id"`
+	Search     interface{} `json:"search"`
+	FromDate   interface{} `json:"from_date"`
+	ToDate     interface{} `json:"to_date"`
+	YearFilter interface{} `json:"year_filter"`
+	Offset     int64       `json:"offset"`
+	Limit      int64       `json:"limit"`
 }
 
 func (q *Queries) ListExpensesByDescriptionDescFiltered(ctx context.Context, arg ListExpensesByDescriptionDescFilteredParams) ([]Expense, error) {
 	rows, err := q.db.QueryContext(ctx, listExpensesByDescriptionDescFiltered,
 		arg.GroupID,
 		arg.Search,
+		arg.FromDate,
+		arg.ToDate,
+		arg.YearFilter,
 		arg.Offset,
 		arg.Limit,
 	)
@@ -466,21 +616,42 @@ WHERE group_id = ?1
     OR title LIKE '%' || ?2 || '%'
     OR description LIKE '%' || ?2 || '%'
   )
+  AND (
+    (
+      ?3 != ''
+      AND ?4 != ''
+      AND date(expenses.date) >= date(?3)
+      AND date(expenses.date) <= date(?4)
+    )
+    OR (
+      (?3 = '' OR ?4 = '')
+      AND (
+        ?5 = ''
+        OR strftime('%Y', expenses.date) = ?5
+      )
+    )
+  )
 ORDER BY title COLLATE NOCASE ASC, created_at DESC
-LIMIT ?4 OFFSET ?3
+LIMIT ?7 OFFSET ?6
 `
 
 type ListExpensesByTitleAscFilteredParams struct {
-	GroupID string      `json:"group_id"`
-	Search  interface{} `json:"search"`
-	Offset  int64       `json:"offset"`
-	Limit   int64       `json:"limit"`
+	GroupID    string      `json:"group_id"`
+	Search     interface{} `json:"search"`
+	FromDate   interface{} `json:"from_date"`
+	ToDate     interface{} `json:"to_date"`
+	YearFilter interface{} `json:"year_filter"`
+	Offset     int64       `json:"offset"`
+	Limit      int64       `json:"limit"`
 }
 
 func (q *Queries) ListExpensesByTitleAscFiltered(ctx context.Context, arg ListExpensesByTitleAscFilteredParams) ([]Expense, error) {
 	rows, err := q.db.QueryContext(ctx, listExpensesByTitleAscFiltered,
 		arg.GroupID,
 		arg.Search,
+		arg.FromDate,
+		arg.ToDate,
+		arg.YearFilter,
 		arg.Offset,
 		arg.Limit,
 	)
@@ -522,21 +693,42 @@ WHERE group_id = ?1
     OR title LIKE '%' || ?2 || '%'
     OR description LIKE '%' || ?2 || '%'
   )
+  AND (
+    (
+      ?3 != ''
+      AND ?4 != ''
+      AND date(expenses.date) >= date(?3)
+      AND date(expenses.date) <= date(?4)
+    )
+    OR (
+      (?3 = '' OR ?4 = '')
+      AND (
+        ?5 = ''
+        OR strftime('%Y', expenses.date) = ?5
+      )
+    )
+  )
 ORDER BY title COLLATE NOCASE DESC, created_at DESC
-LIMIT ?4 OFFSET ?3
+LIMIT ?7 OFFSET ?6
 `
 
 type ListExpensesByTitleDescFilteredParams struct {
-	GroupID string      `json:"group_id"`
-	Search  interface{} `json:"search"`
-	Offset  int64       `json:"offset"`
-	Limit   int64       `json:"limit"`
+	GroupID    string      `json:"group_id"`
+	Search     interface{} `json:"search"`
+	FromDate   interface{} `json:"from_date"`
+	ToDate     interface{} `json:"to_date"`
+	YearFilter interface{} `json:"year_filter"`
+	Offset     int64       `json:"offset"`
+	Limit      int64       `json:"limit"`
 }
 
 func (q *Queries) ListExpensesByTitleDescFiltered(ctx context.Context, arg ListExpensesByTitleDescFilteredParams) ([]Expense, error) {
 	rows, err := q.db.QueryContext(ctx, listExpensesByTitleDescFiltered,
 		arg.GroupID,
 		arg.Search,
+		arg.FromDate,
+		arg.ToDate,
+		arg.YearFilter,
 		arg.Offset,
 		arg.Limit,
 	)

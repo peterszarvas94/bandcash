@@ -157,6 +157,37 @@ func TestParseTableQuery_RejectsMaliciousOrIllegalInputs(t *testing.T) {
 	})
 }
 
+func TestParseTableQuery_DateFilters(t *testing.T) {
+	t.Run("range overrides year when both provided", func(t *testing.T) {
+		e := echo.New()
+		req := httptest.NewRequest("GET", "/?year=2026&from=2026-01-01&to=2026-01-31", nil)
+		ctx := e.NewContext(req, httptest.NewRecorder())
+
+		query := ParseTableQuery(ctx, testQueryable{spec: StandardTableQuerySpec("time", "asc", "time")})
+
+		if query.Year != "" {
+			t.Fatalf("expected year to be cleared when range is set, got %q", query.Year)
+		}
+		if query.From != "2026-01-01" || query.To != "2026-01-31" {
+			t.Fatalf("expected range preserved, got from=%q to=%q", query.From, query.To)
+		}
+	})
+
+	t.Run("rejects invalid date inputs", func(t *testing.T) {
+		e := echo.New()
+		req := httptest.NewRequest("GET", "/?from=2026-44-01&to=bad", nil)
+		ctx := e.NewContext(req, httptest.NewRecorder())
+
+		result := ParseTableQueryWithResult(ctx, testQueryable{spec: StandardTableQuerySpec("time", "asc", "time")})
+		if _, ok := result.Rejected["from"]; !ok {
+			t.Fatalf("expected from to be rejected, got %+v", result.Rejected)
+		}
+		if _, ok := result.Rejected["to"]; !ok {
+			t.Fatalf("expected to to be rejected, got %+v", result.Rejected)
+		}
+	})
+}
+
 func TestParseTableQueryWithResult_ReportsRejectedFields(t *testing.T) {
 	t.Run("returns explicit rejected field map", func(t *testing.T) {
 		e := echo.New()
@@ -276,6 +307,35 @@ func TestBuildTableQueryURLWith_MergesExistingBaseQuery(t *testing.T) {
 		}
 		if strings.Contains(url, "q=") {
 			t.Fatalf("expected empty search to remove q, got %s", url)
+		}
+	})
+}
+
+func TestBuildTableQueryURLWith_DateFilters(t *testing.T) {
+	t.Run("clears year when complete range is provided", func(t *testing.T) {
+		query := TableQuery{Page: 1, PageSize: 10, Year: "2026"}
+		from := "2026-01-01"
+		to := "2026-12-31"
+		url := BuildTableQueryURLWith("/groups/g1/events", query, TableQueryPatch{From: &from, To: &to})
+
+		if strings.Contains(url, "year=") {
+			t.Fatalf("expected year to be removed when range set, got %s", url)
+		}
+		if !strings.Contains(url, "from=2026-01-01") || !strings.Contains(url, "to=2026-12-31") {
+			t.Fatalf("expected range params in url, got %s", url)
+		}
+	})
+
+	t.Run("year selection clears existing range", func(t *testing.T) {
+		query := TableQuery{Page: 1, PageSize: 10, From: "2026-01-01", To: "2026-12-31"}
+		year := "2025"
+		url := BuildTableQueryURLWith("/groups/g1/events", query, TableQueryPatch{Year: &year})
+
+		if !strings.Contains(url, "year=2025") {
+			t.Fatalf("expected year in url, got %s", url)
+		}
+		if strings.Contains(url, "from=") || strings.Contains(url, "to=") {
+			t.Fatalf("expected range params to be removed, got %s", url)
 		}
 	})
 }

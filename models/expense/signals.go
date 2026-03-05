@@ -1,9 +1,12 @@
 package expense
 
-func expenseIndexSignals(csrfToken string, query map[string]any) map[string]any {
+import "bandcash/internal/utils"
+
+func expenseIndexSignals(csrfToken string, query utils.TableQuery) map[string]any {
 	return map[string]any{
 		"csrf":           csrfToken,
-		"tableQuery":     query,
+		"tableQuery":     utils.TableQuerySignals(query),
+		"dateRange":      map[string]any{"from": query.From, "to": query.To},
 		"mode":           "table",
 		"formState":      "",
 		"eventFormState": "",

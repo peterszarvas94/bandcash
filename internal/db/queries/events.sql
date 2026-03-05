@@ -19,6 +19,21 @@ WHERE group_id = sqlc.arg(group_id)
     sqlc.arg(search) = ''
     OR title LIKE '%' || sqlc.arg(search) || '%'
     OR description LIKE '%' || sqlc.arg(search) || '%'
+  )
+  AND (
+    (
+      sqlc.arg(from_date) != ''
+      AND sqlc.arg(to_date) != ''
+      AND date(time) >= date(sqlc.arg(from_date))
+      AND date(time) <= date(sqlc.arg(to_date))
+    )
+    OR (
+      (sqlc.arg(from_date) = '' OR sqlc.arg(to_date) = '')
+      AND (
+        sqlc.arg(year_filter) = ''
+        OR strftime('%Y', time) = sqlc.arg(year_filter)
+      )
+    )
   );
 
 -- name: ListEventsByTimeAscFiltered :many
@@ -28,6 +43,21 @@ WHERE group_id = sqlc.arg(group_id)
     sqlc.arg(search) = ''
     OR title LIKE '%' || sqlc.arg(search) || '%'
     OR description LIKE '%' || sqlc.arg(search) || '%'
+  )
+  AND (
+    (
+      sqlc.arg(from_date) != ''
+      AND sqlc.arg(to_date) != ''
+      AND date(time) >= date(sqlc.arg(from_date))
+      AND date(time) <= date(sqlc.arg(to_date))
+    )
+    OR (
+      (sqlc.arg(from_date) = '' OR sqlc.arg(to_date) = '')
+      AND (
+        sqlc.arg(year_filter) = ''
+        OR strftime('%Y', time) = sqlc.arg(year_filter)
+      )
+    )
   )
 ORDER BY time ASC, created_at DESC
 LIMIT sqlc.arg(limit) OFFSET sqlc.arg(offset);
@@ -40,6 +70,21 @@ WHERE group_id = sqlc.arg(group_id)
     OR title LIKE '%' || sqlc.arg(search) || '%'
     OR description LIKE '%' || sqlc.arg(search) || '%'
   )
+  AND (
+    (
+      sqlc.arg(from_date) != ''
+      AND sqlc.arg(to_date) != ''
+      AND date(time) >= date(sqlc.arg(from_date))
+      AND date(time) <= date(sqlc.arg(to_date))
+    )
+    OR (
+      (sqlc.arg(from_date) = '' OR sqlc.arg(to_date) = '')
+      AND (
+        sqlc.arg(year_filter) = ''
+        OR strftime('%Y', time) = sqlc.arg(year_filter)
+      )
+    )
+  )
 ORDER BY time DESC, created_at DESC
 LIMIT sqlc.arg(limit) OFFSET sqlc.arg(offset);
 
@@ -50,6 +95,21 @@ WHERE group_id = sqlc.arg(group_id)
     sqlc.arg(search) = ''
     OR title LIKE '%' || sqlc.arg(search) || '%'
     OR description LIKE '%' || sqlc.arg(search) || '%'
+  )
+  AND (
+    (
+      sqlc.arg(from_date) != ''
+      AND sqlc.arg(to_date) != ''
+      AND date(time) >= date(sqlc.arg(from_date))
+      AND date(time) <= date(sqlc.arg(to_date))
+    )
+    OR (
+      (sqlc.arg(from_date) = '' OR sqlc.arg(to_date) = '')
+      AND (
+        sqlc.arg(year_filter) = ''
+        OR strftime('%Y', time) = sqlc.arg(year_filter)
+      )
+    )
   )
 ORDER BY title COLLATE NOCASE ASC, created_at DESC
 LIMIT sqlc.arg(limit) OFFSET sqlc.arg(offset);
@@ -62,6 +122,21 @@ WHERE group_id = sqlc.arg(group_id)
     OR title LIKE '%' || sqlc.arg(search) || '%'
     OR description LIKE '%' || sqlc.arg(search) || '%'
   )
+  AND (
+    (
+      sqlc.arg(from_date) != ''
+      AND sqlc.arg(to_date) != ''
+      AND date(time) >= date(sqlc.arg(from_date))
+      AND date(time) <= date(sqlc.arg(to_date))
+    )
+    OR (
+      (sqlc.arg(from_date) = '' OR sqlc.arg(to_date) = '')
+      AND (
+        sqlc.arg(year_filter) = ''
+        OR strftime('%Y', time) = sqlc.arg(year_filter)
+      )
+    )
+  )
 ORDER BY title COLLATE NOCASE DESC, created_at DESC
 LIMIT sqlc.arg(limit) OFFSET sqlc.arg(offset);
 
@@ -72,6 +147,21 @@ WHERE group_id = sqlc.arg(group_id)
     sqlc.arg(search) = ''
     OR title LIKE '%' || sqlc.arg(search) || '%'
     OR description LIKE '%' || sqlc.arg(search) || '%'
+  )
+  AND (
+    (
+      sqlc.arg(from_date) != ''
+      AND sqlc.arg(to_date) != ''
+      AND date(time) >= date(sqlc.arg(from_date))
+      AND date(time) <= date(sqlc.arg(to_date))
+    )
+    OR (
+      (sqlc.arg(from_date) = '' OR sqlc.arg(to_date) = '')
+      AND (
+        sqlc.arg(year_filter) = ''
+        OR strftime('%Y', time) = sqlc.arg(year_filter)
+      )
+    )
   )
 ORDER BY amount ASC, created_at DESC
 LIMIT sqlc.arg(limit) OFFSET sqlc.arg(offset);
@@ -84,6 +174,21 @@ WHERE group_id = sqlc.arg(group_id)
     OR title LIKE '%' || sqlc.arg(search) || '%'
     OR description LIKE '%' || sqlc.arg(search) || '%'
   )
+  AND (
+    (
+      sqlc.arg(from_date) != ''
+      AND sqlc.arg(to_date) != ''
+      AND date(time) >= date(sqlc.arg(from_date))
+      AND date(time) <= date(sqlc.arg(to_date))
+    )
+    OR (
+      (sqlc.arg(from_date) = '' OR sqlc.arg(to_date) = '')
+      AND (
+        sqlc.arg(year_filter) = ''
+        OR strftime('%Y', time) = sqlc.arg(year_filter)
+      )
+    )
+  )
 ORDER BY amount DESC, created_at DESC
 LIMIT sqlc.arg(limit) OFFSET sqlc.arg(offset);
 
@@ -95,6 +200,21 @@ WHERE group_id = sqlc.arg(group_id)
     OR title LIKE '%' || sqlc.arg(search) || '%'
     OR description LIKE '%' || sqlc.arg(search) || '%'
   )
+  AND (
+    (
+      sqlc.arg(from_date) != ''
+      AND sqlc.arg(to_date) != ''
+      AND date(time) >= date(sqlc.arg(from_date))
+      AND date(time) <= date(sqlc.arg(to_date))
+    )
+    OR (
+      (sqlc.arg(from_date) = '' OR sqlc.arg(to_date) = '')
+      AND (
+        sqlc.arg(year_filter) = ''
+        OR strftime('%Y', time) = sqlc.arg(year_filter)
+      )
+    )
+  )
 ORDER BY description COLLATE NOCASE ASC, time ASC
 LIMIT sqlc.arg(limit) OFFSET sqlc.arg(offset);
 
@@ -105,6 +225,21 @@ WHERE group_id = sqlc.arg(group_id)
     sqlc.arg(search) = ''
     OR title LIKE '%' || sqlc.arg(search) || '%'
     OR description LIKE '%' || sqlc.arg(search) || '%'
+  )
+  AND (
+    (
+      sqlc.arg(from_date) != ''
+      AND sqlc.arg(to_date) != ''
+      AND date(time) >= date(sqlc.arg(from_date))
+      AND date(time) <= date(sqlc.arg(to_date))
+    )
+    OR (
+      (sqlc.arg(from_date) = '' OR sqlc.arg(to_date) = '')
+      AND (
+        sqlc.arg(year_filter) = ''
+        OR strftime('%Y', time) = sqlc.arg(year_filter)
+      )
+    )
   )
 ORDER BY description COLLATE NOCASE DESC, time ASC
 LIMIT sqlc.arg(limit) OFFSET sqlc.arg(offset);

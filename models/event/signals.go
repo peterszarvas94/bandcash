@@ -2,10 +2,11 @@ package event
 
 import "bandcash/internal/utils"
 
-func eventIndexSignals(csrfToken string, query map[string]any) map[string]any {
+func eventIndexSignals(csrfToken string, query utils.TableQuery) map[string]any {
 	return map[string]any{
 		"csrf":           csrfToken,
-		"tableQuery":     query,
+		"tableQuery":     utils.TableQuerySignals(query),
+		"dateRange":      map[string]any{"from": query.From, "to": query.To},
 		"mode":           "table",
 		"formState":      "",
 		"editingId":      0,

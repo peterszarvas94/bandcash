@@ -28,6 +28,28 @@ function normalizePage(value, fallback, totalPages = 0) {
   return page;
 }
 
+function normalizeYear(value) {
+  if (typeof value !== "string") {
+    return "";
+  }
+  const trimmed = value.trim();
+  if (!/^\d{4}$/.test(trimmed)) {
+    return "";
+  }
+  return trimmed;
+}
+
+function normalizeDateISO(value) {
+  if (typeof value !== "string") {
+    return "";
+  }
+  const trimmed = value.trim();
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(trimmed)) {
+    return "";
+  }
+  return trimmed;
+}
+
 function buildTableSearchURL(input) {
   const basePath = typeof input.basePath === "string" ? input.basePath : "";
   const defaultPageSize = normalizePageSize(input.defaultPageSize, 10);
@@ -35,6 +57,15 @@ function buildTableSearchURL(input) {
   const search = normalizeText(input.search);
   const sort = normalizeText(input.sort);
   const dir = input.dir === "desc" ? "desc" : "asc";
+  let year = normalizeYear(input.year);
+  let from = normalizeDateISO(input.from);
+  let to = normalizeDateISO(input.to);
+  if (from !== "" && to !== "") {
+    year = "";
+  } else if (year !== "") {
+    from = "";
+    to = "";
+  }
   const currentSearch = typeof input.currentSearch === "string" ? input.currentSearch : window.location.search;
   const current = new URLSearchParams(currentSearch);
 
@@ -50,6 +81,16 @@ function buildTableSearchURL(input) {
 
   if (pageSize !== defaultPageSize) {
     params.set("pageSize", String(pageSize));
+  }
+
+  if (year !== "") {
+    params.set("year", year);
+  }
+  if (from !== "") {
+    params.set("from", from);
+  }
+  if (to !== "") {
+    params.set("to", to);
   }
 
   const query = params.toString();
@@ -71,6 +112,9 @@ function tableSearchAction(basePath, tableQuery, defaultPageSize = 10) {
     sort: queryState.sort,
     dir: queryState.dir,
     pageSize: queryState.pageSize,
+    year: queryState.year,
+    from: queryState.from,
+    to: queryState.to,
     defaultPageSize,
   });
 
@@ -86,6 +130,15 @@ function tablePageAction(basePath, tableQuery, totalPages = 0, defaultPageSize =
   const sort = normalizeText(queryState.sort);
   const sortSet = Boolean(queryState.sortSet) && sort !== "";
   const dir = queryState.dir === "desc" ? "desc" : "asc";
+  let year = normalizeYear(queryState.year);
+  let from = normalizeDateISO(queryState.from);
+  let to = normalizeDateISO(queryState.to);
+  if (from !== "" && to !== "") {
+    year = "";
+  } else if (year !== "") {
+    from = "";
+    to = "";
+  }
 
   const baseURL = new URL(basePath, window.location.origin);
   const params = baseURL.searchParams;
@@ -114,6 +167,24 @@ function tablePageAction(basePath, tableQuery, totalPages = 0, defaultPageSize =
     params.set("pageSize", String(pageSize));
   } else {
     params.delete("pageSize");
+  }
+
+  if (year !== "") {
+    params.set("year", year);
+  } else {
+    params.delete("year");
+  }
+
+  if (from !== "") {
+    params.set("from", from);
+  } else {
+    params.delete("from");
+  }
+
+  if (to !== "") {
+    params.set("to", to);
+  } else {
+    params.delete("to");
   }
 
   const query = params.toString();

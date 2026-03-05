@@ -78,7 +78,7 @@ func TestEventsFilteredQueries(t *testing.T) {
 	}
 
 	t.Run("counts only matching rows in same group", func(t *testing.T) {
-		count, err := q.CountEventsFiltered(ctx, CountEventsFilteredParams{GroupID: groupID, Search: "test"})
+		count, err := q.CountEventsFiltered(ctx, CountEventsFilteredParams{GroupID: groupID, Search: "test", YearFilter: "", FromDate: "", ToDate: ""})
 		if err != nil {
 			t.Fatalf("count events: %v", err)
 		}
@@ -88,7 +88,7 @@ func TestEventsFilteredQueries(t *testing.T) {
 	})
 
 	t.Run("lists events sorted by amount desc with pagination", func(t *testing.T) {
-		list, err := q.ListEventsByAmountDescFiltered(ctx, ListEventsByAmountDescFilteredParams{GroupID: groupID, Search: "", Limit: 2, Offset: 0})
+		list, err := q.ListEventsByAmountDescFiltered(ctx, ListEventsByAmountDescFilteredParams{GroupID: groupID, Search: "", YearFilter: "", FromDate: "", ToDate: "", Limit: 2, Offset: 0})
 		if err != nil {
 			t.Fatalf("list events by amount desc: %v", err)
 		}
@@ -164,7 +164,7 @@ func TestExpensesFilteredQueries(t *testing.T) {
 	}
 
 	t.Run("counts filtered expenses for selected group", func(t *testing.T) {
-		count, err := q.CountExpensesFiltered(ctx, CountExpensesFilteredParams{GroupID: groupID, Search: "test"})
+		count, err := q.CountExpensesFiltered(ctx, CountExpensesFilteredParams{GroupID: groupID, Search: "test", YearFilter: "", FromDate: "", ToDate: ""})
 		if err != nil {
 			t.Fatalf("count expenses: %v", err)
 		}
@@ -174,7 +174,7 @@ func TestExpensesFilteredQueries(t *testing.T) {
 	})
 
 	t.Run("lists expenses sorted by date desc", func(t *testing.T) {
-		list, err := q.ListExpensesByDateDescFiltered(ctx, ListExpensesByDateDescFilteredParams{GroupID: groupID, Search: "", Limit: 2, Offset: 0})
+		list, err := q.ListExpensesByDateDescFiltered(ctx, ListExpensesByDateDescFilteredParams{GroupID: groupID, Search: "", YearFilter: "", FromDate: "", ToDate: "", Limit: 2, Offset: 0})
 		if err != nil {
 			t.Fatalf("list expenses by date desc: %v", err)
 		}
