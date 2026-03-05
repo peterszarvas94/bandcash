@@ -41,6 +41,7 @@ function initBodyLimitTester() {
   const globalBigButton = document.getElementById("body-limit-global-big");
   const authOkButton = document.getElementById("body-limit-auth-ok");
   const authBigButton = document.getElementById("body-limit-auth-big");
+  const clearButton = document.getElementById("body-limit-clear");
 
   if (!output || !csrfInput || !globalOkButton || !globalBigButton || !authOkButton || !authBigButton) {
     return;
@@ -68,6 +69,12 @@ function initBodyLimitTester() {
   authBigButton.addEventListener("click", function onAuthBigClick() {
     sendBodyLimitRequest(output, csrf, "/dev/body-limit/auth", makeBody(csrf, 96 * 1024), msgAuthBig, msgResult);
   });
+
+  if (clearButton) {
+    clearButton.addEventListener("click", function onClearClick() {
+      output.textContent = "Ready.";
+    });
+  }
 }
 
 initBodyLimitTester();

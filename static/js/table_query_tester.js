@@ -34,6 +34,7 @@ function initTableQueryTester() {
   const eventsInvalid = document.getElementById("query-test-events-invalid");
   const membersValid = document.getElementById("query-test-members-valid");
   const expensesValid = document.getElementById("query-test-expenses-valid");
+  const clearButton = document.getElementById("query-test-clear");
 
   if (!output || !eventsValid || !eventsInvalid || !membersValid || !expensesValid) {
     return;
@@ -54,6 +55,12 @@ function initTableQueryTester() {
   expensesValid.addEventListener("click", function onExpensesValidClick() {
     runQueryTest(output, "expenses-valid", "/dev/query-test/expenses?q=&sort=amount&dir=desc&page=1&pageSize=10");
   });
+
+  if (clearButton) {
+    clearButton.addEventListener("click", function onClearClick() {
+      output.textContent = "Ready.";
+    });
+  }
 }
 
 initTableQueryTester();

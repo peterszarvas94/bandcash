@@ -82,9 +82,9 @@
     text-align: center;
     white-space: nowrap;
     cursor: pointer;
-    border: var(--border) solid var(--border-color);
+    border: var(--border) solid transparent;
     border-radius: 0;
-    background: var(--page-bg);
+    background: color-mix(in srgb, var(--page-bg) 94%, var(--text-color) 6%);
     color: var(--text-color);
     min-width: 5ch;
     min-height: 2.5rem;
@@ -94,15 +94,13 @@
     max-width: 100%;
 
     &:not(:disabled):not([disabled]):hover {
-      background: var(--surface-hover);
+      background: color-mix(in srgb, var(--page-bg) 90%, var(--text-color) 10%);
+      border-color: color-mix(in srgb, var(--page-bg) 72%, var(--text-color) 28%);
     }
 
     &:not(:disabled):not([disabled]):active {
-      border-color: color-mix(
-        in srgb,
-        var(--border-color) 50%,
-        var(--page-bg) 50%
-      );
+      background: color-mix(in srgb, var(--page-bg) 86%, var(--text-color) 14%);
+      border-color: color-mix(in srgb, var(--page-bg) 62%, var(--text-color) 38%);
     }
 
     &:focus-visible {
@@ -114,8 +112,8 @@
     &[disabled] {
       opacity: 0.55;
       cursor: not-allowed;
-      background: var(--page-bg);
-      border-color: var(--border-color);
+      background: color-mix(in srgb, var(--page-bg) 97%, var(--text-color) 3%);
+      border-color: transparent;
     }
 
     &.btn-sm {
@@ -141,7 +139,6 @@
     }
 
     &.btn-ghost {
-      border-color: transparent;
       background: transparent;
 
       &:not(:disabled):not([disabled]):hover {
@@ -149,7 +146,7 @@
       }
 
       &:not(:disabled):not([disabled]):active {
-        border-color: transparent;
+        background: color-mix(in srgb, var(--page-bg) 88%, var(--text-color) 12%);
       }
     }
 
@@ -176,35 +173,41 @@
     min-width: 12ch;
     height: 2.5rem;
     padding: var(--space) calc(var(--space) * 2);
-    border: var(--border) solid var(--border-color);
-    background: color-mix(in srgb, var(--page-bg) 97%, var(--text-color) 3%);
-    box-shadow:
-      inset 0 1px 0 color-mix(in srgb, var(--text-color) 7%, transparent),
-      inset 1px 0 0 color-mix(in srgb, var(--text-color) 5%, transparent),
-      inset 0 -1px 0
-        color-mix(in srgb, var(--page-bg) 75%, var(--text-color) 25%);
+    border: var(--border) solid color-mix(in srgb, var(--page-bg) 82%, var(--text-color) 18%);
+    background: color-mix(in srgb, var(--page-bg) 95%, var(--text-color) 5%);
+    color: var(--text-color);
     transition:
       border-color 120ms ease,
-      box-shadow 120ms ease,
       background-color 120ms ease;
+
+    &:hover {
+      background: color-mix(in srgb, var(--page-bg) 92%, var(--text-color) 8%);
+      border-color: color-mix(in srgb, var(--page-bg) 76%, var(--text-color) 24%);
+    }
 
     &:focus-visible {
       outline: var(--focus-ring);
       outline-offset: var(--focus-ring-offset);
       border-radius: 0;
-      border-color: color-mix(
-        in srgb,
-        var(--border-color) 40%,
-        var(--link-color) 60%
-      );
+      border-color: color-mix(in srgb, var(--page-bg) 62%, var(--text-color) 38%);
     }
 
     &:active {
-      box-shadow:
-        inset 0 1px 0 color-mix(in srgb, var(--text-color) 12%, transparent),
-        inset 1px 0 0 color-mix(in srgb, var(--text-color) 10%, transparent),
-        inset 0 -1px 0
-          color-mix(in srgb, var(--page-bg) 70%, var(--text-color) 30%);
+      background: color-mix(in srgb, var(--page-bg) 90%, var(--text-color) 10%);
+      border-color: color-mix(in srgb, var(--page-bg) 56%, var(--text-color) 44%);
+    }
+
+    &:disabled,
+    &[disabled] {
+      opacity: 0.6;
+      cursor: not-allowed;
+      background: color-mix(in srgb, var(--page-bg) 98%, var(--text-color) 2%);
+      border-color: color-mix(in srgb, var(--page-bg) 88%, var(--text-color) 12%);
+      color: var(--muted-text-color);
+    }
+
+    &::placeholder {
+      color: var(--muted-text-color);
     }
 
     &.input-grow {
@@ -217,6 +220,10 @@
 
     &.input-thin {
       width: 5rem;
+    }
+
+    &.input-tall {
+      min-height: 8rem;
     }
   }
 
@@ -279,28 +286,26 @@
   }
 
   .btn-active {
-    background: var(--surface-hover);
-    border-color: color-mix(
-      in srgb,
-      var(--border-color) 50%,
-      var(--page-bg) 50%
-    );
+    background: color-mix(in srgb, var(--page-bg) 87%, var(--text-color) 13%);
+    border-color: color-mix(in srgb, var(--page-bg) 62%, var(--text-color) 38%);
   }
 
   .btn-danger {
-    color: var(--error-color);
-    border-color: var(--error-color);
+    color: color-mix(in srgb, var(--error-color) 85%, var(--text-color) 15%);
+    background: color-mix(in srgb, var(--page-bg) 86%, var(--error-color) 14%);
 
     &.btn-ghost {
-      border-color: transparent;
+      background: transparent;
+    }
+
+    &:not(:disabled):not([disabled]):hover {
+      background: color-mix(in srgb, var(--page-bg) 82%, var(--error-color) 18%);
+      border-color: color-mix(in srgb, var(--page-bg) 62%, var(--error-color) 38%);
     }
 
     &:not(:disabled):not([disabled]):active {
-      border-color: color-mix(
-        in srgb,
-        var(--error-color) 50%,
-        var(--page-bg) 50%
-      );
+      background: color-mix(in srgb, var(--page-bg) 78%, var(--error-color) 22%);
+      border-color: color-mix(in srgb, var(--page-bg) 52%, var(--error-color) 48%);
     }
 
     &:focus-visible {

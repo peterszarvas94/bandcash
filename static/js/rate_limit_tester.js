@@ -72,6 +72,7 @@ function initRateLimitTester() {
   const csrfInput = document.getElementById("rate-limit-csrf");
   const healthButton = document.getElementById("spam-health");
   const authButton = document.getElementById("spam-auth");
+  const clearButton = document.getElementById("rate-limit-clear");
   if (!output || !csrfInput || !healthButton || !authButton) {
     return;
   }
@@ -89,6 +90,12 @@ function initRateLimitTester() {
     const csrf = csrfInput.value || "";
     await runAuthSpam(output, csrf, msgStartAuth, msgDoneAuth);
   });
+
+  if (clearButton) {
+    clearButton.addEventListener("click", function onClearClick() {
+      output.textContent = "Ready.";
+    });
+  }
 }
 
 initRateLimitTester();
