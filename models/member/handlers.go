@@ -72,10 +72,19 @@ func (p *Members) Index(c echo.Context) error {
 	return utils.RenderPage(c, MemberIndex(data))
 }
 
+type staticTableQueryable struct {
+	spec utils.TableQuerySpec
+}
+
+func (s staticTableQueryable) TableQuerySpec() utils.TableQuerySpec {
+	return s.spec
+}
+
 func (p *Members) Show(c echo.Context) error {
 	utils.EnsureClientID(c)
 	groupID := middleware.GetGroupID(c)
 	userEmail := getUserEmail(c)
+	query := utils.ParseTableQuery(c, staticTableQueryable{spec: p.MemberEventsTableQuerySpec()})
 
 	id := c.Param("id")
 	if !utils.IsValidID(id, utils.PrefixMember) {
@@ -83,7 +92,7 @@ func (p *Members) Show(c echo.Context) error {
 		return c.NoContent(http.StatusBadRequest)
 	}
 
-	data, err := p.GetShowData(c.Request().Context(), groupID, id)
+	data, err := p.GetShowData(c.Request().Context(), groupID, id, query)
 	if err != nil {
 		slog.Error("member.show: failed to get data", "err", err)
 		return c.NoContent(http.StatusInternalServerError)
@@ -198,7 +207,8 @@ func (p *Members) Update(c echo.Context) error {
 			"errors": map[string]any{"name": "", "description": ""},
 		})
 
-		data, err := p.GetShowData(c.Request().Context(), groupID, id)
+		query := utils.NormalizeTableQuery(signals.TableQuery, p.MemberEventsTableQuerySpec())
+		data, err := p.GetShowData(c.Request().Context(), groupID, id, query)
 		if err != nil {
 			slog.Error("member.update: failed to get show data", "err", err)
 			return c.NoContent(http.StatusInternalServerError)

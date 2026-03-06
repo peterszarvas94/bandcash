@@ -249,3 +249,27 @@ RETURNING *;
 -- name: DeleteExpense :exec
 DELETE FROM expenses
 WHERE id = ? AND group_id = ?;
+
+-- name: SumExpensesFiltered :one
+SELECT CAST(COALESCE(SUM(amount), 0) AS INTEGER) FROM expenses
+WHERE group_id = sqlc.arg(group_id)
+  AND (
+    sqlc.arg(search) = ''
+    OR title LIKE '%' || sqlc.arg(search) || '%'
+    OR description LIKE '%' || sqlc.arg(search) || '%'
+  )
+  AND (
+    (
+      sqlc.arg(from_date) != ''
+      AND sqlc.arg(to_date) != ''
+      AND date(expenses.date) >= date(sqlc.arg(from_date))
+      AND date(expenses.date) <= date(sqlc.arg(to_date))
+    )
+    OR (
+      (sqlc.arg(from_date) = '' OR sqlc.arg(to_date) = '')
+      AND (
+        sqlc.arg(year_filter) = ''
+        OR strftime('%Y', expenses.date) = sqlc.arg(year_filter)
+      )
+    )
+  );

@@ -45,6 +45,31 @@ func (q *Queries) AddParticipant(ctx context.Context, arg AddParticipantParams) 
 	return i, err
 }
 
+const countParticipantsByMemberFiltered = `-- name: CountParticipantsByMemberFiltered :one
+SELECT COUNT(*) FROM events
+JOIN participants ON participants.event_id = events.id
+WHERE participants.member_id = ?1
+  AND participants.group_id = ?2
+  AND (
+    ?3 = ''
+    OR events.title LIKE '%' || ?3 || '%'
+    OR events.description LIKE '%' || ?3 || '%'
+  )
+`
+
+type CountParticipantsByMemberFilteredParams struct {
+	MemberID string      `json:"member_id"`
+	GroupID  string      `json:"group_id"`
+	Search   interface{} `json:"search"`
+}
+
+func (q *Queries) CountParticipantsByMemberFiltered(ctx context.Context, arg CountParticipantsByMemberFilteredParams) (int64, error) {
+	row := q.db.QueryRowContext(ctx, countParticipantsByMemberFiltered, arg.MemberID, arg.GroupID, arg.Search)
+	var count int64
+	err := row.Scan(&count)
+	return count, err
+}
+
 const listParticipantsByEvent = `-- name: ListParticipantsByEvent :many
 SELECT members.id, members.group_id, members.name, members.description, members.created_at, members.updated_at, participants.amount AS participant_amount, participants.expense AS participant_expense
 FROM members
@@ -161,6 +186,796 @@ func (q *Queries) ListParticipantsByMember(ctx context.Context, arg ListParticip
 	return items, nil
 }
 
+const listParticipantsByMemberByAmountAscFiltered = `-- name: ListParticipantsByMemberByAmountAscFiltered :many
+SELECT 
+  events.id, events.group_id, events.title, events.time, events.description, events.amount, events.created_at, events.updated_at, 
+  participants.amount AS participant_amount, 
+  participants.expense AS participant_expense
+FROM events
+JOIN participants ON participants.event_id = events.id
+WHERE participants.member_id = ?1
+  AND participants.group_id = ?2
+  AND (
+    ?3 = ''
+    OR events.title LIKE '%' || ?3 || '%'
+    OR events.description LIKE '%' || ?3 || '%'
+  )
+ORDER BY events.amount ASC, events.time DESC
+LIMIT ?5 OFFSET ?4
+`
+
+type ListParticipantsByMemberByAmountAscFilteredParams struct {
+	MemberID string      `json:"member_id"`
+	GroupID  string      `json:"group_id"`
+	Search   interface{} `json:"search"`
+	Offset   int64       `json:"offset"`
+	Limit    int64       `json:"limit"`
+}
+
+type ListParticipantsByMemberByAmountAscFilteredRow struct {
+	ID                 string       `json:"id"`
+	GroupID            string       `json:"group_id"`
+	Title              string       `json:"title"`
+	Time               string       `json:"time"`
+	Description        string       `json:"description"`
+	Amount             int64        `json:"amount"`
+	CreatedAt          sql.NullTime `json:"created_at"`
+	UpdatedAt          sql.NullTime `json:"updated_at"`
+	ParticipantAmount  int64        `json:"participant_amount"`
+	ParticipantExpense int64        `json:"participant_expense"`
+}
+
+func (q *Queries) ListParticipantsByMemberByAmountAscFiltered(ctx context.Context, arg ListParticipantsByMemberByAmountAscFilteredParams) ([]ListParticipantsByMemberByAmountAscFilteredRow, error) {
+	rows, err := q.db.QueryContext(ctx, listParticipantsByMemberByAmountAscFiltered,
+		arg.MemberID,
+		arg.GroupID,
+		arg.Search,
+		arg.Offset,
+		arg.Limit,
+	)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []ListParticipantsByMemberByAmountAscFilteredRow{}
+	for rows.Next() {
+		var i ListParticipantsByMemberByAmountAscFilteredRow
+		if err := rows.Scan(
+			&i.ID,
+			&i.GroupID,
+			&i.Title,
+			&i.Time,
+			&i.Description,
+			&i.Amount,
+			&i.CreatedAt,
+			&i.UpdatedAt,
+			&i.ParticipantAmount,
+			&i.ParticipantExpense,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const listParticipantsByMemberByAmountDescFiltered = `-- name: ListParticipantsByMemberByAmountDescFiltered :many
+SELECT 
+  events.id, events.group_id, events.title, events.time, events.description, events.amount, events.created_at, events.updated_at, 
+  participants.amount AS participant_amount, 
+  participants.expense AS participant_expense
+FROM events
+JOIN participants ON participants.event_id = events.id
+WHERE participants.member_id = ?1
+  AND participants.group_id = ?2
+  AND (
+    ?3 = ''
+    OR events.title LIKE '%' || ?3 || '%'
+    OR events.description LIKE '%' || ?3 || '%'
+  )
+ORDER BY events.amount DESC, events.time DESC
+LIMIT ?5 OFFSET ?4
+`
+
+type ListParticipantsByMemberByAmountDescFilteredParams struct {
+	MemberID string      `json:"member_id"`
+	GroupID  string      `json:"group_id"`
+	Search   interface{} `json:"search"`
+	Offset   int64       `json:"offset"`
+	Limit    int64       `json:"limit"`
+}
+
+type ListParticipantsByMemberByAmountDescFilteredRow struct {
+	ID                 string       `json:"id"`
+	GroupID            string       `json:"group_id"`
+	Title              string       `json:"title"`
+	Time               string       `json:"time"`
+	Description        string       `json:"description"`
+	Amount             int64        `json:"amount"`
+	CreatedAt          sql.NullTime `json:"created_at"`
+	UpdatedAt          sql.NullTime `json:"updated_at"`
+	ParticipantAmount  int64        `json:"participant_amount"`
+	ParticipantExpense int64        `json:"participant_expense"`
+}
+
+func (q *Queries) ListParticipantsByMemberByAmountDescFiltered(ctx context.Context, arg ListParticipantsByMemberByAmountDescFilteredParams) ([]ListParticipantsByMemberByAmountDescFilteredRow, error) {
+	rows, err := q.db.QueryContext(ctx, listParticipantsByMemberByAmountDescFiltered,
+		arg.MemberID,
+		arg.GroupID,
+		arg.Search,
+		arg.Offset,
+		arg.Limit,
+	)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []ListParticipantsByMemberByAmountDescFilteredRow{}
+	for rows.Next() {
+		var i ListParticipantsByMemberByAmountDescFilteredRow
+		if err := rows.Scan(
+			&i.ID,
+			&i.GroupID,
+			&i.Title,
+			&i.Time,
+			&i.Description,
+			&i.Amount,
+			&i.CreatedAt,
+			&i.UpdatedAt,
+			&i.ParticipantAmount,
+			&i.ParticipantExpense,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const listParticipantsByMemberByCutAscFiltered = `-- name: ListParticipantsByMemberByCutAscFiltered :many
+SELECT 
+  events.id, events.group_id, events.title, events.time, events.description, events.amount, events.created_at, events.updated_at, 
+  participants.amount AS participant_amount, 
+  participants.expense AS participant_expense
+FROM events
+JOIN participants ON participants.event_id = events.id
+WHERE participants.member_id = ?1
+  AND participants.group_id = ?2
+  AND (
+    ?3 = ''
+    OR events.title LIKE '%' || ?3 || '%'
+    OR events.description LIKE '%' || ?3 || '%'
+  )
+ORDER BY participants.amount ASC, events.time DESC
+LIMIT ?5 OFFSET ?4
+`
+
+type ListParticipantsByMemberByCutAscFilteredParams struct {
+	MemberID string      `json:"member_id"`
+	GroupID  string      `json:"group_id"`
+	Search   interface{} `json:"search"`
+	Offset   int64       `json:"offset"`
+	Limit    int64       `json:"limit"`
+}
+
+type ListParticipantsByMemberByCutAscFilteredRow struct {
+	ID                 string       `json:"id"`
+	GroupID            string       `json:"group_id"`
+	Title              string       `json:"title"`
+	Time               string       `json:"time"`
+	Description        string       `json:"description"`
+	Amount             int64        `json:"amount"`
+	CreatedAt          sql.NullTime `json:"created_at"`
+	UpdatedAt          sql.NullTime `json:"updated_at"`
+	ParticipantAmount  int64        `json:"participant_amount"`
+	ParticipantExpense int64        `json:"participant_expense"`
+}
+
+func (q *Queries) ListParticipantsByMemberByCutAscFiltered(ctx context.Context, arg ListParticipantsByMemberByCutAscFilteredParams) ([]ListParticipantsByMemberByCutAscFilteredRow, error) {
+	rows, err := q.db.QueryContext(ctx, listParticipantsByMemberByCutAscFiltered,
+		arg.MemberID,
+		arg.GroupID,
+		arg.Search,
+		arg.Offset,
+		arg.Limit,
+	)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []ListParticipantsByMemberByCutAscFilteredRow{}
+	for rows.Next() {
+		var i ListParticipantsByMemberByCutAscFilteredRow
+		if err := rows.Scan(
+			&i.ID,
+			&i.GroupID,
+			&i.Title,
+			&i.Time,
+			&i.Description,
+			&i.Amount,
+			&i.CreatedAt,
+			&i.UpdatedAt,
+			&i.ParticipantAmount,
+			&i.ParticipantExpense,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const listParticipantsByMemberByCutDescFiltered = `-- name: ListParticipantsByMemberByCutDescFiltered :many
+SELECT 
+  events.id, events.group_id, events.title, events.time, events.description, events.amount, events.created_at, events.updated_at, 
+  participants.amount AS participant_amount, 
+  participants.expense AS participant_expense
+FROM events
+JOIN participants ON participants.event_id = events.id
+WHERE participants.member_id = ?1
+  AND participants.group_id = ?2
+  AND (
+    ?3 = ''
+    OR events.title LIKE '%' || ?3 || '%'
+    OR events.description LIKE '%' || ?3 || '%'
+  )
+ORDER BY participants.amount DESC, events.time DESC
+LIMIT ?5 OFFSET ?4
+`
+
+type ListParticipantsByMemberByCutDescFilteredParams struct {
+	MemberID string      `json:"member_id"`
+	GroupID  string      `json:"group_id"`
+	Search   interface{} `json:"search"`
+	Offset   int64       `json:"offset"`
+	Limit    int64       `json:"limit"`
+}
+
+type ListParticipantsByMemberByCutDescFilteredRow struct {
+	ID                 string       `json:"id"`
+	GroupID            string       `json:"group_id"`
+	Title              string       `json:"title"`
+	Time               string       `json:"time"`
+	Description        string       `json:"description"`
+	Amount             int64        `json:"amount"`
+	CreatedAt          sql.NullTime `json:"created_at"`
+	UpdatedAt          sql.NullTime `json:"updated_at"`
+	ParticipantAmount  int64        `json:"participant_amount"`
+	ParticipantExpense int64        `json:"participant_expense"`
+}
+
+func (q *Queries) ListParticipantsByMemberByCutDescFiltered(ctx context.Context, arg ListParticipantsByMemberByCutDescFilteredParams) ([]ListParticipantsByMemberByCutDescFilteredRow, error) {
+	rows, err := q.db.QueryContext(ctx, listParticipantsByMemberByCutDescFiltered,
+		arg.MemberID,
+		arg.GroupID,
+		arg.Search,
+		arg.Offset,
+		arg.Limit,
+	)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []ListParticipantsByMemberByCutDescFilteredRow{}
+	for rows.Next() {
+		var i ListParticipantsByMemberByCutDescFilteredRow
+		if err := rows.Scan(
+			&i.ID,
+			&i.GroupID,
+			&i.Title,
+			&i.Time,
+			&i.Description,
+			&i.Amount,
+			&i.CreatedAt,
+			&i.UpdatedAt,
+			&i.ParticipantAmount,
+			&i.ParticipantExpense,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const listParticipantsByMemberByExpenseAscFiltered = `-- name: ListParticipantsByMemberByExpenseAscFiltered :many
+SELECT 
+  events.id, events.group_id, events.title, events.time, events.description, events.amount, events.created_at, events.updated_at, 
+  participants.amount AS participant_amount, 
+  participants.expense AS participant_expense
+FROM events
+JOIN participants ON participants.event_id = events.id
+WHERE participants.member_id = ?1
+  AND participants.group_id = ?2
+  AND (
+    ?3 = ''
+    OR events.title LIKE '%' || ?3 || '%'
+    OR events.description LIKE '%' || ?3 || '%'
+  )
+ORDER BY participants.expense ASC, events.time DESC
+LIMIT ?5 OFFSET ?4
+`
+
+type ListParticipantsByMemberByExpenseAscFilteredParams struct {
+	MemberID string      `json:"member_id"`
+	GroupID  string      `json:"group_id"`
+	Search   interface{} `json:"search"`
+	Offset   int64       `json:"offset"`
+	Limit    int64       `json:"limit"`
+}
+
+type ListParticipantsByMemberByExpenseAscFilteredRow struct {
+	ID                 string       `json:"id"`
+	GroupID            string       `json:"group_id"`
+	Title              string       `json:"title"`
+	Time               string       `json:"time"`
+	Description        string       `json:"description"`
+	Amount             int64        `json:"amount"`
+	CreatedAt          sql.NullTime `json:"created_at"`
+	UpdatedAt          sql.NullTime `json:"updated_at"`
+	ParticipantAmount  int64        `json:"participant_amount"`
+	ParticipantExpense int64        `json:"participant_expense"`
+}
+
+func (q *Queries) ListParticipantsByMemberByExpenseAscFiltered(ctx context.Context, arg ListParticipantsByMemberByExpenseAscFilteredParams) ([]ListParticipantsByMemberByExpenseAscFilteredRow, error) {
+	rows, err := q.db.QueryContext(ctx, listParticipantsByMemberByExpenseAscFiltered,
+		arg.MemberID,
+		arg.GroupID,
+		arg.Search,
+		arg.Offset,
+		arg.Limit,
+	)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []ListParticipantsByMemberByExpenseAscFilteredRow{}
+	for rows.Next() {
+		var i ListParticipantsByMemberByExpenseAscFilteredRow
+		if err := rows.Scan(
+			&i.ID,
+			&i.GroupID,
+			&i.Title,
+			&i.Time,
+			&i.Description,
+			&i.Amount,
+			&i.CreatedAt,
+			&i.UpdatedAt,
+			&i.ParticipantAmount,
+			&i.ParticipantExpense,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const listParticipantsByMemberByExpenseDescFiltered = `-- name: ListParticipantsByMemberByExpenseDescFiltered :many
+SELECT 
+  events.id, events.group_id, events.title, events.time, events.description, events.amount, events.created_at, events.updated_at, 
+  participants.amount AS participant_amount, 
+  participants.expense AS participant_expense
+FROM events
+JOIN participants ON participants.event_id = events.id
+WHERE participants.member_id = ?1
+  AND participants.group_id = ?2
+  AND (
+    ?3 = ''
+    OR events.title LIKE '%' || ?3 || '%'
+    OR events.description LIKE '%' || ?3 || '%'
+  )
+ORDER BY participants.expense DESC, events.time DESC
+LIMIT ?5 OFFSET ?4
+`
+
+type ListParticipantsByMemberByExpenseDescFilteredParams struct {
+	MemberID string      `json:"member_id"`
+	GroupID  string      `json:"group_id"`
+	Search   interface{} `json:"search"`
+	Offset   int64       `json:"offset"`
+	Limit    int64       `json:"limit"`
+}
+
+type ListParticipantsByMemberByExpenseDescFilteredRow struct {
+	ID                 string       `json:"id"`
+	GroupID            string       `json:"group_id"`
+	Title              string       `json:"title"`
+	Time               string       `json:"time"`
+	Description        string       `json:"description"`
+	Amount             int64        `json:"amount"`
+	CreatedAt          sql.NullTime `json:"created_at"`
+	UpdatedAt          sql.NullTime `json:"updated_at"`
+	ParticipantAmount  int64        `json:"participant_amount"`
+	ParticipantExpense int64        `json:"participant_expense"`
+}
+
+func (q *Queries) ListParticipantsByMemberByExpenseDescFiltered(ctx context.Context, arg ListParticipantsByMemberByExpenseDescFilteredParams) ([]ListParticipantsByMemberByExpenseDescFilteredRow, error) {
+	rows, err := q.db.QueryContext(ctx, listParticipantsByMemberByExpenseDescFiltered,
+		arg.MemberID,
+		arg.GroupID,
+		arg.Search,
+		arg.Offset,
+		arg.Limit,
+	)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []ListParticipantsByMemberByExpenseDescFilteredRow{}
+	for rows.Next() {
+		var i ListParticipantsByMemberByExpenseDescFilteredRow
+		if err := rows.Scan(
+			&i.ID,
+			&i.GroupID,
+			&i.Title,
+			&i.Time,
+			&i.Description,
+			&i.Amount,
+			&i.CreatedAt,
+			&i.UpdatedAt,
+			&i.ParticipantAmount,
+			&i.ParticipantExpense,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const listParticipantsByMemberByTimeAscFiltered = `-- name: ListParticipantsByMemberByTimeAscFiltered :many
+SELECT 
+  events.id, events.group_id, events.title, events.time, events.description, events.amount, events.created_at, events.updated_at, 
+  participants.amount AS participant_amount, 
+  participants.expense AS participant_expense
+FROM events
+JOIN participants ON participants.event_id = events.id
+WHERE participants.member_id = ?1
+  AND participants.group_id = ?2
+  AND (
+    ?3 = ''
+    OR events.title LIKE '%' || ?3 || '%'
+    OR events.description LIKE '%' || ?3 || '%'
+  )
+ORDER BY events.time ASC, events.created_at DESC
+LIMIT ?5 OFFSET ?4
+`
+
+type ListParticipantsByMemberByTimeAscFilteredParams struct {
+	MemberID string      `json:"member_id"`
+	GroupID  string      `json:"group_id"`
+	Search   interface{} `json:"search"`
+	Offset   int64       `json:"offset"`
+	Limit    int64       `json:"limit"`
+}
+
+type ListParticipantsByMemberByTimeAscFilteredRow struct {
+	ID                 string       `json:"id"`
+	GroupID            string       `json:"group_id"`
+	Title              string       `json:"title"`
+	Time               string       `json:"time"`
+	Description        string       `json:"description"`
+	Amount             int64        `json:"amount"`
+	CreatedAt          sql.NullTime `json:"created_at"`
+	UpdatedAt          sql.NullTime `json:"updated_at"`
+	ParticipantAmount  int64        `json:"participant_amount"`
+	ParticipantExpense int64        `json:"participant_expense"`
+}
+
+func (q *Queries) ListParticipantsByMemberByTimeAscFiltered(ctx context.Context, arg ListParticipantsByMemberByTimeAscFilteredParams) ([]ListParticipantsByMemberByTimeAscFilteredRow, error) {
+	rows, err := q.db.QueryContext(ctx, listParticipantsByMemberByTimeAscFiltered,
+		arg.MemberID,
+		arg.GroupID,
+		arg.Search,
+		arg.Offset,
+		arg.Limit,
+	)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []ListParticipantsByMemberByTimeAscFilteredRow{}
+	for rows.Next() {
+		var i ListParticipantsByMemberByTimeAscFilteredRow
+		if err := rows.Scan(
+			&i.ID,
+			&i.GroupID,
+			&i.Title,
+			&i.Time,
+			&i.Description,
+			&i.Amount,
+			&i.CreatedAt,
+			&i.UpdatedAt,
+			&i.ParticipantAmount,
+			&i.ParticipantExpense,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const listParticipantsByMemberByTimeDescFiltered = `-- name: ListParticipantsByMemberByTimeDescFiltered :many
+SELECT 
+  events.id, events.group_id, events.title, events.time, events.description, events.amount, events.created_at, events.updated_at, 
+  participants.amount AS participant_amount, 
+  participants.expense AS participant_expense
+FROM events
+JOIN participants ON participants.event_id = events.id
+WHERE participants.member_id = ?1
+  AND participants.group_id = ?2
+  AND (
+    ?3 = ''
+    OR events.title LIKE '%' || ?3 || '%'
+    OR events.description LIKE '%' || ?3 || '%'
+  )
+ORDER BY events.time DESC, events.created_at DESC
+LIMIT ?5 OFFSET ?4
+`
+
+type ListParticipantsByMemberByTimeDescFilteredParams struct {
+	MemberID string      `json:"member_id"`
+	GroupID  string      `json:"group_id"`
+	Search   interface{} `json:"search"`
+	Offset   int64       `json:"offset"`
+	Limit    int64       `json:"limit"`
+}
+
+type ListParticipantsByMemberByTimeDescFilteredRow struct {
+	ID                 string       `json:"id"`
+	GroupID            string       `json:"group_id"`
+	Title              string       `json:"title"`
+	Time               string       `json:"time"`
+	Description        string       `json:"description"`
+	Amount             int64        `json:"amount"`
+	CreatedAt          sql.NullTime `json:"created_at"`
+	UpdatedAt          sql.NullTime `json:"updated_at"`
+	ParticipantAmount  int64        `json:"participant_amount"`
+	ParticipantExpense int64        `json:"participant_expense"`
+}
+
+func (q *Queries) ListParticipantsByMemberByTimeDescFiltered(ctx context.Context, arg ListParticipantsByMemberByTimeDescFilteredParams) ([]ListParticipantsByMemberByTimeDescFilteredRow, error) {
+	rows, err := q.db.QueryContext(ctx, listParticipantsByMemberByTimeDescFiltered,
+		arg.MemberID,
+		arg.GroupID,
+		arg.Search,
+		arg.Offset,
+		arg.Limit,
+	)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []ListParticipantsByMemberByTimeDescFilteredRow{}
+	for rows.Next() {
+		var i ListParticipantsByMemberByTimeDescFilteredRow
+		if err := rows.Scan(
+			&i.ID,
+			&i.GroupID,
+			&i.Title,
+			&i.Time,
+			&i.Description,
+			&i.Amount,
+			&i.CreatedAt,
+			&i.UpdatedAt,
+			&i.ParticipantAmount,
+			&i.ParticipantExpense,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const listParticipantsByMemberByTitleAscFiltered = `-- name: ListParticipantsByMemberByTitleAscFiltered :many
+SELECT 
+  events.id, events.group_id, events.title, events.time, events.description, events.amount, events.created_at, events.updated_at, 
+  participants.amount AS participant_amount, 
+  participants.expense AS participant_expense
+FROM events
+JOIN participants ON participants.event_id = events.id
+WHERE participants.member_id = ?1
+  AND participants.group_id = ?2
+  AND (
+    ?3 = ''
+    OR events.title LIKE '%' || ?3 || '%'
+    OR events.description LIKE '%' || ?3 || '%'
+  )
+ORDER BY events.title COLLATE NOCASE ASC, events.time DESC
+LIMIT ?5 OFFSET ?4
+`
+
+type ListParticipantsByMemberByTitleAscFilteredParams struct {
+	MemberID string      `json:"member_id"`
+	GroupID  string      `json:"group_id"`
+	Search   interface{} `json:"search"`
+	Offset   int64       `json:"offset"`
+	Limit    int64       `json:"limit"`
+}
+
+type ListParticipantsByMemberByTitleAscFilteredRow struct {
+	ID                 string       `json:"id"`
+	GroupID            string       `json:"group_id"`
+	Title              string       `json:"title"`
+	Time               string       `json:"time"`
+	Description        string       `json:"description"`
+	Amount             int64        `json:"amount"`
+	CreatedAt          sql.NullTime `json:"created_at"`
+	UpdatedAt          sql.NullTime `json:"updated_at"`
+	ParticipantAmount  int64        `json:"participant_amount"`
+	ParticipantExpense int64        `json:"participant_expense"`
+}
+
+func (q *Queries) ListParticipantsByMemberByTitleAscFiltered(ctx context.Context, arg ListParticipantsByMemberByTitleAscFilteredParams) ([]ListParticipantsByMemberByTitleAscFilteredRow, error) {
+	rows, err := q.db.QueryContext(ctx, listParticipantsByMemberByTitleAscFiltered,
+		arg.MemberID,
+		arg.GroupID,
+		arg.Search,
+		arg.Offset,
+		arg.Limit,
+	)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []ListParticipantsByMemberByTitleAscFilteredRow{}
+	for rows.Next() {
+		var i ListParticipantsByMemberByTitleAscFilteredRow
+		if err := rows.Scan(
+			&i.ID,
+			&i.GroupID,
+			&i.Title,
+			&i.Time,
+			&i.Description,
+			&i.Amount,
+			&i.CreatedAt,
+			&i.UpdatedAt,
+			&i.ParticipantAmount,
+			&i.ParticipantExpense,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const listParticipantsByMemberByTitleDescFiltered = `-- name: ListParticipantsByMemberByTitleDescFiltered :many
+SELECT 
+  events.id, events.group_id, events.title, events.time, events.description, events.amount, events.created_at, events.updated_at, 
+  participants.amount AS participant_amount, 
+  participants.expense AS participant_expense
+FROM events
+JOIN participants ON participants.event_id = events.id
+WHERE participants.member_id = ?1
+  AND participants.group_id = ?2
+  AND (
+    ?3 = ''
+    OR events.title LIKE '%' || ?3 || '%'
+    OR events.description LIKE '%' || ?3 || '%'
+  )
+ORDER BY events.title COLLATE NOCASE DESC, events.time DESC
+LIMIT ?5 OFFSET ?4
+`
+
+type ListParticipantsByMemberByTitleDescFilteredParams struct {
+	MemberID string      `json:"member_id"`
+	GroupID  string      `json:"group_id"`
+	Search   interface{} `json:"search"`
+	Offset   int64       `json:"offset"`
+	Limit    int64       `json:"limit"`
+}
+
+type ListParticipantsByMemberByTitleDescFilteredRow struct {
+	ID                 string       `json:"id"`
+	GroupID            string       `json:"group_id"`
+	Title              string       `json:"title"`
+	Time               string       `json:"time"`
+	Description        string       `json:"description"`
+	Amount             int64        `json:"amount"`
+	CreatedAt          sql.NullTime `json:"created_at"`
+	UpdatedAt          sql.NullTime `json:"updated_at"`
+	ParticipantAmount  int64        `json:"participant_amount"`
+	ParticipantExpense int64        `json:"participant_expense"`
+}
+
+func (q *Queries) ListParticipantsByMemberByTitleDescFiltered(ctx context.Context, arg ListParticipantsByMemberByTitleDescFilteredParams) ([]ListParticipantsByMemberByTitleDescFilteredRow, error) {
+	rows, err := q.db.QueryContext(ctx, listParticipantsByMemberByTitleDescFiltered,
+		arg.MemberID,
+		arg.GroupID,
+		arg.Search,
+		arg.Offset,
+		arg.Limit,
+	)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []ListParticipantsByMemberByTitleDescFilteredRow{}
+	for rows.Next() {
+		var i ListParticipantsByMemberByTitleDescFilteredRow
+		if err := rows.Scan(
+			&i.ID,
+			&i.GroupID,
+			&i.Title,
+			&i.Time,
+			&i.Description,
+			&i.Amount,
+			&i.CreatedAt,
+			&i.UpdatedAt,
+			&i.ParticipantAmount,
+			&i.ParticipantExpense,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const removeParticipant = `-- name: RemoveParticipant :exec
 DELETE FROM participants
 WHERE event_id = ? AND member_id = ? AND group_id = ?
@@ -187,6 +1002,41 @@ func (q *Queries) SumParticipantAmountsByGroup(ctx context.Context, groupID stri
 	var column_1 int64
 	err := row.Scan(&column_1)
 	return column_1, err
+}
+
+const sumParticipantTotalsByMemberFiltered = `-- name: SumParticipantTotalsByMemberFiltered :one
+SELECT 
+  CAST(COALESCE(SUM(participants.amount), 0) AS INTEGER) as total_cut,
+  CAST(COALESCE(SUM(participants.expense), 0) AS INTEGER) as total_expense,
+  CAST(COALESCE(SUM(participants.amount + participants.expense), 0) AS INTEGER) as total_payout
+FROM events
+JOIN participants ON participants.event_id = events.id
+WHERE participants.member_id = ?1
+  AND participants.group_id = ?2
+  AND (
+    ?3 = ''
+    OR events.title LIKE '%' || ?3 || '%'
+    OR events.description LIKE '%' || ?3 || '%'
+  )
+`
+
+type SumParticipantTotalsByMemberFilteredParams struct {
+	MemberID string      `json:"member_id"`
+	GroupID  string      `json:"group_id"`
+	Search   interface{} `json:"search"`
+}
+
+type SumParticipantTotalsByMemberFilteredRow struct {
+	TotalCut     int64 `json:"total_cut"`
+	TotalExpense int64 `json:"total_expense"`
+	TotalPayout  int64 `json:"total_payout"`
+}
+
+func (q *Queries) SumParticipantTotalsByMemberFiltered(ctx context.Context, arg SumParticipantTotalsByMemberFilteredParams) (SumParticipantTotalsByMemberFilteredRow, error) {
+	row := q.db.QueryRowContext(ctx, sumParticipantTotalsByMemberFiltered, arg.MemberID, arg.GroupID, arg.Search)
+	var i SumParticipantTotalsByMemberFilteredRow
+	err := row.Scan(&i.TotalCut, &i.TotalExpense, &i.TotalPayout)
+	return i, err
 }
 
 const updateParticipant = `-- name: UpdateParticipant :exec

@@ -176,6 +176,10 @@ en:
     create: "Create Expense"
     update: "Update Expense"
     delete_confirm: "Delete this expense?"
+    calculations: "Calculations"
+    list_title: "Expenses"
+    total_all: "All Expenses Total"
+    total_filtered: "Filtered Expenses Total"
     notifications:
       created: "Expense created."
       updated: "Expense updated."
@@ -203,6 +207,12 @@ en:
       delete_failed: "Could not delete member. Please try again."
     table:
       event_amount: "Event Amount"
+    calculations: "Calculations"
+    list_title: "Events"
+    total_events: "Total Events"
+    total_cut: "Total Cut"
+    total_expense: "Total Expense"
+    total_payout: "Total Payout"
   participants:
     add: "Add Participant"
     new: "New Participant"

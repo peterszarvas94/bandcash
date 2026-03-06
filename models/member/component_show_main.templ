@@ -3,18 +3,21 @@ package member
 import (
 	"fmt"
 
-	ctxi18n "github.com/invopop/ctxi18n/i18n"
 	"bandcash/internal/utils"
 	shared "bandcash/models/shared"
 	icons "bandcash/models/shared/icons"
+	ctxi18n "github.com/invopop/ctxi18n/i18n"
 )
 
 templ MemberShowMain(data MemberData) {
-	<h2 class="pt">{ ctxi18n.T(ctx, "members.details") }</h2>
+	<h2 class="pt pb">{ ctxi18n.T(ctx, "members.details") }</h2>
 	@shared.DetailGrid([]shared.DetailGridRow{
 		{Label: ctxi18n.T(ctx, "fields.name"), Value: data.Member.Name},
 		{Label: ctxi18n.T(ctx, "fields.description"), Value: data.Member.Description},
-		{Label: ctxi18n.T(ctx, "events.title"), Value: utils.FormatNumberLocalized(ctx, int64(len(data.Events)))},
+		{Label: ctxi18n.T(ctx, "members.total_events"), Value: utils.FormatNumberLocalized(ctx, int64(len(data.Events)))},
+		{Label: ctxi18n.T(ctx, "members.total_cut"), Value: utils.FormatNumberLocalized(ctx, data.TotalCut)},
+		{Label: ctxi18n.T(ctx, "members.total_expense"), Value: utils.FormatNumberLocalized(ctx, data.TotalExpense)},
+		{Label: ctxi18n.T(ctx, "members.total_payout"), Value: utils.FormatNumberLocalized(ctx, data.TotalPayout)},
 	})
 	if data.IsAdmin {
 		<div class="row row-wrap detail-actions">
@@ -36,17 +39,47 @@ templ MemberShowMain(data MemberData) {
 			})
 		</div>
 	}
-	<h2>{ ctxi18n.T(ctx, "members.events") }</h2>
+	<h2 class="pt pb">{ ctxi18n.T(ctx, "members.list_title") }</h2>
+	@shared.TableSearchForm(utils.BuildTableSearchDatastarAction(fmt.Sprintf("/groups/%s/members/%s", data.GroupID, data.Member.ID), utils.DefaultTablePageSize), "table.search_placeholder_events")
+	<div class="row row-wrap justify-between pt pb">
+		<div class="row row-wrap">
+			<span class="hide-tablet text-sm">{ ctxi18n.T(ctx, "table.page_size") }</span>
+			for _, pageSize := range utils.StandardTablePageSizes {
+				<button
+					class={ utils.PageSizeButtonClass(data.Query.PageSize, pageSize) }
+					type="button"
+					data-on:click={ utils.BuildTableQueryDatastarAction(utils.BuildTablePageSizeURL(fmt.Sprintf("/groups/%s/members/%s", data.GroupID, data.Member.ID), data.Query, pageSize)) }
+				>
+					{ fmt.Sprintf("%d", pageSize) }
+				</button>
+			}
+		</div>
+		@shared.TablePaginationControls(fmt.Sprintf("/groups/%s/members/%s", data.GroupID, data.Member.ID), data.Query, data.Pager)
+	</div>
 	<table class="table">
 		<thead>
 			<tr>
-				<th>{ ctxi18n.T(ctx, "fields.title") }</th>
-				<th>{ ctxi18n.T(ctx, "fields.time") }</th>
-				<th>{ ctxi18n.T(ctx, "fields.description") }</th>
-				<th>{ ctxi18n.T(ctx, "members.table.event_amount") }</th>
-				<th>{ ctxi18n.T(ctx, "participants.cut") }</th>
-				<th>{ ctxi18n.T(ctx, "participants.expense") }</th>
-				<th>{ ctxi18n.T(ctx, "participants.total") }</th>
+				<th>
+					@shared.TableSortHeader(ctxi18n.T(ctx, "fields.title"), "title", data.Query, utils.BuildTableSortURL(fmt.Sprintf("/groups/%s/members/%s", data.GroupID, data.Member.ID), data.Query, "title"))
+				</th>
+				<th>
+					@shared.TableSortHeader(ctxi18n.T(ctx, "fields.time"), "time", data.Query, utils.BuildTableSortURL(fmt.Sprintf("/groups/%s/members/%s", data.GroupID, data.Member.ID), data.Query, "time"))
+				</th>
+				<th>
+					@shared.TableSortHeader(ctxi18n.T(ctx, "fields.description"), "description", data.Query, utils.BuildTableSortURL(fmt.Sprintf("/groups/%s/members/%s", data.GroupID, data.Member.ID), data.Query, "description"))
+				</th>
+				<th>
+					@shared.TableSortHeader(ctxi18n.T(ctx, "members.table.event_amount"), "amount", data.Query, utils.BuildTableSortURL(fmt.Sprintf("/groups/%s/members/%s", data.GroupID, data.Member.ID), data.Query, "amount"))
+				</th>
+				<th>
+					@shared.TableSortHeader(ctxi18n.T(ctx, "participants.cut"), "participant_amount", data.Query, utils.BuildTableSortURL(fmt.Sprintf("/groups/%s/members/%s", data.GroupID, data.Member.ID), data.Query, "participant_amount"))
+				</th>
+				<th>
+					@shared.TableSortHeader(ctxi18n.T(ctx, "participants.expense"), "participant_expense", data.Query, utils.BuildTableSortURL(fmt.Sprintf("/groups/%s/members/%s", data.GroupID, data.Member.ID), data.Query, "participant_expense"))
+				</th>
+				<th>
+					{ ctxi18n.T(ctx, "participants.total") }
+				</th>
 			</tr>
 		</thead>
 		<tbody>

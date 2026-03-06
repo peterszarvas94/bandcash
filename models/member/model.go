@@ -20,7 +20,127 @@ func New() *Members {
 	return &Members{}
 }
 
-func (p *Members) GetShowData(ctx context.Context, groupID, memberID string) (MemberData, error) {
+func (p *Members) MemberEventsTableQuerySpec() utils.TableQuerySpec {
+	return utils.StandardTableQuerySpec("time", "desc", "title", "time", "amount", "participant_amount", "participant_expense")
+}
+
+func convertToMemberEvent(row interface{}) MemberEvent {
+	switch r := row.(type) {
+	case db.ListParticipantsByMemberByTitleAscFilteredRow:
+		return MemberEvent{
+			ID:                 r.ID,
+			GroupID:            r.GroupID,
+			Title:              r.Title,
+			Time:               r.Time,
+			Description:        r.Description,
+			Amount:             r.Amount,
+			ParticipantAmount:  r.ParticipantAmount,
+			ParticipantExpense: r.ParticipantExpense,
+		}
+	case db.ListParticipantsByMemberByTitleDescFilteredRow:
+		return MemberEvent{
+			ID:                 r.ID,
+			GroupID:            r.GroupID,
+			Title:              r.Title,
+			Time:               r.Time,
+			Description:        r.Description,
+			Amount:             r.Amount,
+			ParticipantAmount:  r.ParticipantAmount,
+			ParticipantExpense: r.ParticipantExpense,
+		}
+	case db.ListParticipantsByMemberByTimeAscFilteredRow:
+		return MemberEvent{
+			ID:                 r.ID,
+			GroupID:            r.GroupID,
+			Title:              r.Title,
+			Time:               r.Time,
+			Description:        r.Description,
+			Amount:             r.Amount,
+			ParticipantAmount:  r.ParticipantAmount,
+			ParticipantExpense: r.ParticipantExpense,
+		}
+	case db.ListParticipantsByMemberByTimeDescFilteredRow:
+		return MemberEvent{
+			ID:                 r.ID,
+			GroupID:            r.GroupID,
+			Title:              r.Title,
+			Time:               r.Time,
+			Description:        r.Description,
+			Amount:             r.Amount,
+			ParticipantAmount:  r.ParticipantAmount,
+			ParticipantExpense: r.ParticipantExpense,
+		}
+	case db.ListParticipantsByMemberByAmountAscFilteredRow:
+		return MemberEvent{
+			ID:                 r.ID,
+			GroupID:            r.GroupID,
+			Title:              r.Title,
+			Time:               r.Time,
+			Description:        r.Description,
+			Amount:             r.Amount,
+			ParticipantAmount:  r.ParticipantAmount,
+			ParticipantExpense: r.ParticipantExpense,
+		}
+	case db.ListParticipantsByMemberByAmountDescFilteredRow:
+		return MemberEvent{
+			ID:                 r.ID,
+			GroupID:            r.GroupID,
+			Title:              r.Title,
+			Time:               r.Time,
+			Description:        r.Description,
+			Amount:             r.Amount,
+			ParticipantAmount:  r.ParticipantAmount,
+			ParticipantExpense: r.ParticipantExpense,
+		}
+	case db.ListParticipantsByMemberByCutAscFilteredRow:
+		return MemberEvent{
+			ID:                 r.ID,
+			GroupID:            r.GroupID,
+			Title:              r.Title,
+			Time:               r.Time,
+			Description:        r.Description,
+			Amount:             r.Amount,
+			ParticipantAmount:  r.ParticipantAmount,
+			ParticipantExpense: r.ParticipantExpense,
+		}
+	case db.ListParticipantsByMemberByCutDescFilteredRow:
+		return MemberEvent{
+			ID:                 r.ID,
+			GroupID:            r.GroupID,
+			Title:              r.Title,
+			Time:               r.Time,
+			Description:        r.Description,
+			Amount:             r.Amount,
+			ParticipantAmount:  r.ParticipantAmount,
+			ParticipantExpense: r.ParticipantExpense,
+		}
+	case db.ListParticipantsByMemberByExpenseAscFilteredRow:
+		return MemberEvent{
+			ID:                 r.ID,
+			GroupID:            r.GroupID,
+			Title:              r.Title,
+			Time:               r.Time,
+			Description:        r.Description,
+			Amount:             r.Amount,
+			ParticipantAmount:  r.ParticipantAmount,
+			ParticipantExpense: r.ParticipantExpense,
+		}
+	case db.ListParticipantsByMemberByExpenseDescFilteredRow:
+		return MemberEvent{
+			ID:                 r.ID,
+			GroupID:            r.GroupID,
+			Title:              r.Title,
+			Time:               r.Time,
+			Description:        r.Description,
+			Amount:             r.Amount,
+			ParticipantAmount:  r.ParticipantAmount,
+			ParticipantExpense: r.ParticipantExpense,
+		}
+	}
+	return MemberEvent{}
+}
+
+func (p *Members) GetShowData(ctx context.Context, groupID, memberID string, query utils.TableQuery) (MemberData, error) {
 	group, err := db.Qry.GetGroupByID(ctx, groupID)
 	if err != nil {
 		return MemberData{}, err
@@ -34,19 +154,138 @@ func (p *Members) GetShowData(ctx context.Context, groupID, memberID string) (Me
 		return MemberData{}, err
 	}
 
-	events, err := db.Qry.ListParticipantsByMember(ctx, db.ListParticipantsByMemberParams{
+	totalItems, err := db.Qry.CountParticipantsByMemberFiltered(ctx, db.CountParticipantsByMemberFilteredParams{
 		MemberID: memberID,
 		GroupID:  groupID,
+		Search:   query.Search,
 	})
 	if err != nil {
 		return MemberData{}, err
 	}
 
+	totals, err := db.Qry.SumParticipantTotalsByMemberFiltered(ctx, db.SumParticipantTotalsByMemberFilteredParams{
+		MemberID: memberID,
+		GroupID:  groupID,
+		Search:   query.Search,
+	})
+	if err != nil {
+		return MemberData{}, err
+	}
+
+	query = utils.ClampPage(query, int64(totalItems))
+
+	params := db.ListParticipantsByMemberByTimeDescFilteredParams{
+		MemberID: memberID,
+		GroupID:  groupID,
+		Search:   query.Search,
+		Limit:    int64(query.PageSize),
+		Offset:   query.Offset(),
+	}
+
+	var events []MemberEvent
+	switch query.Sort {
+	case "title":
+		if query.Dir == "desc" {
+			rows, err := db.Qry.ListParticipantsByMemberByTitleDescFiltered(ctx, db.ListParticipantsByMemberByTitleDescFilteredParams(params))
+			if err != nil {
+				return MemberData{}, err
+			}
+			for _, r := range rows {
+				events = append(events, convertToMemberEvent(r))
+			}
+		} else {
+			rows, err := db.Qry.ListParticipantsByMemberByTitleAscFiltered(ctx, db.ListParticipantsByMemberByTitleAscFilteredParams(params))
+			if err != nil {
+				return MemberData{}, err
+			}
+			for _, r := range rows {
+				events = append(events, convertToMemberEvent(r))
+			}
+		}
+	case "amount":
+		if query.Dir == "desc" {
+			rows, err := db.Qry.ListParticipantsByMemberByAmountDescFiltered(ctx, db.ListParticipantsByMemberByAmountDescFilteredParams(params))
+			if err != nil {
+				return MemberData{}, err
+			}
+			for _, r := range rows {
+				events = append(events, convertToMemberEvent(r))
+			}
+		} else {
+			rows, err := db.Qry.ListParticipantsByMemberByAmountAscFiltered(ctx, db.ListParticipantsByMemberByAmountAscFilteredParams(params))
+			if err != nil {
+				return MemberData{}, err
+			}
+			for _, r := range rows {
+				events = append(events, convertToMemberEvent(r))
+			}
+		}
+	case "participant_amount":
+		if query.Dir == "desc" {
+			rows, err := db.Qry.ListParticipantsByMemberByCutDescFiltered(ctx, db.ListParticipantsByMemberByCutDescFilteredParams(params))
+			if err != nil {
+				return MemberData{}, err
+			}
+			for _, r := range rows {
+				events = append(events, convertToMemberEvent(r))
+			}
+		} else {
+			rows, err := db.Qry.ListParticipantsByMemberByCutAscFiltered(ctx, db.ListParticipantsByMemberByCutAscFilteredParams(params))
+			if err != nil {
+				return MemberData{}, err
+			}
+			for _, r := range rows {
+				events = append(events, convertToMemberEvent(r))
+			}
+		}
+	case "participant_expense":
+		if query.Dir == "desc" {
+			rows, err := db.Qry.ListParticipantsByMemberByExpenseDescFiltered(ctx, db.ListParticipantsByMemberByExpenseDescFilteredParams(params))
+			if err != nil {
+				return MemberData{}, err
+			}
+			for _, r := range rows {
+				events = append(events, convertToMemberEvent(r))
+			}
+		} else {
+			rows, err := db.Qry.ListParticipantsByMemberByExpenseAscFiltered(ctx, db.ListParticipantsByMemberByExpenseAscFilteredParams(params))
+			if err != nil {
+				return MemberData{}, err
+			}
+			for _, r := range rows {
+				events = append(events, convertToMemberEvent(r))
+			}
+		}
+	default:
+		if query.Dir == "asc" {
+			rows, err := db.Qry.ListParticipantsByMemberByTimeAscFiltered(ctx, db.ListParticipantsByMemberByTimeAscFilteredParams(params))
+			if err != nil {
+				return MemberData{}, err
+			}
+			for _, r := range rows {
+				events = append(events, convertToMemberEvent(r))
+			}
+		} else {
+			rows, err := db.Qry.ListParticipantsByMemberByTimeDescFiltered(ctx, params)
+			if err != nil {
+				return MemberData{}, err
+			}
+			for _, r := range rows {
+				events = append(events, convertToMemberEvent(r))
+			}
+		}
+	}
+
 	return MemberData{
-		Title:   member.Name,
-		Member:  &member,
-		Events:  events,
-		GroupID: groupID,
+		Title:        member.Name,
+		Member:       &member,
+		Events:       events,
+		GroupID:      groupID,
+		Query:        query,
+		Pager:        utils.BuildTablePagination(int64(totalItems), query),
+		TotalCut:     totals.TotalCut,
+		TotalExpense: totals.TotalExpense,
+		TotalPayout:  totals.TotalPayout,
 		Breadcrumbs: []utils.Crumb{
 			{Label: ctxi18n.T(ctx, "groups.title"), Href: "/dashboard"},
 			{Label: group.Name, Href: "/groups/" + groupID},

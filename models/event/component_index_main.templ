@@ -17,12 +17,10 @@ templ EventTotalsContent(data EventsData) {
 }
 
 templ EventIndexMain(data EventsData) {
-	<h2 class="pt">{ ctxi18n.T(ctx, "events.calculations") }</h2>
+	<h2 class="pt pb">{ ctxi18n.T(ctx, "events.calculations") }</h2>
 	@EventTotalsContent(data)
-
 	<h2 class="pt pb">{ ctxi18n.T(ctx, "events.list_title") }</h2>
 	@shared.TableSearchForm(utils.BuildTableSearchDatastarAction(fmt.Sprintf("/groups/%s/events", data.GroupID), utils.DefaultTablePageSize), "table.search_placeholder_events")
-
 	<div class="row row-wrap pt pb" role="group" aria-label={ ctxi18n.T(ctx, "table.date_filters") }>
 		<button
 			class={ utils.DateFilterAllButtonClass(data.Query) }

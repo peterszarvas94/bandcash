@@ -36,6 +36,17 @@ func (e *Expenses) GetIndexData(ctx context.Context, groupID string, query utils
 		return ExpensesData{}, err
 	}
 
+	filteredTotal, err := db.Qry.SumExpensesFiltered(ctx, db.SumExpensesFilteredParams{
+		GroupID:    groupID,
+		Search:     query.Search,
+		YearFilter: query.Year,
+		FromDate:   query.From,
+		ToDate:     query.To,
+	})
+	if err != nil {
+		return ExpensesData{}, err
+	}
+
 	query = utils.ClampPage(query, totalItems)
 
 	params := db.ListExpensesByDateDescFilteredParams{
@@ -80,12 +91,14 @@ func (e *Expenses) GetIndexData(ctx context.Context, groupID string, query utils
 	}
 
 	return ExpensesData{
-		Title:       ctxi18n.T(ctx, "expenses.title"),
-		Expenses:    expenses,
-		RecentYears: utils.RecentYears(3),
-		Query:       query,
-		Pager:       utils.BuildTablePagination(totalItems, query),
-		GroupID:     groupID,
+		Title:              ctxi18n.T(ctx, "expenses.title"),
+		Expenses:           expenses,
+		RecentYears:        utils.RecentYears(3),
+		Query:              query,
+		Pager:              utils.BuildTablePagination(totalItems, query),
+		GroupID:            groupID,
+		TotalExpenseAmount: group.TotalExpenseAmount,
+		FilteredTotal:      filteredTotal,
 		Breadcrumbs: []utils.Crumb{
 			{Label: ctxi18n.T(ctx, "groups.title"), Href: "/dashboard"},
 			{Label: group.Name, Href: "/groups/" + groupID},

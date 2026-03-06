@@ -9,7 +9,17 @@ import (
 	ctxi18n "github.com/invopop/ctxi18n/i18n"
 )
 
+templ ExpenseTotalsContent(data ExpensesData) {
+	@shared.DetailGrid([]shared.DetailGridRow{
+		{Label: ctxi18n.T(ctx, "expenses.total_all"), Value: utils.FormatNumberLocalized(ctx, data.TotalExpenseAmount)},
+		{Label: ctxi18n.T(ctx, "expenses.total_filtered"), Value: utils.FormatNumberLocalized(ctx, data.FilteredTotal)},
+	})
+}
+
 templ ExpenseIndexMain(data ExpensesData) {
+	<h2 class="pt pb">{ ctxi18n.T(ctx, "expenses.calculations") }</h2>
+	@ExpenseTotalsContent(data)
+	<h2 class="pt pb">{ ctxi18n.T(ctx, "expenses.list_title") }</h2>
 	@shared.TableSearchForm(utils.BuildTableSearchDatastarAction(fmt.Sprintf("/groups/%s/expenses", data.GroupID), utils.DefaultTablePageSize), "table.search_placeholder_expenses")
 	<div class="row row-wrap pt pb" role="group" aria-label={ ctxi18n.T(ctx, "table.date_filters") }>
 		<button

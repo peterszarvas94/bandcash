@@ -207,7 +207,7 @@
     display: block;
   }
 
-  @media (max-width: 730px) {
+  @media (max-width: 780px) {
     .hide-tablet {
       display: none !important;
     }
@@ -222,5 +222,4 @@
       display: none !important;
     }
   }
-
 }

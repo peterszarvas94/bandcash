@@ -762,6 +762,52 @@ func (q *Queries) ListExpensesByTitleDescFiltered(ctx context.Context, arg ListE
 	return items, nil
 }
 
+const sumExpensesFiltered = `-- name: SumExpensesFiltered :one
+SELECT CAST(COALESCE(SUM(amount), 0) AS INTEGER) FROM expenses
+WHERE group_id = ?1
+  AND (
+    ?2 = ''
+    OR title LIKE '%' || ?2 || '%'
+    OR description LIKE '%' || ?2 || '%'
+  )
+  AND (
+    (
+      ?3 != ''
+      AND ?4 != ''
+      AND date(expenses.date) >= date(?3)
+      AND date(expenses.date) <= date(?4)
+    )
+    OR (
+      (?3 = '' OR ?4 = '')
+      AND (
+        ?5 = ''
+        OR strftime('%Y', expenses.date) = ?5
+      )
+    )
+  )
+`
+
+type SumExpensesFilteredParams struct {
+	GroupID    string      `json:"group_id"`
+	Search     interface{} `json:"search"`
+	FromDate   interface{} `json:"from_date"`
+	ToDate     interface{} `json:"to_date"`
+	YearFilter interface{} `json:"year_filter"`
+}
+
+func (q *Queries) SumExpensesFiltered(ctx context.Context, arg SumExpensesFilteredParams) (int64, error) {
+	row := q.db.QueryRowContext(ctx, sumExpensesFiltered,
+		arg.GroupID,
+		arg.Search,
+		arg.FromDate,
+		arg.ToDate,
+		arg.YearFilter,
+	)
+	var column_1 int64
+	err := row.Scan(&column_1)
+	return column_1, err
+}
+
 const updateExpense = `-- name: UpdateExpense :one
 UPDATE expenses
 SET title = ?, description = ?, amount = ?, date = ?

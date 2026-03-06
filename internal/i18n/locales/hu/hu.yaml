@@ -176,6 +176,10 @@ hu:
     create: "Költség létrehozása"
     update: "Költség frissítése"
     delete_confirm: "Törlöd ezt a költséget?"
+    calculations: "Számítások"
+    list_title: "Költségek"
+    total_all: "Összes költség összege"
+    total_filtered: "Szűrt költségek összege"
     notifications:
       created: "Költség létrehozva."
       updated: "Költség frissítve."
@@ -203,6 +207,12 @@ hu:
       delete_failed: "Nem sikerült tagot törölni. Próbáld újra."
     table:
       event_amount: "Esemény összege"
+    calculations: "Számítások"
+    list_title: "Események"
+    total_events: "Összes esemény"
+    total_cut: "Összes részesedés"
+    total_expense: "Összes költség"
+    total_payout: "Összes kifizetés"
   participants:
     add: "Résztvevő hozzáadása"
     new: "Új résztvevő"

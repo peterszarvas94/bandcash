@@ -6,13 +6,15 @@ import (
 )
 
 type ExpensesData struct {
-	Title       string
-	Expenses    []db.Expense
-	RecentYears []int
-	Query       utils.TableQuery
-	Pager       utils.TablePagination
-	Breadcrumbs []utils.Crumb
-	GroupID     string
-	IsAdmin     bool
-	UserEmail   string
+	Title              string
+	Expenses           []db.Expense
+	RecentYears        []int
+	Query              utils.TableQuery
+	Pager              utils.TablePagination
+	Breadcrumbs        []utils.Crumb
+	GroupID            string
+	IsAdmin            bool
+	UserEmail          string
+	TotalExpenseAmount int64
+	FilteredTotal      int64
 }
