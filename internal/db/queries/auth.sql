@@ -38,13 +38,13 @@ SELECT * FROM groups
 WHERE admin_user_id = ?;
 
 -- name: ListGroupsByAdmin :many
-SELECT id, name, admin_user_id, created_at
+SELECT *
 FROM groups
 WHERE admin_user_id = ?
 ORDER BY created_at DESC;
 
 -- name: ListGroupsByReader :many
-SELECT g.id, g.name, g.admin_user_id, g.created_at
+SELECT g.*
 FROM groups g
 JOIN group_readers gr ON gr.group_id = g.id
 WHERE gr.user_id = ?

@@ -783,43 +783,16 @@ func (g *Group) groupPageData(c echo.Context, groupID string) (GroupPageData, er
 		return GroupPageData{}, err
 	}
 
-	events, err := db.Qry.ListEvents(ctx, groupID)
-	if err != nil {
-		return GroupPageData{}, err
-	}
-
-	var income int64
-	for _, event := range events {
-		income += event.Amount
-	}
-
-	expenses, err := db.Qry.ListExpenses(ctx, groupID)
-	if err != nil {
-		return GroupPageData{}, err
-	}
-
-	payouts, err := db.Qry.SumParticipantAmountsByGroup(ctx, groupID)
-	if err != nil {
-		return GroupPageData{}, err
-	}
-
-	var totalExpenses int64
-	for _, expense := range expenses {
-		totalExpenses += expense.Amount
-	}
-
-	leftover := income - payouts - totalExpenses
-
 	return GroupPageData{
 		Title:       group.Name,
 		Breadcrumbs: []utils.Crumb{{Label: ctxi18n.T(ctx, "groups.title"), Href: "/dashboard"}, {Label: group.Name, Href: "/groups/" + groupID}, {Label: ctxi18n.T(ctx, "nav.overview")}},
 		UserEmail:   getUserEmail(c),
 		Group:       group,
 		Admin:       admin,
-		Income:      income,
-		Payouts:     payouts,
-		Expenses:    totalExpenses,
-		Leftover:    leftover,
+		Income:      group.TotalEventAmount,
+		Payouts:     group.TotalPayoutAmount,
+		Expenses:    group.TotalExpenseAmount,
+		Leftover:    group.TotalLeftover,
 		IsAdmin:     middleware.IsAdmin(c),
 	}, nil
 }

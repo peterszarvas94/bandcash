@@ -156,6 +156,10 @@ en:
     leftover: "Leftover"
     participants: "Participants"
     delete_confirm: "Delete this event?"
+    calculations: "Calculations"
+    list_title: "Events"
+    total_all: "All Events Total"
+    total_filtered: "Filtered Events Total"
     notifications:
       created: "Event created."
       updated: "Event updated."

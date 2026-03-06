@@ -256,3 +256,27 @@ WHERE id = ? AND group_id = ?;
 
 -- name: DeleteAllEvents :exec
 DELETE FROM events;
+
+-- name: SumEventsFiltered :one
+SELECT CAST(COALESCE(SUM(amount), 0) AS INTEGER) FROM events
+WHERE group_id = sqlc.arg(group_id)
+  AND (
+    sqlc.arg(search) = ''
+    OR title LIKE '%' || sqlc.arg(search) || '%'
+    OR description LIKE '%' || sqlc.arg(search) || '%'
+  )
+  AND (
+    (
+      sqlc.arg(from_date) != ''
+      AND sqlc.arg(to_date) != ''
+      AND date(time) >= date(sqlc.arg(from_date))
+      AND date(time) <= date(sqlc.arg(to_date))
+    )
+    OR (
+      (sqlc.arg(from_date) = '' OR sqlc.arg(to_date) = '')
+      AND (
+        sqlc.arg(year_filter) = ''
+        OR strftime('%Y', time) = sqlc.arg(year_filter)
+      )
+    )
+  );

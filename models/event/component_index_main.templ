@@ -9,8 +9,20 @@ import (
 	ctxi18n "github.com/invopop/ctxi18n/i18n"
 )
 
+templ EventTotalsContent(data EventsData) {
+	@shared.DetailGrid([]shared.DetailGridRow{
+		{Label: ctxi18n.T(ctx, "events.total_all"), Value: utils.FormatNumberLocalized(ctx, data.TotalEventAmount)},
+		{Label: ctxi18n.T(ctx, "events.total_filtered"), Value: utils.FormatNumberLocalized(ctx, data.FilteredTotal)},
+	})
+}
+
 templ EventIndexMain(data EventsData) {
+	<h2 class="pt">{ ctxi18n.T(ctx, "events.calculations") }</h2>
+	@EventTotalsContent(data)
+
+	<h2 class="pt pb">{ ctxi18n.T(ctx, "events.list_title") }</h2>
 	@shared.TableSearchForm(utils.BuildTableSearchDatastarAction(fmt.Sprintf("/groups/%s/events", data.GroupID), utils.DefaultTablePageSize), "table.search_placeholder_events")
+
 	<div class="row row-wrap pt pb" role="group" aria-label={ ctxi18n.T(ctx, "table.date_filters") }>
 		<button
 			class={ utils.DateFilterAllButtonClass(data.Query) }

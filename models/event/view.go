@@ -21,13 +21,15 @@ type EventData struct {
 }
 
 type EventsData struct {
-	Title       string
-	Events      []db.Event
-	RecentYears []int
-	Query       utils.TableQuery
-	Pager       utils.TablePagination
-	Breadcrumbs []utils.Crumb
-	GroupID     string
-	IsAdmin     bool
-	UserEmail   string
+	Title            string
+	Events           []db.Event
+	RecentYears      []int
+	Query            utils.TableQuery
+	Pager            utils.TablePagination
+	Breadcrumbs      []utils.Crumb
+	GroupID          string
+	IsAdmin          bool
+	UserEmail        string
+	TotalEventAmount int64
+	FilteredTotal    int64
 }

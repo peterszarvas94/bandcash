@@ -87,45 +87,29 @@ SELECT COUNT(*) FROM groups
 WHERE sqlc.arg(search) = '' OR LOWER(name) LIKE '%' || LOWER(sqlc.arg(search)) || '%';
 
 -- name: ListGroupsByNameAscFiltered :many
-SELECT
-  groups.id,
-  groups.name,
-  groups.admin_user_id,
-  groups.created_at
+SELECT *
 FROM groups
 WHERE sqlc.arg(search) = '' OR LOWER(name) LIKE '%' || LOWER(sqlc.arg(search)) || '%'
-ORDER BY LOWER(groups.name) ASC, groups.created_at DESC
+ORDER BY LOWER(name) ASC, created_at DESC
 LIMIT sqlc.arg(limit) OFFSET sqlc.arg(offset);
 
 -- name: ListGroupsByNameDescFiltered :many
-SELECT
-  groups.id,
-  groups.name,
-  groups.admin_user_id,
-  groups.created_at
+SELECT *
 FROM groups
 WHERE sqlc.arg(search) = '' OR LOWER(name) LIKE '%' || LOWER(sqlc.arg(search)) || '%'
-ORDER BY LOWER(groups.name) DESC, groups.created_at DESC
+ORDER BY LOWER(name) DESC, created_at DESC
 LIMIT sqlc.arg(limit) OFFSET sqlc.arg(offset);
 
 -- name: ListGroupsByCreatedAscFiltered :many
-SELECT
-  groups.id,
-  groups.name,
-  groups.admin_user_id,
-  groups.created_at
+SELECT *
 FROM groups
 WHERE sqlc.arg(search) = '' OR LOWER(name) LIKE '%' || LOWER(sqlc.arg(search)) || '%'
-ORDER BY groups.created_at ASC, LOWER(groups.name) ASC
+ORDER BY created_at ASC, LOWER(name) ASC
 LIMIT sqlc.arg(limit) OFFSET sqlc.arg(offset);
 
 -- name: ListGroupsByCreatedDescFiltered :many
-SELECT
-  groups.id,
-  groups.name,
-  groups.admin_user_id,
-  groups.created_at
+SELECT *
 FROM groups
 WHERE sqlc.arg(search) = '' OR LOWER(name) LIKE '%' || LOWER(sqlc.arg(search)) || '%'
-ORDER BY groups.created_at DESC, LOWER(groups.name) ASC
+ORDER BY created_at DESC, LOWER(name) ASC
 LIMIT sqlc.arg(limit) OFFSET sqlc.arg(offset);

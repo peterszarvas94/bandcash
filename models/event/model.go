@@ -191,6 +191,17 @@ func (e *Events) GetIndexData(ctx context.Context, groupID string, query utils.T
 		return EventsData{}, err
 	}
 
+	filteredTotal, err := db.Qry.SumEventsFiltered(ctx, db.SumEventsFilteredParams{
+		GroupID:    groupID,
+		Search:     query.Search,
+		YearFilter: query.Year,
+		FromDate:   query.From,
+		ToDate:     query.To,
+	})
+	if err != nil {
+		return EventsData{}, err
+	}
+
 	query = utils.ClampPage(query, totalItems)
 
 	params := db.ListEventsByTimeAscFilteredParams{
@@ -235,12 +246,14 @@ func (e *Events) GetIndexData(ctx context.Context, groupID string, query utils.T
 	}
 
 	return EventsData{
-		Title:       ctxi18n.T(ctx, "events.title"),
-		Events:      events,
-		RecentYears: utils.RecentYears(3),
-		Query:       query,
-		Pager:       utils.BuildTablePagination(totalItems, query),
-		GroupID:     groupID,
+		Title:            ctxi18n.T(ctx, "events.title"),
+		Events:           events,
+		RecentYears:      utils.RecentYears(3),
+		Query:            query,
+		Pager:            utils.BuildTablePagination(totalItems, query),
+		GroupID:          groupID,
+		TotalEventAmount: group.TotalEventAmount,
+		FilteredTotal:    filteredTotal,
 		Breadcrumbs: []utils.Crumb{
 			{Label: ctxi18n.T(ctx, "groups.title"), Href: "/dashboard"},
 			{Label: group.Name, Href: "/groups/" + groupID},

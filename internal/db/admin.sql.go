@@ -79,7 +79,7 @@ func (q *Queries) CountUsersFiltered(ctx context.Context, search interface{}) (i
 }
 
 const listAllGroups = `-- name: ListAllGroups :many
-SELECT id, name, admin_user_id, created_at FROM groups
+SELECT id, name, admin_user_id, created_at, total_event_amount, total_expense_amount, total_payout_amount, total_leftover FROM groups
 ORDER BY created_at DESC
 `
 
@@ -97,6 +97,10 @@ func (q *Queries) ListAllGroups(ctx context.Context) ([]Group, error) {
 			&i.Name,
 			&i.AdminUserID,
 			&i.CreatedAt,
+			&i.TotalEventAmount,
+			&i.TotalExpenseAmount,
+			&i.TotalPayoutAmount,
+			&i.TotalLeftover,
 		); err != nil {
 			return nil, err
 		}
@@ -112,14 +116,10 @@ func (q *Queries) ListAllGroups(ctx context.Context) ([]Group, error) {
 }
 
 const listGroupsByCreatedAscFiltered = `-- name: ListGroupsByCreatedAscFiltered :many
-SELECT
-  groups.id,
-  groups.name,
-  groups.admin_user_id,
-  groups.created_at
+SELECT id, name, admin_user_id, created_at, total_event_amount, total_expense_amount, total_payout_amount, total_leftover
 FROM groups
 WHERE ?1 = '' OR LOWER(name) LIKE '%' || LOWER(?1) || '%'
-ORDER BY groups.created_at ASC, LOWER(groups.name) ASC
+ORDER BY created_at ASC, LOWER(name) ASC
 LIMIT ?3 OFFSET ?2
 `
 
@@ -143,6 +143,10 @@ func (q *Queries) ListGroupsByCreatedAscFiltered(ctx context.Context, arg ListGr
 			&i.Name,
 			&i.AdminUserID,
 			&i.CreatedAt,
+			&i.TotalEventAmount,
+			&i.TotalExpenseAmount,
+			&i.TotalPayoutAmount,
+			&i.TotalLeftover,
 		); err != nil {
 			return nil, err
 		}
@@ -158,14 +162,10 @@ func (q *Queries) ListGroupsByCreatedAscFiltered(ctx context.Context, arg ListGr
 }
 
 const listGroupsByCreatedDescFiltered = `-- name: ListGroupsByCreatedDescFiltered :many
-SELECT
-  groups.id,
-  groups.name,
-  groups.admin_user_id,
-  groups.created_at
+SELECT id, name, admin_user_id, created_at, total_event_amount, total_expense_amount, total_payout_amount, total_leftover
 FROM groups
 WHERE ?1 = '' OR LOWER(name) LIKE '%' || LOWER(?1) || '%'
-ORDER BY groups.created_at DESC, LOWER(groups.name) ASC
+ORDER BY created_at DESC, LOWER(name) ASC
 LIMIT ?3 OFFSET ?2
 `
 
@@ -189,6 +189,10 @@ func (q *Queries) ListGroupsByCreatedDescFiltered(ctx context.Context, arg ListG
 			&i.Name,
 			&i.AdminUserID,
 			&i.CreatedAt,
+			&i.TotalEventAmount,
+			&i.TotalExpenseAmount,
+			&i.TotalPayoutAmount,
+			&i.TotalLeftover,
 		); err != nil {
 			return nil, err
 		}
@@ -204,14 +208,10 @@ func (q *Queries) ListGroupsByCreatedDescFiltered(ctx context.Context, arg ListG
 }
 
 const listGroupsByNameAscFiltered = `-- name: ListGroupsByNameAscFiltered :many
-SELECT
-  groups.id,
-  groups.name,
-  groups.admin_user_id,
-  groups.created_at
+SELECT id, name, admin_user_id, created_at, total_event_amount, total_expense_amount, total_payout_amount, total_leftover
 FROM groups
 WHERE ?1 = '' OR LOWER(name) LIKE '%' || LOWER(?1) || '%'
-ORDER BY LOWER(groups.name) ASC, groups.created_at DESC
+ORDER BY LOWER(name) ASC, created_at DESC
 LIMIT ?3 OFFSET ?2
 `
 
@@ -235,6 +235,10 @@ func (q *Queries) ListGroupsByNameAscFiltered(ctx context.Context, arg ListGroup
 			&i.Name,
 			&i.AdminUserID,
 			&i.CreatedAt,
+			&i.TotalEventAmount,
+			&i.TotalExpenseAmount,
+			&i.TotalPayoutAmount,
+			&i.TotalLeftover,
 		); err != nil {
 			return nil, err
 		}
@@ -250,14 +254,10 @@ func (q *Queries) ListGroupsByNameAscFiltered(ctx context.Context, arg ListGroup
 }
 
 const listGroupsByNameDescFiltered = `-- name: ListGroupsByNameDescFiltered :many
-SELECT
-  groups.id,
-  groups.name,
-  groups.admin_user_id,
-  groups.created_at
+SELECT id, name, admin_user_id, created_at, total_event_amount, total_expense_amount, total_payout_amount, total_leftover
 FROM groups
 WHERE ?1 = '' OR LOWER(name) LIKE '%' || LOWER(?1) || '%'
-ORDER BY LOWER(groups.name) DESC, groups.created_at DESC
+ORDER BY LOWER(name) DESC, created_at DESC
 LIMIT ?3 OFFSET ?2
 `
 
@@ -281,6 +281,10 @@ func (q *Queries) ListGroupsByNameDescFiltered(ctx context.Context, arg ListGrou
 			&i.Name,
 			&i.AdminUserID,
 			&i.CreatedAt,
+			&i.TotalEventAmount,
+			&i.TotalExpenseAmount,
+			&i.TotalPayoutAmount,
+			&i.TotalLeftover,
 		); err != nil {
 			return nil, err
 		}
@@ -296,7 +300,7 @@ func (q *Queries) ListGroupsByNameDescFiltered(ctx context.Context, arg ListGrou
 }
 
 const listRecentGroups = `-- name: ListRecentGroups :many
-SELECT id, name, admin_user_id, created_at FROM groups
+SELECT id, name, admin_user_id, created_at, total_event_amount, total_expense_amount, total_payout_amount, total_leftover FROM groups
 ORDER BY created_at DESC
 LIMIT ?
 `
@@ -315,6 +319,10 @@ func (q *Queries) ListRecentGroups(ctx context.Context, limit int64) ([]Group, e
 			&i.Name,
 			&i.AdminUserID,
 			&i.CreatedAt,
+			&i.TotalEventAmount,
+			&i.TotalExpenseAmount,
+			&i.TotalPayoutAmount,
+			&i.TotalLeftover,
 		); err != nil {
 			return nil, err
 		}

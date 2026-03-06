@@ -156,6 +156,10 @@ hu:
     leftover: "Maradék"
     participants: "Résztvevők"
     delete_confirm: "Törlöd ezt az eseményt?"
+    calculations: "Számítások"
+    list_title: "Események"
+    total_all: "Összes esemény összege"
+    total_filtered: "Szűrt események összege"
     notifications:
       created: "Esemény létrehozva."
       updated: "Esemény frissítve."

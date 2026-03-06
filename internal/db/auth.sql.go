@@ -112,7 +112,7 @@ func (q *Queries) CountUserGroupsFiltered(ctx context.Context, arg CountUserGrou
 const createGroup = `-- name: CreateGroup :one
 INSERT INTO groups (id, name, admin_user_id)
 VALUES (?, ?, ?)
-RETURNING id, name, admin_user_id, created_at
+RETURNING id, name, admin_user_id, created_at, total_event_amount, total_expense_amount, total_payout_amount, total_leftover
 `
 
 type CreateGroupParams struct {
@@ -129,6 +129,10 @@ func (q *Queries) CreateGroup(ctx context.Context, arg CreateGroupParams) (Group
 		&i.Name,
 		&i.AdminUserID,
 		&i.CreatedAt,
+		&i.TotalEventAmount,
+		&i.TotalExpenseAmount,
+		&i.TotalPayoutAmount,
+		&i.TotalLeftover,
 	)
 	return i, err
 }
@@ -252,7 +256,7 @@ func (q *Queries) DeleteGroupPendingInvite(ctx context.Context, arg DeleteGroupP
 }
 
 const getGroupByAdmin = `-- name: GetGroupByAdmin :one
-SELECT id, name, admin_user_id, created_at FROM groups
+SELECT id, name, admin_user_id, created_at, total_event_amount, total_expense_amount, total_payout_amount, total_leftover FROM groups
 WHERE admin_user_id = ?
 `
 
@@ -264,12 +268,16 @@ func (q *Queries) GetGroupByAdmin(ctx context.Context, adminUserID string) (Grou
 		&i.Name,
 		&i.AdminUserID,
 		&i.CreatedAt,
+		&i.TotalEventAmount,
+		&i.TotalExpenseAmount,
+		&i.TotalPayoutAmount,
+		&i.TotalLeftover,
 	)
 	return i, err
 }
 
 const getGroupByID = `-- name: GetGroupByID :one
-SELECT id, name, admin_user_id, created_at FROM groups
+SELECT id, name, admin_user_id, created_at, total_event_amount, total_expense_amount, total_payout_amount, total_leftover FROM groups
 WHERE id = ?
 `
 
@@ -281,6 +289,10 @@ func (q *Queries) GetGroupByID(ctx context.Context, id string) (Group, error) {
 		&i.Name,
 		&i.AdminUserID,
 		&i.CreatedAt,
+		&i.TotalEventAmount,
+		&i.TotalExpenseAmount,
+		&i.TotalPayoutAmount,
+		&i.TotalLeftover,
 	)
 	return i, err
 }
@@ -756,7 +768,7 @@ func (q *Queries) ListGroupReadersByEmailDescFiltered(ctx context.Context, arg L
 }
 
 const listGroupsByAdmin = `-- name: ListGroupsByAdmin :many
-SELECT id, name, admin_user_id, created_at
+SELECT id, name, admin_user_id, created_at, total_event_amount, total_expense_amount, total_payout_amount, total_leftover
 FROM groups
 WHERE admin_user_id = ?
 ORDER BY created_at DESC
@@ -776,6 +788,10 @@ func (q *Queries) ListGroupsByAdmin(ctx context.Context, adminUserID string) ([]
 			&i.Name,
 			&i.AdminUserID,
 			&i.CreatedAt,
+			&i.TotalEventAmount,
+			&i.TotalExpenseAmount,
+			&i.TotalPayoutAmount,
+			&i.TotalLeftover,
 		); err != nil {
 			return nil, err
 		}
@@ -791,7 +807,7 @@ func (q *Queries) ListGroupsByAdmin(ctx context.Context, adminUserID string) ([]
 }
 
 const listGroupsByReader = `-- name: ListGroupsByReader :many
-SELECT g.id, g.name, g.admin_user_id, g.created_at
+SELECT g.id, g.name, g.admin_user_id, g.created_at, g.total_event_amount, g.total_expense_amount, g.total_payout_amount, g.total_leftover
 FROM groups g
 JOIN group_readers gr ON gr.group_id = g.id
 WHERE gr.user_id = ?
@@ -812,6 +828,10 @@ func (q *Queries) ListGroupsByReader(ctx context.Context, userID string) ([]Grou
 			&i.Name,
 			&i.AdminUserID,
 			&i.CreatedAt,
+			&i.TotalEventAmount,
+			&i.TotalExpenseAmount,
+			&i.TotalPayoutAmount,
+			&i.TotalLeftover,
 		); err != nil {
 			return nil, err
 		}
@@ -1389,7 +1409,7 @@ const updateGroupName = `-- name: UpdateGroupName :one
 UPDATE groups
 SET name = ?
 WHERE id = ?
-RETURNING id, name, admin_user_id, created_at
+RETURNING id, name, admin_user_id, created_at, total_event_amount, total_expense_amount, total_payout_amount, total_leftover
 `
 
 type UpdateGroupNameParams struct {
@@ -1405,6 +1425,10 @@ func (q *Queries) UpdateGroupName(ctx context.Context, arg UpdateGroupNameParams
 		&i.Name,
 		&i.AdminUserID,
 		&i.CreatedAt,
+		&i.TotalEventAmount,
+		&i.TotalExpenseAmount,
+		&i.TotalPayoutAmount,
+		&i.TotalLeftover,
 	)
 	return i, err
 }
