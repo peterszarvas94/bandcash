@@ -14,7 +14,7 @@ require (
 	github.com/pressly/goose/v3 v3.27.0
 	github.com/starfederation/datastar-go v1.1.0
 	golang.org/x/text v0.34.0
-	golang.org/x/time v0.14.0
+	golang.org/x/time v0.15.0
 	gopkg.in/gomail.v2 v2.0.0-20160411212932-81ebce5c23df
 )
 
