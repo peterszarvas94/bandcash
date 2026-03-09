@@ -156,7 +156,7 @@ func (e *Events) GetShowData(ctx context.Context, groupID, eventID string, query
 	slog.Info("event.show.data", "event_id", eventID, "participants", len(participants), "members_total", len(members), "members_filtered", len(filteredMembers), "leftover", leftover)
 
 	return EventData{
-		Title:            event.Title,
+		Title:            "Bandcash - " + event.Title,
 		Event:            &event,
 		Participants:     displayParticipants,
 		Query:            query,
@@ -246,7 +246,7 @@ func (e *Events) GetIndexData(ctx context.Context, groupID string, query utils.T
 	}
 
 	return EventsData{
-		Title:            ctxi18n.T(ctx, "events.title"),
+		Title:            ctxi18n.T(ctx, "events.page_title"),
 		Events:           events,
 		RecentYears:      utils.RecentYears(3),
 		Query:            query,

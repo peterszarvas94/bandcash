@@ -91,7 +91,7 @@ func (e *Expenses) GetIndexData(ctx context.Context, groupID string, query utils
 	}
 
 	return ExpensesData{
-		Title:              ctxi18n.T(ctx, "expenses.title"),
+		Title:              ctxi18n.T(ctx, "expenses.page_title"),
 		Expenses:           expenses,
 		RecentYears:        utils.RecentYears(3),
 		Query:              query,

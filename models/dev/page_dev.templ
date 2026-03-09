@@ -10,7 +10,7 @@ import (
 templ DevPage() {
 	<!DOCTYPE html>
 	<html lang={ appi18n.LocaleCode(ctx) }>
-		@shared.Head("Dev tools")
+		@shared.Head("Bandcash - Dev tools")
 		<body>
 			<div data-signals={ templ.JSONString(map[string]any{"csrf": utils.CSRFTokenFromContext(ctx), "errors": map[string]any{"name": ""}, "formData": map[string]any{"name": ""}, "_fetching": false, "activeSpinner": "", "_notifyInline": false, "_notifyInfo": false, "_notifySuccess": false, "_notifyWarning": false, "_notifyError": false}) } data-init="@get('/sse')"></div>
 			@shared.Notifications()

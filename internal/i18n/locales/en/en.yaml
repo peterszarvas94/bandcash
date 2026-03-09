@@ -1,6 +1,6 @@
 en:
   app:
-    title: "BandCash"
+    title: "Bandcash"
   nav:
     home: "BandCash"
     dashboard: "Dashboard"
@@ -23,9 +23,9 @@ en:
     resend_in: "Resend available in"
     generic_server_error: "Something went wrong. Please try again."
     banned: "Your account is banned."
-    login_title: "Login to BandCash"
+    login_title: "Bandcash - Login"
     check_email: "Check Email"
-    check_email_title: "Check Your Email"
+    check_email_title: "Bandcash - Check Your Email"
     check_email_body: "If you have access, we've sent you a login link. Click the link in your email to access your account."
     link_expiry: "The link will expire in 1 hour."
     send_link: "Send login link"
@@ -94,6 +94,7 @@ en:
     tagline: "Where is my cut?"
   settings:
     title: "Settings"
+    page_title: "Bandcash - Settings"
     language: "Language"
     account: "Account"
     notifications:
@@ -146,6 +147,7 @@ en:
     leave_message: "You can be invited again later."
   events:
     title: "Events"
+    page_title: "Bandcash - Events"
     actions: "Event actions"
     add: "Add Event"
     new: "New Event"
@@ -169,6 +171,7 @@ en:
       delete_failed: "Could not delete event. Please try again."
   expenses:
     title: "Expenses"
+    page_title: "Bandcash - Expenses"
     actions: "Expense actions"
     add: "Add Expense"
     new: "New Expense"
@@ -189,6 +192,7 @@ en:
       delete_failed: "Could not delete expense. Please try again."
   members:
     title: "Members"
+    page_title: "Bandcash - Members"
     actions: "Member actions"
     add: "Add Member"
     new: "New Member"
@@ -245,9 +249,11 @@ en:
     email: "Invalid email address"
   groups:
     title: "Groups"
+    page_title: "Bandcash - Groups"
     actions: "Group actions"
     details: "Group Details"
     access: "Access"
+    access_page_title: "Bandcash - Access"
     viewers: "Viewers"
     read_only: "Viewer access"
     admin: "Admin"
@@ -261,6 +267,7 @@ en:
     leftover: "Leftover"
     total_amount: "Total amount"
     new: "New Group"
+    new_page_title: "Bandcash - New Group"
     edit: "Edit Group"
     new_desc: "Welcome! Let's set up your group's money management system."
     name: "Group Name"
@@ -315,7 +322,7 @@ en:
       leave_failed: "Failed to leave group"
       delete_failed: "Failed to delete group"
   admin:
-    title: "Admin Dashboard"
+    title: "Bandcash - Admin Dashboard"
     dashboard: "Admin"
     stats: "System Stats"
     total_users: "Total users"

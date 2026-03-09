@@ -12,16 +12,18 @@ import (
 )
 
 templ FlagsContent(signupEnabled bool) {
-	<div id="admin-flags" class="pb">
-		<div class="row justify-between">
-			<label for="admin-signup-enabled">{ ctxi18n.T(ctx, "admin.flags.signup") }</label>
-			<input
-				id="admin-signup-enabled"
-				class="native-checkbox"
-				type="checkbox"
-				checked?={ signupEnabled }
-				data-on:change="@post('/admin/flags/signup?value=' + (el.checked ? '1' : '0'))"
-			/>
+	<div id="admin-flags" class="detail-grid no-break pb">
+		<div class="detail-row">
+			<p class="detail-key">{ ctxi18n.T(ctx, "admin.flags.signup") }</p>
+			<p class="detail-val">
+				<input
+					id="admin-signup-enabled"
+					class="native-checkbox"
+					type="checkbox"
+					checked?={ signupEnabled }
+					data-on:change="@post('/admin/flags/signup?value=' + (el.checked ? '1' : '0'))"
+				/>
+			</p>
 		</div>
 	</div>
 }

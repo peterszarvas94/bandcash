@@ -1,6 +1,6 @@
 hu:
   app:
-    title: "BandCash"
+    title: "Bandcash"
   nav:
     home: "BandCash"
     dashboard: "Vezérlőpult"
@@ -23,9 +23,9 @@ hu:
     resend_in: "Újraküldés ennyi idő múlva"
     generic_server_error: "Valami hiba történt. Próbáld újra."
     banned: "A fiókod tiltva van."
-    login_title: "Belépés a BandCash-be"
+    login_title: "Bandcash - Belépés"
     check_email: "Email ellenőrzése"
-    check_email_title: "Ellenőrizd az emailed"
+    check_email_title: "Bandcash - Ellenőrizd az emailed"
     check_email_body: "Ha van hozzáférésed, küldtünk egy belépési linket. Kattints az emailben lévő linkre a belépéshez."
     link_expiry: "A link 1 órán belül lejár."
     send_link: "Belépési link küldése"
@@ -94,6 +94,7 @@ hu:
     tagline: "Hol van a gázsim?"
   settings:
     title: "Beállítások"
+    page_title: "Bandcash - Beállítások"
     language: "Nyelv"
     account: "Fiók"
     notifications:
@@ -146,6 +147,7 @@ hu:
     leave_message: "Később újra meghívhatnak."
   events:
     title: "Események"
+    page_title: "Bandcash - Események"
     actions: "Esemény műveletek"
     add: "Esemény hozzáadása"
     new: "Új esemény"
@@ -169,6 +171,7 @@ hu:
       delete_failed: "Nem sikerült eseményt törölni. Próbáld újra."
   expenses:
     title: "Költségek"
+    page_title: "Bandcash - Költségek"
     actions: "Költség műveletek"
     add: "Költség hozzáadása"
     new: "Új költség"
@@ -189,6 +192,7 @@ hu:
       delete_failed: "Nem sikerült költséget törölni. Próbáld újra."
   members:
     title: "Tagok"
+    page_title: "Bandcash - Tagok"
     actions: "Tag műveletek"
     add: "Tag hozzáadása"
     new: "Új tag"
@@ -245,9 +249,11 @@ hu:
     email: "Érvénytelen email cím"
   groups:
     title: "Csoportok"
+    page_title: "Bandcash - Csoportok"
     actions: "Csoport műveletek"
     details: "Csoport részletei"
     access: "Hozzáférés"
+    access_page_title: "Bandcash - Hozzáférés"
     viewers: "Nézők"
     read_only: "Nézői hozzáférés"
     admin: "Admin"
@@ -261,6 +267,7 @@ hu:
     leftover: "Maradék"
     total_amount: "Teljes összeg"
     new: "Új csoport"
+    new_page_title: "Bandcash - Új csoport"
     edit: "Csoport szerkesztése"
     new_desc: "Üdv! Állítsuk be a csoportod pénzügyi rendszerét."
     name: "Csoport neve"
@@ -315,7 +322,7 @@ hu:
       leave_failed: "Kilépés sikertelen"
       delete_failed: "A csoport törlése sikertelen"
   admin:
-    title: "Admin vezérlőpult"
+    title: "Bandcash - Admin vezérlőpult"
     dashboard: "Admin"
     stats: "Rendszer statisztikák"
     total_users: "Felhasználók összesen"

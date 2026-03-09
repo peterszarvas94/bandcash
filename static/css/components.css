@@ -674,7 +674,7 @@
 
     .detail-row {
       display: grid;
-      grid-template-columns: minmax(8rem, 12rem) minmax(0, 1fr);
+      grid-template-columns: minmax(8rem, 15rem) minmax(0, 1fr);
       gap: calc(var(--space) * 1.2);
       align-items: start;
 
@@ -701,10 +701,17 @@
       }
     }
 
-    @media (max-width: 720px) {
+    @media (max-width: 480px) {
       .detail-row {
         grid-template-columns: 1fr;
         gap: calc(var(--space) * 0.3);
+      }
+    }
+
+    &.no-break {
+      .detail-row {
+        grid-template-columns: minmax(8rem, 15rem) minmax(0, 1fr);
+        gap: calc(var(--space) * 1.2);
       }
     }
   }

@@ -222,4 +222,17 @@
       display: none !important;
     }
   }
+
+  /* View transitions - disabled animations */
+  @view-transition {
+    navigation: auto;
+  }
+
+  ::view-transition-group(*),
+  ::view-transition-old(*),
+  ::view-transition-new(*) {
+    animation: none !important;
+    animation-duration: 0s !important;
+    transition: none !important;
+  }
 }

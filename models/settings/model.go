@@ -17,7 +17,7 @@ func New() *Settings {
 
 func (s *Settings) Data(ctx context.Context) SettingsData {
 	return SettingsData{
-		Title:       ctxi18n.T(ctx, "settings.title"),
+		Title:       ctxi18n.T(ctx, "settings.page_title"),
 		CurrentLang: appi18n.LocaleCode(ctx),
 		Breadcrumbs: []utils.Crumb{
 			{Label: ctxi18n.T(ctx, "settings.title")},

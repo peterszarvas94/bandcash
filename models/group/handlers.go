@@ -88,7 +88,7 @@ func (g *Group) NewGroupPage(c echo.Context) error {
 	utils.EnsureClientID(c)
 	userEmail := getUserEmail(c)
 	data := NewGroupPageData{
-		Title:       ctxi18n.T(c.Request().Context(), "groups.new"),
+		Title:       ctxi18n.T(c.Request().Context(), "groups.new_page_title"),
 		Breadcrumbs: []utils.Crumb{{Label: ctxi18n.T(c.Request().Context(), "groups.title"), Href: "/dashboard"}, {Label: ctxi18n.T(c.Request().Context(), "groups.new")}},
 		UserEmail:   userEmail,
 	}
@@ -163,7 +163,7 @@ func (g *Group) GroupsPage(c echo.Context) error {
 		return c.String(http.StatusInternalServerError, "Failed to load groups")
 	}
 
-	data.Title = ctxi18n.T(c.Request().Context(), "groups.title")
+	data.Title = ctxi18n.T(c.Request().Context(), "groups.page_title")
 	data.Breadcrumbs = []utils.Crumb{{Label: ctxi18n.T(c.Request().Context(), "groups.title")}}
 	data.UserEmail = userEmail
 
@@ -217,7 +217,7 @@ func (g *Group) UpdateGroup(c echo.Context) error {
 			return c.NoContent(http.StatusInternalServerError)
 		}
 
-		data.Title = ctxi18n.T(c.Request().Context(), "groups.title")
+		data.Title = ctxi18n.T(c.Request().Context(), "groups.page_title")
 		data.Breadcrumbs = []utils.Crumb{{Label: ctxi18n.T(c.Request().Context(), "groups.title")}}
 		data.UserEmail = getUserEmail(c)
 
@@ -346,7 +346,7 @@ func (g *Group) DeleteGroup(c echo.Context) error {
 			return c.NoContent(http.StatusInternalServerError)
 		}
 
-		data.Title = ctxi18n.T(c.Request().Context(), "groups.title")
+		data.Title = ctxi18n.T(c.Request().Context(), "groups.page_title")
 		data.Breadcrumbs = []utils.Crumb{{Label: ctxi18n.T(c.Request().Context(), "groups.title")}}
 		data.UserEmail = getUserEmail(c)
 
@@ -632,7 +632,7 @@ func (g *Group) viewersPageData(c echo.Context, groupID, tab string, values url.
 	}
 
 	return ViewersPageData{
-		Title: ctxi18n.T(ctx, "groups.access"),
+		Title: ctxi18n.T(ctx, "groups.access_page_title"),
 		Breadcrumbs: []utils.Crumb{
 			{Label: ctxi18n.T(ctx, "groups.title"), Href: "/dashboard"},
 			{Label: group.Name, Href: "/groups/" + group.ID},
@@ -784,7 +784,7 @@ func (g *Group) groupPageData(c echo.Context, groupID string) (GroupPageData, er
 	}
 
 	return GroupPageData{
-		Title:       group.Name,
+		Title:       "Bandcash - " + group.Name,
 		Breadcrumbs: []utils.Crumb{{Label: ctxi18n.T(ctx, "groups.title"), Href: "/dashboard"}, {Label: group.Name, Href: "/groups/" + groupID}, {Label: ctxi18n.T(ctx, "nav.overview")}},
 		UserEmail:   getUserEmail(c),
 		Group:       group,

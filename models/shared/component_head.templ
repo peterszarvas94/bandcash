@@ -41,5 +41,20 @@ templ Head(title string) {
 			}
 		</script>
 		<script type="module" src="/static/js/main.js"></script>
+		<meta name="view-transition" content="same-origin"/>
+		<script type="speculationrules">
+			{
+				"prefetch": [
+					{
+						"source": "document",
+						"where": {
+							"href_matches": "/**",
+							"relative_to": "document"
+						},
+						"eagerness": "moderate"
+					}
+				]
+			}
+		</script>
 	</head>
 }

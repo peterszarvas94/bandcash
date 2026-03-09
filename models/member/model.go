@@ -277,7 +277,7 @@ func (p *Members) GetShowData(ctx context.Context, groupID, memberID string, que
 	}
 
 	return MemberData{
-		Title:        member.Name,
+		Title:        "Bandcash - " + member.Name,
 		Member:       &member,
 		Events:       events,
 		GroupID:      groupID,
@@ -343,7 +343,7 @@ func (p *Members) GetIndexData(ctx context.Context, groupID string, query utils.
 		return MembersData{}, err
 	}
 	return MembersData{
-		Title:   ctxi18n.T(ctx, "members.title"),
+		Title:   ctxi18n.T(ctx, "members.page_title"),
 		Members: members,
 		Query:   query,
 		Pager:   utils.BuildTablePagination(totalItems, query),
