@@ -8,6 +8,7 @@ import (
 	appi18n "bandcash/internal/i18n"
 	"bandcash/internal/utils"
 	shared "bandcash/models/shared"
+	icons "bandcash/models/shared/icons"
 )
 
 func tabClass(currentTab, targetTab string) string {
@@ -50,6 +51,12 @@ templ DashboardMain(data DashboardData) {
 		<a href={ buildTabURL("users") } class={ tabClass(data.Tab, "users") }>{ ctxi18n.T(ctx, "admin.tab.users") }</a>
 		<a href={ buildTabURL("groups") } class={ tabClass(data.Tab, "groups") }>{ ctxi18n.T(ctx, "admin.tab.groups") }</a>
 	</div>
+	@shared.MobileTabBar([]shared.MobileTab{
+		{Icon: icons.Info, Label: ctxi18n.T(ctx, "admin.tab.overview"), Href: buildTabURL("overview"), IsActive: data.Tab == "overview"},
+		{Icon: icons.Flag, Label: ctxi18n.T(ctx, "admin.tab.flags"), Href: buildTabURL("flags"), IsActive: data.Tab == "flags"},
+		{Icon: icons.Users, Label: ctxi18n.T(ctx, "admin.tab.users"), Href: buildTabURL("users"), IsActive: data.Tab == "users"},
+		{Icon: icons.LayoutGrid, Label: ctxi18n.T(ctx, "admin.tab.groups"), Href: buildTabURL("groups"), IsActive: data.Tab == "groups"},
+	})
 	<div class="pt">
 		// Tab content
 		if data.Tab == "overview" {

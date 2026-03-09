@@ -16,6 +16,11 @@ templ GroupViewersMain(data ViewersPageData) {
 		<a href={ viewersTabURL(data.GroupID, "pending") } class={ viewersTabClass(data.Tab, "pending") }>{ ctxi18n.T(ctx, "groups.pending_invitations") }</a>
 		<a href={ viewersTabURL(data.GroupID, "admins") } class={ viewersTabClass(data.Tab, "admins") }>{ ctxi18n.T(ctx, "groups.admins") }</a>
 	</div>
+	@shared.MobileTabBar([]shared.MobileTab{
+		{Icon: icons.Eye, Label: ctxi18n.T(ctx, "groups.viewers"), Href: viewersTabURL(data.GroupID, "viewers"), IsActive: data.Tab == "viewers"},
+		{Icon: icons.Clock, Label: ctxi18n.T(ctx, "groups.pending_invitations"), Href: viewersTabURL(data.GroupID, "pending"), IsActive: data.Tab == "pending"},
+		{Icon: icons.Shield, Label: ctxi18n.T(ctx, "groups.admins"), Href: viewersTabURL(data.GroupID, "admins"), IsActive: data.Tab == "admins"},
+	})
 	if data.Tab == "admins" {
 		@shared.TableSearchForm(utils.BuildTableSearchDatastarAction(viewersTablePath(data.GroupID, data.Tab), utils.DefaultTablePageSize), "table.search_placeholder_admins")
 		<table class="table table-sticky-actions pt">

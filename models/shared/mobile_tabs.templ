@@ -1,0 +1,19 @@
+package shared
+
+type MobileTab struct {
+	Icon     func(templ.Attributes) templ.Component
+	Label    string
+	Href     string
+	IsActive bool
+}
+
+templ MobileTabBar(tabs []MobileTab) {
+	<nav class="mobile-tab-bar" aria-label="Mobile navigation">
+		for _, tab := range tabs {
+			<a class={ "mobile-tab", templ.KV("active", tab.IsActive) } href={ templ.SafeURL(tab.Href) }>
+				@tab.Icon(templ.Attributes{"class": "icon"})
+				<span>{ tab.Label }</span>
+			</a>
+		}
+	</nav>
+}

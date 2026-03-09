@@ -411,6 +411,58 @@
     color: var(--text-color);
   }
 
+  .mobile-tab-bar {
+    display: none;
+  }
+
+  @media (max-width: 768px) {
+    .tabs {
+      display: none;
+    }
+
+    .mobile-tab-bar {
+      display: flex;
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: var(--page-bg);
+      border-top: var(--border) solid var(--border-color);
+      padding: calc(var(--space) * 0.5);
+      justify-content: space-around;
+      z-index: 100;
+
+      .mobile-tab {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: calc(var(--space) * 0.25);
+        padding: calc(var(--space) * 0.5);
+        text-decoration: none;
+        color: var(--muted-text-color);
+        min-width: 3rem;
+
+        &.active {
+          color: var(--text-color);
+        }
+
+        .icon {
+          width: 1.5rem;
+          height: 1.5rem;
+        }
+
+        span {
+          font-size: 0.625rem;
+        }
+      }
+    }
+
+    .app-shell-main {
+      padding-bottom: calc(var(--space) * 5);
+    }
+  }
+
   .form {
     display: grid;
     gap: var(--space);
@@ -985,6 +1037,10 @@
 
     .app-shell:has(> input[id$="-panel-toggle"]:checked) .app-shell-panel {
       transform: translateX(0);
+    }
+
+    .app-shell-main {
+      padding-bottom: calc(var(--space) * 5);
     }
 
     .app-shell:has(> input[id$="-nav-toggle"]:checked) .app-shell-backdrop-nav,
