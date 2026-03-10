@@ -50,6 +50,13 @@ function normalizeDateISO(value) {
   return trimmed;
 }
 
+function normalizeDateMode(value) {
+  if (typeof value !== "string") {
+    return "";
+  }
+  return value.trim() === "custom" ? "custom" : "";
+}
+
 function buildTableSearchURL(input) {
   const basePath = typeof input.basePath === "string" ? input.basePath : "";
   const defaultPageSize = normalizePageSize(input.defaultPageSize, 10);
@@ -57,12 +64,15 @@ function buildTableSearchURL(input) {
   const search = normalizeText(input.search);
   const sort = normalizeText(input.sort);
   const dir = input.dir === "desc" ? "desc" : "asc";
+  let dateMode = normalizeDateMode(input.dateMode);
   let year = normalizeYear(input.year);
   let from = normalizeDateISO(input.from);
   let to = normalizeDateISO(input.to);
   if (from !== "" && to !== "") {
     year = "";
+    dateMode = "custom";
   } else if (year !== "") {
+    dateMode = "";
     from = "";
     to = "";
   }
@@ -85,6 +95,9 @@ function buildTableSearchURL(input) {
 
   if (year !== "") {
     params.set("year", year);
+  }
+  if (dateMode !== "") {
+    params.set("dateMode", dateMode);
   }
   if (from !== "") {
     params.set("from", from);
@@ -113,6 +126,7 @@ function tableSearchAction(basePath, tableQuery, defaultPageSize = 10) {
     dir: queryState.dir,
     pageSize: queryState.pageSize,
     year: queryState.year,
+    dateMode: queryState.dateMode,
     from: queryState.from,
     to: queryState.to,
     defaultPageSize,
@@ -130,12 +144,15 @@ function tablePageAction(basePath, tableQuery, totalPages = 0, defaultPageSize =
   const sort = normalizeText(queryState.sort);
   const sortSet = Boolean(queryState.sortSet) && sort !== "";
   const dir = queryState.dir === "desc" ? "desc" : "asc";
+  let dateMode = normalizeDateMode(queryState.dateMode);
   let year = normalizeYear(queryState.year);
   let from = normalizeDateISO(queryState.from);
   let to = normalizeDateISO(queryState.to);
   if (from !== "" && to !== "") {
     year = "";
+    dateMode = "custom";
   } else if (year !== "") {
+    dateMode = "";
     from = "";
     to = "";
   }
@@ -173,6 +190,12 @@ function tablePageAction(basePath, tableQuery, totalPages = 0, defaultPageSize =
     params.set("year", year);
   } else {
     params.delete("year");
+  }
+
+  if (dateMode !== "") {
+    params.set("dateMode", dateMode);
+  } else {
+    params.delete("dateMode");
   }
 
   if (from !== "") {

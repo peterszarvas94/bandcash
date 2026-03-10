@@ -4,15 +4,16 @@ import "bandcash/internal/utils"
 
 func eventIndexSignals(csrfToken string, query utils.TableQuery) map[string]any {
 	return map[string]any{
-		"csrf":           csrfToken,
-		"tableQuery":     utils.TableQuerySignals(query),
-		"dateRange":      map[string]any{"from": query.From, "to": query.To},
-		"mode":           "table",
-		"formState":      "",
-		"editingId":      0,
-		"formData":       map[string]any{"title": "", "time": "", "description": "", "amount": 0},
-		"eventFormState": "",
-		"errors":         map[string]any{"title": "", "time": "", "description": "", "amount": "", "memberId": "", "expense": ""},
+		"csrf":            csrfToken,
+		"tableQuery":      utils.TableQuerySignals(query),
+		"dateRange":       map[string]any{"from": query.From, "to": query.To},
+		"showCustomRange": query.DateMode == "custom" || query.From != "" || query.To != "",
+		"mode":            "table",
+		"formState":       "",
+		"editingId":       0,
+		"formData":        map[string]any{"title": "", "time": "", "description": "", "amount": 0},
+		"eventFormState":  "",
+		"errors":          map[string]any{"title": "", "time": "", "description": "", "amount": "", "memberId": "", "expense": ""},
 	}
 }
 

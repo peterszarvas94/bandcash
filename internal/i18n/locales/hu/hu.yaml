@@ -107,6 +107,7 @@ hu:
     empty: "nincs elem"
     actions: "Műveletek"
     all: "Mind"
+    custom: "Egyéni"
     date_filters: "Dátumszűrők"
     from: "Ettől"
     to: "Eddig"

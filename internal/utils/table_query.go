@@ -37,6 +37,7 @@ type TableQuery struct {
 	Sort     string `json:"sort"`
 	SortSet  bool   `json:"sortSet"`
 	Dir      string `json:"dir"`
+	DateMode string `json:"dateMode"`
 	Year     string `json:"year"`
 	From     string `json:"from"`
 	To       string `json:"to"`
@@ -111,6 +112,13 @@ func ParseTableQueryWithResult(c echo.Context, queryable Queryable) TableQueryPa
 		} else {
 			rejected["year"] = "must be YYYY"
 		}
+	}
+
+	dateMode := strings.TrimSpace(c.QueryParam("dateMode"))
+	if dateMode == "custom" {
+		query.DateMode = "custom"
+	} else if dateMode != "" {
+		rejected["dateMode"] = "must be custom"
 	}
 
 	from := strings.TrimSpace(c.QueryParam("from"))
@@ -231,9 +239,14 @@ func NormalizeTableQuery(query TableQuery, spec TableQuerySpec) TableQuery {
 		PageSize: intDefault(spec.DefaultSize, 20),
 		Sort:     spec.DefaultSort,
 		Dir:      defaultDirection(spec.DefaultDir),
+		DateMode: strings.TrimSpace(query.DateMode),
 		Year:     strings.TrimSpace(query.Year),
 		From:     strings.TrimSpace(query.From),
 		To:       strings.TrimSpace(query.To),
+	}
+
+	if normalized.DateMode != "custom" {
+		normalized.DateMode = ""
 	}
 
 	if query.Page > 0 {
@@ -293,6 +306,7 @@ type TableQueryPatch struct {
 	Dir      *string
 	Page     *int
 	PageSize *int
+	DateMode *string
 	Year     *string
 	From     *string
 	To       *string
@@ -362,6 +376,7 @@ func TableQuerySignals(query TableQuery) map[string]any {
 		"dir":      dir,
 		"page":     query.Page,
 		"pageSize": query.PageSize,
+		"dateMode": query.DateMode,
 		"year":     query.Year,
 		"from":     query.From,
 		"to":       query.To,
@@ -400,12 +415,14 @@ func BuildTableDateYearURL(basePath string, query TableQuery, year string) strin
 	page := 1
 	from := ""
 	to := ""
+	dateMode := ""
 	trimmedYear := strings.TrimSpace(year)
 	return BuildTableQueryURLWith(basePath, query, TableQueryPatch{
-		Page: &page,
-		Year: &trimmedYear,
-		From: &from,
-		To:   &to,
+		Page:     &page,
+		DateMode: &dateMode,
+		Year:     &trimmedYear,
+		From:     &from,
+		To:       &to,
 	})
 }
 
@@ -413,10 +430,24 @@ func BuildTableDateClearURL(basePath string, query TableQuery) string {
 	page := 1
 	empty := ""
 	return BuildTableQueryURLWith(basePath, query, TableQueryPatch{
-		Page: &page,
-		Year: &empty,
-		From: &empty,
-		To:   &empty,
+		Page:     &page,
+		DateMode: &empty,
+		Year:     &empty,
+		From:     &empty,
+		To:       &empty,
+	})
+}
+
+func BuildTableDateCustomURL(basePath string, query TableQuery) string {
+	page := 1
+	empty := ""
+	dateMode := "custom"
+	return BuildTableQueryURLWith(basePath, query, TableQueryPatch{
+		Page:     &page,
+		DateMode: &dateMode,
+		Year:     &empty,
+		From:     &empty,
+		To:       &empty,
 	})
 }
 
@@ -424,7 +455,7 @@ func BuildTableDateRangeDatastarAction(basePath string, defaultPageSize int) str
 	if defaultPageSize <= 0 {
 		defaultPageSize = DefaultTablePageSize
 	}
-	return fmt.Sprintf("if ($dateRange.from !== '' && $dateRange.to !== '') { $tableQuery.year = ''; $tableQuery.from = $dateRange.from; $tableQuery.to = $dateRange.to; const url = globalThis.tableSearchAction('%s', $tableQuery, %d); @get(url) }", basePath, defaultPageSize)
+	return fmt.Sprintf("if ($dateRange.from !== '' && $dateRange.to !== '') { $tableQuery.dateMode = 'custom'; $tableQuery.year = ''; $tableQuery.from = $dateRange.from; $tableQuery.to = $dateRange.to; const url = globalThis.tableSearchAction('%s', $tableQuery, %d); @get(url) }", basePath, defaultPageSize)
 }
 
 func DateFilterAllButtonClass(query TableQuery) string {
@@ -441,12 +472,23 @@ func DateFilterYearButtonClass(query TableQuery, year string) string {
 	return "btn btn-sm"
 }
 
+func DateFilterCustomButtonClass(query TableQuery) string {
+	if DateFilterCustomActive(query) {
+		return "btn btn-sm btn-active"
+	}
+	return "btn btn-sm"
+}
+
 func DateFilterAllActive(query TableQuery) bool {
-	return query.Year == "" && !(query.From != "" && query.To != "")
+	return query.DateMode != "custom" && query.Year == "" && !(query.From != "" && query.To != "")
 }
 
 func DateFilterYearActive(query TableQuery, year string) bool {
 	return query.Year == year && !(query.From != "" && query.To != "")
+}
+
+func DateFilterCustomActive(query TableQuery) bool {
+	return query.DateMode == "custom" || query.From != "" || query.To != ""
 }
 
 func BuildTablePageDatastarAction(basePath string, totalPages int, defaultPageSize int) string {
@@ -501,6 +543,10 @@ func BuildTableQueryURLWith(basePath string, query TableQuery, patch TableQueryP
 		resolved.PageSize = *patch.PageSize
 	}
 
+	if patch.DateMode != nil {
+		resolved.DateMode = strings.TrimSpace(*patch.DateMode)
+	}
+
 	if patch.Year != nil {
 		resolved.Year = strings.TrimSpace(*patch.Year)
 		yearPatched = true
@@ -534,6 +580,10 @@ func BuildTableQueryURLWith(basePath string, query TableQuery, patch TableQueryP
 		resolved.To = ""
 	}
 
+	if resolved.DateMode != "custom" {
+		resolved.DateMode = ""
+	}
+
 	if yearPatched && resolved.Year != "" {
 		resolved.From = ""
 		resolved.To = ""
@@ -561,6 +611,9 @@ func BuildTableQueryURLWith(basePath string, query TableQuery, patch TableQueryP
 		}
 		if resolved.Year != "" {
 			values.Set("year", resolved.Year)
+		}
+		if resolved.DateMode != "" {
+			values.Set("dateMode", resolved.DateMode)
 		}
 		if resolved.From != "" {
 			values.Set("from", resolved.From)
@@ -609,6 +662,12 @@ func BuildTableQueryURLWith(basePath string, query TableQuery, patch TableQueryP
 		values.Del("year")
 	}
 
+	if resolved.DateMode != "" {
+		values.Set("dateMode", resolved.DateMode)
+	} else {
+		values.Del("dateMode")
+	}
+
 	if resolved.From != "" {
 		values.Set("from", resolved.From)
 	} else {
@@ -651,6 +710,7 @@ func normalizeDateFilterPriority(query TableQuery) TableQuery {
 	}
 
 	if query.Year != "" {
+		query.DateMode = ""
 		query.From = ""
 		query.To = ""
 	}

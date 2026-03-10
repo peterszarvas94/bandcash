@@ -107,6 +107,7 @@ en:
     empty: "no items"
     actions: "Actions"
     all: "All"
+    custom: "Custom"
     date_filters: "Date filters"
     from: "From"
     to: "To"
