@@ -16,7 +16,7 @@ templ HomeIndex(data HomeData) {
 		<body>
 			<div data-signals={ templ.JSONString(map[string]any{"csrf": utils.CSRFTokenFromContext(ctx), "_langFetching": false, "authError": "", "authServerError": "", "authState": "form", "submittedEmail": "", "submittedEmailMasked": "", "resendRemaining": 0, "formData": map[string]any{"email": "", "lang": data.CurrentLang}}) } data-init="@get('/sse')"></div>
 			@shared.Notifications()
-			<main id="app" class="single-col home-page">
+			<main id="app" class="single-col grid gap-1-5">
 				<figure class="home-hero">
 					<img src="/static/img/bandcash.png" alt="Bandcash app preview" class="home-hero-image"/>
 					<figcaption class="home-hero-content">
@@ -30,7 +30,7 @@ templ HomeIndex(data HomeData) {
 				<div data-show="$authState === 'form'">
 					<form class="form" data-on:submit="@post('/auth/login')" data-indicator:_fetching>
 						<div class="field">
-							<label for="home-auth-email">{ ctxi18n.T(ctx, "auth.email") } <span class="required-mark">*</span></label>
+							<label for="home-auth-email" class="row">{ ctxi18n.T(ctx, "auth.email") } <span class="color-error">*</span></label>
 							<div class="row row-wrap">
 								<input id="home-auth-email" type="email" class="input input-grow" data-bind="formData.email" placeholder={ ctxi18n.T(ctx, "auth.email_placeholder") }/>
 								@shared.LoadingSubmitButton(shared.LoadingSubmitButtonProps{ClassName: "btn", Label: ctxi18n.T(ctx, "auth.send_link"), IconName: icons.IconSend})

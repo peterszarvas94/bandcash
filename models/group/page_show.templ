@@ -26,7 +26,7 @@ templ GroupPage(data GroupPageData) {
 templ GroupMain(data GroupPageData) {
 	@shared.Section(ctxi18n.T(ctx, "groups.details"), GroupDetailsContent(data))
 	if data.IsAdmin {
-		<div class="row row-wrap detail-actions">
+		<div class="row row-wrap pt pb">
 			@shared.ActionButton(shared.ActionButtonProps{ClassName: "btn", OnClick: "$formState = 'edit'; $errors = {name: ''}", DisabledExpr: "$formState !== '' || $_fetching", Label: ctxi18n.T(ctx, "groups.edit"), IconName: icons.IconPencil})
 			@shared.SureActionButton(shared.SureActionButtonProps{
 				ClassName:    "btn btn-danger",
@@ -73,11 +73,11 @@ templ GroupSidebar(data GroupPageData) {
 		<div data-show="$formState === 'edit'" style="display: none" class="pb">
 			<form class="form" data-on:submit={ fmt.Sprintf("@put('/groups/%s')", data.Group.ID) } data-indicator:_fetching>
 				<div class="field">
-					<label for="group-show-name">{ ctxi18n.T(ctx, "groups.name") } <span class="required-mark">*</span></label>
+					<label for="group-show-name" class="row">{ ctxi18n.T(ctx, "groups.name") } <span class="color-error">*</span></label>
 					<input id="group-show-name" type="text" data-bind="formData.name" placeholder={ ctxi18n.T(ctx, "groups.name_placeholder") } class="input"/>
 					<div data-show="$errors && $errors.name" class="color-error" data-text="$errors.name"></div>
 				</div>
-				<div class="sidebar-actions">
+				<div class="grid">
 					@shared.SidebarLoadingSubmitButton(shared.SidebarLoadingSubmitButtonProps{ClassName: "btn", Label: ctxi18n.T(ctx, "groups.update"), IconName: icons.IconSave, ActionID: "group-update"})
 					@shared.ActionButton(shared.ActionButtonProps{ClassName: "btn", OnClick: "$formState = ''; $formData = {name: "+utils.JSONString(data.Group.Name)+"}; $errors = {name: ''}", DisabledExpr: "$_fetching", Label: ctxi18n.T(ctx, "actions.cancel"), IconName: icons.IconX})
 				</div>

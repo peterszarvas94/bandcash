@@ -22,11 +22,11 @@ templ BreadcrumbTrail(crumbs []utils.Crumb) {
 			{ ctxi18n.T(ctx, "nav.home") }
 		</a>
 		for _, crumb := range crumbs {
-			<span class="crumb-sep">/</span>
+			<span class="text-muted">/</span>
 			if crumb.Href != "" {
 				<a class="crumb" href={ crumb.Href }>{ crumb.Label }</a>
 			} else {
-				<span class="crumb current">{ crumb.Label }</span>
+				<span class="crumb text-muted">{ crumb.Label }</span>
 			}
 		}
 	</nav>

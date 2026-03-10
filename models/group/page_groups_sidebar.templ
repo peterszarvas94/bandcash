@@ -16,10 +16,10 @@ templ GroupsSidebar(data GroupsPageData) {
 			<h3>{ ctxi18n.T(ctx, "groups.new") }</h3>
 			<form class="form" data-on:submit="@post('/groups')" data-indicator:_fetching>
 				<div class="field">
-					<label for="groups-sidebar-add-name">{ ctxi18n.T(ctx, "groups.name") } <span class="required-mark">*</span></label>
+					<label for="groups-sidebar-add-name" class="row">{ ctxi18n.T(ctx, "groups.name") } <span class="color-error">*</span></label>
 					<input id="groups-sidebar-add-name" type="text" data-bind="formData.name" placeholder={ ctxi18n.T(ctx, "groups.name_placeholder") } class="input"/>
 				</div>
-				<div class="sidebar-actions">
+				<div class="grid">
 					@shared.SidebarLoadingSubmitButton(shared.SidebarLoadingSubmitButtonProps{ClassName: "btn", Label: ctxi18n.T(ctx, "groups.create"), IconName: icons.IconSave, ActionID: "group-create"})
 					@shared.ActionButton(shared.ActionButtonProps{ClassName: "btn", OnClick: "$formState = ''; $formData = {name: ''}", DisabledExpr: "$_fetching", Label: ctxi18n.T(ctx, "actions.cancel"), IconName: icons.IconX})
 				</div>
@@ -29,11 +29,11 @@ templ GroupsSidebar(data GroupsPageData) {
 			<h3>{ ctxi18n.T(ctx, "groups.edit") }</h3>
 			<form class="form" data-on:submit="@put('/groups/' + $selectedGroupId)" data-indicator:_fetching>
 				<div class="field">
-					<label for="groups-sidebar-edit-name">{ ctxi18n.T(ctx, "groups.name") } <span class="required-mark">*</span></label>
+					<label for="groups-sidebar-edit-name" class="row">{ ctxi18n.T(ctx, "groups.name") } <span class="color-error">*</span></label>
 					<input id="groups-sidebar-edit-name" type="text" data-bind="formData.name" placeholder={ ctxi18n.T(ctx, "groups.name_placeholder") } class="input"/>
 					<div data-show="$errors && $errors.name" class="color-error" data-text="$errors.name"></div>
 				</div>
-				<div class="sidebar-actions">
+				<div class="grid">
 					@shared.SidebarLoadingSubmitButton(shared.SidebarLoadingSubmitButtonProps{ClassName: "btn", Label: ctxi18n.T(ctx, "groups.update"), IconName: icons.IconSave, ActionID: "group-update"})
 					@shared.ActionButton(shared.ActionButtonProps{ClassName: "btn", OnClick: "$formState = ''; $selectedGroupId = ''; $formData = {name: ''}; $errors = {name: ''}", DisabledExpr: "$_fetching", Label: ctxi18n.T(ctx, "actions.cancel"), IconName: icons.IconX})
 				</div>
@@ -42,7 +42,7 @@ templ GroupsSidebar(data GroupsPageData) {
 		<div data-show="$formState === 'leave' && $selectedGroupId !== ''" style="display: none" class="pb">
 			<h3>{ ctxi18n.T(ctx, "groups.leave") }</h3>
 			<p>{ ctxi18n.T(ctx, "groups.leave_confirm") }</p>
-			<div class="sidebar-actions">
+			<div class="grid">
 				@shared.ActionButton(shared.ActionButtonProps{ClassName: "btn btn-danger", OnClick: fmt.Sprintf(
 					"$sureOpen = true; $sureTitle = %s; $sureMessage = %s; $sureSubmitLabel = %s; $sureCancelLabel = %s; $sureMethod = 'post'; $sureURL = '/groups/' + $selectedGroupId + '/leave'; $sureTriggerID = 'groups-sidebar-leave'",
 					utils.JSONString(ctxi18n.T(ctx, "groups.leave_confirm")),

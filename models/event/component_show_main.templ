@@ -19,7 +19,7 @@ templ EventShowMain(data EventData) {
 		{Label: ctxi18n.T(ctx, "events.leftover"), Value: utils.FormatNumberLocalized(ctx, data.Leftover)},
 	})
 	if data.IsAdmin {
-		<div class="row row-wrap detail-actions">
+		<div class="row row-wrap pt pb">
 			@shared.ActionButton(shared.ActionButtonProps{ClassName: "btn", OnClick: "$eventFormState = 'edit'; $errors = {title: '', time: '', description: '', amount: ''}", DisabledExpr: "$eventFormState !== '' || $formState !== '' || $_fetching", Label: ctxi18n.T(ctx, "events.edit"), IconName: icons.IconPencil})
 			@shared.ActionButton(shared.ActionButtonProps{ClassName: "btn btn-danger", OnClick: fmt.Sprintf(
 					"$sureOpen = true; $sureTitle = %s; $sureMessage = %s; $sureSubmitLabel = %s; $sureCancelLabel = %s; $sureMethod = 'delete'; $sureURL = '/groups/%s/events/%s'; $sureTriggerID = 'event-show-delete'",

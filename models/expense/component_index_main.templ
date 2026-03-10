@@ -21,34 +21,36 @@ templ ExpenseIndexMain(data ExpensesData) {
 	@ExpenseTotalsContent(data)
 	<h2 class="pb">{ ctxi18n.T(ctx, "expenses.list_title") }</h2>
 	@shared.TableSearchForm(utils.BuildTableSearchDatastarAction(fmt.Sprintf("/groups/%s/expenses", data.GroupID), utils.DefaultTablePageSize), "table.search_placeholder_expenses")
-	<div class="row row-wrap row-tight pb" role="radiogroup" aria-label={ ctxi18n.T(ctx, "table.date_filters") }>
-		<button
-			class={ utils.DateFilterAllButtonClass(data.Query) }
-			type="button"
-			aria-pressed={ fmt.Sprintf("%t", utils.DateFilterAllActive(data.Query)) }
-			data-on:click={ "$showCustomRange = false; $tableQuery.dateMode = ''; " + utils.BuildTableQueryDatastarAction(utils.BuildTableDateClearURL(fmt.Sprintf("/groups/%s/expenses", data.GroupID), data.Query)) }
-		>
-			{ ctxi18n.T(ctx, "table.all") }
-		</button>
-		for _, year := range data.RecentYears {
+	<div class="row row-wrap justify-between pb" role="radiogroup" aria-label={ ctxi18n.T(ctx, "table.date_filters") }>
+		<div class="row row-tight">
 			<button
-				class={ utils.DateFilterYearButtonClass(data.Query, fmt.Sprintf("%d", year)) }
+				class={ utils.DateFilterAllButtonClass(data.Query) }
 				type="button"
-				aria-pressed={ fmt.Sprintf("%t", utils.DateFilterYearActive(data.Query, fmt.Sprintf("%d", year))) }
-				data-on:click={ "$showCustomRange = false; $tableQuery.dateMode = ''; " + utils.BuildTableQueryDatastarAction(utils.BuildTableDateYearURL(fmt.Sprintf("/groups/%s/expenses", data.GroupID), data.Query, fmt.Sprintf("%d", year))) }
+				aria-pressed={ fmt.Sprintf("%t", utils.DateFilterAllActive(data.Query)) }
+				data-on:click={ "$showCustomRange = false; $tableQuery.dateMode = ''; " + utils.BuildTableQueryDatastarAction(utils.BuildTableDateClearURL(fmt.Sprintf("/groups/%s/expenses", data.GroupID), data.Query)) }
 			>
-				{ fmt.Sprintf("%d", year) }
+				{ ctxi18n.T(ctx, "table.all") }
 			</button>
-		}
-		<button
-			class={ utils.DateFilterCustomButtonClass(data.Query) }
-			type="button"
-			aria-pressed={ fmt.Sprintf("%t", utils.DateFilterCustomActive(data.Query)) }
-			data-on:click={ "$showCustomRange = true; $tableQuery.dateMode = 'custom'; $tableQuery.year = ''; $tableQuery.from = ''; $tableQuery.to = ''; $dateRange.from = ''; $dateRange.to = ''; " + utils.BuildTableQueryDatastarAction(utils.BuildTableDateCustomURL(fmt.Sprintf("/groups/%s/expenses", data.GroupID), data.Query)) }
-		>
-			{ ctxi18n.T(ctx, "table.custom") }
-		</button>
-		<div class="row row-tight pl" data-show="$showCustomRange" style="display: none">
+			for _, year := range data.RecentYears {
+				<button
+					class={ utils.DateFilterYearButtonClass(data.Query, fmt.Sprintf("%d", year)) }
+					type="button"
+					aria-pressed={ fmt.Sprintf("%t", utils.DateFilterYearActive(data.Query, fmt.Sprintf("%d", year))) }
+					data-on:click={ "$showCustomRange = false; $tableQuery.dateMode = ''; " + utils.BuildTableQueryDatastarAction(utils.BuildTableDateYearURL(fmt.Sprintf("/groups/%s/expenses", data.GroupID), data.Query, fmt.Sprintf("%d", year))) }
+				>
+					{ fmt.Sprintf("%d", year) }
+				</button>
+			}
+			<button
+				class={ utils.DateFilterCustomButtonClass(data.Query) }
+				type="button"
+				aria-pressed={ fmt.Sprintf("%t", utils.DateFilterCustomActive(data.Query)) }
+				data-on:click={ "$showCustomRange = true; $tableQuery.dateMode = 'custom'; $tableQuery.year = ''; $tableQuery.from = ''; $tableQuery.to = ''; $dateRange.from = ''; $dateRange.to = ''; " + utils.BuildTableQueryDatastarAction(utils.BuildTableDateCustomURL(fmt.Sprintf("/groups/%s/expenses", data.GroupID), data.Query)) }
+			>
+				{ ctxi18n.T(ctx, "table.custom") }
+			</button>
+		</div>
+		<div class="row row-tight" data-show="$showCustomRange" style="display: none">
 			<input type="date" class="input input-sm" data-bind="dateRange.from" data-on:change={ utils.BuildTableDateRangeDatastarAction(fmt.Sprintf("/groups/%s/expenses", data.GroupID), utils.DefaultTablePageSize) }/>
 			<span class="text-sm pr pl">-</span>
 			<input type="date" class="input input-sm" data-bind="dateRange.to" data-on:change={ utils.BuildTableDateRangeDatastarAction(fmt.Sprintf("/groups/%s/expenses", data.GroupID), utils.DefaultTablePageSize) }/>

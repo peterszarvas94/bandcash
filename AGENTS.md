@@ -55,6 +55,7 @@ Prefer `mise` tasks first, then direct Go commands when needed.
 - With coverage profile: `go test -coverprofile=coverage.out ./...`.
 
 Notes:
+
 - For sqlc-dependent packages, ensure DB-facing code compiles after query changes.
 
 ### Database / Codegen / Templates
@@ -156,10 +157,14 @@ Notes:
 ## Cursor / Copilot Rule Audit
 
 Checked paths:
+
 - `.cursor/rules/`
 - `.cursorrules`
 - `.github/copilot-instructions.md`
 
 Result in this repository:
+
 - No Cursor rules found.
 - No Copilot instruction file found.
+
+Dont regenetate templ files as I am running dev server with live reload all the time.

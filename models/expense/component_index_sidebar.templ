@@ -15,7 +15,7 @@ templ ExpenseIndexSidebar(data ExpensesData) {
 				<h3 data-show="$formState === 'edit'">{ ctxi18n.T(ctx, "expenses.edit") }</h3>
 				<form class="form">
 					<div class="field">
-						<label for="expense-sidebar-title">{ ctxi18n.T(ctx, "fields.title") } <span class="required-mark">*</span></label>
+						<label for="expense-sidebar-title" class="row">{ ctxi18n.T(ctx, "fields.title") } <span class="color-error">*</span></label>
 						<input id="expense-sidebar-title" type="text" data-bind="formData.title" class="input"/>
 						<div data-show="$errors && $errors.title" class="color-error" data-text="$errors.title"></div>
 					</div>
@@ -26,17 +26,17 @@ templ ExpenseIndexSidebar(data ExpensesData) {
 					</div>
 					<div class="form-row">
 						<div class="field">
-							<label for="expense-sidebar-amount">{ ctxi18n.T(ctx, "fields.amount") } <span class="required-mark">*</span></label>
+							<label for="expense-sidebar-amount" class="row">{ ctxi18n.T(ctx, "fields.amount") } <span class="color-error">*</span></label>
 							<input id="expense-sidebar-amount" type="number" data-bind="formData.amount" step="1" class="input"/>
 							<div data-show="$errors && $errors.amount" class="color-error" data-text="$errors.amount"></div>
 						</div>
 						<div class="field">
-							<label for="expense-sidebar-date">{ ctxi18n.T(ctx, "fields.date") } <span class="required-mark">*</span></label>
+							<label for="expense-sidebar-date" class="row">{ ctxi18n.T(ctx, "fields.date") } <span class="color-error">*</span></label>
 							<input id="expense-sidebar-date" type="date" data-bind="formData.date" class="input"/>
 							<div data-show="$errors && $errors.date" class="color-error" data-text="$errors.date"></div>
 						</div>
 					</div>
-					<div class="sidebar-actions">
+					<div class="grid">
 						<span data-show="$formState === 'add'">
 							@shared.SidebarLoadingActionButton(shared.SidebarLoadingActionButtonProps{ClassName: "btn", OnClick: fmt.Sprintf("@post('/groups/%s/expenses')", data.GroupID), Label: ctxi18n.T(ctx, "expenses.create"), IconName: icons.IconSave, ActionID: "expense-create"})
 						</span>
