@@ -1,10 +1,12 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+KAMAL_BIN="$(mise which kamal)"
+
 for accessory in better-stack; do
-  if kamal accessory details "$accessory" >/dev/null 2>&1; then
-    kamal accessory reboot "$accessory"
+  if env -u GEM_HOME -u GEM_PATH "$KAMAL_BIN" accessory details "$accessory" >/dev/null 2>&1; then
+    env -u GEM_HOME -u GEM_PATH "$KAMAL_BIN" accessory reboot "$accessory"
   else
-    kamal accessory boot "$accessory"
+    env -u GEM_HOME -u GEM_PATH "$KAMAL_BIN" accessory boot "$accessory"
   fi
 done
