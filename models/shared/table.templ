@@ -25,7 +25,7 @@ templ TableSearchForm(onSubmitAction string, placeholderKey string) {
 }
 
 templ TableSortHeader(label string, column string, query utils.TableQuery, actionURL string) {
-	<button class="btn btn-sm" type="button" data-on:click={ utils.BuildTableQueryDatastarAction(actionURL) }>
+	<button class="btn btn-text" type="button" data-on:click={ utils.BuildTableQueryDatastarAction(actionURL) }>
 		<span>{ label }</span>
 		if query.SortSet && query.Sort == column && query.Dir == "asc" {
 			@icons.ArrowDownAZ(templ.Attributes{"class": "icon"})

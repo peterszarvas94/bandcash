@@ -6,7 +6,7 @@
   .table {
     width: 100%;
     max-width: 100%;
-    border-collapse: separate;
+    border-collapse: collapse;
     border-spacing: 0;
     table-layout: auto;
     display: block;
@@ -15,7 +15,7 @@
     th,
     td {
       border: var(--border) solid var(--border-color);
-      padding: var(--space) calc(var(--space) * 2);
+      padding: calc(var(--space) * 0.5) var(--space);
       text-align: left;
       white-space: nowrap;
       word-break: normal;
@@ -41,7 +41,7 @@
         right: 0;
         z-index: 1;
         background: var(--page-bg);
-        padding: 0 calc(var(--space) * 0.5);
+        padding: 0;
       }
 
       th[data-actions-col] {
@@ -56,8 +56,7 @@
       @media (max-width: 1020px) {
         th[data-actions-col],
         td[data-actions-col] {
-          padding-left: 0.25rem;
-          padding-right: 0.25rem;
+          padding: 0;
         }
 
         .btn.btn-icon {
@@ -144,6 +143,25 @@
       min-width: 2rem;
       width: 2rem;
       padding: 0;
+    }
+
+    &.btn-text {
+      min-width: 0;
+      min-height: 0;
+      width: auto;
+      padding: 0;
+      border: 0;
+      background: transparent;
+      color: inherit;
+      font-size: inherit;
+      line-height: inherit;
+      justify-content: flex-start;
+
+      &:not(:disabled):not([disabled]):hover,
+      &:not(:disabled):not([disabled]):active {
+        background: transparent;
+        border-color: transparent;
+      }
     }
 
     &.btn-ghost {
