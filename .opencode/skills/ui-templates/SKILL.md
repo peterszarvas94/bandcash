@@ -33,4 +33,12 @@ Use this for page layout, buttons, tables, and form changes.
 
 ## Notes
 - Keep markup in existing sections; do not introduce new layout wrappers unless needed.
-- Run `mise run templ` after template updates.
+- Do not run `mise run templ` by default in this repo (dev server live reload handles templ generation).
+
+## CSS conventions (utility-first)
+- Prefer utilities for layout/spacing (`row`, `grid`, `pt`, `pb`, `show-mobile`, `hide-mobile`, etc.).
+- Keep semantic component classes for real reusable objects (buttons, inputs, dialogs, notifications, app shell).
+- Avoid one-off classes that only provide basic `display`, `gap`, `align-items`, or `flex-wrap`.
+- Use `data-show` for stateful visibility and utility classes for responsive visibility.
+- Prefer padding/utility spacing over margins for layout rhythm.
+- Restrict `gap` usage to `1x` (`var(--space)`) or `0.5x` (`calc(var(--space) * 0.5)`).

@@ -141,6 +141,15 @@ Notes:
 - Prefer patching via `utils.SSEHub.PatchHTML` + `PatchSignals` rather than ad-hoc response shapes.
 - Keep notification usage consistent (`utils.Notify(c, "success"|"error"|"warning", message)`).
 
+### Frontend CSS Style
+
+- Prefer utility classes for layout and spacing (`row`, `grid`, `pb`, `pt`, `show-mobile`, `hide-mobile`, etc.).
+- Keep semantic component classes when they represent real reusable UI objects (`.btn`, `.input`, `.table`, app shell, dialogs, notifications).
+- Avoid one-off wrapper classes that only encode simple `display/gap/align` rules; fold those into utilities.
+- For visibility, use `data-show` for reactive state and utility classes for responsive show/hide.
+- Avoid margin-based layout spacing when equivalent padding/utility spacing can be used.
+- Normalize CSS `gap` values to only `var(--space)` (1x) or `calc(var(--space) * 0.5)` (0.5x).
+
 ### i18n and User-Facing Strings
 
 - Use `ctxi18n.T(ctx, key, args...)` for user-visible text where localized keys already exist.
@@ -152,7 +161,7 @@ Notes:
 - Keep handlers thin; put reusable data assembly in model/helper methods.
 - Respect existing conventions before introducing new abstractions.
 - If migrations or queries change, regenerate sqlc and ensure code compiles.
-- If templ files change, regenerate templ output and ensure build/test still pass.
+- Do not manually regenerate templ output (`mise run templ`) unless explicitly requested; live reload handles it during development.
 
 ## Cursor / Copilot Rule Audit
 
@@ -167,4 +176,4 @@ Result in this repository:
 - No Cursor rules found.
 - No Copilot instruction file found.
 
-Dont regenetate templ files as I am running dev server with live reload all the time.
+Do not regenerate templ files manually; dev server live reload handles them.
