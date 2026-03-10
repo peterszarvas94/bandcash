@@ -80,7 +80,7 @@ func HomeIndex(data HomeData) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 5, "<main id=\"app\" class=\"single-col grid gap-1-5\"><figure class=\"home-hero\"><img src=\"/static/img/bandcash.png\" alt=\"Bandcash app preview\" class=\"home-hero-image\"><figcaption class=\"home-hero-content\"><h1>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 5, "<main id=\"app\" class=\"single-col grid\"><figure class=\"home-hero\"><img src=\"/static/img/bandcash.png\" alt=\"Bandcash app preview\" class=\"home-hero-image\"><figcaption class=\"home-hero-content\"><h1>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

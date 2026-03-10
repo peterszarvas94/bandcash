@@ -16,7 +16,7 @@ templ HomeIndex(data HomeData) {
 		<body>
 			<div data-signals={ templ.JSONString(map[string]any{"csrf": utils.CSRFTokenFromContext(ctx), "_langFetching": false, "authError": "", "authServerError": "", "authState": "form", "submittedEmail": "", "submittedEmailMasked": "", "resendRemaining": 0, "formData": map[string]any{"email": "", "lang": data.CurrentLang}}) } data-init="@get('/sse')"></div>
 			@shared.Notifications()
-			<main id="app" class="single-col grid gap-1-5">
+			<main id="app" class="single-col grid">
 				<figure class="home-hero">
 					<img src="/static/img/bandcash.png" alt="Bandcash app preview" class="home-hero-image"/>
 					<figcaption class="home-hero-content">

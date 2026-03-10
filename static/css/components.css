@@ -73,7 +73,7 @@
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    gap: calc(var(--space) * 0.75);
+    gap: calc(var(--space) * 0.5);
     padding: var(--space) calc(var(--space) * 2);
     font: inherit;
     font-size: 0.875rem;
@@ -452,7 +452,7 @@
   .two-col {
     display: grid;
     grid-template-columns: minmax(0, 1fr) var(--sidebar-width);
-    gap: calc(var(--space) * 2);
+    gap: var(--space);
     align-items: stretch;
     max-width: var(--content-width);
     margin: 0 auto;
@@ -596,7 +596,7 @@
     color: var(--text-color);
     padding: calc(var(--space) * 2);
     display: grid;
-    gap: calc(var(--space) * 1.5);
+    gap: var(--space);
 
     h3,
     p {
@@ -616,7 +616,7 @@
     list-style: none;
     display: flex;
     flex-direction: column-reverse;
-    gap: calc(var(--space) * 0.75);
+    gap: calc(var(--space) * 0.5);
     margin: 0;
     padding: 0;
   }
@@ -651,12 +651,12 @@
 
   .detail-grid {
     display: grid;
-    gap: calc(var(--space) * 0.85);
+    gap: var(--space);
 
     .detail-row {
       display: grid;
       grid-template-columns: minmax(8rem, 15rem) minmax(0, 1fr);
-      gap: calc(var(--space) * 1.2);
+      gap: var(--space);
       align-items: start;
 
       .detail-key,
@@ -685,14 +685,14 @@
     @media (max-width: 480px) {
       .detail-row {
         grid-template-columns: 1fr;
-        gap: calc(var(--space) * 0.3);
+        gap: calc(var(--space) * 0.5);
       }
     }
 
     &.no-break {
       .detail-row {
         grid-template-columns: minmax(8rem, 15rem) minmax(0, 1fr);
-        gap: calc(var(--space) * 1.2);
+        gap: var(--space);
       }
     }
   }
@@ -700,7 +700,7 @@
   .topbar {
     display: flex;
     align-items: center;
-    gap: calc(var(--space) * 2);
+    gap: var(--space);
     flex-wrap: wrap;
   }
 
@@ -715,7 +715,7 @@
   .breadcrumbs {
     display: flex;
     align-items: center;
-    gap: calc(var(--space) * 0.75);
+    gap: calc(var(--space) * 0.5);
     flex-wrap: wrap;
     line-height: 1.6;
     height: fit-content;
@@ -733,7 +733,7 @@
     position: relative;
     display: grid;
     grid-template-rows: auto minmax(0, 1fr);
-    gap: calc(var(--space) * 2);
+    gap: var(--space);
     max-width: var(--content-width);
     margin: 0 auto;
     padding: var(--page-padding-top) var(--page-padding-inline)
@@ -815,7 +815,7 @@
   .app-nav {
     display: flex;
     flex-direction: column;
-    gap: calc(var(--space) * 1);
+    gap: var(--space);
     position: sticky;
     top: 0;
     min-height: 0;

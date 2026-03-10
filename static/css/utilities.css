@@ -11,10 +11,6 @@
     gap: var(--space);
   }
 
-  .gap-1-5 {
-    gap: calc(var(--space) * 1.5);
-  }
-
   .content-start {
     align-content: start;
   }
