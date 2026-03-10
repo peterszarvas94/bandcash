@@ -11,22 +11,8 @@ import (
 
 templ MemberIndexMain(data MembersData) {
 	@shared.TableSearchForm(utils.BuildTableSearchDatastarAction(fmt.Sprintf("/groups/%s/members", data.GroupID), utils.DefaultTablePageSize), "table.search_placeholder_members")
-	<div class="row row-wrap justify-between pt pb">
-		<div class="row row-wrap">
-			<span class="hide-tablet text-sm">{ ctxi18n.T(ctx, "table.page_size") }</span>
-			for _, pageSize := range utils.StandardTablePageSizes {
-				<button
-					class={ utils.PageSizeButtonClass(data.Query.PageSize, pageSize) }
-					type="button"
-					data-on:click={ utils.BuildTableQueryDatastarAction(utils.BuildTablePageSizeURL(fmt.Sprintf("/groups/%s/members", data.GroupID), data.Query, pageSize)) }
-				>
-					{ fmt.Sprintf("%d", pageSize) }
-				</button>
-			}
-		</div>
-		@shared.TablePaginationControls(fmt.Sprintf("/groups/%s/members", data.GroupID), data.Query, data.Pager)
-	</div>
-	<table class="table table-sticky-actions pt">
+	@shared.TablePaginationRow(fmt.Sprintf("/groups/%s/members", data.GroupID), data.Query, data.Pager)
+	<table class="table table-sticky-actions">
 		<thead>
 			<tr>
 				<th>

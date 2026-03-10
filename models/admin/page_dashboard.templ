@@ -8,14 +8,20 @@ import (
 	appi18n "bandcash/internal/i18n"
 	"bandcash/internal/utils"
 	shared "bandcash/models/shared"
-	icons "bandcash/models/shared/icons"
 )
 
 func tabClass(currentTab, targetTab string) string {
 	if currentTab == targetTab {
-		return "tab tab-active"
+		return "btn btn-active"
 	}
-	return "tab"
+	return "btn"
+}
+
+func tabAriaSelected(currentTab, targetTab string) string {
+	if currentTab == targetTab {
+		return "true"
+	}
+	return "false"
 }
 
 func buildTabURL(tab string) string {
@@ -44,30 +50,32 @@ func adminTableQuerySignals(data DashboardData) map[string]any {
 }
 
 templ DashboardMain(data DashboardData) {
-	// Tab navigation
-	<div class="tabs pt">
-		<a href={ buildTabURL("overview") } class={ tabClass(data.Tab, "overview") }>{ ctxi18n.T(ctx, "admin.tab.overview") }</a>
-		<a href={ buildTabURL("flags") } class={ tabClass(data.Tab, "flags") }>{ ctxi18n.T(ctx, "admin.tab.flags") }</a>
-		<a href={ buildTabURL("users") } class={ tabClass(data.Tab, "users") }>{ ctxi18n.T(ctx, "admin.tab.users") }</a>
-		<a href={ buildTabURL("groups") } class={ tabClass(data.Tab, "groups") }>{ ctxi18n.T(ctx, "admin.tab.groups") }</a>
+	<div class="hide-tablet pb">
+		@AdminTabs(data)
 	</div>
-	@shared.MobileTabBar([]shared.MobileTab{
-		{Icon: icons.Info, Label: ctxi18n.T(ctx, "admin.tab.overview"), Href: buildTabURL("overview"), IsActive: data.Tab == "overview"},
-		{Icon: icons.Flag, Label: ctxi18n.T(ctx, "admin.tab.flags"), Href: buildTabURL("flags"), IsActive: data.Tab == "flags"},
-		{Icon: icons.Users, Label: ctxi18n.T(ctx, "admin.tab.users"), Href: buildTabURL("users"), IsActive: data.Tab == "users"},
-		{Icon: icons.LayoutGrid, Label: ctxi18n.T(ctx, "admin.tab.groups"), Href: buildTabURL("groups"), IsActive: data.Tab == "groups"},
-	})
-	<div class="pt">
+	<div class="show-tablet">
+		@shared.Details(adminTabLabel(ctx, data.Tab), AdminTabs(data))
+	</div>
+	<div>
 		// Tab content
 		if data.Tab == "overview" {
-			@shared.Section(ctxi18n.T(ctx, "admin.stats"), DashboardStats(data))
+			@DashboardStats(data)
 		} else if data.Tab == "flags" {
-			@shared.Section(ctxi18n.T(ctx, "admin.flags.title"), FlagsContent(data.SignupEnabled))
+			@FlagsContent(data.SignupEnabled)
 		} else if data.Tab == "users" {
-			@shared.Section(ctxi18n.T(ctx, "admin.users.title"), UsersTableSection(data))
+			@UsersTableSection(data)
 		} else if data.Tab == "groups" {
-			@shared.Section(ctxi18n.T(ctx, "admin.groups.title"), GroupsTableSection(data))
+			@GroupsTableSection(data)
 		}
+	</div>
+}
+
+templ AdminTabs(data DashboardData) {
+	<div class="row row-tight flex-col-mobile" role="tablist" aria-label={ ctxi18n.T(ctx, "nav.sections") }>
+		<a href={ buildTabURL("overview") } class={ tabClass(data.Tab, "overview") } role="tab" aria-selected={ tabAriaSelected(data.Tab, "overview") }>{ ctxi18n.T(ctx, "admin.tab.overview") }</a>
+		<a href={ buildTabURL("flags") } class={ tabClass(data.Tab, "flags") } role="tab" aria-selected={ tabAriaSelected(data.Tab, "flags") }>{ ctxi18n.T(ctx, "admin.tab.flags") }</a>
+		<a href={ buildTabURL("users") } class={ tabClass(data.Tab, "users") } role="tab" aria-selected={ tabAriaSelected(data.Tab, "users") }>{ ctxi18n.T(ctx, "admin.tab.users") }</a>
+		<a href={ buildTabURL("groups") } class={ tabClass(data.Tab, "groups") } role="tab" aria-selected={ tabAriaSelected(data.Tab, "groups") }>{ ctxi18n.T(ctx, "admin.tab.groups") }</a>
 	</div>
 }
 

@@ -21,7 +21,7 @@ templ AppShell(id string, crumbs []utils.Crumb, userEmail string, nav templ.Comp
 			@BreadcrumbTrail(crumbs)
 		</header>
 		<aside class="app-shell-nav">
-			<div class="pb">
+			<div class="show-drawer pb">
 				<label for={ id + "-nav-toggle" } class="btn app-nav-link">
 					@icons.X(templ.Attributes{"class": "icon"})
 					<span>{ ctxi18n.T(ctx, "nav.close") }</span>
@@ -53,7 +53,7 @@ templ AppShellMainOnly(id string, crumbs []utils.Crumb, userEmail string, nav te
 			@BreadcrumbTrail(crumbs)
 		</header>
 		<aside class="app-shell-nav">
-			<div class="pb">
+			<div class="show-drawer pb">
 				<label for={ id + "-nav-toggle" } class="btn app-nav-link">
 					@icons.X(templ.Attributes{"class": "icon"})
 					<span>{ ctxi18n.T(ctx, "nav.close") }</span>
@@ -69,26 +69,26 @@ templ AppShellMainOnly(id string, crumbs []utils.Crumb, userEmail string, nav te
 }
 
 templ GroupTabs(groupID string, activeTab string) {
-	<nav class="tabs" aria-label={ ctxi18n.T(ctx, "groups.actions") }>
+	<nav class="tabs" role="tablist" aria-label={ ctxi18n.T(ctx, "groups.actions") }>
 		if activeTab == "overview" {
-			<a class="tab tab-active" href={ "/groups/" + groupID }>{ ctxi18n.T(ctx, "nav.overview") }</a>
+			<a class="btn btn-active" href={ "/groups/" + groupID } role="tab" aria-selected="true">{ ctxi18n.T(ctx, "nav.overview") }</a>
 		} else {
-			<a class="tab" href={ "/groups/" + groupID }>{ ctxi18n.T(ctx, "nav.overview") }</a>
+			<a class="btn" href={ "/groups/" + groupID } role="tab" aria-selected="false">{ ctxi18n.T(ctx, "nav.overview") }</a>
 		}
 		if activeTab == "events" {
-			<a class="tab tab-active" href={ "/groups/" + groupID + "/events" }>{ ctxi18n.T(ctx, "events.title") }</a>
+			<a class="btn btn-active" href={ "/groups/" + groupID + "/events" } role="tab" aria-selected="true">{ ctxi18n.T(ctx, "events.title") }</a>
 		} else {
-			<a class="tab" href={ "/groups/" + groupID + "/events" }>{ ctxi18n.T(ctx, "events.title") }</a>
+			<a class="btn" href={ "/groups/" + groupID + "/events" } role="tab" aria-selected="false">{ ctxi18n.T(ctx, "events.title") }</a>
 		}
 		if activeTab == "members" {
-			<a class="tab tab-active" href={ "/groups/" + groupID + "/members" }>{ ctxi18n.T(ctx, "members.title") }</a>
+			<a class="btn btn-active" href={ "/groups/" + groupID + "/members" } role="tab" aria-selected="true">{ ctxi18n.T(ctx, "members.title") }</a>
 		} else {
-			<a class="tab" href={ "/groups/" + groupID + "/members" }>{ ctxi18n.T(ctx, "members.title") }</a>
+			<a class="btn" href={ "/groups/" + groupID + "/members" } role="tab" aria-selected="false">{ ctxi18n.T(ctx, "members.title") }</a>
 		}
 		if activeTab == "viewers" {
-			<a class="tab tab-active" href={ "/groups/" + groupID + "/access/viewers" }>{ ctxi18n.T(ctx, "groups.access") }</a>
+			<a class="btn btn-active" href={ "/groups/" + groupID + "/access/viewers" } role="tab" aria-selected="true">{ ctxi18n.T(ctx, "groups.access") }</a>
 		} else {
-			<a class="tab" href={ "/groups/" + groupID + "/access/viewers" }>{ ctxi18n.T(ctx, "groups.access") }</a>
+			<a class="btn" href={ "/groups/" + groupID + "/access/viewers" } role="tab" aria-selected="false">{ ctxi18n.T(ctx, "groups.access") }</a>
 		}
 	</nav>
 }

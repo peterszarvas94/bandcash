@@ -1,5 +1,7 @@
 package shared
 
+import icons "bandcash/models/shared/icons"
+
 type DetailGridRow struct {
 	Label string
 	Value string
@@ -13,5 +15,24 @@ templ DetailGrid(rows []DetailGridRow) {
 				<p class="detail-val">{ row.Value }</p>
 			</div>
 		}
+	</div>
+}
+
+templ Details(summary string, content templ.Component) {
+	<div class="pb">
+		<details class="details">
+			<summary>
+				<span>{ summary }</span>
+				<span class="details-icon">
+					<span class="details-icon-closed">
+						@icons.ChevronDown(templ.Attributes{"class": "icon"})
+					</span>
+					<span class="details-icon-open">
+						@icons.ChevronUp(templ.Attributes{"class": "icon"})
+					</span>
+				</span>
+			</summary>
+			@content
+		</details>
 	</div>
 }

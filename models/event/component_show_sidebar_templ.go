@@ -273,7 +273,7 @@ func EventShowSidebar(data EventData) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 21, "</label> <input id=\"event-participant-expense\" type=\"number\" data-bind=\"formData.expense\" step=\"1\" class=\"input\"><div data-show=\"$errors && $errors.expense\" class=\"color-error\" data-text=\"$errors.expense\"></div></div><div class=\"pt pb\"><strong>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 21, "</label> <input id=\"event-participant-expense\" type=\"number\" data-bind=\"formData.expense\" step=\"1\" class=\"input\"><div data-show=\"$errors && $errors.expense\" class=\"color-error\" data-text=\"$errors.expense\"></div></div><div class=\"pb\"><strong>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}

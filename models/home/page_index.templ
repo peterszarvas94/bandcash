@@ -28,7 +28,7 @@ templ HomeIndex(data HomeData) {
 					@shared.LanguageSelect("home-lang", data.CurrentLang, "_langFetching")
 				</form>
 				<div data-show="$authState === 'form'">
-					<form class="form pt" data-on:submit="@post('/auth/login')" data-indicator:_fetching>
+					<form class="form" data-on:submit="@post('/auth/login')" data-indicator:_fetching>
 						<div class="field">
 							<label for="home-auth-email">{ ctxi18n.T(ctx, "auth.email") } <span class="required-mark">*</span></label>
 							<div class="row row-wrap">
@@ -40,7 +40,7 @@ templ HomeIndex(data HomeData) {
 						</div>
 					</form>
 				</div>
-				<div data-show="$authState === 'sent'" style="display: none" class="form pt">
+				<div data-show="$authState === 'sent'" style="display: none" class="form">
 					<div data-show="$authState === 'sent'" data-on-interval__duration.1s="$resendRemaining = Math.max(0, $resendRemaining - 1)" style="display: none"></div>
 					<p>{ ctxi18n.T(ctx, "auth.check_email_safe") }</p>
 					<p><strong>{ ctxi18n.T(ctx, "auth.masked_email") }:</strong> <span data-text="$submittedEmailMasked"></span></p>
@@ -50,7 +50,7 @@ templ HomeIndex(data HomeData) {
 						@shared.LoadingActionButton(shared.LoadingActionButtonProps{ClassName: "btn", OnClick: "$authState = 'form'; $authError = ''; $authServerError = ''; $formData.email = $submittedEmail", DisabledExpr: "$_fetching", Label: ctxi18n.T(ctx, "auth.use_different_email"), IconName: icons.IconPencil})
 					</div>
 				</div>
-				<div class="row pt">
+				<div class="row">
 					if utils.Env().AppEnv == "development" {
 						<a class="btn" href="/dev">Dev</a>
 					}

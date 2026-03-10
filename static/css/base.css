@@ -26,7 +26,7 @@
     --sidebar-width: 22rem;
     --mobile-drawer-width: min(20rem, calc(100vw - 3rem));
     --page-padding-inline: var(--space);
-    --page-padding-top: calc(var(--space) * 2);
+    --page-padding-top: var(--space);
     --page-padding-bottom: var(--space);
     --z-index-modal: 1100;
 
@@ -42,6 +42,13 @@
       in srgb,
       var(--page-bg) 94%,
       var(--text-color) 6%
+    );
+    --btn-bg: color-mix(in srgb, var(--page-bg) 94%, var(--text-color) 6%);
+    --btn-active-bg: color-mix(in srgb, var(--page-bg) 87%, var(--text-color) 13%);
+    --btn-active-border: color-mix(
+      in srgb,
+      var(--page-bg) 62%,
+      var(--text-color) 38%
     );
     --overlay-backdrop: color-mix(in srgb, var(--text-color) 24%, transparent);
 
@@ -205,22 +212,6 @@
   canvas {
     max-width: 100%;
     display: block;
-  }
-
-  @media (max-width: 780px) {
-    .hide-tablet {
-      display: none !important;
-    }
-
-    .show-table {
-      display: inline !important;
-    }
-  }
-
-  @media (max-width: 680px) {
-    .hide-mobile {
-      display: none !important;
-    }
   }
 
   /* View transitions - disabled animations */

@@ -7,11 +7,19 @@ import (
 	icons "bandcash/models/shared/icons"
 )
 
+func isAdminActive(active string) bool {
+	return active == "admin" || active == "admin-overview" || active == "admin-flags" || active == "admin-users" || active == "admin-groups"
+}
+
+func isAccessActive(active string) bool {
+	return active == "viewers" || active == "access-viewers" || active == "access-pending" || active == "access-admins"
+}
+
 templ AppPrimaryNav(active string, userEmail string) {
 	<nav class="app-nav" aria-label="Primary">
 		<div class="app-nav-primary">
 			if active == "dashboard" {
-				<a class="btn app-nav-link active" href="/dashboard">
+				<a class="btn app-nav-link btn-active" href="/dashboard">
 					@icons.LayoutDashboard(templ.Attributes{"class": "icon"})
 					<span>{ ctxi18n.T(ctx, "nav.dashboard") }</span>
 				</a>
@@ -22,7 +30,7 @@ templ AppPrimaryNav(active string, userEmail string) {
 				</a>
 			}
 			if active == "settings" {
-				<a class="btn app-nav-link active" href="/settings">
+				<a class="btn app-nav-link btn-active" href="/settings">
 					@icons.Settings(templ.Attributes{"class": "icon"})
 					<span>{ ctxi18n.T(ctx, "settings.title") }</span>
 				</a>
@@ -33,21 +41,14 @@ templ AppPrimaryNav(active string, userEmail string) {
 				</a>
 			}
 			if utils.Env().SuperadminEmail != "" && userEmail != "" && userEmail == utils.Env().SuperadminEmail {
-				if active == "admin" {
-					<a class="btn app-nav-link active" href="/admin/overview">
-						@icons.Shield(templ.Attributes{"class": "icon"})
-						<span>{ ctxi18n.T(ctx, "nav.admin") }</span>
-					</a>
-				} else {
-					<a class="btn app-nav-link" href="/admin/overview">
-						@icons.Shield(templ.Attributes{"class": "icon"})
-						<span>{ ctxi18n.T(ctx, "nav.admin") }</span>
-					</a>
-				}
+				<a class={ "btn app-nav-link", templ.KV("btn-active", isAdminActive(active)) } href="/admin/overview">
+					@icons.Shield(templ.Attributes{"class": "icon"})
+					<span>{ ctxi18n.T(ctx, "nav.admin") }</span>
+				</a>
 			}
 			if utils.Env().AppEnv == "development" {
 				if active == "dev" {
-					<a class="btn app-nav-link active" href="/dev">
+					<a class="btn app-nav-link btn-active" href="/dev">
 						@icons.Terminal(templ.Attributes{"class": "icon"})
 						<span>Dev</span>
 					</a>
@@ -66,7 +67,7 @@ templ PublicPrimaryNav(active string) {
 	<nav class="app-nav" aria-label="Primary">
 		<div class="app-nav-primary">
 			if active == "home" {
-				<a class="btn app-nav-link active" href="/">
+				<a class="btn app-nav-link btn-active" href="/">
 					@icons.Landmark(templ.Attributes{"class": "icon"})
 					<span>{ ctxi18n.T(ctx, "nav.home") }</span>
 				</a>
@@ -78,7 +79,7 @@ templ PublicPrimaryNav(active string) {
 			}
 			if utils.Env().AppEnv == "development" {
 				if active == "dev" {
-					<a class="btn app-nav-link active" href="/dev">
+					<a class="btn app-nav-link btn-active" href="/dev">
 						@icons.Terminal(templ.Attributes{"class": "icon"})
 						<span>Dev</span>
 					</a>
@@ -101,7 +102,7 @@ templ DevPrimaryNav(active string) {
 				<span>{ ctxi18n.T(ctx, "nav.home") }</span>
 			</a>
 			if active == "dev" {
-				<a class="btn app-nav-link active" href="/dev">
+				<a class="btn app-nav-link btn-active" href="/dev">
 					@icons.Terminal(templ.Attributes{"class": "icon"})
 					<span>Dev</span>
 				</a>
@@ -123,7 +124,7 @@ templ GroupPrimaryNav(groupID string, active string, userEmail string) {
 				<span>{ ctxi18n.T(ctx, "nav.dashboard") }</span>
 			</a>
 			if active == "settings" {
-				<a class="btn app-nav-link active" href="/settings">
+				<a class="btn app-nav-link btn-active" href="/settings">
 					@icons.Settings(templ.Attributes{"class": "icon"})
 					<span>{ ctxi18n.T(ctx, "settings.title") }</span>
 				</a>
@@ -134,7 +135,7 @@ templ GroupPrimaryNav(groupID string, active string, userEmail string) {
 				</a>
 			}
 			if utils.Env().SuperadminEmail != "" && userEmail != "" && userEmail == utils.Env().SuperadminEmail {
-				<a class="btn app-nav-link" href="/admin/overview">
+				<a class={ "btn app-nav-link", templ.KV("btn-active", isAdminActive(active)) } href="/admin/overview">
 					@icons.Shield(templ.Attributes{"class": "icon"})
 					<span>{ ctxi18n.T(ctx, "nav.admin") }</span>
 				</a>
@@ -146,9 +147,9 @@ templ GroupPrimaryNav(groupID string, active string, userEmail string) {
 				</a>
 			}
 		</div>
-		<div class="app-nav-secondary pt">
+		<div class="app-nav-secondary">
 			if active == "overview" {
-				<a class="btn app-nav-link active" href={ "/groups/" + groupID }>
+				<a class="btn app-nav-link btn-active" href={ "/groups/" + groupID }>
 					@icons.Info(templ.Attributes{"class": "icon"})
 					<span>{ ctxi18n.T(ctx, "nav.overview") }</span>
 				</a>
@@ -159,7 +160,7 @@ templ GroupPrimaryNav(groupID string, active string, userEmail string) {
 				</a>
 			}
 			if active == "events" {
-				<a class="btn app-nav-link active" href={ "/groups/" + groupID + "/events" }>
+				<a class="btn app-nav-link btn-active" href={ "/groups/" + groupID + "/events" }>
 					@icons.Calendar(templ.Attributes{"class": "icon"})
 					<span>{ ctxi18n.T(ctx, "events.title") }</span>
 				</a>
@@ -170,7 +171,7 @@ templ GroupPrimaryNav(groupID string, active string, userEmail string) {
 				</a>
 			}
 			if active == "expenses" {
-				<a class="btn app-nav-link active" href={ "/groups/" + groupID + "/expenses" }>
+				<a class="btn app-nav-link btn-active" href={ "/groups/" + groupID + "/expenses" }>
 					@icons.HandCoins(templ.Attributes{"class": "icon"})
 					<span>{ ctxi18n.T(ctx, "expenses.title") }</span>
 				</a>
@@ -181,7 +182,7 @@ templ GroupPrimaryNav(groupID string, active string, userEmail string) {
 				</a>
 			}
 			if active == "members" {
-				<a class="btn app-nav-link active" href={ "/groups/" + groupID + "/members" }>
+				<a class="btn app-nav-link btn-active" href={ "/groups/" + groupID + "/members" }>
 					@icons.Users(templ.Attributes{"class": "icon"})
 					<span>{ ctxi18n.T(ctx, "members.title") }</span>
 				</a>
@@ -191,17 +192,10 @@ templ GroupPrimaryNav(groupID string, active string, userEmail string) {
 					<span>{ ctxi18n.T(ctx, "members.title") }</span>
 				</a>
 			}
-			if active == "viewers" {
-				<a class="btn app-nav-link active" href={ "/groups/" + groupID + "/access/viewers" }>
-					@icons.Lock(templ.Attributes{"class": "icon"})
-					<span>{ ctxi18n.T(ctx, "groups.access") }</span>
-				</a>
-			} else {
-				<a class="btn app-nav-link" href={ "/groups/" + groupID + "/access/viewers" }>
-					@icons.Lock(templ.Attributes{"class": "icon"})
-					<span>{ ctxi18n.T(ctx, "groups.access") }</span>
-				</a>
-			}
+			<a class={ "btn app-nav-link", templ.KV("btn-active", isAccessActive(active)) } href={ "/groups/" + groupID + "/access/viewers" }>
+				@icons.Lock(templ.Attributes{"class": "icon"})
+				<span>{ ctxi18n.T(ctx, "groups.access") }</span>
+			</a>
 		</div>
 	</nav>
 }

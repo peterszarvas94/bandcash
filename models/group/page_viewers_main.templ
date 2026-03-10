@@ -1,6 +1,7 @@
 package group
 
 import (
+	"context"
 	"fmt"
 
 	ctxi18n "github.com/invopop/ctxi18n/i18n"
@@ -10,20 +11,27 @@ import (
 	icons "bandcash/models/shared/icons"
 )
 
+func viewersTabLabel(ctx context.Context, tab string) string {
+	switch tab {
+	case "pending":
+		return ctxi18n.T(ctx, "groups.pending_invitations")
+	case "admins":
+		return ctxi18n.T(ctx, "groups.admins")
+	default:
+		return ctxi18n.T(ctx, "groups.viewers")
+	}
+}
+
 templ GroupViewersMain(data ViewersPageData) {
-	<div class="tabs pt">
-		<a href={ viewersTabURL(data.GroupID, "viewers") } class={ viewersTabClass(data.Tab, "viewers") }>{ ctxi18n.T(ctx, "groups.viewers") }</a>
-		<a href={ viewersTabURL(data.GroupID, "pending") } class={ viewersTabClass(data.Tab, "pending") }>{ ctxi18n.T(ctx, "groups.pending_invitations") }</a>
-		<a href={ viewersTabURL(data.GroupID, "admins") } class={ viewersTabClass(data.Tab, "admins") }>{ ctxi18n.T(ctx, "groups.admins") }</a>
+	<div class="hide-tablet pb">
+		@ViewersTabs(data)
 	</div>
-	@shared.MobileTabBar([]shared.MobileTab{
-		{Icon: icons.Eye, Label: ctxi18n.T(ctx, "groups.viewers"), Href: viewersTabURL(data.GroupID, "viewers"), IsActive: data.Tab == "viewers"},
-		{Icon: icons.Clock, Label: ctxi18n.T(ctx, "groups.pending_invitations"), Href: viewersTabURL(data.GroupID, "pending"), IsActive: data.Tab == "pending"},
-		{Icon: icons.Shield, Label: ctxi18n.T(ctx, "groups.admins"), Href: viewersTabURL(data.GroupID, "admins"), IsActive: data.Tab == "admins"},
-	})
+	<div class="show-tablet">
+		@shared.Details(viewersTabLabel(ctx, data.Tab), ViewersTabs(data))
+	</div>
 	if data.Tab == "admins" {
 		@shared.TableSearchForm(utils.BuildTableSearchDatastarAction(viewersTablePath(data.GroupID, data.Tab), utils.DefaultTablePageSize), "table.search_placeholder_admins")
-		<table class="table table-sticky-actions pt">
+		<table class="table table-sticky-actions">
 			<thead>
 				<tr>
 					<th>
@@ -45,7 +53,7 @@ templ GroupViewersMain(data ViewersPageData) {
 	} else if data.Tab == "pending" {
 		@shared.TableSearchForm(utils.BuildTableSearchDatastarAction(viewersTablePath(data.GroupID, data.Tab), utils.DefaultTablePageSize), "table.search_placeholder_pending")
 		@ViewersTablePagination(data)
-		<table class="table table-sticky-actions pt">
+		<table class="table table-sticky-actions">
 			<thead>
 				<tr>
 					<th>
@@ -88,7 +96,7 @@ templ GroupViewersMain(data ViewersPageData) {
 	} else {
 		@shared.TableSearchForm(utils.BuildTableSearchDatastarAction(viewersTablePath(data.GroupID, data.Tab), utils.DefaultTablePageSize), "table.search_placeholder_viewers")
 		@ViewersTablePagination(data)
-		<table class="table table-sticky-actions pt">
+		<table class="table table-sticky-actions">
 			<thead>
 				<tr>
 					<th>
@@ -131,20 +139,14 @@ templ GroupViewersMain(data ViewersPageData) {
 	}
 }
 
-templ ViewersTablePagination(data ViewersPageData) {
-	<div class="row row-wrap justify-between pt pb">
-		<div class="row row-wrap">
-			<span class="hide-tablet text-sm">{ ctxi18n.T(ctx, "table.page_size") }</span>
-			for _, pageSize := range utils.StandardTablePageSizes {
-				<button
-					class={ utils.PageSizeButtonClass(data.Query.PageSize, pageSize) }
-					type="button"
-					data-on:click={ utils.BuildTableQueryDatastarAction(utils.BuildTablePageSizeURL(viewersTablePath(data.GroupID, data.Tab), data.Query, pageSize)) }
-				>
-					{ fmt.Sprintf("%d", pageSize) }
-				</button>
-			}
-		</div>
-		@shared.TablePaginationControls(viewersTablePath(data.GroupID, data.Tab), data.Query, data.Pager)
+templ ViewersTabs(data ViewersPageData) {
+	<div class="row row-tight pb flex-col-mobile" role="tablist" aria-label={ ctxi18n.T(ctx, "nav.sections") }>
+		<a href={ viewersTabURL(data.GroupID, "viewers") } class={ viewersTabClass(data.Tab, "viewers") } role="tab" aria-selected={ viewersTabAriaSelected(data.Tab, "viewers") }>{ ctxi18n.T(ctx, "groups.viewers") }</a>
+		<a href={ viewersTabURL(data.GroupID, "pending") } class={ viewersTabClass(data.Tab, "pending") } role="tab" aria-selected={ viewersTabAriaSelected(data.Tab, "pending") }>{ ctxi18n.T(ctx, "groups.pending_invitations") }</a>
+		<a href={ viewersTabURL(data.GroupID, "admins") } class={ viewersTabClass(data.Tab, "admins") } role="tab" aria-selected={ viewersTabAriaSelected(data.Tab, "admins") }>{ ctxi18n.T(ctx, "groups.admins") }</a>
 	</div>
+}
+
+templ ViewersTablePagination(data ViewersPageData) {
+	@shared.TablePaginationRow(viewersTablePath(data.GroupID, data.Tab), data.Query, data.Pager)
 }

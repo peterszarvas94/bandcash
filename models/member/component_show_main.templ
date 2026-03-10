@@ -10,7 +10,7 @@ import (
 )
 
 templ MemberShowMain(data MemberData) {
-	<h2 class="pt pb">{ ctxi18n.T(ctx, "members.details") }</h2>
+	<h2 class="pb">{ ctxi18n.T(ctx, "members.details") }</h2>
 	@shared.DetailGrid([]shared.DetailGridRow{
 		{Label: ctxi18n.T(ctx, "fields.name"), Value: data.Member.Name},
 		{Label: ctxi18n.T(ctx, "fields.description"), Value: data.Member.Description},
@@ -39,23 +39,9 @@ templ MemberShowMain(data MemberData) {
 			})
 		</div>
 	}
-	<h2 class="pt pb">{ ctxi18n.T(ctx, "members.list_title") }</h2>
+	<h2 class="pb">{ ctxi18n.T(ctx, "members.list_title") }</h2>
 	@shared.TableSearchForm(utils.BuildTableSearchDatastarAction(fmt.Sprintf("/groups/%s/members/%s", data.GroupID, data.Member.ID), utils.DefaultTablePageSize), "table.search_placeholder_events")
-	<div class="row row-wrap justify-between pt pb">
-		<div class="row row-wrap">
-			<span class="hide-tablet text-sm">{ ctxi18n.T(ctx, "table.page_size") }</span>
-			for _, pageSize := range utils.StandardTablePageSizes {
-				<button
-					class={ utils.PageSizeButtonClass(data.Query.PageSize, pageSize) }
-					type="button"
-					data-on:click={ utils.BuildTableQueryDatastarAction(utils.BuildTablePageSizeURL(fmt.Sprintf("/groups/%s/members/%s", data.GroupID, data.Member.ID), data.Query, pageSize)) }
-				>
-					{ fmt.Sprintf("%d", pageSize) }
-				</button>
-			}
-		</div>
-		@shared.TablePaginationControls(fmt.Sprintf("/groups/%s/members/%s", data.GroupID, data.Member.ID), data.Query, data.Pager)
-	</div>
+	@shared.TablePaginationRow(fmt.Sprintf("/groups/%s/members/%s", data.GroupID, data.Member.ID), data.Query, data.Pager)
 	<table class="table">
 		<thead>
 			<tr>

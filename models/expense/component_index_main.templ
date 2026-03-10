@@ -17,11 +17,11 @@ templ ExpenseTotalsContent(data ExpensesData) {
 }
 
 templ ExpenseIndexMain(data ExpensesData) {
-	<h2 class="pt pb">{ ctxi18n.T(ctx, "expenses.calculations") }</h2>
+	<h2 class="pb">{ ctxi18n.T(ctx, "expenses.calculations") }</h2>
 	@ExpenseTotalsContent(data)
-	<h2 class="pt pb">{ ctxi18n.T(ctx, "expenses.list_title") }</h2>
+	<h2 class="pb">{ ctxi18n.T(ctx, "expenses.list_title") }</h2>
 	@shared.TableSearchForm(utils.BuildTableSearchDatastarAction(fmt.Sprintf("/groups/%s/expenses", data.GroupID), utils.DefaultTablePageSize), "table.search_placeholder_expenses")
-	<div class="row row-wrap pt pb" role="group" aria-label={ ctxi18n.T(ctx, "table.date_filters") }>
+	<div class="row row-wrap pb" role="group" aria-label={ ctxi18n.T(ctx, "table.date_filters") }>
 		<button
 			class={ utils.DateFilterAllButtonClass(data.Query) }
 			type="button"
@@ -49,22 +49,8 @@ templ ExpenseIndexMain(data ExpensesData) {
 			<input type="date" class="input input-sm" data-bind="dateRange.to" data-on:change={ utils.BuildTableDateRangeDatastarAction(fmt.Sprintf("/groups/%s/expenses", data.GroupID), utils.DefaultTablePageSize) }/>
 		</label>
 	</div>
-	<div class="row row-wrap justify-between pt pb">
-		<div class="row row-wrap">
-			<span class="hide-tablet text-sm">{ ctxi18n.T(ctx, "table.page_size") }</span>
-			for _, pageSize := range utils.StandardTablePageSizes {
-				<button
-					class={ utils.PageSizeButtonClass(data.Query.PageSize, pageSize) }
-					type="button"
-					data-on:click={ utils.BuildTableQueryDatastarAction(utils.BuildTablePageSizeURL(fmt.Sprintf("/groups/%s/expenses", data.GroupID), data.Query, pageSize)) }
-				>
-					{ fmt.Sprintf("%d", pageSize) }
-				</button>
-			}
-		</div>
-		@shared.TablePaginationControls(fmt.Sprintf("/groups/%s/expenses", data.GroupID), data.Query, data.Pager)
-	</div>
-	<table class="table table-sticky-actions pt">
+	@shared.TablePaginationRow(fmt.Sprintf("/groups/%s/expenses", data.GroupID), data.Query, data.Pager)
+	<table class="table table-sticky-actions">
 		<thead>
 			<tr>
 				<th>

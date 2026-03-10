@@ -10,9 +10,16 @@ import (
 
 func viewersTabClass(currentTab, targetTab string) string {
 	if currentTab == targetTab {
-		return "tab tab-active"
+		return "btn btn-active"
 	}
-	return "tab"
+	return "btn"
+}
+
+func viewersTabAriaSelected(currentTab, targetTab string) string {
+	if currentTab == targetTab {
+		return "true"
+	}
+	return "false"
 }
 
 func viewersTabURL(groupID, tab string) string {

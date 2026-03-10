@@ -80,7 +80,7 @@ templ EventShowSidebar(data EventData) {
 					<input id="event-participant-expense" type="number" data-bind="formData.expense" step="1" class="input"/>
 					<div data-show="$errors && $errors.expense" class="color-error" data-text="$errors.expense"></div>
 				</div>
-				<div class="pt pb">
+				<div class="pb">
 					<strong>{ctxi18n.T(ctx, "participants.total")}:</strong>
 					<span class="pl" data-text="$formData.amount + $formData.expense"></span>
 				</div>
