@@ -1,21 +1,23 @@
-# P1
+## Security
 
-- [x] loading indicator for forms and buttons
-- [x] remove unnecessary sidebars (for example read-only users)
-- [x] pagination for tables
-- [x] search for tables
-- [ ] filter for tables
-- [x] order for tables
-- [ ] improve mobile friendliness
-- [x] add monitoring + alerting for `/health` (defer with centralized logs/observability)
-- [x] add expenses table (title, description, amount, date)
+- [ ] add auth abuse protection (cooldown/throttle by IP + email)
+- [ ] evaluate 1Password-backed Kamal secrets (`op`/`kamal secrets`) instead of static `.kamal/secrets`, or use varlock
 
-# P2
+## Improvements
 
+- [ ] support multiple admins per group (user->admin, admin->user, admin kick admin rules)
+- [ ] add real-time collaborative editing notice ("Updated by another user [Refresh]")
 - [ ] notify logged-in user when added/removed from group; on remove redirect to `/dashboard`
 - [ ] add live update on viewer pages when admin changes viewer list (broadcast SSE)
-- [ ] add auth abuse protection (cooldown/throttle by IP + email)
-- [ ] evaluate 1Password-backed Kamal secrets (`op`/`kamal secrets`) instead of static `.kamal/secrets`
-- [ ] automate production deploy on `v*` tag push via GitHub Actions + `mise`/Kamal (set up dedicated deploy SSH key, known_hosts, and production environment secrets)
-- [ ] add real-time collaborative editing notice ("Updated by another user [Refresh]")
-- [ ] support multiple admins per group (user->admin, admin->user, admin kick admin rules)
+- [ ] save filters
+- [ ] cancel events
+
+## Features
+
+- [ ] recurring expenses/events (monthly subscriptions, rent, etc.)
+- [ ] export/import CSV for members, events, and expenses
+- [ ] audit log per group (who changed what and when)
+- [ ] due-date reminders and digest notifications
+- [ ] analytics dashboard (member spend, trends, monthly totals)
+- [ ] quote maker
+- [ ] save quotes as events
