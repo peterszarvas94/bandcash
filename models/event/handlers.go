@@ -90,6 +90,20 @@ func getUserEmail(c echo.Context) string {
 	return user.Email
 }
 
+func applyEventIndexTableByRole(data *EventsData, isAdmin bool) {
+	data.IsAdmin = isAdmin
+	if !isAdmin {
+		data.EventsTable.ActionsWidthRem = 0
+	}
+}
+
+func applyEventShowTableByRole(data *EventData, isAdmin bool) {
+	data.IsAdmin = isAdmin
+	if !isAdmin {
+		data.ParticipantsTable.ActionsWidthRem = 0
+	}
+}
+
 func (e *Events) Index(c echo.Context) error {
 	utils.EnsureClientID(c)
 	groupID := middleware.GetGroupID(c)
@@ -101,7 +115,7 @@ func (e *Events) Index(c echo.Context) error {
 		slog.Error("event.list: failed to get data", "err", err)
 		return c.NoContent(http.StatusInternalServerError)
 	}
-	data.IsAdmin = middleware.IsAdmin(c)
+	applyEventIndexTableByRole(&data, middleware.IsAdmin(c))
 	data.UserEmail = userEmail
 
 	slog.Debug("event.index", "event_count", len(data.Events))
@@ -125,7 +139,7 @@ func (e *Events) Show(c echo.Context) error {
 		slog.Error("event.show: failed to get data", "err", err)
 		return c.NoContent(http.StatusInternalServerError)
 	}
-	data.IsAdmin = middleware.IsAdmin(c)
+	applyEventShowTableByRole(&data, middleware.IsAdmin(c))
 	data.UserEmail = userEmail
 
 	return utils.RenderPage(c, EventShow(data))
@@ -178,7 +192,7 @@ func (e *Events) Create(c echo.Context) error {
 		slog.Error("event.create.table: failed to get data", "err", err)
 		return c.NoContent(http.StatusInternalServerError)
 	}
-	data.IsAdmin = middleware.IsAdmin(c)
+	applyEventIndexTableByRole(&data, middleware.IsAdmin(c))
 	data.UserEmail = userEmail
 
 	html, err := utils.RenderHTMLForRequest(c, EventIndex(data))
@@ -260,7 +274,7 @@ func (e *Events) Update(c echo.Context) error {
 			slog.Error("event.update: failed to get data", "err", err)
 			return c.NoContent(http.StatusInternalServerError)
 		}
-		data.IsAdmin = middleware.IsAdmin(c)
+		applyEventShowTableByRole(&data, middleware.IsAdmin(c))
 		data.UserEmail = userEmail
 		html, err := utils.RenderHTMLForRequest(c, EventShow(data))
 		if err != nil {
@@ -278,7 +292,7 @@ func (e *Events) Update(c echo.Context) error {
 		slog.Error("event.update: failed to get data", "err", err)
 		return c.NoContent(http.StatusInternalServerError)
 	}
-	data.IsAdmin = middleware.IsAdmin(c)
+	applyEventIndexTableByRole(&data, middleware.IsAdmin(c))
 	data.UserEmail = userEmail
 	html, err := utils.RenderHTMLForRequest(c, EventIndex(data))
 	if err != nil {
@@ -336,7 +350,7 @@ func (e *Events) Destroy(c echo.Context) error {
 		slog.Error("event.destroy: failed to get data", "err", err)
 		return c.NoContent(http.StatusInternalServerError)
 	}
-	data.IsAdmin = middleware.IsAdmin(c)
+	applyEventIndexTableByRole(&data, middleware.IsAdmin(c))
 	data.UserEmail = userEmail
 	html, err := utils.RenderHTMLForRequest(c, EventIndex(data))
 	if err != nil {
@@ -397,7 +411,7 @@ func (e *Events) CreateParticipant(c echo.Context) error {
 		slog.Error("participant.create.table: failed to get data", "err", err)
 		return c.NoContent(http.StatusInternalServerError)
 	}
-	data.IsAdmin = middleware.IsAdmin(c)
+	applyEventShowTableByRole(&data, middleware.IsAdmin(c))
 	data.UserEmail = userEmail
 	html, err := utils.RenderHTMLForRequest(c, EventShow(data))
 	if err != nil {
@@ -467,7 +481,7 @@ func (e *Events) UpdateParticipant(c echo.Context) error {
 		slog.Error("participant.update: failed to get data", "err", err)
 		return c.NoContent(http.StatusInternalServerError)
 	}
-	data.IsAdmin = middleware.IsAdmin(c)
+	applyEventShowTableByRole(&data, middleware.IsAdmin(c))
 	data.UserEmail = userEmail
 	html, err := utils.RenderHTMLForRequest(c, EventShow(data))
 	if err != nil {
@@ -520,7 +534,7 @@ func (e *Events) DeleteParticipantTable(c echo.Context) error {
 		slog.Error("participant.delete: failed to get data", "err", err)
 		return c.NoContent(http.StatusInternalServerError)
 	}
-	data.IsAdmin = middleware.IsAdmin(c)
+	applyEventShowTableByRole(&data, middleware.IsAdmin(c))
 	data.UserEmail = userEmail
 	html, err := utils.RenderHTMLForRequest(c, EventShow(data))
 	if err != nil {

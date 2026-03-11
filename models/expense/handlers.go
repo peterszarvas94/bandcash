@@ -55,6 +55,13 @@ func getUserEmail(c echo.Context) string {
 	return user.Email
 }
 
+func applyExpenseTableByRole(data *ExpensesData, isAdmin bool) {
+	data.IsAdmin = isAdmin
+	if !isAdmin {
+		data.ExpensesTable.ActionsWidthRem = 0
+	}
+}
+
 func (e *Expenses) Index(c echo.Context) error {
 	utils.EnsureClientID(c)
 	groupID := middleware.GetGroupID(c)
@@ -66,7 +73,7 @@ func (e *Expenses) Index(c echo.Context) error {
 		slog.Error("expense.list: failed to get data", "err", err)
 		return c.NoContent(http.StatusInternalServerError)
 	}
-	data.IsAdmin = middleware.IsAdmin(c)
+	applyExpenseTableByRole(&data, middleware.IsAdmin(c))
 	data.UserEmail = userEmail
 
 	return utils.RenderPage(c, ExpenseIndex(data))
@@ -114,7 +121,7 @@ func (e *Expenses) Create(c echo.Context) error {
 		slog.Error("expense.create.table: failed to get data", "err", err)
 		return c.NoContent(http.StatusInternalServerError)
 	}
-	data.IsAdmin = middleware.IsAdmin(c)
+	applyExpenseTableByRole(&data, middleware.IsAdmin(c))
 	data.UserEmail = userEmail
 
 	html, err := utils.RenderHTMLForRequest(c, ExpenseIndex(data))
@@ -175,7 +182,7 @@ func (e *Expenses) Update(c echo.Context) error {
 		slog.Error("expense.update: failed to get data", "err", err)
 		return c.NoContent(http.StatusInternalServerError)
 	}
-	data.IsAdmin = middleware.IsAdmin(c)
+	applyExpenseTableByRole(&data, middleware.IsAdmin(c))
 	data.UserEmail = userEmail
 
 	html, err := utils.RenderHTMLForRequest(c, ExpenseIndex(data))
@@ -224,7 +231,7 @@ func (e *Expenses) Destroy(c echo.Context) error {
 		slog.Error("expense.destroy: failed to get data", "err", err)
 		return c.NoContent(http.StatusInternalServerError)
 	}
-	data.IsAdmin = middleware.IsAdmin(c)
+	applyExpenseTableByRole(&data, middleware.IsAdmin(c))
 	data.UserEmail = userEmail
 
 	html, err := utils.RenderHTMLForRequest(c, ExpenseIndex(data))

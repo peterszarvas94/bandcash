@@ -1,11 +1,8 @@
 package group
 
 import (
-	"fmt"
-
 	ctxi18n "github.com/invopop/ctxi18n/i18n"
 
-	"bandcash/internal/utils"
 	shared "bandcash/models/shared"
 	icons "bandcash/models/shared/icons"
 )
@@ -38,20 +35,6 @@ templ GroupsSidebar(data GroupsPageData) {
 					@shared.ActionButton(shared.ActionButtonProps{ClassName: "btn", OnClick: "$formState = ''; $selectedGroupId = ''; $formData = {name: ''}; $errors = {name: ''}", DisabledExpr: "$_fetching", Label: ctxi18n.T(ctx, "actions.cancel"), IconName: icons.IconX})
 				</div>
 			</form>
-		</div>
-		<div data-show="$formState === 'leave' && $selectedGroupId !== ''" style="display: none" class="pb">
-			<h3>{ ctxi18n.T(ctx, "groups.leave") }</h3>
-			<p>{ ctxi18n.T(ctx, "groups.leave_confirm") }</p>
-			<div class="grid">
-				@shared.ActionButton(shared.ActionButtonProps{ClassName: "btn btn-danger", OnClick: fmt.Sprintf(
-					"$sureOpen = true; $sureTitle = %s; $sureMessage = %s; $sureSubmitLabel = %s; $sureCancelLabel = %s; $sureMethod = 'post'; $sureURL = '/groups/' + $selectedGroupId + '/leave'; $sureTriggerID = 'groups-sidebar-leave'",
-					utils.JSONString(ctxi18n.T(ctx, "groups.leave_confirm")),
-					utils.JSONString(ctxi18n.T(ctx, "confirm.leave_message")),
-					utils.JSONString(ctxi18n.T(ctx, "groups.leave")),
-					utils.JSONString(ctxi18n.T(ctx, "actions.cancel")),
-				), DisabledExpr: "$_fetching", Label: ctxi18n.T(ctx, "groups.leave"), IconName: icons.IconSquareArrowRightExit})
-				@shared.ActionButton(shared.ActionButtonProps{ClassName: "btn", OnClick: "$formState = ''; $selectedGroupId = ''", DisabledExpr: "$_fetching", Label: ctxi18n.T(ctx, "actions.cancel"), IconName: icons.IconX})
-			</div>
 		</div>
 	</div>
 }
