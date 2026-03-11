@@ -136,9 +136,10 @@ func (m *GroupModel) GetGroupsPageData(ctx context.Context, userID string, query
 	pagination := utils.BuildTablePagination(total, query)
 
 	return GroupsPageData{
-		AllGroups:  allGroups,
-		Query:      query,
-		Pagination: pagination,
+		AllGroups:   allGroups,
+		Query:       query,
+		Pagination:  pagination,
+		GroupsTable: utils.GroupsIndexTableLayout(),
 	}, nil
 }
 

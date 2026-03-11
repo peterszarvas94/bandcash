@@ -31,12 +31,12 @@ templ GroupViewersMain(data ViewersPageData) {
 	</div>
 	if data.Tab == "admins" {
 		@shared.TableSearchForm(utils.BuildTableSearchDatastarAction(viewersTablePath(data.GroupID, data.Tab), utils.DefaultTablePageSize), "table.search_placeholder_admins")
-		<table class="table table-sticky-actions">
+		@shared.TableOpenFixed(data.AdminsTable, "table-sticky-actions") {
 			<thead>
 				<tr>
-					<th>
+					@shared.THCol(data.AdminsTable.Col("email")) {
 						@shared.TableSortHeader(ctxi18n.T(ctx, "auth.email"), "email", data.Query, utils.BuildTableSortURL(viewersTablePath(data.GroupID, data.Tab), data.Query, "email"))
-					</th>
+					}
 				</tr>
 			</thead>
 			<tbody>
@@ -49,21 +49,21 @@ templ GroupViewersMain(data ViewersPageData) {
 					<tr><td>{ ctxi18n.T(ctx, "table.empty") }</td></tr>
 				}
 			</tbody>
-		</table>
+		}
 	} else if data.Tab == "pending" {
 		@shared.TableSearchForm(utils.BuildTableSearchDatastarAction(viewersTablePath(data.GroupID, data.Tab), utils.DefaultTablePageSize), "table.search_placeholder_pending")
 		@ViewersTablePagination(data)
-		<table class="table table-sticky-actions">
+		@shared.TableOpenFixed(data.PendingTable, "table-sticky-actions") {
 			<thead>
 				<tr>
-					<th>
+					@shared.THCol(data.PendingTable.Col("email")) {
 						@shared.TableSortHeader(ctxi18n.T(ctx, "auth.email"), "email", data.Query, utils.BuildTableSortURL(viewersTablePath(data.GroupID, data.Tab), data.Query, "email"))
-					</th>
-					<th>
+					}
+					@shared.THCol(data.PendingTable.Col("created_at")) {
 						@shared.TableSortHeader(ctxi18n.T(ctx, "groups.created"), "createdAt", data.Query, utils.BuildTableSortURL(viewersTablePath(data.GroupID, data.Tab), data.Query, "createdAt"))
-					</th>
+					}
 					if data.IsAdmin {
-						<th data-actions-col></th>
+						@shared.THActions(data.PendingTable.ActionsWidthCh)
 					}
 				</tr>
 			</thead>
@@ -92,22 +92,22 @@ templ GroupViewersMain(data ViewersPageData) {
 					<tr><td colspan="3">{ ctxi18n.T(ctx, "table.empty") }</td></tr>
 				}
 			</tbody>
-		</table>
+		}
 	} else {
 		@shared.TableSearchForm(utils.BuildTableSearchDatastarAction(viewersTablePath(data.GroupID, data.Tab), utils.DefaultTablePageSize), "table.search_placeholder_viewers")
 		@ViewersTablePagination(data)
-		<table class="table table-sticky-actions">
+		@shared.TableOpenFixed(data.ViewersTable, "table-sticky-actions") {
 			<thead>
 				<tr>
-					<th>
+					@shared.THCol(data.ViewersTable.Col("email")) {
 						@shared.TableSortHeader(ctxi18n.T(ctx, "auth.email"), "email", data.Query, utils.BuildTableSortURL(viewersTablePath(data.GroupID, data.Tab), data.Query, "email"))
-					</th>
+					}
 					if data.IsAdmin {
-						<th data-actions-col>
+						@shared.THActions(data.ViewersTable.ActionsWidthCh) {
 							<div class="row row-right row-tight">
 								@shared.IconActionButton(shared.IconActionButtonProps{ClassName: "btn btn-ghost btn-sm btn-icon", OnClick: "$formState = 'add'; $formData = {email: ''}", DisabledExpr: "$formState !== '' || $_fetching", AriaLabel: ctxi18n.T(ctx, "groups.add_viewer"), Title: ctxi18n.T(ctx, "groups.add_viewer"), IconName: icons.IconPlus})
 							</div>
-						</th>
+						}
 					}
 				</tr>
 			</thead>
@@ -135,7 +135,7 @@ templ GroupViewersMain(data ViewersPageData) {
 					<tr><td colspan="2">{ ctxi18n.T(ctx, "table.empty") }</td></tr>
 				}
 			</tbody>
-		</table>
+		}
 	}
 }
 

@@ -35,6 +35,26 @@ templ TableSortHeader(label string, column string, query utils.TableQuery, actio
 	</button>
 }
 
+templ TableOpenFixed(layout utils.TableLayout, class string) {
+	<div class="table-scroll">
+		<table class={ "table table-fixed " + class } style={ fmt.Sprintf("--table-min-w: %dch", layout.MinWidthCh) }>
+			{ children... }
+		</table>
+	</div>
+}
+
+templ THCol(widthCh int) {
+	<th class="col-w" style={ fmt.Sprintf("--w: %dch", widthCh) }>
+		{ children... }
+	</th>
+}
+
+templ THActions(widthCh int) {
+	<th data-actions-col style={ fmt.Sprintf("--actions-w: %dch", widthCh) }>
+		{ children... }
+	</th>
+}
+
 templ TablePaginationRow(basePath string, query utils.TableQuery, pager utils.TablePagination) {
 	<div class="row row-wrap justify-between pb">
 		<div class="row row-wrap row-tight" role="radiogroup" aria-label={ ctxi18n.T(ctx, "table.page_size") }>

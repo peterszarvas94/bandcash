@@ -42,30 +42,30 @@ templ MemberShowMain(data MemberData) {
 	<h2 class="pb">{ ctxi18n.T(ctx, "members.list_title") }</h2>
 	@shared.TableSearchForm(utils.BuildTableSearchDatastarAction(fmt.Sprintf("/groups/%s/members/%s", data.GroupID, data.Member.ID), utils.DefaultTablePageSize), "table.search_placeholder_events")
 	@shared.TablePaginationRow(fmt.Sprintf("/groups/%s/members/%s", data.GroupID, data.Member.ID), data.Query, data.Pager)
-	<table class="table">
+	@shared.TableOpenFixed(data.EventsTable, "") {
 		<thead>
 			<tr>
-				<th>
+				@shared.THCol(data.EventsTable.Col("title")) {
 					@shared.TableSortHeader(ctxi18n.T(ctx, "fields.title"), "title", data.Query, utils.BuildTableSortURL(fmt.Sprintf("/groups/%s/members/%s", data.GroupID, data.Member.ID), data.Query, "title"))
-				</th>
-				<th>
+				}
+				@shared.THCol(data.EventsTable.Col("time")) {
 					@shared.TableSortHeader(ctxi18n.T(ctx, "fields.time"), "time", data.Query, utils.BuildTableSortURL(fmt.Sprintf("/groups/%s/members/%s", data.GroupID, data.Member.ID), data.Query, "time"))
-				</th>
-				<th>
+				}
+				@shared.THCol(data.EventsTable.Col("description")) {
 					@shared.TableSortHeader(ctxi18n.T(ctx, "fields.description"), "description", data.Query, utils.BuildTableSortURL(fmt.Sprintf("/groups/%s/members/%s", data.GroupID, data.Member.ID), data.Query, "description"))
-				</th>
-				<th>
+				}
+				@shared.THCol(data.EventsTable.Col("amount")) {
 					@shared.TableSortHeader(ctxi18n.T(ctx, "members.table.event_amount"), "amount", data.Query, utils.BuildTableSortURL(fmt.Sprintf("/groups/%s/members/%s", data.GroupID, data.Member.ID), data.Query, "amount"))
-				</th>
-				<th>
+				}
+				@shared.THCol(data.EventsTable.Col("participant_amount")) {
 					@shared.TableSortHeader(ctxi18n.T(ctx, "participants.cut"), "participant_amount", data.Query, utils.BuildTableSortURL(fmt.Sprintf("/groups/%s/members/%s", data.GroupID, data.Member.ID), data.Query, "participant_amount"))
-				</th>
-				<th>
+				}
+				@shared.THCol(data.EventsTable.Col("participant_expense")) {
 					@shared.TableSortHeader(ctxi18n.T(ctx, "participants.expense"), "participant_expense", data.Query, utils.BuildTableSortURL(fmt.Sprintf("/groups/%s/members/%s", data.GroupID, data.Member.ID), data.Query, "participant_expense"))
-				</th>
-				<th>
+				}
+				@shared.THCol(data.EventsTable.Col("total")) {
 					{ ctxi18n.T(ctx, "participants.total") }
-				</th>
+				}
 			</tr>
 		</thead>
 		<tbody>
@@ -86,5 +86,5 @@ templ MemberShowMain(data MemberData) {
 				</tr>
 			}
 		</tbody>
-	</table>
+	}
 }

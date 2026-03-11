@@ -9,8 +9,6 @@
     border-collapse: collapse;
     border-spacing: 0;
     table-layout: auto;
-    display: block;
-    overflow-x: auto;
 
     th,
     td {
@@ -28,8 +26,8 @@
       font-weight: 600;
     }
 
-    & th:last-child,
-    & td:last-child {
+    & th[data-actions-col],
+    & td[data-actions-col] {
       width: 1%;
       white-space: nowrap;
     }
@@ -38,7 +36,7 @@
       th[data-actions-col],
       td[data-actions-col] {
         position: sticky;
-        right: 0;
+        right: var(--space);
         z-index: 1;
         background: var(--page-bg);
         padding: 0;
@@ -66,6 +64,35 @@
         }
       }
     }
+
+    &.table-fixed {
+      table-layout: fixed;
+      width: 100%;
+      min-width: var(--table-min-w, 100%);
+
+      th,
+      td {
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+
+      .col-w {
+        width: var(--w);
+      }
+
+      th[data-actions-col],
+      td[data-actions-col] {
+        width: var(--actions-w, 4rem);
+        overflow: visible;
+        text-overflow: clip;
+      }
+    }
+  }
+
+  .table-scroll {
+    width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
   }
 
   .btn {

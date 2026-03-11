@@ -57,27 +57,27 @@ templ EventIndexMain(data EventsData) {
 		</div>
 	</div>
 	@shared.TablePaginationRow(fmt.Sprintf("/groups/%s/events", data.GroupID), data.Query, data.Pager)
-	<table class="table table-sticky-actions">
+	@shared.TableOpenFixed(data.EventsTable, "table-sticky-actions") {
 		<thead>
 			<tr>
-				<th>
+				@shared.THCol(data.EventsTable.Col("title")) {
 					@shared.TableSortHeader(ctxi18n.T(ctx, "fields.title"), "title", data.Query, utils.BuildTableSortURL(fmt.Sprintf("/groups/%s/events", data.GroupID), data.Query, "title"))
-				</th>
-				<th>
+				}
+				@shared.THCol(data.EventsTable.Col("time")) {
 					@shared.TableSortHeader(ctxi18n.T(ctx, "fields.time"), "time", data.Query, utils.BuildTableSortURL(fmt.Sprintf("/groups/%s/events", data.GroupID), data.Query, "time"))
-				</th>
-				<th>
+				}
+				@shared.THCol(data.EventsTable.Col("amount")) {
 					@shared.TableSortHeader(ctxi18n.T(ctx, "fields.amount"), "amount", data.Query, utils.BuildTableSortURL(fmt.Sprintf("/groups/%s/events", data.GroupID), data.Query, "amount"))
-				</th>
-				<th>
+				}
+				@shared.THCol(data.EventsTable.Col("description")) {
 					@shared.TableSortHeader(ctxi18n.T(ctx, "fields.description"), "description", data.Query, utils.BuildTableSortURL(fmt.Sprintf("/groups/%s/events", data.GroupID), data.Query, "description"))
-				</th>
+				}
 				if data.IsAdmin {
-					<th data-actions-col>
+					@shared.THActions(data.EventsTable.ActionsWidthCh) {
 						<div class="row row-right row-tight">
 							@shared.IconActionButton(shared.IconActionButtonProps{ClassName: "btn btn-ghost btn-sm btn-icon", OnClick: "$formState = 'add'; $editingId = 0; $formData = {title: '', time: '', description: '', amount: 0}; $errors = {title: '', time: '', description: '', amount: ''}", DisabledExpr: "$formState !== '' || $_fetching", AriaLabel: ctxi18n.T(ctx, "events.add"), Title: ctxi18n.T(ctx, "events.add"), IconName: icons.IconPlus})
 						</div>
-					</th>
+					}
 				}
 			</tr>
 		</thead>
@@ -122,5 +122,5 @@ templ EventIndexMain(data EventsData) {
 				</tr>
 			}
 		</tbody>
-	</table>
+	}
 }

@@ -36,21 +36,23 @@ templ DashboardStats(data DashboardData) {
 	})
 }
 
-templ UsersTableSection(data DashboardData) {
+	templ UsersTableSection(data DashboardData) {
 	<div class="table-section">
 		@shared.TableSearchForm(adminSearchAction("users"), "table.search_placeholder_admin_users")
 		@adminTablePagination(data.UserPager, data.UserQuery, "users")
-		<table id="admin-users" class="table table-sticky-actions">
+		@shared.TableOpenFixed(data.UsersTable, "table-sticky-actions") {
 			<thead>
 				<tr>
-					<th>
+					@shared.THCol(data.UsersTable.Col("email")) {
 						@shared.TableSortHeader(ctxi18n.T(ctx, "auth.email"), "email", data.UserQuery, adminUsersSortURL(data, "email"))
-					</th>
-					<th>
+					}
+					@shared.THCol(data.UsersTable.Col("created_at")) {
 						@shared.TableSortHeader(ctxi18n.T(ctx, "groups.created"), "createdAt", data.UserQuery, adminUsersSortURL(data, "createdAt"))
-					</th>
-					<th>{ ctxi18n.T(ctx, "admin.users.status") }</th>
-					<th data-actions-col></th>
+					}
+					@shared.THCol(data.UsersTable.Col("status")) {
+						{ ctxi18n.T(ctx, "admin.users.status") }
+					}
+					@shared.THActions(data.UsersTable.ActionsWidthCh)
 				</tr>
 			</thead>
 			<tbody>
@@ -88,7 +90,7 @@ templ UsersTableSection(data DashboardData) {
 					</tr>
 				}
 			</tbody>
-		</table>
+		}
 	</div>
 }
 
@@ -96,17 +98,21 @@ templ GroupsTableSection(data DashboardData) {
 	<div class="table-section">
 		@shared.TableSearchForm(adminSearchAction("groups"), "table.search_placeholder_admin_groups")
 		@adminTablePagination(data.GroupPager, data.GroupQuery, "groups")
-		<table class="table">
+		@shared.TableOpenFixed(data.GroupsTable, "") {
 			<thead>
 				<tr>
-					<th>
+					@shared.THCol(data.GroupsTable.Col("name")) {
 						@shared.TableSortHeader(ctxi18n.T(ctx, "groups.name"), "name", data.GroupQuery, adminGroupsSortURL(data, "name"))
-					</th>
-					<th>{ ctxi18n.T(ctx, "groups.admin") }</th>
-					<th>{ ctxi18n.T(ctx, "groups.viewers") }</th>
-					<th>
+					}
+					@shared.THCol(data.GroupsTable.Col("admin")) {
+						{ ctxi18n.T(ctx, "groups.admin") }
+					}
+					@shared.THCol(data.GroupsTable.Col("viewers")) {
+						{ ctxi18n.T(ctx, "groups.viewers") }
+					}
+					@shared.THCol(data.GroupsTable.Col("created_at")) {
 						@shared.TableSortHeader(ctxi18n.T(ctx, "groups.created"), "createdAt", data.GroupQuery, adminGroupsSortURL(data, "createdAt"))
-					</th>
+					}
 				</tr>
 			</thead>
 			<tbody>
@@ -130,7 +136,7 @@ templ GroupsTableSection(data DashboardData) {
 					</tr>
 				}
 			</tbody>
-		</table>
+		}
 	</div>
 }
 

@@ -29,15 +29,17 @@ type MemberData struct {
 	TotalCut     int64
 	TotalExpense int64
 	TotalPayout  int64
+	EventsTable  utils.TableLayout
 }
 
 type MembersData struct {
-	Title       string
-	Members     []db.Member
-	Query       utils.TableQuery
-	Pager       utils.TablePagination
-	Breadcrumbs []utils.Crumb
-	GroupID     string
-	IsAdmin     bool
-	UserEmail   string
+	Title        string
+	Members      []db.Member
+	Query        utils.TableQuery
+	Pager        utils.TablePagination
+	Breadcrumbs  []utils.Crumb
+	GroupID      string
+	IsAdmin      bool
+	UserEmail    string
+	MembersTable utils.TableLayout
 }

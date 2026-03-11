@@ -36,4 +36,7 @@ type DashboardData struct {
 	Groups     []db.Group
 	GroupPager utils.TablePagination
 	GroupQuery utils.TableQuery
+
+	UsersTable  utils.TableLayout
+	GroupsTable utils.TableLayout
 }

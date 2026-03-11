@@ -27,6 +27,7 @@ type GroupsPageData struct {
 	ReaderGroups []GroupSummary
 	Query        utils.TableQuery
 	Pagination   utils.TablePagination
+	GroupsTable  utils.TableLayout
 }
 
 type GroupSummary struct {
@@ -36,18 +37,21 @@ type GroupSummary struct {
 }
 
 type ViewersPageData struct {
-	Title       string
-	Breadcrumbs []utils.Crumb
-	UserEmail   string
-	Group       db.Group
-	Admins      []db.User
-	Viewers     []db.User
-	Invites     []db.MagicLink
-	IsAdmin     bool
-	Query       utils.TableQuery
-	Pager       utils.TablePagination
-	GroupID     string
-	Tab         string
+	Title        string
+	Breadcrumbs  []utils.Crumb
+	UserEmail    string
+	Group        db.Group
+	Admins       []db.User
+	Viewers      []db.User
+	Invites      []db.MagicLink
+	IsAdmin      bool
+	Query        utils.TableQuery
+	Pager        utils.TablePagination
+	GroupID      string
+	Tab          string
+	AdminsTable  utils.TableLayout
+	PendingTable utils.TableLayout
+	ViewersTable utils.TableLayout
 }
 
 type GroupPageData struct {

@@ -13,24 +13,26 @@ import (
 templ GroupsMain(data GroupsPageData) {
 	@shared.TableSearchForm(utils.BuildTableSearchDatastarAction("/dashboard", utils.DefaultTablePageSize), "table.search_placeholder")
 	@shared.TablePaginationRow("/dashboard", data.Query, data.Pagination)
-	<table class="table table-sticky-actions">
+	@shared.TableOpenFixed(data.GroupsTable, "table-sticky-actions") {
 		<thead>
 			<tr>
-				<th>
+				@shared.THCol(data.GroupsTable.Col("name")) {
 					@shared.TableSortHeader(ctxi18n.T(ctx, "fields.name"), "name", data.Query, utils.BuildTableSortURL("/dashboard", data.Query, "name"))
-				</th>
-				<th>{ ctxi18n.T(ctx, "fields.role") }</th>
-				<th>
+				}
+				@shared.THCol(data.GroupsTable.Col("role")) {
+					{ ctxi18n.T(ctx, "fields.role") }
+				}
+				@shared.THCol(data.GroupsTable.Col("created")) {
 					@shared.TableSortHeader(ctxi18n.T(ctx, "fields.created"), "createdAt", data.Query, utils.BuildTableSortURL("/dashboard", data.Query, "createdAt"))
-				</th>
-				<th>
+				}
+				@shared.THCol(data.GroupsTable.Col("admin")) {
 					@shared.TableSortHeader(ctxi18n.T(ctx, "fields.admin"), "admin", data.Query, utils.BuildTableSortURL("/dashboard", data.Query, "admin"))
-				</th>
-				<th data-actions-col>
+				}
+				@shared.THActions(data.GroupsTable.ActionsWidthCh) {
 					<div class="row row-right row-tight">
 						@shared.IconActionButton(shared.IconActionButtonProps{ClassName: "btn btn-ghost btn-sm btn-icon", OnClick: "$formState = 'add'; $formData = {name: ''}; $selectedGroupId = ''", DisabledExpr: "$formState !== '' || $_fetching", AriaLabel: ctxi18n.T(ctx, "groups.create"), Title: ctxi18n.T(ctx, "groups.create"), IconName: icons.IconPlus})
 					</div>
-				</th>
+				}
 			</tr>
 		</thead>
 		<tbody>
@@ -73,5 +75,5 @@ templ GroupsMain(data GroupsPageData) {
 				}
 			}
 		</tbody>
-	</table>
+	}
 }

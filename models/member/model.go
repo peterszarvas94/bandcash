@@ -292,6 +292,7 @@ func (p *Members) GetShowData(ctx context.Context, groupID, memberID string, que
 			{Label: ctxi18n.T(ctx, "members.title"), Href: "/groups/" + groupID + "/members"},
 			{Label: member.Name},
 		},
+		EventsTable: utils.MemberEventsTableLayout(),
 	}, nil
 }
 
@@ -353,5 +354,6 @@ func (p *Members) GetIndexData(ctx context.Context, groupID string, query utils.
 			{Label: group.Name, Href: "/groups/" + groupID},
 			{Label: ctxi18n.T(ctx, "members.title")},
 		},
+		MembersTable: utils.MembersIndexTableLayout(),
 	}, nil
 }

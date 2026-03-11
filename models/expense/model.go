@@ -104,5 +104,6 @@ func (e *Expenses) GetIndexData(ctx context.Context, groupID string, query utils
 			{Label: group.Name, Href: "/groups/" + groupID},
 			{Label: ctxi18n.T(ctx, "expenses.title")},
 		},
+		ExpensesTable: utils.ExpensesIndexTableLayout(),
 	}, nil
 }

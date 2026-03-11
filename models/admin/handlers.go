@@ -100,6 +100,8 @@ func (a *Admin) renderDashboard(c echo.Context, tab string) error {
 		EventsCount:   eventsCount,
 		MembersCount:  membersCount,
 		SignupEnabled: signupEnabled,
+		UsersTable:    utils.AdminUsersTableLayout(),
+		GroupsTable:   utils.AdminGroupsTableLayout(),
 	}
 
 	// Load users if on users tab
@@ -580,6 +582,8 @@ func (a *Admin) patchRecentUsers(c echo.Context) error {
 		Users:         users,
 		UserQuery:     query,
 		UserPager:     utils.BuildTablePagination(totalItems, query),
+		UsersTable:    utils.AdminUsersTableLayout(),
+		GroupsTable:   utils.AdminGroupsTableLayout(),
 	}
 
 	// Render and patch the full DashboardPage
