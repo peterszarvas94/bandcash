@@ -135,6 +135,11 @@
           min-width: 0;
         }
 
+        .col-w {
+          width: auto;
+          max-width: none;
+        }
+
         th[data-actions-col],
         td[data-actions-col] {
           width: auto;
@@ -971,10 +976,22 @@
         "main";
     }
 
+    .app-shell-top {
+      border-bottom: 0;
+      padding-bottom: 0;
+      gap: 0;
+    }
+
     .app-shell-mobile-toggles {
       display: flex;
-      justify-content: space-between;
-      width: 100%;
+      justify-content: flex-start;
+      width: fit-content;
+      position: sticky;
+      top: 0;
+      left: 0;
+      z-index: 5;
+      padding: var(--space);
+      background: var(--page-bg);
     }
 
     .app-shell-nav,

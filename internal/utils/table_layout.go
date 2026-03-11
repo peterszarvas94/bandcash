@@ -42,7 +42,8 @@ func (t TableLayout) Col(key string) int {
 func (t TableLayout) GridTemplate() string {
 	parts := make([]string, 0, len(t.ColumnOrder)+1)
 	for _, key := range t.ColumnOrder {
-		parts = append(parts, fmt.Sprintf("minmax(%dch, 1fr)", t.Columns[key]))
+		widthCh := t.Columns[key]
+		parts = append(parts, fmt.Sprintf("minmax(%dch, %dfr)", widthCh, widthCh))
 	}
 	if t.ActionsWidthRem > 0 {
 		parts = append(parts, fmt.Sprintf("%drem", t.ActionsWidthRem))
