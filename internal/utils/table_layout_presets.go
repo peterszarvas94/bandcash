@@ -1,90 +1,90 @@
 package utils
 
 func EventsIndexTableLayout() TableLayout {
-	return NewTableLayout(map[string]int{
-		"title":  28,
-		"time":   19,
-		"amount": 12,
+	return NewTableLayout([]TableColumn{
+		{Key: "title", WidthCh: 28},
+		{Key: "time", WidthCh: 19},
+		{Key: "amount", WidthCh: 12},
 	}, 4)
 }
 
 func EventParticipantsTableLayout() TableLayout {
-	return NewTableLayout(map[string]int{
-		"name":    24,
-		"total":   12,
-		"amount":  12,
-		"expense": 12,
+	return NewTableLayout([]TableColumn{
+		{Key: "name", WidthCh: 24},
+		{Key: "total", WidthCh: 12},
+		{Key: "amount", WidthCh: 12},
+		{Key: "expense", WidthCh: 12},
 	}, 4)
 }
 
 func ExpensesIndexTableLayout() TableLayout {
-	return NewTableLayout(map[string]int{
-		"title":       20,
-		"description": 30,
-		"amount":      12,
-		"date":        12,
+	return NewTableLayout([]TableColumn{
+		{Key: "title", WidthCh: 20},
+		{Key: "description", WidthCh: 30},
+		{Key: "amount", WidthCh: 12},
+		{Key: "date", WidthCh: 12},
 	}, 4)
 }
 
 func GroupsIndexTableLayout() TableLayout {
-	return NewTableLayout(map[string]int{
-		"name":    24,
-		"role":    10,
-		"created": 12,
-		"admin":   28,
+	return NewTableLayout([]TableColumn{
+		{Key: "name", WidthCh: 24},
+		{Key: "role", WidthCh: 10},
+		{Key: "created", WidthCh: 12},
+		{Key: "admin", WidthCh: 28},
 	}, 4)
 }
 
 func MembersIndexTableLayout() TableLayout {
-	return NewTableLayout(map[string]int{
-		"name":        20,
-		"description": 32,
+	return NewTableLayout([]TableColumn{
+		{Key: "name", WidthCh: 20},
+		{Key: "description", WidthCh: 32},
 	}, 4)
 }
 
 func MemberEventsTableLayout() TableLayout {
-	return NewTableLayout(map[string]int{
-		"title":               22,
-		"time":                19,
-		"amount":              12,
-		"participant_amount":  12,
-		"participant_expense": 12,
-		"total":               12,
+	return NewTableLayout([]TableColumn{
+		{Key: "title", WidthCh: 22},
+		{Key: "time", WidthCh: 19},
+		{Key: "amount", WidthCh: 12},
+		{Key: "participant_amount", WidthCh: 12},
+		{Key: "participant_expense", WidthCh: 12},
+		{Key: "total", WidthCh: 12},
 	}, 0)
 }
 
 func ViewersAdminsTableLayout() TableLayout {
-	return NewTableLayout(map[string]int{
-		"email": 34,
+	return NewTableLayout([]TableColumn{
+		{Key: "email", WidthCh: 34},
 	}, 0)
 }
 
 func ViewersPendingTableLayout() TableLayout {
-	return NewTableLayout(map[string]int{
-		"email":      34,
-		"created_at": 18,
+	return NewTableLayout([]TableColumn{
+		{Key: "email", WidthCh: 34},
+		{Key: "created_at", WidthCh: 18},
 	}, 2)
 }
 
 func ViewersTableLayout() TableLayout {
-	return NewTableLayout(map[string]int{
-		"email": 34,
+	return NewTableLayout([]TableColumn{
+		{Key: "email", WidthCh: 34},
 	}, 2)
 }
 
 func AdminUsersTableLayout() TableLayout {
-	return NewTableLayout(map[string]int{
-		"email":      34,
-		"created_at": 18,
-		"status":     12,
+	return NewTableLayout([]TableColumn{
+		{Key: "email", WidthCh: 34},
+		{Key: "created_at", WidthCh: 18},
+		{Key: "status", WidthCh: 12},
 	}, 2)
 }
 
 func AdminGroupsTableLayout() TableLayout {
-	return NewTableLayout(map[string]int{
-		"name":       24,
-		"admin":      24,
-		"viewers":    10,
-		"created_at": 18,
+	return NewTableLayout([]TableColumn{
+		{Key: "name", WidthCh: 24},
+		{Key: "admin", WidthCh: 24},
+		{Key: "viewers", WidthCh: 10},
+		{Key: "created_at", WidthCh: 18},
 	}, 0)
 }

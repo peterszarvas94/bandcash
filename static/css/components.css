@@ -116,6 +116,32 @@
         overflow: visible;
         text-overflow: clip;
       }
+
+      &.table-grid {
+        thead,
+        tbody {
+          display: block;
+          width: 100%;
+        }
+
+        tr {
+          display: grid;
+          grid-template-columns: var(--table-grid-template);
+          width: 100%;
+        }
+
+        th,
+        td {
+          min-width: 0;
+        }
+
+        th[data-actions-col],
+        td[data-actions-col] {
+          width: auto;
+          min-width: 0;
+          max-width: none;
+        }
+      }
     }
   }
 
