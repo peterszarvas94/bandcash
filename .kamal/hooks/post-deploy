@@ -10,3 +10,5 @@ for accessory in better-stack; do
     env -u GEM_HOME -u GEM_PATH "$KAMAL_BIN" accessory boot "$accessory"
   fi
 done
+
+ssh peti@bandcash "docker buildx prune -af --filter 'until=24h'" || true
