@@ -381,14 +381,6 @@ func (g *Group) AccessPage(c echo.Context) error {
 	return utils.RenderPage(c, GroupAccessPage(data))
 }
 
-func (g *Group) AccessAdminsPage(c echo.Context) error {
-	return c.Redirect(http.StatusFound, "/groups/"+middleware.GetGroupID(c)+"/access")
-}
-
-func (g *Group) AccessPendingPage(c echo.Context) error {
-	return c.Redirect(http.StatusFound, "/groups/"+middleware.GetGroupID(c)+"/access")
-}
-
 func (g *Group) patchAccessPage(c echo.Context, groupID, messageKey, errorKey string) error {
 	if messageKey != "" {
 		utils.Notify(c, "success", ctxi18n.T(c.Request().Context(), messageKey))
@@ -404,7 +396,7 @@ func (g *Group) patchAccessPage(c echo.Context, groupID, messageKey, errorKey st
 
 	html, err := utils.RenderHTMLForRequest(c, GroupAccessPage(data))
 	if err != nil {
-		slog.Error("group: failed to render viewers page", "err", err)
+		slog.Error("group: failed to render access page", "err", err)
 		return c.NoContent(http.StatusInternalServerError)
 	}
 
@@ -427,7 +419,7 @@ func (g *Group) patchAccessPageWithState(c echo.Context, groupID string, query u
 
 	html, err := utils.RenderHTMLForRequest(c, GroupAccessPage(data))
 	if err != nil {
-		slog.Error("group: failed to render viewers page", "err", err)
+		slog.Error("group: failed to render access page", "err", err)
 		return c.NoContent(http.StatusInternalServerError)
 	}
 

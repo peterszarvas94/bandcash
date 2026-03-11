@@ -12,7 +12,7 @@ func isAdminActive(active string) bool {
 }
 
 func isAccessActive(active string) bool {
-	return active == "viewers" || active == "access-viewers" || active == "access-pending" || active == "access-admins"
+	return active == "access"
 }
 
 templ AppPrimaryNav(active string, userEmail string) {
@@ -192,7 +192,7 @@ templ GroupPrimaryNav(groupID string, active string, userEmail string) {
 					<span>{ ctxi18n.T(ctx, "members.title") }</span>
 				</a>
 			}
-			<a class={ "btn app-nav-link", templ.KV("btn-active", isAccessActive(active)) } href={ "/groups/" + groupID + "/access/viewers" }>
+			<a class={ "btn app-nav-link", templ.KV("btn-active", isAccessActive(active)) } href={ "/groups/" + groupID + "/access" }>
 				@icons.Lock(templ.Attributes{"class": "icon"})
 				<span>{ ctxi18n.T(ctx, "groups.access") }</span>
 			</a>
