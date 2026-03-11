@@ -44,7 +44,6 @@
     & td[data-actions-col] {
       width: 1%;
       white-space: nowrap;
-      border-left: none;
     }
 
     &.table-sticky-actions {
@@ -55,6 +54,12 @@
         z-index: 1;
         background: var(--page-bg);
         padding: 0;
+      }
+
+      th[data-actions-col] > .row,
+      td[data-actions-col] > .row {
+        width: 100%;
+        justify-content: flex-end;
       }
 
       tbody td[data-actions-col] {
@@ -105,8 +110,9 @@
       th[data-actions-col],
       td[data-actions-col] {
         width: calc(var(--actions-w-rem, 0) * 1rem);
-        min-width: 0;
+        min-width: calc(var(--actions-w-rem, 0) * 1rem);
         max-width: calc(var(--actions-w-rem, 0) * 1rem);
+        border-left: var(--border) solid var(--border-color);
         overflow: visible;
         text-overflow: clip;
       }
