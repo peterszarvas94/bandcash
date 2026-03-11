@@ -979,6 +979,7 @@
     .app-shell-top {
       border-bottom: 0;
       padding-bottom: 0;
+      padding-top: calc((var(--space) * 2) + 1.5rem);
       gap: 0;
     }
 
@@ -986,11 +987,10 @@
       display: flex;
       justify-content: flex-start;
       width: fit-content;
-      position: sticky;
-      top: 0;
-      left: 0;
-      z-index: 5;
-      padding: var(--space);
+      position: fixed;
+      top: var(--space);
+      left: var(--space);
+      z-index: 35;
       background: var(--page-bg);
     }
 
