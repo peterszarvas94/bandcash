@@ -69,11 +69,8 @@ templ EventIndexMain(data EventsData) {
 				@shared.THCol(data.EventsTable.Col("amount")) {
 					@shared.TableSortHeader(ctxi18n.T(ctx, "fields.amount"), "amount", data.Query, utils.BuildTableSortURL(fmt.Sprintf("/groups/%s/events", data.GroupID), data.Query, "amount"))
 				}
-				@shared.THCol(data.EventsTable.Col("description")) {
-					@shared.TableSortHeader(ctxi18n.T(ctx, "fields.description"), "description", data.Query, utils.BuildTableSortURL(fmt.Sprintf("/groups/%s/events", data.GroupID), data.Query, "description"))
-				}
 				if data.IsAdmin {
-					@shared.THActions(data.EventsTable.ActionsWidthCh) {
+					@shared.THActions(data.EventsTable.ActionsWidthRem) {
 						<div class="row row-right row-tight">
 							@shared.IconActionButton(shared.IconActionButtonProps{ClassName: "btn btn-ghost btn-sm btn-icon", OnClick: "$formState = 'add'; $editingId = 0; $formData = {title: '', time: '', description: '', amount: 0}; $errors = {title: '', time: '', description: '', amount: ''}", DisabledExpr: "$formState !== '' || $_fetching", AriaLabel: ctxi18n.T(ctx, "events.add"), Title: ctxi18n.T(ctx, "events.add"), IconName: icons.IconPlus})
 						</div>
@@ -92,7 +89,6 @@ templ EventIndexMain(data EventsData) {
 					<td><a class="link" href={ fmt.Sprintf("/groups/%s/events/%s", data.GroupID, event.ID) }>{ event.Title }</a></td>
 					<td>{ utils.FormatDateTimeLocalized(ctx, event.Time) }</td>
 					<td class="text-right">{ utils.FormatNumberLocalized(ctx, event.Amount) }</td>
-					<td><span class="cell-ellipsis">{ event.Description }</span></td>
 					if data.IsAdmin {
 						<td data-actions-col>
 							<div class="row row-right row-tight">
@@ -115,9 +111,9 @@ templ EventIndexMain(data EventsData) {
 			if len(data.Events) == 0 {
 				<tr>
 					if data.IsAdmin {
-						<td colspan="5">{ ctxi18n.T(ctx, "table.empty") }</td>
-					} else {
 						<td colspan="4">{ ctxi18n.T(ctx, "table.empty") }</td>
+					} else {
+						<td colspan="3">{ ctxi18n.T(ctx, "table.empty") }</td>
 					}
 				</tr>
 			}

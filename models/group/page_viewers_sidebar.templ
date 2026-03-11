@@ -13,7 +13,7 @@ templ GroupViewersSidebar(data ViewersPageData) {
 	<div data-signals={ templ.JSONString(map[string]any{"sidebarLoadingAction": ""}) }>
 		if data.IsAdmin {
 			<div data-show="$formState !== ''" style="display: none" class="pb">
-				<form class="form" data-on:submit={ fmt.Sprintf("@post('/groups/%s/access/viewers')", data.Group.ID) } data-indicator:_fetching>
+				<form class="form" data-on:submit={ fmt.Sprintf("@post('%s')", viewersTablePath(data.Group.ID, data.Tab)) } data-indicator:_fetching>
 					<div class="field">
 						<label for="group-viewer-email" class="row">{ ctxi18n.T(ctx, "auth.email") } <span class="color-error">*</span></label>
 						<input id="group-viewer-email" type="email" data-bind="formData.email" placeholder={ ctxi18n.T(ctx, "groups.viewer_email_placeholder") } class="input"/>

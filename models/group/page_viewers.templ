@@ -44,7 +44,7 @@ templ GroupViewersPage(data ViewersPageData) {
 	<html lang={ appi18n.LocaleCode(ctx) }>
 		@shared.Head(data.Title)
 		<body>
-			<div data-signals={ templ.JSONString(map[string]any{"csrf": utils.CSRFTokenFromContext(ctx), "formState": "", "eventFormState": "", "formData": map[string]any{"email": ""}, "tableQuery": utils.TableQuerySignals(data.Query)}) } data-init="@get('/sse')"></div>
+			<div data-signals={ templ.JSONString(map[string]any{"csrf": utils.CSRFTokenFromContext(ctx), "formState": "", "eventFormState": "", "tab": data.Tab, "formData": map[string]any{"email": ""}, "tableQuery": utils.TableQuerySignals(data.Query)}) } data-init="@get('/sse')"></div>
 			@shared.Notifications()
 			@shared.AppShell("group-access", data.Breadcrumbs, data.UserEmail, shared.GroupPrimaryNav(data.Group.ID, "viewers", data.UserEmail), GroupViewersMain(data), GroupViewersSidebar(data))
 		</body>

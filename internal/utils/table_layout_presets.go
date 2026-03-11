@@ -2,11 +2,10 @@ package utils
 
 func EventsIndexTableLayout() TableLayout {
 	return NewTableLayout(map[string]int{
-		"title":       28,
-		"time":        19,
-		"amount":      12,
-		"description": 30,
-	}, 8)
+		"title":  28,
+		"time":   19,
+		"amount": 12,
+	}, 4)
 }
 
 func EventParticipantsTableLayout() TableLayout {
@@ -15,7 +14,7 @@ func EventParticipantsTableLayout() TableLayout {
 		"total":   12,
 		"amount":  12,
 		"expense": 12,
-	}, 8)
+	}, 4)
 }
 
 func ExpensesIndexTableLayout() TableLayout {
@@ -24,7 +23,7 @@ func ExpensesIndexTableLayout() TableLayout {
 		"description": 30,
 		"amount":      12,
 		"date":        12,
-	}, 8)
+	}, 4)
 }
 
 func GroupsIndexTableLayout() TableLayout {
@@ -33,21 +32,20 @@ func GroupsIndexTableLayout() TableLayout {
 		"role":    10,
 		"created": 12,
 		"admin":   28,
-	}, 8)
+	}, 4)
 }
 
 func MembersIndexTableLayout() TableLayout {
 	return NewTableLayout(map[string]int{
 		"name":        20,
 		"description": 32,
-	}, 8)
+	}, 4)
 }
 
 func MemberEventsTableLayout() TableLayout {
 	return NewTableLayout(map[string]int{
 		"title":               22,
 		"time":                19,
-		"description":         32,
 		"amount":              12,
 		"participant_amount":  12,
 		"participant_expense": 12,
@@ -65,13 +63,13 @@ func ViewersPendingTableLayout() TableLayout {
 	return NewTableLayout(map[string]int{
 		"email":      34,
 		"created_at": 18,
-	}, 4)
+	}, 2)
 }
 
 func ViewersTableLayout() TableLayout {
 	return NewTableLayout(map[string]int{
 		"email": 34,
-	}, 4)
+	}, 2)
 }
 
 func AdminUsersTableLayout() TableLayout {
@@ -79,7 +77,7 @@ func AdminUsersTableLayout() TableLayout {
 		"email":      34,
 		"created_at": 18,
 		"status":     12,
-	}, 18)
+	}, 2)
 }
 
 func AdminGroupsTableLayout() TableLayout {

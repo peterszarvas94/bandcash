@@ -37,20 +37,20 @@ templ TableSortHeader(label string, column string, query utils.TableQuery, actio
 
 templ TableOpenFixed(layout utils.TableLayout, class string) {
 	<div class="table-scroll">
-		<table class={ "table table-fixed " + class } style={ fmt.Sprintf("--table-min-w: %dch", layout.MinWidthCh) }>
+		<table class={ "table table-fixed " + class } style={ fmt.Sprintf("--table-data-w-ch: %d; --table-actions-w-rem: %d", layout.DataWidthCh, layout.ActionsWidthRem) }>
 			{ children... }
 		</table>
 	</div>
 }
 
 templ THCol(widthCh int) {
-	<th class="col-w" style={ fmt.Sprintf("--w: %dch", widthCh) }>
+	<th class="col-w" style={ fmt.Sprintf("--w-ch: %d", widthCh) }>
 		{ children... }
 	</th>
 }
 
-templ THActions(widthCh int) {
-	<th data-actions-col style={ fmt.Sprintf("--actions-w: %dch", widthCh) }>
+templ THActions(widthRem int) {
+	<th data-actions-col style={ fmt.Sprintf("--actions-w-rem: %d", widthRem) }>
 		{ children... }
 	</th>
 }

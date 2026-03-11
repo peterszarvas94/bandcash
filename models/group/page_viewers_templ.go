@@ -94,9 +94,9 @@ func GroupViewersPage(data ViewersPageData) templ.Component {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var3 string
-		templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.JoinStringErrs(templ.JSONString(map[string]any{"csrf": utils.CSRFTokenFromContext(ctx), "formState": "", "eventFormState": "", "formData": map[string]any{"email": ""}, "tableQuery": utils.TableQuerySignals(data.Query)}))
+		templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.JoinStringErrs(templ.JSONString(map[string]any{"csrf": utils.CSRFTokenFromContext(ctx), "formState": "", "eventFormState": "", "tab": data.Tab, "formData": map[string]any{"email": ""}, "tableQuery": utils.TableQuerySignals(data.Query)}))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/group/page_viewers.templ`, Line: 47, Col: 227}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/group/page_viewers.templ`, Line: 47, Col: 244}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var3))
 		if templ_7745c5c3_Err != nil {

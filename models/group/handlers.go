@@ -65,7 +65,9 @@ type createGroupSignals struct {
 }
 
 type addViewerSignals struct {
-	FormData struct {
+	Tab        string           `json:"tab"`
+	TableQuery utils.TableQuery `json:"tableQuery"`
+	FormData   struct {
 		Email string `json:"email" validate:"required,email,max=320"`
 	} `json:"formData"`
 }
@@ -416,6 +418,45 @@ func (g *Group) patchViewersPage(c echo.Context, groupID, messageKey, errorKey s
 	return c.NoContent(http.StatusOK)
 }
 
+func (g *Group) patchViewersPageWithState(c echo.Context, groupID, tab string, query utils.TableQuery, messageKey, errorKey string) error {
+	if messageKey != "" {
+		utils.Notify(c, "success", ctxi18n.T(c.Request().Context(), messageKey))
+	}
+	if errorKey != "" {
+		utils.Notify(c, "error", ctxi18n.T(c.Request().Context(), errorKey))
+	}
+
+	if tab != viewersTabViewers && tab != viewersTabPending && tab != viewersTabAdmins {
+		tab = viewersTabViewers
+	}
+
+	values := url.Values{}
+	values.Set("page", strconv.Itoa(query.Page))
+	values.Set("pageSize", strconv.Itoa(query.PageSize))
+	values.Set("q", query.Search)
+	if query.SortSet && query.Sort != "" {
+		values.Set("sort", query.Sort)
+	}
+	if query.Dir != "" {
+		values.Set("dir", query.Dir)
+	}
+
+	data, err := g.viewersPageData(c, groupID, tab, values)
+	if err != nil {
+		slog.Error("group: failed to load viewers patch data", "group_id", groupID, "tab", tab, "err", err)
+		return c.NoContent(http.StatusInternalServerError)
+	}
+
+	html, err := utils.RenderHTMLForRequest(c, GroupViewersPage(data))
+	if err != nil {
+		slog.Error("group: failed to render viewers page", "err", err)
+		return c.NoContent(http.StatusInternalServerError)
+	}
+
+	utils.SSEHub.PatchHTML(c, html)
+	return c.NoContent(http.StatusOK)
+}
+
 // AddViewer adds an existing user as a group reader
 func (g *Group) AddViewer(c echo.Context) error {
 	groupID := middleware.GetGroupID(c)
@@ -426,6 +467,9 @@ func (g *Group) AddViewer(c echo.Context) error {
 	signals.FormData.Email = strings.ToLower(strings.TrimSpace(signals.FormData.Email))
 	if errs := utils.ValidateWithLocale(c.Request().Context(), signals.FormData); errs != nil {
 		utils.Notify(c, "error", errs["email"])
+		if signals.Tab != "" {
+			return g.patchViewersPageWithState(c, groupID, signals.Tab, signals.TableQuery, "", "")
+		}
 		return g.patchViewersPage(c, groupID, "", "")
 	}
 	emailAdress := signals.FormData.Email
@@ -433,6 +477,9 @@ func (g *Group) AddViewer(c echo.Context) error {
 
 	group, err := db.Qry.GetGroupByID(c.Request().Context(), groupID)
 	if err != nil {
+		if signals.Tab != "" {
+			return g.patchViewersPageWithState(c, groupID, signals.Tab, signals.TableQuery, "", "groups.errors.group_not_found")
+		}
 		return g.patchViewersPage(c, groupID, "", "groups.errors.group_not_found")
 	}
 
@@ -440,6 +487,9 @@ func (g *Group) AddViewer(c echo.Context) error {
 	user, err := db.Qry.GetUserByEmail(c.Request().Context(), emailAdress)
 	if err == nil {
 		if group.AdminUserID == user.ID {
+			if signals.Tab != "" {
+				return g.patchViewersPageWithState(c, groupID, signals.Tab, signals.TableQuery, "groups.messages.already_admin", "")
+			}
 			return g.patchViewersPage(c, groupID, "groups.messages.already_admin", "")
 		}
 		count, err := db.Qry.IsGroupReader(c.Request().Context(), db.IsGroupReaderParams{
@@ -447,6 +497,9 @@ func (g *Group) AddViewer(c echo.Context) error {
 			GroupID: groupID,
 		})
 		if err == nil && count > 0 {
+			if signals.Tab != "" {
+				return g.patchViewersPageWithState(c, groupID, signals.Tab, signals.TableQuery, "groups.messages.already_viewer", "")
+			}
 			return g.patchViewersPage(c, groupID, "groups.messages.already_viewer", "")
 		}
 	}
@@ -465,16 +518,25 @@ func (g *Group) AddViewer(c echo.Context) error {
 	})
 	if err != nil {
 		slog.Error("group: failed to create invite link", "err", err)
+		if signals.Tab != "" {
+			return g.patchViewersPageWithState(c, groupID, signals.Tab, signals.TableQuery, "", "groups.errors.invite_failed")
+		}
 		return g.patchViewersPage(c, groupID, "", "groups.errors.invite_failed")
 	}
 
 	err = email.Email().SendGroupInvitation(c.Request().Context(), emailAdress, group.Name, token, utils.Env().URL)
 	if err != nil {
 		slog.Error("group: failed to send invite email", "err", err)
+		if signals.Tab != "" {
+			return g.patchViewersPageWithState(c, groupID, signals.Tab, signals.TableQuery, "", "groups.errors.send_failed")
+		}
 		return g.patchViewersPage(c, groupID, "", "groups.errors.send_failed")
 	}
 
 	utils.SSEHub.PatchSignals(c, map[string]any{"formState": "", "formData": map[string]any{"email": ""}})
+	if signals.Tab != "" {
+		return g.patchViewersPageWithState(c, groupID, signals.Tab, signals.TableQuery, "groups.messages.invite_sent", "")
+	}
 	return g.patchViewersPage(c, groupID, "groups.messages.invite_sent", "")
 }
 

@@ -224,7 +224,7 @@ func UsersTableSection(data DashboardData) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = shared.THActions(data.UsersTable.ActionsWidthCh).Render(ctx, templ_7745c5c3_Buffer)
+			templ_7745c5c3_Err = shared.THActions(data.UsersTable.ActionsWidthRem).Render(ctx, templ_7745c5c3_Buffer)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -296,17 +296,17 @@ func UsersTableSection(data DashboardData) templ.Component {
 						return templ_7745c5c3_Err
 					}
 				}
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 11, "</td><td data-actions-col><div class=\"row row-right\">")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 11, "</td><td data-actions-col><div class=\"row row-right row-tight\">")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
 				if user.IsBanned {
-					templ_7745c5c3_Err = shared.LoadingActionButton(shared.LoadingActionButtonProps{ClassName: "btn btn-sm", OnClick: fmt.Sprintf("@post('/admin/users/%s/unban')", user.ID), DisabledExpr: "$_fetching", Label: ctxi18n.T(ctx, "admin.users.unban"), IconName: icons.IconCheck}).Render(ctx, templ_7745c5c3_Buffer)
+					templ_7745c5c3_Err = shared.LoadingIconActionButton(shared.LoadingIconActionButtonProps{ClassName: "btn btn-sm btn-icon", OnClick: fmt.Sprintf("@post('/admin/users/%s/unban')", user.ID), DisabledExpr: "$_fetching", AriaLabel: ctxi18n.T(ctx, "admin.users.unban"), Title: ctxi18n.T(ctx, "admin.users.unban"), IconName: icons.IconCheck}).Render(ctx, templ_7745c5c3_Buffer)
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
 				} else {
-					templ_7745c5c3_Err = shared.LoadingActionButton(shared.LoadingActionButtonProps{ClassName: "btn btn-sm btn-danger", OnClick: fmt.Sprintf("@post('/admin/users/%s/ban')", user.ID), DisabledExpr: "$_fetching", Label: ctxi18n.T(ctx, "admin.users.ban"), IconName: icons.IconTrash2}).Render(ctx, templ_7745c5c3_Buffer)
+					templ_7745c5c3_Err = shared.LoadingIconActionButton(shared.LoadingIconActionButtonProps{ClassName: "btn btn-sm btn-danger btn-icon", OnClick: fmt.Sprintf("@post('/admin/users/%s/ban')", user.ID), DisabledExpr: "$_fetching", AriaLabel: ctxi18n.T(ctx, "admin.users.ban"), Title: ctxi18n.T(ctx, "admin.users.ban"), IconName: icons.IconTrash2}).Render(ctx, templ_7745c5c3_Buffer)
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}

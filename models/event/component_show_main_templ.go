@@ -247,7 +247,7 @@ func EventShowMain(data EventData) templ.Component {
 					}
 					return nil
 				})
-				templ_7745c5c3_Err = shared.THActions(data.ParticipantsTable.ActionsWidthCh).Render(templ.WithChildren(ctx, templ_7745c5c3_Var9), templ_7745c5c3_Buffer)
+				templ_7745c5c3_Err = shared.THActions(data.ParticipantsTable.ActionsWidthRem).Render(templ.WithChildren(ctx, templ_7745c5c3_Var9), templ_7745c5c3_Buffer)
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
@@ -379,7 +379,7 @@ func EventShowMain(data EventData) templ.Component {
 					return templ_7745c5c3_Err
 				}
 				if data.IsAdmin {
-					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 21, "<td class=\"text-right\" data-actions-col><div class=\"row row-tight\">")
+					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 21, "<td class=\"text-right\" data-actions-col><div class=\"row row-right row-tight\">")
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}

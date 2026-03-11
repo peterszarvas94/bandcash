@@ -52,7 +52,7 @@ templ DashboardStats(data DashboardData) {
 					@shared.THCol(data.UsersTable.Col("status")) {
 						{ ctxi18n.T(ctx, "admin.users.status") }
 					}
-					@shared.THActions(data.UsersTable.ActionsWidthCh)
+					@shared.THActions(data.UsersTable.ActionsWidthRem)
 				</tr>
 			</thead>
 			<tbody>
@@ -74,11 +74,11 @@ templ DashboardStats(data DashboardData) {
 							}
 						</td>
 						<td data-actions-col>
-							<div class="row row-right">
+							<div class="row row-right row-tight">
 								if user.IsBanned {
-									@shared.LoadingActionButton(shared.LoadingActionButtonProps{ClassName: "btn btn-sm", OnClick: fmt.Sprintf("@post('/admin/users/%s/unban')", user.ID), DisabledExpr: "$_fetching", Label: ctxi18n.T(ctx, "admin.users.unban"), IconName: icons.IconCheck})
+									@shared.LoadingIconActionButton(shared.LoadingIconActionButtonProps{ClassName: "btn btn-sm btn-icon", OnClick: fmt.Sprintf("@post('/admin/users/%s/unban')", user.ID), DisabledExpr: "$_fetching", AriaLabel: ctxi18n.T(ctx, "admin.users.unban"), Title: ctxi18n.T(ctx, "admin.users.unban"), IconName: icons.IconCheck})
 								} else {
-									@shared.LoadingActionButton(shared.LoadingActionButtonProps{ClassName: "btn btn-sm btn-danger", OnClick: fmt.Sprintf("@post('/admin/users/%s/ban')", user.ID), DisabledExpr: "$_fetching", Label: ctxi18n.T(ctx, "admin.users.ban"), IconName: icons.IconTrash2})
+									@shared.LoadingIconActionButton(shared.LoadingIconActionButtonProps{ClassName: "btn btn-sm btn-danger btn-icon", OnClick: fmt.Sprintf("@post('/admin/users/%s/ban')", user.ID), DisabledExpr: "$_fetching", AriaLabel: ctxi18n.T(ctx, "admin.users.ban"), Title: ctxi18n.T(ctx, "admin.users.ban"), IconName: icons.IconTrash2})
 								}
 							</div>
 						</td>

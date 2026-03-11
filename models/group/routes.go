@@ -28,6 +28,7 @@ func RegisterRoutes(e *echo.Echo) *Group {
 	adminAccessRoutes.PUT("", grp.UpdateGroup)
 	adminAccessRoutes.DELETE("", grp.DeleteGroup)
 	adminAccessRoutes.POST("/access/viewers", grp.AddViewer)
+	adminAccessRoutes.POST("/access/pending", grp.AddViewer)
 	adminAccessRoutes.DELETE("/access/viewers/:userId", grp.RemoveViewer)
 	adminAccessRoutes.DELETE("/invites/:inviteId", grp.CancelInvite)
 

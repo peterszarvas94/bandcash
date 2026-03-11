@@ -133,7 +133,7 @@ func MemberIndexMain(data MembersData) templ.Component {
 					}
 					return nil
 				})
-				templ_7745c5c3_Err = shared.THActions(data.MembersTable.ActionsWidthCh).Render(templ.WithChildren(ctx, templ_7745c5c3_Var5), templ_7745c5c3_Buffer)
+				templ_7745c5c3_Err = shared.THActions(data.MembersTable.ActionsWidthRem).Render(templ.WithChildren(ctx, templ_7745c5c3_Var5), templ_7745c5c3_Buffer)
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
@@ -213,7 +213,7 @@ func MemberIndexMain(data MembersData) templ.Component {
 					return templ_7745c5c3_Err
 				}
 				if data.IsAdmin {
-					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 11, "<td data-actions-col><div class=\"row row-tight\">")
+					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 11, "<td data-actions-col><div class=\"row row-right row-tight\">")
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}

@@ -1,21 +1,21 @@
 package utils
 
 type TableLayout struct {
-	MinWidthCh     int
-	ActionsWidthCh int
-	Columns        map[string]int
+	DataWidthCh     int
+	ActionsWidthRem int
+	Columns         map[string]int
 }
 
-func NewTableLayout(columns map[string]int, actionsWidthCh int) TableLayout {
-	minWidthCh := actionsWidthCh
+func NewTableLayout(columns map[string]int, actionsWidthRem int) TableLayout {
+	dataWidthCh := 0
 	for _, widthCh := range columns {
-		minWidthCh += widthCh
+		dataWidthCh += widthCh
 	}
 
 	return TableLayout{
-		MinWidthCh:     minWidthCh,
-		ActionsWidthCh: actionsWidthCh,
-		Columns:        columns,
+		DataWidthCh:     dataWidthCh,
+		ActionsWidthRem: actionsWidthRem,
+		Columns:         columns,
 	}
 }
 

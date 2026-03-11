@@ -4,6 +4,7 @@
   }
 
   .table {
+    font-family: var(--font-mono);
     width: 100%;
     max-width: 100%;
     border-collapse: collapse;
@@ -12,43 +13,61 @@
 
     th,
     td {
-      border: var(--border) solid var(--border-color);
+      border-left: var(--border) solid var(--border-color);
       padding: calc(var(--space) * 0.5) var(--space);
       text-align: left;
       white-space: nowrap;
       word-break: normal;
       overflow-wrap: normal;
       vertical-align: middle;
+
+      &:first-child {
+        border-left: none;
+      }
     }
 
     th {
+      font-family: var(--font-sans);
       background: color-mix(in srgb, var(--page-bg) 94%, var(--text-color) 6%);
       font-weight: 600;
+    }
+
+    tbody tr:nth-child(odd) {
+      background: color-mix(in srgb, var(--page-bg) 98%, var(--text-color) 2%);
+    }
+
+    tbody tr:nth-child(even) {
+      background: color-mix(in srgb, var(--page-bg) 95%, var(--text-color) 5%);
     }
 
     & th[data-actions-col],
     & td[data-actions-col] {
       width: 1%;
       white-space: nowrap;
+      border-left: none;
     }
 
     &.table-sticky-actions {
       th[data-actions-col],
       td[data-actions-col] {
         position: sticky;
-        right: var(--space);
+        right: 0;
         z-index: 1;
         background: var(--page-bg);
         padding: 0;
       }
 
-      th[data-actions-col] {
-        z-index: 3;
-        box-shadow: -1px 0 0 var(--border-color);
+      tbody td[data-actions-col] {
+        background: inherit;
       }
 
-      td[data-actions-col] {
-        box-shadow: -1px 0 0 var(--border-color);
+      th[data-actions-col] {
+        z-index: 3;
+        background: color-mix(
+          in srgb,
+          var(--page-bg) 94%,
+          var(--text-color) 6%
+        );
       }
 
       @media (max-width: 1020px) {
@@ -68,7 +87,10 @@
     &.table-fixed {
       table-layout: fixed;
       width: 100%;
-      min-width: var(--table-min-w, 100%);
+      min-width: calc(
+        (var(--table-data-w-ch, 0) * 1ch) +
+          (var(--table-actions-w-rem, 0) * 1rem)
+      );
 
       th,
       td {
@@ -77,12 +99,14 @@
       }
 
       .col-w {
-        width: var(--w);
+        width: calc(var(--w-ch) * 1ch);
       }
 
       th[data-actions-col],
       td[data-actions-col] {
-        width: var(--actions-w, 4rem);
+        width: calc(var(--actions-w-rem, 0) * 1rem);
+        min-width: 0;
+        max-width: calc(var(--actions-w-rem, 0) * 1rem);
         overflow: visible;
         text-overflow: clip;
       }
@@ -288,7 +312,6 @@
     &::placeholder {
       color: var(--muted-text-color);
     }
-
   }
 
   textarea.input {
@@ -818,6 +841,7 @@
   .app-shell-nav {
     grid-area: nav;
     border-right: var(--border) solid var(--border-color);
+    padding-right: var(--space);
     align-self: stretch;
   }
 
@@ -844,6 +868,7 @@
 
   .app-shell.panel-open .app-shell-panel {
     border-left: var(--border) solid var(--border-color);
+    padding-left: var(--space);
     opacity: 1;
     pointer-events: auto;
   }

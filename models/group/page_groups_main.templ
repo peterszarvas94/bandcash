@@ -28,7 +28,7 @@ templ GroupsMain(data GroupsPageData) {
 				@shared.THCol(data.GroupsTable.Col("admin")) {
 					@shared.TableSortHeader(ctxi18n.T(ctx, "fields.admin"), "admin", data.Query, utils.BuildTableSortURL("/dashboard", data.Query, "admin"))
 				}
-				@shared.THActions(data.GroupsTable.ActionsWidthCh) {
+				@shared.THActions(data.GroupsTable.ActionsWidthRem) {
 					<div class="row row-right row-tight">
 						@shared.IconActionButton(shared.IconActionButtonProps{ClassName: "btn btn-ghost btn-sm btn-icon", OnClick: "$formState = 'add'; $formData = {name: ''}; $selectedGroupId = ''", DisabledExpr: "$formState !== '' || $_fetching", AriaLabel: ctxi18n.T(ctx, "groups.create"), Title: ctxi18n.T(ctx, "groups.create"), IconName: icons.IconPlus})
 					</div>
