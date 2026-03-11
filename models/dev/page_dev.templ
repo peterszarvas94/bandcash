@@ -53,27 +53,29 @@ templ ButtonVariantsContent() {
 	</div>
 }
 
-templ FormControlsContent() {
-	<p>Compare grayscale form controls across default, interactive, and disabled states.</p>
-	<div class="row row-wrap">
-		<input class="input input-wide" type="text" placeholder="Input placeholder" value="Input value"/>
-		<select class="input input-wide">
-			<option>Alpha</option>
-			<option selected>Selected option</option>
-			<option>Gamma</option>
-		</select>
-	</div>
-	<div class="row row-wrap">
-		<textarea class="input input-wide input-tall" rows="6">Textarea sample text</textarea>
-	</div>
-	<div class="row row-wrap">
-		<input class="input input-wide" type="text" placeholder="Disabled input" value="Disabled input" disabled/>
-		<select class="input input-wide" disabled>
-			<option selected>Disabled select</option>
-		</select>
-		<textarea class="input input-wide input-tall" rows="6" disabled>Disabled textarea</textarea>
-	</div>
-}
+	templ FormControlsContent() {
+		<p>Compare grayscale form controls across default, interactive, and disabled states.</p>
+		<div class="row row-wrap">
+			<input class="input w-half" type="text" placeholder="Input placeholder" value="Input value"/>
+			<select class="input w-half">
+				<option>Alpha</option>
+				<option selected>Selected option</option>
+				<option>Gamma</option>
+			</select>
+		</div>
+		<div class="row row-wrap">
+			<textarea class="input" rows="6">Textarea sample text</textarea>
+		</div>
+		<div class="row row-wrap">
+			<input class="input w-half" type="text" placeholder="Disabled input" value="Disabled input" disabled/>
+			<select class="input w-half" disabled>
+				<option selected>Disabled select</option>
+			</select>
+		</div>
+		<div class="row row-wrap">
+			<textarea class="input" rows="6" disabled>Disabled textarea</textarea>
+		</div>
+	}
 
 templ TableQueryTestContent() {
 	<p>Run hardcoded query examples and inspect parsed + backend response.</p>

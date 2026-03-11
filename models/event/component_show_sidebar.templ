@@ -63,7 +63,7 @@ templ EventShowSidebar(data EventData) {
 			<div>
 				<label for="event-participant-cut-amount" class="row">{ctxi18n.T(ctx, "participants.cut_amount")} <span class="color-error">*</span></label>
 					<div class="row">
-						<input id="event-participant-cut-amount" type="number" data-bind="formData.amount" step="1" class="input input-grow"/>
+						<input id="event-participant-cut-amount" type="number" data-bind="formData.amount" step="1" class="input"/>
 						@shared.ActionButton(shared.ActionButtonProps{ClassName: "btn", OnClick: fmt.Sprintf("$calcPercent = $formData.amount > 0 ? Math.round($formData.amount / %d * 10000) / 100 : 0", data.Event.Amount), DisabledExpr: "false", Label: ctxi18n.T(ctx, "participants.calc_percent"), IconName: icons.IconCalculator})
 					</div>
 					<div data-show="$errors && $errors.amount" class="color-error" data-text="$errors.amount"></div>
@@ -71,7 +71,7 @@ templ EventShowSidebar(data EventData) {
 				<div>
 				<label for="event-participant-quick-calc">{ctxi18n.T(ctx, "participants.quick_calc")}</label>
 					<div class="row">
-					<input id="event-participant-quick-calc" type="number" data-bind="calcPercent" step="0.01" min="0" placeholder={ctxi18n.T(ctx, "participants.quick_calc_placeholder")} class="input input-grow"/>
+					<input id="event-participant-quick-calc" type="number" data-bind="calcPercent" step="0.01" min="0" placeholder={ctxi18n.T(ctx, "participants.quick_calc_placeholder")} class="input"/>
 						@shared.ActionButton(shared.ActionButtonProps{ClassName: "btn", OnClick: fmt.Sprintf("$formData.amount = Math.round(%d * $calcPercent / 100)", data.Event.Amount), DisabledExpr: "false", Label: ctxi18n.T(ctx, "participants.calc_amount"), IconName: icons.IconCalculator})
 					</div>
 				</div>

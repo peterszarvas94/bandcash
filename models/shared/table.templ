@@ -11,7 +11,7 @@ import (
 
 templ TableSearchForm(onSubmitAction string, placeholderKey string) {
 	<form class="row row-tight pb" data-on:submit={ onSubmitAction }>
-		<input type="search" data-bind="tableQuery.search" placeholder={ ctxi18n.T(ctx, placeholderKey) } aria-label={ ctxi18n.T(ctx, "table.search") } class="input input-sm w-full"/>
+		<input type="search" data-bind="tableQuery.search" placeholder={ ctxi18n.T(ctx, placeholderKey) } aria-label={ ctxi18n.T(ctx, "table.search") } class="input input-sm"/>
 		<button class="btn btn-sm hide-mobile" type="submit">
 			@icons.Search(templ.Attributes{"class": "icon"})
 			<span>{ ctxi18n.T(ctx, "table.search") }</span>
@@ -87,7 +87,7 @@ templ TablePaginationControls(basePath string, query utils.TableQuery, pager uti
 		<label class="row">
 			<span class="text-sm hide-tablet">{ ctxi18n.T(ctx, "table.page") }</span>
 			<span class="row row-tight hide-tablet">
-				<input type="number" min="1" max={ fmt.Sprintf("%d", pager.TotalPages) } step="1" data-bind="tableQuery.page" aria-label={ ctxi18n.T(ctx, "table.page") } class="input input-thin input-sm"/>
+				<input type="number" min="1" max={ fmt.Sprintf("%d", pager.TotalPages) } step="1" data-bind="tableQuery.page" aria-label={ ctxi18n.T(ctx, "table.page") } class="input input-sm"/>
 				<button class="btn btn-sm btn-icon" type="submit" aria-label={ ctxi18n.T(ctx, "table.go") } title={ ctxi18n.T(ctx, "table.go") }>
 					@icons.FileInput(templ.Attributes{"class": "icon"})
 				</button>

@@ -218,7 +218,7 @@ func EventShowSidebar(data EventData) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 16, " <span class=\"color-error\">*</span></label><div class=\"row\"><input id=\"event-participant-cut-amount\" type=\"number\" data-bind=\"formData.amount\" step=\"1\" class=\"input input-grow\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 16, " <span class=\"color-error\">*</span></label><div class=\"row\"><input id=\"event-participant-cut-amount\" type=\"number\" data-bind=\"formData.amount\" step=\"1\" class=\"input\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -252,7 +252,7 @@ func EventShowSidebar(data EventData) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 19, "\" class=\"input input-grow\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 19, "\" class=\"input\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}

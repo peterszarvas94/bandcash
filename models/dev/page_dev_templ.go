@@ -213,7 +213,7 @@ func FormControlsContent() templ.Component {
 			templ_7745c5c3_Var6 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 9, "<p>Compare grayscale form controls across default, interactive, and disabled states.</p><div class=\"row row-wrap\"><input class=\"input input-wide\" type=\"text\" placeholder=\"Input placeholder\" value=\"Input value\"> <select class=\"input input-wide\"><option>Alpha</option> <option selected>Selected option</option> <option>Gamma</option></select></div><div class=\"row row-wrap\"><textarea class=\"input input-wide input-tall\" rows=\"6\">Textarea sample text</textarea></div><div class=\"row row-wrap\"><input class=\"input input-wide\" type=\"text\" placeholder=\"Disabled input\" value=\"Disabled input\" disabled> <select class=\"input input-wide\" disabled><option selected>Disabled select</option></select> <textarea class=\"input input-wide input-tall\" rows=\"6\" disabled>Disabled textarea</textarea></div>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 9, "<p>Compare grayscale form controls across default, interactive, and disabled states.</p><div class=\"row row-wrap\"><input class=\"input w-half\" type=\"text\" placeholder=\"Input placeholder\" value=\"Input value\"> <select class=\"input w-half\"><option>Alpha</option> <option selected>Selected option</option> <option>Gamma</option></select></div><div class=\"row row-wrap\"><textarea class=\"input\" rows=\"6\">Textarea sample text</textarea></div><div class=\"row row-wrap\"><input class=\"input w-half\" type=\"text\" placeholder=\"Disabled input\" value=\"Disabled input\" disabled> <select class=\"input w-half\" disabled><option selected>Disabled select</option></select></div><div class=\"row row-wrap\"><textarea class=\"input\" rows=\"6\" disabled>Disabled textarea</textarea></div>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -489,7 +489,7 @@ func RateLimitContent() templ.Component {
 		var templ_7745c5c3_Var12 string
 		templ_7745c5c3_Var12, templ_7745c5c3_Err = templ.JoinStringErrs(utils.CSRFTokenFromContext(ctx))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/dev/page_dev.templ`, Line: 170, Col: 82}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/dev/page_dev.templ`, Line: 172, Col: 82}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var12))
 		if templ_7745c5c3_Err != nil {
@@ -559,7 +559,7 @@ func BodyLimitContent() templ.Component {
 		var templ_7745c5c3_Var14 string
 		templ_7745c5c3_Var14, templ_7745c5c3_Err = templ.JoinStringErrs(utils.CSRFTokenFromContext(ctx))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/dev/page_dev.templ`, Line: 190, Col: 82}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/dev/page_dev.templ`, Line: 192, Col: 82}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var14))
 		if templ_7745c5c3_Err != nil {

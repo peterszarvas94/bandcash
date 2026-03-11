@@ -77,7 +77,7 @@ func TableSearchForm(onSubmitAction string, placeholderKey string) templ.Compone
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, "\" class=\"input input-sm w-full\"> <button class=\"btn btn-sm hide-mobile\" type=\"submit\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, "\" class=\"input input-sm\"> <button class=\"btn btn-sm hide-mobile\" type=\"submit\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -574,7 +574,7 @@ func TablePaginationControls(basePath string, query utils.TableQuery, pager util
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 43, "\" class=\"input input-thin input-sm\"> <button class=\"btn btn-sm btn-icon\" type=\"submit\" aria-label=\"")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 43, "\" class=\"input input-sm\"> <button class=\"btn btn-sm btn-icon\" type=\"submit\" aria-label=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

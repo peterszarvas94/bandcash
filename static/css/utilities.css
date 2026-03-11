@@ -80,6 +80,14 @@
     width: fit-content;
   }
 
+  .w-half {
+    width: calc(50% - (var(--space) * 0.5));
+
+    @media (max-width: 680px) {
+      width: 100%;
+    }
+  }
+
   .hide-tablet {
     @media (max-width: 780px) {
       display: none !important;
@@ -120,10 +128,6 @@
     @media (max-width: 780px) {
       flex-direction: column !important;
     }
-  }
-
-  .w-full {
-    width: 100%;
   }
 
   /* *:nth-child(2n) { */

@@ -205,13 +205,13 @@
     field-sizing: content;
     font: inherit;
     border-radius: var(--border);
+    width: 100%;
     height: 2.5rem;
     padding: var(--space) calc(var(--space) * 2);
     border: var(--border) solid
       color-mix(in srgb, var(--page-bg) 82%, var(--text-color) 18%);
     background: color-mix(in srgb, var(--page-bg) 95%, var(--text-color) 5%);
     color: var(--text-color);
-    min-width: 0;
     transition:
       border-color 120ms ease,
       background-color 120ms ease;
@@ -262,21 +262,12 @@
       color: var(--muted-text-color);
     }
 
-    &.input-grow {
-      flex: 1;
-    }
+  }
 
-    &.input-wide {
-      min-width: 200px;
-    }
-
-    &.input-thin {
-      min-width: 4rem;
-    }
-
-    &.input-tall {
-      min-height: 8rem;
-    }
+  textarea.input {
+    height: auto;
+    min-height: 6rem;
+    resize: vertical;
   }
 
   .link,

@@ -32,7 +32,7 @@ templ HomeIndex(data HomeData) {
 						<div class="field">
 							<label for="home-auth-email" class="row">{ ctxi18n.T(ctx, "auth.email") } <span class="color-error">*</span></label>
 							<div class="row row-wrap">
-								<input id="home-auth-email" type="email" class="input input-grow" data-bind="formData.email" placeholder={ ctxi18n.T(ctx, "auth.email_placeholder") }/>
+								<input id="home-auth-email" type="email" class="input" data-bind="formData.email" placeholder={ ctxi18n.T(ctx, "auth.email_placeholder") }/>
 								@shared.LoadingSubmitButton(shared.LoadingSubmitButtonProps{ClassName: "btn", Label: ctxi18n.T(ctx, "auth.send_link"), IconName: icons.IconSend})
 							</div>
 							<div data-show="$authError !== ''" class="color-error" data-text="$authError"></div>
