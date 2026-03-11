@@ -979,7 +979,7 @@
     .app-shell-top {
       border-bottom: 0;
       padding-bottom: 0;
-      padding-top: calc((var(--space) * 2) + 1.5rem);
+      padding-top: calc((var(--space) * 2) + 2.5rem);
       gap: 0;
     }
 
@@ -990,7 +990,7 @@
       position: fixed;
       top: var(--space);
       left: var(--space);
-      z-index: 35;
+      z-index: 15;
       background: var(--page-bg);
     }
 
@@ -1046,6 +1046,13 @@
     .app-shell-main-only:has(> input[id$="-nav-toggle"]:checked)
       .app-shell-backdrop-nav {
       display: block;
+    }
+
+  }
+
+  @media (max-width: 680px) {
+    .app-shell-top {
+      padding-top: calc((var(--space) * 2) + 1.5rem);
     }
   }
 }
