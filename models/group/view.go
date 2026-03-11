@@ -1,6 +1,8 @@
 package group
 
 import (
+	"time"
+
 	"bandcash/internal/db"
 	"bandcash/internal/utils"
 )
@@ -36,22 +38,28 @@ type GroupSummary struct {
 	AdminEmail  string
 }
 
-type ViewersPageData struct {
-	Title        string
-	Breadcrumbs  []utils.Crumb
-	UserEmail    string
-	Group        db.Group
-	Admins       []db.User
-	Viewers      []db.User
-	Invites      []db.MagicLink
-	IsAdmin      bool
-	Query        utils.TableQuery
-	Pager        utils.TablePagination
-	GroupID      string
-	Tab          string
-	AdminsTable  utils.TableLayout
-	PendingTable utils.TableLayout
-	ViewersTable utils.TableLayout
+type AccessPageData struct {
+	Title         string
+	Breadcrumbs   []utils.Crumb
+	UserEmail     string
+	CurrentUserID string
+	Group         db.Group
+	AccessRows    []GroupAccessRow
+	IsAdmin       bool
+	Query         utils.TableQuery
+	Pager         utils.TablePagination
+	GroupID       string
+	AccessTable   utils.TableLayout
+}
+
+type GroupAccessRow struct {
+	Kind      string
+	Status    string
+	Role      string
+	Email     string
+	UserID    string
+	InviteID  string
+	CreatedAt time.Time
 }
 
 type GroupPageData struct {

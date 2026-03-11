@@ -54,6 +54,13 @@ type Group struct {
 	TotalLeftover      int64        `json:"total_leftover"`
 }
 
+type GroupAdmin struct {
+	ID        string       `json:"id"`
+	UserID    string       `json:"user_id"`
+	GroupID   string       `json:"group_id"`
+	CreatedAt sql.NullTime `json:"created_at"`
+}
+
 type GroupReader struct {
 	ID        string       `json:"id"`
 	UserID    string       `json:"user_id"`
@@ -62,14 +69,15 @@ type GroupReader struct {
 }
 
 type MagicLink struct {
-	ID        string         `json:"id"`
-	Token     string         `json:"token"`
-	Email     string         `json:"email"`
-	Action    string         `json:"action"`
-	GroupID   sql.NullString `json:"group_id"`
-	ExpiresAt time.Time      `json:"expires_at"`
-	UsedAt    sql.NullTime   `json:"used_at"`
-	CreatedAt sql.NullTime   `json:"created_at"`
+	ID         string         `json:"id"`
+	Token      string         `json:"token"`
+	Email      string         `json:"email"`
+	Action     string         `json:"action"`
+	GroupID    sql.NullString `json:"group_id"`
+	ExpiresAt  time.Time      `json:"expires_at"`
+	UsedAt     sql.NullTime   `json:"used_at"`
+	CreatedAt  sql.NullTime   `json:"created_at"`
+	InviteRole string         `json:"invite_role"`
 }
 
 type Member struct {

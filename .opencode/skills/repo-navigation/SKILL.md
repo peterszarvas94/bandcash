@@ -31,3 +31,4 @@ Use this when you need to locate where to make changes without scanning the whol
 ## Notes
 - Avoid repo-wide `Grep` unless the feature is unknown.
 - Prefer reading a small set of files over broad scans.
+- Generated files are read-only targets: `*_templ.go`, `internal/db/*.sql.go`.

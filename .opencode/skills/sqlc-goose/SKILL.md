@@ -4,10 +4,10 @@ description: Manage database migrations with goose and type-safe queries with sq
 ---
 
 ## What I do
-- Add or update SQL migrations for the entry database.
+- Add or update SQL migrations for the app database.
 - Add or update sqlc queries and regenerate Go code.
 - Keep sqlc/goose tooling usage consistent with this repo.
- - Ensure mise tooling is used for `goose` and `sqlc`.
+- Ensure mise tooling is used for `goose` and `sqlc`.
 
 ## When to use me
 Use this when changing database schema or queries, or when you need to regenerate sqlc code.
@@ -16,8 +16,8 @@ Use this when changing database schema or queries, or when you need to regenerat
 - Migrations live in `internal/db/migrations` and use goose `Up/Down` blocks.
 - Queries live in `internal/db/queries` and are compiled by sqlc.
 - sqlc config is `sqlc.yaml` and outputs Go code into `internal/db`.
-- App startup does not run migrations automatically.
-- Tooling is installed via `mise.toml`; use `goose` and `sqlc` directly after `mise install`.
+- App startup runs migrations via `db.Migrate()`, but explicit migration commands are still used during schema work.
+- Tooling is installed via `mise.toml`; prefer `mise run ...` tasks.
 
 ## Common commands
 Install tools:
@@ -47,11 +47,11 @@ mise run sqlc
 
 Add a new query:
 ```bash
-vim internal/db/queries/entries.sql
+${EDITOR:-vim} internal/db/queries/<feature>.sql
 mise run sqlc
 ```
 
 ## Notes
-- Generated files in `internal/db/*.go` should not be edited manually.
+- Generated files in `internal/db/*.sql.go` should not be edited manually.
 - After changing SQL queries, run `mise run sqlc`.
-- If `goose` or `sqlc` is missing, ensure your shell is activated for mise (e.g. `eval "$(mise activate zsh)"`).
+- Validate affected code with targeted tests (for example `go test ./models/event -run '^TestHandlerCreate$'`) and then broader checks as needed.

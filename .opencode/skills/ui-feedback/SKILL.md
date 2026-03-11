@@ -24,7 +24,11 @@ Apply one strict feedback model across the app.
 - Every top-level page template should include `@shared.Notifications()`.
 - For handlers rendering full pages, use `utils.RenderPage(...)`.
 - For server-side patch rendering, use `utils.RenderHTMLForRequest(...)` so notification queues are drained.
+- Keep Datastar mutation responses consistent: parse signals first, return `400` for parse failures and `422` for validation failures.
 
 ## i18n
 - Notification text must use locale keys from `internal/i18n/locales/en/en.yaml` and `internal/i18n/locales/hu/hu.yaml`.
 - Do not hardcode notification strings in handlers.
+
+## Logging
+- Log internal failures with `slog` structured fields (include `"err", err` and stable IDs when available).

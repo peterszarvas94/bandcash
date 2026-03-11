@@ -247,11 +247,51 @@ func (a *Auth) VerifyMagicLink(c echo.Context) error {
 		}
 
 		groupID := magicLink.GroupID.String
+		inviteRole := strings.TrimSpace(strings.ToLower(magicLink.InviteRole))
+		if inviteRole != "admin" {
+			inviteRole = "viewer"
+		}
 		groupName := groupID
 		group, groupErr := db.Qry.GetGroupByID(c.Request().Context(), groupID)
 		if groupErr == nil {
 			groupName = group.Name
 			if group.AdminUserID != user.ID {
+				if inviteRole == "admin" {
+					_ = db.Qry.RemoveGroupReader(c.Request().Context(), db.RemoveGroupReaderParams{UserID: user.ID, GroupID: groupID})
+					_, err = db.Qry.CreateGroupAdmin(c.Request().Context(), db.CreateGroupAdminParams{
+						ID:      utils.GenerateID("gad"),
+						UserID:  user.ID,
+						GroupID: groupID,
+					})
+					if err != nil {
+						slog.Warn("auth: failed to add group admin", "group_id", groupID, "user_id", user.ID, "err", err)
+					}
+				} else {
+					_ = db.Qry.RemoveGroupAdmin(c.Request().Context(), db.RemoveGroupAdminParams{UserID: user.ID, GroupID: groupID})
+					_, err = db.Qry.CreateGroupReader(c.Request().Context(), db.CreateGroupReaderParams{
+						ID:      utils.GenerateID("grd"),
+						UserID:  user.ID,
+						GroupID: groupID,
+					})
+					if err != nil {
+						slog.Warn("auth: failed to add group reader", "group_id", groupID, "user_id", user.ID, "err", err)
+					}
+				}
+			}
+		} else {
+			slog.Warn("auth.verify: failed to load group for invite", "group_id", groupID, "err", groupErr)
+			if inviteRole == "admin" {
+				_ = db.Qry.RemoveGroupReader(c.Request().Context(), db.RemoveGroupReaderParams{UserID: user.ID, GroupID: groupID})
+				_, err = db.Qry.CreateGroupAdmin(c.Request().Context(), db.CreateGroupAdminParams{
+					ID:      utils.GenerateID("gad"),
+					UserID:  user.ID,
+					GroupID: groupID,
+				})
+				if err != nil {
+					slog.Warn("auth: failed to add group admin", "group_id", groupID, "user_id", user.ID, "err", err)
+				}
+			} else {
+				_ = db.Qry.RemoveGroupAdmin(c.Request().Context(), db.RemoveGroupAdminParams{UserID: user.ID, GroupID: groupID})
 				_, err = db.Qry.CreateGroupReader(c.Request().Context(), db.CreateGroupReaderParams{
 					ID:      utils.GenerateID("grd"),
 					UserID:  user.ID,
@@ -260,16 +300,6 @@ func (a *Auth) VerifyMagicLink(c echo.Context) error {
 				if err != nil {
 					slog.Warn("auth: failed to add group reader", "group_id", groupID, "user_id", user.ID, "err", err)
 				}
-			}
-		} else {
-			slog.Warn("auth.verify: failed to load group for invite", "group_id", groupID, "err", groupErr)
-			_, err = db.Qry.CreateGroupReader(c.Request().Context(), db.CreateGroupReaderParams{
-				ID:      utils.GenerateID("grd"),
-				UserID:  user.ID,
-				GroupID: groupID,
-			})
-			if err != nil {
-				slog.Warn("auth: failed to add group reader", "group_id", groupID, "user_id", user.ID, "err", err)
 			}
 		}
 
@@ -307,13 +337,13 @@ func (a *Auth) Logout(c echo.Context) error {
 func (a *Auth) Dashboard(c echo.Context) error {
 	userID := middleware.GetUserID(c)
 
-	adminGroups, err := db.Qry.ListGroupsByAdmin(c.Request().Context(), userID)
+	adminGroups, err := db.Qry.ListGroupsByAdmin(c.Request().Context(), db.ListGroupsByAdminParams{OwnerUserID: userID, UserID: userID})
 	if err != nil {
 		slog.Error("auth: failed to load admin groups", "err", err)
 		return c.Redirect(http.StatusFound, "/groups/new")
 	}
 
-	readerGroups, err := db.Qry.ListGroupsByReader(c.Request().Context(), userID)
+	readerGroups, err := db.Qry.ListGroupsByReader(c.Request().Context(), db.ListGroupsByReaderParams{UserID: userID, AdminUserID: userID})
 	if err != nil {
 		slog.Error("auth: failed to load reader groups", "err", err)
 		return c.Redirect(http.StatusFound, "/groups/new")

@@ -56,12 +56,13 @@ func MemberEventsTableLayout() TableLayout {
 func ViewersAdminsTableLayout() TableLayout {
 	return NewTableLayout([]TableColumn{
 		{Key: "email", WidthCh: 34},
-	}, 0)
+	}, 2)
 }
 
 func ViewersPendingTableLayout() TableLayout {
 	return NewTableLayout([]TableColumn{
 		{Key: "email", WidthCh: 34},
+		{Key: "role", WidthCh: 10},
 		{Key: "created_at", WidthCh: 18},
 	}, 2)
 }
@@ -70,6 +71,15 @@ func ViewersTableLayout() TableLayout {
 	return NewTableLayout([]TableColumn{
 		{Key: "email", WidthCh: 34},
 	}, 2)
+}
+
+func GroupAccessTableLayout() TableLayout {
+	return NewTableLayout([]TableColumn{
+		{Key: "email", WidthCh: 30},
+		{Key: "role", WidthCh: 10},
+		{Key: "status", WidthCh: 10},
+		{Key: "created_at", WidthCh: 18},
+	}, 4)
 }
 
 func AdminUsersTableLayout() TableLayout {

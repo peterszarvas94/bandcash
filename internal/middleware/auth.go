@@ -93,6 +93,17 @@ func RequireGroup() echo.MiddlewareFunc {
 			}
 
 			// Check if reader
+			adminCount, err := db.Qry.IsGroupAdmin(c.Request().Context(), db.IsGroupAdminParams{
+				UserID:  userID,
+				GroupID: groupID,
+			})
+			if err == nil && adminCount > 0 {
+				c.Set(string(GroupIDKey), groupID)
+				c.Set(string(IsAdminKey), true)
+				return next(c)
+			}
+
+			// Check if viewer
 			readerCount, err := db.Qry.IsGroupReader(c.Request().Context(), db.IsGroupReaderParams{
 				UserID:  userID,
 				GroupID: groupID,

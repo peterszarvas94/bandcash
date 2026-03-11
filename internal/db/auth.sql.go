@@ -27,6 +27,40 @@ func (q *Queries) BanUser(ctx context.Context, arg BanUserParams) error {
 	return err
 }
 
+const countGroupAdminsFiltered = `-- name: CountGroupAdminsFiltered :one
+SELECT COUNT(*) FROM (
+  SELECT u.id
+  FROM groups g
+  JOIN users u ON u.id = g.admin_user_id
+  WHERE g.id = ?1
+    AND (
+      ?2 = ''
+      OR LOWER(u.email) LIKE '%' || LOWER(?2) || '%'
+    )
+  UNION
+  SELECT u.id
+  FROM group_admins ga
+  JOIN users u ON u.id = ga.user_id
+  WHERE ga.group_id = ?1
+    AND (
+      ?2 = ''
+      OR LOWER(u.email) LIKE '%' || LOWER(?2) || '%'
+    )
+)
+`
+
+type CountGroupAdminsFilteredParams struct {
+	GroupID string      `json:"group_id"`
+	Search  interface{} `json:"search"`
+}
+
+func (q *Queries) CountGroupAdminsFiltered(ctx context.Context, arg CountGroupAdminsFilteredParams) (int64, error) {
+	row := q.db.QueryRowContext(ctx, countGroupAdminsFiltered, arg.GroupID, arg.Search)
+	var count int64
+	err := row.Scan(&count)
+	return count, err
+}
+
 const countGroupPendingInvitesFiltered = `-- name: CountGroupPendingInvitesFiltered :one
 SELECT COUNT(*) FROM magic_links
 WHERE action = 'invite'
@@ -85,10 +119,26 @@ SELECT COUNT(*) FROM (
     )
   UNION
   SELECT g.id FROM groups g
+  JOIN group_admins ga ON ga.group_id = g.id
+  JOIN users u ON u.id = g.admin_user_id
+  WHERE ga.user_id = ?1
+    AND g.admin_user_id != ?1
+    AND (
+      ?2 = ''
+      OR g.name LIKE '%' || ?2 || '%'
+      OR u.email LIKE '%' || ?2 || '%'
+    )
+  UNION
+  SELECT g.id FROM groups g
   JOIN group_readers gr ON gr.group_id = g.id
   JOIN users u ON u.id = g.admin_user_id
   WHERE gr.user_id = ?1
     AND g.admin_user_id != ?1
+  AND NOT EXISTS (
+    SELECT 1 FROM group_admins ga
+    WHERE ga.group_id = g.id
+        AND ga.user_id = gr.user_id
+    )
     AND (
       ?2 = ''
       OR g.name LIKE '%' || ?2 || '%'
@@ -137,6 +187,30 @@ func (q *Queries) CreateGroup(ctx context.Context, arg CreateGroupParams) (Group
 	return i, err
 }
 
+const createGroupAdmin = `-- name: CreateGroupAdmin :one
+INSERT INTO group_admins (id, user_id, group_id)
+VALUES (?, ?, ?)
+RETURNING id, user_id, group_id, created_at
+`
+
+type CreateGroupAdminParams struct {
+	ID      string `json:"id"`
+	UserID  string `json:"user_id"`
+	GroupID string `json:"group_id"`
+}
+
+func (q *Queries) CreateGroupAdmin(ctx context.Context, arg CreateGroupAdminParams) (GroupAdmin, error) {
+	row := q.db.QueryRowContext(ctx, createGroupAdmin, arg.ID, arg.UserID, arg.GroupID)
+	var i GroupAdmin
+	err := row.Scan(
+		&i.ID,
+		&i.UserID,
+		&i.GroupID,
+		&i.CreatedAt,
+	)
+	return i, err
+}
+
 const createGroupReader = `-- name: CreateGroupReader :one
 INSERT INTO group_readers (id, user_id, group_id)
 VALUES (?, ?, ?)
@@ -161,10 +235,49 @@ func (q *Queries) CreateGroupReader(ctx context.Context, arg CreateGroupReaderPa
 	return i, err
 }
 
+const createInviteMagicLink = `-- name: CreateInviteMagicLink :one
+INSERT INTO magic_links (id, token, email, action, group_id, expires_at, invite_role)
+VALUES (?, ?, ?, 'invite', ?, ?, ?)
+RETURNING id, token, email, "action", group_id, expires_at, used_at, created_at, invite_role
+`
+
+type CreateInviteMagicLinkParams struct {
+	ID         string         `json:"id"`
+	Token      string         `json:"token"`
+	Email      string         `json:"email"`
+	GroupID    sql.NullString `json:"group_id"`
+	ExpiresAt  time.Time      `json:"expires_at"`
+	InviteRole string         `json:"invite_role"`
+}
+
+func (q *Queries) CreateInviteMagicLink(ctx context.Context, arg CreateInviteMagicLinkParams) (MagicLink, error) {
+	row := q.db.QueryRowContext(ctx, createInviteMagicLink,
+		arg.ID,
+		arg.Token,
+		arg.Email,
+		arg.GroupID,
+		arg.ExpiresAt,
+		arg.InviteRole,
+	)
+	var i MagicLink
+	err := row.Scan(
+		&i.ID,
+		&i.Token,
+		&i.Email,
+		&i.Action,
+		&i.GroupID,
+		&i.ExpiresAt,
+		&i.UsedAt,
+		&i.CreatedAt,
+		&i.InviteRole,
+	)
+	return i, err
+}
+
 const createMagicLink = `-- name: CreateMagicLink :one
 INSERT INTO magic_links (id, token, email, action, group_id, expires_at)
 VALUES (?, ?, ?, ?, ?, ?)
-RETURNING id, token, email, "action", group_id, expires_at, used_at, created_at
+RETURNING id, token, email, "action", group_id, expires_at, used_at, created_at, invite_role
 `
 
 type CreateMagicLinkParams struct {
@@ -195,6 +308,7 @@ func (q *Queries) CreateMagicLink(ctx context.Context, arg CreateMagicLinkParams
 		&i.ExpiresAt,
 		&i.UsedAt,
 		&i.CreatedAt,
+		&i.InviteRole,
 	)
 	return i, err
 }
@@ -257,11 +371,22 @@ func (q *Queries) DeleteGroupPendingInvite(ctx context.Context, arg DeleteGroupP
 
 const getGroupByAdmin = `-- name: GetGroupByAdmin :one
 SELECT id, name, admin_user_id, created_at, total_event_amount, total_expense_amount, total_payout_amount, total_leftover FROM groups
-WHERE admin_user_id = ?
+WHERE admin_user_id = ?1
+   OR id IN (
+     SELECT group_id
+     FROM group_admins
+     WHERE user_id = ?2
+   )
+LIMIT 1
 `
 
-func (q *Queries) GetGroupByAdmin(ctx context.Context, adminUserID string) (Group, error) {
-	row := q.db.QueryRowContext(ctx, getGroupByAdmin, adminUserID)
+type GetGroupByAdminParams struct {
+	OwnerUserID string `json:"owner_user_id"`
+	UserID      string `json:"user_id"`
+}
+
+func (q *Queries) GetGroupByAdmin(ctx context.Context, arg GetGroupByAdminParams) (Group, error) {
+	row := q.db.QueryRowContext(ctx, getGroupByAdmin, arg.OwnerUserID, arg.UserID)
 	var i Group
 	err := row.Scan(
 		&i.ID,
@@ -327,7 +452,7 @@ func (q *Queries) GetGroupReaders(ctx context.Context, groupID string) ([]User, 
 }
 
 const getMagicLinkByToken = `-- name: GetMagicLinkByToken :one
-SELECT id, token, email, "action", group_id, expires_at, used_at, created_at FROM magic_links
+SELECT id, token, email, "action", group_id, expires_at, used_at, created_at, invite_role FROM magic_links
 WHERE token = ?
 `
 
@@ -343,6 +468,7 @@ func (q *Queries) GetMagicLinkByToken(ctx context.Context, token string) (MagicL
 		&i.ExpiresAt,
 		&i.UsedAt,
 		&i.CreatedAt,
+		&i.InviteRole,
 	)
 	return i, err
 }
@@ -369,6 +495,25 @@ func (q *Queries) GetUserByID(ctx context.Context, id string) (User, error) {
 	var i User
 	err := row.Scan(&i.ID, &i.Email, &i.CreatedAt)
 	return i, err
+}
+
+const isGroupAdmin = `-- name: IsGroupAdmin :one
+SELECT COUNT(*)
+FROM group_admins
+WHERE user_id = ?
+  AND group_id = ?
+`
+
+type IsGroupAdminParams struct {
+	UserID  string `json:"user_id"`
+	GroupID string `json:"group_id"`
+}
+
+func (q *Queries) IsGroupAdmin(ctx context.Context, arg IsGroupAdminParams) (int64, error) {
+	row := q.db.QueryRowContext(ctx, isGroupAdmin, arg.UserID, arg.GroupID)
+	var count int64
+	err := row.Scan(&count)
+	return count, err
 }
 
 const isGroupReader = `-- name: IsGroupReader :one
@@ -400,8 +545,157 @@ func (q *Queries) IsUserBanned(ctx context.Context, userID string) (int64, error
 	return count, err
 }
 
+const listGroupAdminUserIDs = `-- name: ListGroupAdminUserIDs :many
+SELECT user_id
+FROM group_admins
+WHERE group_id = ?
+`
+
+func (q *Queries) ListGroupAdminUserIDs(ctx context.Context, groupID string) ([]string, error) {
+	rows, err := q.db.QueryContext(ctx, listGroupAdminUserIDs, groupID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []string{}
+	for rows.Next() {
+		var user_id string
+		if err := rows.Scan(&user_id); err != nil {
+			return nil, err
+		}
+		items = append(items, user_id)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const listGroupAdminsByEmailAscFiltered = `-- name: ListGroupAdminsByEmailAscFiltered :many
+SELECT id, email, created_at FROM users
+WHERE id IN (
+  SELECT u.id
+  FROM groups g
+  JOIN users u ON u.id = g.admin_user_id
+  WHERE g.id = ?1
+    AND (
+      ?2 = ''
+      OR LOWER(u.email) LIKE '%' || LOWER(?2) || '%'
+    )
+  UNION
+  SELECT u.id
+  FROM group_admins ga
+  JOIN users u ON u.id = ga.user_id
+  WHERE ga.group_id = ?1
+    AND (
+      ?2 = ''
+      OR LOWER(u.email) LIKE '%' || LOWER(?2) || '%'
+    )
+)
+ORDER BY LOWER(email) ASC
+LIMIT ?4 OFFSET ?3
+`
+
+type ListGroupAdminsByEmailAscFilteredParams struct {
+	GroupID string      `json:"group_id"`
+	Search  interface{} `json:"search"`
+	Offset  int64       `json:"offset"`
+	Limit   int64       `json:"limit"`
+}
+
+func (q *Queries) ListGroupAdminsByEmailAscFiltered(ctx context.Context, arg ListGroupAdminsByEmailAscFilteredParams) ([]User, error) {
+	rows, err := q.db.QueryContext(ctx, listGroupAdminsByEmailAscFiltered,
+		arg.GroupID,
+		arg.Search,
+		arg.Offset,
+		arg.Limit,
+	)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []User{}
+	for rows.Next() {
+		var i User
+		if err := rows.Scan(&i.ID, &i.Email, &i.CreatedAt); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const listGroupAdminsByEmailDescFiltered = `-- name: ListGroupAdminsByEmailDescFiltered :many
+SELECT id, email, created_at FROM users
+WHERE id IN (
+  SELECT u.id
+  FROM groups g
+  JOIN users u ON u.id = g.admin_user_id
+  WHERE g.id = ?1
+    AND (
+      ?2 = ''
+      OR LOWER(u.email) LIKE '%' || LOWER(?2) || '%'
+    )
+  UNION
+  SELECT u.id
+  FROM group_admins ga
+  JOIN users u ON u.id = ga.user_id
+  WHERE ga.group_id = ?1
+    AND (
+      ?2 = ''
+      OR LOWER(u.email) LIKE '%' || LOWER(?2) || '%'
+    )
+)
+ORDER BY LOWER(email) DESC
+LIMIT ?4 OFFSET ?3
+`
+
+type ListGroupAdminsByEmailDescFilteredParams struct {
+	GroupID string      `json:"group_id"`
+	Search  interface{} `json:"search"`
+	Offset  int64       `json:"offset"`
+	Limit   int64       `json:"limit"`
+}
+
+func (q *Queries) ListGroupAdminsByEmailDescFiltered(ctx context.Context, arg ListGroupAdminsByEmailDescFilteredParams) ([]User, error) {
+	rows, err := q.db.QueryContext(ctx, listGroupAdminsByEmailDescFiltered,
+		arg.GroupID,
+		arg.Search,
+		arg.Offset,
+		arg.Limit,
+	)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []User{}
+	for rows.Next() {
+		var i User
+		if err := rows.Scan(&i.ID, &i.Email, &i.CreatedAt); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const listGroupPendingInvites = `-- name: ListGroupPendingInvites :many
-SELECT id, token, email, "action", group_id, expires_at, used_at, created_at FROM magic_links
+SELECT id, token, email, "action", group_id, expires_at, used_at, created_at, invite_role FROM magic_links
 WHERE action = 'invite'
   AND group_id = ?
   AND used_at IS NULL
@@ -427,6 +721,7 @@ func (q *Queries) ListGroupPendingInvites(ctx context.Context, groupID sql.NullS
 			&i.ExpiresAt,
 			&i.UsedAt,
 			&i.CreatedAt,
+			&i.InviteRole,
 		); err != nil {
 			return nil, err
 		}
@@ -442,7 +737,7 @@ func (q *Queries) ListGroupPendingInvites(ctx context.Context, groupID sql.NullS
 }
 
 const listGroupPendingInvitesByCreatedAscFiltered = `-- name: ListGroupPendingInvitesByCreatedAscFiltered :many
-SELECT id, token, email, "action", group_id, expires_at, used_at, created_at FROM magic_links
+SELECT id, token, email, "action", group_id, expires_at, used_at, created_at, invite_role FROM magic_links
 WHERE action = 'invite'
   AND group_id = ?1
   AND used_at IS NULL
@@ -485,6 +780,7 @@ func (q *Queries) ListGroupPendingInvitesByCreatedAscFiltered(ctx context.Contex
 			&i.ExpiresAt,
 			&i.UsedAt,
 			&i.CreatedAt,
+			&i.InviteRole,
 		); err != nil {
 			return nil, err
 		}
@@ -500,7 +796,7 @@ func (q *Queries) ListGroupPendingInvitesByCreatedAscFiltered(ctx context.Contex
 }
 
 const listGroupPendingInvitesByCreatedDescFiltered = `-- name: ListGroupPendingInvitesByCreatedDescFiltered :many
-SELECT id, token, email, "action", group_id, expires_at, used_at, created_at FROM magic_links
+SELECT id, token, email, "action", group_id, expires_at, used_at, created_at, invite_role FROM magic_links
 WHERE action = 'invite'
   AND group_id = ?1
   AND used_at IS NULL
@@ -543,6 +839,7 @@ func (q *Queries) ListGroupPendingInvitesByCreatedDescFiltered(ctx context.Conte
 			&i.ExpiresAt,
 			&i.UsedAt,
 			&i.CreatedAt,
+			&i.InviteRole,
 		); err != nil {
 			return nil, err
 		}
@@ -558,7 +855,7 @@ func (q *Queries) ListGroupPendingInvitesByCreatedDescFiltered(ctx context.Conte
 }
 
 const listGroupPendingInvitesByEmailAscFiltered = `-- name: ListGroupPendingInvitesByEmailAscFiltered :many
-SELECT id, token, email, "action", group_id, expires_at, used_at, created_at FROM magic_links
+SELECT id, token, email, "action", group_id, expires_at, used_at, created_at, invite_role FROM magic_links
 WHERE action = 'invite'
   AND group_id = ?1
   AND used_at IS NULL
@@ -601,6 +898,7 @@ func (q *Queries) ListGroupPendingInvitesByEmailAscFiltered(ctx context.Context,
 			&i.ExpiresAt,
 			&i.UsedAt,
 			&i.CreatedAt,
+			&i.InviteRole,
 		); err != nil {
 			return nil, err
 		}
@@ -616,7 +914,7 @@ func (q *Queries) ListGroupPendingInvitesByEmailAscFiltered(ctx context.Context,
 }
 
 const listGroupPendingInvitesByEmailDescFiltered = `-- name: ListGroupPendingInvitesByEmailDescFiltered :many
-SELECT id, token, email, "action", group_id, expires_at, used_at, created_at FROM magic_links
+SELECT id, token, email, "action", group_id, expires_at, used_at, created_at, invite_role FROM magic_links
 WHERE action = 'invite'
   AND group_id = ?1
   AND used_at IS NULL
@@ -659,6 +957,7 @@ func (q *Queries) ListGroupPendingInvitesByEmailDescFiltered(ctx context.Context
 			&i.ExpiresAt,
 			&i.UsedAt,
 			&i.CreatedAt,
+			&i.InviteRole,
 		); err != nil {
 			return nil, err
 		}
@@ -770,12 +1069,22 @@ func (q *Queries) ListGroupReadersByEmailDescFiltered(ctx context.Context, arg L
 const listGroupsByAdmin = `-- name: ListGroupsByAdmin :many
 SELECT id, name, admin_user_id, created_at, total_event_amount, total_expense_amount, total_payout_amount, total_leftover
 FROM groups
-WHERE admin_user_id = ?
+WHERE admin_user_id = ?1
+   OR id IN (
+     SELECT group_id
+     FROM group_admins
+     WHERE user_id = ?2
+   )
 ORDER BY created_at DESC
 `
 
-func (q *Queries) ListGroupsByAdmin(ctx context.Context, adminUserID string) ([]Group, error) {
-	rows, err := q.db.QueryContext(ctx, listGroupsByAdmin, adminUserID)
+type ListGroupsByAdminParams struct {
+	OwnerUserID string `json:"owner_user_id"`
+	UserID      string `json:"user_id"`
+}
+
+func (q *Queries) ListGroupsByAdmin(ctx context.Context, arg ListGroupsByAdminParams) ([]Group, error) {
+	rows, err := q.db.QueryContext(ctx, listGroupsByAdmin, arg.OwnerUserID, arg.UserID)
 	if err != nil {
 		return nil, err
 	}
@@ -811,11 +1120,23 @@ SELECT g.id, g.name, g.admin_user_id, g.created_at, g.total_event_amount, g.tota
 FROM groups g
 JOIN group_readers gr ON gr.group_id = g.id
 WHERE gr.user_id = ?
+  AND g.admin_user_id != ?
+  AND NOT EXISTS (
+    SELECT 1
+    FROM group_admins ga
+    WHERE ga.group_id = g.id
+      AND ga.user_id = gr.user_id
+  )
 ORDER BY g.created_at DESC
 `
 
-func (q *Queries) ListGroupsByReader(ctx context.Context, userID string) ([]Group, error) {
-	rows, err := q.db.QueryContext(ctx, listGroupsByReader, userID)
+type ListGroupsByReaderParams struct {
+	UserID      string `json:"user_id"`
+	AdminUserID string `json:"admin_user_id"`
+}
+
+func (q *Queries) ListGroupsByReader(ctx context.Context, arg ListGroupsByReaderParams) ([]Group, error) {
+	rows, err := q.db.QueryContext(ctx, listGroupsByReader, arg.UserID, arg.AdminUserID)
 	if err != nil {
 		return nil, err
 	}
@@ -863,6 +1184,24 @@ WHERE g.admin_user_id = ?3
     OR u.email LIKE '%' || ?4 || '%'
   )
 UNION ALL
+SELECT
+  g.id,
+  g.name,
+  g.admin_user_id,
+  g.created_at,
+  'admin' as role,
+  u.email as admin_email
+FROM groups g
+JOIN group_admins ga ON ga.group_id = g.id
+JOIN users u ON u.id = g.admin_user_id
+WHERE ga.user_id = ?3
+  AND g.admin_user_id != ?3
+  AND (
+    ?4 = ''
+    OR g.name LIKE '%' || ?4 || '%'
+    OR u.email LIKE '%' || ?4 || '%'
+  )
+UNION ALL
 SELECT 
   g.id,
   g.name,
@@ -875,6 +1214,11 @@ JOIN group_readers gr ON gr.group_id = g.id
 JOIN users u ON u.id = g.admin_user_id
 WHERE gr.user_id = ?3
   AND g.admin_user_id != ?3
+  AND NOT EXISTS (
+    SELECT 1 FROM group_admins ga
+    WHERE ga.group_id = g.id
+      AND ga.user_id = gr.user_id
+  )
   AND (
     ?4 = ''
     OR g.name LIKE '%' || ?4 || '%'
@@ -946,6 +1290,24 @@ SELECT
 FROM groups g
 JOIN users u ON u.id = g.admin_user_id
 WHERE g.admin_user_id = ?3
+  AND (
+    ?4 = ''
+    OR g.name LIKE '%' || ?4 || '%'
+    OR u.email LIKE '%' || ?4 || '%'
+  )
+UNION ALL
+SELECT
+  g.id,
+  g.name,
+  g.admin_user_id,
+  g.created_at,
+  'admin' as role,
+  u.email as admin_email
+FROM groups g
+JOIN group_admins ga ON ga.group_id = g.id
+JOIN users u ON u.id = g.admin_user_id
+WHERE ga.user_id = ?3
+  AND g.admin_user_id != ?3
   AND (
     ?4 = ''
     OR g.name LIKE '%' || ?4 || '%'
@@ -1040,6 +1402,23 @@ WHERE g.admin_user_id = ?3
     OR u.email LIKE '%' || ?4 || '%'
   )
 UNION ALL
+SELECT
+  g.id,
+  g.name,
+  g.admin_user_id,
+  g.created_at,
+  'admin' as role
+FROM groups g
+JOIN group_admins ga ON ga.group_id = g.id
+JOIN users u ON u.id = g.admin_user_id
+WHERE ga.user_id = ?3
+  AND g.admin_user_id != ?3
+  AND (
+    ?4 = ''
+    OR g.name LIKE '%' || ?4 || '%'
+    OR u.email LIKE '%' || ?4 || '%'
+  )
+UNION ALL
 SELECT 
   g.id,
   g.name,
@@ -1051,6 +1430,11 @@ JOIN group_readers gr ON gr.group_id = g.id
 JOIN users u ON u.id = g.admin_user_id
 WHERE gr.user_id = ?3
   AND g.admin_user_id != ?3
+  AND NOT EXISTS (
+    SELECT 1 FROM group_admins ga
+    WHERE ga.group_id = g.id
+      AND ga.user_id = gr.user_id
+  )
   AND (
     ?4 = ''
     OR g.name LIKE '%' || ?4 || '%'
@@ -1125,6 +1509,23 @@ WHERE g.admin_user_id = ?3
     OR u.email LIKE '%' || ?4 || '%'
   )
 UNION ALL
+SELECT
+  g.id,
+  g.name,
+  g.admin_user_id,
+  g.created_at,
+  'admin' as role
+FROM groups g
+JOIN group_admins ga ON ga.group_id = g.id
+JOIN users u ON u.id = g.admin_user_id
+WHERE ga.user_id = ?3
+  AND g.admin_user_id != ?3
+  AND (
+    ?4 = ''
+    OR g.name LIKE '%' || ?4 || '%'
+    OR u.email LIKE '%' || ?4 || '%'
+  )
+UNION ALL
 SELECT 
   g.id,
   g.name,
@@ -1136,6 +1537,11 @@ JOIN group_readers gr ON gr.group_id = g.id
 JOIN users u ON u.id = g.admin_user_id
 WHERE gr.user_id = ?3
   AND g.admin_user_id != ?3
+  AND NOT EXISTS (
+    SELECT 1 FROM group_admins ga
+    WHERE ga.group_id = g.id
+      AND ga.user_id = gr.user_id
+  )
   AND (
     ?4 = ''
     OR g.name LIKE '%' || ?4 || '%'
@@ -1210,6 +1616,23 @@ WHERE g.admin_user_id = ?3
     OR u.email LIKE '%' || ?4 || '%'
   )
 UNION ALL
+SELECT
+  g.id,
+  g.name,
+  g.admin_user_id,
+  g.created_at,
+  'admin' as role
+FROM groups g
+JOIN group_admins ga ON ga.group_id = g.id
+JOIN users u ON u.id = g.admin_user_id
+WHERE ga.user_id = ?3
+  AND g.admin_user_id != ?3
+  AND (
+    ?4 = ''
+    OR g.name LIKE '%' || ?4 || '%'
+    OR u.email LIKE '%' || ?4 || '%'
+  )
+UNION ALL
 SELECT 
   g.id,
   g.name,
@@ -1221,6 +1644,11 @@ JOIN group_readers gr ON gr.group_id = g.id
 JOIN users u ON u.id = g.admin_user_id
 WHERE gr.user_id = ?3
   AND g.admin_user_id != ?3
+  AND NOT EXISTS (
+    SELECT 1 FROM group_admins ga
+    WHERE ga.group_id = g.id
+      AND ga.user_id = gr.user_id
+  )
   AND (
     ?4 = ''
     OR g.name LIKE '%' || ?4 || '%'
@@ -1295,6 +1723,23 @@ WHERE g.admin_user_id = ?3
     OR u.email LIKE '%' || ?4 || '%'
   )
 UNION ALL
+SELECT
+  g.id,
+  g.name,
+  g.admin_user_id,
+  g.created_at,
+  'admin' as role
+FROM groups g
+JOIN group_admins ga ON ga.group_id = g.id
+JOIN users u ON u.id = g.admin_user_id
+WHERE ga.user_id = ?3
+  AND g.admin_user_id != ?3
+  AND (
+    ?4 = ''
+    OR g.name LIKE '%' || ?4 || '%'
+    OR u.email LIKE '%' || ?4 || '%'
+  )
+UNION ALL
 SELECT 
   g.id,
   g.name,
@@ -1306,6 +1751,11 @@ JOIN group_readers gr ON gr.group_id = g.id
 JOIN users u ON u.id = g.admin_user_id
 WHERE gr.user_id = ?3
   AND g.admin_user_id != ?3
+  AND NOT EXISTS (
+    SELECT 1 FROM group_admins ga
+    WHERE ga.group_id = g.id
+      AND ga.user_id = gr.user_id
+  )
   AND (
     ?4 = ''
     OR g.name LIKE '%' || ?4 || '%'
@@ -1362,6 +1812,22 @@ func (q *Queries) ListUserGroupsByNameDescFiltered(ctx context.Context, arg List
 		return nil, err
 	}
 	return items, nil
+}
+
+const removeGroupAdmin = `-- name: RemoveGroupAdmin :exec
+DELETE FROM group_admins
+WHERE user_id = ?
+  AND group_id = ?
+`
+
+type RemoveGroupAdminParams struct {
+	UserID  string `json:"user_id"`
+	GroupID string `json:"group_id"`
+}
+
+func (q *Queries) RemoveGroupAdmin(ctx context.Context, arg RemoveGroupAdminParams) error {
+	_, err := q.db.ExecContext(ctx, removeGroupAdmin, arg.UserID, arg.GroupID)
+	return err
 }
 
 const removeGroupReader = `-- name: RemoveGroupReader :exec

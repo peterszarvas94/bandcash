@@ -13,7 +13,7 @@ Use this for page layout, buttons, tables, and form changes.
 
 ## Template locations
 - Feature templates: `models/**/**/*.templ`
-- Shared layout/components: `models/shared/*.templ` and `models/shared/*.go`
+- Shared layout/components: `models/shared/*.templ`
 - Shared table components: `models/shared/table.templ`
 - Static assets: `static/css/*`, `static/js/*`
 
@@ -33,7 +33,8 @@ Use this for page layout, buttons, tables, and form changes.
 
 ## Notes
 - Keep markup in existing sections; do not introduce new layout wrappers unless needed.
-- Do not run `mise run templ` by default in this repo (dev server live reload handles templ generation).
+- Do not edit generated `*_templ.go` files by hand.
+- Do not run `mise run templ` unless explicitly requested; normal dev flow handles templ regeneration.
 
 ## CSS conventions (utility-first)
 - Prefer utilities for layout/spacing (`row`, `grid`, `pt`, `pb`, `show-mobile`, `hide-mobile`, etc.).

@@ -17,10 +17,10 @@ Use this whenever you add/remove icons or touch `models/shared/icons/*`.
 - Keep icon package at `models/shared/icons`.
 
 ## Generator command
-Use the installed `lucide-gen` binary with constrained categories:
+Use `lucide-gen` with constrained categories:
 
 ```bash
-/Users/szarvaspeter/.local/share/mise/installs/go/1.26.0/bin/lucide-gen \
+lucide-gen \
   -output ./models/shared/icons \
   -package icons \
   -categories "navigation,actions,communication,ui,data"
@@ -30,14 +30,16 @@ Use the installed `lucide-gen` binary with constrained categories:
 Always run:
 
 ```bash
-mise run templ && mise run format && mise run test
+mise run format && mise run test
 ```
+
+Only run `mise run templ` when explicitly requested.
 
 ## Practical workflow
 1. Update template usages (`@icons.*`) first.
 2. Regenerate reduced icon set with the command above.
 3. If compile fails due missing icon names, swap to available icons from `models/shared/icons/registry.templ`.
-4. Run templ/format/tests.
+4. Run format/tests.
 
 ## Notes
 - This keeps icon files small and avoids slow parsing from 1000+ generated icons.

@@ -35,12 +35,23 @@ WHERE id = ?;
 
 -- name: GetGroupByAdmin :one
 SELECT * FROM groups
-WHERE admin_user_id = ?;
+WHERE admin_user_id = sqlc.arg(owner_user_id)
+   OR id IN (
+     SELECT group_id
+     FROM group_admins
+     WHERE user_id = sqlc.arg(user_id)
+   )
+LIMIT 1;
 
 -- name: ListGroupsByAdmin :many
 SELECT *
 FROM groups
-WHERE admin_user_id = ?
+WHERE admin_user_id = sqlc.arg(owner_user_id)
+   OR id IN (
+     SELECT group_id
+     FROM group_admins
+     WHERE user_id = sqlc.arg(user_id)
+   )
 ORDER BY created_at DESC;
 
 -- name: ListGroupsByReader :many
@@ -48,6 +59,13 @@ SELECT g.*
 FROM groups g
 JOIN group_readers gr ON gr.group_id = g.id
 WHERE gr.user_id = ?
+  AND g.admin_user_id != ?
+  AND NOT EXISTS (
+    SELECT 1
+    FROM group_admins ga
+    WHERE ga.group_id = g.id
+      AND ga.user_id = gr.user_id
+  )
 ORDER BY g.created_at DESC;
 
 -- name: UpdateGroupAdmin :exec
@@ -117,6 +135,11 @@ WHERE user_id = ? AND group_id = ?;
 -- name: CreateMagicLink :one
 INSERT INTO magic_links (id, token, email, action, group_id, expires_at)
 VALUES (?, ?, ?, ?, ?, ?)
+RETURNING *;
+
+-- name: CreateInviteMagicLink :one
+INSERT INTO magic_links (id, token, email, action, group_id, expires_at, invite_role)
+VALUES (?, ?, ?, 'invite', ?, ?, ?)
 RETURNING *;
 
 -- name: GetMagicLinkByToken :one
@@ -210,6 +233,96 @@ WHERE id = ?
   AND group_id = ?
   AND used_at IS NULL;
 
+-- name: CreateGroupAdmin :one
+INSERT INTO group_admins (id, user_id, group_id)
+VALUES (?, ?, ?)
+RETURNING *;
+
+-- name: IsGroupAdmin :one
+SELECT COUNT(*)
+FROM group_admins
+WHERE user_id = ?
+  AND group_id = ?;
+
+-- name: RemoveGroupAdmin :exec
+DELETE FROM group_admins
+WHERE user_id = ?
+  AND group_id = ?;
+
+-- name: ListGroupAdminUserIDs :many
+SELECT user_id
+FROM group_admins
+WHERE group_id = ?;
+
+-- name: CountGroupAdminsFiltered :one
+SELECT COUNT(*) FROM (
+  SELECT u.id
+  FROM groups g
+  JOIN users u ON u.id = g.admin_user_id
+  WHERE g.id = sqlc.arg(group_id)
+    AND (
+      sqlc.arg(search) = ''
+      OR LOWER(u.email) LIKE '%' || LOWER(sqlc.arg(search)) || '%'
+    )
+  UNION
+  SELECT u.id
+  FROM group_admins ga
+  JOIN users u ON u.id = ga.user_id
+  WHERE ga.group_id = sqlc.arg(group_id)
+    AND (
+      sqlc.arg(search) = ''
+      OR LOWER(u.email) LIKE '%' || LOWER(sqlc.arg(search)) || '%'
+    )
+);
+
+-- name: ListGroupAdminsByEmailAscFiltered :many
+SELECT * FROM users
+WHERE id IN (
+  SELECT u.id
+  FROM groups g
+  JOIN users u ON u.id = g.admin_user_id
+  WHERE g.id = sqlc.arg(group_id)
+    AND (
+      sqlc.arg(search) = ''
+      OR LOWER(u.email) LIKE '%' || LOWER(sqlc.arg(search)) || '%'
+    )
+  UNION
+  SELECT u.id
+  FROM group_admins ga
+  JOIN users u ON u.id = ga.user_id
+  WHERE ga.group_id = sqlc.arg(group_id)
+    AND (
+      sqlc.arg(search) = ''
+      OR LOWER(u.email) LIKE '%' || LOWER(sqlc.arg(search)) || '%'
+    )
+)
+ORDER BY LOWER(email) ASC
+LIMIT sqlc.arg(limit) OFFSET sqlc.arg(offset);
+
+-- name: ListGroupAdminsByEmailDescFiltered :many
+SELECT * FROM users
+WHERE id IN (
+  SELECT u.id
+  FROM groups g
+  JOIN users u ON u.id = g.admin_user_id
+  WHERE g.id = sqlc.arg(group_id)
+    AND (
+      sqlc.arg(search) = ''
+      OR LOWER(u.email) LIKE '%' || LOWER(sqlc.arg(search)) || '%'
+    )
+  UNION
+  SELECT u.id
+  FROM group_admins ga
+  JOIN users u ON u.id = ga.user_id
+  WHERE ga.group_id = sqlc.arg(group_id)
+    AND (
+      sqlc.arg(search) = ''
+      OR LOWER(u.email) LIKE '%' || LOWER(sqlc.arg(search)) || '%'
+    )
+)
+ORDER BY LOWER(email) DESC
+LIMIT sqlc.arg(limit) OFFSET sqlc.arg(offset);
+
 -- name: CountUserGroupsFiltered :one
 SELECT COUNT(*) FROM (
   SELECT g.id FROM groups g
@@ -222,10 +335,26 @@ SELECT COUNT(*) FROM (
     )
   UNION
   SELECT g.id FROM groups g
+  JOIN group_admins ga ON ga.group_id = g.id
+  JOIN users u ON u.id = g.admin_user_id
+  WHERE ga.user_id = sqlc.arg(user_id)
+    AND g.admin_user_id != sqlc.arg(user_id)
+    AND (
+      sqlc.arg(search) = ''
+      OR g.name LIKE '%' || sqlc.arg(search) || '%'
+      OR u.email LIKE '%' || sqlc.arg(search) || '%'
+    )
+  UNION
+  SELECT g.id FROM groups g
   JOIN group_readers gr ON gr.group_id = g.id
   JOIN users u ON u.id = g.admin_user_id
   WHERE gr.user_id = sqlc.arg(user_id)
     AND g.admin_user_id != sqlc.arg(user_id)
+  AND NOT EXISTS (
+    SELECT 1 FROM group_admins ga
+    WHERE ga.group_id = g.id
+        AND ga.user_id = gr.user_id
+    )
     AND (
       sqlc.arg(search) = ''
       OR g.name LIKE '%' || sqlc.arg(search) || '%'
@@ -249,6 +378,23 @@ WHERE g.admin_user_id = sqlc.arg(user_id)
     OR u.email LIKE '%' || sqlc.arg(search) || '%'
   )
 UNION ALL
+SELECT
+  g.id,
+  g.name,
+  g.admin_user_id,
+  g.created_at,
+  'admin' as role
+FROM groups g
+JOIN group_admins ga ON ga.group_id = g.id
+JOIN users u ON u.id = g.admin_user_id
+WHERE ga.user_id = sqlc.arg(user_id)
+  AND g.admin_user_id != sqlc.arg(user_id)
+  AND (
+    sqlc.arg(search) = ''
+    OR g.name LIKE '%' || sqlc.arg(search) || '%'
+    OR u.email LIKE '%' || sqlc.arg(search) || '%'
+  )
+UNION ALL
 SELECT 
   g.id,
   g.name,
@@ -260,6 +406,11 @@ JOIN group_readers gr ON gr.group_id = g.id
 JOIN users u ON u.id = g.admin_user_id
 WHERE gr.user_id = sqlc.arg(user_id)
   AND g.admin_user_id != sqlc.arg(user_id)
+  AND NOT EXISTS (
+    SELECT 1 FROM group_admins ga
+    WHERE ga.group_id = g.id
+      AND ga.user_id = gr.user_id
+  )
   AND (
     sqlc.arg(search) = ''
     OR g.name LIKE '%' || sqlc.arg(search) || '%'
@@ -284,6 +435,23 @@ WHERE g.admin_user_id = sqlc.arg(user_id)
     OR u.email LIKE '%' || sqlc.arg(search) || '%'
   )
 UNION ALL
+SELECT
+  g.id,
+  g.name,
+  g.admin_user_id,
+  g.created_at,
+  'admin' as role
+FROM groups g
+JOIN group_admins ga ON ga.group_id = g.id
+JOIN users u ON u.id = g.admin_user_id
+WHERE ga.user_id = sqlc.arg(user_id)
+  AND g.admin_user_id != sqlc.arg(user_id)
+  AND (
+    sqlc.arg(search) = ''
+    OR g.name LIKE '%' || sqlc.arg(search) || '%'
+    OR u.email LIKE '%' || sqlc.arg(search) || '%'
+  )
+UNION ALL
 SELECT 
   g.id,
   g.name,
@@ -295,6 +463,11 @@ JOIN group_readers gr ON gr.group_id = g.id
 JOIN users u ON u.id = g.admin_user_id
 WHERE gr.user_id = sqlc.arg(user_id)
   AND g.admin_user_id != sqlc.arg(user_id)
+  AND NOT EXISTS (
+    SELECT 1 FROM group_admins ga
+    WHERE ga.group_id = g.id
+      AND ga.user_id = gr.user_id
+  )
   AND (
     sqlc.arg(search) = ''
     OR g.name LIKE '%' || sqlc.arg(search) || '%'
@@ -319,6 +492,23 @@ WHERE g.admin_user_id = sqlc.arg(user_id)
     OR u.email LIKE '%' || sqlc.arg(search) || '%'
   )
 UNION ALL
+SELECT
+  g.id,
+  g.name,
+  g.admin_user_id,
+  g.created_at,
+  'admin' as role
+FROM groups g
+JOIN group_admins ga ON ga.group_id = g.id
+JOIN users u ON u.id = g.admin_user_id
+WHERE ga.user_id = sqlc.arg(user_id)
+  AND g.admin_user_id != sqlc.arg(user_id)
+  AND (
+    sqlc.arg(search) = ''
+    OR g.name LIKE '%' || sqlc.arg(search) || '%'
+    OR u.email LIKE '%' || sqlc.arg(search) || '%'
+  )
+UNION ALL
 SELECT 
   g.id,
   g.name,
@@ -330,6 +520,11 @@ JOIN group_readers gr ON gr.group_id = g.id
 JOIN users u ON u.id = g.admin_user_id
 WHERE gr.user_id = sqlc.arg(user_id)
   AND g.admin_user_id != sqlc.arg(user_id)
+  AND NOT EXISTS (
+    SELECT 1 FROM group_admins ga
+    WHERE ga.group_id = g.id
+      AND ga.user_id = gr.user_id
+  )
   AND (
     sqlc.arg(search) = ''
     OR g.name LIKE '%' || sqlc.arg(search) || '%'
@@ -354,6 +549,23 @@ WHERE g.admin_user_id = sqlc.arg(user_id)
     OR u.email LIKE '%' || sqlc.arg(search) || '%'
   )
 UNION ALL
+SELECT
+  g.id,
+  g.name,
+  g.admin_user_id,
+  g.created_at,
+  'admin' as role
+FROM groups g
+JOIN group_admins ga ON ga.group_id = g.id
+JOIN users u ON u.id = g.admin_user_id
+WHERE ga.user_id = sqlc.arg(user_id)
+  AND g.admin_user_id != sqlc.arg(user_id)
+  AND (
+    sqlc.arg(search) = ''
+    OR g.name LIKE '%' || sqlc.arg(search) || '%'
+    OR u.email LIKE '%' || sqlc.arg(search) || '%'
+  )
+UNION ALL
 SELECT 
   g.id,
   g.name,
@@ -365,6 +577,11 @@ JOIN group_readers gr ON gr.group_id = g.id
 JOIN users u ON u.id = g.admin_user_id
 WHERE gr.user_id = sqlc.arg(user_id)
   AND g.admin_user_id != sqlc.arg(user_id)
+  AND NOT EXISTS (
+    SELECT 1 FROM group_admins ga
+    WHERE ga.group_id = g.id
+      AND ga.user_id = gr.user_id
+  )
   AND (
     sqlc.arg(search) = ''
     OR g.name LIKE '%' || sqlc.arg(search) || '%'
@@ -390,6 +607,24 @@ WHERE g.admin_user_id = sqlc.arg(user_id)
     OR u.email LIKE '%' || sqlc.arg(search) || '%'
   )
 UNION ALL
+SELECT
+  g.id,
+  g.name,
+  g.admin_user_id,
+  g.created_at,
+  'admin' as role,
+  u.email as admin_email
+FROM groups g
+JOIN group_admins ga ON ga.group_id = g.id
+JOIN users u ON u.id = g.admin_user_id
+WHERE ga.user_id = sqlc.arg(user_id)
+  AND g.admin_user_id != sqlc.arg(user_id)
+  AND (
+    sqlc.arg(search) = ''
+    OR g.name LIKE '%' || sqlc.arg(search) || '%'
+    OR u.email LIKE '%' || sqlc.arg(search) || '%'
+  )
+UNION ALL
 SELECT 
   g.id,
   g.name,
@@ -402,6 +637,11 @@ JOIN group_readers gr ON gr.group_id = g.id
 JOIN users u ON u.id = g.admin_user_id
 WHERE gr.user_id = sqlc.arg(user_id)
   AND g.admin_user_id != sqlc.arg(user_id)
+  AND NOT EXISTS (
+    SELECT 1 FROM group_admins ga
+    WHERE ga.group_id = g.id
+      AND ga.user_id = gr.user_id
+  )
   AND (
     sqlc.arg(search) = ''
     OR g.name LIKE '%' || sqlc.arg(search) || '%'
@@ -421,6 +661,24 @@ SELECT
 FROM groups g
 JOIN users u ON u.id = g.admin_user_id
 WHERE g.admin_user_id = sqlc.arg(user_id)
+  AND (
+    sqlc.arg(search) = ''
+    OR g.name LIKE '%' || sqlc.arg(search) || '%'
+    OR u.email LIKE '%' || sqlc.arg(search) || '%'
+  )
+UNION ALL
+SELECT
+  g.id,
+  g.name,
+  g.admin_user_id,
+  g.created_at,
+  'admin' as role,
+  u.email as admin_email
+FROM groups g
+JOIN group_admins ga ON ga.group_id = g.id
+JOIN users u ON u.id = g.admin_user_id
+WHERE ga.user_id = sqlc.arg(user_id)
+  AND g.admin_user_id != sqlc.arg(user_id)
   AND (
     sqlc.arg(search) = ''
     OR g.name LIKE '%' || sqlc.arg(search) || '%'

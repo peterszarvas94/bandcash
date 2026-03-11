@@ -21,8 +21,14 @@ Use this when adding participant UI or wiring add/remove participant actions.
 - Tables use `.table` and numeric values use `.text-right`.
 - Forms use `class="form"` and `data-on:submit`.
 - Number inputs use `type="number"` and `step="0.01"`.
+- Keep signal structs in handlers aligned with `data-bind` names in templ.
 
 ## SSE update pattern
 - Use `utils.SSEHub.PatchHTML(c, html)` to patch full view markup.
 - Use `utils.SSEHub.PatchSignals(c, ...)` for form/UI state updates.
 - Use `utils.SSEHub.Redirect(c, url)` after successful mutations.
+
+## Handler pattern
+- Parse signals first; on parse failure return `c.NoContent(http.StatusBadRequest)`.
+- Validate with `utils.ValidateWithLocale`; return `c.NoContent(http.StatusUnprocessableEntity)` for validation failures.
+- Keep participant mutation handlers thin; move query/data assembly into model methods when practical.

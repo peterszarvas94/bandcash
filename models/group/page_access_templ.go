@@ -9,45 +9,16 @@ import "github.com/a-h/templ"
 import templruntime "github.com/a-h/templ/runtime"
 
 import (
-	"fmt"
-
 	appi18n "bandcash/internal/i18n"
 	"bandcash/internal/utils"
 	shared "bandcash/models/shared"
 )
 
-func viewersTabClass(currentTab, targetTab string) string {
-	if currentTab == targetTab {
-		return "btn btn-active"
-	}
-	return "btn"
+func accessTablePath(groupID string) string {
+	return "/groups/" + groupID + "/access"
 }
 
-func viewersTabAriaSelected(currentTab, targetTab string) string {
-	if currentTab == targetTab {
-		return "true"
-	}
-	return "false"
-}
-
-func viewersTabURL(groupID, tab string) string {
-	switch tab {
-	case "viewers":
-		return fmt.Sprintf("/groups/%s/access/viewers", groupID)
-	case "pending":
-		return fmt.Sprintf("/groups/%s/access/pending", groupID)
-	case "admins":
-		return fmt.Sprintf("/groups/%s/access/admins", groupID)
-	default:
-		return fmt.Sprintf("/groups/%s/access/viewers", groupID)
-	}
-}
-
-func viewersTablePath(groupID, tab string) string {
-	return viewersTabURL(groupID, tab)
-}
-
-func GroupViewersPage(data ViewersPageData) templ.Component {
+func GroupAccessPage(data AccessPageData) templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
 		if templ_7745c5c3_CtxErr := ctx.Err(); templ_7745c5c3_CtxErr != nil {
@@ -75,7 +46,7 @@ func GroupViewersPage(data ViewersPageData) templ.Component {
 		var templ_7745c5c3_Var2 string
 		templ_7745c5c3_Var2, templ_7745c5c3_Err = templ.JoinStringErrs(appi18n.LocaleCode(ctx))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/group/page_viewers.templ`, Line: 44, Col: 37}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/group/page_access.templ`, Line: 15, Col: 37}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var2))
 		if templ_7745c5c3_Err != nil {
@@ -94,9 +65,9 @@ func GroupViewersPage(data ViewersPageData) templ.Component {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var3 string
-		templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.JoinStringErrs(templ.JSONString(map[string]any{"csrf": utils.CSRFTokenFromContext(ctx), "formState": "", "eventFormState": "", "tab": data.Tab, "formData": map[string]any{"email": ""}, "tableQuery": utils.TableQuerySignals(data.Query)}))
+		templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.JoinStringErrs(templ.JSONString(map[string]any{"csrf": utils.CSRFTokenFromContext(ctx), "formState": "", "eventFormState": "", "formData": map[string]any{"email": "", "role": "viewer"}, "tableQuery": utils.TableQuerySignals(data.Query)}))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/group/page_viewers.templ`, Line: 47, Col: 244}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/group/page_access.templ`, Line: 18, Col: 245}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var3))
 		if templ_7745c5c3_Err != nil {
@@ -110,7 +81,7 @@ func GroupViewersPage(data ViewersPageData) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = shared.AppShell("group-access", data.Breadcrumbs, data.UserEmail, shared.GroupPrimaryNav(data.Group.ID, "viewers", data.UserEmail), GroupViewersMain(data), GroupViewersSidebar(data)).Render(ctx, templ_7745c5c3_Buffer)
+		templ_7745c5c3_Err = shared.AppShell("group-access", data.Breadcrumbs, data.UserEmail, shared.GroupPrimaryNav(data.Group.ID, "viewers", data.UserEmail), GroupAccessMain(data), GroupAccessSidebar(data)).Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
