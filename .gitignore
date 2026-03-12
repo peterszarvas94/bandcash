@@ -7,3 +7,5 @@ sqlite.db
 sqlite.db-*
 .kamal/secrets
 static/gen/
+.env.local
+.env.*.local

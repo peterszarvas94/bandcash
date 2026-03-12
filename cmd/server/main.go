@@ -37,7 +37,6 @@ func main() {
 	flag.Parse()
 
 	utils.SetupLogger()
-	utils.LoadAppDotEnv()
 
 	e := echo.New()
 	e.HideBanner = true

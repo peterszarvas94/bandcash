@@ -18,8 +18,6 @@ func main() {
 
 	flag.Parse()
 
-	utils.LoadAppDotEnv()
-
 	dbPath := utils.Env().DBPath
 	if *flagDBPath != "" {
 		dbPath = *flagDBPath

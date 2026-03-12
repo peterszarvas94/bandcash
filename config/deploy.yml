@@ -41,11 +41,11 @@ env:
     - LOG_PREFIX
     - SUPERADMIN_EMAIL
     - DISABLE_RATE_LIMIT
-    - SMTP_USERNAME
-    - SMTP_PASSWORD
     - SMTP_HOST
     - SMTP_PORT
     - EMAIL_FROM
+    - SMTP_USERNAME
+    - SMTP_PASSWORD
 
 accessories:
   better-stack:
