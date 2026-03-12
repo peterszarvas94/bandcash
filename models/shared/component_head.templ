@@ -8,6 +8,7 @@ templ Head(title string) {
 		description := "Track shared group money, events, expenses, and payouts with BandCash."
 		siteURL := "https://bandcash.app/"
 		socialImageURL := "https://bandcash.app/static/img/bandcash.png"
+		importMapScript := `<script type="importmap">` + assets.ImportMapJSON() + `</script>`
 	}}
 	<head>
 		<meta charset="UTF-8"/>
@@ -29,7 +30,7 @@ templ Head(title string) {
 		<meta name="application-name" content={ siteName }/>
 		<title>{ title }</title>
 		<link rel="stylesheet" href={ assets.AssetPath("css/style.css") }/>
-		<script type="importmap">@templ.Raw(assets.ImportMapJSON())</script>
+		@templ.Raw(importMapScript)
 		<script type="module" src={ assets.AssetPath("js/main.js") }></script>
 		<meta name="view-transition" content="same-origin"/>
 		<script type="speculationrules">
