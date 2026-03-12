@@ -3,13 +3,11 @@ package email
 import ctxi18n "github.com/invopop/ctxi18n/i18n"
 
 templ BilingualEmailHTML(huHTML, enHTML string) {
-	<div style="margin:0;padding:0;background:#f7f8fa;color:#1a1a1a;color-scheme:light;">
-		<div style="margin:0;padding-top:20px;font-family:system-ui,-apple-system,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif;font-size:12px;line-height:1.4;color:#1a1a1a;text-align:center;background:#f7f8fa;">
-			English follows below.
-		</div>
-		@templ.Raw(huHTML)
-		@templ.Raw(enHTML)
+	<div style="margin:0;padding-top:20px;font-family:system-ui,-apple-system,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif;font-size:12px;line-height:1.4;color:#1a1a1a;text-align:center;background:#f7f8fa;color-scheme:light;">
+		English follows below.
 	</div>
+	@templ.Raw(huHTML)
+	@templ.Raw(enHTML)
 }
 
 templ MagicLinkText(link string) {

@@ -8,16 +8,19 @@ import (
 	"strings"
 	"time"
 
+	ctxi18n "github.com/invopop/ctxi18n/i18n"
 	"github.com/labstack/echo/v4"
 	"github.com/starfederation/datastar-go/datastar"
 
 	"bandcash/internal/db"
 	"bandcash/internal/email"
+	appi18n "bandcash/internal/i18n"
 	"bandcash/internal/utils"
 	"bandcash/models/event"
 	"bandcash/models/expense"
 	"bandcash/models/member"
 	shared "bandcash/models/shared"
+	icons "bandcash/models/shared/icons"
 )
 
 type devSignals struct {
@@ -226,8 +229,45 @@ func (h *DevNotifications) PreviewAccessRemovedEmail(c echo.Context) error {
 	})
 }
 
+func (h *DevNotifications) PreviewInvalidLinkErrorPage(c echo.Context) error {
+	return renderDevErrorPage(c, http.StatusBadRequest, icons.IconLink2Off, "error_pages.link.invalid_title", "error_pages.link.invalid_body")
+}
+
+func (h *DevNotifications) PreviewBadRequestErrorPage(c echo.Context) error {
+	return echo.NewHTTPError(http.StatusBadRequest)
+}
+
+func (h *DevNotifications) PreviewForbiddenErrorPage(c echo.Context) error {
+	return echo.NewHTTPError(http.StatusForbidden)
+}
+
+func (h *DevNotifications) PreviewNotFoundErrorPage(c echo.Context) error {
+	return echo.NewHTTPError(http.StatusNotFound)
+}
+
+func (h *DevNotifications) PreviewRateLimitErrorPage(c echo.Context) error {
+	return echo.NewHTTPError(http.StatusTooManyRequests)
+}
+
+func (h *DevNotifications) PreviewInternalErrorPage(c echo.Context) error {
+	return echo.NewHTTPError(http.StatusInternalServerError)
+}
+
 func renderEmailPreview(c echo.Context, data EmailPreviewData) error {
 	return utils.RenderPage(c, DevEmailPreviewPage(data))
+}
+
+func renderDevErrorPage(c echo.Context, status int, iconName icons.IconName, titleKey, bodyKey string) error {
+	ctx := c.Request().Context()
+	return utils.RenderPage(c, shared.ErrorPage(shared.ErrorPageData{
+		Title:      ctxi18n.T(ctx, titleKey),
+		StatusCode: status,
+		IconName:   iconName,
+		Heading:    ctxi18n.T(ctx, titleKey),
+		Message:    ctxi18n.T(ctx, bodyKey),
+		HomeLabel:  ctxi18n.T(ctx, "error_pages.home_action"),
+		HomeHref:   appi18n.LocalizedHomePath(ctx),
+	}))
 }
 
 func (h *DevNotifications) TestTableQuery(c echo.Context) error {

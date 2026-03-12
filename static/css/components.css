@@ -613,6 +613,47 @@
     padding-left: var(--page-padding-inline);
   }
 
+  .error-page {
+    min-height: 100vh;
+    align-content: center;
+  }
+
+  .error-card {
+    display: grid;
+    gap: var(--space);
+    padding: calc(var(--space) * 2);
+    border: var(--border) solid var(--border-color);
+    background: color-mix(in srgb, var(--page-bg) 96%, var(--text-color) 4%);
+    text-align: center;
+
+    > h1,
+    > p {
+      margin: 0;
+    }
+  }
+
+  .error-icon {
+    width: 3rem;
+    height: 3rem;
+    margin: 0 auto;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border: var(--border) solid var(--border-color);
+    background: color-mix(in srgb, var(--page-bg) 90%, var(--text-color) 10%);
+
+    .icon {
+      width: 1.25rem;
+      height: 1.25rem;
+    }
+  }
+
+  .error-status {
+    font-family: var(--font-mono);
+    font-size: 0.875rem;
+    color: var(--muted-text-color);
+  }
+
   .home-hero {
     position: relative;
     margin: 0;

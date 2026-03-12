@@ -35,6 +35,30 @@ hu:
       send_email_failed: "Nem sikerült emailt küldeni. Próbáld újra."
       create_user_failed: "Nem sikerült fiókot létrehozni. Próbáld újra."
       link_sent: "Ha van hozzáférésed, küldtünk egy belépési linket."
+  error_pages:
+    home_action: "Vissza a főoldalra"
+    link:
+      invalid_title: "Érvénytelen link"
+      invalid_body: "Ez a belépési link érvénytelen vagy már nem elérhető."
+      expired_title: "Lejárt link"
+      expired_body: "Ez a belépési link lejárt. Kérj új belépési linket a főoldalon."
+      used_title: "A link már felhasználva"
+      used_body: "Ez a belépési link már egyszer fel lett használva, ezért nem használható újra."
+      invalid_invitation_title: "Érvénytelen meghívás"
+      invalid_invitation_body: "Ez a meghívás érvénytelen vagy hiányos csoportadatot tartalmaz."
+      process_title: "Nem sikerült feldolgozni a linket"
+      process_body: "Most nem tudtuk befejezni a belépést ezzel a linkkel. Próbáld újra."
+    generic:
+      bad_request_title: "Hibás kérés"
+      bad_request_body: "A kérés feldolgozása nem sikerült."
+      forbidden_title: "Hozzáférés megtagadva"
+      forbidden_body: "Nincs jogosultságod az oldal megnyitásához."
+      not_found_title: "Az oldal nem található"
+      not_found_body: "A keresett oldal nem létezik vagy áthelyezték."
+      too_many_requests_title: "Túl sok kérés"
+      too_many_requests_body: "Túl gyorsan küldesz kéréseket. Várj egy kicsit, majd próbáld újra."
+      internal_title: "Szerverhiba"
+      internal_body: "A szerver oldalon hiba történt. Próbáld újra egy kis idő múlva."
   email:
     magic_link:
       subject: "Belépés a BandCash-be"

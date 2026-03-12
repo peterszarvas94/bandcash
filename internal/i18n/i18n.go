@@ -4,6 +4,7 @@ import (
 	"context"
 	"embed"
 	"net/http"
+	"net/url"
 	"strings"
 
 	"github.com/invopop/ctxi18n"
@@ -67,4 +68,8 @@ func LocaleFromRequest(r *http.Request) string {
 	}
 
 	return DefaultLocale
+}
+
+func LocalizedHomePath(ctx context.Context) string {
+	return "/?lang=" + url.QueryEscape(LocaleCode(ctx))
 }

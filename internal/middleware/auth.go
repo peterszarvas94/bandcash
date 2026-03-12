@@ -57,6 +57,9 @@ func RequireAuth() echo.MiddlewareFunc {
 			}
 
 			preferredLang := appi18n.NormalizeLocale(user.PreferredLang)
+			if rawLang := strings.TrimSpace(c.QueryParam("lang")); rawLang != "" {
+				preferredLang = appi18n.NormalizeLocale(rawLang)
+			}
 			if localizedCtx, localeErr := ctxi18nlib.WithLocale(c.Request().Context(), preferredLang); localeErr == nil {
 				c.SetRequest(c.Request().WithContext(localizedCtx))
 			}

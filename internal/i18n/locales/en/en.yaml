@@ -35,6 +35,30 @@ en:
       send_email_failed: "Could not send email. Please try again."
       create_user_failed: "Could not create account. Please try again."
       link_sent: "If you have access, we've sent you a login link."
+  error_pages:
+    home_action: "Go to home"
+    link:
+      invalid_title: "Invalid link"
+      invalid_body: "This sign-in link is invalid or no longer available."
+      expired_title: "Link expired"
+      expired_body: "This sign-in link has expired. Request a new login link from the home page."
+      used_title: "Link already used"
+      used_body: "This sign-in link was already used once and cannot be used again."
+      invalid_invitation_title: "Invalid invitation"
+      invalid_invitation_body: "This invitation is invalid or missing required group information."
+      process_title: "Could not process link"
+      process_body: "We could not complete sign-in with this link right now. Please try again."
+    generic:
+      bad_request_title: "Bad request"
+      bad_request_body: "The request could not be processed."
+      forbidden_title: "Access denied"
+      forbidden_body: "You do not have permission to access this page."
+      not_found_title: "Page not found"
+      not_found_body: "The page you requested does not exist or has moved."
+      too_many_requests_title: "Too many requests"
+      too_many_requests_body: "You are sending requests too quickly. Please wait a moment and try again."
+      internal_title: "Server error"
+      internal_body: "Something went wrong on our side. Please try again in a moment."
   email:
     magic_link:
       subject: "Login to BandCash"

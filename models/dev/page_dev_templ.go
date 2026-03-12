@@ -127,6 +127,10 @@ func DevMain() templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
+		templ_7745c5c3_Err = shared.Section("Error pages", ErrorPagePreviewContent()).Render(ctx, templ_7745c5c3_Buffer)
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
 		templ_7745c5c3_Err = shared.Section("Loading indicator test", LoadingIndicatorContent()).Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
@@ -168,7 +172,7 @@ func ButtonVariantsContent() templ.Component {
 			templ_7745c5c3_Var5 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 6, "<p>Use this palette to tune button styling consistently across variants.</p><div class=\"row row-wrap\"><button class=\"btn\" type=\"button\">Default</button> <button class=\"btn btn-ghost\" type=\"button\">Ghost</button> <button class=\"btn btn-danger\" type=\"button\">Danger</button> <button class=\"btn btn-active\" type=\"button\">Active</button> <button class=\"btn\" type=\"button\" disabled>Disabled</button></div><div class=\"row row-wrap\"><button class=\"btn btn-sm\" type=\"button\">Small</button> <button class=\"btn btn-sm btn-ghost\" type=\"button\">Small ghost</button> <button class=\"btn btn-sm btn-active\" type=\"button\">Small active</button> <button class=\"btn btn-sm\" type=\"button\" disabled>Small disabled</button> <button class=\"btn btn-sm btn-icon\" type=\"button\" aria-label=\"Icon default\" title=\"Icon default\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 6, "<div class=\"row row-wrap\"><button class=\"btn\" type=\"button\">Default</button> <button class=\"btn btn-ghost\" type=\"button\">Ghost</button> <button class=\"btn btn-danger\" type=\"button\">Danger</button> <button class=\"btn btn-active\" type=\"button\">Active</button> <button class=\"btn\" type=\"button\" disabled>Disabled</button></div><div class=\"row row-wrap\"><button class=\"btn btn-sm\" type=\"button\">Small</button> <button class=\"btn btn-sm btn-ghost\" type=\"button\">Small ghost</button> <button class=\"btn btn-sm btn-active\" type=\"button\">Small active</button> <button class=\"btn btn-sm\" type=\"button\" disabled>Small disabled</button> <button class=\"btn btn-sm btn-icon\" type=\"button\" aria-label=\"Icon default\" title=\"Icon default\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -213,7 +217,7 @@ func FormControlsContent() templ.Component {
 			templ_7745c5c3_Var6 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 9, "<p>Compare grayscale form controls across default, interactive, and disabled states.</p><div class=\"row row-wrap\"><input class=\"input w-half\" type=\"text\" placeholder=\"Input placeholder\" value=\"Input value\"> <select class=\"input w-half\"><option>Alpha</option> <option selected>Selected option</option> <option>Gamma</option></select></div><div class=\"row row-wrap\"><textarea class=\"input\" rows=\"6\">Textarea sample text</textarea></div><div class=\"row row-wrap\"><input class=\"input w-half\" type=\"text\" placeholder=\"Disabled input\" value=\"Disabled input\" disabled> <select class=\"input w-half\" disabled><option selected>Disabled select</option></select></div><div class=\"row row-wrap\"><textarea class=\"input\" rows=\"6\" disabled>Disabled textarea</textarea></div>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 9, "<div class=\"row row-wrap\"><input class=\"input w-half\" type=\"text\" placeholder=\"Input placeholder\" value=\"Input value\"> <select class=\"input w-half\"><option>Alpha</option> <option selected>Selected option</option> <option>Gamma</option></select></div><div class=\"row row-wrap\"><textarea class=\"input\" rows=\"6\">Textarea sample text</textarea></div><div class=\"row row-wrap\"><input class=\"input w-half\" type=\"text\" placeholder=\"Disabled input\" value=\"Disabled input\" disabled> <select class=\"input w-half\" disabled><option selected>Disabled select</option></select></div><div class=\"row row-wrap\"><textarea class=\"input\" rows=\"6\" disabled>Disabled textarea</textarea></div>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -242,7 +246,7 @@ func TableQueryTestContent() templ.Component {
 			templ_7745c5c3_Var7 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 10, "<p>Run hardcoded query examples and inspect parsed + backend response.</p><div class=\"row row-wrap\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 10, "<div class=\"row row-wrap\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -299,7 +303,36 @@ func EmailPreviewContent() templ.Component {
 			templ_7745c5c3_Var8 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 13, "<p>Open email previews in a new tab with a basic fake email-client wrapper.</p><div class=\"row row-wrap\"><a class=\"btn\" href=\"/dev/emails/login\" target=\"_blank\" rel=\"noopener\">Login email</a> <a class=\"btn\" href=\"/dev/emails/invite\" target=\"_blank\" rel=\"noopener\">Invite email</a> <a class=\"btn\" href=\"/dev/emails/invite-accepted\" target=\"_blank\" rel=\"noopener\">Invite accepted email</a> <a class=\"btn\" href=\"/dev/emails/group-created\" target=\"_blank\" rel=\"noopener\">Group created email</a> <a class=\"btn\" href=\"/dev/emails/role-upgraded\" target=\"_blank\" rel=\"noopener\">Role upgraded email</a> <a class=\"btn\" href=\"/dev/emails/role-downgraded\" target=\"_blank\" rel=\"noopener\">Role downgraded email</a> <a class=\"btn\" href=\"/dev/emails/access-removed\" target=\"_blank\" rel=\"noopener\">Access removed email</a></div>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 13, "<div class=\"row row-wrap\"><a class=\"btn\" href=\"/dev/emails/login\" target=\"_blank\" rel=\"noopener\">Login email</a> <a class=\"btn\" href=\"/dev/emails/invite\" target=\"_blank\" rel=\"noopener\">Invite email</a> <a class=\"btn\" href=\"/dev/emails/invite-accepted\" target=\"_blank\" rel=\"noopener\">Invite accepted email</a> <a class=\"btn\" href=\"/dev/emails/group-created\" target=\"_blank\" rel=\"noopener\">Group created email</a> <a class=\"btn\" href=\"/dev/emails/role-upgraded\" target=\"_blank\" rel=\"noopener\">Role upgraded email</a> <a class=\"btn\" href=\"/dev/emails/role-downgraded\" target=\"_blank\" rel=\"noopener\">Role downgraded email</a> <a class=\"btn\" href=\"/dev/emails/access-removed\" target=\"_blank\" rel=\"noopener\">Access removed email</a></div>")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		return nil
+	})
+}
+
+func ErrorPagePreviewContent() templ.Component {
+	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
+		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
+		if templ_7745c5c3_CtxErr := ctx.Err(); templ_7745c5c3_CtxErr != nil {
+			return templ_7745c5c3_CtxErr
+		}
+		templ_7745c5c3_Buffer, templ_7745c5c3_IsBuffer := templruntime.GetBuffer(templ_7745c5c3_W)
+		if !templ_7745c5c3_IsBuffer {
+			defer func() {
+				templ_7745c5c3_BufErr := templruntime.ReleaseBuffer(templ_7745c5c3_Buffer)
+				if templ_7745c5c3_Err == nil {
+					templ_7745c5c3_Err = templ_7745c5c3_BufErr
+				}
+			}()
+		}
+		ctx = templ.InitializeContext(ctx)
+		templ_7745c5c3_Var9 := templ.GetChildren(ctx)
+		if templ_7745c5c3_Var9 == nil {
+			templ_7745c5c3_Var9 = templ.NopComponent
+		}
+		ctx = templ.ClearChildren(ctx)
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 14, "<div class=\"row row-wrap\"><a class=\"btn\" href=\"/dev/errors/link-invalid?lang=en\" target=\"_blank\" rel=\"noopener\">Invalid link (EN)</a> <a class=\"btn\" href=\"/dev/errors/400?lang=en\" target=\"_blank\" rel=\"noopener\">400 page (EN)</a> <a class=\"btn\" href=\"/dev/errors/403?lang=en\" target=\"_blank\" rel=\"noopener\">403 page (EN)</a> <a class=\"btn\" href=\"/dev/errors/404?lang=en\" target=\"_blank\" rel=\"noopener\">404 page (EN)</a> <a class=\"btn\" href=\"/dev/errors/429?lang=en\" target=\"_blank\" rel=\"noopener\">429 page (EN)</a> <a class=\"btn\" href=\"/dev/errors/500?lang=en\" target=\"_blank\" rel=\"noopener\">500 page (EN)</a></div><div class=\"row row-wrap\"><a class=\"btn\" href=\"/dev/errors/link-invalid?lang=hu\" target=\"_blank\" rel=\"noopener\">Invalid link (HU)</a> <a class=\"btn\" href=\"/dev/errors/400?lang=hu\" target=\"_blank\" rel=\"noopener\">400 page (HU)</a> <a class=\"btn\" href=\"/dev/errors/403?lang=hu\" target=\"_blank\" rel=\"noopener\">403 page (HU)</a> <a class=\"btn\" href=\"/dev/errors/404?lang=hu\" target=\"_blank\" rel=\"noopener\">404 page (HU)</a> <a class=\"btn\" href=\"/dev/errors/429?lang=hu\" target=\"_blank\" rel=\"noopener\">429 page (HU)</a> <a class=\"btn\" href=\"/dev/errors/500?lang=hu\" target=\"_blank\" rel=\"noopener\">500 page (HU)</a></div>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -323,12 +356,12 @@ func LoadingIndicatorContent() templ.Component {
 			}()
 		}
 		ctx = templ.InitializeContext(ctx)
-		templ_7745c5c3_Var9 := templ.GetChildren(ctx)
-		if templ_7745c5c3_Var9 == nil {
-			templ_7745c5c3_Var9 = templ.NopComponent
+		templ_7745c5c3_Var10 := templ.GetChildren(ctx)
+		if templ_7745c5c3_Var10 == nil {
+			templ_7745c5c3_Var10 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 14, "<div class=\"row row-wrap\"><form data-on:submit=\"@post('/dev/spinner')\" data-indicator:_fetching><button class=\"btn\" type=\"submit\" data-on:click=\"$activeSpinner = 'request'\" data-attr:disabled=\"$_fetching\"><span data-show=\"$_fetching && $activeSpinner === 'request'\" style=\"display: none\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 15, "<div class=\"row row-wrap\"><form data-on:submit=\"@post('/dev/spinner')\" data-indicator:_fetching><button class=\"btn\" type=\"submit\" data-on:click=\"$activeSpinner = 'request'\" data-attr:disabled=\"$_fetching\"><span data-show=\"$_fetching && $activeSpinner === 'request'\" style=\"display: none\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -336,7 +369,7 @@ func LoadingIndicatorContent() templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 15, "</span> <span data-show=\"!($_fetching && $activeSpinner === 'request')\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 16, "</span> <span data-show=\"!($_fetching && $activeSpinner === 'request')\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -344,7 +377,7 @@ func LoadingIndicatorContent() templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 16, "</span> <span>Spinner 500ms</span></button></form><form data-on:submit=\"@post('/dev/spinner?ms=750')\" data-indicator:_fetching><button class=\"btn\" type=\"submit\" data-on:click=\"$activeSpinner = 'quick'\" data-attr:disabled=\"$_fetching\"><span data-show=\"$_fetching && $activeSpinner === 'quick'\" style=\"display: none\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 17, "</span> <span>Spinner 500ms</span></button></form><form data-on:submit=\"@post('/dev/spinner?ms=750')\" data-indicator:_fetching><button class=\"btn\" type=\"submit\" data-on:click=\"$activeSpinner = 'quick'\" data-attr:disabled=\"$_fetching\"><span data-show=\"$_fetching && $activeSpinner === 'quick'\" style=\"display: none\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -352,7 +385,7 @@ func LoadingIndicatorContent() templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 17, "</span> <span data-show=\"!($_fetching && $activeSpinner === 'quick')\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 18, "</span> <span data-show=\"!($_fetching && $activeSpinner === 'quick')\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -360,7 +393,7 @@ func LoadingIndicatorContent() templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 18, "</span> <span>Spinner 750ms</span></button></form><form data-on:submit=\"@post('/dev/spinner?ms=3000')\" data-indicator:_fetching><button class=\"btn\" type=\"submit\" data-on:click=\"$activeSpinner = 'slow'\" data-attr:disabled=\"$_fetching\"><span data-show=\"$_fetching && $activeSpinner === 'slow'\" style=\"display: none\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 19, "</span> <span>Spinner 750ms</span></button></form><form data-on:submit=\"@post('/dev/spinner?ms=3000')\" data-indicator:_fetching><button class=\"btn\" type=\"submit\" data-on:click=\"$activeSpinner = 'slow'\" data-attr:disabled=\"$_fetching\"><span data-show=\"$_fetching && $activeSpinner === 'slow'\" style=\"display: none\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -368,7 +401,7 @@ func LoadingIndicatorContent() templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 19, "</span> <span data-show=\"!($_fetching && $activeSpinner === 'slow')\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 20, "</span> <span data-show=\"!($_fetching && $activeSpinner === 'slow')\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -376,7 +409,7 @@ func LoadingIndicatorContent() templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 20, "</span> <span>Spinner 3000ms</span></button></form></div>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 21, "</span> <span>Spinner 3000ms</span></button></form></div>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -400,12 +433,12 @@ func NotificationsContent() templ.Component {
 			}()
 		}
 		ctx = templ.InitializeContext(ctx)
-		templ_7745c5c3_Var10 := templ.GetChildren(ctx)
-		if templ_7745c5c3_Var10 == nil {
-			templ_7745c5c3_Var10 = templ.NopComponent
+		templ_7745c5c3_Var11 := templ.GetChildren(ctx)
+		if templ_7745c5c3_Var11 == nil {
+			templ_7745c5c3_Var11 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 21, "<form class=\"form\" data-on:submit=\"@post('/dev/notifications/inline')\" data-indicator:_notifyInline><div class=\"field\"><label>Required field</label><div class=\"row\"><input type=\"text\" data-bind=\"formData.name\" placeholder=\"Type anything\" class=\"input\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 22, "<form class=\"form\" data-on:submit=\"@post('/dev/notifications/inline')\" data-indicator:_notifyInline><div class=\"field\"><label>Required field</label><div class=\"row\"><input type=\"text\" data-bind=\"formData.name\" placeholder=\"Required field\" class=\"input\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -413,7 +446,7 @@ func NotificationsContent() templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 22, "</div><div data-show=\"$errors && $errors.name\" class=\"color-error\" data-text=\"$errors.name\"></div></div></form><div class=\"row row-wrap\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 23, "</div><div data-show=\"$errors && $errors.name\" class=\"color-error\" data-text=\"$errors.name\"></div></div></form><div class=\"row row-wrap\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -433,7 +466,7 @@ func NotificationsContent() templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 23, "</div>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 24, "</div>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -457,12 +490,12 @@ func RateLimitContent() templ.Component {
 			}()
 		}
 		ctx = templ.InitializeContext(ctx)
-		templ_7745c5c3_Var11 := templ.GetChildren(ctx)
-		if templ_7745c5c3_Var11 == nil {
-			templ_7745c5c3_Var11 = templ.NopComponent
+		templ_7745c5c3_Var12 := templ.GetChildren(ctx)
+		if templ_7745c5c3_Var12 == nil {
+			templ_7745c5c3_Var12 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 24, "<p>Fire repeated requests to inspect rate-limit behavior from the browser.</p><div class=\"row row-wrap\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 25, "<div class=\"row row-wrap\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -474,7 +507,7 @@ func RateLimitContent() templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 25, "<button id=\"rate-limit-clear\" type=\"button\" class=\"btn\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 26, "<button id=\"rate-limit-clear\" type=\"button\" class=\"btn\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -482,20 +515,20 @@ func RateLimitContent() templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 26, "<span>Clear</span></button></div><input id=\"rate-limit-csrf\" type=\"hidden\" value=\"")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 27, "<span>Clear</span></button></div><input id=\"rate-limit-csrf\" type=\"hidden\" value=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		var templ_7745c5c3_Var12 string
-		templ_7745c5c3_Var12, templ_7745c5c3_Err = templ.JoinStringErrs(utils.CSRFTokenFromContext(ctx))
+		var templ_7745c5c3_Var13 string
+		templ_7745c5c3_Var13, templ_7745c5c3_Err = templ.JoinStringErrs(utils.CSRFTokenFromContext(ctx))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/dev/page_dev.templ`, Line: 175, Col: 82}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/dev/page_dev.templ`, Line: 190, Col: 82}
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var12))
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var13))
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 27, "\"> <span id=\"rate-limit-msg-start-health\" hidden>Running /health burst...</span> <span id=\"rate-limit-msg-done-health\" hidden>/health burst completed.</span> <span id=\"rate-limit-msg-start-auth\" hidden>Running /auth/login burst...</span> <span id=\"rate-limit-msg-done-auth\" hidden>/auth/login burst completed.</span><pre id=\"rate-limit-output\">Ready.</pre>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 28, "\"> <span id=\"rate-limit-msg-start-health\" hidden>Running /health burst...</span> <span id=\"rate-limit-msg-done-health\" hidden>/health burst completed.</span> <span id=\"rate-limit-msg-start-auth\" hidden>Running /auth/login burst...</span> <span id=\"rate-limit-msg-done-auth\" hidden>/auth/login burst completed.</span><pre id=\"rate-limit-output\">Ready.</pre>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -519,12 +552,12 @@ func BodyLimitContent() templ.Component {
 			}()
 		}
 		ctx = templ.InitializeContext(ctx)
-		templ_7745c5c3_Var13 := templ.GetChildren(ctx)
-		if templ_7745c5c3_Var13 == nil {
-			templ_7745c5c3_Var13 = templ.NopComponent
+		templ_7745c5c3_Var14 := templ.GetChildren(ctx)
+		if templ_7745c5c3_Var14 == nil {
+			templ_7745c5c3_Var14 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 28, "<p>Send small and oversized payloads to verify body-size limits.</p><div class=\"row row-wrap\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 29, "<div class=\"row row-wrap\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -544,7 +577,7 @@ func BodyLimitContent() templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 29, "<button id=\"body-limit-clear\" type=\"button\" class=\"btn\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 30, "<button id=\"body-limit-clear\" type=\"button\" class=\"btn\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -552,20 +585,20 @@ func BodyLimitContent() templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 30, "<span>Clear</span></button></div><input id=\"body-limit-csrf\" type=\"hidden\" value=\"")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 31, "<span>Clear</span></button></div><input id=\"body-limit-csrf\" type=\"hidden\" value=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		var templ_7745c5c3_Var14 string
-		templ_7745c5c3_Var14, templ_7745c5c3_Err = templ.JoinStringErrs(utils.CSRFTokenFromContext(ctx))
+		var templ_7745c5c3_Var15 string
+		templ_7745c5c3_Var15, templ_7745c5c3_Err = templ.JoinStringErrs(utils.CSRFTokenFromContext(ctx))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/dev/page_dev.templ`, Line: 195, Col: 82}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/dev/page_dev.templ`, Line: 209, Col: 82}
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var14))
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var15))
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 31, "\"> <span id=\"body-limit-msg-global-ok\" hidden>Sending small payload to /health...</span> <span id=\"body-limit-msg-global-big\" hidden>Sending oversized payload to /health...</span> <span id=\"body-limit-msg-auth-ok\" hidden>Sending small payload to /auth/login...</span> <span id=\"body-limit-msg-auth-big\" hidden>Sending oversized payload to /auth/login...</span> <span id=\"body-limit-msg-result\" hidden>Result:</span><pre id=\"body-limit-output\">Ready.</pre>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 32, "\"> <span id=\"body-limit-msg-global-ok\" hidden>Sending small payload to /health...</span> <span id=\"body-limit-msg-global-big\" hidden>Sending oversized payload to /health...</span> <span id=\"body-limit-msg-auth-ok\" hidden>Sending small payload to /auth/login...</span> <span id=\"body-limit-msg-auth-big\" hidden>Sending oversized payload to /auth/login...</span> <span id=\"body-limit-msg-result\" hidden>Result:</span><pre id=\"body-limit-output\">Ready.</pre>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

@@ -11,7 +11,6 @@ import (
 	"time"
 
 	"github.com/labstack/echo/v4"
-	echoMiddleware "github.com/labstack/echo/v4/middleware"
 
 	"bandcash/internal/db"
 	"bandcash/internal/i18n"
@@ -28,6 +27,7 @@ import (
 	"bandcash/models/member"
 	"bandcash/models/settings"
 	"bandcash/models/sse"
+	"bandcash/models/static"
 )
 
 func main() {
@@ -40,6 +40,7 @@ func main() {
 	e := echo.New()
 	e.HideBanner = true
 	e.HidePort = true
+	e.HTTPErrorHandler = middleware.ErrorHandler()
 
 	e.Use(middleware.Compression())
 	e.Use(middleware.RequestID())
@@ -51,24 +52,10 @@ func main() {
 	e.Use(middleware.OriginProtection())
 	e.Use(middleware.CSRFToken())
 	e.Use(middleware.CSRFProtection())
-	e.Use(echoMiddleware.RequestLoggerWithConfig(echoMiddleware.RequestLoggerConfig{
-		LogStatus: true,
-		LogURI:    false,
-		LogValuesFunc: func(c echo.Context, v echoMiddleware.RequestLoggerValues) error {
-			req := c.Request()
-			slog.Info("http.request.completed",
-				"path", req.URL.Path,
-				"query", req.URL.RawQuery,
-				"method", req.Method,
-				"status", v.Status,
-			)
-			return nil
-		},
-	}))
+	e.Use(middleware.RequestLogger())
 
 	// Routes
-	e.Static("/static", "static")
-
+	static.RegisterRoutes(e)
 	health.RegisterRoutes(e)
 	auth.RegisterRoutes(e)
 	admin.RegisterRoutes(e)

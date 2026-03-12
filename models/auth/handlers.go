@@ -18,6 +18,8 @@ import (
 	appi18n "bandcash/internal/i18n"
 	"bandcash/internal/middleware"
 	"bandcash/internal/utils"
+	shared "bandcash/models/shared"
+	icons "bandcash/models/shared/icons"
 )
 
 type Auth struct {
@@ -70,6 +72,19 @@ func (a *Auth) patchLoginSentState(c echo.Context, emailAddress string) {
 		"submittedEmailMasked": maskEmail(emailAddress),
 		"resendRemaining":      int(resendCooldown.Seconds()),
 	})
+}
+
+func (a *Auth) renderVerifyLinkError(c echo.Context, status int) error {
+	ctx := c.Request().Context()
+	return utils.RenderPage(c, shared.ErrorPage(shared.ErrorPageData{
+		Title:      ctxi18n.T(ctx, "error_pages.link.invalid_title"),
+		StatusCode: status,
+		IconName:   icons.IconLink2Off,
+		Heading:    ctxi18n.T(ctx, "error_pages.link.invalid_title"),
+		Message:    ctxi18n.T(ctx, "error_pages.link.invalid_body"),
+		HomeLabel:  ctxi18n.T(ctx, "error_pages.home_action"),
+		HomeHref:   appi18n.LocalizedHomePath(ctx),
+	}))
 }
 
 // LoginPage shows the login form
@@ -176,7 +191,7 @@ func (a *Auth) LoginSentPage(c echo.Context) error {
 func (a *Auth) VerifyMagicLink(c echo.Context) error {
 	token := c.QueryParam("token")
 	if !utils.IsValidID(token, "tok") {
-		return c.String(http.StatusBadRequest, "Invalid token")
+		return a.renderVerifyLinkError(c, http.StatusBadRequest)
 	}
 
 	locale := appi18n.NormalizeLocale(c.QueryParam("lang"))
@@ -184,24 +199,24 @@ func (a *Auth) VerifyMagicLink(c echo.Context) error {
 	// Get magic link
 	magicLink, err := db.Qry.GetMagicLinkByToken(c.Request().Context(), token)
 	if err != nil {
-		return c.String(http.StatusNotFound, "Invalid or expired link")
+		return a.renderVerifyLinkError(c, http.StatusBadRequest)
 	}
 
 	// Check if already used
 	if magicLink.UsedAt.Valid {
-		return c.String(http.StatusBadRequest, "Link already used")
+		return a.renderVerifyLinkError(c, http.StatusBadRequest)
 	}
 
 	// Check if expired
 	if time.Now().After(magicLink.ExpiresAt) {
-		return c.String(http.StatusBadRequest, "Link expired")
+		return a.renderVerifyLinkError(c, http.StatusBadRequest)
 	}
 
 	// Mark as used
 	err = db.Qry.UseMagicLink(c.Request().Context(), magicLink.ID)
 	if err != nil {
 		slog.Error("auth: failed to mark magic link used", "err", err)
-		return c.String(http.StatusInternalServerError, "Failed to process link")
+		return a.renderVerifyLinkError(c, http.StatusBadRequest)
 	}
 
 	// Get user
@@ -215,7 +230,7 @@ func (a *Auth) VerifyMagicLink(c echo.Context) error {
 		})
 		if err != nil {
 			slog.Error("auth: failed to create user", "err", err)
-			return c.String(http.StatusInternalServerError, "Failed to create user")
+			return a.renderVerifyLinkError(c, http.StatusBadRequest)
 		}
 	} else if user.PreferredLang != locale {
 		if err := db.Qry.UpdateUserPreferredLang(c.Request().Context(), db.UpdateUserPreferredLangParams{PreferredLang: locale, ID: user.ID}); err != nil {
@@ -228,7 +243,7 @@ func (a *Auth) VerifyMagicLink(c echo.Context) error {
 	bannedCount, err := db.Qry.IsUserBanned(c.Request().Context(), user.ID)
 	if err != nil {
 		slog.Error("auth.verify: failed to check user ban", "user_id", user.ID, "err", err)
-		return c.String(http.StatusInternalServerError, "Failed to process link")
+		return a.renderVerifyLinkError(c, http.StatusBadRequest)
 	}
 	if bannedCount > 0 {
 		utils.Notify(c, "warning", ctxi18n.T(c.Request().Context(), "auth.banned"))
@@ -250,7 +265,7 @@ func (a *Auth) VerifyMagicLink(c echo.Context) error {
 	// If invite, add viewer access
 	if magicLink.Action == "invite" {
 		if !magicLink.GroupID.Valid {
-			return c.String(http.StatusBadRequest, "Invalid invitation")
+			return a.renderVerifyLinkError(c, http.StatusBadRequest)
 		}
 
 		groupID := magicLink.GroupID.String
