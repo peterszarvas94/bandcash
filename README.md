@@ -27,8 +27,8 @@ Environment loading is handled only by `varlock` + 1Password.
 Files:
 
 - `.env.schema` is committed (schema + defaults)
-- `.env.local` is gitignored (local secret-zero)
-- `.env.production.local` is gitignored (optional, only for local deploys)
+- `.env.local` is gitignored (dev secret-zero)
+- `.env.production.local` is gitignored (prod secret-zero for local deploy)
 
 For dev:
 
@@ -39,6 +39,7 @@ cp .env.local.example .env.local
 Put this in `.env.local`:
 
 ```bash
+APP_ENV=development
 OP_TOKEN=...
 OP_ENVIRONMENT_ID=...
 ```
@@ -54,12 +55,13 @@ For prod:
 - Copy the same way as dev:
 
 ```bash
-cp .env.local.example .env.production.local
+cp .env.production.local.example .env.production.local
 ```
 
 - Put production values into `.env.production.local`:
 
 ```bash
+APP_ENV=production
 OP_TOKEN=...
 OP_ENVIRONMENT_ID=...
 ```
@@ -70,7 +72,7 @@ OP_ENVIRONMENT_ID=...
 mise run deploy
 ```
 
-`mise run deploy` already sets `APP_ENV=production`.
+`mise run deploy` explicitly sources `.env.production.local` via `scripts/with_varlock_env.sh`, then runs `varlock` in production mode.
 
 ## Commands
 
