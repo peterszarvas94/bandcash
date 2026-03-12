@@ -20,6 +20,7 @@ Use this when you need to locate where to make changes without scanning the whol
 - Shared tables: `models/shared/table.templ`, `internal/utils/table_query.go`, `static/js/table_query.js`
 - Database: `internal/db/queries/*.sql`, `internal/db/migrations/*.sql`, generated `internal/db/*.sql.go`
 - Assets: `static/css/*.css`, `static/js/*.js`
+- Deploy config: `config/deploy.yml`, `.kamal/secrets.example`, `.kamal/secrets`
 
 ## Scoped search rules
 - Start with `models/<area>/*.templ` when UI is mentioned.

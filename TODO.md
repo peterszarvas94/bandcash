@@ -1,7 +1,7 @@
 ## Security
 
 - [ ] add auth abuse protection (cooldown/throttle by IP + email)
-- [ ] evaluate 1Password-backed Kamal secrets (`op`/`kamal secrets`) instead of static `.kamal/secrets`, or use varlock
+- [ ] harden/de-noise Kamal + 1Password secret fetch flow (reduce shell warnings, add deploy secret sanity check)
 
 ## Improvements
 

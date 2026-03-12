@@ -36,6 +36,14 @@ Prefer `mise run <task>` commands first.
 - `mise run start` - run built binary.
 - `mise run routes` - print registered routes and exit.
 
+### Deploy and Secrets
+
+- Deployment uses Kamal with `.kamal/secrets` (gitignored).
+- Safe template is `.kamal/secrets.example`.
+- Prefer `kamal secrets fetch/extract` helpers in `.kamal/secrets` for 1Password-backed values.
+- `mise run deploy-check` - render Kamal config to validate secret/config resolution.
+- `mise run deploy` - run Kamal deploy.
+
 ### Formatting and Static Checks
 
 - `mise run format` - run `go fmt ./...`.
