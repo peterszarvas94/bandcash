@@ -14,8 +14,10 @@ proxy:
     timeout: 5
 
 registry:
-  username: <%= ENV.fetch("KAMAL_REGISTRY_USERNAME") %>
-  password: <%= ENV.fetch("KAMAL_REGISTRY_PASSWORD") %>
+  username:
+    - KAMAL_REGISTRY_USERNAME
+  password:
+    - KAMAL_REGISTRY_PASSWORD
 
 builder:
   arch: amd64
@@ -29,16 +31,17 @@ volumes:
   - bandcash_data:/storage
 
 env:
+  clear:
+    APP_ENV: production
+    PORT: 2222
+    URL: https://bandcash.app
+    DB_PATH: /storage/sqlite.db
+    LOG_LEVEL: info
+    LOG_FOLDER: /storage/logs
+    LOG_PREFIX: bandcash
+    DISABLE_RATE_LIMIT: false
   secret:
-    - APP_ENV
-    - PORT
-    - URL
-    - DB_PATH
-    - LOG_LEVEL
-    - LOG_FOLDER
-    - LOG_PREFIX
     - SUPERADMIN_EMAIL
-    - DISABLE_RATE_LIMIT
     - SMTP_HOST
     - SMTP_PORT
     - EMAIL_FROM

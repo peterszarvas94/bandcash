@@ -6,6 +6,9 @@ bin/
 sqlite.db
 sqlite.db-*
 .kamal/secrets
+.kamal/secrets.*
+!.kamal/secrets.example
+.kamal/secrets-common
 static/gen/
 .env.local
 .env.*.local

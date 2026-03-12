@@ -13,66 +13,21 @@ Bandcash is a Go web app for managing shared group expenses.
 ```bash
 mise trust
 mise install
-op signin
 mise run goose-up
 mise run dev
 ```
 
 Open `http://localhost:2222`.
 
-## Varlock + 1Password
+## Environment
 
-Environment loading is handled only by `varlock` + 1Password.
+Development runs with built-in defaults from `internal/utils/env.go`.
 
-Files:
+Production deploy uses Kamal secrets.
 
-- `.env.schema` is committed (schema + defaults)
-- `.env.local` is gitignored (dev secret-zero)
-- `.env.production.local` is gitignored (prod secret-zero for local deploy)
-
-For dev:
-
-```bash
-cp .env.local.example .env.local
-```
-
-Put this in `.env.local`:
-
-```bash
-APP_ENV=development
-OP_TOKEN=...
-OP_ENVIRONMENT_ID=...
-```
-
-Then run:
-
-```bash
-mise run dev
-```
-
-For prod:
-
-- Copy the same way as dev:
-
-```bash
-cp .env.production.local.example .env.production.local
-```
-
-- Put production values into `.env.production.local`:
-
-```bash
-APP_ENV=production
-OP_TOKEN=...
-OP_ENVIRONMENT_ID=...
-```
-
-- Deploy with:
-
-```bash
-mise run deploy
-```
-
-`mise run deploy` explicitly sources `.env.production.local` via `scripts/with_varlock_env.sh`, then runs `varlock` in production mode.
+- Put all production env values into `.kamal/secrets` (gitignored).
+- Keep sensitive values there too (registry, smtp user/password, better stack tokens).
+- Deploy with `mise run deploy`.
 
 ## Commands
 

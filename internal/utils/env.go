@@ -26,7 +26,6 @@ type EnvConfig struct {
 	SMTPUser         string
 	SMTPPass         string
 	EmailFrom        string
-	BetterStackURI   string
 }
 
 var (
@@ -35,23 +34,22 @@ var (
 )
 
 type envVars struct {
-	AppEnv           string `env:"APP_ENV" validate:"required,oneof=development production"`
+	AppEnv           string `env:"APP_ENV" envDefault:"development" validate:"required,oneof=development production"`
 	Host             string `env:"HOST" envDefault:"0.0.0.0"`
-	Port             int    `env:"PORT" validate:"required,gte=1,lte=65535"`
+	Port             int    `env:"PORT" envDefault:"2222" validate:"required,gte=1,lte=65535"`
 	DevGlobalDelayMS int    `env:"DEV_GLOBAL_DELAY_MS" envDefault:"0" validate:"gte=0"`
-	LogLevel         string `env:"LOG_LEVEL" validate:"required,oneof=debug info warn error"`
-	LogFolder        string `env:"LOG_FOLDER" validate:"required"`
-	LogPrefix        string `env:"LOG_PREFIX" validate:"required"`
-	DBPath           string `env:"DB_PATH" validate:"required"`
-	URL              string `env:"URL" validate:"required_if=AppEnv production"`
+	LogLevel         string `env:"LOG_LEVEL" envDefault:"debug" validate:"required,oneof=debug info warn error"`
+	LogFolder        string `env:"LOG_FOLDER" envDefault:"logs" validate:"required"`
+	LogPrefix        string `env:"LOG_PREFIX" envDefault:"bandcash" validate:"required"`
+	DBPath           string `env:"DB_PATH" envDefault:"sqlite.db" validate:"required"`
+	URL              string `env:"URL" envDefault:"http://localhost:2222" validate:"required_if=AppEnv production"`
 	SuperadminEmail  string `env:"SUPERADMIN_EMAIL" validate:"omitempty,email"`
-	DisableRateLimit bool   `env:"DISABLE_RATE_LIMIT" envDefault:"false"`
-	SMTPHost         string `env:"SMTP_HOST" validate:"required_if=AppEnv production"`
-	SMTPPort         int    `env:"SMTP_PORT" validate:"required_if=AppEnv production,omitempty,gt=0"`
+	DisableRateLimit bool   `env:"DISABLE_RATE_LIMIT" envDefault:"true"`
+	SMTPHost         string `env:"SMTP_HOST" envDefault:"localhost" validate:"required_if=AppEnv production"`
+	SMTPPort         int    `env:"SMTP_PORT" envDefault:"1025" validate:"required_if=AppEnv production,omitempty,gt=0"`
 	SMTPUser         string `env:"SMTP_USERNAME" validate:"required_if=AppEnv production"`
 	SMTPPass         string `env:"SMTP_PASSWORD" validate:"required_if=AppEnv production"`
-	EmailFrom        string `env:"EMAIL_FROM" validate:"required_if=AppEnv production"`
-	BetterStackURI   string `env:"BETTER_STACK_URI"`
+	EmailFrom        string `env:"EMAIL_FROM" envDefault:"BandCash <noreply@bandcash.local>" validate:"required_if=AppEnv production"`
 }
 
 func Env() *EnvConfig {
@@ -93,7 +91,6 @@ func Env() *EnvConfig {
 			SMTPUser:         parsed.SMTPUser,
 			SMTPPass:         parsed.SMTPPass,
 			EmailFrom:        parsed.EmailFrom,
-			BetterStackURI:   parsed.BetterStackURI,
 		}
 	})
 	return envCfg
