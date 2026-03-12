@@ -14,10 +14,8 @@ proxy:
     timeout: 5
 
 registry:
-  username:
-    - KAMAL_REGISTRY_USERNAME
-  password:
-    - KAMAL_REGISTRY_PASSWORD
+  username: <%= ENV.fetch("KAMAL_REGISTRY_USERNAME") %>
+  password: <%= ENV.fetch("KAMAL_REGISTRY_PASSWORD") %>
 
 builder:
   arch: amd64
