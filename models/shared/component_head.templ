@@ -1,5 +1,7 @@
 package shared
 
+import "bandcash/internal/assets"
+
 templ Head(title string) {
 	{{
 		siteName := "Bandcash"
@@ -26,21 +28,9 @@ templ Head(title string) {
 		<meta property="twitter:image" content={ socialImageURL }/>
 		<meta name="application-name" content={ siteName }/>
 		<title>{ title }</title>
-		<link rel="stylesheet" href="/static/css/style.css"/>
-		<script type="importmap">
-			{
-				"imports": {
-					"datastar": "/static/js/vendor/datastar.js",
-					"bandcash/notifications": "/static/js/notifications.js",
-					"bandcash/drawer-focus": "/static/js/drawer_focus.js",
-					"bandcash/rate-limit-tester": "/static/js/rate_limit_tester.js",
-					"bandcash/body-limit-tester": "/static/js/body_limit_tester.js",
-					"bandcash/table-query-tester": "/static/js/table_query_tester.js",
-					"bandcash/table-query": "/static/js/table_query.js"
-				}
-			}
-		</script>
-		<script type="module" src="/static/js/main.js"></script>
+		<link rel="stylesheet" href={ assets.AssetPath("css/style.css") }/>
+		<script type="importmap">@templ.Raw(assets.ImportMapJSON())</script>
+		<script type="module" src={ assets.AssetPath("js/main.js") }></script>
 		<meta name="view-transition" content="same-origin"/>
 		<script type="speculationrules">
 			{
