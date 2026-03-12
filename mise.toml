@@ -13,7 +13,7 @@ ruby = "3.4.2"
 
 [tasks]
 dev = "mise run dev-preflight && mise run -o prefix dev-app ::: dev-mail"
-dev-app = "varlock run --no-redact-stdout -- air"
+dev-app = "varlock run -- air"
 dev-preflight = "go run ./cmd/devpreflight/main.go"
 assets = "varlock run -- go run ./cmd/assets/main.go"
 build = "varlock run -- sh -c 'go run ./cmd/assets/main.go && go build -o tmp/server cmd/server/main.go'"

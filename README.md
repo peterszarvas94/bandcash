@@ -22,43 +22,55 @@ Open `http://localhost:2222`.
 
 ## Varlock + 1Password
 
-Environment loading is handled by `varlock` and 1Password.
+Environment loading is handled only by `varlock` + 1Password.
 
-- Schema: `.env.schema`
-- Local secrets file: `.env.local` (gitignored)
-- Production local secrets file: `.env.production.local` (gitignored, optional)
-- Runtime/loading command wrapper: `varlock run -- ...`
+Files:
 
-Initial setup:
+- `.env.schema` is committed (schema + defaults)
+- `.env.local` is gitignored (local secret-zero)
+- `.env.production.local` is gitignored (optional, only for local deploys)
+
+For dev:
 
 ```bash
-mise install
 cp .env.local.example .env.local
 ```
 
-Then set:
-
-1. `OP_TOKEN` in `.env.local` (gitignored) for local runs.
-2. `OP_ENVIRONMENT_ID` in `.env.local` for your local 1Password environment.
-3. Ensure 1Password environments include deploy keys too (`KAMAL_REGISTRY_USERNAME`, `KAMAL_REGISTRY_PASSWORD`) where needed.
-
-Varlock file precedence follows the default convention:
-
-1. `.env.schema`
-2. `.env.local`
-3. `.env.production.local` (when `APP_ENV=production`)
-4. process environment variables
-
-For production/CI, inject `APP_ENV`, `OP_ENVIRONMENT_ID`, and `OP_TOKEN` from your platform secret store (do not commit them).
-
-If you deploy from your local machine and do not want to export env vars manually, create `.env.production.local` (gitignored) with:
+Put this in `.env.local`:
 
 ```bash
 OP_TOKEN=...
 OP_ENVIRONMENT_ID=...
 ```
 
-`mise run deploy` already forces `APP_ENV=production`, so varlock will load `.env.production.local` for the deploy command.
+Then run:
+
+```bash
+mise run dev
+```
+
+For prod:
+
+- Copy the same way as dev:
+
+```bash
+cp .env.local.example .env.production.local
+```
+
+- Put production values into `.env.production.local`:
+
+```bash
+OP_TOKEN=...
+OP_ENVIRONMENT_ID=...
+```
+
+- Deploy with:
+
+```bash
+mise run deploy
+```
+
+`mise run deploy` already sets `APP_ENV=production`.
 
 ## Commands
 
