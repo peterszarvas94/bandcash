@@ -13,12 +13,7 @@ import (
 func Locale() echo.MiddlewareFunc {
 	return func(next echo.HandlerFunc) echo.HandlerFunc {
 		return func(c echo.Context) error {
-			locale := appi18n.DefaultLocale
-			cookie, err := c.Cookie(appi18n.CookieName)
-			if err == nil && cookie.Value != "" {
-				locale = cookie.Value
-			}
-			locale = appi18n.NormalizeLocale(locale)
+			locale := appi18n.LocaleFromRequest(c.Request())
 
 			ctx, err := ctxi18n.WithLocale(c.Request().Context(), locale)
 			if err != nil {

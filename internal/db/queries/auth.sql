@@ -1,7 +1,12 @@
 -- name: CreateUser :one
-INSERT INTO users (id, email)
-VALUES (?, ?)
+INSERT INTO users (id, email, preferred_lang)
+VALUES (sqlc.arg(id), sqlc.arg(email), COALESCE(NULLIF(sqlc.arg(preferred_lang), ''), 'hu'))
 RETURNING *;
+
+-- name: UpdateUserPreferredLang :exec
+UPDATE users
+SET preferred_lang = ?
+WHERE id = ?;
 
 -- name: GetUserByEmail :one
 SELECT * FROM users

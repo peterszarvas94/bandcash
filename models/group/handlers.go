@@ -12,6 +12,7 @@ import (
 	"strings"
 	"time"
 
+	ctxi18nlib "github.com/invopop/ctxi18n"
 	ctxi18n "github.com/invopop/ctxi18n/i18n"
 	"github.com/labstack/echo/v4"
 	"github.com/starfederation/datastar-go/datastar"
@@ -484,7 +485,7 @@ func (g *Group) AddViewer(c echo.Context) error {
 					slog.Error("group: failed to promote viewer to admin", "group_id", groupID, "user_id", user.ID, "err", err)
 					return g.patchAccessPageWithState(c, groupID, signals.TableQuery, "", "groups.errors.promote_failed")
 				}
-				if err := sendRoleChangeEmail(c.Request().Context(), user.Email, group.Name, group.ID, "admin"); err != nil {
+				if err := sendRoleChangeEmail(c.Request().Context(), user, group.Name, group.ID, "admin"); err != nil {
 					slog.Warn("group: failed to send role-change email", "group_id", groupID, "user_id", user.ID, "err", err)
 				}
 				return g.patchAccessPageWithState(c, groupID, signals.TableQuery, "groups.messages.viewer_promoted", "")
@@ -594,7 +595,7 @@ func (g *Group) PromoteViewerToAdmin(c echo.Context) error {
 	group, err := db.Qry.GetGroupByID(ctx, groupID)
 	if err == nil {
 		if user, userErr := db.Qry.GetUserByID(ctx, userID); userErr == nil {
-			if mailErr := sendRoleChangeEmail(ctx, user.Email, group.Name, group.ID, "admin"); mailErr != nil {
+			if mailErr := sendRoleChangeEmail(ctx, user, group.Name, group.ID, "admin"); mailErr != nil {
 				slog.Warn("group: failed to send role-change email", "group_id", groupID, "user_id", userID, "err", mailErr)
 			}
 		}
@@ -623,7 +624,7 @@ func (g *Group) DemoteAdminToViewer(c echo.Context) error {
 	group, err := db.Qry.GetGroupByID(ctx, groupID)
 	if err == nil {
 		if user, userErr := db.Qry.GetUserByID(ctx, userID); userErr == nil {
-			if mailErr := sendRoleChangeEmail(ctx, user.Email, group.Name, group.ID, "viewer"); mailErr != nil {
+			if mailErr := sendRoleChangeEmail(ctx, user, group.Name, group.ID, "viewer"); mailErr != nil {
 				slog.Warn("group: failed to send role-change email", "group_id", groupID, "user_id", userID, "err", mailErr)
 			}
 		}
@@ -915,12 +916,18 @@ func (g *Group) removeAdminAccess(ctx context.Context, groupID, userID string) e
 	return nil
 }
 
-func sendRoleChangeEmail(ctx context.Context, userEmail, groupName, groupID, role string) error {
+func sendRoleChangeEmail(ctx context.Context, user db.User, groupName, groupID, role string) error {
 	baseURL := utils.Env().URL
-	if role == "admin" {
-		return email.Email().SendRoleUpgradedToAdmin(ctx, userEmail, groupName, groupID, baseURL)
+	mailCtx := ctx
+	if user.PreferredLang != "" {
+		if localizedCtx, err := ctxi18nlib.WithLocale(ctx, user.PreferredLang); err == nil {
+			mailCtx = localizedCtx
+		}
 	}
-	return email.Email().SendRoleDowngradedToViewer(ctx, userEmail, groupName, groupID, baseURL)
+	if role == "admin" {
+		return email.Email().SendRoleUpgradedToAdmin(mailCtx, user.Email, groupName, groupID, baseURL)
+	}
+	return email.Email().SendRoleDowngradedToViewer(mailCtx, user.Email, groupName, groupID, baseURL)
 }
 
 func notifyAccessRemoved(ctx context.Context, groupID, userID string) {
@@ -945,7 +952,14 @@ func notifyAccessRemoved(ctx context.Context, groupID, userID string) {
 		adminEmails = append(adminEmails, admin.Email)
 	}
 
-	if err := email.Email().SendAccessRemoved(ctx, user.Email, group.Name, adminEmails, utils.Env().URL); err != nil {
+	mailCtx := ctx
+	if user.PreferredLang != "" {
+		if localizedCtx, localeErr := ctxi18nlib.WithLocale(ctx, user.PreferredLang); localeErr == nil {
+			mailCtx = localizedCtx
+		}
+	}
+
+	if err := email.Email().SendAccessRemoved(mailCtx, user.Email, group.Name, adminEmails, utils.Env().URL); err != nil {
 		slog.Warn("group: failed to send access-removed email", "group_id", groupID, "user_id", userID, "err", err)
 	}
 }

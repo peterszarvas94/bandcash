@@ -100,7 +100,8 @@ type Participant struct {
 }
 
 type User struct {
-	ID        string       `json:"id"`
-	Email     string       `json:"email"`
-	CreatedAt sql.NullTime `json:"created_at"`
+	ID            string       `json:"id"`
+	Email         string       `json:"email"`
+	CreatedAt     sql.NullTime `json:"created_at"`
+	PreferredLang string       `json:"preferred_lang"`
 }

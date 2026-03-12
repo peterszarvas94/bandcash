@@ -314,20 +314,26 @@ func (q *Queries) CreateMagicLink(ctx context.Context, arg CreateMagicLinkParams
 }
 
 const createUser = `-- name: CreateUser :one
-INSERT INTO users (id, email)
-VALUES (?, ?)
-RETURNING id, email, created_at
+INSERT INTO users (id, email, preferred_lang)
+VALUES (?1, ?2, COALESCE(NULLIF(?3, ''), 'hu'))
+RETURNING id, email, created_at, preferred_lang
 `
 
 type CreateUserParams struct {
-	ID    string `json:"id"`
-	Email string `json:"email"`
+	ID            string      `json:"id"`
+	Email         string      `json:"email"`
+	PreferredLang interface{} `json:"preferred_lang"`
 }
 
 func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (User, error) {
-	row := q.db.QueryRowContext(ctx, createUser, arg.ID, arg.Email)
+	row := q.db.QueryRowContext(ctx, createUser, arg.ID, arg.Email, arg.PreferredLang)
 	var i User
-	err := row.Scan(&i.ID, &i.Email, &i.CreatedAt)
+	err := row.Scan(
+		&i.ID,
+		&i.Email,
+		&i.CreatedAt,
+		&i.PreferredLang,
+	)
 	return i, err
 }
 
@@ -423,7 +429,7 @@ func (q *Queries) GetGroupByID(ctx context.Context, id string) (Group, error) {
 }
 
 const getGroupReaders = `-- name: GetGroupReaders :many
-SELECT users.id, users.email, users.created_at FROM users
+SELECT users.id, users.email, users.created_at, users.preferred_lang FROM users
 JOIN group_readers ON group_readers.user_id = users.id
 WHERE group_readers.group_id = ?
 `
@@ -437,7 +443,12 @@ func (q *Queries) GetGroupReaders(ctx context.Context, groupID string) ([]User, 
 	items := []User{}
 	for rows.Next() {
 		var i User
-		if err := rows.Scan(&i.ID, &i.Email, &i.CreatedAt); err != nil {
+		if err := rows.Scan(
+			&i.ID,
+			&i.Email,
+			&i.CreatedAt,
+			&i.PreferredLang,
+		); err != nil {
 			return nil, err
 		}
 		items = append(items, i)
@@ -474,26 +485,36 @@ func (q *Queries) GetMagicLinkByToken(ctx context.Context, token string) (MagicL
 }
 
 const getUserByEmail = `-- name: GetUserByEmail :one
-SELECT id, email, created_at FROM users
+SELECT id, email, created_at, preferred_lang FROM users
 WHERE email = ?
 `
 
 func (q *Queries) GetUserByEmail(ctx context.Context, email string) (User, error) {
 	row := q.db.QueryRowContext(ctx, getUserByEmail, email)
 	var i User
-	err := row.Scan(&i.ID, &i.Email, &i.CreatedAt)
+	err := row.Scan(
+		&i.ID,
+		&i.Email,
+		&i.CreatedAt,
+		&i.PreferredLang,
+	)
 	return i, err
 }
 
 const getUserByID = `-- name: GetUserByID :one
-SELECT id, email, created_at FROM users
+SELECT id, email, created_at, preferred_lang FROM users
 WHERE id = ?
 `
 
 func (q *Queries) GetUserByID(ctx context.Context, id string) (User, error) {
 	row := q.db.QueryRowContext(ctx, getUserByID, id)
 	var i User
-	err := row.Scan(&i.ID, &i.Email, &i.CreatedAt)
+	err := row.Scan(
+		&i.ID,
+		&i.Email,
+		&i.CreatedAt,
+		&i.PreferredLang,
+	)
 	return i, err
 }
 
@@ -575,7 +596,7 @@ func (q *Queries) ListGroupAdminUserIDs(ctx context.Context, groupID string) ([]
 }
 
 const listGroupAdminsByEmailAscFiltered = `-- name: ListGroupAdminsByEmailAscFiltered :many
-SELECT id, email, created_at FROM users
+SELECT id, email, created_at, preferred_lang FROM users
 WHERE id IN (
   SELECT u.id
   FROM groups g
@@ -620,7 +641,12 @@ func (q *Queries) ListGroupAdminsByEmailAscFiltered(ctx context.Context, arg Lis
 	items := []User{}
 	for rows.Next() {
 		var i User
-		if err := rows.Scan(&i.ID, &i.Email, &i.CreatedAt); err != nil {
+		if err := rows.Scan(
+			&i.ID,
+			&i.Email,
+			&i.CreatedAt,
+			&i.PreferredLang,
+		); err != nil {
 			return nil, err
 		}
 		items = append(items, i)
@@ -635,7 +661,7 @@ func (q *Queries) ListGroupAdminsByEmailAscFiltered(ctx context.Context, arg Lis
 }
 
 const listGroupAdminsByEmailDescFiltered = `-- name: ListGroupAdminsByEmailDescFiltered :many
-SELECT id, email, created_at FROM users
+SELECT id, email, created_at, preferred_lang FROM users
 WHERE id IN (
   SELECT u.id
   FROM groups g
@@ -680,7 +706,12 @@ func (q *Queries) ListGroupAdminsByEmailDescFiltered(ctx context.Context, arg Li
 	items := []User{}
 	for rows.Next() {
 		var i User
-		if err := rows.Scan(&i.ID, &i.Email, &i.CreatedAt); err != nil {
+		if err := rows.Scan(
+			&i.ID,
+			&i.Email,
+			&i.CreatedAt,
+			&i.PreferredLang,
+		); err != nil {
 			return nil, err
 		}
 		items = append(items, i)
@@ -973,7 +1004,7 @@ func (q *Queries) ListGroupPendingInvitesByEmailDescFiltered(ctx context.Context
 }
 
 const listGroupReadersByEmailAscFiltered = `-- name: ListGroupReadersByEmailAscFiltered :many
-SELECT users.id, users.email, users.created_at FROM users
+SELECT users.id, users.email, users.created_at, users.preferred_lang FROM users
 JOIN group_readers ON group_readers.user_id = users.id
 WHERE group_readers.group_id = ?1
   AND (
@@ -1005,7 +1036,12 @@ func (q *Queries) ListGroupReadersByEmailAscFiltered(ctx context.Context, arg Li
 	items := []User{}
 	for rows.Next() {
 		var i User
-		if err := rows.Scan(&i.ID, &i.Email, &i.CreatedAt); err != nil {
+		if err := rows.Scan(
+			&i.ID,
+			&i.Email,
+			&i.CreatedAt,
+			&i.PreferredLang,
+		); err != nil {
 			return nil, err
 		}
 		items = append(items, i)
@@ -1020,7 +1056,7 @@ func (q *Queries) ListGroupReadersByEmailAscFiltered(ctx context.Context, arg Li
 }
 
 const listGroupReadersByEmailDescFiltered = `-- name: ListGroupReadersByEmailDescFiltered :many
-SELECT users.id, users.email, users.created_at FROM users
+SELECT users.id, users.email, users.created_at, users.preferred_lang FROM users
 JOIN group_readers ON group_readers.user_id = users.id
 WHERE group_readers.group_id = ?1
   AND (
@@ -1052,7 +1088,12 @@ func (q *Queries) ListGroupReadersByEmailDescFiltered(ctx context.Context, arg L
 	items := []User{}
 	for rows.Next() {
 		var i User
-		if err := rows.Scan(&i.ID, &i.Email, &i.CreatedAt); err != nil {
+		if err := rows.Scan(
+			&i.ID,
+			&i.Email,
+			&i.CreatedAt,
+			&i.PreferredLang,
+		); err != nil {
 			return nil, err
 		}
 		items = append(items, i)
@@ -1897,6 +1938,22 @@ func (q *Queries) UpdateGroupName(ctx context.Context, arg UpdateGroupNameParams
 		&i.TotalLeftover,
 	)
 	return i, err
+}
+
+const updateUserPreferredLang = `-- name: UpdateUserPreferredLang :exec
+UPDATE users
+SET preferred_lang = ?
+WHERE id = ?
+`
+
+type UpdateUserPreferredLangParams struct {
+	PreferredLang string `json:"preferred_lang"`
+	ID            string `json:"id"`
+}
+
+func (q *Queries) UpdateUserPreferredLang(ctx context.Context, arg UpdateUserPreferredLangParams) error {
+	_, err := q.db.ExecContext(ctx, updateUserPreferredLang, arg.PreferredLang, arg.ID)
+	return err
 }
 
 const useMagicLink = `-- name: UseMagicLink :exec

@@ -8,6 +8,7 @@ import (
 	"strings"
 	"time"
 
+	ctxi18nlib "github.com/invopop/ctxi18n"
 	ctxi18n "github.com/invopop/ctxi18n/i18n"
 	"github.com/labstack/echo/v4"
 	"github.com/starfederation/datastar-go/datastar"
@@ -113,8 +114,9 @@ func (a *Auth) LoginRequest(c echo.Context) error {
 		}
 
 		loginUser, err = db.Qry.CreateUser(c.Request().Context(), db.CreateUserParams{
-			ID:    utils.GenerateID("usr"),
-			Email: emailAddress,
+			ID:            utils.GenerateID("usr"),
+			Email:         emailAddress,
+			PreferredLang: appi18n.LocaleCode(c.Request().Context()),
 		})
 		if err != nil {
 			slog.Error("auth.login: failed to create user", "err", err)
@@ -150,7 +152,13 @@ func (a *Auth) LoginRequest(c echo.Context) error {
 		return c.NoContent(http.StatusOK)
 	}
 
-	err = email.Email().SendMagicLink(c.Request().Context(), emailAddress, token, utils.Env().URL)
+	mailCtx := c.Request().Context()
+	if loginUser.PreferredLang != "" {
+		if localizedCtx, localeErr := ctxi18nlib.WithLocale(mailCtx, loginUser.PreferredLang); localeErr == nil {
+			mailCtx = localizedCtx
+		}
+	}
+	err = email.Email().SendMagicLink(mailCtx, emailAddress, token, utils.Env().URL)
 	if err != nil {
 		slog.Error("auth.login: failed to send email", "err", err)
 	}
@@ -172,14 +180,6 @@ func (a *Auth) VerifyMagicLink(c echo.Context) error {
 	}
 
 	locale := appi18n.NormalizeLocale(c.QueryParam("lang"))
-	c.SetCookie(&http.Cookie{
-		Name:     appi18n.CookieName,
-		Value:    locale,
-		Path:     "/",
-		MaxAge:   60 * 60 * 24 * 365,
-		SameSite: http.SameSiteLaxMode,
-		HttpOnly: true,
-	})
 
 	// Get magic link
 	magicLink, err := db.Qry.GetMagicLinkByToken(c.Request().Context(), token)
@@ -209,12 +209,19 @@ func (a *Auth) VerifyMagicLink(c echo.Context) error {
 	if err != nil {
 		// Create user on invite accept
 		user, err = db.Qry.CreateUser(c.Request().Context(), db.CreateUserParams{
-			ID:    utils.GenerateID("usr"),
-			Email: magicLink.Email,
+			ID:            utils.GenerateID("usr"),
+			Email:         magicLink.Email,
+			PreferredLang: locale,
 		})
 		if err != nil {
 			slog.Error("auth: failed to create user", "err", err)
 			return c.String(http.StatusInternalServerError, "Failed to create user")
+		}
+	} else if user.PreferredLang != locale {
+		if err := db.Qry.UpdateUserPreferredLang(c.Request().Context(), db.UpdateUserPreferredLangParams{PreferredLang: locale, ID: user.ID}); err != nil {
+			slog.Warn("auth.verify: failed to update user preferred language", "user_id", user.ID, "err", err)
+		} else {
+			user.PreferredLang = locale
 		}
 	}
 
@@ -303,7 +310,13 @@ func (a *Auth) VerifyMagicLink(c echo.Context) error {
 			}
 		}
 
-		err = email.Email().SendInviteAccepted(c.Request().Context(), user.Email, groupName, groupID, utils.Env().URL)
+		notifyCtx := c.Request().Context()
+		if user.PreferredLang != "" {
+			if localizedCtx, localeErr := ctxi18nlib.WithLocale(notifyCtx, user.PreferredLang); localeErr == nil {
+				notifyCtx = localizedCtx
+			}
+		}
+		err = email.Email().SendInviteAccepted(notifyCtx, user.Email, groupName, groupID, utils.Env().URL)
 		if err != nil {
 			slog.Warn("auth.verify: failed to send invite accepted email", "group_id", groupID, "user_id", user.ID, "err", err)
 		}

@@ -55,52 +55,52 @@ func TestJoinBilingualHTML(t *testing.T) {
 
 func TestBuildInviteAcceptedBodies(t *testing.T) {
 	svc := &Service{}
-	htmlBody, textBody, subject, err := svc.buildInviteAcceptedBodies(context.Background(), "My Group", "grp_123", "https://example.com")
+	built, err := svc.buildInviteAcceptedBodies(context.Background(), "My Group", "grp_123", "https://example.com")
 	if err != nil {
 		t.Fatalf("buildInviteAcceptedBodies returned error: %v", err)
 	}
 
 	t.Run("subject includes group name", func(t *testing.T) {
-		if !strings.Contains(subject, "My Group") {
-			t.Fatalf("expected subject to include group name, got %q", subject)
+		if !strings.Contains(built.Subject, "My Group") {
+			t.Fatalf("expected subject to include group name, got %q", built.Subject)
 		}
 	})
 
 	t.Run("text body includes group link", func(t *testing.T) {
-		if !strings.Contains(textBody, "https://example.com/groups/grp_123") {
-			t.Fatalf("expected text body to include group link, got %q", textBody)
+		if !strings.Contains(built.TextBody, "https://example.com/groups/grp_123") {
+			t.Fatalf("expected text body to include group link, got %q", built.TextBody)
 		}
 	})
 
 	t.Run("html body includes group link", func(t *testing.T) {
-		if !strings.Contains(htmlBody, "https://example.com/groups/grp_123") {
-			t.Fatalf("expected html body to include group link, got %q", htmlBody)
+		if !strings.Contains(built.HTMLBody, "https://example.com/groups/grp_123") {
+			t.Fatalf("expected html body to include group link, got %q", built.HTMLBody)
 		}
 	})
 }
 
 func TestBuildGroupCreatedBodies(t *testing.T) {
 	svc := &Service{}
-	htmlBody, textBody, subject, err := svc.buildGroupCreatedBodies(context.Background(), "My Group", "grp_123", "https://example.com")
+	built, err := svc.buildGroupCreatedBodies(context.Background(), "My Group", "grp_123", "https://example.com")
 	if err != nil {
 		t.Fatalf("buildGroupCreatedBodies returned error: %v", err)
 	}
 
 	t.Run("subject includes group name", func(t *testing.T) {
-		if !strings.Contains(subject, "My Group") {
-			t.Fatalf("expected subject to include group name, got %q", subject)
+		if !strings.Contains(built.Subject, "My Group") {
+			t.Fatalf("expected subject to include group name, got %q", built.Subject)
 		}
 	})
 
 	t.Run("text body includes group link", func(t *testing.T) {
-		if !strings.Contains(textBody, "https://example.com/groups/grp_123") {
-			t.Fatalf("expected text body to include group link, got %q", textBody)
+		if !strings.Contains(built.TextBody, "https://example.com/groups/grp_123") {
+			t.Fatalf("expected text body to include group link, got %q", built.TextBody)
 		}
 	})
 
 	t.Run("html body includes group link", func(t *testing.T) {
-		if !strings.Contains(htmlBody, "https://example.com/groups/grp_123") {
-			t.Fatalf("expected html body to include group link, got %q", htmlBody)
+		if !strings.Contains(built.HTMLBody, "https://example.com/groups/grp_123") {
+			t.Fatalf("expected html body to include group link, got %q", built.HTMLBody)
 		}
 	})
 }

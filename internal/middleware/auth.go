@@ -5,10 +5,12 @@ import (
 	"net/http"
 	"strings"
 
+	ctxi18nlib "github.com/invopop/ctxi18n"
 	ctxi18n "github.com/invopop/ctxi18n/i18n"
 	"github.com/labstack/echo/v4"
 
 	"bandcash/internal/db"
+	appi18n "bandcash/internal/i18n"
 	"bandcash/internal/utils"
 )
 
@@ -52,6 +54,11 @@ func RequireAuth() echo.MiddlewareFunc {
 			superadminEmail := strings.ToLower(strings.TrimSpace(utils.Env().SuperadminEmail))
 			if superadminEmail != "" && strings.ToLower(strings.TrimSpace(user.Email)) == superadminEmail {
 				isSuperadmin = true
+			}
+
+			preferredLang := appi18n.NormalizeLocale(user.PreferredLang)
+			if localizedCtx, localeErr := ctxi18nlib.WithLocale(c.Request().Context(), preferredLang); localeErr == nil {
+				c.SetRequest(c.Request().WithContext(localizedCtx))
 			}
 
 			c.Set(string(UserIDKey), user.ID)

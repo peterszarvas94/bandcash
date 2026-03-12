@@ -3,14 +3,15 @@ package i18n
 import (
 	"context"
 	"embed"
+	"net/http"
+	"strings"
 
 	"github.com/invopop/ctxi18n"
 	ctxi18nCore "github.com/invopop/ctxi18n/i18n"
 )
 
 const (
-	DefaultLocale = "en"
-	CookieName    = "lang"
+	DefaultLocale = "hu"
 )
 
 var SupportedLocales = []string{"en", "hu"}
@@ -39,4 +40,31 @@ func NormalizeLocale(code string) string {
 		return DefaultLocale
 	}
 	return string(l.Code())
+}
+
+func LocaleFromRequest(r *http.Request) string {
+	if r == nil {
+		return DefaultLocale
+	}
+
+	if lang := NormalizeLocale(r.URL.Query().Get("lang")); lang != "" {
+		if r.URL.Query().Get("lang") != "" {
+			return lang
+		}
+	}
+
+	acceptLanguage := strings.TrimSpace(r.Header.Get("Accept-Language"))
+	if acceptLanguage == "" {
+		return DefaultLocale
+	}
+
+	for _, part := range strings.Split(acceptLanguage, ",") {
+		candidate := strings.TrimSpace(strings.Split(part, ";")[0])
+		if candidate == "" {
+			continue
+		}
+		return NormalizeLocale(candidate)
+	}
+
+	return DefaultLocale
 }

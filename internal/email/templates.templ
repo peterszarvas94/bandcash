@@ -1,16 +1,13 @@
 package email
 
-import (
-	ctxi18n "github.com/invopop/ctxi18n/i18n"
-)
+import ctxi18n "github.com/invopop/ctxi18n/i18n"
 
 templ BilingualEmailHTML(huHTML, enHTML string) {
-	<div style="margin:0;padding:0;">
-		<div style="margin:0 0 10px;font-family:system-ui,-apple-system,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif;font-size:12px;line-height:1.4;color:#1a1a1a;text-align:center;">
+	<div style="margin:0;padding:0;background:#f7f8fa;color:#1a1a1a;color-scheme:light;">
+		<div style="margin:0;padding-top:20px;font-family:system-ui,-apple-system,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif;font-size:12px;line-height:1.4;color:#1a1a1a;text-align:center;background:#f7f8fa;">
 			English follows below.
 		</div>
 		@templ.Raw(huHTML)
-		<div style="height:10px"></div>
 		@templ.Raw(enHTML)
 	</div>
 }
@@ -165,7 +162,7 @@ templ AccessRemovedHTML(groupName string, admins []string, link string) {
 }
 
 templ ActionEmailHTMLWithDetails(title, intro, cta, copyLink, expiry, ignore, link string) {
-	<div style="margin:0;padding:24px;background:#f7f8fa;">
+	<div style="margin:0;padding:24px;background:#f7f8fa;color:#1a1a1a;color-scheme:light;">
 		<div style="max-width:760px;margin:0 auto;border:1px solid #cccccc;background:#ffffff;border-radius:8px;overflow:hidden;font-family:system-ui,-apple-system,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif;color:#1a1a1a;line-height:1.6;">
 			<div style="padding:20px 20px 16px;border-bottom:1px solid #e6e6e6;background:#fdfdfd;">
 				<p style="margin:0 0 8px;font-size:12px;letter-spacing:0.08em;text-transform:uppercase;color:#1a1a1a;">BandCash</p>
@@ -177,7 +174,7 @@ templ ActionEmailHTMLWithDetails(title, intro, cta, copyLink, expiry, ignore, li
 					<a href={ link } style="display:inline-block;background:#1f3a5f;color:#ffffff;text-decoration:none;padding:10px 16px;border-radius:6px;border:1px solid #1f3a5f;font-weight:600;">{ cta }</a>
 				</p>
 				<p style="margin:0 0 8px;color:#1a1a1a;">{ copyLink }</p>
-				<p style="margin:0 0 16px;padding:10px 12px;border:1px solid #d5d8de;border-radius:6px;background:#f7f8fa;white-space:nowrap;"><a href={ link } style="color:#1f3a5f;text-decoration:underline;white-space:nowrap;">{ link }</a></p>
+				<p style="margin:0 0 16px;padding:10px 12px;border:1px solid #d5d8de;border-radius:6px;background:#f7f8fa;overflow-wrap:anywhere;word-break:break-word;"><a href={ link } style="color:#1f3a5f;text-decoration:underline;overflow-wrap:anywhere;word-break:break-word;">{ link }</a></p>
 				{ children... }
 				if expiry != "" || ignore != "" {
 					<p style="margin:0;color:#1a1a1a;">
@@ -194,5 +191,5 @@ templ ActionEmailHTMLWithDetails(title, intro, cta, copyLink, expiry, ignore, li
 }
 
 templ ActionEmailHTML(title, intro, cta, copyLink, expiry, ignore, link string) {
-	@ActionEmailHTMLWithDetails(title, intro, cta, copyLink, expiry, ignore, link) {}
+	@ActionEmailHTMLWithDetails(title, intro, cta, copyLink, expiry, ignore, link)
 }

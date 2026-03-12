@@ -50,14 +50,11 @@ func (s *Settings) UpdateLanguage(c echo.Context) error {
 	}
 
 	locale := appi18n.NormalizeLocale(signals.FormData.Lang)
-	c.SetCookie(&http.Cookie{
-		Name:     appi18n.CookieName,
-		Value:    locale,
-		Path:     "/",
-		MaxAge:   60 * 60 * 24 * 365,
-		SameSite: http.SameSiteLaxMode,
-		HttpOnly: true,
-	})
+	if sessionCookie, err := c.Cookie("session"); err == nil && sessionCookie.Value != "" {
+		if err := db.Qry.UpdateUserPreferredLang(c.Request().Context(), db.UpdateUserPreferredLangParams{PreferredLang: locale, ID: sessionCookie.Value}); err != nil {
+			return c.NoContent(http.StatusInternalServerError)
+		}
+	}
 	notifyCtx, err := ctxi18nlib.WithLocale(c.Request().Context(), locale)
 	if err != nil {
 		notifyCtx = c.Request().Context()

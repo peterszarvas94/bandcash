@@ -129,59 +129,105 @@ func (h *DevNotifications) TestMultiAction(c echo.Context) error {
 }
 
 func (h *DevNotifications) PreviewLoginEmail(c echo.Context) error {
-	html, err := email.Email().PreviewMagicLinkHTML(c.Request().Context(), "tok_12345678901234567890", devBaseURL(c))
+	subject, html, err := email.Email().PreviewMagicLinkHTML(c.Request().Context(), "tok_12345678901234567890", devBaseURL(c))
 	if err != nil {
 		return c.String(http.StatusInternalServerError, err.Error())
 	}
-	return c.HTML(http.StatusOK, html)
+	return renderEmailPreview(c, EmailPreviewData{
+		Title:    "Login email preview",
+		From:     utils.Env().EmailFrom,
+		To:       "user@example.com",
+		Subject:  subject,
+		BodyHTML: html,
+	})
 }
 
 func (h *DevNotifications) PreviewInviteEmail(c echo.Context) error {
-	html, err := email.Email().PreviewGroupInvitationHTML(c.Request().Context(), "Preview Group", "tok_ABCDEFGHIJ1234567890", devBaseURL(c))
+	subject, html, err := email.Email().PreviewGroupInvitationHTML(c.Request().Context(), "Preview Group", "tok_ABCDEFGHIJ1234567890", devBaseURL(c))
 	if err != nil {
 		return c.String(http.StatusInternalServerError, err.Error())
 	}
-	return c.HTML(http.StatusOK, html)
+	return renderEmailPreview(c, EmailPreviewData{
+		Title:    "Invite email preview",
+		From:     utils.Env().EmailFrom,
+		To:       "invitee@example.com",
+		Subject:  subject,
+		BodyHTML: html,
+	})
 }
 
 func (h *DevNotifications) PreviewInviteAcceptedEmail(c echo.Context) error {
-	html, err := email.Email().PreviewInviteAcceptedHTML(c.Request().Context(), "Preview Group", "grp_preview1234567890", devBaseURL(c))
+	subject, html, err := email.Email().PreviewInviteAcceptedHTML(c.Request().Context(), "Preview Group", "grp_preview1234567890", devBaseURL(c))
 	if err != nil {
 		return c.String(http.StatusInternalServerError, err.Error())
 	}
-	return c.HTML(http.StatusOK, html)
+	return renderEmailPreview(c, EmailPreviewData{
+		Title:    "Invite accepted email preview",
+		From:     utils.Env().EmailFrom,
+		To:       "admin@example.com",
+		Subject:  subject,
+		BodyHTML: html,
+	})
 }
 
 func (h *DevNotifications) PreviewGroupCreatedEmail(c echo.Context) error {
-	html, err := email.Email().PreviewGroupCreatedHTML(c.Request().Context(), "Preview Group", "grp_preview1234567890", devBaseURL(c))
+	subject, html, err := email.Email().PreviewGroupCreatedHTML(c.Request().Context(), "Preview Group", "grp_preview1234567890", devBaseURL(c))
 	if err != nil {
 		return c.String(http.StatusInternalServerError, err.Error())
 	}
-	return c.HTML(http.StatusOK, html)
+	return renderEmailPreview(c, EmailPreviewData{
+		Title:    "Group created email preview",
+		From:     utils.Env().EmailFrom,
+		To:       "owner@example.com",
+		Subject:  subject,
+		BodyHTML: html,
+	})
 }
 
 func (h *DevNotifications) PreviewRoleUpgradedEmail(c echo.Context) error {
-	html, err := email.Email().PreviewRoleUpgradedToAdminHTML(c.Request().Context(), "Preview Group", "grp_preview1234567890", devBaseURL(c))
+	subject, html, err := email.Email().PreviewRoleUpgradedToAdminHTML(c.Request().Context(), "Preview Group", "grp_preview1234567890", devBaseURL(c))
 	if err != nil {
 		return c.String(http.StatusInternalServerError, err.Error())
 	}
-	return c.HTML(http.StatusOK, html)
+	return renderEmailPreview(c, EmailPreviewData{
+		Title:    "Role upgraded email preview",
+		From:     utils.Env().EmailFrom,
+		To:       "member@example.com",
+		Subject:  subject,
+		BodyHTML: html,
+	})
 }
 
 func (h *DevNotifications) PreviewRoleDowngradedEmail(c echo.Context) error {
-	html, err := email.Email().PreviewRoleDowngradedToViewerHTML(c.Request().Context(), "Preview Group", "grp_preview1234567890", devBaseURL(c))
+	subject, html, err := email.Email().PreviewRoleDowngradedToViewerHTML(c.Request().Context(), "Preview Group", "grp_preview1234567890", devBaseURL(c))
 	if err != nil {
 		return c.String(http.StatusInternalServerError, err.Error())
 	}
-	return c.HTML(http.StatusOK, html)
+	return renderEmailPreview(c, EmailPreviewData{
+		Title:    "Role downgraded email preview",
+		From:     utils.Env().EmailFrom,
+		To:       "member@example.com",
+		Subject:  subject,
+		BodyHTML: html,
+	})
 }
 
 func (h *DevNotifications) PreviewAccessRemovedEmail(c echo.Context) error {
-	html, err := email.Email().PreviewAccessRemovedHTML(c.Request().Context(), "Preview Group", []string{"admin.one@example.com", "admin.two@example.com"}, devBaseURL(c))
+	subject, html, err := email.Email().PreviewAccessRemovedHTML(c.Request().Context(), "Preview Group", []string{"admin.one@example.com", "admin.two@example.com"}, devBaseURL(c))
 	if err != nil {
 		return c.String(http.StatusInternalServerError, err.Error())
 	}
-	return c.HTML(http.StatusOK, html)
+	return renderEmailPreview(c, EmailPreviewData{
+		Title:    "Access removed email preview",
+		From:     utils.Env().EmailFrom,
+		To:       "member@example.com",
+		Subject:  subject,
+		BodyHTML: html,
+	})
+}
+
+func renderEmailPreview(c echo.Context, data EmailPreviewData) error {
+	return utils.RenderPage(c, DevEmailPreviewPage(data))
 }
 
 func (h *DevNotifications) TestTableQuery(c echo.Context) error {
