@@ -9,7 +9,7 @@ RUN go mod download
 
 COPY . .
 ENV CGO_ENABLED=1
-RUN go run ./cmd/assets/main.go
+RUN APP_ENV=production go run ./cmd/assets/main.go
 RUN go build -o server ./cmd/server
 
 FROM alpine:latest

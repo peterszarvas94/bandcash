@@ -19,7 +19,7 @@ type importMapFile struct {
 	Imports map[string]string `json:"imports"`
 }
 
-var assetSpecs = []assetSpec{
+var coreAssetSpecs = []assetSpec{
 	{Logical: "css/base.css", Source: "static/css/base.css"},
 	{Logical: "css/components.css", Source: "static/css/components.css"},
 	{Logical: "css/utilities.css", Source: "static/css/utilities.css"},
@@ -27,11 +27,14 @@ var assetSpecs = []assetSpec{
 	{Logical: "js/vendor/datastar.js", Source: "static/js/vendor/datastar.js"},
 	{Logical: "js/notifications.js", Source: "static/js/notifications.js"},
 	{Logical: "js/drawer_focus.js", Source: "static/js/drawer_focus.js"},
+	{Logical: "js/table_query.js", Source: "static/js/table_query.js"},
+	{Logical: "js/main.js", Source: "static/js/main.js"},
+}
+
+var devOnlyAssetSpecs = []assetSpec{
 	{Logical: "js/rate_limit_tester.js", Source: "static/js/rate_limit_tester.js"},
 	{Logical: "js/body_limit_tester.js", Source: "static/js/body_limit_tester.js"},
 	{Logical: "js/table_query_tester.js", Source: "static/js/table_query_tester.js"},
-	{Logical: "js/table_query.js", Source: "static/js/table_query.js"},
-	{Logical: "js/main.js", Source: "static/js/main.js"},
 }
 
 func main() {
@@ -43,6 +46,12 @@ func main() {
 	sourceImportMap, err := loadSourceImportMap("static/importmap.json")
 	if err != nil {
 		panic(err)
+	}
+
+	appEnv := strings.TrimSpace(strings.ToLower(os.Getenv("APP_ENV")))
+	assetSpecs := append([]assetSpec{}, coreAssetSpecs...)
+	if appEnv != "production" {
+		assetSpecs = append(assetSpecs, devOnlyAssetSpecs...)
 	}
 
 	if err := os.RemoveAll("static/gen"); err != nil {

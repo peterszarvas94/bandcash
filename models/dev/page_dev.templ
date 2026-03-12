@@ -1,6 +1,7 @@
 package dev
 
 import (
+	"bandcash/internal/assets"
 	appi18n "bandcash/internal/i18n"
 	"bandcash/internal/utils"
 	shared "bandcash/models/shared"
@@ -15,6 +16,9 @@ templ DevPage() {
 			<div data-signals={ templ.JSONString(map[string]any{"csrf": utils.CSRFTokenFromContext(ctx), "errors": map[string]any{"name": ""}, "formData": map[string]any{"name": ""}, "_fetching": false, "activeSpinner": "", "_notifyInline": false, "_notifyInfo": false, "_notifySuccess": false, "_notifyWarning": false, "_notifyError": false}) } data-init="@get('/sse')"></div>
 			@shared.Notifications()
 			@shared.AppShellMainOnly("dev-page", []utils.Crumb{{Label: "Dev tools"}}, "", shared.DevPrimaryNav("dev"), DevMain())
+			<script type="module" src={ assets.AssetPath("js/rate_limit_tester.js") }></script>
+			<script type="module" src={ assets.AssetPath("js/body_limit_tester.js") }></script>
+			<script type="module" src={ assets.AssetPath("js/table_query_tester.js") }></script>
 		</body>
 	</html>
 }
