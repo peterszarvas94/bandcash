@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"log/slog"
+	"sort"
 	"strings"
 	"sync"
 
@@ -71,6 +72,10 @@ func verifyLink(baseURL, token, locale string) string {
 
 func groupLink(baseURL, groupID string) string {
 	return fmt.Sprintf("%s/groups/%s", baseURL, groupID)
+}
+
+func dashboardLink(baseURL string) string {
+	return fmt.Sprintf("%s/dashboard", baseURL)
 }
 
 func joinBilingualText(huText, enText string) string {
@@ -329,5 +334,173 @@ func (s *Service) buildGroupCreatedBodies(ctx context.Context, groupName, groupI
 	if err != nil {
 		return "", "", "", err
 	}
+	return htmlBody, textBody, subject, nil
+}
+
+func (s *Service) SendRoleUpgradedToAdmin(ctx context.Context, to, groupName, groupID, baseURL string) error {
+	htmlBody, textBody, subject, err := s.buildRoleChangeBodies(ctx, groupName, groupID, baseURL, "role_upgraded")
+	if err != nil {
+		return err
+	}
+
+	return s.Send(to, subject, strings.TrimSpace(textBody), strings.TrimSpace(htmlBody))
+}
+
+func (s *Service) PreviewRoleUpgradedToAdminHTML(ctx context.Context, groupName, groupID, baseURL string) (string, error) {
+	htmlBody, _, _, err := s.buildRoleChangeBodies(ctx, groupName, groupID, baseURL, "role_upgraded")
+	if err != nil {
+		return "", err
+	}
+	return strings.TrimSpace(htmlBody), nil
+}
+
+func (s *Service) SendRoleDowngradedToViewer(ctx context.Context, to, groupName, groupID, baseURL string) error {
+	htmlBody, textBody, subject, err := s.buildRoleChangeBodies(ctx, groupName, groupID, baseURL, "role_downgraded")
+	if err != nil {
+		return err
+	}
+
+	return s.Send(to, subject, strings.TrimSpace(textBody), strings.TrimSpace(htmlBody))
+}
+
+func (s *Service) PreviewRoleDowngradedToViewerHTML(ctx context.Context, groupName, groupID, baseURL string) (string, error) {
+	htmlBody, _, _, err := s.buildRoleChangeBodies(ctx, groupName, groupID, baseURL, "role_downgraded")
+	if err != nil {
+		return "", err
+	}
+	return strings.TrimSpace(htmlBody), nil
+}
+
+func (s *Service) buildRoleChangeBodies(ctx context.Context, groupName, groupID, baseURL, key string) (string, string, string, error) {
+	ctx = emailContext(ctx)
+	huCtx := contextWithLocale(ctx, "hu")
+	enCtx := contextWithLocale(ctx, "en")
+
+	link := groupLink(baseURL, groupID)
+
+	subject := ctxi18ncore.T(enCtx, "email."+key+".subject", groupName)
+
+	var huTextBody, enTextBody, huHTMLBody, enHTMLBody string
+	var err error
+
+	switch key {
+	case "role_upgraded":
+		huTextBody, err = utils.RenderHTML(huCtx, RoleUpgradedToAdminText(groupName, link))
+		if err != nil {
+			return "", "", "", fmt.Errorf("failed to render role-upgraded text template: %w", err)
+		}
+		enTextBody, err = utils.RenderHTML(enCtx, RoleUpgradedToAdminText(groupName, link))
+		if err != nil {
+			return "", "", "", fmt.Errorf("failed to render role-upgraded text template: %w", err)
+		}
+		huHTMLBody, err = utils.RenderHTML(huCtx, RoleUpgradedToAdminHTML(groupName, link))
+		if err != nil {
+			return "", "", "", fmt.Errorf("failed to render role-upgraded HTML template: %w", err)
+		}
+		enHTMLBody, err = utils.RenderHTML(enCtx, RoleUpgradedToAdminHTML(groupName, link))
+		if err != nil {
+			return "", "", "", fmt.Errorf("failed to render role-upgraded HTML template: %w", err)
+		}
+	case "role_downgraded":
+		huTextBody, err = utils.RenderHTML(huCtx, RoleDowngradedToViewerText(groupName, link))
+		if err != nil {
+			return "", "", "", fmt.Errorf("failed to render role-downgraded text template: %w", err)
+		}
+		enTextBody, err = utils.RenderHTML(enCtx, RoleDowngradedToViewerText(groupName, link))
+		if err != nil {
+			return "", "", "", fmt.Errorf("failed to render role-downgraded text template: %w", err)
+		}
+		huHTMLBody, err = utils.RenderHTML(huCtx, RoleDowngradedToViewerHTML(groupName, link))
+		if err != nil {
+			return "", "", "", fmt.Errorf("failed to render role-downgraded HTML template: %w", err)
+		}
+		enHTMLBody, err = utils.RenderHTML(enCtx, RoleDowngradedToViewerHTML(groupName, link))
+		if err != nil {
+			return "", "", "", fmt.Errorf("failed to render role-downgraded HTML template: %w", err)
+		}
+	default:
+		return "", "", "", fmt.Errorf("unsupported role change key: %s", key)
+	}
+
+	textBody := joinBilingualText(huTextBody, enTextBody)
+	htmlBody, err := joinBilingualHTML(ctx, huHTMLBody, enHTMLBody)
+	if err != nil {
+		return "", "", "", err
+	}
+
+	return htmlBody, textBody, subject, nil
+}
+
+func (s *Service) SendAccessRemoved(ctx context.Context, to, groupName string, adminEmails []string, baseURL string) error {
+	htmlBody, textBody, subject, err := s.buildAccessRemovedBodies(ctx, groupName, adminEmails, baseURL)
+	if err != nil {
+		return err
+	}
+
+	return s.Send(to, subject, strings.TrimSpace(textBody), strings.TrimSpace(htmlBody))
+}
+
+func (s *Service) PreviewAccessRemovedHTML(ctx context.Context, groupName string, adminEmails []string, baseURL string) (string, error) {
+	htmlBody, _, _, err := s.buildAccessRemovedBodies(ctx, groupName, adminEmails, baseURL)
+	if err != nil {
+		return "", err
+	}
+	return strings.TrimSpace(htmlBody), nil
+}
+
+func normalizeEmails(emails []string) []string {
+	seen := make(map[string]struct{}, len(emails))
+	normalized := make([]string, 0, len(emails))
+	for _, email := range emails {
+		trimmed := strings.TrimSpace(email)
+		if trimmed == "" {
+			continue
+		}
+		if _, ok := seen[trimmed]; ok {
+			continue
+		}
+		seen[trimmed] = struct{}{}
+		normalized = append(normalized, trimmed)
+	}
+	sort.Strings(normalized)
+	return normalized
+}
+
+func (s *Service) buildAccessRemovedBodies(ctx context.Context, groupName string, adminEmails []string, baseURL string) (string, string, string, error) {
+	ctx = emailContext(ctx)
+	huCtx := contextWithLocale(ctx, "hu")
+	enCtx := contextWithLocale(ctx, "en")
+
+	link := dashboardLink(baseURL)
+	admins := normalizeEmails(adminEmails)
+
+	subject := ctxi18ncore.T(enCtx, "email.access_removed.subject", groupName)
+	if len(admins) == 0 {
+		return "", "", "", fmt.Errorf("no admin emails available for access-removed email")
+	}
+
+	huTextBody, err := utils.RenderHTML(huCtx, AccessRemovedText(groupName, admins, link))
+	if err != nil {
+		return "", "", "", fmt.Errorf("failed to render access-removed text template: %w", err)
+	}
+	enTextBody, err := utils.RenderHTML(enCtx, AccessRemovedText(groupName, admins, link))
+	if err != nil {
+		return "", "", "", fmt.Errorf("failed to render access-removed text template: %w", err)
+	}
+	huHTMLBody, err := utils.RenderHTML(huCtx, AccessRemovedHTML(groupName, admins, link))
+	if err != nil {
+		return "", "", "", fmt.Errorf("failed to render access-removed HTML template: %w", err)
+	}
+	enHTMLBody, err := utils.RenderHTML(enCtx, AccessRemovedHTML(groupName, admins, link))
+	if err != nil {
+		return "", "", "", fmt.Errorf("failed to render access-removed HTML template: %w", err)
+	}
+
+	textBody := joinBilingualText(huTextBody, enTextBody)
+	htmlBody, err := joinBilingualHTML(ctx, huHTMLBody, enHTMLBody)
+	if err != nil {
+		return "", "", "", err
+	}
+
 	return htmlBody, textBody, subject, nil
 }

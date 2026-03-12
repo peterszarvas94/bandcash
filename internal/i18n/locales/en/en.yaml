@@ -91,6 +91,45 @@ en:
         copy_link: "Or copy and paste this link into your browser:"
         expiry: "This link will stay valid."
         ignore: "If this wasn't expected, you can safely ignore this email."
+    role_upgraded:
+      subject: "You were promoted to admin in %s on BandCash"
+      text:
+        greeting: "Hello!"
+        intro: "Your role in %s has been upgraded to admin."
+        open_group: "Open your group here:"
+      html:
+        title: "Role updated: Admin"
+        intro: "Your role in %s has been upgraded to admin."
+        cta: "Open group"
+        copy_link: "Or copy and paste this link into your browser:"
+        expiry: "This link will stay valid."
+        ignore: "If this wasn't expected, you can safely ignore this email."
+    role_downgraded:
+      subject: "Your role was changed to viewer in %s on BandCash"
+      text:
+        greeting: "Hello!"
+        intro: "Your role in %s has been changed to viewer."
+        open_group: "Open your group here:"
+      html:
+        title: "Role updated: Viewer"
+        intro: "Your role in %s has been changed to viewer."
+        cta: "Open group"
+        copy_link: "Or copy and paste this link into your browser:"
+        expiry: "This link will stay valid."
+        ignore: "If this wasn't expected, you can safely ignore this email."
+    access_removed:
+      subject: "Your access to %s was removed on BandCash"
+      text:
+        greeting: "Hello!"
+        intro: "Your access to %s has been removed."
+        contact_admins: "Contact group admins:"
+        open_dashboard: "Open your dashboard here:"
+      html:
+        title: "Access removed"
+        intro: "Your access to %s has been removed."
+        cta: "Open dashboard"
+        copy_link: "Or copy and paste this link into your browser:"
+        contact_admins: "Contact group admins:"
   home:
     tagline: "Where is my cut?"
   settings:

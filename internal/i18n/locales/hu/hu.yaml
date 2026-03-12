@@ -91,6 +91,45 @@ hu:
         copy_link: "Vagy másold be ezt a linket a böngésződbe:"
         expiry: "Ez a link nem jár le."
         ignore: "Ha nem te kérted ezt, nyugodtan figyelmen kívül hagyhatod ezt az emailt."
+    role_upgraded:
+      subject: "Admin lettél a(z) %s csoportban a BandCash-ben"
+      text:
+        greeting: "Szia!"
+        intro: "A szerepköröd a(z) %s csoportban adminra változott."
+        open_group: "Itt tudod megnyitni a csoportot:"
+      html:
+        title: "Szerepkör frissítve: Admin"
+        intro: "A szerepköröd a(z) %s csoportban adminra változott."
+        cta: "Csoport megnyitása"
+        copy_link: "Vagy másold be ezt a linket a böngésződbe:"
+        expiry: "Ez a link nem jár le."
+        ignore: "Ha nem te kérted ezt, nyugodtan figyelmen kívül hagyhatod ezt az emailt."
+    role_downgraded:
+      subject: "A szerepköröd nézőre változott a(z) %s csoportban a BandCash-ben"
+      text:
+        greeting: "Szia!"
+        intro: "A szerepköröd a(z) %s csoportban nézőre változott."
+        open_group: "Itt tudod megnyitni a csoportot:"
+      html:
+        title: "Szerepkör frissítve: Néző"
+        intro: "A szerepköröd a(z) %s csoportban nézőre változott."
+        cta: "Csoport megnyitása"
+        copy_link: "Vagy másold be ezt a linket a böngésződbe:"
+        expiry: "Ez a link nem jár le."
+        ignore: "Ha nem te kérted ezt, nyugodtan figyelmen kívül hagyhatod ezt az emailt."
+    access_removed:
+      subject: "A hozzáférésed megszűnt a(z) %s csoporthoz a BandCash-ben"
+      text:
+        greeting: "Szia!"
+        intro: "A hozzáférésed a(z) %s csoporthoz megszűnt."
+        contact_admins: "Ha ez váratlan, lépj kapcsolatba a csoport adminjaival:"
+        open_dashboard: "Itt tudod megnyitni az irányítópultodat:"
+      html:
+        title: "Hozzáférés megszűnt"
+        intro: "A hozzáférésed a(z) %s csoporthoz megszűnt."
+        cta: "Irányítópult megnyitása"
+        copy_link: "Vagy másold be ezt a linket a böngésződbe:"
+        contact_admins: "Ha ez váratlan, lépj kapcsolatba a csoport adminjaival:"
   home:
     tagline: "Hol van a gázsim?"
   settings:

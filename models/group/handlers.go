@@ -4,7 +4,6 @@ import (
 	"context"
 	"database/sql"
 	"errors"
-	"fmt"
 	"log/slog"
 	"net/http"
 	"net/url"
@@ -537,6 +536,7 @@ func (g *Group) RemoveViewer(c echo.Context) error {
 			slog.Error("group: failed to remove admin access", "group_id", groupID, "user_id", userID, "err", err)
 			return g.patchAccessPage(c, groupID, "", "groups.errors.remove_failed")
 		}
+		notifyAccessRemoved(ctx, groupID, userID)
 		return g.patchAccessPage(c, groupID, "groups.messages.viewer_removed", "")
 	}
 
@@ -548,6 +548,7 @@ func (g *Group) RemoveViewer(c echo.Context) error {
 		slog.Error("group: failed to remove viewer", "err", err)
 		return g.patchAccessPage(c, groupID, "", "groups.errors.remove_failed")
 	}
+	notifyAccessRemoved(ctx, groupID, userID)
 
 	return g.patchAccessPage(c, groupID, "groups.messages.viewer_removed", "")
 }
@@ -916,10 +917,37 @@ func (g *Group) removeAdminAccess(ctx context.Context, groupID, userID string) e
 
 func sendRoleChangeEmail(ctx context.Context, userEmail, groupName, groupID, role string) error {
 	baseURL := utils.Env().URL
-	link := fmt.Sprintf("%s/groups/%s", baseURL, groupID)
-	subject := "Bandcash access role changed"
-	body := fmt.Sprintf("Your role in %s is now %s. Open group: %s", groupName, role, link)
-	return email.Email().Send(userEmail, subject, body, "")
+	if role == "admin" {
+		return email.Email().SendRoleUpgradedToAdmin(ctx, userEmail, groupName, groupID, baseURL)
+	}
+	return email.Email().SendRoleDowngradedToViewer(ctx, userEmail, groupName, groupID, baseURL)
+}
+
+func notifyAccessRemoved(ctx context.Context, groupID, userID string) {
+	group, err := db.Qry.GetGroupByID(ctx, groupID)
+	if err != nil {
+		slog.Warn("group: failed to load group for access-removed email", "group_id", groupID, "user_id", userID, "err", err)
+		return
+	}
+	user, err := db.Qry.GetUserByID(ctx, userID)
+	if err != nil {
+		slog.Warn("group: failed to load user for access-removed email", "group_id", groupID, "user_id", userID, "err", err)
+		return
+	}
+	admins, err := listGroupAdmins(ctx, groupID)
+	if err != nil {
+		slog.Warn("group: failed to list admins for access-removed email", "group_id", groupID, "user_id", userID, "err", err)
+		return
+	}
+
+	adminEmails := make([]string, 0, len(admins))
+	for _, admin := range admins {
+		adminEmails = append(adminEmails, admin.Email)
+	}
+
+	if err := email.Email().SendAccessRemoved(ctx, user.Email, group.Name, adminEmails, utils.Env().URL); err != nil {
+		slog.Warn("group: failed to send access-removed email", "group_id", groupID, "user_id", userID, "err", err)
+	}
 }
 
 func parseTableQueryFromValues(values url.Values, queryable utils.Queryable) utils.TableQuery {

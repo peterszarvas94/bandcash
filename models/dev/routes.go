@@ -27,5 +27,8 @@ func RegisterRoutes(e *echo.Echo) {
 	e.GET("/dev/emails/invite", h.PreviewInviteEmail)
 	e.GET("/dev/emails/invite-accepted", h.PreviewInviteAcceptedEmail)
 	e.GET("/dev/emails/group-created", h.PreviewGroupCreatedEmail)
+	e.GET("/dev/emails/role-upgraded", h.PreviewRoleUpgradedEmail)
+	e.GET("/dev/emails/role-downgraded", h.PreviewRoleDowngradedEmail)
+	e.GET("/dev/emails/access-removed", h.PreviewAccessRemovedEmail)
 	e.GET("/dev/query-test/:model", h.TestTableQuery)
 }

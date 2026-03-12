@@ -160,6 +160,30 @@ func (h *DevNotifications) PreviewGroupCreatedEmail(c echo.Context) error {
 	return c.HTML(http.StatusOK, html)
 }
 
+func (h *DevNotifications) PreviewRoleUpgradedEmail(c echo.Context) error {
+	html, err := email.Email().PreviewRoleUpgradedToAdminHTML(c.Request().Context(), "Preview Group", "grp_preview1234567890", devBaseURL(c))
+	if err != nil {
+		return c.String(http.StatusInternalServerError, err.Error())
+	}
+	return c.HTML(http.StatusOK, html)
+}
+
+func (h *DevNotifications) PreviewRoleDowngradedEmail(c echo.Context) error {
+	html, err := email.Email().PreviewRoleDowngradedToViewerHTML(c.Request().Context(), "Preview Group", "grp_preview1234567890", devBaseURL(c))
+	if err != nil {
+		return c.String(http.StatusInternalServerError, err.Error())
+	}
+	return c.HTML(http.StatusOK, html)
+}
+
+func (h *DevNotifications) PreviewAccessRemovedEmail(c echo.Context) error {
+	html, err := email.Email().PreviewAccessRemovedHTML(c.Request().Context(), "Preview Group", []string{"admin.one@example.com", "admin.two@example.com"}, devBaseURL(c))
+	if err != nil {
+		return c.String(http.StatusInternalServerError, err.Error())
+	}
+	return c.HTML(http.StatusOK, html)
+}
+
 func (h *DevNotifications) TestTableQuery(c echo.Context) error {
 	model := c.Param("model")
 	groupID, err := h.resolveTableQueryGroupID(c, model)

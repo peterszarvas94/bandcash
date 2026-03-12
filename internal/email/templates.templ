@@ -6,7 +6,7 @@ import (
 
 templ BilingualEmailHTML(huHTML, enHTML string) {
 	<div style="margin:0;padding:0;">
-		<div style="margin:0 0 10px;font-family:system-ui,-apple-system,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif;font-size:12px;line-height:1.4;color:#6b7280;text-align:center;">
+		<div style="margin:0 0 10px;font-family:system-ui,-apple-system,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif;font-size:12px;line-height:1.4;color:#1a1a1a;text-align:center;">
 			English follows below.
 		</div>
 		@templ.Raw(huHTML)
@@ -94,11 +94,81 @@ templ GroupCreatedHTML(groupName, link string) {
 	)
 }
 
-templ ActionEmailHTML(title, intro, cta, copyLink, expiry, ignore, link string) {
+templ RoleUpgradedToAdminText(groupName, link string) {
+	{ ctxi18n.T(ctx, "email.role_upgraded.text.greeting") }
+	{ ctxi18n.T(ctx, "email.role_upgraded.text.intro", groupName) }
+	{ ctxi18n.T(ctx, "email.role_upgraded.text.open_group") }
+	{ link }
+}
+
+templ RoleUpgradedToAdminHTML(groupName, link string) {
+	@ActionEmailHTML(
+		ctxi18n.T(ctx, "email.role_upgraded.html.title"),
+		ctxi18n.T(ctx, "email.role_upgraded.html.intro", groupName),
+		ctxi18n.T(ctx, "email.role_upgraded.html.cta"),
+		ctxi18n.T(ctx, "email.role_upgraded.html.copy_link"),
+		ctxi18n.T(ctx, "email.role_upgraded.html.expiry"),
+		ctxi18n.T(ctx, "email.role_upgraded.html.ignore"),
+		link,
+	)
+}
+
+templ RoleDowngradedToViewerText(groupName, link string) {
+	{ ctxi18n.T(ctx, "email.role_downgraded.text.greeting") }
+	{ ctxi18n.T(ctx, "email.role_downgraded.text.intro", groupName) }
+	{ ctxi18n.T(ctx, "email.role_downgraded.text.open_group") }
+	{ link }
+}
+
+templ RoleDowngradedToViewerHTML(groupName, link string) {
+	@ActionEmailHTML(
+		ctxi18n.T(ctx, "email.role_downgraded.html.title"),
+		ctxi18n.T(ctx, "email.role_downgraded.html.intro", groupName),
+		ctxi18n.T(ctx, "email.role_downgraded.html.cta"),
+		ctxi18n.T(ctx, "email.role_downgraded.html.copy_link"),
+		ctxi18n.T(ctx, "email.role_downgraded.html.expiry"),
+		ctxi18n.T(ctx, "email.role_downgraded.html.ignore"),
+		link,
+	)
+}
+
+templ AccessRemovedText(groupName string, admins []string, link string) {
+	{ ctxi18n.T(ctx, "email.access_removed.text.greeting") }
+	{ ctxi18n.T(ctx, "email.access_removed.text.intro", groupName) }
+	{ ctxi18n.T(ctx, "email.access_removed.text.open_dashboard") }
+	{ link }
+	{ ctxi18n.T(ctx, "email.access_removed.text.contact_admins") }
+	for _, admin := range admins {
+		{ admin }
+	}
+}
+
+templ AccessRemovedHTML(groupName string, admins []string, link string) {
+	@ActionEmailHTMLWithDetails(
+		ctxi18n.T(ctx, "email.access_removed.html.title"),
+		ctxi18n.T(ctx, "email.access_removed.html.intro", groupName),
+		ctxi18n.T(ctx, "email.access_removed.html.cta"),
+		ctxi18n.T(ctx, "email.access_removed.html.copy_link"),
+		"",
+		"",
+		link,
+	) {
+		<p style="margin:0 0 8px;">{ ctxi18n.T(ctx, "email.access_removed.html.contact_admins") }</p>
+		<ul style="margin:0 0 16px;padding-left:18px;color:#1a1a1a;">
+			for _, admin := range admins {
+				<li style="margin:0 0 4px;">
+					<a href={ templ.SafeURL("mailto:" + admin) } style="color:#1f3a5f;text-decoration:underline;">{ admin }</a>
+				</li>
+			}
+		</ul>
+	}
+}
+
+templ ActionEmailHTMLWithDetails(title, intro, cta, copyLink, expiry, ignore, link string) {
 	<div style="margin:0;padding:24px;background:#f7f8fa;">
 		<div style="max-width:760px;margin:0 auto;border:1px solid #cccccc;background:#ffffff;border-radius:8px;overflow:hidden;font-family:system-ui,-apple-system,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif;color:#1a1a1a;line-height:1.6;">
 			<div style="padding:20px 20px 16px;border-bottom:1px solid #e6e6e6;background:#fdfdfd;">
-				<p style="margin:0 0 8px;font-size:12px;letter-spacing:0.08em;text-transform:uppercase;color:#5c6673;">BandCash</p>
+				<p style="margin:0 0 8px;font-size:12px;letter-spacing:0.08em;text-transform:uppercase;color:#1a1a1a;">BandCash</p>
 				<h2 style="margin:0;font-size:22px;line-height:1.3;color:#1a1a1a;">{ title }</h2>
 			</div>
 			<div style="padding:20px;">
@@ -106,11 +176,23 @@ templ ActionEmailHTML(title, intro, cta, copyLink, expiry, ignore, link string) 
 				<p style="margin:0 0 20px;">
 					<a href={ link } style="display:inline-block;background:#1f3a5f;color:#ffffff;text-decoration:none;padding:10px 16px;border-radius:6px;border:1px solid #1f3a5f;font-weight:600;">{ cta }</a>
 				</p>
-				<p style="margin:0 0 8px;color:#4b5563;">{ copyLink }</p>
+				<p style="margin:0 0 8px;color:#1a1a1a;">{ copyLink }</p>
 				<p style="margin:0 0 16px;padding:10px 12px;border:1px solid #d5d8de;border-radius:6px;background:#f7f8fa;white-space:nowrap;"><a href={ link } style="color:#1f3a5f;text-decoration:underline;white-space:nowrap;">{ link }</a></p>
-				<p style="margin:0 0 8px;">{ expiry }</p>
-				<p style="margin:0;color:#6b7280;">{ ignore }</p>
+				{ children... }
+				if expiry != "" || ignore != "" {
+					<p style="margin:0;color:#1a1a1a;">
+						{ expiry }
+						if expiry != "" && ignore != "" {
+							{ " " }
+						}
+						{ ignore }
+					</p>
+				}
 			</div>
 		</div>
 	</div>
+}
+
+templ ActionEmailHTML(title, intro, cta, copyLink, expiry, ignore, link string) {
+	@ActionEmailHTMLWithDetails(title, intro, cta, copyLink, expiry, ignore, link) {}
 }
