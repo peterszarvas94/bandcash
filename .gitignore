@@ -6,3 +6,4 @@ bin/
 sqlite.db
 sqlite.db-*
 .kamal/secrets
+static/gen/

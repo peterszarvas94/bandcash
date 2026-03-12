@@ -2,9 +2,11 @@ package main
 
 import (
 	"context"
+	"errors"
 	"flag"
 	"fmt"
 	"log/slog"
+	"net/http"
 	"os"
 	"os/signal"
 	"syscall"
@@ -95,19 +97,27 @@ func main() {
 		os.Exit(1)
 	}
 
+	startErr := make(chan error, 1)
+
 	// Graceful shutdown
 	go func() {
 		addr := fmt.Sprintf("%s:%d", cfg.Host, cfg.Port)
 		slog.Info("server starting", "host", cfg.Host, "port", cfg.Port)
 		err := e.Start(addr)
-		if err != nil {
-			slog.Info("server stopped", "err", err)
+		if err != nil && !errors.Is(err, http.ErrServerClosed) {
+			startErr <- err
 		}
 	}()
 
 	quit := make(chan os.Signal, 1)
 	signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)
-	<-quit
+
+	select {
+	case err := <-startErr:
+		slog.Error("server failed to start", "err", err)
+		os.Exit(1)
+	case <-quit:
+	}
 
 	slog.Info("shutting down server...")
 
