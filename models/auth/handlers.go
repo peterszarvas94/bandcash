@@ -4,8 +4,10 @@ import (
 	"database/sql"
 	"errors"
 	"log/slog"
+	"net"
 	"net/http"
 	"strings"
+	"sync"
 	"time"
 
 	ctxi18nlib "github.com/invopop/ctxi18n"
@@ -26,6 +28,132 @@ type Auth struct {
 }
 
 const resendCooldown = 30 * time.Second
+
+const (
+	loginEmailCooldown     = 60 * time.Second
+	loginIPEmailWindow     = 15 * time.Minute
+	loginEmailGlobalWindow = 1 * time.Hour
+	loginIPEmailLimit      = 5
+	loginEmailGlobalLimit  = 10
+)
+
+type loginThrottle struct {
+	mu            sync.Mutex
+	emailLastSent map[string]time.Time
+	ipEmailHits   map[string][]time.Time
+	emailHits     map[string][]time.Time
+	ops           int
+}
+
+func newLoginThrottle() *loginThrottle {
+	return &loginThrottle{
+		emailLastSent: make(map[string]time.Time),
+		ipEmailHits:   make(map[string][]time.Time),
+		emailHits:     make(map[string][]time.Time),
+	}
+}
+
+func (t *loginThrottle) allow(ip string, emailAddress string, now time.Time) bool {
+	if ip == "" || emailAddress == "" {
+		return true
+	}
+
+	t.mu.Lock()
+	defer t.mu.Unlock()
+
+	t.ops++
+	if t.ops%100 == 0 {
+		t.cleanup(now)
+	}
+
+	if lastSentAt, ok := t.emailLastSent[emailAddress]; ok && now.Sub(lastSentAt) < loginEmailCooldown {
+		return false
+	}
+
+	ipEmailKey := ip + "|" + emailAddress
+	ipHits := pruneHits(t.ipEmailHits[ipEmailKey], now, loginIPEmailWindow)
+	if len(ipHits) >= loginIPEmailLimit {
+		t.ipEmailHits[ipEmailKey] = ipHits
+		return false
+	}
+
+	emailHits := pruneHits(t.emailHits[emailAddress], now, loginEmailGlobalWindow)
+	if len(emailHits) >= loginEmailGlobalLimit {
+		t.emailHits[emailAddress] = emailHits
+		return false
+	}
+
+	ipHits = append(ipHits, now)
+	emailHits = append(emailHits, now)
+	t.ipEmailHits[ipEmailKey] = ipHits
+	t.emailHits[emailAddress] = emailHits
+	t.emailLastSent[emailAddress] = now
+
+	return true
+}
+
+func (t *loginThrottle) cleanup(now time.Time) {
+	for key, lastSentAt := range t.emailLastSent {
+		if now.Sub(lastSentAt) >= loginEmailGlobalWindow {
+			delete(t.emailLastSent, key)
+		}
+	}
+
+	for key, hits := range t.ipEmailHits {
+		pruned := pruneHits(hits, now, loginIPEmailWindow)
+		if len(pruned) == 0 {
+			delete(t.ipEmailHits, key)
+			continue
+		}
+		t.ipEmailHits[key] = pruned
+	}
+
+	for key, hits := range t.emailHits {
+		pruned := pruneHits(hits, now, loginEmailGlobalWindow)
+		if len(pruned) == 0 {
+			delete(t.emailHits, key)
+			continue
+		}
+		t.emailHits[key] = pruned
+	}
+}
+
+func pruneHits(hits []time.Time, now time.Time, window time.Duration) []time.Time {
+	if len(hits) == 0 {
+		return hits
+	}
+
+	cutoff := now.Add(-window)
+	idx := 0
+	for idx < len(hits) && hits[idx].Before(cutoff) {
+		idx++
+	}
+
+	if idx == 0 {
+		return hits
+	}
+	if idx >= len(hits) {
+		return nil
+	}
+
+	return hits[idx:]
+}
+
+func requestIP(c echo.Context) string {
+	ip := strings.TrimSpace(c.RealIP())
+	if ip != "" {
+		return ip
+	}
+
+	remoteAddr := strings.TrimSpace(c.Request().RemoteAddr)
+	if host, _, err := net.SplitHostPort(remoteAddr); err == nil {
+		return host
+	}
+
+	return remoteAddr
+}
+
+var authLoginThrottle = newLoginThrottle()
 
 type authSignals struct {
 	FormData struct {
@@ -104,6 +232,12 @@ func (a *Auth) LoginRequest(c echo.Context) error {
 		return c.NoContent(http.StatusUnprocessableEntity)
 	}
 	emailAddress := signals.FormData.Email
+	clientIP := requestIP(c)
+	if !authLoginThrottle.allow(clientIP, emailAddress, time.Now()) {
+		slog.Warn("auth.login: throttled login request", "ip", clientIP, "email", maskEmail(emailAddress))
+		a.patchLoginSentState(c, emailAddress)
+		return c.NoContent(http.StatusOK)
+	}
 
 	loginUser, err := db.Qry.GetUserByEmail(c.Request().Context(), emailAddress)
 	if err != nil {

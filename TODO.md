@@ -1,11 +1,10 @@
 ## Security
 
-- [ ] add auth abuse protection (cooldown/throttle by IP + email)
-- [ ] harden/de-noise Kamal + 1Password secret fetch flow (reduce shell warnings, add deploy secret sanity check)
+- [x] add auth abuse protection (cooldown/throttle by IP + email)
 
 ## Improvements
 
-- [ ] support multiple admins per group (user->admin, admin->user, admin kick admin rules)
+- [x] support multiple admins per group (user->admin, admin->user, admin kick admin rules)
 - [ ] add real-time collaborative editing notice ("Updated by another user [Refresh]")
 - [ ] notify logged-in user when added/removed from group; on remove redirect to `/dashboard`
 - [ ] add live update on viewer pages when admin changes viewer list (broadcast SSE)
