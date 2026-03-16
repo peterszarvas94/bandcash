@@ -16,7 +16,7 @@ func NewModel() *GroupModel {
 }
 
 func (m *GroupModel) TableQuerySpec() utils.TableQuerySpec {
-	return utils.StandardTableQuerySpec("createdAt", "desc", "name", "createdAt", "admin")
+	return utils.StandardTableQuerySpec("name", "asc", "name")
 }
 
 func (m *GroupModel) GetGroupsPageData(ctx context.Context, userID string, query utils.TableQuery) (GroupsPageData, error) {

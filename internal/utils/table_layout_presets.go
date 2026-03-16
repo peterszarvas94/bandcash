@@ -30,9 +30,7 @@ func GroupsIndexTableLayout() TableLayout {
 	return NewTableLayout([]TableColumn{
 		{Key: "name", WidthCh: 24},
 		{Key: "role", WidthCh: 10},
-		{Key: "created", WidthCh: 12},
-		{Key: "admin", WidthCh: 28},
-	}, 4)
+	}, 6)
 }
 
 func MembersIndexTableLayout() TableLayout {
