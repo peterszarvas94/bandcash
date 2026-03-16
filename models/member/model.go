@@ -28,7 +28,7 @@ func (p *Members) MemberEventsTableQuerySpec() utils.TableQuerySpec {
 	return utils.StandardTableQuerySpec(utils.StandardTableQuerySpecParams{
 		DefaultSort:  "time",
 		DefaultDir:   "desc",
-		AllowedSorts: []string{"title", "time", "amount", "participant_amount", "participant_expense"},
+		AllowedSorts: []string{"title", "time", "participant_amount", "participant_expense"},
 	})
 }
 
@@ -203,24 +203,6 @@ func (p *Members) GetShowData(ctx context.Context, groupID, memberID string, que
 			}
 		} else {
 			rows, err := db.Qry.ListParticipantsByMemberByTitleAscFiltered(ctx, db.ListParticipantsByMemberByTitleAscFilteredParams(params))
-			if err != nil {
-				return MemberData{}, err
-			}
-			for _, r := range rows {
-				events = append(events, convertToMemberEvent(r))
-			}
-		}
-	case "amount":
-		if query.Dir == "desc" {
-			rows, err := db.Qry.ListParticipantsByMemberByAmountDescFiltered(ctx, db.ListParticipantsByMemberByAmountDescFilteredParams(params))
-			if err != nil {
-				return MemberData{}, err
-			}
-			for _, r := range rows {
-				events = append(events, convertToMemberEvent(r))
-			}
-		} else {
-			rows, err := db.Qry.ListParticipantsByMemberByAmountAscFiltered(ctx, db.ListParticipantsByMemberByAmountAscFilteredParams(params))
 			if err != nil {
 				return MemberData{}, err
 			}

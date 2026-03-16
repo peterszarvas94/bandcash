@@ -43,7 +43,6 @@ func MemberEventsTableLayout() TableLayout {
 	return NewTableLayout([]TableColumn{
 		{Key: "title", WidthCh: 22},
 		{Key: "time", WidthCh: 19},
-		{Key: "amount", WidthCh: 12},
 		{Key: "participant_amount", WidthCh: 12},
 		{Key: "participant_expense", WidthCh: 12},
 		{Key: "total", WidthCh: 12},
