@@ -11,7 +11,7 @@ import (
 )
 
 templ GroupsMain(data GroupsPageData) {
-	@shared.TableSearchForm(utils.BuildTableSearchDatastarAction("/dashboard", utils.DefaultTablePageSize), "table.search_placeholder")
+	@shared.TableSearchForm("/dashboard", data.Query, "table.search_placeholder")
 	@shared.TablePaginationRow("/dashboard", data.Query, data.Pagination)
 	@shared.TableOpenFixed(data.GroupsTable, "table-sticky-actions") {
 		<thead>

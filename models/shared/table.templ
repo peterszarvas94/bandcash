@@ -9,9 +9,28 @@ import (
 	icons "bandcash/models/shared/icons"
 )
 
-templ TableSearchForm(onSubmitAction string, placeholderKey string) {
-	<form class="row row-tight pb" data-on:submit={ onSubmitAction }>
-		<input type="search" data-bind="tableQuery.search" placeholder={ ctxi18n.T(ctx, placeholderKey) } aria-label={ ctxi18n.T(ctx, "table.search") } class="input input-sm"/>
+templ TableSearchForm(basePath string, query utils.TableQuery, placeholderKey string) {
+	<form class="row row-tight pb" method="get" action={ basePath }>
+		<input type="search" name="q" value={ query.Search } placeholder={ ctxi18n.T(ctx, placeholderKey) } aria-label={ ctxi18n.T(ctx, "table.search") } class="input input-sm"/>
+		if query.SortSet {
+			<input type="hidden" name="sort" value={ query.Sort }/>
+			<input type="hidden" name="dir" value={ query.Dir }/>
+		}
+		if query.PageSize != utils.DefaultTablePageSize {
+			<input type="hidden" name="pageSize" value={ fmt.Sprintf("%d", query.PageSize) }/>
+		}
+		if query.Year != "" {
+			<input type="hidden" name="year" value={ query.Year }/>
+		}
+		if query.DateMode == "custom" {
+			<input type="hidden" name="dateMode" value="custom"/>
+		}
+		if query.From != "" {
+			<input type="hidden" name="from" value={ query.From }/>
+		}
+		if query.To != "" {
+			<input type="hidden" name="to" value={ query.To }/>
+		}
 		<button class="btn btn-sm hide-mobile" type="submit">
 			@icons.Search(templ.Attributes{"class": "icon"})
 			<span>{ ctxi18n.T(ctx, "table.search") }</span>
@@ -25,14 +44,14 @@ templ TableSearchForm(onSubmitAction string, placeholderKey string) {
 }
 
 templ TableSortHeader(label string, column string, query utils.TableQuery, actionURL string) {
-	<button class="btn btn-text" type="button" data-on:click={ utils.BuildTableQueryDatastarAction(actionURL) }>
+	<a class="btn btn-text" href={ actionURL }>
 		<span>{ label }</span>
 		if query.SortSet && query.Sort == column && query.Dir == "asc" {
 			@icons.ArrowDownAZ(templ.Attributes{"class": "icon"})
 		} else if query.SortSet && query.Sort == column && query.Dir == "desc" {
 			@icons.ArrowUpZA(templ.Attributes{"class": "icon"})
 		}
-	</button>
+	</a>
 }
 
 templ TableOpenFixed(layout utils.TableLayout, class string) {
@@ -60,15 +79,14 @@ templ TablePaginationRow(basePath string, query utils.TableQuery, pager utils.Ta
 		<div class="row row-wrap row-tight" role="radiogroup" aria-label={ ctxi18n.T(ctx, "table.page_size") }>
 			<span class="hide-tablet text-sm pr">{ ctxi18n.T(ctx, "table.page_size") }</span>
 			for _, pageSize := range utils.StandardTablePageSizes {
-				<button
+				<a
 					class={ utils.PageSizeButtonClass(query.PageSize, pageSize) }
-					type="button"
 					role="radio"
 					aria-checked={ fmt.Sprintf("%t", query.PageSize == pageSize) }
-					data-on:click={ utils.BuildTableQueryDatastarAction(utils.BuildTablePageSizeURL(basePath, query, pageSize)) }
+					href={ utils.BuildTablePageSizeURL(basePath, query, pageSize) }
 				>
 					{ fmt.Sprintf("%d", pageSize) }
-				</button>
+				</a>
 			}
 		</div>
 		@TablePaginationControls(basePath, query, pager)
@@ -76,26 +94,46 @@ templ TablePaginationRow(basePath string, query utils.TableQuery, pager utils.Ta
 }
 
 templ TablePaginationControls(basePath string, query utils.TableQuery, pager utils.TablePagination) {
-	<form class="row row-wrap" data-on:submit={ utils.BuildTablePageDatastarAction(basePath, pager.TotalPages, utils.DefaultTablePageSize) }>
+	<form class="row row-wrap" method="get" action={ basePath }>
+		if query.Search != "" {
+			<input type="hidden" name="q" value={ query.Search }/>
+		}
+		if query.SortSet {
+			<input type="hidden" name="sort" value={ query.Sort }/>
+			<input type="hidden" name="dir" value={ query.Dir }/>
+		}
+		if query.PageSize != utils.DefaultTablePageSize {
+			<input type="hidden" name="pageSize" value={ fmt.Sprintf("%d", query.PageSize) }/>
+		}
+		if query.Year != "" {
+			<input type="hidden" name="year" value={ query.Year }/>
+		}
+		if query.DateMode == "custom" {
+			<input type="hidden" name="dateMode" value="custom"/>
+		}
+		if query.From != "" {
+			<input type="hidden" name="from" value={ query.From }/>
+		}
+		if query.To != "" {
+			<input type="hidden" name="to" value={ query.To }/>
+		}
 		if pager.HasPrev {
-			<button
+			<a
 				class="btn btn-sm btn-icon hide-tablet"
-				type="button"
-				data-on:click={ utils.BuildTableQueryDatastarAction(utils.BuildTablePageURL(basePath, query, 1, pager.TotalPages)) }
+				href={ utils.BuildTablePageURL(basePath, query, 1, pager.TotalPages) }
 				aria-label={ ctxi18n.T(ctx, "table.first") }
 				title={ ctxi18n.T(ctx, "table.first") }
 			>
 				1
-			</button>
-			<button
+			</a>
+			<a
 				class="btn btn-sm btn-icon"
-				type="button"
-				data-on:click={ utils.BuildTableQueryDatastarAction(utils.BuildTablePageURL(basePath, query, pager.Page-1, pager.TotalPages)) }
+				href={ utils.BuildTablePageURL(basePath, query, pager.Page-1, pager.TotalPages) }
 				aria-label={ ctxi18n.T(ctx, "table.prev") }
 				title={ ctxi18n.T(ctx, "table.prev") }
 			>
 				@icons.ArrowLeft(templ.Attributes{"class": "icon"})
-			</button>
+			</a>
 		} else {
 			<button type="button" class="btn btn-sm btn-icon hide-tablet" aria-label={ ctxi18n.T(ctx, "table.first") } title={ ctxi18n.T(ctx, "table.first") } disabled>
 				1
@@ -107,7 +145,7 @@ templ TablePaginationControls(basePath string, query utils.TableQuery, pager uti
 		<label class="row">
 			<span class="text-sm hide-tablet">{ ctxi18n.T(ctx, "table.page") }</span>
 			<span class="row row-tight hide-tablet">
-				<input type="number" min="1" max={ fmt.Sprintf("%d", pager.TotalPages) } step="1" data-bind="tableQuery.page" aria-label={ ctxi18n.T(ctx, "table.page") } class="input input-sm"/>
+				<input type="number" min="1" max={ fmt.Sprintf("%d", pager.TotalPages) } step="1" name="page" value={ fmt.Sprintf("%d", pager.Page) } aria-label={ ctxi18n.T(ctx, "table.page") } class="input input-sm"/>
 				<button class="btn btn-sm btn-icon" type="submit" aria-label={ ctxi18n.T(ctx, "table.go") } title={ ctxi18n.T(ctx, "table.go") }>
 					@icons.FileInput(templ.Attributes{"class": "icon"})
 				</button>
@@ -115,24 +153,22 @@ templ TablePaginationControls(basePath string, query utils.TableQuery, pager uti
 			<span class="text-sm show-tablet" aria-live="polite" aria-label={ fmt.Sprintf("%s %d/%d", ctxi18n.T(ctx, "table.page"), pager.Page, pager.TotalPages) }>{ fmt.Sprintf("%d/%d", pager.Page, pager.TotalPages) }</span>
 		</label>
 		if pager.HasNext {
-			<button
+			<a
 				class="btn btn-sm btn-icon"
-				type="button"
-				data-on:click={ utils.BuildTableQueryDatastarAction(utils.BuildTablePageURL(basePath, query, pager.Page+1, pager.TotalPages)) }
+				href={ utils.BuildTablePageURL(basePath, query, pager.Page+1, pager.TotalPages) }
 				aria-label={ ctxi18n.T(ctx, "table.next") }
 				title={ ctxi18n.T(ctx, "table.next") }
 			>
 				@icons.ArrowRight(templ.Attributes{"class": "icon"})
-			</button>
-			<button
+			</a>
+			<a
 				class="btn btn-sm btn-icon hide-tablet"
-				type="button"
-				data-on:click={ utils.BuildTableQueryDatastarAction(utils.BuildTablePageURL(basePath, query, pager.TotalPages, pager.TotalPages)) }
+				href={ utils.BuildTablePageURL(basePath, query, pager.TotalPages, pager.TotalPages) }
 				aria-label={ ctxi18n.T(ctx, "table.last") }
 				title={ ctxi18n.T(ctx, "table.last") }
 			>
 				{ fmt.Sprintf("%d", pager.TotalPages) }
-			</button>
+			</a>
 		} else {
 			<button type="button" class="btn btn-sm btn-icon" aria-label={ ctxi18n.T(ctx, "table.next") } title={ ctxi18n.T(ctx, "table.next") } disabled>
 				@icons.ArrowRight(templ.Attributes{"class": "icon"})

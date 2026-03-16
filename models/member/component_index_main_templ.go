@@ -38,7 +38,7 @@ func MemberIndexMain(data MembersData) templ.Component {
 			templ_7745c5c3_Var1 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = shared.TableSearchForm(utils.BuildTableSearchDatastarAction(fmt.Sprintf("/groups/%s/members", data.GroupID), utils.DefaultTablePageSize), "table.search_placeholder_members").Render(ctx, templ_7745c5c3_Buffer)
+		templ_7745c5c3_Err = shared.TableSearchForm(fmt.Sprintf("/groups/%s/members", data.GroupID), data.Query, "table.search_placeholder_members").Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

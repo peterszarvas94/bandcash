@@ -489,9 +489,4 @@ func adminPageSizeURL(query utils.TableQuery, tab string, pageSize int) string {
 	return utils.BuildTablePageSizeURL(fmt.Sprintf("/admin/%s", tab), query, pageSize)
 }
 
-func adminSearchAction(tab string) string {
-	baseURL := fmt.Sprintf("/admin/%s", tab)
-	return utils.BuildTableSearchDatastarAction(baseURL, utils.DefaultTablePageSize)
-}
-
 var _ = templruntime.GeneratedTemplate

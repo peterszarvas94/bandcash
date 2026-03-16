@@ -38,7 +38,7 @@ templ DashboardStats(data DashboardData) {
 
 	templ UsersTableSection(data DashboardData) {
 	<div class="table-section">
-		@shared.TableSearchForm(adminSearchAction("users"), "table.search_placeholder_admin_users")
+		@shared.TableSearchForm(fmt.Sprintf("/admin/%s", "users"), data.UserQuery, "table.search_placeholder_admin_users")
 		@adminTablePagination(data.UserPager, data.UserQuery, "users")
 		@shared.TableOpenFixed(data.UsersTable, "table-sticky-actions") {
 			<thead>
@@ -96,7 +96,7 @@ templ DashboardStats(data DashboardData) {
 
 templ GroupsTableSection(data DashboardData) {
 	<div class="table-section">
-		@shared.TableSearchForm(adminSearchAction("groups"), "table.search_placeholder_admin_groups")
+		@shared.TableSearchForm(fmt.Sprintf("/admin/%s", "groups"), data.GroupQuery, "table.search_placeholder_admin_groups")
 		@adminTablePagination(data.GroupPager, data.GroupQuery, "groups")
 		@shared.TableOpenFixed(data.GroupsTable, "") {
 			<thead>

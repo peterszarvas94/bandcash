@@ -1,7 +1,6 @@
 package utils
 
 import (
-	"fmt"
 	"net/url"
 	"strconv"
 	"strings"
@@ -410,13 +409,6 @@ func StandardTableQuerySpec(params StandardTableQuerySpecParams) TableQuerySpec 
 	}
 }
 
-func BuildTableSearchDatastarAction(basePath string, defaultPageSize int) string {
-	if defaultPageSize <= 0 {
-		defaultPageSize = DefaultTablePageSize
-	}
-	return fmt.Sprintf("const url = tableSearchAction('%s', $tableQuery, %d); @get(url)", basePath, defaultPageSize)
-}
-
 func BuildTableDateYearURL(basePath string, query TableQuery, year string) string {
 	page := 1
 	from := ""
@@ -457,13 +449,6 @@ func BuildTableDateCustomURL(basePath string, query TableQuery) string {
 	})
 }
 
-func BuildTableDateRangeDatastarAction(basePath string, defaultPageSize int) string {
-	if defaultPageSize <= 0 {
-		defaultPageSize = DefaultTablePageSize
-	}
-	return fmt.Sprintf("if ($dateRange.from !== '' && $dateRange.to !== '') { $tableQuery.dateMode = 'custom'; $tableQuery.year = ''; $tableQuery.from = $dateRange.from; $tableQuery.to = $dateRange.to; const url = tableSearchAction('%s', $tableQuery, %d); @get(url) }", basePath, defaultPageSize)
-}
-
 func DateFilterAllButtonClass(query TableQuery) string {
 	if DateFilterAllActive(query) {
 		return "btn btn-sm btn-active"
@@ -495,22 +480,6 @@ func DateFilterYearActive(query TableQuery, year string) bool {
 
 func DateFilterCustomActive(query TableQuery) bool {
 	return query.DateMode == "custom" || query.From != "" || query.To != ""
-}
-
-func BuildTablePageDatastarAction(basePath string, totalPages int, defaultPageSize int) string {
-	if totalPages < 1 {
-		totalPages = 1
-	}
-
-	if defaultPageSize <= 0 {
-		defaultPageSize = DefaultTablePageSize
-	}
-
-	return fmt.Sprintf("const url = tablePageAction('%s', $tableQuery, %d, %d); @get(url)", basePath, totalPages, defaultPageSize)
-}
-
-func BuildTableQueryDatastarAction(url string) string {
-	return fmt.Sprintf("history.pushState(null, '', '%s'); @get('%s')", url, url)
 }
 
 func PageSizeButtonClass(current, value int) string {

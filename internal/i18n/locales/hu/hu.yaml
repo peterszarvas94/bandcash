@@ -192,6 +192,7 @@ hu:
     next: "Következő"
     last: "Utolsó"
     go: "Ugrás oldalra"
+    apply: "Alkalmaz"
     page_size: "Oldalméret"
   fields:
     title: "Cím"

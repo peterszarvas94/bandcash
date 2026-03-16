@@ -192,6 +192,7 @@ en:
     next: "Next"
     last: "Last"
     go: "Go to page"
+    apply: "Apply"
     page_size: "Page size"
   fields:
     title: "Title"

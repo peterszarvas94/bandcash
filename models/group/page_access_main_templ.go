@@ -39,7 +39,7 @@ func GroupAccessMain(data AccessPageData) templ.Component {
 			templ_7745c5c3_Var1 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = shared.TableSearchForm(utils.BuildTableSearchDatastarAction(accessTablePath(data.GroupID), utils.DefaultTablePageSize), "table.search_placeholder_access").Render(ctx, templ_7745c5c3_Buffer)
+		templ_7745c5c3_Err = shared.TableSearchForm(accessTablePath(data.GroupID), data.Query, "table.search_placeholder_access").Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

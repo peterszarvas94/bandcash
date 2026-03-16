@@ -40,7 +40,7 @@ templ MemberShowMain(data MemberData) {
 		</div>
 	}
 	<h2 class="pb">{ ctxi18n.T(ctx, "members.list_title") }</h2>
-	@shared.TableSearchForm(utils.BuildTableSearchDatastarAction(fmt.Sprintf("/groups/%s/members/%s", data.GroupID, data.Member.ID), utils.DefaultTablePageSize), "table.search_placeholder_member_events")
+	@shared.TableSearchForm(fmt.Sprintf("/groups/%s/members/%s", data.GroupID, data.Member.ID), data.Query, "table.search_placeholder_member_events")
 	@shared.TablePaginationRow(fmt.Sprintf("/groups/%s/members/%s", data.GroupID, data.Member.ID), data.Query, data.Pager)
 	@shared.TableOpenFixed(data.EventsTable, "") {
 		<thead>

@@ -33,7 +33,7 @@ templ EventShowMain(data EventData) {
 		</div>
 	}
 	<h2 class="pb">{ ctxi18n.T(ctx, "events.participants") }</h2>
-	@shared.TableSearchForm(utils.BuildTableSearchDatastarAction(fmt.Sprintf("/groups/%s/events/%s", data.GroupID, data.Event.ID), utils.DefaultTablePageSize), "table.search_placeholder_members")
+	@shared.TableSearchForm(fmt.Sprintf("/groups/%s/events/%s", data.GroupID, data.Event.ID), data.Query, "table.search_placeholder_members")
 	@shared.TablePaginationRow(fmt.Sprintf("/groups/%s/events/%s", data.GroupID, data.Event.ID), data.Query, data.Pager)
 	@shared.TableOpenFixed(data.ParticipantsTable, "table-sticky-actions") {
 		<thead>

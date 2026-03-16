@@ -20,41 +20,52 @@ templ ExpenseIndexMain(data ExpensesData) {
 	<h2 class="pb">{ ctxi18n.T(ctx, "expenses.calculations") }</h2>
 	@ExpenseTotalsContent(data)
 	<h2 class="pb">{ ctxi18n.T(ctx, "expenses.list_title") }</h2>
-	@shared.TableSearchForm(utils.BuildTableSearchDatastarAction(fmt.Sprintf("/groups/%s/expenses", data.GroupID), utils.DefaultTablePageSize), "table.search_placeholder_expenses")
+	@shared.TableSearchForm(fmt.Sprintf("/groups/%s/expenses", data.GroupID), data.Query, "table.search_placeholder_expenses")
 	<div class="row row-wrap justify-between pb" role="radiogroup" aria-label={ ctxi18n.T(ctx, "table.date_filters") }>
 		<div class="row row-tight">
-			<button
+			<a
 				class={ utils.DateFilterAllButtonClass(data.Query) }
-				type="button"
 				aria-pressed={ fmt.Sprintf("%t", utils.DateFilterAllActive(data.Query)) }
-				data-on:click={ "$showCustomRange = false; $tableQuery.dateMode = ''; " + utils.BuildTableQueryDatastarAction(utils.BuildTableDateClearURL(fmt.Sprintf("/groups/%s/expenses", data.GroupID), data.Query)) }
+				href={ utils.BuildTableDateClearURL(fmt.Sprintf("/groups/%s/expenses", data.GroupID), data.Query) }
 			>
 				{ ctxi18n.T(ctx, "table.all") }
-			</button>
+			</a>
 			for _, year := range data.RecentYears {
-				<button
+				<a
 					class={ utils.DateFilterYearButtonClass(data.Query, fmt.Sprintf("%d", year)) }
-					type="button"
 					aria-pressed={ fmt.Sprintf("%t", utils.DateFilterYearActive(data.Query, fmt.Sprintf("%d", year))) }
-					data-on:click={ "$showCustomRange = false; $tableQuery.dateMode = ''; " + utils.BuildTableQueryDatastarAction(utils.BuildTableDateYearURL(fmt.Sprintf("/groups/%s/expenses", data.GroupID), data.Query, fmt.Sprintf("%d", year))) }
+					href={ utils.BuildTableDateYearURL(fmt.Sprintf("/groups/%s/expenses", data.GroupID), data.Query, fmt.Sprintf("%d", year)) }
 				>
 					{ fmt.Sprintf("%d", year) }
-				</button>
+				</a>
 			}
-			<button
+			<a
 				class={ utils.DateFilterCustomButtonClass(data.Query) }
-				type="button"
 				aria-pressed={ fmt.Sprintf("%t", utils.DateFilterCustomActive(data.Query)) }
-				data-on:click={ "$showCustomRange = true; $tableQuery.dateMode = 'custom'; $tableQuery.year = ''; $tableQuery.from = ''; $tableQuery.to = ''; $dateRange.from = ''; $dateRange.to = ''; " + utils.BuildTableQueryDatastarAction(utils.BuildTableDateCustomURL(fmt.Sprintf("/groups/%s/expenses", data.GroupID), data.Query)) }
+				href={ utils.BuildTableDateCustomURL(fmt.Sprintf("/groups/%s/expenses", data.GroupID), data.Query) }
 			>
 				{ ctxi18n.T(ctx, "table.custom") }
-			</button>
+			</a>
 		</div>
-		<div class="row row-tight" data-show="$showCustomRange" style="display: none">
-			<input type="date" class="input input-sm" data-bind="dateRange.from" data-on:change={ utils.BuildTableDateRangeDatastarAction(fmt.Sprintf("/groups/%s/expenses", data.GroupID), utils.DefaultTablePageSize) }/>
-			<span class="text-sm pr pl">-</span>
-			<input type="date" class="input input-sm" data-bind="dateRange.to" data-on:change={ utils.BuildTableDateRangeDatastarAction(fmt.Sprintf("/groups/%s/expenses", data.GroupID), utils.DefaultTablePageSize) }/>
-		</div>
+		if utils.DateFilterCustomActive(data.Query) {
+			<form class="row row-tight" method="get" action={ fmt.Sprintf("/groups/%s/expenses", data.GroupID) }>
+				if data.Query.Search != "" {
+					<input type="hidden" name="q" value={ data.Query.Search }/>
+				}
+				if data.Query.SortSet {
+					<input type="hidden" name="sort" value={ data.Query.Sort }/>
+					<input type="hidden" name="dir" value={ data.Query.Dir }/>
+				}
+				if data.Query.PageSize != utils.DefaultTablePageSize {
+					<input type="hidden" name="pageSize" value={ fmt.Sprintf("%d", data.Query.PageSize) }/>
+				}
+				<input type="hidden" name="dateMode" value="custom"/>
+				<input type="date" class="input input-sm" name="from" value={ data.Query.From }/>
+				<span class="text-sm pr pl">-</span>
+				<input type="date" class="input input-sm" name="to" value={ data.Query.To }/>
+				<button class="btn btn-sm" type="submit">{ ctxi18n.T(ctx, "table.apply") }</button>
+			</form>
+		}
 	</div>
 	@shared.TablePaginationRow(fmt.Sprintf("/groups/%s/expenses", data.GroupID), data.Query, data.Pager)
 	@shared.TableOpenFixed(data.ExpensesTable, "table-sticky-actions") {

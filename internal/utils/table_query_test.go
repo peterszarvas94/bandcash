@@ -376,19 +376,3 @@ func TestTableQuerySignals_HidesSortWhenNotExplicitlySet(t *testing.T) {
 		}
 	})
 }
-
-func TestBuildTableDatastarActions(t *testing.T) {
-	t.Run("builds search datastar action", func(t *testing.T) {
-		searchAction := BuildTableSearchDatastarAction("/dashboard", DefaultTablePageSize)
-		if !strings.Contains(searchAction, "tableSearchAction('/dashboard', $tableQuery, 10)") {
-			t.Fatalf("unexpected search action output: %s", searchAction)
-		}
-	})
-
-	t.Run("builds query datastar action", func(t *testing.T) {
-		queryAction := BuildTableQueryDatastarAction("/dashboard?q=abc")
-		if !strings.Contains(queryAction, "history.pushState") || !strings.Contains(queryAction, "@get('/dashboard?q=abc')") {
-			t.Fatalf("unexpected query action output: %s", queryAction)
-		}
-	})
-}
