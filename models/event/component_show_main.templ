@@ -118,8 +118,8 @@ templ EventShowMain(data EventData) {
 							for _, row := range data.WizardRows {
 								<tr>
 									<td><a class="link" href={ fmt.Sprintf("/groups/%s/members/%s", data.GroupID, row.MemberID) }>{ row.MemberName }</a></td>
-									<td class="text-right"><input type="number" class="input w-min-input" step="1" min="1" data-bind={ fmt.Sprintf("wizardAmounts.%s", row.MemberID) } value={ fmt.Sprintf("%d", row.Amount) }/></td>
-									<td class="text-right"><input type="number" class="input w-min-input" step="1" min="1" data-bind={ fmt.Sprintf("wizardExpenses.%s", row.MemberID) } value={ fmt.Sprintf("%d", row.Expense) }/></td>
+									<td class="text-right"><input type="number" class="input w-min-input" step="1" min="0" data-bind={ fmt.Sprintf("wizardAmounts.%s", row.MemberID) } value={ fmt.Sprintf("%d", row.Amount) }/></td>
+									<td class="text-right"><input type="number" class="input w-min-input" step="1" min="0" data-bind={ fmt.Sprintf("wizardExpenses.%s", row.MemberID) } value={ fmt.Sprintf("%d", row.Expense) }/></td>
 									<td class="text-right" data-text={ fmt.Sprintf("($wizardAmounts['%s'] || 0) + ($wizardExpenses['%s'] || 0)", row.MemberID, row.MemberID) }></td>
 									<td class="text-right">
 										@shared.IconActionButton(shared.IconActionButtonProps{ClassName: "btn btn-ghost btn-sm btn-danger btn-icon", OnClick: fmt.Sprintf("@delete('/groups/%s/events/%s/participants/draft/%s')", data.GroupID, data.Event.ID, row.MemberID), DisabledExpr: "$_fetching", AriaLabel: ctxi18n.T(ctx, "actions.delete"), Title: ctxi18n.T(ctx, "actions.delete"), IconName: icons.IconTrash2})

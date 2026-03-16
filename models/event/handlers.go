@@ -51,8 +51,8 @@ type participantBulkRowData struct {
 	MemberID   string `json:"memberId"`
 	MemberName string `json:"memberName"`
 	Included   bool   `json:"included"`
-	Amount     int64  `json:"amount" validate:"gt=0"`
-	Expense    int64  `json:"expense" validate:"gt=0"`
+	Amount     int64  `json:"amount" validate:"gte=0"`
+	Expense    int64  `json:"expense" validate:"gte=0"`
 }
 
 type participantBulkParams struct {
@@ -917,13 +917,13 @@ func (e *Events) SaveParticipantsBulk(c echo.Context) error {
 			return c.NoContent(http.StatusUnprocessableEntity)
 		}
 		if signals.WizardAmounts != nil {
-			if value, ok := signals.WizardAmounts[signals.WizardRows[i].MemberID]; ok && value <= 0 {
+			if value, ok := signals.WizardAmounts[signals.WizardRows[i].MemberID]; ok && value < 0 {
 				utils.SSEHub.PatchSignals(c, map[string]any{"wizardError": ctxi18n.T(c.Request().Context(), "participants.bulk_validation_error")})
 				return c.NoContent(http.StatusUnprocessableEntity)
 			}
 		}
 		if signals.WizardExpenses != nil {
-			if value, ok := signals.WizardExpenses[signals.WizardRows[i].MemberID]; ok && value <= 0 {
+			if value, ok := signals.WizardExpenses[signals.WizardRows[i].MemberID]; ok && value < 0 {
 				utils.SSEHub.PatchSignals(c, map[string]any{"wizardError": ctxi18n.T(c.Request().Context(), "participants.bulk_validation_error")})
 				return c.NoContent(http.StatusUnprocessableEntity)
 			}
