@@ -219,10 +219,10 @@ templ SidebarLoadingSubmitButton(props SidebarLoadingSubmitButtonProps) {
 templ SidebarLoadingActionButton(props SidebarLoadingActionButtonProps) {
 	<button
 		class={ props.ClassName }
-		type="button"
+		type="submit"
 		data-indicator:_fetching
 		data-attr:disabled="$_fetching"
-		data-on:click={ fmt.Sprintf("$sidebarLoadingAction = %q; %s", props.ActionID, props.OnClick) }
+		data-on:click={ fmt.Sprintf("$sidebarLoadingAction = %q", props.ActionID) }
 	>
 		<span data-show={ fmt.Sprintf("!($_fetching && $sidebarLoadingAction === %q)", props.ActionID) }>
 			@icons.Icon(props.IconName, templ.Attributes{"class": "icon"})

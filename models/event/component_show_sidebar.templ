@@ -14,7 +14,7 @@ templ EventShowSidebar(data EventData) {
 	if data.IsAdmin {
 		<div data-signals={ templ.JSONString(map[string]any{"sidebarLoadingAction": ""}) }>
 		<div data-show="$eventFormState === 'edit'" style="display: none" class="pb">
-			<form class="form">
+			<form class="form" data-on:submit={ fmt.Sprintf("$sidebarLoadingAction = 'event-details-update'; @put('/groups/%s/events/%s')", data.GroupID, data.Event.ID) } data-indicator:_fetching>
 				<div class="form-row">
 					<div class="field">
 						<label for="event-show-title" class="row">{ctxi18n.T(ctx, "fields.title")} <span class="color-error">*</span></label>
@@ -45,7 +45,7 @@ templ EventShowSidebar(data EventData) {
 		</div>
 		<div data-show="$formState !== '' && $eventFormState === ''" style="display: none" class="pb">
 			<h3 data-show="$formState === 'edit'">{ctxi18n.T(ctx, "participants.edit")}</h3>
-			<form class="form">
+			<form class="form" data-on:submit={ fmt.Sprintf("$sidebarLoadingAction = ($formState === 'add' ? 'participant-add' : 'participant-update'); ($formState === 'add' ? @post('/groups/%s/events/%s/participants') : @put('/groups/%s/events/%s/participants/' + $editingId))", data.GroupID, data.Event.ID, data.GroupID, data.Event.ID) } data-indicator:_fetching>
 				<div data-show="$formState === 'add'">
 				<label for="event-participant-member-add" class="row">{ctxi18n.T(ctx, "participants.member")} <span class="color-error">*</span></label>
 				<select id="event-participant-member-add" data-bind="formData.memberId" class="input">
