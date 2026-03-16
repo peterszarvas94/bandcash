@@ -88,6 +88,10 @@
     }
   }
 
+  .w-min-input {
+    min-width: 7rem;
+  }
+
   .hide-tablet {
     @media (max-width: 780px) {
       display: none !important;

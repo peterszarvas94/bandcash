@@ -36,7 +36,7 @@ templ EventIndexSidebar(data EventsData) {
 					<input id="event-sidebar-amount" type="number" data-bind="formData.amount" step="1" class="input"/>
 					<div data-show="$errors && $errors.amount" class="color-error" data-text="$errors.amount"></div>
 				</div>
-				<div class="grid">
+				<div class="row row-wrap">
 					<span data-show="$formState === 'add'">
 						@shared.SidebarLoadingActionButton(shared.SidebarLoadingActionButtonProps{ClassName: "btn", OnClick: fmt.Sprintf("@post('/groups/%s/events')", data.GroupID), Label: ctxi18n.T(ctx, "events.create"), IconName: icons.IconSave, ActionID: "event-create"})
 					</span>

@@ -1,8 +1,10 @@
 package event
 
 import (
+	"database/sql"
 	"log/slog"
 	"net/http"
+	"sort"
 	"strings"
 
 	ctxi18n "github.com/invopop/ctxi18n/i18n"
@@ -43,6 +45,32 @@ type participantData struct {
 type participantTableParams struct {
 	FormData   participantData  `json:"formData"`
 	TableQuery utils.TableQuery `json:"tableQuery"`
+}
+
+type participantBulkRowData struct {
+	MemberID   string `json:"memberId"`
+	MemberName string `json:"memberName"`
+	Included   bool   `json:"included"`
+	Amount     int64  `json:"amount" validate:"gt=0"`
+	Expense    int64  `json:"expense" validate:"gt=0"`
+}
+
+type participantBulkParams struct {
+	EventFormData     eventData                `json:"eventFormData"`
+	WizardEventAmount int64                    `json:"wizardEventAmount"`
+	WizardRows        []participantBulkRowData `json:"wizardRows"`
+	WizardAmounts     map[string]int64         `json:"wizardAmounts"`
+	WizardExpenses    map[string]int64         `json:"wizardExpenses"`
+	TableQuery        utils.TableQuery         `json:"tableQuery"`
+}
+
+type participantDraftParams struct {
+	EventFormData     eventData                `json:"eventFormData"`
+	WizardEventAmount int64                    `json:"wizardEventAmount"`
+	WizardRows        []participantBulkRowData `json:"wizardRows"`
+	WizardAmounts     map[string]int64         `json:"wizardAmounts"`
+	WizardExpenses    map[string]int64         `json:"wizardExpenses"`
+	TableQuery        utils.TableQuery         `json:"tableQuery"`
 }
 
 type staticTableQueryable struct {
@@ -102,6 +130,140 @@ func applyEventShowTableByRole(data *EventData, isAdmin bool) {
 	if !isAdmin {
 		data.ParticipantsTable.ActionsWidthRem = 0
 	}
+}
+
+func mergeWizardRows(base []ParticipantWizardRow, allMembers []db.Member, incoming []participantBulkRowData, wizardAmounts map[string]int64, wizardExpenses map[string]int64) []ParticipantWizardRow {
+	if len(incoming) == 0 {
+		for i := range base {
+			if wizardAmounts != nil {
+				if amount, ok := wizardAmounts[base[i].MemberID]; ok {
+					base[i].Amount = amount
+				}
+			}
+			if wizardExpenses != nil {
+				if expense, ok := wizardExpenses[base[i].MemberID]; ok {
+					base[i].Expense = expense
+				}
+			}
+		}
+		return base
+	}
+
+	memberNameByID := make(map[string]string, len(allMembers))
+	for _, member := range allMembers {
+		memberNameByID[member.ID] = member.Name
+	}
+
+	merged := make([]ParticipantWizardRow, 0, len(incoming))
+	for _, incomingRow := range incoming {
+		memberID := strings.TrimSpace(incomingRow.MemberID)
+		if memberID == "" {
+			continue
+		}
+
+		memberName, ok := memberNameByID[memberID]
+		if !ok {
+			continue
+		}
+
+		merged = append(merged, ParticipantWizardRow{
+			MemberID:   memberID,
+			MemberName: memberName,
+			Included:   incomingRow.Included,
+			Amount: func() int64 {
+				if wizardAmounts != nil {
+					if v, ok := wizardAmounts[memberID]; ok {
+						return v
+					}
+				}
+				return incomingRow.Amount
+			}(),
+			Expense: func() int64 {
+				if wizardExpenses != nil {
+					if v, ok := wizardExpenses[memberID]; ok {
+						return v
+					}
+				}
+				return incomingRow.Expense
+			}(),
+		})
+	}
+
+	if len(merged) == 0 {
+		return base
+	}
+
+	return merged
+}
+
+func buildWizardAddableMembers(allMembers []db.Member, wizardRows []ParticipantWizardRow) []db.Member {
+	inDraft := make(map[string]struct{}, len(wizardRows))
+	for _, row := range wizardRows {
+		inDraft[row.MemberID] = struct{}{}
+	}
+
+	addable := make([]db.Member, 0, len(allMembers))
+	for _, member := range allMembers {
+		if _, exists := inDraft[member.ID]; exists {
+			continue
+		}
+		addable = append(addable, member)
+	}
+
+	sort.Slice(addable, func(i, j int) bool {
+		left := strings.ToLower(strings.TrimSpace(addable[i].Name))
+		right := strings.ToLower(strings.TrimSpace(addable[j].Name))
+		if left == right {
+			return addable[i].ID < addable[j].ID
+		}
+		return left < right
+	})
+
+	return addable
+}
+
+func (e *Events) patchEventShow(c echo.Context, groupID, eventID, userEmail string, query utils.TableQuery, editorMode string, eventForm eventData, wizardEventAmount int64, wizardRows []participantBulkRowData, wizardAmounts map[string]int64, wizardExpenses map[string]int64, wizardError string) error {
+	data, err := e.GetShowData(c.Request().Context(), groupID, eventID, query)
+	if err != nil {
+		return err
+	}
+
+	applyEventShowTableByRole(&data, middleware.IsAdmin(c))
+	data.UserEmail = userEmail
+
+	if editorMode != "" {
+		data.EditorMode = editorMode
+	}
+
+	if eventForm.Title != "" || eventForm.Time != "" || eventForm.Amount > 0 {
+		data.Event.Title = eventForm.Title
+		data.Event.Time = eventForm.Time
+		data.Event.Description = eventForm.Description
+		data.Event.Amount = eventForm.Amount
+	}
+
+	if wizardEventAmount > 0 {
+		data.WizardEventAmount = wizardEventAmount
+	}
+
+	if len(wizardRows) > 0 {
+		data.WizardRows = mergeWizardRows(data.WizardRows, data.AllMembers, wizardRows, wizardAmounts, wizardExpenses)
+	} else if wizardAmounts != nil || wizardExpenses != nil {
+		data.WizardRows = mergeWizardRows(data.WizardRows, data.AllMembers, nil, wizardAmounts, wizardExpenses)
+	}
+
+	data.WizardAddableMembers = buildWizardAddableMembers(data.AllMembers, data.WizardRows)
+
+	data.WizardError = wizardError
+
+	html, err := utils.RenderHTMLForRequest(c, EventShow(data))
+	if err != nil {
+		return err
+	}
+
+	utils.SSEHub.PatchHTML(c, html)
+	utils.SSEHub.PatchSignals(c, eventShowSignals(data, utils.CSRFTokenFromContext(c.Request().Context())))
+	return nil
 }
 
 func (e *Events) Index(c echo.Context) error {
@@ -546,5 +708,336 @@ func (e *Events) DeleteParticipantTable(c echo.Context) error {
 	utils.SSEHub.PatchSignals(c, defaultParticipantSignals)
 
 	slog.Debug("participant.delete", "event_id", eventID, "member_id", memberID)
+	return c.NoContent(http.StatusOK)
+}
+
+func (e *Events) OpenParticipantsDraft(c echo.Context) error {
+	groupID := middleware.GetGroupID(c)
+	userEmail := getUserEmail(c)
+
+	eventID := c.Param("id")
+	if !utils.IsValidID(eventID, utils.PrefixEvent) {
+		slog.Info("participant.draft.open: invalid event id")
+		return c.NoContent(http.StatusBadRequest)
+	}
+
+	query := parseParticipantTableQuery(c, e)
+	var signals modeParams
+	if err := datastar.ReadSignals(c.Request(), &signals); err == nil {
+		query = utils.NormalizeTableQuery(signals.TableQuery, e.ParticipantTableQuerySpec())
+	}
+
+	if err := e.patchEventShow(c, groupID, eventID, userEmail, query, "edit", eventData{}, 0, nil, nil, nil, ""); err != nil {
+		slog.Error("participant.draft.open: failed to render", "err", err)
+		return c.NoContent(http.StatusInternalServerError)
+	}
+
+	return c.NoContent(http.StatusOK)
+}
+
+func (e *Events) CancelParticipantsDraft(c echo.Context) error {
+	groupID := middleware.GetGroupID(c)
+	userEmail := getUserEmail(c)
+
+	eventID := c.Param("id")
+	if !utils.IsValidID(eventID, utils.PrefixEvent) {
+		slog.Info("participant.draft.cancel: invalid event id")
+		return c.NoContent(http.StatusBadRequest)
+	}
+
+	query := parseParticipantTableQuery(c, e)
+	var signals participantDraftParams
+	if err := datastar.ReadSignals(c.Request(), &signals); err == nil {
+		query = utils.NormalizeTableQuery(signals.TableQuery, e.ParticipantTableQuerySpec())
+	}
+
+	if err := e.patchEventShow(c, groupID, eventID, userEmail, query, "read", eventData{}, 0, nil, nil, nil, ""); err != nil {
+		slog.Error("participant.draft.cancel: failed to render", "err", err)
+		return c.NoContent(http.StatusInternalServerError)
+	}
+
+	return c.NoContent(http.StatusOK)
+}
+
+func (e *Events) IncludeParticipantsDraftMember(c echo.Context) error {
+	groupID := middleware.GetGroupID(c)
+	userEmail := getUserEmail(c)
+
+	eventID := c.Param("id")
+	if !utils.IsValidID(eventID, utils.PrefixEvent) {
+		slog.Info("participant.draft.include: invalid event id")
+		return c.NoContent(http.StatusBadRequest)
+	}
+
+	memberID := c.Param("memberId")
+	if !utils.IsValidID(memberID, utils.PrefixMember) {
+		slog.Info("participant.draft.include: invalid member id")
+		return c.NoContent(http.StatusBadRequest)
+	}
+
+	var signals participantDraftParams
+	if err := datastar.ReadSignals(c.Request(), &signals); err != nil {
+		slog.Info("participant.draft.include: failed to read signals", "err", err)
+		return c.NoContent(http.StatusBadRequest)
+	}
+
+	query := utils.NormalizeTableQuery(signals.TableQuery, e.ParticipantTableQuerySpec())
+	found := false
+	for i := range signals.WizardRows {
+		signals.WizardRows[i].MemberID = strings.TrimSpace(signals.WizardRows[i].MemberID)
+		if signals.WizardRows[i].MemberID == memberID {
+			signals.WizardRows[i].Included = true
+			found = true
+			break
+		}
+	}
+	if !found {
+		amount := int64(0)
+		expense := int64(0)
+		participants, err := db.Qry.ListParticipantsByEvent(c.Request().Context(), db.ListParticipantsByEventParams{EventID: eventID, GroupID: groupID})
+		if err != nil {
+			slog.Error("participant.draft.include: failed to list participants", "err", err)
+			return c.NoContent(http.StatusInternalServerError)
+		}
+		for _, participant := range participants {
+			if participant.ID != memberID {
+				continue
+			}
+			amount = participant.ParticipantAmount
+			expense = participant.ParticipantExpense
+			break
+		}
+		signals.WizardRows = append(signals.WizardRows, participantBulkRowData{MemberID: memberID, Included: true, Amount: amount, Expense: expense})
+	}
+
+	if err := e.patchEventShow(c, groupID, eventID, userEmail, query, "edit", signals.EventFormData, signals.WizardEventAmount, signals.WizardRows, signals.WizardAmounts, signals.WizardExpenses, ""); err != nil {
+		slog.Error("participant.draft.include: failed to render", "err", err)
+		return c.NoContent(http.StatusInternalServerError)
+	}
+
+	return c.NoContent(http.StatusOK)
+}
+
+func (e *Events) ExcludeParticipantsDraftMember(c echo.Context) error {
+	groupID := middleware.GetGroupID(c)
+	userEmail := getUserEmail(c)
+
+	eventID := c.Param("id")
+	if !utils.IsValidID(eventID, utils.PrefixEvent) {
+		slog.Info("participant.draft.exclude: invalid event id")
+		return c.NoContent(http.StatusBadRequest)
+	}
+
+	memberID := c.Param("memberId")
+	if !utils.IsValidID(memberID, utils.PrefixMember) {
+		slog.Info("participant.draft.exclude: invalid member id")
+		return c.NoContent(http.StatusBadRequest)
+	}
+
+	var signals participantDraftParams
+	if err := datastar.ReadSignals(c.Request(), &signals); err != nil {
+		slog.Info("participant.draft.exclude: failed to read signals", "err", err)
+		return c.NoContent(http.StatusBadRequest)
+	}
+
+	query := utils.NormalizeTableQuery(signals.TableQuery, e.ParticipantTableQuerySpec())
+	updatedRows := make([]participantBulkRowData, 0, len(signals.WizardRows))
+	for i := range signals.WizardRows {
+		signals.WizardRows[i].MemberID = strings.TrimSpace(signals.WizardRows[i].MemberID)
+		if signals.WizardRows[i].MemberID == memberID {
+			continue
+		}
+		updatedRows = append(updatedRows, signals.WizardRows[i])
+	}
+	signals.WizardRows = updatedRows
+
+	if err := e.patchEventShow(c, groupID, eventID, userEmail, query, "edit", signals.EventFormData, signals.WizardEventAmount, signals.WizardRows, signals.WizardAmounts, signals.WizardExpenses, ""); err != nil {
+		slog.Error("participant.draft.exclude: failed to render", "err", err)
+		return c.NoContent(http.StatusInternalServerError)
+	}
+
+	return c.NoContent(http.StatusOK)
+}
+
+func (e *Events) SaveParticipantsBulk(c echo.Context) error {
+	groupID := middleware.GetGroupID(c)
+	userEmail := getUserEmail(c)
+
+	eventID := c.Param("id")
+	if !utils.IsValidID(eventID, utils.PrefixEvent) {
+		slog.Info("participant.bulk: invalid event id")
+		return c.NoContent(http.StatusBadRequest)
+	}
+
+	var signals participantBulkParams
+	if err := datastar.ReadSignals(c.Request(), &signals); err != nil {
+		slog.Info("participant.bulk: failed to read signals", "err", err)
+		return c.NoContent(http.StatusBadRequest)
+	}
+
+	signals.EventFormData.Title = strings.TrimSpace(signals.EventFormData.Title)
+	signals.EventFormData.Time = strings.TrimSpace(signals.EventFormData.Time)
+	signals.EventFormData.Description = strings.TrimSpace(signals.EventFormData.Description)
+
+	if errs := utils.ValidateWithLocale(c.Request().Context(), signals.EventFormData); errs != nil {
+		utils.SSEHub.PatchSignals(c, map[string]any{"errors": utils.WithErrors(eventErrorFields, errs), "wizardError": ctxi18n.T(c.Request().Context(), "participants.bulk_validation_error")})
+		return c.NoContent(http.StatusUnprocessableEntity)
+	}
+
+	members, err := db.Qry.ListMembers(c.Request().Context(), groupID)
+	if err != nil {
+		slog.Error("participant.bulk: failed to list members", "err", err)
+		utils.Notify(c, "error", ctxi18n.T(c.Request().Context(), "participants.notifications.update_failed"))
+		return c.NoContent(http.StatusInternalServerError)
+	}
+	memberIDs := make(map[string]struct{}, len(members))
+	for _, member := range members {
+		memberIDs[member.ID] = struct{}{}
+	}
+
+	for i := range signals.WizardRows {
+		signals.WizardRows[i].MemberID = strings.TrimSpace(signals.WizardRows[i].MemberID)
+		signals.WizardRows[i].MemberName = strings.TrimSpace(signals.WizardRows[i].MemberName)
+		if signals.WizardAmounts != nil {
+			if value, ok := signals.WizardAmounts[signals.WizardRows[i].MemberID]; ok {
+				signals.WizardRows[i].Amount = value
+			}
+		}
+		if signals.WizardExpenses != nil {
+			if value, ok := signals.WizardExpenses[signals.WizardRows[i].MemberID]; ok {
+				signals.WizardRows[i].Expense = value
+			}
+		}
+		if _, ok := memberIDs[signals.WizardRows[i].MemberID]; !ok {
+			utils.SSEHub.PatchSignals(c, map[string]any{"wizardError": ctxi18n.T(c.Request().Context(), "participants.bulk_validation_error")})
+			return c.NoContent(http.StatusUnprocessableEntity)
+		}
+		if errs := utils.ValidateWithLocale(c.Request().Context(), signals.WizardRows[i]); errs != nil {
+			utils.SSEHub.PatchSignals(c, map[string]any{"wizardError": ctxi18n.T(c.Request().Context(), "participants.bulk_validation_error")})
+			return c.NoContent(http.StatusUnprocessableEntity)
+		}
+		if signals.WizardAmounts != nil {
+			if value, ok := signals.WizardAmounts[signals.WizardRows[i].MemberID]; ok && value <= 0 {
+				utils.SSEHub.PatchSignals(c, map[string]any{"wizardError": ctxi18n.T(c.Request().Context(), "participants.bulk_validation_error")})
+				return c.NoContent(http.StatusUnprocessableEntity)
+			}
+		}
+		if signals.WizardExpenses != nil {
+			if value, ok := signals.WizardExpenses[signals.WizardRows[i].MemberID]; ok && value <= 0 {
+				utils.SSEHub.PatchSignals(c, map[string]any{"wizardError": ctxi18n.T(c.Request().Context(), "participants.bulk_validation_error")})
+				return c.NoContent(http.StatusUnprocessableEntity)
+			}
+		}
+	}
+
+	tx, err := db.DB.BeginTx(c.Request().Context(), &sql.TxOptions{})
+	if err != nil {
+		slog.Error("participant.bulk: failed to begin tx", "err", err)
+		utils.Notify(c, "error", ctxi18n.T(c.Request().Context(), "participants.notifications.update_failed"))
+		return c.NoContent(http.StatusInternalServerError)
+	}
+	defer tx.Rollback()
+	qtx := db.New(tx)
+
+	_, err = qtx.UpdateEvent(c.Request().Context(), db.UpdateEventParams{
+		Title:       signals.EventFormData.Title,
+		Time:        signals.EventFormData.Time,
+		Description: signals.EventFormData.Description,
+		Amount:      signals.EventFormData.Amount,
+		ID:          eventID,
+		GroupID:     groupID,
+	})
+	if err != nil {
+		slog.Error("participant.bulk: failed to update event", "err", err)
+		utils.Notify(c, "error", ctxi18n.T(c.Request().Context(), "events.notifications.update_failed"))
+		return c.NoContent(http.StatusInternalServerError)
+	}
+
+	currentParticipants, err := qtx.ListParticipantsByEvent(c.Request().Context(), db.ListParticipantsByEventParams{EventID: eventID, GroupID: groupID})
+	if err != nil {
+		slog.Error("participant.bulk: failed to list participants", "err", err)
+		utils.Notify(c, "error", ctxi18n.T(c.Request().Context(), "participants.notifications.update_failed"))
+		return c.NoContent(http.StatusInternalServerError)
+	}
+	currentSet := make(map[string]struct{}, len(currentParticipants))
+	for _, participant := range currentParticipants {
+		currentSet[participant.ID] = struct{}{}
+	}
+
+	desiredSet := make(map[string]struct{}, len(signals.WizardRows))
+	for _, row := range signals.WizardRows {
+		if !row.Included {
+			continue
+		}
+
+		amount := row.Amount
+		if signals.WizardAmounts != nil {
+			if value, ok := signals.WizardAmounts[row.MemberID]; ok {
+				amount = value
+			}
+		}
+		expense := row.Expense
+		if signals.WizardExpenses != nil {
+			if value, ok := signals.WizardExpenses[row.MemberID]; ok {
+				expense = value
+			}
+		}
+
+		desiredSet[row.MemberID] = struct{}{}
+		if _, exists := currentSet[row.MemberID]; exists {
+			err = qtx.UpdateParticipant(c.Request().Context(), db.UpdateParticipantParams{
+				Amount:   amount,
+				Expense:  expense,
+				EventID:  eventID,
+				MemberID: row.MemberID,
+				GroupID:  groupID,
+			})
+		} else {
+			_, err = qtx.AddParticipant(c.Request().Context(), db.AddParticipantParams{
+				GroupID:  groupID,
+				EventID:  eventID,
+				MemberID: row.MemberID,
+				Amount:   amount,
+				Expense:  expense,
+			})
+		}
+		if err != nil {
+			slog.Error("participant.bulk: failed to upsert participant", "err", err, "event_id", eventID, "member_id", row.MemberID)
+			utils.Notify(c, "error", ctxi18n.T(c.Request().Context(), "participants.notifications.update_failed"))
+			return c.NoContent(http.StatusInternalServerError)
+		}
+	}
+
+	for memberID := range currentSet {
+		if _, keep := desiredSet[memberID]; keep {
+			continue
+		}
+		err = qtx.RemoveParticipant(c.Request().Context(), db.RemoveParticipantParams{
+			EventID:  eventID,
+			MemberID: memberID,
+			GroupID:  groupID,
+		})
+		if err != nil {
+			slog.Error("participant.bulk: failed to remove participant", "err", err, "event_id", eventID, "member_id", memberID)
+			utils.Notify(c, "error", ctxi18n.T(c.Request().Context(), "participants.notifications.update_failed"))
+			return c.NoContent(http.StatusInternalServerError)
+		}
+	}
+
+	if err = tx.Commit(); err != nil {
+		slog.Error("participant.bulk: failed to commit tx", "err", err)
+		utils.Notify(c, "error", ctxi18n.T(c.Request().Context(), "participants.notifications.update_failed"))
+		return c.NoContent(http.StatusInternalServerError)
+	}
+
+	utils.Notify(c, "success", ctxi18n.T(c.Request().Context(), "participants.notifications.updated"))
+
+	query := utils.NormalizeTableQuery(signals.TableQuery, e.ParticipantTableQuerySpec())
+	if err := e.patchEventShow(c, groupID, eventID, userEmail, query, "read", eventData{}, 0, nil, nil, nil, ""); err != nil {
+		slog.Error("participant.bulk: failed to render", "err", err)
+		return c.NoContent(http.StatusInternalServerError)
+	}
+
+	slog.Debug("participant.bulk", "event_id", eventID, "rows", len(signals.WizardRows))
 	return c.NoContent(http.StatusOK)
 }

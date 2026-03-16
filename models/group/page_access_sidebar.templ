@@ -25,7 +25,7 @@ templ GroupAccessSidebar(data AccessPageData) {
 							<option value="admin">{ ctxi18n.T(ctx, "groups.role_admin") }</option>
 						</select>
 					</div>
-					<div class="grid">
+					<div class="row row-wrap">
 						@shared.SidebarLoadingSubmitButton(shared.SidebarLoadingSubmitButtonProps{ClassName: "btn", Label: ctxi18n.T(ctx, "groups.invite_access"), IconName: icons.IconSave, ActionID: "viewer-add"})
 						@shared.ActionButton(shared.ActionButtonProps{ClassName: "btn", OnClick: "$formState = ''; $formData = {email: '', role: 'viewer'}", DisabledExpr: "$_fetching", Label: ctxi18n.T(ctx, "actions.cancel"), IconName: icons.IconX})
 					</div>

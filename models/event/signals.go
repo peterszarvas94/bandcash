@@ -18,11 +18,37 @@ func eventIndexSignals(csrfToken string, query utils.TableQuery) map[string]any 
 }
 
 func eventShowSignals(data EventData, csrfToken string) map[string]any {
+	wizardRows := make([]map[string]any, 0, len(data.WizardRows))
+	wizardAmounts := make(map[string]int64, len(data.WizardRows))
+	wizardExpenses := make(map[string]int64, len(data.WizardRows))
+	wizardTotal := int64(0)
+	for _, row := range data.WizardRows {
+		wizardRows = append(wizardRows, map[string]any{
+			"memberId":   row.MemberID,
+			"memberName": row.MemberName,
+			"included":   row.Included,
+			"amount":     row.Amount,
+			"expense":    row.Expense,
+		})
+		wizardAmounts[row.MemberID] = row.Amount
+		wizardExpenses[row.MemberID] = row.Expense
+		wizardTotal += row.Amount + row.Expense
+	}
+
 	return map[string]any{
-		"csrf":           csrfToken,
-		"mode":           "single",
-		"tableQuery":     utils.TableQuerySignals(data.Query),
-		"eventFormState": "",
+		"csrf":                   csrfToken,
+		"mode":                   "single",
+		"tableQuery":             utils.TableQuerySignals(data.Query),
+		"eventFormState":         "",
+		"participantEditorMode":  data.EditorMode,
+		"wizardError":            data.WizardError,
+		"wizardEventAmount":      data.WizardEventAmount,
+		"wizardSelectedMemberId": "",
+		"wizardRows":             wizardRows,
+		"wizardAmounts":          wizardAmounts,
+		"wizardExpenses":         wizardExpenses,
+		"wizardTotal":            wizardTotal,
+		"wizardLeftover":         data.WizardEventAmount - wizardTotal,
 		"eventFormData": map[string]any{
 			"title":       data.Event.Title,
 			"time":        data.Event.Time,

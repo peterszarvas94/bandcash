@@ -25,7 +25,7 @@ templ MemberIndexSidebar(data MembersData) {
 					<input id="member-sidebar-description" type="text" name="description" data-bind="formData.description" class="input"/>
 					<div data-show="$errors && $errors.description" class="color-error" data-text="$errors.description"></div>
 				</div>
-				<div class="grid">
+				<div class="row row-wrap">
 					<span data-show="$formState === 'add'">
 						@shared.SidebarLoadingActionButton(shared.SidebarLoadingActionButtonProps{ClassName: "btn", OnClick: fmt.Sprintf("@post('/groups/%s/members')", data.GroupID), Label: ctxi18n.T(ctx, "members.create"), IconName: icons.IconSave, ActionID: "member-create"})
 					</span>

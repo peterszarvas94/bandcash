@@ -10,98 +10,159 @@ import (
 )
 
 templ EventShowMain(data EventData) {
-	if data.IsAdmin {
-		@shared.DetailGridWithActions([]shared.DetailGridRow{
-			{Label: ctxi18n.T(ctx, "fields.title"), Value: data.Event.Title},
-			{Label: ctxi18n.T(ctx, "fields.time"), Value: utils.FormatDateTimeLocalized(ctx, data.Event.Time)},
-			{Label: ctxi18n.T(ctx, "fields.description"), Value: data.Event.Description},
-			{Label: ctxi18n.T(ctx, "fields.amount"), Value: utils.FormatNumberLocalized(ctx, data.Event.Amount)},
-			{Label: ctxi18n.T(ctx, "events.leftover"), Value: utils.FormatNumberLocalized(ctx, data.Leftover)},
-		}, EventShowDetailsActions(data))
-	} else {
-		@shared.DetailGrid([]shared.DetailGridRow{
-			{Label: ctxi18n.T(ctx, "fields.title"), Value: data.Event.Title},
-			{Label: ctxi18n.T(ctx, "fields.time"), Value: utils.FormatDateTimeLocalized(ctx, data.Event.Time)},
-			{Label: ctxi18n.T(ctx, "fields.description"), Value: data.Event.Description},
-			{Label: ctxi18n.T(ctx, "fields.amount"), Value: utils.FormatNumberLocalized(ctx, data.Event.Amount)},
-			{Label: ctxi18n.T(ctx, "events.leftover"), Value: utils.FormatNumberLocalized(ctx, data.Leftover)},
-		})
-	}
-	@shared.TableSearchForm(fmt.Sprintf("/groups/%s/events/%s", data.GroupID, data.Event.ID), data.Query, "table.search_placeholder_members")
-	@shared.TablePaginationRow(fmt.Sprintf("/groups/%s/events/%s", data.GroupID, data.Event.ID), data.Query, data.Pager)
-	@shared.TableOpenFixed(data.ParticipantsTable, "table-sticky-actions") {
-		<thead>
-			<tr>
-				@shared.THCol(data.ParticipantsTable.Col("name")) {
-					@shared.TableSortHeader(ctxi18n.T(ctx, "participants.member"), "name", data.Query, utils.BuildTableSortURL(fmt.Sprintf("/groups/%s/events/%s", data.GroupID, data.Event.ID), data.Query, "name"))
-				}
-				@shared.THCol(data.ParticipantsTable.Col("amount")) {
-					@shared.TableSortHeader(ctxi18n.T(ctx, "participants.cut"), "amount", data.Query, utils.BuildTableSortURL(fmt.Sprintf("/groups/%s/events/%s", data.GroupID, data.Event.ID), data.Query, "amount"))
-				}
-				@shared.THCol(data.ParticipantsTable.Col("expense")) {
-					@shared.TableSortHeader(ctxi18n.T(ctx, "participants.expense"), "expense", data.Query, utils.BuildTableSortURL(fmt.Sprintf("/groups/%s/events/%s", data.GroupID, data.Event.ID), data.Query, "expense"))
-				}
-				@shared.THCol(data.ParticipantsTable.Col("total")) {
-					@shared.TableSortHeader(ctxi18n.T(ctx, "participants.total"), "total", data.Query, utils.BuildTableSortURL(fmt.Sprintf("/groups/%s/events/%s", data.GroupID, data.Event.ID), data.Query, "total"))
-				}
-				if data.IsAdmin {
-					@shared.THActions(data.ParticipantsTable.ActionsWidthRem) {
-						<div class="row row-right row-tight">
-							@shared.IconActionButton(shared.IconActionButtonProps{ClassName: "btn btn-ghost btn-sm btn-icon", OnClick: "$formState = 'add'; $editingId = ''; $calcPercent = 0; $formData = {memberId: '', memberName: '', amount: 0, expense: 0}; $errors = {memberId: '', amount: '', expense: ''}", DisabledExpr: "$formState !== '' || $eventFormState !== '' || $_fetching", AriaLabel: ctxi18n.T(ctx, "participants.add"), Title: ctxi18n.T(ctx, "participants.add"), IconName: icons.IconPlus})
-						</div>
-					}
-				}
-			</tr>
-		</thead>
-		<tbody>
-			for _, participant := range data.Participants {
-				<tr
-					data-member-id={ fmt.Sprintf("%s", participant.ID) }
-					data-member-name={ participant.Name }
-					data-participant-amount={ fmt.Sprintf("%d", participant.ParticipantAmount) }
-					data-participant-expense={ fmt.Sprintf("%d", participant.ParticipantExpense) }
-				>
-					<td><a class="link" href={ fmt.Sprintf("/groups/%s/members/%s", data.GroupID, participant.ID) }>{ participant.Name }</a></td>
-					<td class="text-right">{ utils.FormatNumberLocalized(ctx, participant.ParticipantAmount) }</td>
-					<td class="text-right">{ utils.FormatNumberLocalized(ctx, participant.ParticipantExpense) }</td>
-					<td class="text-right">{ utils.FormatNumberLocalized(ctx, participant.ParticipantAmount+participant.ParticipantExpense) }</td>
-					if data.IsAdmin {
-						<td class="text-right" data-actions-col>
-							<div class="row row-right row-tight">
-								@shared.IconActionButton(shared.IconActionButtonProps{ClassName: "btn btn-ghost btn-sm btn-icon", OnClick: fmt.Sprintf("$formState = 'edit'; $editingId = %q; $formData = {memberId: el.closest('tr').dataset.memberId, memberName: el.closest('tr').dataset.memberName, amount: Number(el.closest('tr').dataset.participantAmount), expense: Number(el.closest('tr').dataset.participantExpense)}", participant.ID), DisabledExpr: "$formState !== '' || $eventFormState !== '' || $_fetching", AriaLabel: ctxi18n.T(ctx, "actions.edit"), Title: ctxi18n.T(ctx, "actions.edit"), IconName: icons.IconPencil})
-								@shared.IconActionButton(shared.IconActionButtonProps{ClassName: "btn btn-ghost btn-sm btn-danger btn-icon", OnClick: fmt.Sprintf(
-									"$sureTitle = %s; $sureMessage = %s; $sureSubmitLabel = %s; $sureCancelLabel = %s; $sureMethod = 'delete'; $sureURL = '/groups/%s/events/%s/participants/%s'; $sureTriggerID = %s; $sureOpen = true",
-									utils.JSONString(ctxi18n.T(ctx, "participants.delete_confirm")),
-									utils.JSONString(ctxi18n.T(ctx, "confirm.destructive_message")),
-									utils.JSONString(ctxi18n.T(ctx, "actions.delete")),
-									utils.JSONString(ctxi18n.T(ctx, "actions.cancel")),
-									data.GroupID,
-									data.Event.ID,
-									participant.ID,
-									utils.JSONString("participant-delete-"+participant.ID),
-								), DisabledExpr: "$formState !== '' || $eventFormState !== '' || $_fetching", AriaLabel: ctxi18n.T(ctx, "actions.delete"), Title: ctxi18n.T(ctx, "actions.delete"), IconName: icons.IconTrash2})
-							</div>
-						</td>
-					}
-				</tr>
-			}
-			if len(data.Participants) == 0 {
+	<div data-show="$participantEditorMode === 'read'">
+		if data.IsAdmin {
+			@shared.DetailGridWithActions([]shared.DetailGridRow{
+				{Label: ctxi18n.T(ctx, "fields.title"), Value: data.Event.Title},
+				{Label: ctxi18n.T(ctx, "fields.time"), Value: utils.FormatDateTimeLocalized(ctx, data.Event.Time)},
+				{Label: ctxi18n.T(ctx, "fields.description"), Value: data.Event.Description},
+				{Label: ctxi18n.T(ctx, "fields.amount"), Value: utils.FormatNumberLocalized(ctx, data.Event.Amount)},
+				{Label: ctxi18n.T(ctx, "participants.payout_total"), Value: utils.FormatNumberLocalized(ctx, data.TotalDistributed)},
+				{Label: ctxi18n.T(ctx, "events.leftover"), Value: utils.FormatNumberLocalized(ctx, data.Leftover)},
+			}, ReadModeActions(data))
+		} else {
+			@shared.DetailGrid([]shared.DetailGridRow{
+				{Label: ctxi18n.T(ctx, "fields.title"), Value: data.Event.Title},
+				{Label: ctxi18n.T(ctx, "fields.time"), Value: utils.FormatDateTimeLocalized(ctx, data.Event.Time)},
+				{Label: ctxi18n.T(ctx, "fields.description"), Value: data.Event.Description},
+				{Label: ctxi18n.T(ctx, "fields.amount"), Value: utils.FormatNumberLocalized(ctx, data.Event.Amount)},
+				{Label: ctxi18n.T(ctx, "participants.payout_total"), Value: utils.FormatNumberLocalized(ctx, data.TotalDistributed)},
+				{Label: ctxi18n.T(ctx, "events.leftover"), Value: utils.FormatNumberLocalized(ctx, data.Leftover)},
+			})
+		}
+
+		@shared.TableSearchForm(fmt.Sprintf("/groups/%s/events/%s", data.GroupID, data.Event.ID), data.Query, "table.search_placeholder_members")
+		@shared.TablePaginationRow(fmt.Sprintf("/groups/%s/events/%s", data.GroupID, data.Event.ID), data.Query, data.Pager)
+		@shared.TableOpenFixed(data.ParticipantsTable, "") {
+			<thead>
 				<tr>
-					if data.IsAdmin {
-						<td colspan="5">{ ctxi18n.T(ctx, "table.empty") }</td>
-					} else {
-						<td colspan="4">{ ctxi18n.T(ctx, "table.empty") }</td>
+					@shared.THCol(data.ParticipantsTable.Col("name")) {
+						@shared.TableSortHeader(ctxi18n.T(ctx, "participants.member"), "name", data.Query, utils.BuildTableSortURL(fmt.Sprintf("/groups/%s/events/%s", data.GroupID, data.Event.ID), data.Query, "name"))
+					}
+					@shared.THCol(data.ParticipantsTable.Col("amount")) {
+						@shared.TableSortHeader(ctxi18n.T(ctx, "participants.cut"), "amount", data.Query, utils.BuildTableSortURL(fmt.Sprintf("/groups/%s/events/%s", data.GroupID, data.Event.ID), data.Query, "amount"))
+					}
+					@shared.THCol(data.ParticipantsTable.Col("expense")) {
+						@shared.TableSortHeader(ctxi18n.T(ctx, "participants.expense"), "expense", data.Query, utils.BuildTableSortURL(fmt.Sprintf("/groups/%s/events/%s", data.GroupID, data.Event.ID), data.Query, "expense"))
+					}
+					@shared.THCol(data.ParticipantsTable.Col("total")) {
+						@shared.TableSortHeader(ctxi18n.T(ctx, "participants.total"), "total", data.Query, utils.BuildTableSortURL(fmt.Sprintf("/groups/%s/events/%s", data.GroupID, data.Event.ID), data.Query, "total"))
 					}
 				</tr>
-			}
-		</tbody>
+			</thead>
+			<tbody>
+				for _, participant := range data.Participants {
+					<tr>
+						<td><a class="link" href={ fmt.Sprintf("/groups/%s/members/%s", data.GroupID, participant.ID) }>{ participant.Name }</a></td>
+						<td class="text-right">{ utils.FormatNumberLocalized(ctx, participant.ParticipantAmount) }</td>
+						<td class="text-right">{ utils.FormatNumberLocalized(ctx, participant.ParticipantExpense) }</td>
+						<td class="text-right">{ utils.FormatNumberLocalized(ctx, participant.ParticipantAmount+participant.ParticipantExpense) }</td>
+					</tr>
+				}
+				if len(data.Participants) == 0 {
+					<tr>
+						<td colspan="4">{ ctxi18n.T(ctx, "table.empty") }</td>
+					</tr>
+				}
+			</tbody>
+		}
+	</div>
+
+	if data.IsAdmin {
+		<div data-show="$participantEditorMode === 'edit'" style="display: none">
+			<form class="form" data-on:submit={ fmt.Sprintf("@put('/groups/%s/events/%s/participants')", data.GroupID, data.Event.ID) } data-on:input="$wizardTotal = $wizardRows.reduce((sum, row) => sum + ($wizardAmounts[row.memberId] || 0) + ($wizardExpenses[row.memberId] || 0), 0); $wizardLeftover = ($eventFormData.amount || 0) - $wizardTotal" data-indicator:_fetching>
+				<div data-show="$wizardError" class="color-error" data-text="$wizardError"></div>
+				<div class="form-row">
+					<div class="field">
+						<label for="event-edit-title" class="row">{ctxi18n.T(ctx, "fields.title")} <span class="color-error">*</span></label>
+						<input id="event-edit-title" type="text" data-bind="eventFormData.title" class="input"/>
+						<div data-show="$errors && $errors.title" class="color-error" data-text="$errors.title"></div>
+					</div>
+					<div class="field">
+						<label for="event-edit-time" class="row">{ctxi18n.T(ctx, "fields.time")} <span class="color-error">*</span></label>
+						<input id="event-edit-time" type="datetime-local" data-bind="eventFormData.time" class="input"/>
+						<div data-show="$errors && $errors.time" class="color-error" data-text="$errors.time"></div>
+					</div>
+				</div>
+				<div class="field">
+					<label for="event-edit-description">{ctxi18n.T(ctx, "fields.description")}</label>
+					<textarea id="event-edit-description" data-bind="eventFormData.description" rows="3" class="input">{ data.Event.Description }</textarea>
+					<div data-show="$errors && $errors.description" class="color-error" data-text="$errors.description"></div>
+				</div>
+				<div class="field">
+					<label for="event-edit-amount" class="row">{ctxi18n.T(ctx, "fields.amount")} <span class="color-error">*</span></label>
+					<input id="event-edit-amount" type="number" data-bind="eventFormData.amount" step="1" min="1" class="input"/>
+					<div data-show="$errors && $errors.amount" class="color-error" data-text="$errors.amount"></div>
+				</div>
+				<div class="field">
+					<label for="event-edit-total">{ctxi18n.T(ctx, "participants.payout_total")}</label>
+					<input id="event-edit-total" type="number" class="input" disabled data-bind="wizardTotal"/>
+				</div>
+				<div class="field">
+					<label for="event-edit-leftover">{ctxi18n.T(ctx, "events.leftover")}</label>
+					<input id="event-edit-leftover" type="number" class="input" disabled data-bind="wizardLeftover"/>
+				</div>
+
+				<div class="table-scroll">
+					<table class="table">
+						<thead>
+							<tr>
+								<th>{ ctxi18n.T(ctx, "participants.member") }</th>
+								<th>{ ctxi18n.T(ctx, "participants.cut_amount") }</th>
+								<th>{ ctxi18n.T(ctx, "participants.expense") }</th>
+								<th>{ ctxi18n.T(ctx, "participants.total") }</th>
+								<th>{ ctxi18n.T(ctx, "actions.delete") }</th>
+							</tr>
+						</thead>
+						<tbody>
+							for _, row := range data.WizardRows {
+								<tr>
+									<td><a class="link" href={ fmt.Sprintf("/groups/%s/members/%s", data.GroupID, row.MemberID) }>{ row.MemberName }</a></td>
+									<td class="text-right"><input type="number" class="input w-min-input" step="1" min="1" data-bind={ fmt.Sprintf("wizardAmounts.%s", row.MemberID) } value={ fmt.Sprintf("%d", row.Amount) }/></td>
+									<td class="text-right"><input type="number" class="input w-min-input" step="1" min="1" data-bind={ fmt.Sprintf("wizardExpenses.%s", row.MemberID) } value={ fmt.Sprintf("%d", row.Expense) }/></td>
+									<td class="text-right" data-text={ fmt.Sprintf("($wizardAmounts['%s'] || 0) + ($wizardExpenses['%s'] || 0)", row.MemberID, row.MemberID) }></td>
+									<td class="text-right">
+										@shared.IconActionButton(shared.IconActionButtonProps{ClassName: "btn btn-ghost btn-sm btn-danger btn-icon", OnClick: fmt.Sprintf("@delete('/groups/%s/events/%s/participants/draft/%s')", data.GroupID, data.Event.ID, row.MemberID), DisabledExpr: "$_fetching", AriaLabel: ctxi18n.T(ctx, "actions.delete"), Title: ctxi18n.T(ctx, "actions.delete"), IconName: icons.IconTrash2})
+									</td>
+								</tr>
+							}
+							if len(data.WizardRows) == 0 {
+								<tr>
+									<td colspan="5">{ ctxi18n.T(ctx, "table.empty") }</td>
+								</tr>
+							}
+							<tr>
+								<td>
+									<select id="event-wizard-add-member" data-bind="wizardSelectedMemberId" class="input w-min-input" data-attr:disabled={ fmt.Sprintf("$_fetching || %t", len(data.WizardAddableMembers) == 0) }>
+										<option value="">{ctxi18n.T(ctx, "participants.select_member")}</option>
+										for _, member := range data.WizardAddableMembers {
+											<option value={ member.ID }>{ member.Name }</option>
+										}
+									</select>
+								</td>
+								<td>
+									@shared.ActionButton(shared.ActionButtonProps{ClassName: "btn", OnClick: fmt.Sprintf("if (!$wizardSelectedMemberId) return; @post('/groups/%s/events/%s/participants/draft/' + $wizardSelectedMemberId)", data.GroupID, data.Event.ID), DisabledExpr: fmt.Sprintf("$_fetching || !$wizardSelectedMemberId || %t", len(data.WizardAddableMembers) == 0), Label: ctxi18n.T(ctx, "participants.add"), IconName: icons.IconPlus})
+								</td>
+								<td></td>
+								<td></td>
+								<td></td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
+				<div class="row row-wrap">
+					@shared.LoadingSubmitButton(shared.LoadingSubmitButtonProps{ClassName: "btn", Label: ctxi18n.T(ctx, "participants.save_all"), IconName: icons.IconSave})
+					@shared.ActionButton(shared.ActionButtonProps{ClassName: "btn", OnClick: fmt.Sprintf("@delete('/groups/%s/events/%s/participants/draft')", data.GroupID, data.Event.ID), DisabledExpr: "$_fetching", Label: ctxi18n.T(ctx, "actions.cancel"), IconName: icons.IconX})
+				</div>
+			</form>
+		</div>
 	}
 }
 
-templ EventShowDetailsActions(data EventData) {
+templ ReadModeActions(data EventData) {
 	if data.IsAdmin {
 		<div class="row row-wrap">
-			@shared.ActionButton(shared.ActionButtonProps{ClassName: "btn", OnClick: "$eventFormState = 'edit'; $errors = {title: '', time: '', description: '', amount: ''}", DisabledExpr: "$eventFormState !== '' || $formState !== '' || $_fetching", Label: ctxi18n.T(ctx, "actions.edit"), IconName: icons.IconPencil})
+			@shared.ActionButton(shared.ActionButtonProps{ClassName: "btn", OnClick: fmt.Sprintf("@post('/groups/%s/events/%s/participants/draft')", data.GroupID, data.Event.ID), DisabledExpr: "$_fetching", Label: ctxi18n.T(ctx, "actions.edit"), IconName: icons.IconPencil})
 			@shared.ActionButton(shared.ActionButtonProps{ClassName: "btn btn-danger", OnClick: fmt.Sprintf(
 				"$sureTitle = %s; $sureMessage = %s; $sureSubmitLabel = %s; $sureCancelLabel = %s; $sureMethod = 'delete'; $sureURL = '/groups/%s/events/%s'; $sureTriggerID = 'event-show-delete'; $sureOpen = true",
 				utils.JSONString(ctxi18n.T(ctx, "events.delete_confirm")),
@@ -110,7 +171,7 @@ templ EventShowDetailsActions(data EventData) {
 				utils.JSONString(ctxi18n.T(ctx, "actions.cancel")),
 				data.GroupID,
 				data.Event.ID,
-			), DisabledExpr: "$eventFormState !== '' || $formState !== '' || $_fetching", Label: ctxi18n.T(ctx, "actions.delete"), IconName: icons.IconTrash2})
+			), DisabledExpr: "$_fetching", Label: ctxi18n.T(ctx, "actions.delete"), IconName: icons.IconTrash2})
 		</div>
 	}
 }

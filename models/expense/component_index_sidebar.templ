@@ -36,7 +36,7 @@ templ ExpenseIndexSidebar(data ExpensesData) {
 							<div data-show="$errors && $errors.date" class="color-error" data-text="$errors.date"></div>
 						</div>
 					</div>
-					<div class="grid">
+					<div class="row row-wrap">
 						<span data-show="$formState === 'add'">
 							@shared.SidebarLoadingActionButton(shared.SidebarLoadingActionButtonProps{ClassName: "btn", OnClick: fmt.Sprintf("@post('/groups/%s/expenses')", data.GroupID), Label: ctxi18n.T(ctx, "expenses.create"), IconName: icons.IconSave, ActionID: "expense-create"})
 						</span>

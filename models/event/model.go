@@ -63,12 +63,26 @@ func (e *Events) GetShowData(ctx context.Context, groupID, eventID string, query
 	}
 
 	participantMemberIDs := make(map[string]bool, len(allParticipants))
+	participantByMemberID := make(map[string]db.ListParticipantsByEventRow, len(allParticipants))
 	for _, participant := range allParticipants {
 		participantMemberIDs[participant.ID] = true
+		participantByMemberID[participant.ID] = participant
 	}
 
 	filteredMembers := make([]db.Member, 0, len(members))
+	wizardRows := make([]ParticipantWizardRow, 0, len(allParticipants))
 	for _, member := range members {
+		participant, included := participantByMemberID[member.ID]
+		if included {
+			wizardRows = append(wizardRows, ParticipantWizardRow{
+				MemberID:   member.ID,
+				MemberName: member.Name,
+				Included:   true,
+				Amount:     participant.ParticipantAmount,
+				Expense:    participant.ParticipantExpense,
+			})
+		}
+
 		if participantMemberIDs[member.ID] {
 			continue
 		}
@@ -164,15 +178,21 @@ func (e *Events) GetShowData(ctx context.Context, groupID, eventID string, query
 	slog.Info("event.show.data", "event_id", eventID, "participants", len(participants), "members_total", len(members), "members_filtered", len(filteredMembers), "leftover", leftover)
 
 	return EventData{
-		Title:            "Bandcash - " + event.Title,
-		Event:            &event,
-		Participants:     displayParticipants,
-		Query:            query,
-		Pager:            utils.BuildTablePagination(totalItems, query),
-		Members:          filteredMembers,
-		Leftover:         leftover,
-		TotalDistributed: totalDistributed,
-		GroupID:          groupID,
+		Title:                "Bandcash - " + event.Title,
+		Event:                &event,
+		Participants:         displayParticipants,
+		WizardRows:           wizardRows,
+		Query:                query,
+		Pager:                utils.BuildTablePagination(totalItems, query),
+		Members:              filteredMembers,
+		AllMembers:           members,
+		WizardAddableMembers: filteredMembers,
+		Leftover:             leftover,
+		TotalDistributed:     totalDistributed,
+		WizardEventAmount:    event.Amount,
+		WizardError:          "",
+		EditorMode:           "read",
+		GroupID:              groupID,
 		Breadcrumbs: []utils.Crumb{
 			{Label: ctxi18n.T(ctx, "groups.title"), Href: "/dashboard"},
 			{Label: group.Name, Href: "/groups/" + groupID},
