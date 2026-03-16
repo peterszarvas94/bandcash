@@ -20,7 +20,7 @@ templ MemberShowMain(data MemberData) {
 		{Label: ctxi18n.T(ctx, "members.total_payout"), Value: utils.FormatNumberLocalized(ctx, data.TotalPayout)},
 	})
 	if data.IsAdmin {
-		<div class="row row-wrap pt pb">
+		<div class="row row-wrap pb">
 			@shared.ActionButton(shared.ActionButtonProps{ClassName: "btn", OnClick: "$formState = 'edit'; $errors = {name: '', description: ''}", DisabledExpr: "$formState !== '' || $_fetching", Label: ctxi18n.T(ctx, "members.edit"), IconName: icons.IconPencil})
 			@shared.SureActionButton(shared.SureActionButtonProps{
 				ClassName:    "btn btn-danger",
