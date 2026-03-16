@@ -16,3 +16,18 @@ func expenseIndexSignals(csrfToken string, query utils.TableQuery) map[string]an
 		"errors":          map[string]any{"title": "", "description": "", "amount": "", "date": ""},
 	}
 }
+
+func expenseShowSignals(data ExpenseData, csrfToken string) map[string]any {
+	return map[string]any{
+		"csrf":      csrfToken,
+		"mode":      "single",
+		"formState": "",
+		"formData": map[string]any{
+			"title":       data.Expense.Title,
+			"description": data.Expense.Description,
+			"amount":      data.Expense.Amount,
+			"date":        data.Expense.Date,
+		},
+		"errors": map[string]any{"title": "", "description": "", "amount": "", "date": ""},
+	}
+}

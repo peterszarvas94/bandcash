@@ -247,6 +247,7 @@ en:
     create: "Create Expense"
     update: "Update Expense"
     delete_confirm: "Delete this expense?"
+    details: "Expense Details"
     calculations: "Calculations"
     list_title: "Expenses"
     total_all: "All Expenses Total"

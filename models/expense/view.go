@@ -19,3 +19,12 @@ type ExpensesData struct {
 	FilteredTotal      int64
 	ExpensesTable      utils.TableLayout
 }
+
+type ExpenseData struct {
+	Title       string
+	Expense     *db.Expense
+	Breadcrumbs []utils.Crumb
+	GroupID     string
+	IsAdmin     bool
+	UserEmail   string
+}

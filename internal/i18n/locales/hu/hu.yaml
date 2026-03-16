@@ -247,6 +247,7 @@ hu:
     create: "Költség létrehozása"
     update: "Költség frissítése"
     delete_confirm: "Törlöd ezt a költséget?"
+    details: "Költség részletei"
     calculations: "Számítások"
     list_title: "Költségek"
     total_all: "Összes költség összege"

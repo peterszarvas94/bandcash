@@ -108,6 +108,32 @@ func (q *Queries) DeleteExpense(ctx context.Context, arg DeleteExpenseParams) er
 	return err
 }
 
+const getExpense = `-- name: GetExpense :one
+SELECT id, group_id, title, description, amount, date, created_at, updated_at FROM expenses
+WHERE id = ? AND group_id = ?
+`
+
+type GetExpenseParams struct {
+	ID      string `json:"id"`
+	GroupID string `json:"group_id"`
+}
+
+func (q *Queries) GetExpense(ctx context.Context, arg GetExpenseParams) (Expense, error) {
+	row := q.db.QueryRowContext(ctx, getExpense, arg.ID, arg.GroupID)
+	var i Expense
+	err := row.Scan(
+		&i.ID,
+		&i.GroupID,
+		&i.Title,
+		&i.Description,
+		&i.Amount,
+		&i.Date,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+	)
+	return i, err
+}
+
 const listExpenses = `-- name: ListExpenses :many
 SELECT id, group_id, title, description, amount, date, created_at, updated_at FROM expenses
 WHERE group_id = ?

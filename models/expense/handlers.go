@@ -79,6 +79,28 @@ func (e *Expenses) Index(c echo.Context) error {
 	return utils.RenderPage(c, ExpenseIndex(data))
 }
 
+func (e *Expenses) Show(c echo.Context) error {
+	utils.EnsureClientID(c)
+	groupID := middleware.GetGroupID(c)
+	userEmail := getUserEmail(c)
+
+	id := c.Param("id")
+	if !utils.IsValidID(id, utils.PrefixExpense) {
+		slog.Info("expense.show: invalid id")
+		return c.NoContent(http.StatusBadRequest)
+	}
+
+	data, err := e.GetShowData(c.Request().Context(), groupID, id)
+	if err != nil {
+		slog.Error("expense.show: failed to get data", "err", err)
+		return c.NoContent(http.StatusInternalServerError)
+	}
+	data.IsAdmin = middleware.IsAdmin(c)
+	data.UserEmail = userEmail
+
+	return utils.RenderPage(c, ExpenseShow(data))
+}
+
 func (e *Expenses) Create(c echo.Context) error {
 	groupID := middleware.GetGroupID(c)
 	userEmail := getUserEmail(c)
@@ -174,6 +196,34 @@ func (e *Expenses) Update(c echo.Context) error {
 	}
 
 	utils.Notify(c, "success", ctxi18n.T(c.Request().Context(), "expenses.notifications.updated"))
+
+	if signals.Mode == "single" {
+		utils.SSEHub.PatchSignals(c, map[string]any{
+			"formState": "",
+			"formData": map[string]any{
+				"title":       signals.FormData.Title,
+				"description": signals.FormData.Description,
+				"amount":      signals.FormData.Amount,
+				"date":        signals.FormData.Date,
+			},
+			"errors": map[string]any{"title": "", "description": "", "amount": "", "date": ""},
+		})
+		data, err := e.GetShowData(c.Request().Context(), groupID, id)
+		if err != nil {
+			slog.Error("expense.update: failed to get data", "err", err)
+			return c.NoContent(http.StatusInternalServerError)
+		}
+		data.IsAdmin = middleware.IsAdmin(c)
+		data.UserEmail = userEmail
+		html, err := utils.RenderHTMLForRequest(c, ExpenseShow(data))
+		if err != nil {
+			slog.Error("expense.update: failed to render", "err", err)
+			return c.NoContent(http.StatusInternalServerError)
+		}
+		utils.SSEHub.PatchHTML(c, html)
+		return c.NoContent(http.StatusOK)
+	}
+
 	utils.SSEHub.PatchSignals(c, defaultExpenseSignals)
 
 	query := utils.NormalizeTableQuery(signals.TableQuery, e.TableQuerySpec())
@@ -223,6 +273,15 @@ func (e *Expenses) Destroy(c echo.Context) error {
 	}
 
 	utils.Notify(c, "success", ctxi18n.T(c.Request().Context(), "expenses.notifications.deleted"))
+
+	if signals.Mode == "single" {
+		err = utils.SSEHub.Redirect(c, "/groups/"+groupID+"/expenses")
+		if err != nil {
+			slog.Warn("expense.destroy: failed to redirect", "err", err)
+		}
+		return c.NoContent(http.StatusOK)
+	}
+
 	utils.SSEHub.PatchSignals(c, defaultExpenseSignals)
 
 	query := utils.NormalizeTableQuery(signals.TableQuery, e.TableQuerySpec())

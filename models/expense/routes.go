@@ -11,6 +11,7 @@ func RegisterRoutes(e *echo.Echo) *Expenses {
 
 	g := e.Group("/groups/:groupId", middleware.RequireAuth(), middleware.RequireGroup())
 	g.GET("/expenses", expenses.Index)
+	g.GET("/expenses/:id", expenses.Show)
 
 	admin := g.Group("", middleware.RequireAdmin())
 	admin.POST("/expenses", expenses.Create)

@@ -20,7 +20,6 @@ func EventParticipantsTableLayout() TableLayout {
 func ExpensesIndexTableLayout() TableLayout {
 	return NewTableLayout([]TableColumn{
 		{Key: "title", WidthCh: 20},
-		{Key: "description", WidthCh: 30},
 		{Key: "amount", WidthCh: 12},
 		{Key: "date", WidthCh: 12},
 	}, 4)

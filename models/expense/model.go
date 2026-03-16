@@ -12,7 +12,7 @@ import (
 type Expenses struct{}
 
 func (e *Expenses) TableQuerySpec() utils.TableQuerySpec {
-	return utils.StandardTableQuerySpec("date", "desc", "date", "title", "amount", "description")
+	return utils.StandardTableQuerySpec("date", "desc", "date", "title", "amount")
 }
 
 func New() *Expenses {
@@ -73,12 +73,6 @@ func (e *Expenses) GetIndexData(ctx context.Context, groupID string, query utils
 		} else {
 			expenses, err = db.Qry.ListExpensesByAmountAscFiltered(ctx, db.ListExpensesByAmountAscFilteredParams(params))
 		}
-	case "description":
-		if query.Dir == "desc" {
-			expenses, err = db.Qry.ListExpensesByDescriptionDescFiltered(ctx, db.ListExpensesByDescriptionDescFilteredParams(params))
-		} else {
-			expenses, err = db.Qry.ListExpensesByDescriptionAscFiltered(ctx, db.ListExpensesByDescriptionAscFilteredParams(params))
-		}
 	default:
 		if query.Dir == "asc" {
 			expenses, err = db.Qry.ListExpensesByDateAscFiltered(ctx, db.ListExpensesByDateAscFilteredParams(params))
@@ -105,5 +99,32 @@ func (e *Expenses) GetIndexData(ctx context.Context, groupID string, query utils
 			{Label: ctxi18n.T(ctx, "expenses.title")},
 		},
 		ExpensesTable: utils.ExpensesIndexTableLayout(),
+	}, nil
+}
+
+func (e *Expenses) GetShowData(ctx context.Context, groupID, expenseID string) (ExpenseData, error) {
+	group, err := db.Qry.GetGroupByID(ctx, groupID)
+	if err != nil {
+		return ExpenseData{}, err
+	}
+
+	expense, err := db.Qry.GetExpense(ctx, db.GetExpenseParams{
+		ID:      expenseID,
+		GroupID: groupID,
+	})
+	if err != nil {
+		return ExpenseData{}, err
+	}
+
+	return ExpenseData{
+		Title:   "Bandcash - " + expense.Title,
+		Expense: &expense,
+		GroupID: groupID,
+		Breadcrumbs: []utils.Crumb{
+			{Label: ctxi18n.T(ctx, "groups.title"), Href: "/dashboard"},
+			{Label: group.Name, Href: "/groups/" + groupID},
+			{Label: ctxi18n.T(ctx, "expenses.title"), Href: "/groups/" + groupID + "/expenses"},
+			{Label: expense.Title},
+		},
 	}, nil
 }

@@ -1,0 +1,41 @@
+package expense
+
+import (
+	"fmt"
+
+	ctxi18n "github.com/invopop/ctxi18n/i18n"
+
+	"bandcash/internal/utils"
+	shared "bandcash/models/shared"
+	icons "bandcash/models/shared/icons"
+)
+
+templ ExpenseShowMain(data ExpenseData) {
+	<h2 class="pb">{ ctxi18n.T(ctx, "expenses.details") }</h2>
+	@shared.DetailGrid([]shared.DetailGridRow{
+		{Label: ctxi18n.T(ctx, "fields.title"), Value: data.Expense.Title},
+		{Label: ctxi18n.T(ctx, "fields.description"), Value: data.Expense.Description},
+		{Label: ctxi18n.T(ctx, "fields.amount"), Value: utils.FormatNumberLocalized(ctx, data.Expense.Amount)},
+		{Label: ctxi18n.T(ctx, "fields.date"), Value: utils.FormatDateLocalized(ctx, data.Expense.Date)},
+	})
+	if data.IsAdmin {
+		<div class="row row-wrap pb">
+			@shared.ActionButton(shared.ActionButtonProps{ClassName: "btn", OnClick: "$formState = 'edit'; $errors = {title: '', description: '', amount: '', date: ''}", DisabledExpr: "$formState !== '' || $_fetching", Label: ctxi18n.T(ctx, "expenses.edit"), IconName: icons.IconPencil})
+			@shared.SureActionButton(shared.SureActionButtonProps{
+				ClassName:    "btn btn-danger",
+				DisabledExpr: "$formState !== '' || $_fetching",
+				Label:        ctxi18n.T(ctx, "actions.delete"),
+				IconName:     icons.IconTrash2,
+				Dialog: shared.SureDialogProps{
+					Title:       ctxi18n.T(ctx, "expenses.delete_confirm"),
+					Message:     ctxi18n.T(ctx, "confirm.destructive_message"),
+					SubmitLabel: ctxi18n.T(ctx, "actions.delete"),
+					CancelLabel: ctxi18n.T(ctx, "actions.cancel"),
+					Method:      "delete",
+					URL:         fmt.Sprintf("/groups/%s/expenses/%s", data.GroupID, data.Expense.ID),
+					TriggerID:   "expense-show-delete",
+				},
+			})
+		</div>
+	}
+}

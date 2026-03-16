@@ -3,6 +3,10 @@ INSERT INTO expenses (id, group_id, title, description, amount, date)
 VALUES (?, ?, ?, ?, ?, ?)
 RETURNING *;
 
+-- name: GetExpense :one
+SELECT * FROM expenses
+WHERE id = ? AND group_id = ?;
+
 -- name: ListExpenses :many
 SELECT * FROM expenses
 WHERE group_id = ?
