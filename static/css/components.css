@@ -834,6 +834,28 @@
     }
   }
 
+  .detail-grid-with-actions {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: var(--space);
+    align-items: start;
+
+    @media (max-width: 900px) {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  .detail-grid-actions {
+    display: flex;
+    gap: var(--space);
+    flex-wrap: wrap;
+    justify-content: flex-end;
+
+    @media (max-width: 900px) {
+      justify-content: flex-start;
+    }
+  }
+
   .topbar {
     display: flex;
     align-items: center;
@@ -882,17 +904,10 @@
   }
 
   .app-shell {
-    --panel-width: 0px;
-
-    grid-template-columns: var(--nav-width) minmax(0, 1fr) var(--panel-width);
+    grid-template-columns: var(--nav-width) minmax(0, 1fr);
     grid-template-areas:
-      "nav top panel"
-      "nav main panel";
-    transition: grid-template-columns 180ms ease;
-  }
-
-  .app-shell.panel-open {
-    --panel-width: var(--sidebar-width);
+      "nav top"
+      "nav main";
   }
 
   .app-shell-main-only {
@@ -930,25 +945,29 @@
   }
 
   .app-shell-panel {
-    grid-area: panel;
-    border-left: 0;
-    padding-left: 0;
-    min-width: 0;
-    align-self: stretch;
-    overflow: hidden;
-    opacity: 0;
-    pointer-events: none;
-    transition:
-      padding-left 180ms ease,
-      border-color 180ms ease,
-      opacity 120ms ease;
-  }
-
-  .app-shell.panel-open .app-shell-panel {
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    right: 0;
+    width: var(--sidebar-width);
+    background: var(--page-bg);
+    z-index: 30;
+    overflow-y: auto;
+    padding: var(--space);
     border-left: var(--border) solid var(--border-color);
-    padding-left: var(--space);
+    padding-left: calc(var(--space) * 2);
     opacity: 1;
     pointer-events: auto;
+    transform: translateX(105%);
+    transition: transform 180ms ease;
+  }
+
+  .app-shell:has(> input[id$="-panel-toggle"]:checked) .app-shell-panel {
+    transform: translateX(0);
+  }
+
+  .app-shell:has(> input[id$="-panel-toggle"]:checked) .app-shell-backdrop-panel {
+    display: block;
   }
 
   .app-nav {
@@ -1007,7 +1026,6 @@
       grid-template-areas:
         "top"
         "main";
-      transition: none;
     }
 
     .app-shell-main-only {
@@ -1059,8 +1077,6 @@
       right: 0;
       border-left: var(--border) solid var(--border-color);
       padding-left: calc(var(--space) * 2);
-      opacity: 1;
-      pointer-events: auto;
       transform: translateX(105%);
       transition: transform 180ms ease;
     }
@@ -1074,13 +1090,8 @@
       transform: translateX(0);
     }
 
-    .app-shell:has(> input[id$="-panel-toggle"]:checked) .app-shell-panel {
-      transform: translateX(0);
-    }
-
     .app-shell:has(> input[id$="-nav-toggle"]:checked) .app-shell-backdrop-nav,
-    .app-shell:has(> input[id$="-panel-toggle"]:checked)
-      .app-shell-backdrop-panel {
+    .app-shell:has(> input[id$="-panel-toggle"]:checked) .app-shell-backdrop-panel {
       display: block;
     }
 

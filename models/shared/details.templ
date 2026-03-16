@@ -18,6 +18,24 @@ templ DetailGrid(rows []DetailGridRow) {
 	</div>
 }
 
+templ DetailGridWithActions(rows []DetailGridRow, actions templ.Component) {
+	<div class="detail-grid-with-actions pb">
+		<div>
+			<div class="detail-grid">
+				for _, row := range rows {
+					<div class="detail-row">
+						<p class="detail-key">{ row.Label }</p>
+						<p class="detail-val">{ row.Value }</p>
+					</div>
+				}
+			</div>
+		</div>
+		<div class="detail-grid-actions">
+			@actions
+		</div>
+	</div>
+}
+
 templ Details(summary string, content templ.Component) {
 	<div class="pb">
 		<details class="details">

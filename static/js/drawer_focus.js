@@ -75,47 +75,29 @@ function applyState(shell) {
   const main = shell.querySelector(".app-shell-main");
   const panelVisible = hasVisiblePanelContent(shell);
 
-  shell.classList.toggle("panel-open", panelVisible);
-
-  if (!isMobile()) {
-    if (navToggle) {
-      navToggle.checked = false;
-    }
-    if (panelToggle) {
-      panelToggle.checked = false;
-    }
-
-    [top, nav, main].forEach(function(el) {
-      if (el) {
-        el.removeAttribute("inert");
-      }
-    });
-
-    if (panel) {
-      panel.toggleAttribute("inert", !panelVisible);
-    }
-    return;
-  }
-
   if (panelToggle) {
-    const shouldOpenPanel = panelVisible && !Boolean(navToggle?.checked);
+    const shouldOpenPanel = panelVisible && !(isMobile() && Boolean(navToggle?.checked));
     if (panelToggle.checked !== shouldOpenPanel) {
       panelToggle.checked = shouldOpenPanel;
     }
   }
 
-  const navOpen = Boolean(navToggle?.checked);
-  const panelOpen = Boolean(panelToggle?.checked);
-
-  if (navOpen && panelToggle && panelToggle.checked) {
-    panelToggle.checked = false;
-  }
-
-  if (panelOpen && navToggle && navToggle.checked) {
+  if (!isMobile() && navToggle) {
     navToggle.checked = false;
   }
 
-  const navIsOpen = Boolean(navToggle?.checked);
+  const navOpen = isMobile() && Boolean(navToggle?.checked);
+  const panelOpen = Boolean(panelToggle?.checked);
+
+  if (isMobile() && navOpen && panelToggle && panelToggle.checked) {
+    panelToggle.checked = false;
+  }
+
+  if (isMobile() && panelOpen && navToggle && navToggle.checked) {
+    navToggle.checked = false;
+  }
+
+  const navIsOpen = isMobile() && Boolean(navToggle?.checked);
   const panelIsOpen = Boolean(panelToggle?.checked);
   const drawerOpen = navIsOpen || panelIsOpen;
 
@@ -126,7 +108,11 @@ function applyState(shell) {
     main.toggleAttribute("inert", drawerOpen);
   }
   if (nav) {
-    nav.toggleAttribute("inert", !navIsOpen);
+    if (isMobile()) {
+      nav.toggleAttribute("inert", !navIsOpen);
+    } else {
+      nav.removeAttribute("inert");
+    }
   }
   if (panel) {
     panel.toggleAttribute("inert", !panelIsOpen);
@@ -139,7 +125,7 @@ function activeDrawer(shell) {
   if (isMobile() && navToggle?.checked) {
     return shell.querySelector(".app-shell-nav");
   }
-  if (isMobile() && panelToggle?.checked) {
+  if (panelToggle?.checked) {
     return shell.querySelector(".app-shell-panel");
   }
   return null;
@@ -235,7 +221,7 @@ function wireShell(shell) {
 
   if (panelToggle) {
     panelToggle.addEventListener("change", function onPanelChange() {
-      if (isMobile() && !panelToggle.checked && hasVisiblePanelContent(shell)) {
+      if (!panelToggle.checked && hasVisiblePanelContent(shell)) {
         closePanelLikeCancel(shell);
         return;
       }

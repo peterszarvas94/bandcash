@@ -10,33 +10,24 @@ import (
 )
 
 templ MemberShowMain(data MemberData) {
-	@shared.DetailGrid([]shared.DetailGridRow{
-		{Label: ctxi18n.T(ctx, "fields.name"), Value: data.Member.Name},
-		{Label: ctxi18n.T(ctx, "fields.description"), Value: data.Member.Description},
-		{Label: ctxi18n.T(ctx, "members.total_events"), Value: utils.FormatNumberLocalized(ctx, int64(len(data.Events)))},
-		{Label: ctxi18n.T(ctx, "members.total_cut"), Value: utils.FormatNumberLocalized(ctx, data.TotalCut)},
-		{Label: ctxi18n.T(ctx, "members.total_expense"), Value: utils.FormatNumberLocalized(ctx, data.TotalExpense)},
-		{Label: ctxi18n.T(ctx, "members.total_payout"), Value: utils.FormatNumberLocalized(ctx, data.TotalPayout)},
-	})
 	if data.IsAdmin {
-		<div class="row row-wrap pb">
-			@shared.ActionButton(shared.ActionButtonProps{ClassName: "btn", OnClick: "$formState = 'edit'; $errors = {name: '', description: ''}", DisabledExpr: "$formState !== '' || $_fetching", Label: ctxi18n.T(ctx, "members.edit"), IconName: icons.IconPencil})
-			@shared.SureActionButton(shared.SureActionButtonProps{
-				ClassName:    "btn btn-danger",
-				DisabledExpr: "$formState !== '' || $_fetching",
-				Label:        ctxi18n.T(ctx, "actions.delete"),
-				IconName:     icons.IconTrash2,
-				Dialog: shared.SureDialogProps{
-					Title:       ctxi18n.T(ctx, "members.delete_confirm"),
-					Message:     ctxi18n.T(ctx, "confirm.destructive_message"),
-					SubmitLabel: ctxi18n.T(ctx, "actions.delete"),
-					CancelLabel: ctxi18n.T(ctx, "actions.cancel"),
-					Method:      "delete",
-					URL:         fmt.Sprintf("/groups/%s/members/%s", data.GroupID, data.Member.ID),
-					TriggerID:   "member-show-delete",
-				},
-			})
-		</div>
+		@shared.DetailGridWithActions([]shared.DetailGridRow{
+			{Label: ctxi18n.T(ctx, "fields.name"), Value: data.Member.Name},
+			{Label: ctxi18n.T(ctx, "fields.description"), Value: data.Member.Description},
+			{Label: ctxi18n.T(ctx, "members.total_events"), Value: utils.FormatNumberLocalized(ctx, int64(len(data.Events)))},
+			{Label: ctxi18n.T(ctx, "members.total_cut"), Value: utils.FormatNumberLocalized(ctx, data.TotalCut)},
+			{Label: ctxi18n.T(ctx, "members.total_expense"), Value: utils.FormatNumberLocalized(ctx, data.TotalExpense)},
+			{Label: ctxi18n.T(ctx, "members.total_payout"), Value: utils.FormatNumberLocalized(ctx, data.TotalPayout)},
+		}, MemberShowDetailsActions(data))
+	} else {
+		@shared.DetailGrid([]shared.DetailGridRow{
+			{Label: ctxi18n.T(ctx, "fields.name"), Value: data.Member.Name},
+			{Label: ctxi18n.T(ctx, "fields.description"), Value: data.Member.Description},
+			{Label: ctxi18n.T(ctx, "members.total_events"), Value: utils.FormatNumberLocalized(ctx, int64(len(data.Events)))},
+			{Label: ctxi18n.T(ctx, "members.total_cut"), Value: utils.FormatNumberLocalized(ctx, data.TotalCut)},
+			{Label: ctxi18n.T(ctx, "members.total_expense"), Value: utils.FormatNumberLocalized(ctx, data.TotalExpense)},
+			{Label: ctxi18n.T(ctx, "members.total_payout"), Value: utils.FormatNumberLocalized(ctx, data.TotalPayout)},
+		})
 	}
 	@shared.TableSearchForm(fmt.Sprintf("/groups/%s/members/%s", data.GroupID, data.Member.ID), data.Query, "table.search_placeholder_member_events")
 	@shared.TablePaginationRow(fmt.Sprintf("/groups/%s/members/%s", data.GroupID, data.Member.ID), data.Query, data.Pager)
@@ -76,5 +67,28 @@ templ MemberShowMain(data MemberData) {
 				</tr>
 			}
 		</tbody>
+	}
+}
+
+templ MemberShowDetailsActions(data MemberData) {
+	if data.IsAdmin {
+		<div class="row row-wrap">
+			@shared.ActionButton(shared.ActionButtonProps{ClassName: "btn", OnClick: "$formState = 'edit'; $errors = {name: '', description: ''}", DisabledExpr: "$formState !== '' || $_fetching", Label: ctxi18n.T(ctx, "members.edit"), IconName: icons.IconPencil})
+			@shared.SureActionButton(shared.SureActionButtonProps{
+				ClassName:    "btn btn-danger",
+				DisabledExpr: "$formState !== '' || $_fetching",
+				Label:        ctxi18n.T(ctx, "actions.delete"),
+				IconName:     icons.IconTrash2,
+				Dialog: shared.SureDialogProps{
+					Title:       ctxi18n.T(ctx, "members.delete_confirm"),
+					Message:     ctxi18n.T(ctx, "confirm.destructive_message"),
+					SubmitLabel: ctxi18n.T(ctx, "actions.delete"),
+					CancelLabel: ctxi18n.T(ctx, "actions.cancel"),
+					Method:      "delete",
+					URL:         fmt.Sprintf("/groups/%s/members/%s", data.GroupID, data.Member.ID),
+					TriggerID:   "member-show-delete",
+				},
+			})
+		</div>
 	}
 }

@@ -28,41 +28,66 @@ templ GroupMain(data GroupPageData) {
 }
 
 templ GroupDetailsContent(data GroupPageData) {
-	@shared.DetailGrid([]shared.DetailGridRow{
-		{Label: ctxi18n.T(ctx, "groups.name"), Value: data.Group.Name},
-		{Label: ctxi18n.T(ctx, "groups.admin"), Value: data.Admin.Email},
-		{
-			Label: ctxi18n.T(ctx, "groups.created"),
-			Value: func() string {
-				if data.Group.CreatedAt.Valid {
-					return utils.FormatTimeLocalized(ctx, data.Group.CreatedAt.Time)
-				}
-				return "-"
-			}(),
-		},
-		{Label: ctxi18n.T(ctx, "groups.income"), Value: utils.FormatNumberLocalized(ctx, data.Income)},
-		{Label: ctxi18n.T(ctx, "groups.payouts"), Value: utils.FormatNumberLocalized(ctx, data.Payouts)},
-		{Label: ctxi18n.T(ctx, "groups.expenses"), Value: utils.FormatNumberLocalized(ctx, data.Expenses)},
-		{Label: ctxi18n.T(ctx, "groups.leftover"), Value: utils.FormatNumberLocalized(ctx, data.Leftover)},
-	})
-	<div class="row row-wrap pb">
-		@shared.ActionButton(shared.ActionButtonProps{ClassName: "btn", OnClick: "$formState = 'edit'; $errors = {name: ''}", DisabledExpr: "$formState !== '' || $_fetching", Label: ctxi18n.T(ctx, "groups.edit"), IconName: icons.IconPencil})
-		@shared.SureActionButton(shared.SureActionButtonProps{
-			ClassName:    "btn btn-danger",
-			DisabledExpr: "$formState !== '' || $_fetching",
-			Label:        ctxi18n.T(ctx, "groups.delete"),
-			IconName:     icons.IconTrash2,
-			Dialog: shared.SureDialogProps{
-				Title:       ctxi18n.T(ctx, "groups.delete_confirm"),
-				Message:     ctxi18n.T(ctx, "confirm.destructive_message"),
-				SubmitLabel: ctxi18n.T(ctx, "groups.delete"),
-				CancelLabel: ctxi18n.T(ctx, "actions.cancel"),
-				Method:      "delete",
-				URL:         fmt.Sprintf("/groups/%s", data.Group.ID),
-				TriggerID:   "group-show-delete",
+	if data.IsAdmin {
+		@shared.DetailGridWithActions([]shared.DetailGridRow{
+			{Label: ctxi18n.T(ctx, "groups.name"), Value: data.Group.Name},
+			{Label: ctxi18n.T(ctx, "groups.admin"), Value: data.Admin.Email},
+			{
+				Label: ctxi18n.T(ctx, "groups.created"),
+				Value: func() string {
+					if data.Group.CreatedAt.Valid {
+						return utils.FormatTimeLocalized(ctx, data.Group.CreatedAt.Time)
+					}
+					return "-"
+				}(),
 			},
+			{Label: ctxi18n.T(ctx, "groups.income"), Value: utils.FormatNumberLocalized(ctx, data.Income)},
+			{Label: ctxi18n.T(ctx, "groups.payouts"), Value: utils.FormatNumberLocalized(ctx, data.Payouts)},
+			{Label: ctxi18n.T(ctx, "groups.expenses"), Value: utils.FormatNumberLocalized(ctx, data.Expenses)},
+			{Label: ctxi18n.T(ctx, "groups.leftover"), Value: utils.FormatNumberLocalized(ctx, data.Leftover)},
+		}, GroupDetailsActions(data))
+	} else {
+		@shared.DetailGrid([]shared.DetailGridRow{
+			{Label: ctxi18n.T(ctx, "groups.name"), Value: data.Group.Name},
+			{Label: ctxi18n.T(ctx, "groups.admin"), Value: data.Admin.Email},
+			{
+				Label: ctxi18n.T(ctx, "groups.created"),
+				Value: func() string {
+					if data.Group.CreatedAt.Valid {
+						return utils.FormatTimeLocalized(ctx, data.Group.CreatedAt.Time)
+					}
+					return "-"
+				}(),
+			},
+			{Label: ctxi18n.T(ctx, "groups.income"), Value: utils.FormatNumberLocalized(ctx, data.Income)},
+			{Label: ctxi18n.T(ctx, "groups.payouts"), Value: utils.FormatNumberLocalized(ctx, data.Payouts)},
+			{Label: ctxi18n.T(ctx, "groups.expenses"), Value: utils.FormatNumberLocalized(ctx, data.Expenses)},
+			{Label: ctxi18n.T(ctx, "groups.leftover"), Value: utils.FormatNumberLocalized(ctx, data.Leftover)},
 		})
-	</div>
+	}
+}
+
+templ GroupDetailsActions(data GroupPageData) {
+	if data.IsAdmin {
+		<div class="row row-wrap">
+			@shared.ActionButton(shared.ActionButtonProps{ClassName: "btn", OnClick: "$formState = 'edit'; $errors = {name: ''}", DisabledExpr: "$formState !== '' || $_fetching", Label: ctxi18n.T(ctx, "groups.edit"), IconName: icons.IconPencil})
+			@shared.SureActionButton(shared.SureActionButtonProps{
+				ClassName:    "btn btn-danger",
+				DisabledExpr: "$formState !== '' || $_fetching",
+				Label:        ctxi18n.T(ctx, "groups.delete"),
+				IconName:     icons.IconTrash2,
+				Dialog: shared.SureDialogProps{
+					Title:       ctxi18n.T(ctx, "groups.delete_confirm"),
+					Message:     ctxi18n.T(ctx, "confirm.destructive_message"),
+					SubmitLabel: ctxi18n.T(ctx, "groups.delete"),
+					CancelLabel: ctxi18n.T(ctx, "actions.cancel"),
+					Method:      "delete",
+					URL:         fmt.Sprintf("/groups/%s", data.Group.ID),
+					TriggerID:   "group-show-delete",
+				},
+			})
+		</div>
+	}
 }
 
 templ GroupSidebar(data GroupPageData) {

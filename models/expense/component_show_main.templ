@@ -11,14 +11,26 @@ import (
 )
 
 templ ExpenseShowMain(data ExpenseData) {
-	@shared.DetailGrid([]shared.DetailGridRow{
-		{Label: ctxi18n.T(ctx, "fields.title"), Value: data.Expense.Title},
-		{Label: ctxi18n.T(ctx, "fields.description"), Value: data.Expense.Description},
-		{Label: ctxi18n.T(ctx, "fields.amount"), Value: utils.FormatNumberLocalized(ctx, data.Expense.Amount)},
-		{Label: ctxi18n.T(ctx, "fields.date"), Value: utils.FormatDateLocalized(ctx, data.Expense.Date)},
-	})
 	if data.IsAdmin {
-		<div class="row row-wrap pb">
+		@shared.DetailGridWithActions([]shared.DetailGridRow{
+			{Label: ctxi18n.T(ctx, "fields.title"), Value: data.Expense.Title},
+			{Label: ctxi18n.T(ctx, "fields.description"), Value: data.Expense.Description},
+			{Label: ctxi18n.T(ctx, "fields.amount"), Value: utils.FormatNumberLocalized(ctx, data.Expense.Amount)},
+			{Label: ctxi18n.T(ctx, "fields.date"), Value: utils.FormatDateLocalized(ctx, data.Expense.Date)},
+		}, ExpenseShowDetailsActions(data))
+	} else {
+		@shared.DetailGrid([]shared.DetailGridRow{
+			{Label: ctxi18n.T(ctx, "fields.title"), Value: data.Expense.Title},
+			{Label: ctxi18n.T(ctx, "fields.description"), Value: data.Expense.Description},
+			{Label: ctxi18n.T(ctx, "fields.amount"), Value: utils.FormatNumberLocalized(ctx, data.Expense.Amount)},
+			{Label: ctxi18n.T(ctx, "fields.date"), Value: utils.FormatDateLocalized(ctx, data.Expense.Date)},
+		})
+	}
+}
+
+templ ExpenseShowDetailsActions(data ExpenseData) {
+	if data.IsAdmin {
+		<div class="row row-wrap">
 			@shared.ActionButton(shared.ActionButtonProps{ClassName: "btn", OnClick: "$formState = 'edit'; $errors = {title: '', description: '', amount: '', date: ''}", DisabledExpr: "$formState !== '' || $_fetching", Label: ctxi18n.T(ctx, "expenses.edit"), IconName: icons.IconPencil})
 			@shared.SureActionButton(shared.SureActionButtonProps{
 				ClassName:    "btn btn-danger",
