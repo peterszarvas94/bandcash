@@ -137,7 +137,11 @@ func TestParseTableQuery_RejectsMaliciousOrIllegalInputs(t *testing.T) {
 		req := httptest.NewRequest("GET", "/?q=%20%20hello%20%20&sort=createdAt;DROP%20TABLE%20users&dir=desc&page=0&pageSize=2147483647", nil)
 		ctx := e.NewContext(req, httptest.NewRecorder())
 
-		query := ParseTableQuery(ctx, testQueryable{spec: StandardTableQuerySpec("createdAt", "desc", "name", "createdAt")})
+		query := ParseTableQuery(ctx, testQueryable{spec: StandardTableQuerySpec(StandardTableQuerySpecParams{
+			DefaultSort:  "createdAt",
+			DefaultDir:   "desc",
+			AllowedSorts: []string{"name", "createdAt"},
+		})})
 
 		if query.Search != "hello" {
 			t.Fatalf("expected trimmed search hello, got %q", query.Search)
@@ -163,7 +167,11 @@ func TestParseTableQuery_DateFilters(t *testing.T) {
 		req := httptest.NewRequest("GET", "/?year=2026&from=2026-01-01&to=2026-01-31", nil)
 		ctx := e.NewContext(req, httptest.NewRecorder())
 
-		query := ParseTableQuery(ctx, testQueryable{spec: StandardTableQuerySpec("time", "asc", "time")})
+		query := ParseTableQuery(ctx, testQueryable{spec: StandardTableQuerySpec(StandardTableQuerySpecParams{
+			DefaultSort:  "time",
+			DefaultDir:   "asc",
+			AllowedSorts: []string{"time"},
+		})})
 
 		if query.Year != "" {
 			t.Fatalf("expected year to be cleared when range is set, got %q", query.Year)
@@ -178,7 +186,11 @@ func TestParseTableQuery_DateFilters(t *testing.T) {
 		req := httptest.NewRequest("GET", "/?from=2026-44-01&to=bad", nil)
 		ctx := e.NewContext(req, httptest.NewRecorder())
 
-		result := ParseTableQueryWithResult(ctx, testQueryable{spec: StandardTableQuerySpec("time", "asc", "time")})
+		result := ParseTableQueryWithResult(ctx, testQueryable{spec: StandardTableQuerySpec(StandardTableQuerySpecParams{
+			DefaultSort:  "time",
+			DefaultDir:   "asc",
+			AllowedSorts: []string{"time"},
+		})})
 		if _, ok := result.Rejected["from"]; !ok {
 			t.Fatalf("expected from to be rejected, got %+v", result.Rejected)
 		}
@@ -194,7 +206,11 @@ func TestParseTableQueryWithResult_ReportsRejectedFields(t *testing.T) {
 		req := httptest.NewRequest("GET", "/?sort=not_allowed&dir=sideways&page=-3&pageSize=999", nil)
 		ctx := e.NewContext(req, httptest.NewRecorder())
 
-		result := ParseTableQueryWithResult(ctx, testQueryable{spec: StandardTableQuerySpec("createdAt", "desc", "name", "createdAt")})
+		result := ParseTableQueryWithResult(ctx, testQueryable{spec: StandardTableQuerySpec(StandardTableQuerySpecParams{
+			DefaultSort:  "createdAt",
+			DefaultDir:   "desc",
+			AllowedSorts: []string{"name", "createdAt"},
+		})})
 
 		if result.Rejected == nil {
 			t.Fatal("expected rejected fields map")
@@ -209,7 +225,11 @@ func TestParseTableQueryWithResult_ReportsRejectedFields(t *testing.T) {
 
 func TestNormalizeTableQuery_RejectsDisallowedPageSizeAndSort(t *testing.T) {
 	t.Run("normalizes disallowed values to safe defaults", func(t *testing.T) {
-		spec := StandardTableQuerySpec("createdAt", "desc", "name", "createdAt")
+		spec := StandardTableQuerySpec(StandardTableQuerySpecParams{
+			DefaultSort:  "createdAt",
+			DefaultDir:   "desc",
+			AllowedSorts: []string{"name", "createdAt"},
+		})
 
 		query := NormalizeTableQuery(TableQuery{
 			Page:     -5,
@@ -276,7 +296,11 @@ func TestBuildTablePageURL_ClampsToRange(t *testing.T) {
 }
 
 func TestBuildTablePageSizeURL_ResetsPageAndRejectsIllegalPageSize(t *testing.T) {
-	spec := StandardTableQuerySpec("createdAt", "desc", "name", "createdAt")
+	spec := StandardTableQuerySpec(StandardTableQuerySpecParams{
+		DefaultSort:  "createdAt",
+		DefaultDir:   "desc",
+		AllowedSorts: []string{"name", "createdAt"},
+	})
 	query := TableQuery{Page: 6, PageSize: 50, Search: "abc", Sort: "createdAt", SortSet: true, Dir: "desc"}
 
 	t.Run("resets page to first when page-size changes", func(t *testing.T) {

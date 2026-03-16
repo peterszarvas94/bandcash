@@ -16,7 +16,11 @@ type Events struct {
 }
 
 func (e *Events) TableQuerySpec() utils.TableQuerySpec {
-	return utils.StandardTableQuerySpec("time", "asc", "time", "title", "amount", "description")
+	return utils.StandardTableQuerySpec(utils.StandardTableQuerySpecParams{
+		DefaultSort:  "time",
+		DefaultDir:   "asc",
+		AllowedSorts: []string{"time", "title", "amount", "description"},
+	})
 }
 
 func New() *Events {
@@ -24,7 +28,11 @@ func New() *Events {
 }
 
 func (e *Events) ParticipantTableQuerySpec() utils.TableQuerySpec {
-	return utils.StandardTableQuerySpec("name", "asc", "name", "total", "amount", "expense")
+	return utils.StandardTableQuerySpec(utils.StandardTableQuerySpecParams{
+		DefaultSort:  "name",
+		DefaultDir:   "asc",
+		AllowedSorts: []string{"name", "amount", "expense", "total"},
+	})
 }
 
 func (e *Events) GetShowData(ctx context.Context, groupID, eventID string, query utils.TableQuery) (EventData, error) {

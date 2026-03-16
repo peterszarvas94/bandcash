@@ -41,14 +41,14 @@ templ EventShowMain(data EventData) {
 				@shared.THCol(data.ParticipantsTable.Col("name")) {
 					@shared.TableSortHeader(ctxi18n.T(ctx, "participants.member"), "name", data.Query, utils.BuildTableSortURL(fmt.Sprintf("/groups/%s/events/%s", data.GroupID, data.Event.ID), data.Query, "name"))
 				}
-				@shared.THCol(data.ParticipantsTable.Col("total")) {
-					@shared.TableSortHeader(ctxi18n.T(ctx, "participants.total"), "total", data.Query, utils.BuildTableSortURL(fmt.Sprintf("/groups/%s/events/%s", data.GroupID, data.Event.ID), data.Query, "total"))
-				}
 				@shared.THCol(data.ParticipantsTable.Col("amount")) {
 					@shared.TableSortHeader(ctxi18n.T(ctx, "participants.cut"), "amount", data.Query, utils.BuildTableSortURL(fmt.Sprintf("/groups/%s/events/%s", data.GroupID, data.Event.ID), data.Query, "amount"))
 				}
 				@shared.THCol(data.ParticipantsTable.Col("expense")) {
 					@shared.TableSortHeader(ctxi18n.T(ctx, "participants.expense"), "expense", data.Query, utils.BuildTableSortURL(fmt.Sprintf("/groups/%s/events/%s", data.GroupID, data.Event.ID), data.Query, "expense"))
+				}
+				@shared.THCol(data.ParticipantsTable.Col("total")) {
+					@shared.TableSortHeader(ctxi18n.T(ctx, "participants.total"), "total", data.Query, utils.BuildTableSortURL(fmt.Sprintf("/groups/%s/events/%s", data.GroupID, data.Event.ID), data.Query, "total"))
 				}
 				if data.IsAdmin {
 					@shared.THActions(data.ParticipantsTable.ActionsWidthRem) {
@@ -68,9 +68,9 @@ templ EventShowMain(data EventData) {
 					data-participant-expense={ fmt.Sprintf("%d", participant.ParticipantExpense) }
 				>
 					<td><a class="link" href={ fmt.Sprintf("/groups/%s/members/%s", data.GroupID, participant.ID) }>{ participant.Name }</a></td>
-					<td class="text-right">{ utils.FormatNumberLocalized(ctx, participant.ParticipantAmount+participant.ParticipantExpense) }</td>
 					<td class="text-right">{ utils.FormatNumberLocalized(ctx, participant.ParticipantAmount) }</td>
 					<td class="text-right">{ utils.FormatNumberLocalized(ctx, participant.ParticipantExpense) }</td>
+					<td class="text-right">{ utils.FormatNumberLocalized(ctx, participant.ParticipantAmount+participant.ParticipantExpense) }</td>
 					if data.IsAdmin {
 						<td class="text-right" data-actions-col>
 							<div class="row row-right row-tight">

@@ -33,7 +33,11 @@ type AccessModel struct{}
 var errAtLeastOneAdmin = errors.New("at least one admin required")
 
 func (a *AccessModel) TableQuerySpec() utils.TableQuerySpec {
-	return utils.StandardTableQuerySpec("createdAt", "desc", "email", "role", "status", "createdAt")
+	return utils.StandardTableQuerySpec(utils.StandardTableQuerySpecParams{
+		DefaultSort:  "createdAt",
+		DefaultDir:   "desc",
+		AllowedSorts: []string{"email", "role", "status", "createdAt"},
+	})
 }
 
 func New() *Group {

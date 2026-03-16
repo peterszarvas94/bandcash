@@ -383,9 +383,15 @@ func TableQuerySignals(query TableQuery) map[string]any {
 	}
 }
 
-func StandardTableQuerySpec(defaultSort, defaultDir string, allowedSorts ...string) TableQuerySpec {
-	sorts := make(map[string]struct{}, len(allowedSorts))
-	for _, sort := range allowedSorts {
+type StandardTableQuerySpecParams struct {
+	DefaultSort  string
+	DefaultDir   string
+	AllowedSorts []string
+}
+
+func StandardTableQuerySpec(params StandardTableQuerySpecParams) TableQuerySpec {
+	sorts := make(map[string]struct{}, len(params.AllowedSorts))
+	for _, sort := range params.AllowedSorts {
 		sorts[sort] = struct{}{}
 	}
 
@@ -395,8 +401,8 @@ func StandardTableQuerySpec(defaultSort, defaultDir string, allowedSorts ...stri
 	}
 
 	return TableQuerySpec{
-		DefaultSort:      defaultSort,
-		DefaultDir:       defaultDir,
+		DefaultSort:      params.DefaultSort,
+		DefaultDir:       params.DefaultDir,
 		AllowedSorts:     sorts,
 		AllowedPageSizes: pageSizes,
 		DefaultSize:      DefaultTablePageSize,

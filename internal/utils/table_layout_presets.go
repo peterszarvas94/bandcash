@@ -11,17 +11,17 @@ func EventsIndexTableLayout() TableLayout {
 func EventParticipantsTableLayout() TableLayout {
 	return NewTableLayout([]TableColumn{
 		{Key: "name", WidthCh: 24},
-		{Key: "total", WidthCh: 12},
 		{Key: "amount", WidthCh: 12},
 		{Key: "expense", WidthCh: 12},
+		{Key: "total", WidthCh: 12},
 	}, 4)
 }
 
 func ExpensesIndexTableLayout() TableLayout {
 	return NewTableLayout([]TableColumn{
 		{Key: "title", WidthCh: 20},
-		{Key: "amount", WidthCh: 12},
 		{Key: "date", WidthCh: 12},
+		{Key: "amount", WidthCh: 12},
 	}, 4)
 }
 

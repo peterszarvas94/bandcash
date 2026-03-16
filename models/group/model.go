@@ -16,7 +16,11 @@ func NewModel() *GroupModel {
 }
 
 func (m *GroupModel) TableQuerySpec() utils.TableQuerySpec {
-	return utils.StandardTableQuerySpec("name", "asc", "name")
+	return utils.StandardTableQuerySpec(utils.StandardTableQuerySpecParams{
+		DefaultSort:  "name",
+		DefaultDir:   "asc",
+		AllowedSorts: []string{"name"},
+	})
 }
 
 func (m *GroupModel) GetGroupsPageData(ctx context.Context, userID string, query utils.TableQuery) (GroupsPageData, error) {

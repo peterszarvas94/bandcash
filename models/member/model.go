@@ -13,7 +13,11 @@ type Members struct {
 }
 
 func (p *Members) TableQuerySpec() utils.TableQuerySpec {
-	return utils.StandardTableQuerySpec("createdAt", "desc", "name", "createdAt", "description")
+	return utils.StandardTableQuerySpec(utils.StandardTableQuerySpecParams{
+		DefaultSort:  "createdAt",
+		DefaultDir:   "desc",
+		AllowedSorts: []string{"name", "createdAt", "description"},
+	})
 }
 
 func New() *Members {
@@ -21,7 +25,11 @@ func New() *Members {
 }
 
 func (p *Members) MemberEventsTableQuerySpec() utils.TableQuerySpec {
-	return utils.StandardTableQuerySpec("time", "desc", "title", "time", "amount", "participant_amount", "participant_expense")
+	return utils.StandardTableQuerySpec(utils.StandardTableQuerySpecParams{
+		DefaultSort:  "time",
+		DefaultDir:   "desc",
+		AllowedSorts: []string{"title", "time", "amount", "participant_amount", "participant_expense"},
+	})
 }
 
 func convertToMemberEvent(row interface{}) MemberEvent {
