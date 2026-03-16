@@ -69,6 +69,15 @@ func Env() *EnvConfig {
 			panic("invalid env vars: " + err.Error())
 		}
 
+		superadminEmail := strings.ToLower(strings.TrimSpace(parsed.SuperadminEmail))
+		if parsed.AppEnv == "production" {
+			if superadminEmail == "" {
+				panic("invalid env vars: SUPERADMIN_EMAIL is required in production")
+			}
+		} else if superadminEmail == "" {
+			superadminEmail = "superadmin@bandcash.local"
+		}
+
 		logLevel, err := parseLogLevel(parsed.LogLevel)
 		if err != nil {
 			panic("invalid env vars: " + err.Error())
@@ -84,7 +93,7 @@ func Env() *EnvConfig {
 			DBPath:           parsed.DBPath,
 			URL:              parsed.URL,
 			AppEnv:           parsed.AppEnv,
-			SuperadminEmail:  strings.ToLower(strings.TrimSpace(parsed.SuperadminEmail)),
+			SuperadminEmail:  superadminEmail,
 			DisableRateLimit: parsed.DisableRateLimit,
 			SMTPHost:         parsed.SMTPHost,
 			SMTPPort:         parsed.SMTPPort,

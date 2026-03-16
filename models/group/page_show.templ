@@ -70,7 +70,7 @@ templ GroupDetailsContent(data GroupPageData) {
 templ GroupDetailsActions(data GroupPageData) {
 	if data.IsAdmin {
 		<div class="row row-wrap">
-			@shared.ActionButton(shared.ActionButtonProps{ClassName: "btn", OnClick: "$formState = 'edit'; $errors = {name: ''}", DisabledExpr: "$formState !== '' || $_fetching", Label: ctxi18n.T(ctx, "groups.edit"), IconName: icons.IconPencil})
+			@shared.ActionButton(shared.ActionButtonProps{ClassName: "btn", OnClick: "$formState = 'edit'; $errors = {name: ''}", DisabledExpr: "$formState !== '' || $_fetching", Label: ctxi18n.T(ctx, "actions.edit"), IconName: icons.IconPencil})
 			@shared.SureActionButton(shared.SureActionButtonProps{
 				ClassName:    "btn btn-danger",
 				DisabledExpr: "$formState !== '' || $_fetching",
