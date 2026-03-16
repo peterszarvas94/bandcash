@@ -10,7 +10,6 @@ import (
 )
 
 templ MemberShowMain(data MemberData) {
-	<h2 class="pb">{ ctxi18n.T(ctx, "members.details") }</h2>
 	@shared.DetailGrid([]shared.DetailGridRow{
 		{Label: ctxi18n.T(ctx, "fields.name"), Value: data.Member.Name},
 		{Label: ctxi18n.T(ctx, "fields.description"), Value: data.Member.Description},
@@ -39,7 +38,6 @@ templ MemberShowMain(data MemberData) {
 			})
 		</div>
 	}
-	<h2 class="pb">{ ctxi18n.T(ctx, "members.list_title") }</h2>
 	@shared.TableSearchForm(fmt.Sprintf("/groups/%s/members/%s", data.GroupID, data.Member.ID), data.Query, "table.search_placeholder_member_events")
 	@shared.TablePaginationRow(fmt.Sprintf("/groups/%s/members/%s", data.GroupID, data.Member.ID), data.Query, data.Pager)
 	@shared.TableOpenFixed(data.EventsTable, "") {

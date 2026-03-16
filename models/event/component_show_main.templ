@@ -10,7 +10,6 @@ import (
 )
 
 templ EventShowMain(data EventData) {
-	<h2>{ ctxi18n.T(ctx, "events.details") }</h2>
 	@shared.DetailGrid([]shared.DetailGridRow{
 		{Label: ctxi18n.T(ctx, "fields.title"), Value: data.Event.Title},
 		{Label: ctxi18n.T(ctx, "fields.time"), Value: utils.FormatDateTimeLocalized(ctx, data.Event.Time)},
@@ -32,7 +31,6 @@ templ EventShowMain(data EventData) {
 			), DisabledExpr: "$eventFormState !== '' || $formState !== '' || $_fetching", Label: ctxi18n.T(ctx, "actions.delete"), IconName: icons.IconTrash2})
 		</div>
 	}
-	<h2 class="pb">{ ctxi18n.T(ctx, "events.participants") }</h2>
 	@shared.TableSearchForm(fmt.Sprintf("/groups/%s/events/%s", data.GroupID, data.Event.ID), data.Query, "table.search_placeholder_members")
 	@shared.TablePaginationRow(fmt.Sprintf("/groups/%s/events/%s", data.GroupID, data.Event.ID), data.Query, data.Pager)
 	@shared.TableOpenFixed(data.ParticipantsTable, "table-sticky-actions") {

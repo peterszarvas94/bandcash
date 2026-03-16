@@ -24,7 +24,7 @@ templ GroupPage(data GroupPageData) {
 }
 
 templ GroupMain(data GroupPageData) {
-	@shared.Section(ctxi18n.T(ctx, "groups.details"), GroupDetailsContent(data))
+	@GroupDetailsContent(data)
 }
 
 templ GroupDetailsContent(data GroupPageData) {

@@ -11,7 +11,6 @@ import (
 )
 
 templ ExpenseShowMain(data ExpenseData) {
-	<h2 class="pb">{ ctxi18n.T(ctx, "expenses.details") }</h2>
 	@shared.DetailGrid([]shared.DetailGridRow{
 		{Label: ctxi18n.T(ctx, "fields.title"), Value: data.Expense.Title},
 		{Label: ctxi18n.T(ctx, "fields.description"), Value: data.Expense.Description},

@@ -17,9 +17,7 @@ templ EventTotalsContent(data EventsData) {
 }
 
 templ EventIndexMain(data EventsData) {
-	<h2 class="pb">{ ctxi18n.T(ctx, "events.calculations") }</h2>
 	@EventTotalsContent(data)
-	<h2 class="pb">{ ctxi18n.T(ctx, "events.list_title") }</h2>
 	@shared.TableSearchForm(fmt.Sprintf("/groups/%s/events", data.GroupID), data.Query, "table.search_placeholder_events")
 	<div class="row row-wrap justify-between pb" role="radiogroup" aria-label={ ctxi18n.T(ctx, "table.date_filters") }>
 		<div class="row row-tight">
