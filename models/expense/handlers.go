@@ -137,7 +137,7 @@ func (e *Expenses) Create(c echo.Context) error {
 	utils.Notify(c, "success", ctxi18n.T(c.Request().Context(), "expenses.notifications.created"))
 	utils.SSEHub.PatchSignals(c, defaultExpenseSignals)
 
-	query := utils.NormalizeTableQuery(signals.TableQuery, e.TableQuerySpec())
+	query := utils.NormalizeTableQuery(utils.TableQuery{}, e.TableQuerySpec())
 	data, err := e.GetIndexData(c.Request().Context(), groupID, query)
 	if err != nil {
 		slog.Error("expense.create.table: failed to get data", "err", err)

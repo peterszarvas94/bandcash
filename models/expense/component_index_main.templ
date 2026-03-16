@@ -81,7 +81,7 @@ templ ExpenseIndexMain(data ExpensesData) {
 				if data.IsAdmin {
 					@shared.THActions(data.ExpensesTable.ActionsWidthRem) {
 						<div class="row row-right row-tight">
-							@shared.IconActionButton(shared.IconActionButtonProps{ClassName: "btn btn-ghost btn-sm btn-icon", OnClick: "$formState = 'add'; $editingId = 0; $formData = {title: '', description: '', amount: 0, date: ''}; $errors = {title: '', description: '', amount: '', date: ''}", DisabledExpr: "$formState !== '' || $_fetching", AriaLabel: ctxi18n.T(ctx, "expenses.add"), Title: ctxi18n.T(ctx, "expenses.add"), IconName: icons.IconPlus})
+							@shared.IconActionButton(shared.IconActionButtonProps{ClassName: "btn btn-ghost btn-sm btn-icon", OnClick: "$formState = 'add'; $editingId = 0; $formData = {title: '', description: '', amount: 0, date: (() => { const d = new Date(); d.setMinutes(d.getMinutes() - d.getTimezoneOffset()); return d.toISOString().slice(0, 10) })()}; $errors = {title: '', description: '', amount: '', date: ''}", DisabledExpr: "$formState !== '' || $_fetching", AriaLabel: ctxi18n.T(ctx, "expenses.add"), Title: ctxi18n.T(ctx, "expenses.add"), IconName: icons.IconPlus})
 						</div>
 					}
 				}

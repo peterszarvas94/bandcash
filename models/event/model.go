@@ -18,7 +18,7 @@ type Events struct {
 func (e *Events) TableQuerySpec() utils.TableQuerySpec {
 	return utils.StandardTableQuerySpec(utils.StandardTableQuerySpecParams{
 		DefaultSort:  "time",
-		DefaultDir:   "asc",
+		DefaultDir:   "desc",
 		AllowedSorts: []string{"time", "title", "amount", "description"},
 	})
 }

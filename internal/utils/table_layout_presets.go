@@ -74,7 +74,6 @@ func GroupAccessTableLayout() TableLayout {
 		{Key: "email", WidthCh: 30},
 		{Key: "role", WidthCh: 10},
 		{Key: "status", WidthCh: 10},
-		{Key: "created_at", WidthCh: 18},
 	}, 4)
 }
 

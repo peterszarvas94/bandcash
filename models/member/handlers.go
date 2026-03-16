@@ -138,7 +138,7 @@ func (p *Members) Create(c echo.Context) error {
 	utils.Notify(c, "success", ctxi18n.T(c.Request().Context(), "members.notifications.created"))
 
 	utils.SSEHub.PatchSignals(c, defaultMemberSignals)
-	query := utils.NormalizeTableQuery(signals.TableQuery, p.TableQuerySpec())
+	query := utils.NormalizeTableQuery(utils.TableQuery{}, p.TableQuerySpec())
 	data, err := p.GetIndexData(c.Request().Context(), groupID, query)
 	if err != nil {
 		slog.Error("member.create.table: failed to get data", "err", err)

@@ -25,9 +25,6 @@ templ GroupAccessMain(data AccessPageData) {
 				@shared.THCol(data.AccessTable.Col("status")) {
 					@shared.TableSortHeader(ctxi18n.T(ctx, "fields.status"), "status", data.Query, utils.BuildTableSortURL(accessTablePath(data.GroupID), data.Query, "status"))
 				}
-				@shared.THCol(data.AccessTable.Col("created_at")) {
-					@shared.TableSortHeader(ctxi18n.T(ctx, "groups.created"), "createdAt", data.Query, utils.BuildTableSortURL(accessTablePath(data.GroupID), data.Query, "createdAt"))
-				}
 				if data.IsAdmin {
 					@shared.THActions(data.AccessTable.ActionsWidthRem) {
 						<div class="row row-right row-tight">
@@ -55,7 +52,6 @@ templ GroupAccessMain(data AccessPageData) {
 							<span class="badge badge-primary">{ ctxi18n.T(ctx, "groups.active") }</span>
 						}
 					</td>
-					<td>{ utils.FormatTimeLocalized(ctx, row.CreatedAt) }</td>
 					if data.IsAdmin {
 						<td data-actions-col>
 							<div class="row row-right row-tight">
@@ -84,7 +80,11 @@ templ GroupAccessMain(data AccessPageData) {
 				</tr>
 			}
 			if len(data.AccessRows) == 0 {
-				<tr><td colspan="5">{ ctxi18n.T(ctx, "table.empty") }</td></tr>
+				if data.IsAdmin {
+					<tr><td colspan="4">{ ctxi18n.T(ctx, "table.empty") }</td></tr>
+				} else {
+					<tr><td colspan="3">{ ctxi18n.T(ctx, "table.empty") }</td></tr>
+				}
 			}
 		</tbody>
 	}
