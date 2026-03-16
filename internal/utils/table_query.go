@@ -414,7 +414,7 @@ func BuildTableSearchDatastarAction(basePath string, defaultPageSize int) string
 	if defaultPageSize <= 0 {
 		defaultPageSize = DefaultTablePageSize
 	}
-	return fmt.Sprintf("const url = globalThis.tableSearchAction('%s', $tableQuery, %d); @get(url)", basePath, defaultPageSize)
+	return fmt.Sprintf("const url = tableSearchAction('%s', $tableQuery, %d); @get(url)", basePath, defaultPageSize)
 }
 
 func BuildTableDateYearURL(basePath string, query TableQuery, year string) string {
@@ -461,7 +461,7 @@ func BuildTableDateRangeDatastarAction(basePath string, defaultPageSize int) str
 	if defaultPageSize <= 0 {
 		defaultPageSize = DefaultTablePageSize
 	}
-	return fmt.Sprintf("if ($dateRange.from !== '' && $dateRange.to !== '') { $tableQuery.dateMode = 'custom'; $tableQuery.year = ''; $tableQuery.from = $dateRange.from; $tableQuery.to = $dateRange.to; const url = globalThis.tableSearchAction('%s', $tableQuery, %d); @get(url) }", basePath, defaultPageSize)
+	return fmt.Sprintf("if ($dateRange.from !== '' && $dateRange.to !== '') { $tableQuery.dateMode = 'custom'; $tableQuery.year = ''; $tableQuery.from = $dateRange.from; $tableQuery.to = $dateRange.to; const url = tableSearchAction('%s', $tableQuery, %d); @get(url) }", basePath, defaultPageSize)
 }
 
 func DateFilterAllButtonClass(query TableQuery) string {
@@ -506,7 +506,7 @@ func BuildTablePageDatastarAction(basePath string, totalPages int, defaultPageSi
 		defaultPageSize = DefaultTablePageSize
 	}
 
-	return fmt.Sprintf("const url = globalThis.tablePageAction('%s', $tableQuery, %d, %d); @get(url)", basePath, totalPages, defaultPageSize)
+	return fmt.Sprintf("const url = tablePageAction('%s', $tableQuery, %d, %d); @get(url)", basePath, totalPages, defaultPageSize)
 }
 
 func BuildTableQueryDatastarAction(url string) string {

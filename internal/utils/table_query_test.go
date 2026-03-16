@@ -380,7 +380,7 @@ func TestTableQuerySignals_HidesSortWhenNotExplicitlySet(t *testing.T) {
 func TestBuildTableDatastarActions(t *testing.T) {
 	t.Run("builds search datastar action", func(t *testing.T) {
 		searchAction := BuildTableSearchDatastarAction("/dashboard", DefaultTablePageSize)
-		if !strings.Contains(searchAction, "globalThis.tableSearchAction('/dashboard', $tableQuery, 10)") {
+		if !strings.Contains(searchAction, "tableSearchAction('/dashboard', $tableQuery, 10)") {
 			t.Fatalf("unexpected search action output: %s", searchAction)
 		}
 	})
