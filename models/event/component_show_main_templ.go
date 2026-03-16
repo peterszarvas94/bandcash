@@ -341,7 +341,7 @@ func EventShowMain(data EventData) templ.Component {
 						return templ_7745c5c3_Err
 					}
 					templ_7745c5c3_Err = shared.IconActionButton(shared.IconActionButtonProps{ClassName: "btn btn-ghost btn-sm btn-danger btn-icon", OnClick: fmt.Sprintf(
-						"$sureOpen = true; $sureTitle = %s; $sureMessage = %s; $sureSubmitLabel = %s; $sureCancelLabel = %s; $sureMethod = 'delete'; $sureURL = '/groups/%s/events/%s/participants/%s'; $sureTriggerID = %s",
+						"$sureTitle = %s; $sureMessage = %s; $sureSubmitLabel = %s; $sureCancelLabel = %s; $sureMethod = 'delete'; $sureURL = '/groups/%s/events/%s/participants/%s'; $sureTriggerID = %s; $sureOpen = true",
 						utils.JSONString(ctxi18n.T(ctx, "participants.delete_confirm")),
 						utils.JSONString(ctxi18n.T(ctx, "confirm.destructive_message")),
 						utils.JSONString(ctxi18n.T(ctx, "actions.delete")),
@@ -456,7 +456,7 @@ func EventShowDetailsActions(data EventData) templ.Component {
 				return templ_7745c5c3_Err
 			}
 			templ_7745c5c3_Err = shared.ActionButton(shared.ActionButtonProps{ClassName: "btn btn-danger", OnClick: fmt.Sprintf(
-				"$sureOpen = true; $sureTitle = %s; $sureMessage = %s; $sureSubmitLabel = %s; $sureCancelLabel = %s; $sureMethod = 'delete'; $sureURL = '/groups/%s/events/%s'; $sureTriggerID = 'event-show-delete'",
+				"$sureTitle = %s; $sureMessage = %s; $sureSubmitLabel = %s; $sureCancelLabel = %s; $sureMethod = 'delete'; $sureURL = '/groups/%s/events/%s'; $sureTriggerID = 'event-show-delete'; $sureOpen = true",
 				utils.JSONString(ctxi18n.T(ctx, "events.delete_confirm")),
 				utils.JSONString(ctxi18n.T(ctx, "confirm.destructive_message")),
 				utils.JSONString(ctxi18n.T(ctx, "actions.delete")),

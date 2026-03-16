@@ -34,16 +34,17 @@ func Notifications() templ.Component {
 			templ_7745c5c3_Var1 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		sureCloseExpr := `!$sureFetching && ($sureOpen = false, $sureTriggerID = '')`
-		sureOverlayCloseExpr := `evt.target === el && !$sureFetching && ($sureOpen = false, $sureTriggerID = '')`
-		sureEscapeCloseExpr := `evt.key === 'Escape' && $sureOpen && !$sureFetching && ($sureOpen = false, $sureTriggerID = '')`
+		sureCloseExpr := `!$sureFetching && ($sureOpen = false)`
+		sureOverlayCloseExpr := `evt.target === el && !$sureFetching && ($sureOpen = false)`
+		sureCancelExpr := `$sureFetching && evt.preventDefault()`
+		sureDialogEffect := `$sureOpen ? (!el.open && el.showModal()) : (el.open && el.close())`
+		sureDialogCloseExpr := `$sureOpen = false; $sureTriggerID = ''`
 		sureSubmitExpr := `!$sureFetching && (
 			$sureFetching = true,
 			($sureMethod === 'delete' ? @delete($sureURL) : ($sureMethod === 'put' ? @put($sureURL) : @post($sureURL)))
 		)`
 		sureFetchDoneExpr := `(evt.detail.type === 'finished' || evt.detail.type === 'error' || evt.detail.type === 'retries-failed') && (
 			$sureFetching = false,
-			$sureTriggerID = '',
 			$sureOpen = false
 		)`
 		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<div id=\"notifications-popover\" class=\"notifications-popover\"><ul class=\"notifications-list\">")
@@ -63,7 +64,7 @@ func Notifications() templ.Component {
 			var templ_7745c5c3_Var3 string
 			templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.JoinStringErrs("notification-item-" + item.ID)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/shared/component_notifications.templ`, Line: 26, Col: 43}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/shared/component_notifications.templ`, Line: 27, Col: 43}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var3))
 			if templ_7745c5c3_Err != nil {
@@ -89,7 +90,7 @@ func Notifications() templ.Component {
 			var templ_7745c5c3_Var5 string
 			templ_7745c5c3_Var5, templ_7745c5c3_Err = templ.JoinStringErrs(item.ID)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/shared/component_notifications.templ`, Line: 26, Col: 127}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/shared/component_notifications.templ`, Line: 27, Col: 127}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var5))
 			if templ_7745c5c3_Err != nil {
@@ -102,7 +103,7 @@ func Notifications() templ.Component {
 			var templ_7745c5c3_Var6 string
 			templ_7745c5c3_Var6, templ_7745c5c3_Err = templ.JoinStringErrs(item.Created.UnixMilli())
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/shared/component_notifications.templ`, Line: 26, Col: 175}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/shared/component_notifications.templ`, Line: 27, Col: 175}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var6))
 			if templ_7745c5c3_Err != nil {
@@ -115,7 +116,7 @@ func Notifications() templ.Component {
 			var templ_7745c5c3_Var7 string
 			templ_7745c5c3_Var7, templ_7745c5c3_Err = templ.JoinStringErrs(item.Message)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/shared/component_notifications.templ`, Line: 27, Col: 22}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/shared/component_notifications.templ`, Line: 28, Col: 22}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var7))
 			if templ_7745c5c3_Err != nil {
@@ -126,7 +127,7 @@ func Notifications() templ.Component {
 				return templ_7745c5c3_Err
 			}
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 8, "</ul></div><div id=\"sure-popover\" class=\"sure-popover\" data-signals=\"")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 8, "</ul></div><dialog id=\"sure-popover\" class=\"sure-popover\" data-signals=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -136,52 +137,78 @@ func Notifications() templ.Component {
 			"sureFetching": false,
 		}))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/shared/component_notifications.templ`, Line: 38, Col: 4}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/shared/component_notifications.templ`, Line: 39, Col: 4}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var8))
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 9, "\" data-show=\"$sureOpen\" style=\"display: none\" data-on:click=\"")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 9, "\" data-effect=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var9 string
-		templ_7745c5c3_Var9, templ_7745c5c3_Err = templ.JoinStringErrs(sureOverlayCloseExpr)
+		templ_7745c5c3_Var9, templ_7745c5c3_Err = templ.JoinStringErrs(sureDialogEffect)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/shared/component_notifications.templ`, Line: 41, Col: 38}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/shared/component_notifications.templ`, Line: 40, Col: 32}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var9))
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 10, "\" data-on:keydown__window=\"")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 10, "\" data-on:click=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var10 string
-		templ_7745c5c3_Var10, templ_7745c5c3_Err = templ.JoinStringErrs(sureEscapeCloseExpr)
+		templ_7745c5c3_Var10, templ_7745c5c3_Err = templ.JoinStringErrs(sureOverlayCloseExpr)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/shared/component_notifications.templ`, Line: 42, Col: 47}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/shared/component_notifications.templ`, Line: 41, Col: 38}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var10))
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 11, "\"><section class=\"sure-dialog\" role=\"dialog\" aria-modal=\"true\" aria-labelledby=\"sure-title\" aria-describedby=\"sure-message\"><h3 id=\"sure-title\" data-text=\"$sureTitle\"></h3><p id=\"sure-message\" data-show=\"$sureMessage !== ''\" style=\"display: none\" data-text=\"$sureMessage\"></p><div class=\"row row-right row-wrap\"><button id=\"sure-cancel\" type=\"button\" class=\"btn\" data-attr:disabled=\"$sureFetching\" data-on:click=\"")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 11, "\" data-on:cancel=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var11 string
-		templ_7745c5c3_Var11, templ_7745c5c3_Err = templ.JoinStringErrs(sureCloseExpr)
+		templ_7745c5c3_Var11, templ_7745c5c3_Err = templ.JoinStringErrs(sureCancelExpr)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/shared/component_notifications.templ`, Line: 53, Col: 34}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/shared/component_notifications.templ`, Line: 42, Col: 33}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var11))
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 12, "\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 12, "\" data-on:close=\"")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		var templ_7745c5c3_Var12 string
+		templ_7745c5c3_Var12, templ_7745c5c3_Err = templ.JoinStringErrs(sureDialogCloseExpr)
+		if templ_7745c5c3_Err != nil {
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/shared/component_notifications.templ`, Line: 43, Col: 37}
+		}
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var12))
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 13, "\"><section class=\"sure-dialog\" role=\"dialog\" aria-modal=\"true\" aria-labelledby=\"sure-title\" aria-describedby=\"sure-message\"><h3 id=\"sure-title\" data-text=\"$sureTitle\"></h3><p id=\"sure-message\" data-show=\"$sureMessage !== ''\" style=\"display: none\" data-text=\"$sureMessage\"></p><div class=\"row row-right row-wrap\"><button id=\"sure-cancel\" type=\"button\" class=\"btn\" autofocus data-attr:disabled=\"$sureFetching\" data-on:click=\"")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		var templ_7745c5c3_Var13 string
+		templ_7745c5c3_Var13, templ_7745c5c3_Err = templ.JoinStringErrs(sureCloseExpr)
+		if templ_7745c5c3_Err != nil {
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/shared/component_notifications.templ`, Line: 55, Col: 34}
+		}
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var13))
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 14, "\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -189,33 +216,33 @@ func Notifications() templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 13, "<span data-text=\"$sureCancelLabel\"></span></button> <button id=\"sure-submit\" type=\"button\" class=\"btn btn-danger\" data-attr:disabled=\"$sureFetching\" data-on:click=\"")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 15, "<span data-text=\"$sureCancelLabel\"></span></button> <button id=\"sure-submit\" type=\"button\" class=\"btn btn-danger\" data-attr:disabled=\"$sureFetching\" data-on:click=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		var templ_7745c5c3_Var12 string
-		templ_7745c5c3_Var12, templ_7745c5c3_Err = templ.JoinStringErrs(sureSubmitExpr)
+		var templ_7745c5c3_Var14 string
+		templ_7745c5c3_Var14, templ_7745c5c3_Err = templ.JoinStringErrs(sureSubmitExpr)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/shared/component_notifications.templ`, Line: 63, Col: 35}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/shared/component_notifications.templ`, Line: 65, Col: 35}
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var12))
-		if templ_7745c5c3_Err != nil {
-			return templ_7745c5c3_Err
-		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 14, "\" data-on:datastar-fetch=\"")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var14))
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		var templ_7745c5c3_Var13 string
-		templ_7745c5c3_Var13, templ_7745c5c3_Err = templ.JoinStringErrs(sureFetchDoneExpr)
-		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/shared/component_notifications.templ`, Line: 64, Col: 47}
-		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var13))
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 16, "\" data-on:datastar-fetch=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 15, "\"><span data-show=\"!$sureFetching\">")
+		var templ_7745c5c3_Var15 string
+		templ_7745c5c3_Var15, templ_7745c5c3_Err = templ.JoinStringErrs(sureFetchDoneExpr)
+		if templ_7745c5c3_Err != nil {
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/shared/component_notifications.templ`, Line: 66, Col: 47}
+		}
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var15))
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 17, "\"><span data-show=\"!$sureFetching\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -223,7 +250,7 @@ func Notifications() templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 16, "</span> <span data-show=\"$sureFetching\" style=\"display: none\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 18, "</span> <span data-show=\"$sureFetching\" style=\"display: none\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -231,7 +258,7 @@ func Notifications() templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 17, "</span> <span data-text=\"$sureSubmitLabel\"></span></button></div></section></div>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 19, "</span> <span data-text=\"$sureSubmitLabel\"></span></button></div></section></dialog>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

@@ -710,18 +710,18 @@
   }
 
   .sure-popover {
-    position: fixed;
-    inset: 0;
-    z-index: var(--z-index-modal);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 1rem;
-    margin: 0;
+    width: min(32rem, calc(100vw - 2rem));
+    max-width: 100%;
+    padding: 0;
+    margin: auto;
     border: 0;
+    background: transparent;
+    color: inherit;
+  }
+
+  .sure-popover::backdrop {
     background: var(--overlay-backdrop);
     backdrop-filter: blur(2px);
-    color: inherit;
   }
 
   .sure-dialog {
@@ -742,8 +742,11 @@
   }
 
   @media (max-width: 680px) {
-    .sure-dialog {
+    .sure-popover {
       width: 100vw;
+    }
+
+    .sure-dialog {
       min-height: 100vh;
       align-content: center;
     }

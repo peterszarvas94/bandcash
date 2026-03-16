@@ -294,7 +294,7 @@ func GroupsMain(data GroupsPageData) templ.Component {
 							return templ_7745c5c3_Err
 						}
 						templ_7745c5c3_Err = shared.IconActionButton(shared.IconActionButtonProps{ClassName: "btn btn-ghost btn-sm btn-danger btn-icon", OnClick: fmt.Sprintf(
-							"$sureOpen = true; $sureTitle = %s; $sureMessage = %s; $sureSubmitLabel = %s; $sureCancelLabel = %s; $sureMethod = 'delete'; $sureURL = '/groups/%s'; $sureTriggerID = %s",
+							"$sureTitle = %s; $sureMessage = %s; $sureSubmitLabel = %s; $sureCancelLabel = %s; $sureMethod = 'delete'; $sureURL = '/groups/%s'; $sureTriggerID = %s; $sureOpen = true",
 							utils.JSONString(ctxi18n.T(ctx, "groups.delete_confirm")),
 							utils.JSONString(ctxi18n.T(ctx, "confirm.destructive_message")),
 							utils.JSONString(ctxi18n.T(ctx, "groups.delete")),
@@ -307,7 +307,7 @@ func GroupsMain(data GroupsPageData) templ.Component {
 						}
 					} else {
 						templ_7745c5c3_Err = shared.IconActionButton(shared.IconActionButtonProps{ClassName: "btn btn-ghost btn-sm btn-icon", OnClick: fmt.Sprintf(
-							"$sureOpen = true; $sureTitle = %s; $sureMessage = %s; $sureSubmitLabel = %s; $sureCancelLabel = %s; $sureMethod = 'post'; $sureURL = '/groups/%s/leave'; $sureTriggerID = %s",
+							"$sureTitle = %s; $sureMessage = %s; $sureSubmitLabel = %s; $sureCancelLabel = %s; $sureMethod = 'post'; $sureURL = '/groups/%s/leave'; $sureTriggerID = %s; $sureOpen = true",
 							utils.JSONString(ctxi18n.T(ctx, "groups.leave_confirm")),
 							utils.JSONString(ctxi18n.T(ctx, "confirm.leave_message")),
 							utils.JSONString(ctxi18n.T(ctx, "groups.leave")),

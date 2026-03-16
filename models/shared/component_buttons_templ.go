@@ -561,14 +561,14 @@ func SureActionButton(props SureActionButtonProps) templ.Component {
 		ctx = templ.ClearChildren(ctx)
 		disabledExpr := fmt.Sprintf("(%s) || $sureTriggerID === %q", props.DisabledExpr, props.Dialog.TriggerID)
 		onClickExpr := fmt.Sprintf(
-			`$sureOpen = true;
-			$sureTitle = %s;
+			`$sureTitle = %s;
 			$sureMessage = %s;
 			$sureSubmitLabel = %s;
 			$sureCancelLabel = %s;
 			$sureMethod = %s;
 			$sureURL = %s;
-			$sureTriggerID = %s`,
+			$sureTriggerID = %s;
+			$sureOpen = true`,
 			utils.JSONString(props.Dialog.Title),
 			utils.JSONString(props.Dialog.Message),
 			utils.JSONString(props.Dialog.SubmitLabel),

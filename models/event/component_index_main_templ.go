@@ -657,7 +657,7 @@ func EventIndexMain(data EventsData) templ.Component {
 						return templ_7745c5c3_Err
 					}
 					templ_7745c5c3_Err = shared.IconActionButton(shared.IconActionButtonProps{ClassName: "btn btn-ghost btn-sm btn-danger btn-icon", OnClick: fmt.Sprintf(
-						"$sureOpen = true; $sureTitle = %s; $sureMessage = %s; $sureSubmitLabel = %s; $sureCancelLabel = %s; $sureMethod = 'delete'; $sureURL = '/groups/%s/events/%s'; $sureTriggerID = %s",
+						"$sureTitle = %s; $sureMessage = %s; $sureSubmitLabel = %s; $sureCancelLabel = %s; $sureMethod = 'delete'; $sureURL = '/groups/%s/events/%s'; $sureTriggerID = %s; $sureOpen = true",
 						utils.JSONString(ctxi18n.T(ctx, "events.delete_confirm")),
 						utils.JSONString(ctxi18n.T(ctx, "confirm.destructive_message")),
 						utils.JSONString(ctxi18n.T(ctx, "actions.delete")),

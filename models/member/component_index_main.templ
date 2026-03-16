@@ -40,7 +40,7 @@ templ MemberIndexMain(data MembersData) {
 							<div class="row row-right row-tight">
 								@shared.IconActionButton(shared.IconActionButtonProps{ClassName: "btn btn-ghost btn-sm btn-icon", OnClick: fmt.Sprintf("$formState = 'edit'; $editingId = %q; $formData = {name: el.closest('tr').dataset.memberName, description: el.closest('tr').dataset.memberDescription}", member.ID), DisabledExpr: "$formState !== '' || $_fetching", AriaLabel: ctxi18n.T(ctx, "actions.edit"), Title: ctxi18n.T(ctx, "actions.edit"), IconName: icons.IconPencil})
 								@shared.IconActionButton(shared.IconActionButtonProps{ClassName: "btn btn-ghost btn-sm btn-danger btn-icon", OnClick: fmt.Sprintf(
-									"$sureOpen = true; $sureTitle = %s; $sureMessage = %s; $sureSubmitLabel = %s; $sureCancelLabel = %s; $sureMethod = 'delete'; $sureURL = '/groups/%s/members/%s'; $sureTriggerID = %s",
+									"$sureTitle = %s; $sureMessage = %s; $sureSubmitLabel = %s; $sureCancelLabel = %s; $sureMethod = 'delete'; $sureURL = '/groups/%s/members/%s'; $sureTriggerID = %s; $sureOpen = true",
 									utils.JSONString(ctxi18n.T(ctx, "members.delete_confirm")),
 									utils.JSONString(ctxi18n.T(ctx, "confirm.destructive_message")),
 									utils.JSONString(ctxi18n.T(ctx, "actions.delete")),

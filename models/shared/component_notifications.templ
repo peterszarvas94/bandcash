@@ -7,16 +7,17 @@ import (
 
 templ Notifications() {
 	{{
-		sureCloseExpr := `!$sureFetching && ($sureOpen = false, $sureTriggerID = '')`
-		sureOverlayCloseExpr := `evt.target === el && !$sureFetching && ($sureOpen = false, $sureTriggerID = '')`
-		sureEscapeCloseExpr := `evt.key === 'Escape' && $sureOpen && !$sureFetching && ($sureOpen = false, $sureTriggerID = '')`
+		sureCloseExpr := `!$sureFetching && ($sureOpen = false)`
+		sureOverlayCloseExpr := `evt.target === el && !$sureFetching && ($sureOpen = false)`
+		sureCancelExpr := `$sureFetching && evt.preventDefault()`
+		sureDialogEffect := `$sureOpen ? (!el.open && el.showModal()) : (el.open && el.close())`
+		sureDialogCloseExpr := `$sureOpen = false; $sureTriggerID = ''`
 		sureSubmitExpr := `!$sureFetching && (
 			$sureFetching = true,
 			($sureMethod === 'delete' ? @delete($sureURL) : ($sureMethod === 'put' ? @put($sureURL) : @post($sureURL)))
 		)`
 		sureFetchDoneExpr := `(evt.detail.type === 'finished' || evt.detail.type === 'error' || evt.detail.type === 'retries-failed') && (
 			$sureFetching = false,
-			$sureTriggerID = '',
 			$sureOpen = false
 		)`
 	}}
@@ -29,17 +30,17 @@ templ Notifications() {
 			}
 		</ul>
 	</div>
-	<div
+	<dialog
 		id="sure-popover"
 		class="sure-popover"
 		data-signals={ templ.JSONString(map[string]any{
 			"sureOpen": false,
 			"sureFetching": false,
 		}) }
-		data-show="$sureOpen"
-		style="display: none"
+		data-effect={ sureDialogEffect }
 		data-on:click={ sureOverlayCloseExpr }
-		data-on:keydown__window={ sureEscapeCloseExpr }
+		data-on:cancel={ sureCancelExpr }
+		data-on:close={ sureDialogCloseExpr }
 	>
 		<section class="sure-dialog" role="dialog" aria-modal="true" aria-labelledby="sure-title" aria-describedby="sure-message">
 			<h3 id="sure-title" data-text="$sureTitle"></h3>
@@ -49,6 +50,7 @@ templ Notifications() {
 					id="sure-cancel"
 					type="button"
 					class="btn"
+					autofocus
 					data-attr:disabled="$sureFetching"
 					data-on:click={ sureCloseExpr }
 				>
@@ -73,5 +75,5 @@ templ Notifications() {
 				</button>
 			</div>
 		</section>
-	</div>
+	</dialog>
 }
