@@ -1,0 +1,7 @@
+http://bandcash.localhost {
+	reverse_proxy 127.0.0.1:2222
+}
+
+http://email.bandcash.localhost {
+	reverse_proxy 127.0.0.1:8025
+}

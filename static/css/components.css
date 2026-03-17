@@ -983,7 +983,7 @@
   }
 
   .app-nav:has(.app-nav-secondary) {
-    min-height: calc(100vh - (var(--space) * 4));
+    min-height: calc(100vh - (var(--space) * 2));
   }
 
   .app-nav-primary,
@@ -1101,6 +1101,10 @@
     .app-shell-main-only:has(> input[id$="-nav-toggle"]:checked)
       .app-shell-backdrop-nav {
       display: block;
+    }
+
+    .app-nav:has(.app-nav-secondary) {
+      min-height: calc(100vh - (var(--space) * 8));
     }
 
   }

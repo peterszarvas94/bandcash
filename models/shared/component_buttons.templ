@@ -162,16 +162,19 @@ templ ActionButton(props ActionButtonProps) {
 
 templ SureActionButton(props SureActionButtonProps) {
 	{{
-		disabledExpr := fmt.Sprintf("(%s) || $sureTriggerID === %q", props.DisabledExpr, props.Dialog.TriggerID)
+		disabledExpr := fmt.Sprintf("(%s) || $sure.triggerID === %q", props.DisabledExpr, props.Dialog.TriggerID)
 		onClickExpr := fmt.Sprintf(
-			`$sureTitle = %s;
-			$sureMessage = %s;
-			$sureSubmitLabel = %s;
-			$sureCancelLabel = %s;
-			$sureMethod = %s;
-			$sureURL = %s;
-			$sureTriggerID = %s;
-			$sureOpen = true`,
+			`$sure = {
+				title: %s,
+				message: %s,
+				submitLabel: %s,
+				cancelLabel: %s,
+				method: %s,
+				url: %s,
+				triggerID: %s,
+				open: true,
+				fetching: false
+			}`,
 			utils.JSONString(props.Dialog.Title),
 			utils.JSONString(props.Dialog.Message),
 			utils.JSONString(props.Dialog.SubmitLabel),
@@ -180,8 +183,8 @@ templ SureActionButton(props SureActionButtonProps) {
 			utils.JSONString(props.Dialog.URL),
 			utils.JSONString(props.Dialog.TriggerID),
 		)
-		showIconExpr := fmt.Sprintf("$sureTriggerID !== %q", props.Dialog.TriggerID)
-		showSpinnerExpr := fmt.Sprintf("$sureTriggerID === %q", props.Dialog.TriggerID)
+		showIconExpr := fmt.Sprintf("$sure.triggerID !== %q", props.Dialog.TriggerID)
+		showSpinnerExpr := fmt.Sprintf("$sure.triggerID === %q", props.Dialog.TriggerID)
 	}}
 	<button
 		class={ props.ClassName }

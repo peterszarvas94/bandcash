@@ -707,7 +707,7 @@ func ReadModeActions(data EventData) templ.Component {
 				return templ_7745c5c3_Err
 			}
 			templ_7745c5c3_Err = shared.ActionButton(shared.ActionButtonProps{ClassName: "btn btn-danger", OnClick: fmt.Sprintf(
-				"$sureTitle = %s; $sureMessage = %s; $sureSubmitLabel = %s; $sureCancelLabel = %s; $sureMethod = 'delete'; $sureURL = '/groups/%s/events/%s'; $sureTriggerID = 'event-show-delete'; $sureOpen = true",
+				"$sure = {title: %s, message: %s, submitLabel: %s, cancelLabel: %s, method: 'delete', url: '/groups/%s/events/%s', triggerID: 'event-show-delete', open: true, fetching: false}",
 				utils.JSONString(ctxi18n.T(ctx, "events.delete_confirm")),
 				utils.JSONString(ctxi18n.T(ctx, "confirm.destructive_message")),
 				utils.JSONString(ctxi18n.T(ctx, "actions.delete")),

@@ -657,7 +657,7 @@ func ExpenseIndexMain(data ExpensesData) templ.Component {
 						return templ_7745c5c3_Err
 					}
 					templ_7745c5c3_Err = shared.IconActionButton(shared.IconActionButtonProps{ClassName: "btn btn-ghost btn-sm btn-danger btn-icon", OnClick: fmt.Sprintf(
-						"$sureTitle = %s; $sureMessage = %s; $sureSubmitLabel = %s; $sureCancelLabel = %s; $sureMethod = 'delete'; $sureURL = '/groups/%s/expenses/%s'; $sureTriggerID = %s; $sureOpen = true",
+						"$sure = {title: %s, message: %s, submitLabel: %s, cancelLabel: %s, method: 'delete', url: '/groups/%s/expenses/%s', triggerID: %s, open: true, fetching: false}",
 						utils.JSONString(ctxi18n.T(ctx, "expenses.delete_confirm")),
 						utils.JSONString(ctxi18n.T(ctx, "confirm.destructive_message")),
 						utils.JSONString(ctxi18n.T(ctx, "actions.delete")),

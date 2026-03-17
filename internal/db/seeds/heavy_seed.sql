@@ -4,7 +4,7 @@ BEGIN;
 
 INSERT OR IGNORE INTO users (id, email)
 VALUES
-  ('usr_SuperAdminSeed000001', 'superadmin@bandcash.local'),
+  ('usr_SuperAdminSeed000001', 'admin@bandcash.localhost'),
   ('usr_AdminUserOneSeed0001', 'admin1@bandcash.local'),
   ('usr_AdminUserTwoSeed0002', 'admin2@bandcash.local'),
   ('usr_AdminUserTriSeed0003', 'admin3@bandcash.local'),
