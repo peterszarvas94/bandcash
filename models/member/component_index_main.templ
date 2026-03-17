@@ -10,6 +10,9 @@ import (
 )
 
 templ MemberIndexMain(data MembersData) {
+	{{
+		addExpr := "$formState = 'add'; $editingId = 0; $formData = {name: '', description: ''}; $errors = {name: '', description: ''}"
+	}}
 	@shared.TableSearchForm(fmt.Sprintf("/groups/%s/members", data.GroupID), data.Query, "table.search_placeholder_members")
 	@shared.TablePaginationRow(fmt.Sprintf("/groups/%s/members", data.GroupID), data.Query, data.Pager)
 	@shared.TableOpenFixed(data.MembersTable, "table-sticky-actions") {
@@ -24,7 +27,14 @@ templ MemberIndexMain(data MembersData) {
 				if data.IsAdmin {
 					@shared.THActions(data.MembersTable.ActionsWidthRem) {
 						<div class="row row-right row-tight">
-							@shared.IconActionButton(shared.IconActionButtonProps{ClassName: "btn btn-ghost btn-sm btn-icon", OnClick: "$formState = 'add'; $editingId = 0; $formData = {name: '', description: ''}; $errors = {name: '', description: ''}", DisabledExpr: "$formState !== '' || $_fetching", AriaLabel: ctxi18n.T(ctx, "members.add"), Title: ctxi18n.T(ctx, "members.add"), IconName: icons.IconPlus})
+							@shared.IconActionButton(shared.IconActionButtonProps{
+								ClassName:     "btn btn-ghost btn-sm btn-icon",
+								OnClick:       addExpr,
+								DisabledExpr:  "$formState !== '' || $_fetching",
+								AriaLabel:     ctxi18n.T(ctx, "members.add"),
+								Title:         ctxi18n.T(ctx, "members.add"),
+								IconName:      icons.IconPlus,
+							})
 						</div>
 					}
 				}
@@ -32,23 +42,41 @@ templ MemberIndexMain(data MembersData) {
 		</thead>
 		<tbody>
 			for _, member := range data.Members {
+				{{
+					editExpr := fmt.Sprintf("$formState = 'edit'; $editingId = %q; $formData = {name: %s, description: %s}", member.ID, utils.JSONString(member.Name), utils.JSONString(member.Description))
+					deleteExpr := fmt.Sprintf(
+						"$sure = {title: %s, message: %s, submitLabel: %s, cancelLabel: %s, method: 'delete', url: '/groups/%s/members/%s', triggerID: %s, open: true, fetching: false}",
+						utils.JSONString(ctxi18n.T(ctx, "members.delete_confirm")),
+						utils.JSONString(ctxi18n.T(ctx, "confirm.destructive_message")),
+						utils.JSONString(ctxi18n.T(ctx, "actions.delete")),
+						utils.JSONString(ctxi18n.T(ctx, "actions.cancel")),
+						data.GroupID,
+						member.ID,
+						utils.JSONString("member-delete-"+member.ID),
+					)
+				}}
 				<tr>
 					<td><a class="link" href={ fmt.Sprintf("/groups/%s/members/%s", data.GroupID, member.ID) }>{ member.Name }</a></td>
 					<td><span class="cell-ellipsis">{ member.Description }</span></td>
 					if data.IsAdmin {
 						<td data-actions-col>
 							<div class="row row-right row-tight">
-								@shared.IconActionButton(shared.IconActionButtonProps{ClassName: "btn btn-ghost btn-sm btn-icon", OnClick: fmt.Sprintf("$formState = 'edit'; $editingId = %q; $formData = {name: %s, description: %s}", member.ID, utils.JSONString(member.Name), utils.JSONString(member.Description)), DisabledExpr: "$formState !== '' || $_fetching", AriaLabel: ctxi18n.T(ctx, "actions.edit"), Title: ctxi18n.T(ctx, "actions.edit"), IconName: icons.IconPencil})
-								@shared.IconActionButton(shared.IconActionButtonProps{ClassName: "btn btn-ghost btn-sm btn-danger btn-icon", OnClick: fmt.Sprintf(
-									"$sure = {title: %s, message: %s, submitLabel: %s, cancelLabel: %s, method: 'delete', url: '/groups/%s/members/%s', triggerID: %s, open: true, fetching: false}",
-									utils.JSONString(ctxi18n.T(ctx, "members.delete_confirm")),
-									utils.JSONString(ctxi18n.T(ctx, "confirm.destructive_message")),
-									utils.JSONString(ctxi18n.T(ctx, "actions.delete")),
-									utils.JSONString(ctxi18n.T(ctx, "actions.cancel")),
-									data.GroupID,
-									member.ID,
-									utils.JSONString("member-delete-"+member.ID),
-								), DisabledExpr: "$formState !== '' || $_fetching", AriaLabel: ctxi18n.T(ctx, "actions.delete"), Title: ctxi18n.T(ctx, "actions.delete"), IconName: icons.IconTrash2})
+								@shared.IconActionButton(shared.IconActionButtonProps{
+									ClassName:     "btn btn-ghost btn-sm btn-icon",
+									OnClick:       editExpr,
+									DisabledExpr:  "$formState !== '' || $_fetching",
+									AriaLabel:     ctxi18n.T(ctx, "actions.edit"),
+									Title:         ctxi18n.T(ctx, "actions.edit"),
+									IconName:      icons.IconPencil,
+								})
+								@shared.IconActionButton(shared.IconActionButtonProps{
+									ClassName:     "btn btn-ghost btn-sm btn-danger btn-icon",
+									OnClick:       deleteExpr,
+									DisabledExpr:  "$formState !== '' || $_fetching",
+									AriaLabel:     ctxi18n.T(ctx, "actions.delete"),
+									Title:         ctxi18n.T(ctx, "actions.delete"),
+									IconName:      icons.IconTrash2,
+								})
 							</div>
 						</td>
 					}

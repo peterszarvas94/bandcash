@@ -82,10 +82,26 @@ templ FormControlsContent() {
 
 templ TableQueryTestContent() {
 	<div class="row row-wrap">
-		@shared.IDActionButton(shared.IDActionButtonProps{ID: "query-test-events-valid", ClassName: "btn", Label: "Events valid query"})
-		@shared.IDActionButton(shared.IDActionButtonProps{ID: "query-test-events-invalid", ClassName: "btn", Label: "Events invalid values"})
-		@shared.IDActionButton(shared.IDActionButtonProps{ID: "query-test-members-valid", ClassName: "btn", Label: "Members valid query"})
-		@shared.IDActionButton(shared.IDActionButtonProps{ID: "query-test-expenses-valid", ClassName: "btn", Label: "Expenses valid query"})
+		@shared.IDActionButton(shared.IDActionButtonProps{
+			ID:        "query-test-events-valid",
+			ClassName: "btn",
+			Label:     "Events valid query",
+		})
+		@shared.IDActionButton(shared.IDActionButtonProps{
+			ID:        "query-test-events-invalid",
+			ClassName: "btn",
+			Label:     "Events invalid values",
+		})
+		@shared.IDActionButton(shared.IDActionButtonProps{
+			ID:        "query-test-members-valid",
+			ClassName: "btn",
+			Label:     "Members valid query",
+		})
+		@shared.IDActionButton(shared.IDActionButtonProps{
+			ID:        "query-test-expenses-valid",
+			ClassName: "btn",
+			Label:     "Expenses valid query",
+		})
 		<button id="query-test-clear" type="button" class="btn">
 			@icons.X(templ.Attributes{"class": "icon"})
 			<span>Clear</span>
@@ -169,23 +185,64 @@ templ NotificationsContent() {
 			<label>Required field</label>
 			<div class="row">
 				<input type="text" data-bind="formData.name" placeholder="Required field" class="input"/>
-				@shared.LoadingSubmitButtonWithSignal(shared.LoadingSubmitButtonWithSignalProps{ClassName: "btn", Label: "Inline validation", IconName: icons.IconSave, LoadingSignal: "_notifyInline"})
+				@shared.LoadingSubmitButtonWithSignal(shared.LoadingSubmitButtonWithSignalProps{
+					ClassName:     "btn",
+					Label:         "Inline validation",
+					IconName:      icons.IconSave,
+					LoadingSignal: "_notifyInline",
+				})
 			</div>
 			<div data-show="$errors && $errors.name" class="color-error" data-text="$errors.name"></div>
 		</div>
 	</form>
 	<div class="row row-wrap">
-		@shared.LoadingActionButtonWithSignal(shared.LoadingActionButtonWithSignalProps{ClassName: "btn", OnClick: "@post('/dev/notifications/info')", DisabledExpr: "$_notifyInfo", Label: "Info", IconName: icons.IconInfo, LoadingSignal: "_notifyInfo"})
-		@shared.LoadingActionButtonWithSignal(shared.LoadingActionButtonWithSignalProps{ClassName: "btn", OnClick: "@post('/dev/notifications/success')", DisabledExpr: "$_notifySuccess", Label: "Success", IconName: icons.IconCheck, LoadingSignal: "_notifySuccess"})
-		@shared.LoadingActionButtonWithSignal(shared.LoadingActionButtonWithSignalProps{ClassName: "btn", OnClick: "@post('/dev/notifications/warning')", DisabledExpr: "$_notifyWarning", Label: "Warning", IconName: icons.IconTriangleAlert, LoadingSignal: "_notifyWarning"})
-		@shared.LoadingActionButtonWithSignal(shared.LoadingActionButtonWithSignalProps{ClassName: "btn btn-danger", OnClick: "@post('/dev/notifications/error')", DisabledExpr: "$_notifyError", Label: "Error", IconName: icons.IconCircleX, LoadingSignal: "_notifyError"})
+		@shared.LoadingActionButtonWithSignal(shared.LoadingActionButtonWithSignalProps{
+			ClassName:     "btn",
+			OnClick:       "@post('/dev/notifications/info')",
+			DisabledExpr:  "$_notifyInfo",
+			Label:         "Info",
+			IconName:      icons.IconInfo,
+			LoadingSignal: "_notifyInfo",
+		})
+		@shared.LoadingActionButtonWithSignal(shared.LoadingActionButtonWithSignalProps{
+			ClassName:     "btn",
+			OnClick:       "@post('/dev/notifications/success')",
+			DisabledExpr:  "$_notifySuccess",
+			Label:         "Success",
+			IconName:      icons.IconCheck,
+			LoadingSignal: "_notifySuccess",
+		})
+		@shared.LoadingActionButtonWithSignal(shared.LoadingActionButtonWithSignalProps{
+			ClassName:     "btn",
+			OnClick:       "@post('/dev/notifications/warning')",
+			DisabledExpr:  "$_notifyWarning",
+			Label:         "Warning",
+			IconName:      icons.IconTriangleAlert,
+			LoadingSignal: "_notifyWarning",
+		})
+		@shared.LoadingActionButtonWithSignal(shared.LoadingActionButtonWithSignalProps{
+			ClassName:     "btn btn-danger",
+			OnClick:       "@post('/dev/notifications/error')",
+			DisabledExpr:  "$_notifyError",
+			Label:         "Error",
+			IconName:      icons.IconCircleX,
+			LoadingSignal: "_notifyError",
+		})
 	</div>
 }
 
 templ RateLimitContent() {
 	<div class="row row-wrap">
-		@shared.IDActionButton(shared.IDActionButtonProps{ID: "spam-health", ClassName: "btn", Label: "Spam /health"})
-		@shared.IDActionButton(shared.IDActionButtonProps{ID: "spam-auth", ClassName: "btn", Label: "Spam /auth/login"})
+		@shared.IDActionButton(shared.IDActionButtonProps{
+			ID:        "spam-health",
+			ClassName: "btn",
+			Label:     "Spam /health",
+		})
+		@shared.IDActionButton(shared.IDActionButtonProps{
+			ID:        "spam-auth",
+			ClassName: "btn",
+			Label:     "Spam /auth/login",
+		})
 		<button id="rate-limit-clear" type="button" class="btn">
 			@icons.X(templ.Attributes{"class": "icon"})
 			<span>Clear</span>
@@ -201,10 +258,26 @@ templ RateLimitContent() {
 
 templ BodyLimitContent() {
 	<div class="row row-wrap">
-		@shared.IDActionButton(shared.IDActionButtonProps{ID: "body-limit-global-ok", ClassName: "btn", Label: "POST /health (small body)"})
-		@shared.IDActionButton(shared.IDActionButtonProps{ID: "body-limit-global-big", ClassName: "btn btn-danger", Label: "POST /health (too large)"})
-		@shared.IDActionButton(shared.IDActionButtonProps{ID: "body-limit-auth-ok", ClassName: "btn", Label: "POST /auth/login (small body)"})
-		@shared.IDActionButton(shared.IDActionButtonProps{ID: "body-limit-auth-big", ClassName: "btn btn-danger", Label: "POST /auth/login (too large)"})
+		@shared.IDActionButton(shared.IDActionButtonProps{
+			ID:        "body-limit-global-ok",
+			ClassName: "btn",
+			Label:     "POST /health (small body)",
+		})
+		@shared.IDActionButton(shared.IDActionButtonProps{
+			ID:        "body-limit-global-big",
+			ClassName: "btn btn-danger",
+			Label:     "POST /health (too large)",
+		})
+		@shared.IDActionButton(shared.IDActionButtonProps{
+			ID:        "body-limit-auth-ok",
+			ClassName: "btn",
+			Label:     "POST /auth/login (small body)",
+		})
+		@shared.IDActionButton(shared.IDActionButtonProps{
+			ID:        "body-limit-auth-big",
+			ClassName: "btn btn-danger",
+			Label:     "POST /auth/login (too large)",
+		})
 		<button id="body-limit-clear" type="button" class="btn">
 			@icons.X(templ.Attributes{"class": "icon"})
 			<span>Clear</span>

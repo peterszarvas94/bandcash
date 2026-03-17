@@ -14,6 +14,8 @@ templ MemberShowSidebar(data MemberData) {
 	if data.IsAdmin {
 		{{
 			submitExpr := fmt.Sprintf("$sidebarLoadingAction = 'member-details-update'; @put('/groups/%s/members/%s')", data.GroupID, data.Member.ID)
+			updateExpr := fmt.Sprintf("@put('/groups/%s/members/%s')", data.GroupID, data.Member.ID)
+			cancelExpr := "$formState = ''; $formData = {name: " + utils.JSONString(data.Member.Name) + ", description: " + utils.JSONString(data.Member.Description) + "}; $errors = {name: '', description: ''}"
 		}}
 		<div data-signals={ templ.JSONString(map[string]any{"sidebarLoadingAction": ""}) }>
 		<div data-show="$formState === 'edit'" style="display: none" class="pb">
@@ -29,8 +31,20 @@ templ MemberShowSidebar(data MemberData) {
 					<div data-show="$errors && $errors.description" class="color-error" data-text="$errors.description"></div>
 				</div>
 				<div class="row row-wrap">
-				@shared.SidebarLoadingActionButton(shared.SidebarLoadingActionButtonProps{ClassName: "btn", OnClick: fmt.Sprintf("@put('/groups/%s/members/%s')", data.GroupID, data.Member.ID), Label: ctxi18n.T(ctx, "members.update"), IconName: icons.IconSave, ActionID: "member-details-update"})
-					@shared.ActionButton(shared.ActionButtonProps{ClassName: "btn", OnClick: "$formState = ''; $formData = {name: "+utils.JSONString(data.Member.Name)+", description: "+utils.JSONString(data.Member.Description)+"}; $errors = {name: '', description: ''}", DisabledExpr: "$_fetching", Label: ctxi18n.T(ctx, "actions.cancel"), IconName: icons.IconX})
+					@shared.SidebarLoadingActionButton(shared.SidebarLoadingActionButtonProps{
+						ClassName: "btn",
+						OnClick:   updateExpr,
+						Label:     ctxi18n.T(ctx, "members.update"),
+						IconName:  icons.IconSave,
+						ActionID:  "member-details-update",
+					})
+					@shared.ActionButton(shared.ActionButtonProps{
+						ClassName:     "btn",
+						OnClick:       cancelExpr,
+						DisabledExpr:  "$_fetching",
+						Label:         ctxi18n.T(ctx, "actions.cancel"),
+						IconName:      icons.IconX,
+					})
 				</div>
 			</form>
 		</div>

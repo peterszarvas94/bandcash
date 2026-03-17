@@ -12,6 +12,9 @@ templ ExpenseIndexSidebar(data ExpensesData) {
 	if data.IsAdmin {
 		{{
 			submitExpr := fmt.Sprintf("$sidebarLoadingAction = ($formState === 'add' ? 'expense-create' : 'expense-update'); ($formState === 'add' ? @post('/groups/%s/expenses') : @put('/groups/%s/expenses/' + $editingId))", data.GroupID, data.GroupID)
+			createExpr := fmt.Sprintf("@post('/groups/%s/expenses')", data.GroupID)
+			updateExpr := fmt.Sprintf("@put('/groups/%s/expenses/' + $editingId)", data.GroupID)
+			cancelExpr := "$formState = ''; $editingId = 0; $formData = {title: '', description: '', amount: 0, date: ''}; $errors = {title: '', description: '', amount: '', date: ''}"
 		}}
 		<div data-signals={ templ.JSONString(map[string]any{"sidebarLoadingAction": ""}) }>
 			<div data-show="$formState !== ''" style="display: none" class="pb">
@@ -41,12 +44,30 @@ templ ExpenseIndexSidebar(data ExpensesData) {
 					</div>
 					<div class="row row-wrap">
 						<span data-show="$formState === 'add'">
-							@shared.SidebarLoadingActionButton(shared.SidebarLoadingActionButtonProps{ClassName: "btn", OnClick: fmt.Sprintf("@post('/groups/%s/expenses')", data.GroupID), Label: ctxi18n.T(ctx, "expenses.create"), IconName: icons.IconSave, ActionID: "expense-create"})
+							@shared.SidebarLoadingActionButton(shared.SidebarLoadingActionButtonProps{
+								ClassName: "btn",
+								OnClick:   createExpr,
+								Label:     ctxi18n.T(ctx, "expenses.create"),
+								IconName:  icons.IconSave,
+								ActionID:  "expense-create",
+							})
 						</span>
 						<span data-show="$formState === 'edit'">
-							@shared.SidebarLoadingActionButton(shared.SidebarLoadingActionButtonProps{ClassName: "btn", OnClick: fmt.Sprintf("@put('/groups/%s/expenses/' + $editingId)", data.GroupID), Label: ctxi18n.T(ctx, "expenses.update"), IconName: icons.IconSave, ActionID: "expense-update"})
+							@shared.SidebarLoadingActionButton(shared.SidebarLoadingActionButtonProps{
+								ClassName: "btn",
+								OnClick:   updateExpr,
+								Label:     ctxi18n.T(ctx, "expenses.update"),
+								IconName:  icons.IconSave,
+								ActionID:  "expense-update",
+							})
 						</span>
-						@shared.ActionButton(shared.ActionButtonProps{ClassName: "btn", OnClick: "$formState = ''; $editingId = 0; $formData = {title: '', description: '', amount: 0, date: ''}; $errors = {title: '', description: '', amount: '', date: ''}", DisabledExpr: "$_fetching", Label: ctxi18n.T(ctx, "actions.cancel"), IconName: icons.IconX})
+						@shared.ActionButton(shared.ActionButtonProps{
+							ClassName:     "btn",
+							OnClick:       cancelExpr,
+							DisabledExpr:  "$_fetching",
+							Label:         ctxi18n.T(ctx, "actions.cancel"),
+							IconName:      icons.IconX,
+						})
 					</div>
 				</form>
 			</div>

@@ -17,6 +17,9 @@ templ EventTotalsContent(data EventsData) {
 }
 
 templ EventIndexMain(data EventsData) {
+	{{
+		addExpr := "$formState = 'add'; $editingId = 0; $formData = {title: '', time: (() => { const d = new Date(); d.setMinutes(d.getMinutes() - d.getTimezoneOffset()); return d.toISOString().slice(0, 16) })(), description: '', amount: 0}; $errors = {title: '', time: '', description: '', amount: ''}"
+	}}
 	@EventTotalsContent(data)
 	@shared.TableSearchForm(fmt.Sprintf("/groups/%s/events", data.GroupID), data.Query, "table.search_placeholder_events")
 	<div class="row row-wrap justify-between pb" role="radiogroup" aria-label={ ctxi18n.T(ctx, "table.date_filters") }>
@@ -81,7 +84,14 @@ templ EventIndexMain(data EventsData) {
 				if data.IsAdmin {
 					@shared.THActions(data.EventsTable.ActionsWidthRem) {
 						<div class="row row-right row-tight">
-							@shared.IconActionButton(shared.IconActionButtonProps{ClassName: "btn btn-ghost btn-sm btn-icon", OnClick: "$formState = 'add'; $editingId = 0; $formData = {title: '', time: (() => { const d = new Date(); d.setMinutes(d.getMinutes() - d.getTimezoneOffset()); return d.toISOString().slice(0, 16) })(), description: '', amount: 0}; $errors = {title: '', time: '', description: '', amount: ''}", DisabledExpr: "$formState !== '' || $_fetching", AriaLabel: ctxi18n.T(ctx, "events.add"), Title: ctxi18n.T(ctx, "events.add"), IconName: icons.IconPlus})
+							@shared.IconActionButton(shared.IconActionButtonProps{
+								ClassName:     "btn btn-ghost btn-sm btn-icon",
+								OnClick:       addExpr,
+								DisabledExpr:  "$formState !== '' || $_fetching",
+								AriaLabel:     ctxi18n.T(ctx, "events.add"),
+								Title:         ctxi18n.T(ctx, "events.add"),
+								IconName:      icons.IconPlus,
+							})
 						</div>
 					}
 				}
@@ -89,6 +99,19 @@ templ EventIndexMain(data EventsData) {
 		</thead>
 		<tbody>
 			for _, event := range data.Events {
+				{{
+					editExpr := fmt.Sprintf("$formState = 'edit'; $editingId = %q; $formData = {title: %s, time: %s, description: %s, amount: %d}", event.ID, utils.JSONString(event.Title), utils.JSONString(event.Time), utils.JSONString(event.Description), event.Amount)
+					deleteExpr := fmt.Sprintf(
+						"$sure = {title: %s, message: %s, submitLabel: %s, cancelLabel: %s, method: 'delete', url: '/groups/%s/events/%s', triggerID: %s, open: true, fetching: false}",
+						utils.JSONString(ctxi18n.T(ctx, "events.delete_confirm")),
+						utils.JSONString(ctxi18n.T(ctx, "confirm.destructive_message")),
+						utils.JSONString(ctxi18n.T(ctx, "actions.delete")),
+						utils.JSONString(ctxi18n.T(ctx, "actions.cancel")),
+						data.GroupID,
+						event.ID,
+						utils.JSONString("event-delete-"+event.ID),
+					)
+				}}
 				<tr>
 					<td><a class="link" href={ fmt.Sprintf("/groups/%s/events/%s", data.GroupID, event.ID) }>{ event.Title }</a></td>
 					<td>{ utils.FormatDateTimeLocalized(ctx, event.Time) }</td>
@@ -96,17 +119,22 @@ templ EventIndexMain(data EventsData) {
 					if data.IsAdmin {
 						<td data-actions-col>
 							<div class="row row-right row-tight">
-								@shared.IconActionButton(shared.IconActionButtonProps{ClassName: "btn btn-ghost btn-sm btn-icon", OnClick: fmt.Sprintf("$formState = 'edit'; $editingId = %q; $formData = {title: %s, time: %s, description: %s, amount: %d}", event.ID, utils.JSONString(event.Title), utils.JSONString(event.Time), utils.JSONString(event.Description), event.Amount), DisabledExpr: "$formState !== '' || $_fetching", AriaLabel: ctxi18n.T(ctx, "actions.edit"), Title: ctxi18n.T(ctx, "actions.edit"), IconName: icons.IconPencil})
-								@shared.IconActionButton(shared.IconActionButtonProps{ClassName: "btn btn-ghost btn-sm btn-danger btn-icon", OnClick: fmt.Sprintf(
-									"$sure = {title: %s, message: %s, submitLabel: %s, cancelLabel: %s, method: 'delete', url: '/groups/%s/events/%s', triggerID: %s, open: true, fetching: false}",
-									utils.JSONString(ctxi18n.T(ctx, "events.delete_confirm")),
-									utils.JSONString(ctxi18n.T(ctx, "confirm.destructive_message")),
-									utils.JSONString(ctxi18n.T(ctx, "actions.delete")),
-									utils.JSONString(ctxi18n.T(ctx, "actions.cancel")),
-									data.GroupID,
-									event.ID,
-									utils.JSONString("event-delete-"+event.ID),
-								), DisabledExpr: "$formState !== '' || $_fetching", AriaLabel: ctxi18n.T(ctx, "actions.delete"), Title: ctxi18n.T(ctx, "actions.delete"), IconName: icons.IconTrash2})
+								@shared.IconActionButton(shared.IconActionButtonProps{
+									ClassName:     "btn btn-ghost btn-sm btn-icon",
+									OnClick:       editExpr,
+									DisabledExpr:  "$formState !== '' || $_fetching",
+									AriaLabel:     ctxi18n.T(ctx, "actions.edit"),
+									Title:         ctxi18n.T(ctx, "actions.edit"),
+									IconName:      icons.IconPencil,
+								})
+								@shared.IconActionButton(shared.IconActionButtonProps{
+									ClassName:     "btn btn-ghost btn-sm btn-danger btn-icon",
+									OnClick:       deleteExpr,
+									DisabledExpr:  "$formState !== '' || $_fetching",
+									AriaLabel:     ctxi18n.T(ctx, "actions.delete"),
+									Title:         ctxi18n.T(ctx, "actions.delete"),
+									IconName:      icons.IconTrash2,
+								})
 							</div>
 						</td>
 					}

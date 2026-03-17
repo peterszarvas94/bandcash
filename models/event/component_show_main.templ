@@ -12,6 +12,9 @@ import (
 templ EventShowMain(data EventData) {
 	{{
 		participantsSubmitExpr := fmt.Sprintf("@put('/groups/%s/events/%s/participants')", data.GroupID, data.Event.ID)
+		addParticipantExpr := fmt.Sprintf("if (!$wizard.selectedMemberId) return; @post('/groups/%s/events/%s/participants/draft/' + $wizard.selectedMemberId)", data.GroupID, data.Event.ID)
+		addParticipantDisabledExpr := fmt.Sprintf("$_fetching || !$wizard.selectedMemberId || %t", len(data.WizardAddableMembers) == 0)
+		cancelParticipantsEditExpr := fmt.Sprintf("@delete('/groups/%s/events/%s/participants/draft')", data.GroupID, data.Event.ID)
 	}}
 	<div data-show="$participantEditorMode === 'read'">
 		if data.IsAdmin {
@@ -119,13 +122,23 @@ templ EventShowMain(data EventData) {
 						</thead>
 						<tbody>
 							for _, row := range data.WizardRows {
+								{{
+									removeDraftExpr := fmt.Sprintf("@delete('/groups/%s/events/%s/participants/draft/%s')", data.GroupID, data.Event.ID, row.MemberID)
+								}}
 								<tr>
 									<td><a class="link" href={ fmt.Sprintf("/groups/%s/members/%s", data.GroupID, row.MemberID) }>{ row.MemberName }</a></td>
 									<td class="text-right"><input type="number" class="input w-min-input" step="1" min="0" data-bind={ fmt.Sprintf("wizard.amounts.%s", row.MemberID) } value={ fmt.Sprintf("%d", row.Amount) }/></td>
 									<td class="text-right"><input type="number" class="input w-min-input" step="1" min="0" data-bind={ fmt.Sprintf("wizard.expenses.%s", row.MemberID) } value={ fmt.Sprintf("%d", row.Expense) }/></td>
 									<td class="text-right" data-text={ fmt.Sprintf("($wizard.amounts['%s'] || 0) + ($wizard.expenses['%s'] || 0)", row.MemberID, row.MemberID) }></td>
 									<td class="text-right">
-										@shared.IconActionButton(shared.IconActionButtonProps{ClassName: "btn btn-ghost btn-sm btn-danger btn-icon", OnClick: fmt.Sprintf("@delete('/groups/%s/events/%s/participants/draft/%s')", data.GroupID, data.Event.ID, row.MemberID), DisabledExpr: "$_fetching", AriaLabel: ctxi18n.T(ctx, "actions.delete"), Title: ctxi18n.T(ctx, "actions.delete"), IconName: icons.IconTrash2})
+										@shared.IconActionButton(shared.IconActionButtonProps{
+											ClassName:     "btn btn-ghost btn-sm btn-danger btn-icon",
+											OnClick:       removeDraftExpr,
+											DisabledExpr:  "$_fetching",
+											AriaLabel:     ctxi18n.T(ctx, "actions.delete"),
+											Title:         ctxi18n.T(ctx, "actions.delete"),
+											IconName:      icons.IconTrash2,
+										})
 									</td>
 								</tr>
 							}
@@ -144,7 +157,13 @@ templ EventShowMain(data EventData) {
 									</select>
 								</td>
 								<td>
-									@shared.ActionButton(shared.ActionButtonProps{ClassName: "btn", OnClick: fmt.Sprintf("if (!$wizard.selectedMemberId) return; @post('/groups/%s/events/%s/participants/draft/' + $wizard.selectedMemberId)", data.GroupID, data.Event.ID), DisabledExpr: fmt.Sprintf("$_fetching || !$wizard.selectedMemberId || %t", len(data.WizardAddableMembers) == 0), Label: ctxi18n.T(ctx, "participants.add"), IconName: icons.IconPlus})
+									@shared.ActionButton(shared.ActionButtonProps{
+										ClassName:     "btn",
+										OnClick:       addParticipantExpr,
+										DisabledExpr:  addParticipantDisabledExpr,
+										Label:         ctxi18n.T(ctx, "participants.add"),
+										IconName:      icons.IconPlus,
+									})
 								</td>
 								<td></td>
 								<td></td>
@@ -154,8 +173,18 @@ templ EventShowMain(data EventData) {
 					</table>
 				</div>
 				<div class="row row-wrap">
-					@shared.LoadingSubmitButton(shared.LoadingSubmitButtonProps{ClassName: "btn", Label: ctxi18n.T(ctx, "participants.save_all"), IconName: icons.IconSave})
-					@shared.ActionButton(shared.ActionButtonProps{ClassName: "btn", OnClick: fmt.Sprintf("@delete('/groups/%s/events/%s/participants/draft')", data.GroupID, data.Event.ID), DisabledExpr: "$_fetching", Label: ctxi18n.T(ctx, "actions.cancel"), IconName: icons.IconX})
+					@shared.LoadingSubmitButton(shared.LoadingSubmitButtonProps{
+						ClassName: "btn",
+						Label:     ctxi18n.T(ctx, "participants.save_all"),
+						IconName:  icons.IconSave,
+					})
+					@shared.ActionButton(shared.ActionButtonProps{
+						ClassName:     "btn",
+						OnClick:       cancelParticipantsEditExpr,
+						DisabledExpr:  "$_fetching",
+						Label:         ctxi18n.T(ctx, "actions.cancel"),
+						IconName:      icons.IconX,
+					})
 				</div>
 			</form>
 		</div>
@@ -164,9 +193,9 @@ templ EventShowMain(data EventData) {
 
 templ ReadModeActions(data EventData) {
 	if data.IsAdmin {
-		<div class="row row-wrap">
-			@shared.ActionButton(shared.ActionButtonProps{ClassName: "btn", OnClick: fmt.Sprintf("@post('/groups/%s/events/%s/participants/draft')", data.GroupID, data.Event.ID), DisabledExpr: "$_fetching", Label: ctxi18n.T(ctx, "actions.edit"), IconName: icons.IconPencil})
-			@shared.ActionButton(shared.ActionButtonProps{ClassName: "btn btn-danger", OnClick: fmt.Sprintf(
+		{{
+			editParticipantsExpr := fmt.Sprintf("@post('/groups/%s/events/%s/participants/draft')", data.GroupID, data.Event.ID)
+			deleteEventExpr := fmt.Sprintf(
 				"$sure = {title: %s, message: %s, submitLabel: %s, cancelLabel: %s, method: 'delete', url: '/groups/%s/events/%s', triggerID: 'event-show-delete', open: true, fetching: false}",
 				utils.JSONString(ctxi18n.T(ctx, "events.delete_confirm")),
 				utils.JSONString(ctxi18n.T(ctx, "confirm.destructive_message")),
@@ -174,7 +203,23 @@ templ ReadModeActions(data EventData) {
 				utils.JSONString(ctxi18n.T(ctx, "actions.cancel")),
 				data.GroupID,
 				data.Event.ID,
-			), DisabledExpr: "$_fetching", Label: ctxi18n.T(ctx, "actions.delete"), IconName: icons.IconTrash2})
+			)
+		}}
+		<div class="row row-wrap">
+			@shared.ActionButton(shared.ActionButtonProps{
+				ClassName:     "btn",
+				OnClick:       editParticipantsExpr,
+				DisabledExpr:  "$_fetching",
+				Label:         ctxi18n.T(ctx, "actions.edit"),
+				IconName:      icons.IconPencil,
+			})
+			@shared.ActionButton(shared.ActionButtonProps{
+				ClassName:     "btn btn-danger",
+				OnClick:       deleteEventExpr,
+				DisabledExpr:  "$_fetching",
+				Label:         ctxi18n.T(ctx, "actions.delete"),
+				IconName:      icons.IconTrash2,
+			})
 		</div>
 	}
 }

@@ -31,10 +31,14 @@ templ HomeIndex(data HomeData) {
 					<form class="form" data-on:submit="@post('/auth/login')" data-indicator:_fetching>
 						<div class="field">
 							<label for="home-auth-email" class="row">{ ctxi18n.T(ctx, "auth.email") } <span class="color-error">*</span></label>
-							<div class="row row-wrap">
-								<input id="home-auth-email" type="email" class="input" data-bind="formData.email" placeholder={ ctxi18n.T(ctx, "auth.email_placeholder") }/>
-								@shared.LoadingSubmitButton(shared.LoadingSubmitButtonProps{ClassName: "btn", Label: ctxi18n.T(ctx, "auth.send_link"), IconName: icons.IconSend})
-							</div>
+						<div class="row row-wrap">
+							<input id="home-auth-email" type="email" class="input" data-bind="formData.email" placeholder={ ctxi18n.T(ctx, "auth.email_placeholder") }/>
+							@shared.LoadingSubmitButton(shared.LoadingSubmitButtonProps{
+								ClassName: "btn",
+								Label:     ctxi18n.T(ctx, "auth.send_link"),
+								IconName:  icons.IconSend,
+							})
+						</div>
 							<div data-show="$authError !== ''" class="color-error" data-text="$authError"></div>
 							<div data-show="$authServerError !== ''" class="color-error" data-text="$authServerError"></div>
 						</div>
@@ -45,9 +49,21 @@ templ HomeIndex(data HomeData) {
 					<p>{ ctxi18n.T(ctx, "auth.check_email_safe") }</p>
 					<p><strong>{ ctxi18n.T(ctx, "auth.masked_email") }:</strong> <span data-text="$submittedEmailMasked"></span></p>
 					<div class="row row-wrap">
-						@shared.LoadingActionButton(shared.LoadingActionButtonProps{ClassName: "btn", OnClick: "@post('/auth/login')", DisabledExpr: "$_fetching || $resendRemaining > 0", Label: ctxi18n.T(ctx, "auth.resend_email"), IconName: icons.IconSend})
+						@shared.LoadingActionButton(shared.LoadingActionButtonProps{
+							ClassName:     "btn",
+							OnClick:       "@post('/auth/login')",
+							DisabledExpr:  "$_fetching || $resendRemaining > 0",
+							Label:         ctxi18n.T(ctx, "auth.resend_email"),
+							IconName:      icons.IconSend,
+						})
 						<span data-show="$resendRemaining > 0" data-text="'(' + $resendRemaining + 's)'"></span>
-						@shared.LoadingActionButton(shared.LoadingActionButtonProps{ClassName: "btn", OnClick: "$authState = 'form'; $authError = ''; $authServerError = ''; $formData.email = $submittedEmail", DisabledExpr: "$_fetching", Label: ctxi18n.T(ctx, "auth.use_different_email"), IconName: icons.IconPencil})
+						@shared.LoadingActionButton(shared.LoadingActionButtonProps{
+							ClassName:     "btn",
+							OnClick:       "$authState = 'form'; $authError = ''; $authServerError = ''; $formData.email = $submittedEmail",
+							DisabledExpr:  "$_fetching",
+							Label:         ctxi18n.T(ctx, "auth.use_different_email"),
+							IconName:      icons.IconPencil,
+						})
 					</div>
 				</div>
 				<div class="row">

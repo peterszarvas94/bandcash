@@ -139,11 +139,22 @@ func GroupAccessSidebar(data AccessPageData) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = shared.SidebarLoadingSubmitButton(shared.SidebarLoadingSubmitButtonProps{ClassName: "btn", Label: ctxi18n.T(ctx, "groups.invite_access"), IconName: icons.IconSave, ActionID: "viewer-add"}).Render(ctx, templ_7745c5c3_Buffer)
+			templ_7745c5c3_Err = shared.SidebarLoadingSubmitButton(shared.SidebarLoadingSubmitButtonProps{
+				ClassName: "btn",
+				Label:     ctxi18n.T(ctx, "groups.invite_access"),
+				IconName:  icons.IconSave,
+				ActionID:  "viewer-add",
+			}).Render(ctx, templ_7745c5c3_Buffer)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = shared.ActionButton(shared.ActionButtonProps{ClassName: "btn", OnClick: "$formState = ''; $formData = {email: '', role: 'viewer'}", DisabledExpr: "$_fetching", Label: ctxi18n.T(ctx, "actions.cancel"), IconName: icons.IconX}).Render(ctx, templ_7745c5c3_Buffer)
+			templ_7745c5c3_Err = shared.ActionButton(shared.ActionButtonProps{
+				ClassName:    "btn",
+				OnClick:      "$formState = ''; $formData = {email: '', role: 'viewer'}",
+				DisabledExpr: "$_fetching",
+				Label:        ctxi18n.T(ctx, "actions.cancel"),
+				IconName:     icons.IconX,
+			}).Render(ctx, templ_7745c5c3_Buffer)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}

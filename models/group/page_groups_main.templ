@@ -24,7 +24,14 @@ templ GroupsMain(data GroupsPageData) {
 				}
 				@shared.THActions(data.GroupsTable.ActionsWidthRem) {
 					<div class="row row-right row-tight">
-						@shared.IconActionButton(shared.IconActionButtonProps{ClassName: "btn btn-ghost btn-sm btn-icon", OnClick: "$formState = 'add'; $formData = {name: ''}; $selectedGroupId = ''", DisabledExpr: "$formState !== '' || $_fetching", AriaLabel: ctxi18n.T(ctx, "groups.create"), Title: ctxi18n.T(ctx, "groups.create"), IconName: icons.IconPlus})
+						@shared.IconActionButton(shared.IconActionButtonProps{
+							ClassName:     "btn btn-ghost btn-sm btn-icon",
+							OnClick:       "$formState = 'add'; $formData = {name: ''}; $selectedGroupId = ''",
+							DisabledExpr:  "$formState !== '' || $_fetching",
+							AriaLabel:     ctxi18n.T(ctx, "groups.create"),
+							Title:         ctxi18n.T(ctx, "groups.create"),
+							IconName:      icons.IconPlus,
+						})
 					</div>
 				}
 			</tr>
@@ -34,6 +41,27 @@ templ GroupsMain(data GroupsPageData) {
 				<tr><td colspan="3">{ ctxi18n.T(ctx, "table.empty") }</td></tr>
 			} else {
 				for _, group := range data.AllGroups {
+					{{
+						editExpr := fmt.Sprintf("$formState = 'edit'; $selectedGroupId = '%s'; $formData = {name: %s}; $errors = {name: ''}", group.Group.ID, utils.JSONString(group.Group.Name))
+						deleteExpr := fmt.Sprintf(
+							"$sure = {title: %s, message: %s, submitLabel: %s, cancelLabel: %s, method: 'delete', url: '/groups/%s', triggerID: %s, open: true, fetching: false}",
+							utils.JSONString(ctxi18n.T(ctx, "groups.delete_confirm")),
+							utils.JSONString(ctxi18n.T(ctx, "confirm.destructive_message")),
+							utils.JSONString(ctxi18n.T(ctx, "groups.delete")),
+							utils.JSONString(ctxi18n.T(ctx, "actions.cancel")),
+							group.Group.ID,
+							utils.JSONString("group-delete-"+group.Group.ID),
+						)
+						leaveExpr := fmt.Sprintf(
+							"$sure = {title: %s, message: %s, submitLabel: %s, cancelLabel: %s, method: 'post', url: '/groups/%s/leave', triggerID: %s, open: true, fetching: false}",
+							utils.JSONString(ctxi18n.T(ctx, "groups.leave_confirm")),
+							utils.JSONString(ctxi18n.T(ctx, "confirm.leave_message")),
+							utils.JSONString(ctxi18n.T(ctx, "groups.leave")),
+							utils.JSONString(ctxi18n.T(ctx, "actions.cancel")),
+							group.Group.ID,
+							utils.JSONString("group-leave-"+group.Group.ID),
+						)
+					}}
 					<tr>
 						<td>
 							<a class="link" href={ "/groups/" + group.Group.ID }>{ group.Group.Name }</a>
@@ -51,26 +79,31 @@ templ GroupsMain(data GroupsPageData) {
 									@icons.Icon(icons.IconCalendar, templ.Attributes{"class": "icon"})
 								</a>
 								if group.Role == "admin" {
-									@shared.IconActionButton(shared.IconActionButtonProps{ClassName: "btn btn-ghost btn-sm btn-icon", OnClick: fmt.Sprintf("$formState = 'edit'; $selectedGroupId = '%s'; $formData = {name: %s}; $errors = {name: ''}", group.Group.ID, utils.JSONString(group.Group.Name)), DisabledExpr: "$formState !== '' || $_fetching", AriaLabel: ctxi18n.T(ctx, "actions.edit"), Title: ctxi18n.T(ctx, "actions.edit"), IconName: icons.IconPencil})
-									@shared.IconActionButton(shared.IconActionButtonProps{ClassName: "btn btn-ghost btn-sm btn-danger btn-icon", OnClick: fmt.Sprintf(
-										"$sure = {title: %s, message: %s, submitLabel: %s, cancelLabel: %s, method: 'delete', url: '/groups/%s', triggerID: %s, open: true, fetching: false}",
-										utils.JSONString(ctxi18n.T(ctx, "groups.delete_confirm")),
-										utils.JSONString(ctxi18n.T(ctx, "confirm.destructive_message")),
-										utils.JSONString(ctxi18n.T(ctx, "groups.delete")),
-										utils.JSONString(ctxi18n.T(ctx, "actions.cancel")),
-										group.Group.ID,
-										utils.JSONString("group-delete-"+group.Group.ID),
-									), DisabledExpr: "$formState !== '' || $_fetching", AriaLabel: ctxi18n.T(ctx, "actions.delete"), Title: ctxi18n.T(ctx, "actions.delete"), IconName: icons.IconTrash2})
+									@shared.IconActionButton(shared.IconActionButtonProps{
+										ClassName:     "btn btn-ghost btn-sm btn-icon",
+										OnClick:       editExpr,
+										DisabledExpr:  "$formState !== '' || $_fetching",
+										AriaLabel:     ctxi18n.T(ctx, "actions.edit"),
+										Title:         ctxi18n.T(ctx, "actions.edit"),
+										IconName:      icons.IconPencil,
+									})
+									@shared.IconActionButton(shared.IconActionButtonProps{
+										ClassName:     "btn btn-ghost btn-sm btn-danger btn-icon",
+										OnClick:       deleteExpr,
+										DisabledExpr:  "$formState !== '' || $_fetching",
+										AriaLabel:     ctxi18n.T(ctx, "actions.delete"),
+										Title:         ctxi18n.T(ctx, "actions.delete"),
+										IconName:      icons.IconTrash2,
+									})
 								} else {
-									@shared.IconActionButton(shared.IconActionButtonProps{ClassName: "btn btn-ghost btn-sm btn-icon", OnClick: fmt.Sprintf(
-										"$sure = {title: %s, message: %s, submitLabel: %s, cancelLabel: %s, method: 'post', url: '/groups/%s/leave', triggerID: %s, open: true, fetching: false}",
-										utils.JSONString(ctxi18n.T(ctx, "groups.leave_confirm")),
-										utils.JSONString(ctxi18n.T(ctx, "confirm.leave_message")),
-										utils.JSONString(ctxi18n.T(ctx, "groups.leave")),
-										utils.JSONString(ctxi18n.T(ctx, "actions.cancel")),
-										group.Group.ID,
-										utils.JSONString("group-leave-"+group.Group.ID),
-									), DisabledExpr: "$formState !== '' || $_fetching", AriaLabel: ctxi18n.T(ctx, "groups.leave"), Title: ctxi18n.T(ctx, "groups.leave"), IconName: icons.IconSquareArrowRightExit})
+									@shared.IconActionButton(shared.IconActionButtonProps{
+										ClassName:     "btn btn-ghost btn-sm btn-icon",
+										OnClick:       leaveExpr,
+										DisabledExpr:  "$formState !== '' || $_fetching",
+										AriaLabel:     ctxi18n.T(ctx, "groups.leave"),
+										Title:         ctxi18n.T(ctx, "groups.leave"),
+										IconName:      icons.IconSquareArrowRightExit,
+									})
 								}
 							</div>
 						</td>

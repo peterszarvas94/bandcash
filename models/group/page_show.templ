@@ -68,10 +68,16 @@ templ GroupDetailsContent(data GroupPageData) {
 	}
 }
 
-templ GroupDetailsActions(data GroupPageData) {
+	templ GroupDetailsActions(data GroupPageData) {
 	if data.IsAdmin {
 		<div class="row row-wrap">
-			@shared.ActionButton(shared.ActionButtonProps{ClassName: "btn", OnClick: "$formState = 'edit'; $errors = {name: ''}", DisabledExpr: "$formState !== '' || $_fetching", Label: ctxi18n.T(ctx, "actions.edit"), IconName: icons.IconPencil})
+			@shared.ActionButton(shared.ActionButtonProps{
+				ClassName:     "btn",
+				OnClick:       "$formState = 'edit'; $errors = {name: ''}",
+				DisabledExpr:  "$formState !== '' || $_fetching",
+				Label:         ctxi18n.T(ctx, "actions.edit"),
+				IconName:      icons.IconPencil,
+			})
 			@shared.SureActionButton(shared.SureActionButtonProps{
 				ClassName:    "btn btn-danger",
 				DisabledExpr: "$formState !== '' || $_fetching",
@@ -94,6 +100,7 @@ templ GroupDetailsActions(data GroupPageData) {
 templ GroupSidebar(data GroupPageData) {
 	{{
 		submitExpr := fmt.Sprintf("@put('/groups/%s')", data.Group.ID)
+		cancelExpr := "$formState = ''; $formData = {name: " + utils.JSONString(data.Group.Name) + "}; $errors = {name: ''}"
 	}}
 	<div data-signals={ templ.JSONString(map[string]any{"sidebarLoadingAction": ""}) }>
 		if data.IsAdmin {
@@ -105,8 +112,19 @@ templ GroupSidebar(data GroupPageData) {
 						<div data-show="$errors && $errors.name" class="color-error" data-text="$errors.name"></div>
 					</div>
 					<div class="grid">
-						@shared.SidebarLoadingSubmitButton(shared.SidebarLoadingSubmitButtonProps{ClassName: "btn", Label: ctxi18n.T(ctx, "groups.update"), IconName: icons.IconSave, ActionID: "group-update"})
-						@shared.ActionButton(shared.ActionButtonProps{ClassName: "btn", OnClick: "$formState = ''; $formData = {name: " + utils.JSONString(data.Group.Name) + "}; $errors = {name: ''}", DisabledExpr: "$_fetching", Label: ctxi18n.T(ctx, "actions.cancel"), IconName: icons.IconX})
+						@shared.SidebarLoadingSubmitButton(shared.SidebarLoadingSubmitButtonProps{
+							ClassName: "btn",
+							Label:     ctxi18n.T(ctx, "groups.update"),
+							IconName:  icons.IconSave,
+							ActionID:  "group-update",
+						})
+						@shared.ActionButton(shared.ActionButtonProps{
+							ClassName:     "btn",
+							OnClick:       cancelExpr,
+							DisabledExpr:  "$_fetching",
+							Label:         ctxi18n.T(ctx, "actions.cancel"),
+							IconName:      icons.IconX,
+						})
 					</div>
 				</form>
 			</div>

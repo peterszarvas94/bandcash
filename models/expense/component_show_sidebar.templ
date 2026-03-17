@@ -14,6 +14,8 @@ templ ExpenseShowSidebar(data ExpenseData) {
 	if data.IsAdmin {
 		{{
 			submitExpr := fmt.Sprintf("$sidebarLoadingAction = 'expense-show-update'; @put('/groups/%s/expenses/%s')", data.GroupID, data.Expense.ID)
+			updateExpr := fmt.Sprintf("@put('/groups/%s/expenses/%s')", data.GroupID, data.Expense.ID)
+			cancelExpr := "$formState = ''; $formData = {title: " + utils.JSONString(data.Expense.Title) + ", description: " + utils.JSONString(data.Expense.Description) + ", amount: " + fmt.Sprintf("%d", data.Expense.Amount) + ", date: " + utils.JSONString(data.Expense.Date) + "}; $errors = {title: '', description: '', amount: '', date: ''}"
 		}}
 		<div data-signals={ templ.JSONString(map[string]any{"sidebarLoadingAction": ""}) }>
 			<div data-show="$formState === 'edit'" style="display: none" class="pb">
@@ -41,8 +43,20 @@ templ ExpenseShowSidebar(data ExpenseData) {
 						</div>
 					</div>
 					<div class="row row-wrap">
-						@shared.SidebarLoadingActionButton(shared.SidebarLoadingActionButtonProps{ClassName: "btn", OnClick: fmt.Sprintf("@put('/groups/%s/expenses/%s')", data.GroupID, data.Expense.ID), Label: ctxi18n.T(ctx, "expenses.update"), IconName: icons.IconSave, ActionID: "expense-show-update"})
-						@shared.ActionButton(shared.ActionButtonProps{ClassName: "btn", OnClick: "$formState = ''; $formData = {title: " + utils.JSONString(data.Expense.Title) + ", description: " + utils.JSONString(data.Expense.Description) + ", amount: " + fmt.Sprintf("%d", data.Expense.Amount) + ", date: " + utils.JSONString(data.Expense.Date) + "}; $errors = {title: '', description: '', amount: '', date: ''}", DisabledExpr: "$_fetching", Label: ctxi18n.T(ctx, "actions.cancel"), IconName: icons.IconX})
+						@shared.SidebarLoadingActionButton(shared.SidebarLoadingActionButtonProps{
+							ClassName: "btn",
+							OnClick:   updateExpr,
+							Label:     ctxi18n.T(ctx, "expenses.update"),
+							IconName:  icons.IconSave,
+							ActionID:  "expense-show-update",
+						})
+						@shared.ActionButton(shared.ActionButtonProps{
+							ClassName:     "btn",
+							OnClick:       cancelExpr,
+							DisabledExpr:  "$_fetching",
+							Label:         ctxi18n.T(ctx, "actions.cancel"),
+							IconName:      icons.IconX,
+						})
 					</div>
 				</form>
 			</div>

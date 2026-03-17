@@ -30,7 +30,11 @@ templ LoginMain() {
 				<div data-show="$authError !== ''" class="color-error" data-text="$authError"></div>
 				<div data-show="$authServerError !== ''" class="color-error" data-text="$authServerError"></div>
 			</div>
-			@shared.LoadingSubmitButton(shared.LoadingSubmitButtonProps{ClassName: "btn", Label: ctxi18n.T(ctx, "auth.send_link"), IconName: icons.IconSend})
+			@shared.LoadingSubmitButton(shared.LoadingSubmitButtonProps{
+				ClassName: "btn",
+				Label:     ctxi18n.T(ctx, "auth.send_link"),
+				IconName:  icons.IconSend,
+			})
 		</form>
 	</div>
 	<div data-show="$authState === 'sent'" style="display: none" class="form">
@@ -38,9 +42,21 @@ templ LoginMain() {
 		<p>{ ctxi18n.T(ctx, "auth.check_email_safe") }</p>
 		<p><strong>{ ctxi18n.T(ctx, "auth.masked_email") }:</strong> <span data-text="$submittedEmailMasked"></span></p>
 		<div class="row row-wrap">
-			@shared.LoadingActionButton(shared.LoadingActionButtonProps{ClassName: "btn", OnClick: "@post('/auth/login')", DisabledExpr: "$_fetching || $resendRemaining > 0", Label: ctxi18n.T(ctx, "auth.resend_email"), IconName: icons.IconSend})
+			@shared.LoadingActionButton(shared.LoadingActionButtonProps{
+				ClassName:     "btn",
+				OnClick:       "@post('/auth/login')",
+				DisabledExpr:  "$_fetching || $resendRemaining > 0",
+				Label:         ctxi18n.T(ctx, "auth.resend_email"),
+				IconName:      icons.IconSend,
+			})
 			<span data-show="$resendRemaining > 0" data-text="'(' + $resendRemaining + 's)'"></span>
-			@shared.LoadingActionButton(shared.LoadingActionButtonProps{ClassName: "btn", OnClick: "$authState = 'form'; $authError = ''; $authServerError = ''; $formData.email = $submittedEmail", DisabledExpr: "$_fetching", Label: ctxi18n.T(ctx, "auth.use_different_email"), IconName: icons.IconPencil})
+			@shared.LoadingActionButton(shared.LoadingActionButtonProps{
+				ClassName:     "btn",
+				OnClick:       "$authState = 'form'; $authError = ''; $authServerError = ''; $formData.email = $submittedEmail",
+				DisabledExpr:  "$_fetching",
+				Label:         ctxi18n.T(ctx, "auth.use_different_email"),
+				IconName:      icons.IconPencil,
+			})
 		</div>
 	</div>
 }

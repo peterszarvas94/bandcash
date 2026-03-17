@@ -28,7 +28,14 @@ templ GroupAccessMain(data AccessPageData) {
 				if data.IsAdmin {
 					@shared.THActions(data.AccessTable.ActionsWidthRem) {
 						<div class="row row-right row-tight">
-							@shared.IconActionButton(shared.IconActionButtonProps{ClassName: "btn btn-ghost btn-sm btn-icon", OnClick: "$formState = 'add'; $formData = {email: '', role: 'viewer'}", DisabledExpr: "$formState !== '' || $_fetching", AriaLabel: ctxi18n.T(ctx, "groups.invite_access"), Title: ctxi18n.T(ctx, "groups.invite_access"), IconName: icons.IconPlus})
+							@shared.IconActionButton(shared.IconActionButtonProps{
+								ClassName:     "btn btn-ghost btn-sm btn-icon",
+								OnClick:       "$formState = 'add'; $formData = {email: '', role: 'viewer'}",
+								DisabledExpr:  "$formState !== '' || $_fetching",
+								AriaLabel:     ctxi18n.T(ctx, "groups.invite_access"),
+								Title:         ctxi18n.T(ctx, "groups.invite_access"),
+								IconName:      icons.IconPlus,
+							})
 						</div>
 					}
 				}
@@ -36,6 +43,21 @@ templ GroupAccessMain(data AccessPageData) {
 		</thead>
 		<tbody>
 			for _, row := range data.AccessRows {
+				{{
+					inviteDeleteExpr := fmt.Sprintf("@delete('/groups/%s/access/invites/%s')", data.Group.ID, row.InviteID)
+					makeAdminExpr := fmt.Sprintf("@put('/groups/%s/access/users/%s/admin')", data.Group.ID, row.UserID)
+					makeViewerExpr := fmt.Sprintf("@put('/groups/%s/access/users/%s/viewer')", data.Group.ID, row.UserID)
+					removeUserExpr := fmt.Sprintf(
+						"$sure = {title: %s, message: %s, submitLabel: %s, cancelLabel: %s, method: 'delete', url: '/groups/%s/access/users/%s', triggerID: %s, open: true, fetching: false}",
+						utils.JSONString(ctxi18n.T(ctx, "groups.remove_viewer_confirm")),
+						utils.JSONString(ctxi18n.T(ctx, "confirm.destructive_message")),
+						utils.JSONString(ctxi18n.T(ctx, "actions.delete")),
+						utils.JSONString(ctxi18n.T(ctx, "actions.cancel")),
+						data.Group.ID,
+						row.UserID,
+						utils.JSONString("access-remove-"+row.UserID),
+					)
+				}}
 				<tr>
 					<td>{ row.Email }</td>
 					<td>
@@ -56,23 +78,42 @@ templ GroupAccessMain(data AccessPageData) {
 						<td data-actions-col>
 							<div class="row row-right row-tight">
 								if row.Kind == "invite" {
-									@shared.IconActionButton(shared.IconActionButtonProps{ClassName: "btn btn-ghost btn-sm btn-danger btn-icon", OnClick: fmt.Sprintf("@delete('/groups/%s/access/invites/%s')", data.Group.ID, row.InviteID), DisabledExpr: "$_fetching", AriaLabel: ctxi18n.T(ctx, "actions.delete"), Title: ctxi18n.T(ctx, "actions.delete"), IconName: icons.IconTrash2})
+									@shared.IconActionButton(shared.IconActionButtonProps{
+										ClassName:     "btn btn-ghost btn-sm btn-danger btn-icon",
+										OnClick:       inviteDeleteExpr,
+										DisabledExpr:  "$_fetching",
+										AriaLabel:     ctxi18n.T(ctx, "actions.delete"),
+										Title:         ctxi18n.T(ctx, "actions.delete"),
+										IconName:      icons.IconTrash2,
+									})
 								} else {
 									if row.Role == "viewer" {
-										@shared.IconActionButton(shared.IconActionButtonProps{ClassName: "btn btn-ghost btn-sm btn-icon", OnClick: fmt.Sprintf("@put('/groups/%s/access/users/%s/admin')", data.Group.ID, row.UserID), DisabledExpr: "$_fetching", AriaLabel: ctxi18n.T(ctx, "groups.make_admin"), Title: ctxi18n.T(ctx, "groups.make_admin"), IconName: icons.IconShieldPlus})
+										@shared.IconActionButton(shared.IconActionButtonProps{
+											ClassName:     "btn btn-ghost btn-sm btn-icon",
+											OnClick:       makeAdminExpr,
+											DisabledExpr:  "$_fetching",
+											AriaLabel:     ctxi18n.T(ctx, "groups.make_admin"),
+											Title:         ctxi18n.T(ctx, "groups.make_admin"),
+											IconName:      icons.IconShieldPlus,
+										})
 									} else {
-										@shared.IconActionButton(shared.IconActionButtonProps{ClassName: "btn btn-ghost btn-sm btn-icon", OnClick: fmt.Sprintf("@put('/groups/%s/access/users/%s/viewer')", data.Group.ID, row.UserID), DisabledExpr: "$_fetching", AriaLabel: ctxi18n.T(ctx, "groups.make_viewer"), Title: ctxi18n.T(ctx, "groups.make_viewer"), IconName: icons.IconEye})
+										@shared.IconActionButton(shared.IconActionButtonProps{
+											ClassName:     "btn btn-ghost btn-sm btn-icon",
+											OnClick:       makeViewerExpr,
+											DisabledExpr:  "$_fetching",
+											AriaLabel:     ctxi18n.T(ctx, "groups.make_viewer"),
+											Title:         ctxi18n.T(ctx, "groups.make_viewer"),
+											IconName:      icons.IconEye,
+										})
 									}
-									@shared.IconActionButton(shared.IconActionButtonProps{ClassName: "btn btn-ghost btn-sm btn-danger btn-icon", OnClick: fmt.Sprintf(
-									"$sure = {title: %s, message: %s, submitLabel: %s, cancelLabel: %s, method: 'delete', url: '/groups/%s/access/users/%s', triggerID: %s, open: true, fetching: false}",
-										utils.JSONString(ctxi18n.T(ctx, "groups.remove_viewer_confirm")),
-										utils.JSONString(ctxi18n.T(ctx, "confirm.destructive_message")),
-										utils.JSONString(ctxi18n.T(ctx, "actions.delete")),
-										utils.JSONString(ctxi18n.T(ctx, "actions.cancel")),
-										data.Group.ID,
-										row.UserID,
-										utils.JSONString("access-remove-"+row.UserID),
-									), DisabledExpr: "$_fetching", AriaLabel: ctxi18n.T(ctx, "actions.delete"), Title: ctxi18n.T(ctx, "actions.delete"), IconName: icons.IconTrash2})
+									@shared.IconActionButton(shared.IconActionButtonProps{
+										ClassName:     "btn btn-ghost btn-sm btn-danger btn-icon",
+										OnClick:       removeUserExpr,
+										DisabledExpr:  "$_fetching",
+										AriaLabel:     ctxi18n.T(ctx, "actions.delete"),
+										Title:         ctxi18n.T(ctx, "actions.delete"),
+										IconName:      icons.IconTrash2,
+									})
 								}
 							</div>
 						</td>
