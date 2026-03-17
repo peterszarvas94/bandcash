@@ -89,14 +89,14 @@ templ ExpenseIndexMain(data ExpensesData) {
 		</thead>
 		<tbody>
 			for _, expense := range data.Expenses {
-				<tr data-expense-title={ expense.Title } data-expense-description={ expense.Description } data-expense-amount={ fmt.Sprintf("%d", expense.Amount) } data-expense-date={ expense.Date }>
+				<tr>
 					<td><a class="link cell-ellipsis" href={ fmt.Sprintf("/groups/%s/expenses/%s", data.GroupID, expense.ID) }>{ expense.Title }</a></td>
 					<td>{ utils.FormatDateLocalized(ctx, expense.Date) }</td>
 					<td class="text-right">{ utils.FormatNumberLocalized(ctx, expense.Amount) }</td>
 					if data.IsAdmin {
 						<td data-actions-col>
 							<div class="row row-right row-tight">
-								@shared.IconActionButton(shared.IconActionButtonProps{ClassName: "btn btn-ghost btn-sm btn-icon", OnClick: fmt.Sprintf("$formState = 'edit'; $editingId = %q; $formData = {title: el.closest('tr').dataset.expenseTitle, description: el.closest('tr').dataset.expenseDescription, amount: Number(el.closest('tr').dataset.expenseAmount), date: el.closest('tr').dataset.expenseDate}", expense.ID), DisabledExpr: "$formState !== '' || $_fetching", AriaLabel: ctxi18n.T(ctx, "actions.edit"), Title: ctxi18n.T(ctx, "actions.edit"), IconName: icons.IconPencil})
+								@shared.IconActionButton(shared.IconActionButtonProps{ClassName: "btn btn-ghost btn-sm btn-icon", OnClick: fmt.Sprintf("$formState = 'edit'; $editingId = %q; $formData = {title: %s, description: %s, amount: %d, date: %s}", expense.ID, utils.JSONString(expense.Title), utils.JSONString(expense.Description), expense.Amount, utils.JSONString(expense.Date)), DisabledExpr: "$formState !== '' || $_fetching", AriaLabel: ctxi18n.T(ctx, "actions.edit"), Title: ctxi18n.T(ctx, "actions.edit"), IconName: icons.IconPencil})
 								@shared.IconActionButton(shared.IconActionButtonProps{ClassName: "btn btn-ghost btn-sm btn-danger btn-icon", OnClick: fmt.Sprintf(
 									"$sure = {title: %s, message: %s, submitLabel: %s, cancelLabel: %s, method: 'delete', url: '/groups/%s/expenses/%s', triggerID: %s, open: true, fetching: false}",
 									utils.JSONString(ctxi18n.T(ctx, "expenses.delete_confirm")),
