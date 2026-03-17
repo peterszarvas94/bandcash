@@ -77,6 +77,10 @@ func ExpenseShow(data ExpenseData) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
+		templ_7745c5c3_Err = shared.SureDialog().Render(ctx, templ_7745c5c3_Buffer)
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
 		templ_7745c5c3_Err = shared.AppShell("expense-show", data.Breadcrumbs, data.UserEmail, shared.GroupPrimaryNav(data.GroupID, "expenses", data.UserEmail), ExpenseShowMain(data), ExpenseShowSidebar(data)).Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err

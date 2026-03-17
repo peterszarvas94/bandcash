@@ -16,6 +16,7 @@ templ GroupsPage(data GroupsPageData) {
 				data-init="@get('/sse')"
 			></div>
 			@shared.Notifications()
+			@shared.SureDialog()
 			@shared.AppShell("group-dashboard", data.Breadcrumbs, data.UserEmail, shared.AppPrimaryNav("dashboard", data.UserEmail), GroupsMain(data), GroupsSidebar(data))
 		</body>
 	</html>

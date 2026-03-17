@@ -301,7 +301,7 @@ func EventShowMain(data EventData) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 15, "\" data-on:input=\"$wizard.total = $wizard.rows.reduce((sum, row) => sum + ($wizard.amounts[row.memberId] || 0) + ($wizard.expenses[row.memberId] || 0), 0); $wizard.leftover = ($eventFormData.amount || 0) - $wizard.total\" data-indicator:_fetching><div data-show=\"$wizard.error\" class=\"color-error\" data-text=\"$wizard.error\"></div><div class=\"form-row\"><div class=\"field\"><label for=\"event-edit-title\" class=\"row\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 15, "\" data-effect=\"$wizard.total = $wizard.rows.reduce((sum, row) => sum + ($wizard.amounts[row.memberId] || 0) + ($wizard.expenses[row.memberId] || 0), 0); $wizard.leftover = ($eventFormData.amount || 0) - $wizard.total\" data-indicator:_fetching><div data-show=\"$wizard.error\" class=\"color-error\" data-text=\"$wizard.error\"></div><div class=\"form-row\"><div class=\"field\"><label for=\"event-edit-title\" class=\"row\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}

@@ -13,6 +13,7 @@ templ ExpenseShow(data ExpenseData) {
 		<body>
 			<div data-signals={ templ.JSONString(expenseShowSignals(data, utils.CSRFTokenFromContext(ctx))) } data-init="@get('/sse')"></div>
 			@shared.Notifications()
+			@shared.SureDialog()
 			@shared.AppShell("expense-show", data.Breadcrumbs, data.UserEmail, shared.GroupPrimaryNav(data.GroupID, "expenses", data.UserEmail), ExpenseShowMain(data), ExpenseShowSidebar(data))
 		</body>
 	</html>

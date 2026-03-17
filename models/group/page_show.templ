@@ -18,6 +18,7 @@ templ GroupPage(data GroupPageData) {
 		<body>
 			<div data-signals={ templ.JSONString(map[string]any{"csrf": utils.CSRFTokenFromContext(ctx), "mode": "single", "formState": "", "eventFormState": "", "formData": map[string]any{"name": data.Group.Name}, "errors": map[string]any{"name": ""}}) } data-init="@get('/sse')"></div>
 			@shared.Notifications()
+			@shared.SureDialog()
 			@shared.AppShell("group-show", data.Breadcrumbs, data.UserEmail, shared.GroupPrimaryNav(data.Group.ID, "overview", data.UserEmail), GroupMain(data), GroupSidebar(data))
 		</body>
 	</html>
