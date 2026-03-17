@@ -10,10 +10,13 @@ import (
 
 templ EventIndexSidebar(data EventsData) {
 	if data.IsAdmin {
+		{{
+			submitExpr := fmt.Sprintf("$sidebarLoadingAction = ($formState === 'add' ? 'event-create' : 'event-update'); ($formState === 'add' ? @post('/groups/%s/events') : @put('/groups/%s/events/' + $editingId))", data.GroupID, data.GroupID)
+		}}
 		<div data-signals={ templ.JSONString(map[string]any{"sidebarLoadingAction": ""}) }>
 		<div data-show="$formState !== ''" style="display: none" class="pb">
 			<h3 data-show="$formState === 'edit'">{ctxi18n.T(ctx, "events.edit")}</h3>
-			<form class="form" data-on:submit={ fmt.Sprintf("$sidebarLoadingAction = ($formState === 'add' ? 'event-create' : 'event-update'); ($formState === 'add' ? @post('/groups/%s/events') : @put('/groups/%s/events/' + $editingId))", data.GroupID, data.GroupID) } data-indicator:_fetching>
+			<form class="form" data-on:submit={ submitExpr } data-indicator:_fetching>
 				<div class="form-row">
 					<div class="field">
 						<label for="event-sidebar-title" class="row">{ctxi18n.T(ctx, "fields.title")} <span class="color-error">*</span></label>

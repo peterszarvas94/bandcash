@@ -10,6 +10,9 @@ import (
 )
 
 templ EventShowMain(data EventData) {
+	{{
+		participantsSubmitExpr := fmt.Sprintf("@put('/groups/%s/events/%s/participants')", data.GroupID, data.Event.ID)
+	}}
 	<div data-show="$participantEditorMode === 'read'">
 		if data.IsAdmin {
 			@shared.DetailGridWithActions([]shared.DetailGridRow{
@@ -70,7 +73,7 @@ templ EventShowMain(data EventData) {
 
 	if data.IsAdmin {
 		<div data-show="$participantEditorMode === 'edit'" style="display: none">
-			<form class="form" data-on:submit={ fmt.Sprintf("@put('/groups/%s/events/%s/participants')", data.GroupID, data.Event.ID) } data-effect="$wizard.total = $wizard.rows.reduce((sum, row) => sum + ($wizard.amounts[row.memberId] || 0) + ($wizard.expenses[row.memberId] || 0), 0); $wizard.leftover = ($eventFormData.amount || 0) - $wizard.total" data-indicator:_fetching>
+			<form class="form" data-on:submit={ participantsSubmitExpr } data-effect="$wizard.total = $wizard.rows.reduce((sum, row) => sum + ($wizard.amounts[row.memberId] || 0) + ($wizard.expenses[row.memberId] || 0), 0); $wizard.leftover = ($eventFormData.amount || 0) - $wizard.total" data-indicator:_fetching>
 				<div data-show="$wizard.error" class="color-error" data-text="$wizard.error"></div>
 				<div class="form-row">
 					<div class="field">

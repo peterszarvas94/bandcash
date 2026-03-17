@@ -40,6 +40,7 @@ func ExpenseShowSidebar(data ExpenseData) templ.Component {
 		}
 		ctx = templ.ClearChildren(ctx)
 		if data.IsAdmin {
+			submitExpr := fmt.Sprintf("$sidebarLoadingAction = 'expense-show-update'; @put('/groups/%s/expenses/%s')", data.GroupID, data.Expense.ID)
 			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<div data-signals=\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
@@ -47,7 +48,7 @@ func ExpenseShowSidebar(data ExpenseData) templ.Component {
 			var templ_7745c5c3_Var2 string
 			templ_7745c5c3_Var2, templ_7745c5c3_Err = templ.JoinStringErrs(templ.JSONString(map[string]any{"sidebarLoadingAction": ""}))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/expense/component_show_sidebar.templ`, Line: 15, Col: 82}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/expense/component_show_sidebar.templ`, Line: 18, Col: 82}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var2))
 			if templ_7745c5c3_Err != nil {
@@ -58,9 +59,9 @@ func ExpenseShowSidebar(data ExpenseData) templ.Component {
 				return templ_7745c5c3_Err
 			}
 			var templ_7745c5c3_Var3 string
-			templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("$sidebarLoadingAction = 'expense-show-update'; @put('/groups/%s/expenses/%s')", data.GroupID, data.Expense.ID))
+			templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.JoinStringErrs(submitExpr)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/expense/component_show_sidebar.templ`, Line: 17, Col: 163}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/expense/component_show_sidebar.templ`, Line: 20, Col: 50}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var3))
 			if templ_7745c5c3_Err != nil {
@@ -73,7 +74,7 @@ func ExpenseShowSidebar(data ExpenseData) templ.Component {
 			var templ_7745c5c3_Var4 string
 			templ_7745c5c3_Var4, templ_7745c5c3_Err = templ.JoinStringErrs(ctxi18n.T(ctx, "fields.title"))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/expense/component_show_sidebar.templ`, Line: 19, Col: 82}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/expense/component_show_sidebar.templ`, Line: 22, Col: 82}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var4))
 			if templ_7745c5c3_Err != nil {
@@ -86,7 +87,7 @@ func ExpenseShowSidebar(data ExpenseData) templ.Component {
 			var templ_7745c5c3_Var5 string
 			templ_7745c5c3_Var5, templ_7745c5c3_Err = templ.JoinStringErrs(ctxi18n.T(ctx, "fields.description"))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/expense/component_show_sidebar.templ`, Line: 24, Col: 82}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/expense/component_show_sidebar.templ`, Line: 27, Col: 82}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var5))
 			if templ_7745c5c3_Err != nil {
@@ -99,7 +100,7 @@ func ExpenseShowSidebar(data ExpenseData) templ.Component {
 			var templ_7745c5c3_Var6 string
 			templ_7745c5c3_Var6, templ_7745c5c3_Err = templ.JoinStringErrs(ctxi18n.T(ctx, "fields.amount"))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/expense/component_show_sidebar.templ`, Line: 30, Col: 85}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/expense/component_show_sidebar.templ`, Line: 33, Col: 85}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var6))
 			if templ_7745c5c3_Err != nil {
@@ -112,7 +113,7 @@ func ExpenseShowSidebar(data ExpenseData) templ.Component {
 			var templ_7745c5c3_Var7 string
 			templ_7745c5c3_Var7, templ_7745c5c3_Err = templ.JoinStringErrs(ctxi18n.T(ctx, "fields.date"))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/expense/component_show_sidebar.templ`, Line: 35, Col: 81}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/expense/component_show_sidebar.templ`, Line: 38, Col: 81}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var7))
 			if templ_7745c5c3_Err != nil {

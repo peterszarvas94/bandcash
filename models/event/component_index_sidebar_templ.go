@@ -38,6 +38,7 @@ func EventIndexSidebar(data EventsData) templ.Component {
 		}
 		ctx = templ.ClearChildren(ctx)
 		if data.IsAdmin {
+			submitExpr := fmt.Sprintf("$sidebarLoadingAction = ($formState === 'add' ? 'event-create' : 'event-update'); ($formState === 'add' ? @post('/groups/%s/events') : @put('/groups/%s/events/' + $editingId))", data.GroupID, data.GroupID)
 			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<div data-signals=\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
@@ -45,7 +46,7 @@ func EventIndexSidebar(data EventsData) templ.Component {
 			var templ_7745c5c3_Var2 string
 			templ_7745c5c3_Var2, templ_7745c5c3_Err = templ.JoinStringErrs(templ.JSONString(map[string]any{"sidebarLoadingAction": ""}))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/event/component_index_sidebar.templ`, Line: 13, Col: 82}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/event/component_index_sidebar.templ`, Line: 16, Col: 82}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var2))
 			if templ_7745c5c3_Err != nil {
@@ -58,7 +59,7 @@ func EventIndexSidebar(data EventsData) templ.Component {
 			var templ_7745c5c3_Var3 string
 			templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.JoinStringErrs(ctxi18n.T(ctx, "events.edit"))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/event/component_index_sidebar.templ`, Line: 15, Col: 71}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/event/component_index_sidebar.templ`, Line: 18, Col: 71}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var3))
 			if templ_7745c5c3_Err != nil {
@@ -69,9 +70,9 @@ func EventIndexSidebar(data EventsData) templ.Component {
 				return templ_7745c5c3_Err
 			}
 			var templ_7745c5c3_Var4 string
-			templ_7745c5c3_Var4, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("$sidebarLoadingAction = ($formState === 'add' ? 'event-create' : 'event-update'); ($formState === 'add' ? @post('/groups/%s/events') : @put('/groups/%s/events/' + $editingId))", data.GroupID, data.GroupID))
+			templ_7745c5c3_Var4, templ_7745c5c3_Err = templ.JoinStringErrs(submitExpr)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/event/component_index_sidebar.templ`, Line: 16, Col: 257}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/event/component_index_sidebar.templ`, Line: 19, Col: 49}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var4))
 			if templ_7745c5c3_Err != nil {
@@ -84,7 +85,7 @@ func EventIndexSidebar(data EventsData) templ.Component {
 			var templ_7745c5c3_Var5 string
 			templ_7745c5c3_Var5, templ_7745c5c3_Err = templ.JoinStringErrs(ctxi18n.T(ctx, "fields.title"))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/event/component_index_sidebar.templ`, Line: 19, Col: 82}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/event/component_index_sidebar.templ`, Line: 22, Col: 82}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var5))
 			if templ_7745c5c3_Err != nil {
@@ -97,7 +98,7 @@ func EventIndexSidebar(data EventsData) templ.Component {
 			var templ_7745c5c3_Var6 string
 			templ_7745c5c3_Var6, templ_7745c5c3_Err = templ.JoinStringErrs(ctxi18n.T(ctx, "fields.time"))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/event/component_index_sidebar.templ`, Line: 24, Col: 80}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/event/component_index_sidebar.templ`, Line: 27, Col: 80}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var6))
 			if templ_7745c5c3_Err != nil {
@@ -110,7 +111,7 @@ func EventIndexSidebar(data EventsData) templ.Component {
 			var templ_7745c5c3_Var7 string
 			templ_7745c5c3_Var7, templ_7745c5c3_Err = templ.JoinStringErrs(ctxi18n.T(ctx, "fields.description"))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/event/component_index_sidebar.templ`, Line: 30, Col: 81}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/event/component_index_sidebar.templ`, Line: 33, Col: 81}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var7))
 			if templ_7745c5c3_Err != nil {
@@ -123,7 +124,7 @@ func EventIndexSidebar(data EventsData) templ.Component {
 			var templ_7745c5c3_Var8 string
 			templ_7745c5c3_Var8, templ_7745c5c3_Err = templ.JoinStringErrs(ctxi18n.T(ctx, "fields.amount"))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/event/component_index_sidebar.templ`, Line: 35, Col: 83}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/event/component_index_sidebar.templ`, Line: 38, Col: 83}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var8))
 			if templ_7745c5c3_Err != nil {

@@ -12,9 +12,12 @@ import (
 
 templ ExpenseShowSidebar(data ExpenseData) {
 	if data.IsAdmin {
+		{{
+			submitExpr := fmt.Sprintf("$sidebarLoadingAction = 'expense-show-update'; @put('/groups/%s/expenses/%s')", data.GroupID, data.Expense.ID)
+		}}
 		<div data-signals={ templ.JSONString(map[string]any{"sidebarLoadingAction": ""}) }>
 			<div data-show="$formState === 'edit'" style="display: none" class="pb">
-				<form class="form" data-on:submit={ fmt.Sprintf("$sidebarLoadingAction = 'expense-show-update'; @put('/groups/%s/expenses/%s')", data.GroupID, data.Expense.ID) } data-indicator:_fetching>
+				<form class="form" data-on:submit={ submitExpr } data-indicator:_fetching>
 					<div class="field">
 						<label for="expense-show-title" class="row">{ ctxi18n.T(ctx, "fields.title") } <span class="color-error">*</span></label>
 						<input id="expense-show-title" type="text" data-bind="formData.title" class="input"/>
