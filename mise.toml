@@ -11,13 +11,10 @@ ruby = "3.4.2"
 "gem:kamal" = "2.10.1"
 
 [tasks]
-dev = "mise run dev-preflight && mise run -o prefix dev-app ::: dev-mail ::: dev-caddy"
-dev-app = "SUPERADMIN_EMAIL=admin@bandcash.localhost air"
-dev-preflight = "go run ./cmd/devpreflight/main.go"
+app = "SUPERADMIN_EMAIL=admin@bandcash.localhost air"
+preflight = "go run ./cmd/devpreflight/main.go"
 assets = "go run ./cmd/assets/main.go"
-build = "mise run assets && go build -o tmp/server cmd/server/main.go"
 start = "./tmp/server"
-run = "SUPERADMIN_EMAIL=admin@bandcash.localhost mise run assets && SUPERADMIN_EMAIL=admin@bandcash.localhost go run ./cmd/server/main.go"
 routes = "go run ./cmd/server/main.go --routes"
 test = "go test ./..."
 test-pretty = "gotestsum --format testdox -- -count=1 ./..."
@@ -25,7 +22,6 @@ format = "go fmt ./..."
 vet = "go vet ./..."
 lint = "golangci-lint run"
 lsp = 'gopls check -severity=hint $(git ls-files "*.go" ":!internal/db/*.go")'
-check = "mise run format && mise run vet && mise run test"
 templ = "templ generate -lazy"
 sqlc = "sqlc generate"
 goose-up = "goose -dir internal/db/migrations sqlite3 sqlite.db up"
@@ -33,9 +29,31 @@ goose-status = "goose -dir internal/db/migrations sqlite3 sqlite.db status"
 goose-create = "goose -dir internal/db/migrations create ${name} sql"
 seed = "SUPERADMIN_EMAIL=admin@bandcash.localhost go run ./cmd/seed/main.go"
 mailpit = "mailpit --listen 0.0.0.0:8025 --smtp 0.0.0.0:1025"
-dev-mail = "mailpit --listen 0.0.0.0:8025 --smtp 0.0.0.0:1025"
-dev-caddy = "sudo caddy run --config ./Caddyfile.local"
 check-versions = "go run ./cmd/checkversions"
 kamal = "env -u GEM_HOME -u GEM_PATH $(mise which kamal)"
 deploy-check = "env -u GEM_HOME -u GEM_PATH $(mise which kamal) config"
 deploy = "env -u GEM_HOME -u GEM_PATH $(mise which kamal) deploy"
+
+[tasks.build]
+depends = ["assets"]
+run = "go build -o tmp/server cmd/server/main.go"
+
+[tasks.run]
+run = [
+  { task = "assets" },
+  "SUPERADMIN_EMAIL=admin@bandcash.localhost go run ./cmd/server/main.go",
+]
+
+[tasks.check]
+run = [
+  { task = "format" },
+  { task = "vet" },
+  { task = "test" },
+]
+
+[tasks.dev]
+depends = ["preflight"]
+run = [{ tasks = ["app", "mailpit", "caddy"] }]
+
+[tasks.caddy]
+run = "exec caddy run --config ./Caddyfile.local"
