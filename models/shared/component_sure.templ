@@ -1,0 +1,76 @@
+package shared
+
+import "bandcash/models/shared/icons"
+
+templ SureDialog() {
+	{{
+		sureCloseExpr := `!$sure.fetching && ($sure.open = false)`
+		sureOverlayCloseExpr := `evt.target === el && !$sure.fetching && ($sure.open = false)`
+		sureCancelExpr := `$sure.fetching && evt.preventDefault()`
+		sureDialogEffect := `$sure.open ? (!el.open && el.showModal()) : (el.open && el.close())`
+		sureDialogCloseExpr := `$sure.open = false; $sure.triggerID = ''`
+		sureSubmitExpr := `!$sure.fetching && (
+			$sure.fetching = true,
+			($sure.method === 'delete' ? @delete($sure.url) : ($sure.method === 'put' ? @put($sure.url) : @post($sure.url)))
+		)`
+		sureFetchDoneExpr := `(evt.detail.type === 'finished' || evt.detail.type === 'error' || evt.detail.type === 'retries-failed') && (
+			$sure.fetching = false,
+			$sure.open = false
+		)`
+	}}
+	<dialog
+		id="sure-popover"
+		class="sure-popover"
+		data-signals={ templ.JSONString(map[string]any{
+			"sure": map[string]any{
+				"open":        false,
+				"fetching":    false,
+				"title":       "",
+				"message":     "",
+				"submitLabel": "",
+				"cancelLabel": "",
+				"method":      "post",
+				"url":         "",
+				"triggerID":   "",
+			},
+		}) }
+		data-effect={ sureDialogEffect }
+		data-on:click={ sureOverlayCloseExpr }
+		data-on:cancel={ sureCancelExpr }
+		data-on:close={ sureDialogCloseExpr }
+	>
+		<section class="sure-dialog" role="dialog" aria-modal="true" aria-labelledby="sure-title" aria-describedby="sure-message">
+			<h3 id="sure-title" data-text="$sure.title"></h3>
+			<p id="sure-message" data-show="$sure.message !== ''" style="display: none" data-text="$sure.message"></p>
+			<div class="row row-right row-wrap">
+				<button
+					id="sure-cancel"
+					type="button"
+					class="btn"
+					autofocus
+					data-attr:disabled="$sure.fetching"
+					data-on:click={ sureCloseExpr }
+				>
+					@icons.Icon(icons.IconX, templ.Attributes{"class": "icon"})
+					<span data-text="$sure.cancelLabel"></span>
+				</button>
+				<button
+					id="sure-submit"
+					type="button"
+					class="btn btn-danger"
+					data-attr:disabled="$sure.fetching"
+					data-on:click={ sureSubmitExpr }
+					data-on:datastar-fetch={ sureFetchDoneExpr }
+				>
+					<span data-show="!$sure.fetching">
+						@icons.Icon(icons.IconTrash2, templ.Attributes{"class": "icon"})
+					</span>
+					<span data-show="$sure.fetching" style="display: none">
+						@icons.LoaderCircle(templ.Attributes{"class": "icon icon-spin"})
+					</span>
+					<span data-text="$sure.submitLabel"></span>
+				</button>
+			</div>
+		</section>
+	</dialog>
+}
