@@ -32,13 +32,13 @@ templ MemberIndexMain(data MembersData) {
 		</thead>
 		<tbody>
 			for _, member := range data.Members {
-				<tr data-member-name={ member.Name } data-member-description={ member.Description }>
+				<tr>
 					<td><a class="link" href={ fmt.Sprintf("/groups/%s/members/%s", data.GroupID, member.ID) }>{ member.Name }</a></td>
 					<td><span class="cell-ellipsis">{ member.Description }</span></td>
 					if data.IsAdmin {
 						<td data-actions-col>
 							<div class="row row-right row-tight">
-								@shared.IconActionButton(shared.IconActionButtonProps{ClassName: "btn btn-ghost btn-sm btn-icon", OnClick: fmt.Sprintf("$formState = 'edit'; $editingId = %q; $formData = {name: el.closest('tr').dataset.memberName, description: el.closest('tr').dataset.memberDescription}", member.ID), DisabledExpr: "$formState !== '' || $_fetching", AriaLabel: ctxi18n.T(ctx, "actions.edit"), Title: ctxi18n.T(ctx, "actions.edit"), IconName: icons.IconPencil})
+								@shared.IconActionButton(shared.IconActionButtonProps{ClassName: "btn btn-ghost btn-sm btn-icon", OnClick: fmt.Sprintf("$formState = 'edit'; $editingId = %q; $formData = {name: %s, description: %s}", member.ID, utils.JSONString(member.Name), utils.JSONString(member.Description)), DisabledExpr: "$formState !== '' || $_fetching", AriaLabel: ctxi18n.T(ctx, "actions.edit"), Title: ctxi18n.T(ctx, "actions.edit"), IconName: icons.IconPencil})
 								@shared.IconActionButton(shared.IconActionButtonProps{ClassName: "btn btn-ghost btn-sm btn-danger btn-icon", OnClick: fmt.Sprintf(
 									"$sure = {title: %s, message: %s, submitLabel: %s, cancelLabel: %s, method: 'delete', url: '/groups/%s/members/%s', triggerID: %s, open: true, fetching: false}",
 									utils.JSONString(ctxi18n.T(ctx, "members.delete_confirm")),

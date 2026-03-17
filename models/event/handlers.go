@@ -55,22 +55,27 @@ type participantBulkRowData struct {
 	Expense    int64  `json:"expense" validate:"gte=0"`
 }
 
+type participantWizardSignals struct {
+	EventAmount      int64                    `json:"eventAmount"`
+	SelectedMemberID string                   `json:"selectedMemberId"`
+	Rows             []participantBulkRowData `json:"rows"`
+	Amounts          map[string]int64         `json:"amounts"`
+	Expenses         map[string]int64         `json:"expenses"`
+	Total            int64                    `json:"total"`
+	Leftover         int64                    `json:"leftover"`
+	Error            string                   `json:"error"`
+}
+
 type participantBulkParams struct {
-	EventFormData     eventData                `json:"eventFormData"`
-	WizardEventAmount int64                    `json:"wizardEventAmount"`
-	WizardRows        []participantBulkRowData `json:"wizardRows"`
-	WizardAmounts     map[string]int64         `json:"wizardAmounts"`
-	WizardExpenses    map[string]int64         `json:"wizardExpenses"`
-	TableQuery        utils.TableQuery         `json:"tableQuery"`
+	EventFormData eventData                `json:"eventFormData"`
+	Wizard        participantWizardSignals `json:"wizard"`
+	TableQuery    utils.TableQuery         `json:"tableQuery"`
 }
 
 type participantDraftParams struct {
-	EventFormData     eventData                `json:"eventFormData"`
-	WizardEventAmount int64                    `json:"wizardEventAmount"`
-	WizardRows        []participantBulkRowData `json:"wizardRows"`
-	WizardAmounts     map[string]int64         `json:"wizardAmounts"`
-	WizardExpenses    map[string]int64         `json:"wizardExpenses"`
-	TableQuery        utils.TableQuery         `json:"tableQuery"`
+	EventFormData eventData                `json:"eventFormData"`
+	Wizard        participantWizardSignals `json:"wizard"`
+	TableQuery    utils.TableQuery         `json:"tableQuery"`
 }
 
 type staticTableQueryable struct {
@@ -220,6 +225,21 @@ func buildWizardAddableMembers(allMembers []db.Member, wizardRows []ParticipantW
 	})
 
 	return addable
+}
+
+func patchWizardError(c echo.Context, wizard participantWizardSignals, message string) {
+	utils.SSEHub.PatchSignals(c, map[string]any{
+		"wizard": map[string]any{
+			"eventAmount":      wizard.EventAmount,
+			"selectedMemberId": wizard.SelectedMemberID,
+			"rows":             wizard.Rows,
+			"amounts":          wizard.Amounts,
+			"expenses":         wizard.Expenses,
+			"total":            wizard.Total,
+			"leftover":         wizard.Leftover,
+			"error":            message,
+		},
+	})
 }
 
 func (e *Events) patchEventShow(c echo.Context, groupID, eventID, userEmail string, query utils.TableQuery, editorMode string, eventForm eventData, wizardEventAmount int64, wizardRows []participantBulkRowData, wizardAmounts map[string]int64, wizardExpenses map[string]int64, wizardError string) error {
@@ -783,10 +803,10 @@ func (e *Events) IncludeParticipantsDraftMember(c echo.Context) error {
 
 	query := utils.NormalizeTableQuery(signals.TableQuery, e.ParticipantTableQuerySpec())
 	found := false
-	for i := range signals.WizardRows {
-		signals.WizardRows[i].MemberID = strings.TrimSpace(signals.WizardRows[i].MemberID)
-		if signals.WizardRows[i].MemberID == memberID {
-			signals.WizardRows[i].Included = true
+	for i := range signals.Wizard.Rows {
+		signals.Wizard.Rows[i].MemberID = strings.TrimSpace(signals.Wizard.Rows[i].MemberID)
+		if signals.Wizard.Rows[i].MemberID == memberID {
+			signals.Wizard.Rows[i].Included = true
 			found = true
 			break
 		}
@@ -807,10 +827,10 @@ func (e *Events) IncludeParticipantsDraftMember(c echo.Context) error {
 			expense = participant.ParticipantExpense
 			break
 		}
-		signals.WizardRows = append(signals.WizardRows, participantBulkRowData{MemberID: memberID, Included: true, Amount: amount, Expense: expense})
+		signals.Wizard.Rows = append(signals.Wizard.Rows, participantBulkRowData{MemberID: memberID, Included: true, Amount: amount, Expense: expense})
 	}
 
-	if err := e.patchEventShow(c, groupID, eventID, userEmail, query, "edit", signals.EventFormData, signals.WizardEventAmount, signals.WizardRows, signals.WizardAmounts, signals.WizardExpenses, ""); err != nil {
+	if err := e.patchEventShow(c, groupID, eventID, userEmail, query, "edit", signals.EventFormData, signals.Wizard.EventAmount, signals.Wizard.Rows, signals.Wizard.Amounts, signals.Wizard.Expenses, ""); err != nil {
 		slog.Error("participant.draft.include: failed to render", "err", err)
 		return c.NoContent(http.StatusInternalServerError)
 	}
@@ -841,17 +861,17 @@ func (e *Events) ExcludeParticipantsDraftMember(c echo.Context) error {
 	}
 
 	query := utils.NormalizeTableQuery(signals.TableQuery, e.ParticipantTableQuerySpec())
-	updatedRows := make([]participantBulkRowData, 0, len(signals.WizardRows))
-	for i := range signals.WizardRows {
-		signals.WizardRows[i].MemberID = strings.TrimSpace(signals.WizardRows[i].MemberID)
-		if signals.WizardRows[i].MemberID == memberID {
+	updatedRows := make([]participantBulkRowData, 0, len(signals.Wizard.Rows))
+	for i := range signals.Wizard.Rows {
+		signals.Wizard.Rows[i].MemberID = strings.TrimSpace(signals.Wizard.Rows[i].MemberID)
+		if signals.Wizard.Rows[i].MemberID == memberID {
 			continue
 		}
-		updatedRows = append(updatedRows, signals.WizardRows[i])
+		updatedRows = append(updatedRows, signals.Wizard.Rows[i])
 	}
-	signals.WizardRows = updatedRows
+	signals.Wizard.Rows = updatedRows
 
-	if err := e.patchEventShow(c, groupID, eventID, userEmail, query, "edit", signals.EventFormData, signals.WizardEventAmount, signals.WizardRows, signals.WizardAmounts, signals.WizardExpenses, ""); err != nil {
+	if err := e.patchEventShow(c, groupID, eventID, userEmail, query, "edit", signals.EventFormData, signals.Wizard.EventAmount, signals.Wizard.Rows, signals.Wizard.Amounts, signals.Wizard.Expenses, ""); err != nil {
 		slog.Error("participant.draft.exclude: failed to render", "err", err)
 		return c.NoContent(http.StatusInternalServerError)
 	}
@@ -880,7 +900,8 @@ func (e *Events) SaveParticipantsBulk(c echo.Context) error {
 	signals.EventFormData.Description = strings.TrimSpace(signals.EventFormData.Description)
 
 	if errs := utils.ValidateWithLocale(c.Request().Context(), signals.EventFormData); errs != nil {
-		utils.SSEHub.PatchSignals(c, map[string]any{"errors": utils.WithErrors(eventErrorFields, errs), "wizardError": ctxi18n.T(c.Request().Context(), "participants.bulk_validation_error")})
+		patchWizardError(c, signals.Wizard, ctxi18n.T(c.Request().Context(), "participants.bulk_validation_error"))
+		utils.SSEHub.PatchSignals(c, map[string]any{"errors": utils.WithErrors(eventErrorFields, errs)})
 		return c.NoContent(http.StatusUnprocessableEntity)
 	}
 
@@ -895,36 +916,36 @@ func (e *Events) SaveParticipantsBulk(c echo.Context) error {
 		memberIDs[member.ID] = struct{}{}
 	}
 
-	for i := range signals.WizardRows {
-		signals.WizardRows[i].MemberID = strings.TrimSpace(signals.WizardRows[i].MemberID)
-		signals.WizardRows[i].MemberName = strings.TrimSpace(signals.WizardRows[i].MemberName)
-		if signals.WizardAmounts != nil {
-			if value, ok := signals.WizardAmounts[signals.WizardRows[i].MemberID]; ok {
-				signals.WizardRows[i].Amount = value
+	for i := range signals.Wizard.Rows {
+		signals.Wizard.Rows[i].MemberID = strings.TrimSpace(signals.Wizard.Rows[i].MemberID)
+		signals.Wizard.Rows[i].MemberName = strings.TrimSpace(signals.Wizard.Rows[i].MemberName)
+		if signals.Wizard.Amounts != nil {
+			if value, ok := signals.Wizard.Amounts[signals.Wizard.Rows[i].MemberID]; ok {
+				signals.Wizard.Rows[i].Amount = value
 			}
 		}
-		if signals.WizardExpenses != nil {
-			if value, ok := signals.WizardExpenses[signals.WizardRows[i].MemberID]; ok {
-				signals.WizardRows[i].Expense = value
+		if signals.Wizard.Expenses != nil {
+			if value, ok := signals.Wizard.Expenses[signals.Wizard.Rows[i].MemberID]; ok {
+				signals.Wizard.Rows[i].Expense = value
 			}
 		}
-		if _, ok := memberIDs[signals.WizardRows[i].MemberID]; !ok {
-			utils.SSEHub.PatchSignals(c, map[string]any{"wizardError": ctxi18n.T(c.Request().Context(), "participants.bulk_validation_error")})
+		if _, ok := memberIDs[signals.Wizard.Rows[i].MemberID]; !ok {
+			patchWizardError(c, signals.Wizard, ctxi18n.T(c.Request().Context(), "participants.bulk_validation_error"))
 			return c.NoContent(http.StatusUnprocessableEntity)
 		}
-		if errs := utils.ValidateWithLocale(c.Request().Context(), signals.WizardRows[i]); errs != nil {
-			utils.SSEHub.PatchSignals(c, map[string]any{"wizardError": ctxi18n.T(c.Request().Context(), "participants.bulk_validation_error")})
+		if errs := utils.ValidateWithLocale(c.Request().Context(), signals.Wizard.Rows[i]); errs != nil {
+			patchWizardError(c, signals.Wizard, ctxi18n.T(c.Request().Context(), "participants.bulk_validation_error"))
 			return c.NoContent(http.StatusUnprocessableEntity)
 		}
-		if signals.WizardAmounts != nil {
-			if value, ok := signals.WizardAmounts[signals.WizardRows[i].MemberID]; ok && value < 0 {
-				utils.SSEHub.PatchSignals(c, map[string]any{"wizardError": ctxi18n.T(c.Request().Context(), "participants.bulk_validation_error")})
+		if signals.Wizard.Amounts != nil {
+			if value, ok := signals.Wizard.Amounts[signals.Wizard.Rows[i].MemberID]; ok && value < 0 {
+				patchWizardError(c, signals.Wizard, ctxi18n.T(c.Request().Context(), "participants.bulk_validation_error"))
 				return c.NoContent(http.StatusUnprocessableEntity)
 			}
 		}
-		if signals.WizardExpenses != nil {
-			if value, ok := signals.WizardExpenses[signals.WizardRows[i].MemberID]; ok && value < 0 {
-				utils.SSEHub.PatchSignals(c, map[string]any{"wizardError": ctxi18n.T(c.Request().Context(), "participants.bulk_validation_error")})
+		if signals.Wizard.Expenses != nil {
+			if value, ok := signals.Wizard.Expenses[signals.Wizard.Rows[i].MemberID]; ok && value < 0 {
+				patchWizardError(c, signals.Wizard, ctxi18n.T(c.Request().Context(), "participants.bulk_validation_error"))
 				return c.NoContent(http.StatusUnprocessableEntity)
 			}
 		}
@@ -964,21 +985,21 @@ func (e *Events) SaveParticipantsBulk(c echo.Context) error {
 		currentSet[participant.ID] = struct{}{}
 	}
 
-	desiredSet := make(map[string]struct{}, len(signals.WizardRows))
-	for _, row := range signals.WizardRows {
+	desiredSet := make(map[string]struct{}, len(signals.Wizard.Rows))
+	for _, row := range signals.Wizard.Rows {
 		if !row.Included {
 			continue
 		}
 
 		amount := row.Amount
-		if signals.WizardAmounts != nil {
-			if value, ok := signals.WizardAmounts[row.MemberID]; ok {
+		if signals.Wizard.Amounts != nil {
+			if value, ok := signals.Wizard.Amounts[row.MemberID]; ok {
 				amount = value
 			}
 		}
 		expense := row.Expense
-		if signals.WizardExpenses != nil {
-			if value, ok := signals.WizardExpenses[row.MemberID]; ok {
+		if signals.Wizard.Expenses != nil {
+			if value, ok := signals.Wizard.Expenses[row.MemberID]; ok {
 				expense = value
 			}
 		}
@@ -1038,6 +1059,6 @@ func (e *Events) SaveParticipantsBulk(c echo.Context) error {
 		return c.NoContent(http.StatusInternalServerError)
 	}
 
-	slog.Debug("participant.bulk", "event_id", eventID, "rows", len(signals.WizardRows))
+	slog.Debug("participant.bulk", "event_id", eventID, "rows", len(signals.Wizard.Rows))
 	return c.NoContent(http.StatusOK)
 }

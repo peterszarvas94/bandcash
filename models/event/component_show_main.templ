@@ -70,8 +70,8 @@ templ EventShowMain(data EventData) {
 
 	if data.IsAdmin {
 		<div data-show="$participantEditorMode === 'edit'" style="display: none">
-			<form class="form" data-on:submit={ fmt.Sprintf("@put('/groups/%s/events/%s/participants')", data.GroupID, data.Event.ID) } data-on:input="$wizardTotal = $wizardRows.reduce((sum, row) => sum + ($wizardAmounts[row.memberId] || 0) + ($wizardExpenses[row.memberId] || 0), 0); $wizardLeftover = ($eventFormData.amount || 0) - $wizardTotal" data-indicator:_fetching>
-				<div data-show="$wizardError" class="color-error" data-text="$wizardError"></div>
+			<form class="form" data-on:submit={ fmt.Sprintf("@put('/groups/%s/events/%s/participants')", data.GroupID, data.Event.ID) } data-on:input="$wizard.total = $wizard.rows.reduce((sum, row) => sum + ($wizard.amounts[row.memberId] || 0) + ($wizard.expenses[row.memberId] || 0), 0); $wizard.leftover = ($eventFormData.amount || 0) - $wizard.total" data-indicator:_fetching>
+				<div data-show="$wizard.error" class="color-error" data-text="$wizard.error"></div>
 				<div class="form-row">
 					<div class="field">
 						<label for="event-edit-title" class="row">{ctxi18n.T(ctx, "fields.title")} <span class="color-error">*</span></label>
@@ -96,11 +96,11 @@ templ EventShowMain(data EventData) {
 				</div>
 				<div class="field">
 					<label for="event-edit-total">{ctxi18n.T(ctx, "participants.payout_total")}</label>
-					<input id="event-edit-total" type="number" class="input" disabled data-bind="wizardTotal"/>
+					<input id="event-edit-total" type="number" class="input" disabled data-bind="wizard.total"/>
 				</div>
 				<div class="field">
 					<label for="event-edit-leftover">{ctxi18n.T(ctx, "events.leftover")}</label>
-					<input id="event-edit-leftover" type="number" class="input" disabled data-bind="wizardLeftover"/>
+					<input id="event-edit-leftover" type="number" class="input" disabled data-bind="wizard.leftover"/>
 				</div>
 
 				<div class="table-scroll">
@@ -118,9 +118,9 @@ templ EventShowMain(data EventData) {
 							for _, row := range data.WizardRows {
 								<tr>
 									<td><a class="link" href={ fmt.Sprintf("/groups/%s/members/%s", data.GroupID, row.MemberID) }>{ row.MemberName }</a></td>
-									<td class="text-right"><input type="number" class="input w-min-input" step="1" min="0" data-bind={ fmt.Sprintf("wizardAmounts.%s", row.MemberID) } value={ fmt.Sprintf("%d", row.Amount) }/></td>
-									<td class="text-right"><input type="number" class="input w-min-input" step="1" min="0" data-bind={ fmt.Sprintf("wizardExpenses.%s", row.MemberID) } value={ fmt.Sprintf("%d", row.Expense) }/></td>
-									<td class="text-right" data-text={ fmt.Sprintf("($wizardAmounts['%s'] || 0) + ($wizardExpenses['%s'] || 0)", row.MemberID, row.MemberID) }></td>
+									<td class="text-right"><input type="number" class="input w-min-input" step="1" min="0" data-bind={ fmt.Sprintf("wizard.amounts.%s", row.MemberID) } value={ fmt.Sprintf("%d", row.Amount) }/></td>
+									<td class="text-right"><input type="number" class="input w-min-input" step="1" min="0" data-bind={ fmt.Sprintf("wizard.expenses.%s", row.MemberID) } value={ fmt.Sprintf("%d", row.Expense) }/></td>
+									<td class="text-right" data-text={ fmt.Sprintf("($wizard.amounts['%s'] || 0) + ($wizard.expenses['%s'] || 0)", row.MemberID, row.MemberID) }></td>
 									<td class="text-right">
 										@shared.IconActionButton(shared.IconActionButtonProps{ClassName: "btn btn-ghost btn-sm btn-danger btn-icon", OnClick: fmt.Sprintf("@delete('/groups/%s/events/%s/participants/draft/%s')", data.GroupID, data.Event.ID, row.MemberID), DisabledExpr: "$_fetching", AriaLabel: ctxi18n.T(ctx, "actions.delete"), Title: ctxi18n.T(ctx, "actions.delete"), IconName: icons.IconTrash2})
 									</td>
@@ -133,7 +133,7 @@ templ EventShowMain(data EventData) {
 							}
 							<tr>
 								<td>
-									<select id="event-wizard-add-member" data-bind="wizardSelectedMemberId" class="input w-min-input" data-attr:disabled={ fmt.Sprintf("$_fetching || %t", len(data.WizardAddableMembers) == 0) }>
+									<select id="event-wizard-add-member" data-bind="wizard.selectedMemberId" class="input w-min-input" data-attr:disabled={ fmt.Sprintf("$_fetching || %t", len(data.WizardAddableMembers) == 0) }>
 										<option value="">{ctxi18n.T(ctx, "participants.select_member")}</option>
 										for _, member := range data.WizardAddableMembers {
 											<option value={ member.ID }>{ member.Name }</option>
@@ -141,7 +141,7 @@ templ EventShowMain(data EventData) {
 									</select>
 								</td>
 								<td>
-									@shared.ActionButton(shared.ActionButtonProps{ClassName: "btn", OnClick: fmt.Sprintf("if (!$wizardSelectedMemberId) return; @post('/groups/%s/events/%s/participants/draft/' + $wizardSelectedMemberId)", data.GroupID, data.Event.ID), DisabledExpr: fmt.Sprintf("$_fetching || !$wizardSelectedMemberId || %t", len(data.WizardAddableMembers) == 0), Label: ctxi18n.T(ctx, "participants.add"), IconName: icons.IconPlus})
+									@shared.ActionButton(shared.ActionButtonProps{ClassName: "btn", OnClick: fmt.Sprintf("if (!$wizard.selectedMemberId) return; @post('/groups/%s/events/%s/participants/draft/' + $wizard.selectedMemberId)", data.GroupID, data.Event.ID), DisabledExpr: fmt.Sprintf("$_fetching || !$wizard.selectedMemberId || %t", len(data.WizardAddableMembers) == 0), Label: ctxi18n.T(ctx, "participants.add"), IconName: icons.IconPlus})
 								</td>
 								<td></td>
 								<td></td>
