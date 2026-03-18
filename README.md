@@ -17,7 +17,7 @@ mise run goose-up
 mise run dev
 ```
 
-Open `http://localhost:2222`.
+Open `http://bandcash.localhost`.
 
 ## Environment
 
