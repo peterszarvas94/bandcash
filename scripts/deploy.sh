@@ -1,23 +1,73 @@
 #!/bin/bash
 set -e
 
+# Parse bump type argument
+BUMP_TYPE="${1:-}"
+
+# If no argument provided, prompt user
+if [ -z "$BUMP_TYPE" ]; then
+  echo "Select version bump type:"
+  echo "  1) major (X.0.0)"
+  echo "  2) minor (x.Y.0)"
+  echo "  3) patch (x.y.Z)"
+  read -p "Enter choice (1-3): " choice
+  
+  case "$choice" in
+    1) BUMP_TYPE="major" ;;
+    2) BUMP_TYPE="minor" ;;
+    3) BUMP_TYPE="patch" ;;
+    *) 
+      echo "Invalid choice: $choice"
+      exit 1
+      ;;
+  esac
+fi
+
+# Validate bump type
+case "$BUMP_TYPE" in
+  major|minor|patch)
+    ;;
+  *)
+    echo "Usage: $0 [major|minor|patch]"
+    echo "Or run without arguments to be prompted"
+    exit 1
+    ;;
+esac
+
 # Get the latest tag, default to v0.0.0 if none exists
 latest_tag=$(git tag --list 'v*' --sort=-v:refname | head -1)
 
 if [ -z "$latest_tag" ]; then
-  new_tag="v0.0.1"
+  major=0
+  minor=0
+  patch=0
 else
   # Parse version components (assumes format vX.Y.Z)
   version=${latest_tag#v}
   major=$(echo "$version" | cut -d. -f1)
   minor=$(echo "$version" | cut -d. -f2)
   patch=$(echo "$version" | cut -d. -f3)
-  
-  # Increment patch version
-  new_patch=$((patch + 1))
-  new_tag="v${major}.${minor}.${new_patch}"
 fi
 
+# Bump the appropriate version component
+case "$BUMP_TYPE" in
+  major)
+    major=$((major + 1))
+    minor=0
+    patch=0
+    ;;
+  minor)
+    minor=$((minor + 1))
+    patch=0
+    ;;
+  patch)
+    patch=$((patch + 1))
+    ;;
+esac
+
+new_tag="v${major}.${minor}.${patch}"
+
+echo "Bumping $BUMP_TYPE version..."
 echo "Creating tag: $new_tag"
 git tag "$new_tag"
 
