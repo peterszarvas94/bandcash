@@ -345,10 +345,6 @@ func MemberShowDetailsActions(data MemberData) templ.Component {
 		}
 		ctx = templ.ClearChildren(ctx)
 		if data.IsAdmin {
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 13, "<div class=\"row row-wrap\">")
-			if templ_7745c5c3_Err != nil {
-				return templ_7745c5c3_Err
-			}
 			templ_7745c5c3_Err = shared.ActionButton(shared.ActionButtonProps{
 				ClassName:    "btn",
 				OnClick:      "$formState = 'edit'; $errors = {name: '', description: ''}",
@@ -356,6 +352,10 @@ func MemberShowDetailsActions(data MemberData) templ.Component {
 				Label:        ctxi18n.T(ctx, "actions.edit"),
 				IconName:     icons.IconPencil,
 			}).Render(ctx, templ_7745c5c3_Buffer)
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 13, " ")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -374,10 +374,6 @@ func MemberShowDetailsActions(data MemberData) templ.Component {
 					TriggerID:   "member-show-delete",
 				},
 			}).Render(ctx, templ_7745c5c3_Buffer)
-			if templ_7745c5c3_Err != nil {
-				return templ_7745c5c3_Err
-			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 14, "</div>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}

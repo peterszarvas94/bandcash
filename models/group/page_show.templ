@@ -68,32 +68,30 @@ templ GroupDetailsContent(data GroupPageData) {
 	}
 }
 
-	templ GroupDetailsActions(data GroupPageData) {
+templ GroupDetailsActions(data GroupPageData) {
 	if data.IsAdmin {
-		<div class="row row-wrap">
-			@shared.ActionButton(shared.ActionButtonProps{
-				ClassName:     "btn",
-				OnClick:       "$formState = 'edit'; $errors = {name: ''}",
-				DisabledExpr:  "$formState !== '' || $_fetching",
-				Label:         ctxi18n.T(ctx, "actions.edit"),
-				IconName:      icons.IconPencil,
-			})
-			@shared.SureActionButton(shared.SureActionButtonProps{
-				ClassName:    "btn btn-danger",
-				DisabledExpr: "$formState !== '' || $_fetching",
-				Label:        ctxi18n.T(ctx, "groups.delete"),
-				IconName:     icons.IconTrash2,
-				Dialog: shared.SureDialogProps{
-					Title:       ctxi18n.T(ctx, "groups.delete_confirm"),
-					Message:     ctxi18n.T(ctx, "confirm.destructive_message"),
-					SubmitLabel: ctxi18n.T(ctx, "groups.delete"),
-					CancelLabel: ctxi18n.T(ctx, "actions.cancel"),
-					Method:      "delete",
-					URL:         fmt.Sprintf("/groups/%s", data.Group.ID),
-					TriggerID:   "group-show-delete",
-				},
-			})
-		</div>
+		@shared.ActionButton(shared.ActionButtonProps{
+			ClassName:    "btn",
+			OnClick:      "$formState = 'edit'; $errors = {name: ''}",
+			DisabledExpr: "$formState !== '' || $_fetching",
+			Label:        ctxi18n.T(ctx, "actions.edit"),
+			IconName:     icons.IconPencil,
+		})
+		@shared.SureActionButton(shared.SureActionButtonProps{
+			ClassName:    "btn btn-danger",
+			DisabledExpr: "$formState !== '' || $_fetching",
+			Label:        ctxi18n.T(ctx, "groups.delete"),
+			IconName:     icons.IconTrash2,
+			Dialog: shared.SureDialogProps{
+				Title:       ctxi18n.T(ctx, "groups.delete_confirm"),
+				Message:     ctxi18n.T(ctx, "confirm.destructive_message"),
+				SubmitLabel: ctxi18n.T(ctx, "groups.delete"),
+				CancelLabel: ctxi18n.T(ctx, "actions.cancel"),
+				Method:      "delete",
+				URL:         fmt.Sprintf("/groups/%s", data.Group.ID),
+				TriggerID:   "group-show-delete",
+			},
+		})
 	}
 }
 
@@ -119,11 +117,11 @@ templ GroupSidebar(data GroupPageData) {
 							ActionID:  "group-update",
 						})
 						@shared.ActionButton(shared.ActionButtonProps{
-							ClassName:     "btn",
-							OnClick:       cancelExpr,
-							DisabledExpr:  "$_fetching",
-							Label:         ctxi18n.T(ctx, "actions.cancel"),
-							IconName:      icons.IconX,
+							ClassName:    "btn",
+							OnClick:      cancelExpr,
+							DisabledExpr: "$_fetching",
+							Label:        ctxi18n.T(ctx, "actions.cancel"),
+							IconName:     icons.IconX,
 						})
 					</div>
 				</form>

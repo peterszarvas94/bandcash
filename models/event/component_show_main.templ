@@ -36,7 +36,6 @@ templ EventShowMain(data EventData) {
 				{Label: ctxi18n.T(ctx, "events.leftover"), Value: utils.FormatNumberLocalized(ctx, data.Leftover)},
 			})
 		}
-
 		@shared.TableSearchFormWithClass(fmt.Sprintf("/groups/%s/events/%s", data.GroupID, data.Event.ID), data.Query, "table.search_placeholder_members", "pt")
 		@shared.TablePaginationRow(fmt.Sprintf("/groups/%s/events/%s", data.GroupID, data.Event.ID), data.Query, data.Pager)
 		@shared.TableOpenFixed(data.ParticipantsTable, "") {
@@ -73,42 +72,40 @@ templ EventShowMain(data EventData) {
 			</tbody>
 		}
 	</div>
-
 	if data.IsAdmin {
 		<div data-show="$participantEditorMode === 'edit'" style="display: none">
 			<form class="form" data-on:submit={ participantsSubmitExpr } data-effect="$wizard.total = $wizard.rows.reduce((sum, row) => sum + ($wizard.amounts[row.memberId] || 0) + ($wizard.expenses[row.memberId] || 0), 0); $wizard.leftover = ($eventFormData.amount || 0) - $wizard.total" data-indicator:_fetching>
 				<div data-show="$wizard.error" class="color-error" data-text="$wizard.error"></div>
 				<div class="form-row">
 					<div class="field">
-						<label for="event-edit-title" class="row">{ctxi18n.T(ctx, "fields.title")} <span class="color-error">*</span></label>
+						<label for="event-edit-title" class="row">{ ctxi18n.T(ctx, "fields.title") } <span class="color-error">*</span></label>
 						<input id="event-edit-title" type="text" data-bind="eventFormData.title" class="input"/>
 						<div data-show="$errors && $errors.title" class="color-error" data-text="$errors.title"></div>
 					</div>
 					<div class="field">
-						<label for="event-edit-time" class="row">{ctxi18n.T(ctx, "fields.time")} <span class="color-error">*</span></label>
+						<label for="event-edit-time" class="row">{ ctxi18n.T(ctx, "fields.time") } <span class="color-error">*</span></label>
 						<input id="event-edit-time" type="datetime-local" data-bind="eventFormData.time" class="input"/>
 						<div data-show="$errors && $errors.time" class="color-error" data-text="$errors.time"></div>
 					</div>
 				</div>
 				<div class="field">
-					<label for="event-edit-description">{ctxi18n.T(ctx, "fields.description")}</label>
+					<label for="event-edit-description">{ ctxi18n.T(ctx, "fields.description") }</label>
 					<textarea id="event-edit-description" data-bind="eventFormData.description" rows="3" class="input">{ data.Event.Description }</textarea>
 					<div data-show="$errors && $errors.description" class="color-error" data-text="$errors.description"></div>
 				</div>
 				<div class="field">
-					<label for="event-edit-amount" class="row">{ctxi18n.T(ctx, "fields.amount")} <span class="color-error">*</span></label>
+					<label for="event-edit-amount" class="row">{ ctxi18n.T(ctx, "fields.amount") } <span class="color-error">*</span></label>
 					<input id="event-edit-amount" type="number" data-bind="eventFormData.amount" step="1" min="1" class="input"/>
 					<div data-show="$errors && $errors.amount" class="color-error" data-text="$errors.amount"></div>
 				</div>
 				<div class="field">
-					<label for="event-edit-total">{ctxi18n.T(ctx, "participants.payout_total")}</label>
+					<label for="event-edit-total">{ ctxi18n.T(ctx, "participants.payout_total") }</label>
 					<input id="event-edit-total" type="number" class="input" disabled data-bind="wizard.total"/>
 				</div>
 				<div class="field">
-					<label for="event-edit-leftover">{ctxi18n.T(ctx, "events.leftover")}</label>
+					<label for="event-edit-leftover">{ ctxi18n.T(ctx, "events.leftover") }</label>
 					<input id="event-edit-leftover" type="number" class="input" disabled data-bind="wizard.leftover"/>
 				</div>
-
 				<div class="table-scroll pt">
 					<table class="table">
 						<thead>
@@ -122,9 +119,7 @@ templ EventShowMain(data EventData) {
 						</thead>
 						<tbody>
 							for _, row := range data.WizardRows {
-								{{
-									removeDraftExpr := fmt.Sprintf("@delete('/groups/%s/events/%s/participants/draft/%s')", data.GroupID, data.Event.ID, row.MemberID)
-								}}
+								{{ removeDraftExpr := fmt.Sprintf("@delete('/groups/%s/events/%s/participants/draft/%s')", data.GroupID, data.Event.ID, row.MemberID) }}
 								<tr>
 									<td><a class="link" href={ fmt.Sprintf("/groups/%s/members/%s", data.GroupID, row.MemberID) }>{ row.MemberName }</a></td>
 									<td class="text-right"><input type="number" class="input w-min-input" step="1" min="0" data-bind={ fmt.Sprintf("wizard.amounts.%s", row.MemberID) } value={ fmt.Sprintf("%d", row.Amount) }/></td>
@@ -132,12 +127,12 @@ templ EventShowMain(data EventData) {
 									<td class="text-right" data-text={ fmt.Sprintf("($wizard.amounts['%s'] || 0) + ($wizard.expenses['%s'] || 0)", row.MemberID, row.MemberID) }></td>
 									<td class="text-right">
 										@shared.IconActionButton(shared.IconActionButtonProps{
-											ClassName:     "btn btn-ghost btn-sm btn-danger btn-icon",
-											OnClick:       removeDraftExpr,
-											DisabledExpr:  "$_fetching",
-											AriaLabel:     ctxi18n.T(ctx, "actions.delete"),
-											Title:         ctxi18n.T(ctx, "actions.delete"),
-											IconName:      icons.IconTrash2,
+											ClassName:    "btn btn-ghost btn-sm btn-danger btn-icon",
+											OnClick:      removeDraftExpr,
+											DisabledExpr: "$_fetching",
+											AriaLabel:    ctxi18n.T(ctx, "actions.delete"),
+											Title:        ctxi18n.T(ctx, "actions.delete"),
+											IconName:     icons.IconTrash2,
 										})
 									</td>
 								</tr>
@@ -150,7 +145,7 @@ templ EventShowMain(data EventData) {
 							<tr>
 								<td>
 									<select id="event-wizard-add-member" data-bind="wizard.selectedMemberId" class="input w-min-input" data-attr:disabled={ fmt.Sprintf("$_fetching || %t", len(data.WizardAddableMembers) == 0) }>
-										<option value="">{ctxi18n.T(ctx, "participants.select_member")}</option>
+										<option value="">{ ctxi18n.T(ctx, "participants.select_member") }</option>
 										for _, member := range data.WizardAddableMembers {
 											<option value={ member.ID }>{ member.Name }</option>
 										}
@@ -158,11 +153,11 @@ templ EventShowMain(data EventData) {
 								</td>
 								<td>
 									@shared.ActionButton(shared.ActionButtonProps{
-										ClassName:     "btn",
-										OnClick:       addParticipantExpr,
-										DisabledExpr:  addParticipantDisabledExpr,
-										Label:         ctxi18n.T(ctx, "participants.add"),
-										IconName:      icons.IconPlus,
+										ClassName:    "btn",
+										OnClick:      addParticipantExpr,
+										DisabledExpr: addParticipantDisabledExpr,
+										Label:        ctxi18n.T(ctx, "participants.add"),
+										IconName:     icons.IconPlus,
 									})
 								</td>
 								<td></td>
@@ -179,11 +174,11 @@ templ EventShowMain(data EventData) {
 						IconName:  icons.IconSave,
 					})
 					@shared.ActionButton(shared.ActionButtonProps{
-						ClassName:     "btn",
-						OnClick:       cancelParticipantsEditExpr,
-						DisabledExpr:  "$_fetching",
-						Label:         ctxi18n.T(ctx, "actions.cancel"),
-						IconName:      icons.IconX,
+						ClassName:    "btn",
+						OnClick:      cancelParticipantsEditExpr,
+						DisabledExpr: "$_fetching",
+						Label:        ctxi18n.T(ctx, "actions.cancel"),
+						IconName:     icons.IconX,
 					})
 				</div>
 			</form>
@@ -205,21 +200,19 @@ templ ReadModeActions(data EventData) {
 				data.Event.ID,
 			)
 		}}
-		<div class="row row-wrap">
-			@shared.ActionButton(shared.ActionButtonProps{
-				ClassName:     "btn",
-				OnClick:       editParticipantsExpr,
-				DisabledExpr:  "$_fetching",
-				Label:         ctxi18n.T(ctx, "actions.edit"),
-				IconName:      icons.IconPencil,
-			})
-			@shared.ActionButton(shared.ActionButtonProps{
-				ClassName:     "btn btn-danger",
-				OnClick:       deleteEventExpr,
-				DisabledExpr:  "$_fetching",
-				Label:         ctxi18n.T(ctx, "actions.delete"),
-				IconName:      icons.IconTrash2,
-			})
-		</div>
+		@shared.ActionButton(shared.ActionButtonProps{
+			ClassName:    "btn",
+			OnClick:      editParticipantsExpr,
+			DisabledExpr: "$_fetching",
+			Label:        ctxi18n.T(ctx, "actions.edit"),
+			IconName:     icons.IconPencil,
+		})
+		@shared.ActionButton(shared.ActionButtonProps{
+			ClassName:    "btn btn-danger",
+			OnClick:      deleteEventExpr,
+			DisabledExpr: "$_fetching",
+			Label:        ctxi18n.T(ctx, "actions.delete"),
+			IconName:     icons.IconTrash2,
+		})
 	}
 }

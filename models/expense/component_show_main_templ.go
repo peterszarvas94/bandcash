@@ -86,10 +86,6 @@ func ExpenseShowDetailsActions(data ExpenseData) templ.Component {
 		}
 		ctx = templ.ClearChildren(ctx)
 		if data.IsAdmin {
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<div class=\"row row-wrap\">")
-			if templ_7745c5c3_Err != nil {
-				return templ_7745c5c3_Err
-			}
 			templ_7745c5c3_Err = shared.ActionButton(shared.ActionButtonProps{
 				ClassName:    "btn",
 				OnClick:      "$formState = 'edit'; $errors = {title: '', description: '', amount: '', date: ''}",
@@ -97,6 +93,10 @@ func ExpenseShowDetailsActions(data ExpenseData) templ.Component {
 				Label:        ctxi18n.T(ctx, "actions.edit"),
 				IconName:     icons.IconPencil,
 			}).Render(ctx, templ_7745c5c3_Buffer)
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, " ")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -115,10 +115,6 @@ func ExpenseShowDetailsActions(data ExpenseData) templ.Component {
 					TriggerID:   "expense-show-delete",
 				},
 			}).Render(ctx, templ_7745c5c3_Buffer)
-			if templ_7745c5c3_Err != nil {
-				return templ_7745c5c3_Err
-			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "</div>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
