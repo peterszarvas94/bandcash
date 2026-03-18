@@ -32,7 +32,7 @@ mailpit = "mailpit --listen 0.0.0.0:8025 --smtp 0.0.0.0:1025"
 check-versions = "go run ./cmd/checkversions"
 kamal = "env -u GEM_HOME -u GEM_PATH $(mise which kamal)"
 deploy-check = "env -u GEM_HOME -u GEM_PATH $(mise which kamal) config"
-deploy = "env -u GEM_HOME -u GEM_PATH $(mise which kamal) deploy"
+deploy = "./scripts/deploy.sh"
 
 [tasks.build]
 depends = ["assets"]
