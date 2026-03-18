@@ -111,7 +111,7 @@ templ EventIndexMain(data EventsData) {
 						event.ID,
 						utils.JSONString("event-delete-"+event.ID),
 					)
-					togglePaidExpr := fmt.Sprintf("@put('/groups/%s/events/%s/toggle-paid')", data.GroupID, event.ID)
+					togglePaidExpr := fmt.Sprintf("@put('/groups/%s/events/%s/toggle-paid', {mode: 'list', tableQuery: $tableQuery})", data.GroupID, event.ID)
 					paidClass := "btn btn-ghost btn-sm btn-icon btn-table"
 					if event.Paid == 1 {
 						paidClass += " btn-success"

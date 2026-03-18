@@ -39,7 +39,7 @@ func ExpenseShowMain(data ExpenseData) templ.Component {
 			templ_7745c5c3_Var1 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		togglePaidExpr := fmt.Sprintf("@put('/groups/%s/expenses/%s/toggle-paid')", data.GroupID, data.Expense.ID)
+		togglePaidExpr := fmt.Sprintf("@put('/groups/%s/expenses/%s/toggle-paid', {mode: 'single'})", data.GroupID, data.Expense.ID)
 		paidClass := "btn btn-sm btn-icon"
 		if data.Expense.Paid == 1 {
 			paidClass += " btn-success"

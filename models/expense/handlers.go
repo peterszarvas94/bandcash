@@ -138,6 +138,9 @@ func (e *Expenses) Create(c echo.Context) error {
 	utils.Notify(c, "success", ctxi18n.T(c.Request().Context(), "expenses.notifications.created"))
 	utils.SSEHub.PatchSignals(c, defaultExpenseSignals)
 
+	// Clear cache to ensure fresh data on next load
+	utils.CalcCacheInstance.ClearPrefix(groupID + ":expenses:")
+
 	query := utils.NormalizeTableQuery(utils.TableQuery{}, e.TableQuerySpec())
 	data, err := e.GetIndexData(c.Request().Context(), groupID, query)
 	if err != nil {
@@ -227,6 +230,9 @@ func (e *Expenses) Update(c echo.Context) error {
 
 	utils.SSEHub.PatchSignals(c, defaultExpenseSignals)
 
+	// Clear cache to ensure fresh data on next load
+	utils.CalcCacheInstance.ClearPrefix(groupID + ":expenses:")
+
 	query := utils.NormalizeTableQuery(signals.TableQuery, e.TableQuerySpec())
 	data, err := e.GetIndexData(c.Request().Context(), groupID, query)
 	if err != nil {
@@ -285,6 +291,9 @@ func (e *Expenses) Destroy(c echo.Context) error {
 
 	utils.SSEHub.PatchSignals(c, defaultExpenseSignals)
 
+	// Clear cache to ensure fresh data on next load
+	utils.CalcCacheInstance.ClearPrefix(groupID + ":expenses:")
+
 	query := utils.NormalizeTableQuery(signals.TableQuery, e.TableQuerySpec())
 	data, err := e.GetIndexData(c.Request().Context(), groupID, query)
 	if err != nil {
@@ -332,6 +341,9 @@ func (e *Expenses) TogglePaid(c echo.Context) error {
 	}
 
 	slog.Debug("expense.togglePaid", "id", id)
+
+	// Clear cache to ensure fresh data on next load
+	utils.CalcCacheInstance.ClearPrefix(groupID + ":expenses:")
 
 	if result.Paid == 1 {
 		utils.Notify(c, "success", ctxi18n.T(c.Request().Context(), "paid_status.marked_as_paid"))

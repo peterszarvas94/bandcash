@@ -552,7 +552,7 @@ func ExpenseIndexMain(data ExpensesData) templ.Component {
 					expense.ID,
 					utils.JSONString("expense-delete-"+expense.ID),
 				)
-				togglePaidExpr := fmt.Sprintf("@put('/groups/%s/expenses/%s/toggle-paid')", data.GroupID, expense.ID)
+				togglePaidExpr := fmt.Sprintf("@put('/groups/%s/expenses/%s/toggle-paid', {mode: 'list', tableQuery: $tableQuery})", data.GroupID, expense.ID)
 				paidClass := "btn btn-ghost btn-sm btn-icon btn-table"
 				if expense.Paid == 1 {
 					paidClass += " btn-success"

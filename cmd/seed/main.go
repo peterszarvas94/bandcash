@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"log/slog"
 	"os"
+	"path/filepath"
+	"time"
 
 	"bandcash/internal/db"
 	"bandcash/internal/utils"
@@ -23,14 +25,32 @@ func main() {
 		dbPath = *flagDBPath
 	}
 
+	absPath, _ := filepath.Abs(dbPath)
+	slog.Info("resetting database", "path", absPath)
+
 	pathsToRemove := []string{dbPath, dbPath + "-wal", dbPath + "-shm"}
 	for _, path := range pathsToRemove {
-		err := os.Remove(path)
-		if err != nil && !os.IsNotExist(err) {
-			slog.Error("failed to remove existing database file", "path", path, "err", err)
-			os.Exit(1)
+		for i := 0; i < 5; i++ {
+			err := os.Remove(path)
+			if err == nil || os.IsNotExist(err) {
+				if err == nil {
+					slog.Info("removed file", "path", filepath.Base(path))
+				}
+				break
+			}
+			if i < 4 {
+				slog.Warn("failed to remove file, retrying", "path", filepath.Base(path), "err", err, "attempt", i+1)
+				time.Sleep(100 * time.Millisecond)
+			} else {
+				slog.Error("failed to remove file after retries", "path", filepath.Base(path), "err", err)
+				fmt.Fprintf(os.Stderr, "\nERROR: Cannot delete database file. Make sure the app is not running.\n")
+				fmt.Fprintf(os.Stderr, "Run: pkill -f \"air\" && pkill -f \"tmp/server\"\n\n")
+				os.Exit(1)
+			}
 		}
 	}
+
+	time.Sleep(100 * time.Millisecond)
 
 	if err := db.Init(dbPath); err != nil {
 		slog.Error("failed to initialize database", "err", err)

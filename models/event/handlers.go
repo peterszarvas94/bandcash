@@ -369,6 +369,10 @@ func (e *Events) Create(c echo.Context) error {
 	utils.Notify(c, "success", ctxi18n.T(c.Request().Context(), "events.notifications.created"))
 
 	utils.SSEHub.PatchSignals(c, defaultEventSignals)
+
+	// Clear cache to ensure fresh data on next load
+	utils.CalcCacheInstance.ClearPrefix(groupID + ":events:")
+
 	query := utils.NormalizeTableQuery(utils.TableQuery{}, e.TableQuerySpec())
 	data, err := e.GetIndexData(c.Request().Context(), groupID, query)
 	if err != nil {
@@ -469,6 +473,10 @@ func (e *Events) Update(c echo.Context) error {
 	}
 
 	utils.SSEHub.PatchSignals(c, defaultEventSignals)
+
+	// Clear cache to ensure fresh data on next load
+	utils.CalcCacheInstance.ClearPrefix(groupID + ":events:")
+
 	query := utils.NormalizeTableQuery(signals.TableQuery, e.TableQuerySpec())
 	data, err := e.GetIndexData(c.Request().Context(), groupID, query)
 	if err != nil {
@@ -527,6 +535,10 @@ func (e *Events) Destroy(c echo.Context) error {
 	}
 
 	utils.SSEHub.PatchSignals(c, defaultEventSignals)
+
+	// Clear cache to ensure fresh data on next load
+	utils.CalcCacheInstance.ClearPrefix(groupID + ":events:")
+
 	query := utils.NormalizeTableQuery(signals.TableQuery, e.TableQuerySpec())
 	data, err := e.GetIndexData(c.Request().Context(), groupID, query)
 	if err != nil {
@@ -1153,6 +1165,9 @@ func (e *Events) TogglePaid(c echo.Context) error {
 	}
 
 	slog.Debug("event.togglePaid", "id", id)
+
+	// Clear cache to ensure fresh data on next load
+	utils.CalcCacheInstance.ClearPrefix(groupID + ":events:")
 
 	if result.Paid == 1 {
 		utils.Notify(c, "success", ctxi18n.T(c.Request().Context(), "paid_status.marked_as_paid"))

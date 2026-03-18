@@ -38,5 +38,16 @@ func (c *CalcCache) Clear() {
 	c.data = make(map[string]any)
 }
 
+// ClearPrefix removes all entries with keys starting with the given prefix
+func (c *CalcCache) ClearPrefix(prefix string) {
+	c.mu.Lock()
+	defer c.mu.Unlock()
+	for key := range c.data {
+		if len(key) >= len(prefix) && key[:len(prefix)] == prefix {
+			delete(c.data, key)
+		}
+	}
+}
+
 // Global cache instance for shared use
 var CalcCacheInstance = NewCalcCache()

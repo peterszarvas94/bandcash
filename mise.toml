@@ -1,5 +1,6 @@
 [tools]
 air = "1.64.5"
+caddy = "2.9.1"
 go = "1.26.0"
 "go:github.com/a-h/templ/cmd/templ" = "v0.3.1001"
 "go:github.com/sqlc-dev/sqlc/cmd/sqlc" = "v1.30.0"

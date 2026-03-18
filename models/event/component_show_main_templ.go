@@ -42,7 +42,7 @@ func EventShowMain(data EventData) templ.Component {
 		addParticipantExpr := fmt.Sprintf("if (!$wizard.selectedMemberId) return; @post('/groups/%s/events/%s/participants/draft/' + $wizard.selectedMemberId)", data.GroupID, data.Event.ID)
 		addParticipantDisabledExpr := fmt.Sprintf("$_fetching || !$wizard.selectedMemberId || %t", len(data.WizardAddableMembers) == 0)
 		cancelParticipantsEditExpr := fmt.Sprintf("@delete('/groups/%s/events/%s/participants/draft')", data.GroupID, data.Event.ID)
-		togglePaidExpr := fmt.Sprintf("@put('/groups/%s/events/%s/toggle-paid')", data.GroupID, data.Event.ID)
+		togglePaidExpr := fmt.Sprintf("@put('/groups/%s/events/%s/toggle-paid', {mode: 'single'})", data.GroupID, data.Event.ID)
 		paidClass := "btn btn-sm btn-icon"
 		if data.Event.Paid == 1 {
 			paidClass += " btn-success"
@@ -202,7 +202,7 @@ func EventShowMain(data EventData) templ.Component {
 				return templ_7745c5c3_Err
 			}
 			for _, participant := range data.Participants {
-				togglePaidExpr := fmt.Sprintf("@put('/groups/%s/events/%s/participants/%s/toggle-paid')", data.GroupID, data.Event.ID, participant.ID)
+				togglePaidExpr := fmt.Sprintf("@put('/groups/%s/events/%s/participants/%s/toggle-paid', {tableQuery: $tableQuery})", data.GroupID, data.Event.ID, participant.ID)
 				paidClass := "btn btn-ghost btn-sm btn-icon btn-table"
 				if participant.ParticipantPaid == 1 {
 					paidClass += " btn-success"
