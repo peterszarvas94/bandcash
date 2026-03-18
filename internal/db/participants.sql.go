@@ -11,9 +11,9 @@ import (
 )
 
 const addParticipant = `-- name: AddParticipant :one
-INSERT INTO participants (group_id, event_id, member_id, amount, expense)
-VALUES (?, ?, ?, ?, ?)
-RETURNING group_id, event_id, member_id, amount, expense, created_at, updated_at
+INSERT INTO participants (group_id, event_id, member_id, amount, expense, paid)
+VALUES (?, ?, ?, ?, ?, ?)
+RETURNING group_id, event_id, member_id, amount, expense, created_at, updated_at, paid
 `
 
 type AddParticipantParams struct {
@@ -22,6 +22,7 @@ type AddParticipantParams struct {
 	MemberID string `json:"member_id"`
 	Amount   int64  `json:"amount"`
 	Expense  int64  `json:"expense"`
+	Paid     int64  `json:"paid"`
 }
 
 func (q *Queries) AddParticipant(ctx context.Context, arg AddParticipantParams) (Participant, error) {
@@ -31,6 +32,7 @@ func (q *Queries) AddParticipant(ctx context.Context, arg AddParticipantParams) 
 		arg.MemberID,
 		arg.Amount,
 		arg.Expense,
+		arg.Paid,
 	)
 	var i Participant
 	err := row.Scan(
@@ -41,6 +43,7 @@ func (q *Queries) AddParticipant(ctx context.Context, arg AddParticipantParams) 
 		&i.Expense,
 		&i.CreatedAt,
 		&i.UpdatedAt,
+		&i.Paid,
 	)
 	return i, err
 }
@@ -71,7 +74,7 @@ func (q *Queries) CountParticipantsByMemberFiltered(ctx context.Context, arg Cou
 }
 
 const listParticipantsByEvent = `-- name: ListParticipantsByEvent :many
-SELECT members.id, members.group_id, members.name, members.description, members.created_at, members.updated_at, participants.amount AS participant_amount, participants.expense AS participant_expense
+SELECT members.id, members.group_id, members.name, members.description, members.created_at, members.updated_at, participants.amount AS participant_amount, participants.expense AS participant_expense, participants.paid AS participant_paid
 FROM members
 JOIN participants ON participants.member_id = members.id
 WHERE participants.event_id = ? AND participants.group_id = ?
@@ -92,6 +95,7 @@ type ListParticipantsByEventRow struct {
 	UpdatedAt          sql.NullTime `json:"updated_at"`
 	ParticipantAmount  int64        `json:"participant_amount"`
 	ParticipantExpense int64        `json:"participant_expense"`
+	ParticipantPaid    int64        `json:"participant_paid"`
 }
 
 func (q *Queries) ListParticipantsByEvent(ctx context.Context, arg ListParticipantsByEventParams) ([]ListParticipantsByEventRow, error) {
@@ -112,6 +116,7 @@ func (q *Queries) ListParticipantsByEvent(ctx context.Context, arg ListParticipa
 			&i.UpdatedAt,
 			&i.ParticipantAmount,
 			&i.ParticipantExpense,
+			&i.ParticipantPaid,
 		); err != nil {
 			return nil, err
 		}
@@ -127,7 +132,7 @@ func (q *Queries) ListParticipantsByEvent(ctx context.Context, arg ListParticipa
 }
 
 const listParticipantsByMember = `-- name: ListParticipantsByMember :many
-SELECT events.id, events.group_id, events.title, events.time, events.description, events.amount, events.created_at, events.updated_at, participants.amount AS participant_amount, participants.expense AS participant_expense
+SELECT events.id, events.group_id, events.title, events.time, events.description, events.amount, events.created_at, events.updated_at, events.paid, participants.amount AS participant_amount, participants.expense AS participant_expense, participants.paid AS participant_paid
 FROM events
 JOIN participants ON participants.event_id = events.id
 WHERE participants.member_id = ? AND participants.group_id = ?
@@ -148,8 +153,10 @@ type ListParticipantsByMemberRow struct {
 	Amount             int64        `json:"amount"`
 	CreatedAt          sql.NullTime `json:"created_at"`
 	UpdatedAt          sql.NullTime `json:"updated_at"`
+	Paid               int64        `json:"paid"`
 	ParticipantAmount  int64        `json:"participant_amount"`
 	ParticipantExpense int64        `json:"participant_expense"`
+	ParticipantPaid    int64        `json:"participant_paid"`
 }
 
 func (q *Queries) ListParticipantsByMember(ctx context.Context, arg ListParticipantsByMemberParams) ([]ListParticipantsByMemberRow, error) {
@@ -170,8 +177,10 @@ func (q *Queries) ListParticipantsByMember(ctx context.Context, arg ListParticip
 			&i.Amount,
 			&i.CreatedAt,
 			&i.UpdatedAt,
+			&i.Paid,
 			&i.ParticipantAmount,
 			&i.ParticipantExpense,
+			&i.ParticipantPaid,
 		); err != nil {
 			return nil, err
 		}
@@ -188,7 +197,7 @@ func (q *Queries) ListParticipantsByMember(ctx context.Context, arg ListParticip
 
 const listParticipantsByMemberByAmountAscFiltered = `-- name: ListParticipantsByMemberByAmountAscFiltered :many
 SELECT 
-  events.id, events.group_id, events.title, events.time, events.description, events.amount, events.created_at, events.updated_at, 
+  events.id, events.group_id, events.title, events.time, events.description, events.amount, events.created_at, events.updated_at, events.paid, 
   participants.amount AS participant_amount, 
   participants.expense AS participant_expense
 FROM events
@@ -221,6 +230,7 @@ type ListParticipantsByMemberByAmountAscFilteredRow struct {
 	Amount             int64        `json:"amount"`
 	CreatedAt          sql.NullTime `json:"created_at"`
 	UpdatedAt          sql.NullTime `json:"updated_at"`
+	Paid               int64        `json:"paid"`
 	ParticipantAmount  int64        `json:"participant_amount"`
 	ParticipantExpense int64        `json:"participant_expense"`
 }
@@ -249,6 +259,7 @@ func (q *Queries) ListParticipantsByMemberByAmountAscFiltered(ctx context.Contex
 			&i.Amount,
 			&i.CreatedAt,
 			&i.UpdatedAt,
+			&i.Paid,
 			&i.ParticipantAmount,
 			&i.ParticipantExpense,
 		); err != nil {
@@ -267,7 +278,7 @@ func (q *Queries) ListParticipantsByMemberByAmountAscFiltered(ctx context.Contex
 
 const listParticipantsByMemberByAmountDescFiltered = `-- name: ListParticipantsByMemberByAmountDescFiltered :many
 SELECT 
-  events.id, events.group_id, events.title, events.time, events.description, events.amount, events.created_at, events.updated_at, 
+  events.id, events.group_id, events.title, events.time, events.description, events.amount, events.created_at, events.updated_at, events.paid, 
   participants.amount AS participant_amount, 
   participants.expense AS participant_expense
 FROM events
@@ -300,6 +311,7 @@ type ListParticipantsByMemberByAmountDescFilteredRow struct {
 	Amount             int64        `json:"amount"`
 	CreatedAt          sql.NullTime `json:"created_at"`
 	UpdatedAt          sql.NullTime `json:"updated_at"`
+	Paid               int64        `json:"paid"`
 	ParticipantAmount  int64        `json:"participant_amount"`
 	ParticipantExpense int64        `json:"participant_expense"`
 }
@@ -328,6 +340,7 @@ func (q *Queries) ListParticipantsByMemberByAmountDescFiltered(ctx context.Conte
 			&i.Amount,
 			&i.CreatedAt,
 			&i.UpdatedAt,
+			&i.Paid,
 			&i.ParticipantAmount,
 			&i.ParticipantExpense,
 		); err != nil {
@@ -346,7 +359,7 @@ func (q *Queries) ListParticipantsByMemberByAmountDescFiltered(ctx context.Conte
 
 const listParticipantsByMemberByCutAscFiltered = `-- name: ListParticipantsByMemberByCutAscFiltered :many
 SELECT 
-  events.id, events.group_id, events.title, events.time, events.description, events.amount, events.created_at, events.updated_at, 
+  events.id, events.group_id, events.title, events.time, events.description, events.amount, events.created_at, events.updated_at, events.paid, 
   participants.amount AS participant_amount, 
   participants.expense AS participant_expense
 FROM events
@@ -379,6 +392,7 @@ type ListParticipantsByMemberByCutAscFilteredRow struct {
 	Amount             int64        `json:"amount"`
 	CreatedAt          sql.NullTime `json:"created_at"`
 	UpdatedAt          sql.NullTime `json:"updated_at"`
+	Paid               int64        `json:"paid"`
 	ParticipantAmount  int64        `json:"participant_amount"`
 	ParticipantExpense int64        `json:"participant_expense"`
 }
@@ -407,6 +421,7 @@ func (q *Queries) ListParticipantsByMemberByCutAscFiltered(ctx context.Context, 
 			&i.Amount,
 			&i.CreatedAt,
 			&i.UpdatedAt,
+			&i.Paid,
 			&i.ParticipantAmount,
 			&i.ParticipantExpense,
 		); err != nil {
@@ -425,7 +440,7 @@ func (q *Queries) ListParticipantsByMemberByCutAscFiltered(ctx context.Context, 
 
 const listParticipantsByMemberByCutDescFiltered = `-- name: ListParticipantsByMemberByCutDescFiltered :many
 SELECT 
-  events.id, events.group_id, events.title, events.time, events.description, events.amount, events.created_at, events.updated_at, 
+  events.id, events.group_id, events.title, events.time, events.description, events.amount, events.created_at, events.updated_at, events.paid, 
   participants.amount AS participant_amount, 
   participants.expense AS participant_expense
 FROM events
@@ -458,6 +473,7 @@ type ListParticipantsByMemberByCutDescFilteredRow struct {
 	Amount             int64        `json:"amount"`
 	CreatedAt          sql.NullTime `json:"created_at"`
 	UpdatedAt          sql.NullTime `json:"updated_at"`
+	Paid               int64        `json:"paid"`
 	ParticipantAmount  int64        `json:"participant_amount"`
 	ParticipantExpense int64        `json:"participant_expense"`
 }
@@ -486,6 +502,7 @@ func (q *Queries) ListParticipantsByMemberByCutDescFiltered(ctx context.Context,
 			&i.Amount,
 			&i.CreatedAt,
 			&i.UpdatedAt,
+			&i.Paid,
 			&i.ParticipantAmount,
 			&i.ParticipantExpense,
 		); err != nil {
@@ -504,7 +521,7 @@ func (q *Queries) ListParticipantsByMemberByCutDescFiltered(ctx context.Context,
 
 const listParticipantsByMemberByExpenseAscFiltered = `-- name: ListParticipantsByMemberByExpenseAscFiltered :many
 SELECT 
-  events.id, events.group_id, events.title, events.time, events.description, events.amount, events.created_at, events.updated_at, 
+  events.id, events.group_id, events.title, events.time, events.description, events.amount, events.created_at, events.updated_at, events.paid, 
   participants.amount AS participant_amount, 
   participants.expense AS participant_expense
 FROM events
@@ -537,6 +554,7 @@ type ListParticipantsByMemberByExpenseAscFilteredRow struct {
 	Amount             int64        `json:"amount"`
 	CreatedAt          sql.NullTime `json:"created_at"`
 	UpdatedAt          sql.NullTime `json:"updated_at"`
+	Paid               int64        `json:"paid"`
 	ParticipantAmount  int64        `json:"participant_amount"`
 	ParticipantExpense int64        `json:"participant_expense"`
 }
@@ -565,6 +583,7 @@ func (q *Queries) ListParticipantsByMemberByExpenseAscFiltered(ctx context.Conte
 			&i.Amount,
 			&i.CreatedAt,
 			&i.UpdatedAt,
+			&i.Paid,
 			&i.ParticipantAmount,
 			&i.ParticipantExpense,
 		); err != nil {
@@ -583,7 +602,7 @@ func (q *Queries) ListParticipantsByMemberByExpenseAscFiltered(ctx context.Conte
 
 const listParticipantsByMemberByExpenseDescFiltered = `-- name: ListParticipantsByMemberByExpenseDescFiltered :many
 SELECT 
-  events.id, events.group_id, events.title, events.time, events.description, events.amount, events.created_at, events.updated_at, 
+  events.id, events.group_id, events.title, events.time, events.description, events.amount, events.created_at, events.updated_at, events.paid, 
   participants.amount AS participant_amount, 
   participants.expense AS participant_expense
 FROM events
@@ -616,6 +635,7 @@ type ListParticipantsByMemberByExpenseDescFilteredRow struct {
 	Amount             int64        `json:"amount"`
 	CreatedAt          sql.NullTime `json:"created_at"`
 	UpdatedAt          sql.NullTime `json:"updated_at"`
+	Paid               int64        `json:"paid"`
 	ParticipantAmount  int64        `json:"participant_amount"`
 	ParticipantExpense int64        `json:"participant_expense"`
 }
@@ -644,6 +664,7 @@ func (q *Queries) ListParticipantsByMemberByExpenseDescFiltered(ctx context.Cont
 			&i.Amount,
 			&i.CreatedAt,
 			&i.UpdatedAt,
+			&i.Paid,
 			&i.ParticipantAmount,
 			&i.ParticipantExpense,
 		); err != nil {
@@ -662,7 +683,7 @@ func (q *Queries) ListParticipantsByMemberByExpenseDescFiltered(ctx context.Cont
 
 const listParticipantsByMemberByTimeAscFiltered = `-- name: ListParticipantsByMemberByTimeAscFiltered :many
 SELECT 
-  events.id, events.group_id, events.title, events.time, events.description, events.amount, events.created_at, events.updated_at, 
+  events.id, events.group_id, events.title, events.time, events.description, events.amount, events.created_at, events.updated_at, events.paid, 
   participants.amount AS participant_amount, 
   participants.expense AS participant_expense
 FROM events
@@ -695,6 +716,7 @@ type ListParticipantsByMemberByTimeAscFilteredRow struct {
 	Amount             int64        `json:"amount"`
 	CreatedAt          sql.NullTime `json:"created_at"`
 	UpdatedAt          sql.NullTime `json:"updated_at"`
+	Paid               int64        `json:"paid"`
 	ParticipantAmount  int64        `json:"participant_amount"`
 	ParticipantExpense int64        `json:"participant_expense"`
 }
@@ -723,6 +745,7 @@ func (q *Queries) ListParticipantsByMemberByTimeAscFiltered(ctx context.Context,
 			&i.Amount,
 			&i.CreatedAt,
 			&i.UpdatedAt,
+			&i.Paid,
 			&i.ParticipantAmount,
 			&i.ParticipantExpense,
 		); err != nil {
@@ -741,7 +764,7 @@ func (q *Queries) ListParticipantsByMemberByTimeAscFiltered(ctx context.Context,
 
 const listParticipantsByMemberByTimeDescFiltered = `-- name: ListParticipantsByMemberByTimeDescFiltered :many
 SELECT 
-  events.id, events.group_id, events.title, events.time, events.description, events.amount, events.created_at, events.updated_at, 
+  events.id, events.group_id, events.title, events.time, events.description, events.amount, events.created_at, events.updated_at, events.paid, 
   participants.amount AS participant_amount, 
   participants.expense AS participant_expense
 FROM events
@@ -774,6 +797,7 @@ type ListParticipantsByMemberByTimeDescFilteredRow struct {
 	Amount             int64        `json:"amount"`
 	CreatedAt          sql.NullTime `json:"created_at"`
 	UpdatedAt          sql.NullTime `json:"updated_at"`
+	Paid               int64        `json:"paid"`
 	ParticipantAmount  int64        `json:"participant_amount"`
 	ParticipantExpense int64        `json:"participant_expense"`
 }
@@ -802,6 +826,7 @@ func (q *Queries) ListParticipantsByMemberByTimeDescFiltered(ctx context.Context
 			&i.Amount,
 			&i.CreatedAt,
 			&i.UpdatedAt,
+			&i.Paid,
 			&i.ParticipantAmount,
 			&i.ParticipantExpense,
 		); err != nil {
@@ -820,7 +845,7 @@ func (q *Queries) ListParticipantsByMemberByTimeDescFiltered(ctx context.Context
 
 const listParticipantsByMemberByTitleAscFiltered = `-- name: ListParticipantsByMemberByTitleAscFiltered :many
 SELECT 
-  events.id, events.group_id, events.title, events.time, events.description, events.amount, events.created_at, events.updated_at, 
+  events.id, events.group_id, events.title, events.time, events.description, events.amount, events.created_at, events.updated_at, events.paid, 
   participants.amount AS participant_amount, 
   participants.expense AS participant_expense
 FROM events
@@ -853,6 +878,7 @@ type ListParticipantsByMemberByTitleAscFilteredRow struct {
 	Amount             int64        `json:"amount"`
 	CreatedAt          sql.NullTime `json:"created_at"`
 	UpdatedAt          sql.NullTime `json:"updated_at"`
+	Paid               int64        `json:"paid"`
 	ParticipantAmount  int64        `json:"participant_amount"`
 	ParticipantExpense int64        `json:"participant_expense"`
 }
@@ -881,6 +907,7 @@ func (q *Queries) ListParticipantsByMemberByTitleAscFiltered(ctx context.Context
 			&i.Amount,
 			&i.CreatedAt,
 			&i.UpdatedAt,
+			&i.Paid,
 			&i.ParticipantAmount,
 			&i.ParticipantExpense,
 		); err != nil {
@@ -899,7 +926,7 @@ func (q *Queries) ListParticipantsByMemberByTitleAscFiltered(ctx context.Context
 
 const listParticipantsByMemberByTitleDescFiltered = `-- name: ListParticipantsByMemberByTitleDescFiltered :many
 SELECT 
-  events.id, events.group_id, events.title, events.time, events.description, events.amount, events.created_at, events.updated_at, 
+  events.id, events.group_id, events.title, events.time, events.description, events.amount, events.created_at, events.updated_at, events.paid, 
   participants.amount AS participant_amount, 
   participants.expense AS participant_expense
 FROM events
@@ -932,6 +959,7 @@ type ListParticipantsByMemberByTitleDescFilteredRow struct {
 	Amount             int64        `json:"amount"`
 	CreatedAt          sql.NullTime `json:"created_at"`
 	UpdatedAt          sql.NullTime `json:"updated_at"`
+	Paid               int64        `json:"paid"`
 	ParticipantAmount  int64        `json:"participant_amount"`
 	ParticipantExpense int64        `json:"participant_expense"`
 }
@@ -960,6 +988,7 @@ func (q *Queries) ListParticipantsByMemberByTitleDescFiltered(ctx context.Contex
 			&i.Amount,
 			&i.CreatedAt,
 			&i.UpdatedAt,
+			&i.Paid,
 			&i.ParticipantAmount,
 			&i.ParticipantExpense,
 		); err != nil {
@@ -1036,6 +1065,35 @@ func (q *Queries) SumParticipantTotalsByMemberFiltered(ctx context.Context, arg 
 	row := q.db.QueryRowContext(ctx, sumParticipantTotalsByMemberFiltered, arg.MemberID, arg.GroupID, arg.Search)
 	var i SumParticipantTotalsByMemberFilteredRow
 	err := row.Scan(&i.TotalCut, &i.TotalExpense, &i.TotalPayout)
+	return i, err
+}
+
+const toggleParticipantPaid = `-- name: ToggleParticipantPaid :one
+UPDATE participants
+SET paid = CASE WHEN paid = 1 THEN 0 ELSE 1 END
+WHERE event_id = ? AND member_id = ? AND group_id = ?
+RETURNING group_id, event_id, member_id, amount, expense, created_at, updated_at, paid
+`
+
+type ToggleParticipantPaidParams struct {
+	EventID  string `json:"event_id"`
+	MemberID string `json:"member_id"`
+	GroupID  string `json:"group_id"`
+}
+
+func (q *Queries) ToggleParticipantPaid(ctx context.Context, arg ToggleParticipantPaidParams) (Participant, error) {
+	row := q.db.QueryRowContext(ctx, toggleParticipantPaid, arg.EventID, arg.MemberID, arg.GroupID)
+	var i Participant
+	err := row.Scan(
+		&i.GroupID,
+		&i.EventID,
+		&i.MemberID,
+		&i.Amount,
+		&i.Expense,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+		&i.Paid,
+	)
 	return i, err
 }
 

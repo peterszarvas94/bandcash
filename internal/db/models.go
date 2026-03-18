@@ -30,6 +30,7 @@ type Event struct {
 	Amount      int64        `json:"amount"`
 	CreatedAt   sql.NullTime `json:"created_at"`
 	UpdatedAt   sql.NullTime `json:"updated_at"`
+	Paid        int64        `json:"paid"`
 }
 
 type Expense struct {
@@ -41,6 +42,7 @@ type Expense struct {
 	Date        string       `json:"date"`
 	CreatedAt   sql.NullTime `json:"created_at"`
 	UpdatedAt   sql.NullTime `json:"updated_at"`
+	Paid        int64        `json:"paid"`
 }
 
 type Group struct {
@@ -97,6 +99,7 @@ type Participant struct {
 	Expense   int64        `json:"expense"`
 	CreatedAt sql.NullTime `json:"created_at"`
 	UpdatedAt sql.NullTime `json:"updated_at"`
+	Paid      int64        `json:"paid"`
 }
 
 type User struct {

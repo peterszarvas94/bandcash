@@ -23,16 +23,14 @@ templ GroupsMain(data GroupsPageData) {
 					{ ctxi18n.T(ctx, "fields.role") }
 				}
 				@shared.THActions(data.GroupsTable.ActionsWidthRem) {
-					<div class="row row-right row-tight">
-						@shared.IconActionButton(shared.IconActionButtonProps{
-							ClassName:     "btn btn-ghost btn-sm btn-icon",
-							OnClick:       "$formState = 'add'; $formData = {name: ''}; $selectedGroupId = ''",
-							DisabledExpr:  "$formState !== '' || $_fetching",
-							AriaLabel:     ctxi18n.T(ctx, "groups.create"),
-							Title:         ctxi18n.T(ctx, "groups.create"),
-							IconName:      icons.IconPlus,
-						})
-					</div>
+					@shared.IconActionButton(shared.IconActionButtonProps{
+						ClassName:     "btn btn-ghost btn-sm btn-icon",
+						OnClick:       "$formState = 'add'; $formData = {name: ''}; $selectedGroupId = ''",
+						DisabledExpr:  "$formState !== '' || $_fetching",
+						AriaLabel:     ctxi18n.T(ctx, "groups.create"),
+						Title:         ctxi18n.T(ctx, "groups.create"),
+						IconName:      icons.IconPlus,
+					})
 				}
 			</tr>
 		</thead>
@@ -74,38 +72,36 @@ templ GroupsMain(data GroupsPageData) {
 							}
 						</td>
 						<td data-actions-col>
-							<div class="row row-right row-tight">
-								<a class="btn btn-ghost btn-sm btn-icon" href={ "/groups/" + group.Group.ID + "/events" } aria-label={ ctxi18n.T(ctx, "events.title") } title={ ctxi18n.T(ctx, "events.title") }>
-									@icons.Icon(icons.IconCalendar, templ.Attributes{"class": "icon"})
-								</a>
-								if group.Role == "admin" {
-									@shared.IconActionButton(shared.IconActionButtonProps{
-										ClassName:     "btn btn-ghost btn-sm btn-icon",
-										OnClick:       editExpr,
-										DisabledExpr:  "$formState !== '' || $_fetching",
-										AriaLabel:     ctxi18n.T(ctx, "actions.edit"),
-										Title:         ctxi18n.T(ctx, "actions.edit"),
-										IconName:      icons.IconPencil,
-									})
-									@shared.IconActionButton(shared.IconActionButtonProps{
-										ClassName:     "btn btn-ghost btn-sm btn-danger btn-icon",
-										OnClick:       deleteExpr,
-										DisabledExpr:  "$formState !== '' || $_fetching",
-										AriaLabel:     ctxi18n.T(ctx, "actions.delete"),
-										Title:         ctxi18n.T(ctx, "actions.delete"),
-										IconName:      icons.IconTrash2,
-									})
-								} else {
-									@shared.IconActionButton(shared.IconActionButtonProps{
-										ClassName:     "btn btn-ghost btn-sm btn-icon",
-										OnClick:       leaveExpr,
-										DisabledExpr:  "$formState !== '' || $_fetching",
-										AriaLabel:     ctxi18n.T(ctx, "groups.leave"),
-										Title:         ctxi18n.T(ctx, "groups.leave"),
-										IconName:      icons.IconSquareArrowRightExit,
-									})
-								}
-							</div>
+							<a class="btn btn-ghost btn-sm btn-icon" href={ "/groups/" + group.Group.ID + "/events" } aria-label={ ctxi18n.T(ctx, "events.title") } title={ ctxi18n.T(ctx, "events.title") }>
+								@icons.Icon(icons.IconCalendar, templ.Attributes{"class": "icon"})
+							</a>
+							if group.Role == "admin" {
+								@shared.IconActionButton(shared.IconActionButtonProps{
+									ClassName:     "btn btn-ghost btn-sm btn-icon",
+									OnClick:       editExpr,
+									DisabledExpr:  "$formState !== '' || $_fetching",
+									AriaLabel:     ctxi18n.T(ctx, "actions.edit"),
+									Title:         ctxi18n.T(ctx, "actions.edit"),
+									IconName:      icons.IconPencil,
+								})
+								@shared.IconActionButton(shared.IconActionButtonProps{
+									ClassName:     "btn btn-ghost btn-sm btn-danger btn-icon",
+									OnClick:       deleteExpr,
+									DisabledExpr:  "$formState !== '' || $_fetching",
+									AriaLabel:     ctxi18n.T(ctx, "actions.delete"),
+									Title:         ctxi18n.T(ctx, "actions.delete"),
+									IconName:      icons.IconTrash2,
+								})
+							} else {
+								@shared.IconActionButton(shared.IconActionButtonProps{
+									ClassName:     "btn btn-ghost btn-sm btn-icon",
+									OnClick:       leaveExpr,
+									DisabledExpr:  "$formState !== '' || $_fetching",
+									AriaLabel:     ctxi18n.T(ctx, "groups.leave"),
+									Title:         ctxi18n.T(ctx, "groups.leave"),
+									IconName:      icons.IconSquareArrowRightExit,
+								})
+							}
 						</td>
 					</tr>
 				}

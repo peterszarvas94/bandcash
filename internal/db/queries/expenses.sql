@@ -1,6 +1,6 @@
 -- name: CreateExpense :one
-INSERT INTO expenses (id, group_id, title, description, amount, date)
-VALUES (?, ?, ?, ?, ?, ?)
+INSERT INTO expenses (id, group_id, title, description, amount, date, paid)
+VALUES (?, ?, ?, ?, ?, ?, ?)
 RETURNING *;
 
 -- name: GetExpense :one
@@ -247,6 +247,12 @@ LIMIT sqlc.arg(limit) OFFSET sqlc.arg(offset);
 -- name: UpdateExpense :one
 UPDATE expenses
 SET title = ?, description = ?, amount = ?, date = ?
+WHERE id = ? AND group_id = ?
+RETURNING *;
+
+-- name: ToggleExpensePaid :one
+UPDATE expenses
+SET paid = CASE WHEN paid = 1 THEN 0 ELSE 1 END
 WHERE id = ? AND group_id = ?
 RETURNING *;
 

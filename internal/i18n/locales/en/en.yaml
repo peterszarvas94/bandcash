@@ -182,6 +182,10 @@ en:
     edit: "Edit"
     delete: "Delete"
     cancel: "Cancel"
+    toggle_paid: "Toggle paid status"
+  paid_status:
+    marked_as_paid: "Marked as paid"
+    marked_as_unpaid: "Marked as unpaid"
   confirm:
     destructive_message: "This action cannot be undone."
     leave_message: "You can be invited again later."
@@ -203,6 +207,7 @@ en:
       create_failed: "Could not create event. Please try again."
       update_failed: "Could not update event. Please try again."
       delete_failed: "Could not delete event. Please try again."
+      toggle_paid_failed: "Could not update paid status. Please try again."
   expenses:
     title: "Expenses"
     page_title: "Bandcash - Expenses"
@@ -220,6 +225,7 @@ en:
       create_failed: "Could not create expense. Please try again."
       update_failed: "Could not update expense. Please try again."
       delete_failed: "Could not delete expense. Please try again."
+      toggle_paid_failed: "Could not update paid status. Please try again."
   members:
     title: "Members"
     page_title: "Bandcash - Members"
@@ -266,6 +272,7 @@ en:
       add_failed: "Could not add participant. Please try again."
       update_failed: "Could not update participant. Please try again."
       delete_failed: "Could not remove participant. Please try again."
+      toggle_paid_failed: "Could not update paid status. Please try again."
     bulk_validation_error: "Please check participant values and try again."
   validation:
     required: "Required"

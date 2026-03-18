@@ -11,21 +11,31 @@ import (
 )
 
 templ ExpenseShowMain(data ExpenseData) {
+	{{
+		togglePaidExpr := fmt.Sprintf("@put('/groups/%s/expenses/%s/toggle-paid')", data.GroupID, data.Expense.ID)
+		paidClass := "btn btn-sm btn-icon"
+		if data.Expense.Paid == 1 {
+			paidClass += " btn-success"
+		} else {
+			paidClass += " btn-inactive"
+		}
+	}}
 	if data.IsAdmin {
-		@shared.DetailGridWithActions([]shared.DetailGridRow{
-			{Label: ctxi18n.T(ctx, "fields.title"), Value: data.Expense.Title},
-			{Label: ctxi18n.T(ctx, "fields.description"), Value: data.Expense.Description},
-			{Label: ctxi18n.T(ctx, "fields.amount"), Value: utils.FormatNumberLocalized(ctx, data.Expense.Amount)},
-			{Label: ctxi18n.T(ctx, "fields.date"), Value: utils.FormatDateLocalized(ctx, data.Expense.Date)},
-		}, ExpenseShowDetailsActions(data))
-	} else {
-		@shared.DetailGrid([]shared.DetailGridRow{
-			{Label: ctxi18n.T(ctx, "fields.title"), Value: data.Expense.Title},
-			{Label: ctxi18n.T(ctx, "fields.description"), Value: data.Expense.Description},
-			{Label: ctxi18n.T(ctx, "fields.amount"), Value: utils.FormatNumberLocalized(ctx, data.Expense.Amount)},
-			{Label: ctxi18n.T(ctx, "fields.date"), Value: utils.FormatDateLocalized(ctx, data.Expense.Date)},
-		})
+		@shared.DetailsActions(ExpenseShowDetailsActions(data))
 	}
+	@shared.DetailsGrid([]shared.DetailsRow{
+		{Label: ctxi18n.T(ctx, "fields.title"), Value: data.Expense.Title},
+		{Label: ctxi18n.T(ctx, "fields.description"), Value: data.Expense.Description},
+		{Label: ctxi18n.T(ctx, "fields.amount"), Value: utils.FormatNumberLocalized(ctx, data.Expense.Amount), Action: shared.IconActionButton(shared.IconActionButtonProps{
+			ClassName:    paidClass + " btn-icon",
+			OnClick:      togglePaidExpr,
+			DisabledExpr: "$_fetching",
+			AriaLabel:    ctxi18n.T(ctx, "actions.toggle_paid"),
+			Title:        ctxi18n.T(ctx, "actions.toggle_paid"),
+			IconName:     icons.IconBanknoteArrowUp,
+		})},
+		{Label: ctxi18n.T(ctx, "fields.date"), Value: utils.FormatDateLocalized(ctx, data.Expense.Date)},
+	})
 }
 
 templ ExpenseShowDetailsActions(data ExpenseData) {

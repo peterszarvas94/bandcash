@@ -127,6 +127,7 @@ func (e *Expenses) Create(c echo.Context) error {
 		Description: signals.FormData.Description,
 		Amount:      signals.FormData.Amount,
 		Date:        signals.FormData.Date,
+		Paid:        0,
 	})
 	if err != nil {
 		slog.Error("expense.create.table: failed to create expense", "err", err)
@@ -300,5 +301,75 @@ func (e *Expenses) Destroy(c echo.Context) error {
 	}
 	utils.SSEHub.PatchHTML(c, html)
 
+	return c.NoContent(http.StatusOK)
+}
+
+func (e *Expenses) TogglePaid(c echo.Context) error {
+	groupID := middleware.GetGroupID(c)
+	userEmail := getUserEmail(c)
+
+	id := c.Param("id")
+	if !utils.IsValidID(id, utils.PrefixExpense) {
+		slog.Info("expense.togglePaid: invalid id")
+		return c.NoContent(http.StatusBadRequest)
+	}
+
+	var signals modeParams
+	err := datastar.ReadSignals(c.Request(), &signals)
+	if err != nil {
+		slog.Info("expense.togglePaid: failed to read signals", "err", err)
+		return c.NoContent(http.StatusBadRequest)
+	}
+
+	result, err := db.Qry.ToggleExpensePaid(c.Request().Context(), db.ToggleExpensePaidParams{
+		ID:      id,
+		GroupID: groupID,
+	})
+	if err != nil {
+		slog.Error("expense.togglePaid: failed to toggle paid status", "err", err)
+		utils.Notify(c, "error", ctxi18n.T(c.Request().Context(), "expenses.notifications.toggle_paid_failed"))
+		return c.NoContent(http.StatusInternalServerError)
+	}
+
+	slog.Debug("expense.togglePaid", "id", id)
+
+	if result.Paid == 1 {
+		utils.Notify(c, "success", ctxi18n.T(c.Request().Context(), "paid_status.marked_as_paid"))
+	} else {
+		utils.Notify(c, "success", ctxi18n.T(c.Request().Context(), "paid_status.marked_as_unpaid"))
+	}
+
+	if signals.Mode == "single" {
+		data, err := e.GetShowData(c.Request().Context(), groupID, id)
+		if err != nil {
+			slog.Error("expense.togglePaid: failed to get data", "err", err)
+			return c.NoContent(http.StatusInternalServerError)
+		}
+		data.IsAdmin = middleware.IsAdmin(c)
+		data.UserEmail = userEmail
+		html, err := utils.RenderHTMLForRequest(c, ExpenseShow(data))
+		if err != nil {
+			slog.Error("expense.togglePaid: failed to render", "err", err)
+			return c.NoContent(http.StatusInternalServerError)
+		}
+		utils.SSEHub.PatchHTML(c, html)
+		return c.NoContent(http.StatusOK)
+	}
+
+	query := utils.NormalizeTableQuery(signals.TableQuery, e.TableQuerySpec())
+	data, err := e.GetIndexData(c.Request().Context(), groupID, query)
+	if err != nil {
+		slog.Error("expense.togglePaid: failed to get data", "err", err)
+		return c.NoContent(http.StatusInternalServerError)
+	}
+	applyExpenseTableByRole(&data, middleware.IsAdmin(c))
+	data.UserEmail = userEmail
+	html, err := utils.RenderHTMLForRequest(c, ExpenseIndex(data))
+	if err != nil {
+		slog.Error("expense.togglePaid: failed to render", "err", err)
+		return c.NoContent(http.StatusInternalServerError)
+	}
+
+	utils.SSEHub.PatchHTML(c, html)
 	return c.NoContent(http.StatusOK)
 }

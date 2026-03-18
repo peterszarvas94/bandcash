@@ -10,7 +10,7 @@ import (
 )
 
 templ EventTotalsContent(data EventsData) {
-	@shared.DetailGrid([]shared.DetailGridRow{
+	@shared.DetailsGrid([]shared.DetailsRow{
 		{Label: ctxi18n.T(ctx, "events.total_all"), Value: utils.FormatNumberLocalized(ctx, data.TotalEventAmount)},
 		{Label: ctxi18n.T(ctx, "events.total_filtered"), Value: utils.FormatNumberLocalized(ctx, data.FilteredTotal)},
 	})
@@ -81,20 +81,18 @@ templ EventIndexMain(data EventsData) {
 				@shared.THCol(data.EventsTable.Col("amount")) {
 					@shared.TableSortHeader(ctxi18n.T(ctx, "fields.amount"), "amount", data.Query, utils.BuildTableSortURL(fmt.Sprintf("/groups/%s/events", data.GroupID), data.Query, "amount"))
 				}
-				if data.IsAdmin {
-					@shared.THActions(data.EventsTable.ActionsWidthRem) {
-						<div class="row row-right row-tight">
-							@shared.IconActionButton(shared.IconActionButtonProps{
-								ClassName:     "btn btn-ghost btn-sm btn-icon",
-								OnClick:       addExpr,
-								DisabledExpr:  "$formState !== '' || $_fetching",
-								AriaLabel:     ctxi18n.T(ctx, "events.add"),
-								Title:         ctxi18n.T(ctx, "events.add"),
-								IconName:      icons.IconPlus,
-							})
-						</div>
-					}
+			if data.IsAdmin {
+				@shared.THActions(data.EventsTable.ActionsWidthRem) {
+					@shared.IconActionButton(shared.IconActionButtonProps{
+						ClassName:     "btn btn-ghost btn-sm btn-icon",
+						OnClick:       addExpr,
+						DisabledExpr:  "$formState !== '' || $_fetching",
+						AriaLabel:     ctxi18n.T(ctx, "events.add"),
+						Title:         ctxi18n.T(ctx, "events.add"),
+						IconName:      icons.IconPlus,
+					})
 				}
+			}
 			</tr>
 		</thead>
 		<tbody>
@@ -111,33 +109,46 @@ templ EventIndexMain(data EventsData) {
 						event.ID,
 						utils.JSONString("event-delete-"+event.ID),
 					)
+					togglePaidExpr := fmt.Sprintf("@put('/groups/%s/events/%s/toggle-paid')", data.GroupID, event.ID)
+					paidClass := "btn btn-ghost btn-sm btn-icon btn-table"
+					if event.Paid == 1 {
+						paidClass += " btn-success"
+					} else {
+						paidClass += " btn-inactive"
+					}
 				}}
 				<tr>
 					<td><a class="link" href={ fmt.Sprintf("/groups/%s/events/%s", data.GroupID, event.ID) }>{ event.Title }</a></td>
 					<td>{ utils.FormatDateTimeLocalized(ctx, event.Time) }</td>
 					<td class="text-right">{ utils.FormatNumberLocalized(ctx, event.Amount) }</td>
-					if data.IsAdmin {
-						<td data-actions-col>
-							<div class="row row-right row-tight">
-								@shared.IconActionButton(shared.IconActionButtonProps{
-									ClassName:     "btn btn-ghost btn-sm btn-icon",
-									OnClick:       editExpr,
-									DisabledExpr:  "$formState !== '' || $_fetching",
-									AriaLabel:     ctxi18n.T(ctx, "actions.edit"),
-									Title:         ctxi18n.T(ctx, "actions.edit"),
-									IconName:      icons.IconPencil,
-								})
-								@shared.IconActionButton(shared.IconActionButtonProps{
-									ClassName:     "btn btn-ghost btn-sm btn-danger btn-icon",
-									OnClick:       deleteExpr,
-									DisabledExpr:  "$formState !== '' || $_fetching",
-									AriaLabel:     ctxi18n.T(ctx, "actions.delete"),
-									Title:         ctxi18n.T(ctx, "actions.delete"),
-									IconName:      icons.IconTrash2,
-								})
-							</div>
-						</td>
-					}
+				if data.IsAdmin {
+					<td data-actions-col>
+						@shared.IconActionButton(shared.IconActionButtonProps{
+							ClassName:     paidClass,
+							OnClick:       togglePaidExpr,
+							DisabledExpr:  "$formState !== '' || $_fetching",
+							AriaLabel:     ctxi18n.T(ctx, "actions.toggle_paid"),
+							Title:         ctxi18n.T(ctx, "actions.toggle_paid"),
+							IconName:      icons.IconBanknoteArrowUp,
+						})
+						@shared.IconActionButton(shared.IconActionButtonProps{
+							ClassName:     "btn btn-ghost btn-sm btn-icon",
+							OnClick:       editExpr,
+							DisabledExpr:  "$formState !== '' || $_fetching",
+							AriaLabel:     ctxi18n.T(ctx, "actions.edit"),
+							Title:         ctxi18n.T(ctx, "actions.edit"),
+							IconName:      icons.IconPencil,
+						})
+						@shared.IconActionButton(shared.IconActionButtonProps{
+							ClassName:     "btn btn-ghost btn-sm btn-danger btn-icon",
+							OnClick:       deleteExpr,
+							DisabledExpr:  "$formState !== '' || $_fetching",
+							AriaLabel:     ctxi18n.T(ctx, "actions.delete"),
+							Title:         ctxi18n.T(ctx, "actions.delete"),
+							IconName:      icons.IconTrash2,
+						})
+					</td>
+				}
 				</tr>
 			}
 			if len(data.Events) == 0 {

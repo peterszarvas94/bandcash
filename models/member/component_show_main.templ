@@ -11,24 +11,16 @@ import (
 
 templ MemberShowMain(data MemberData) {
 	if data.IsAdmin {
-		@shared.DetailGridWithActions([]shared.DetailGridRow{
-			{Label: ctxi18n.T(ctx, "fields.name"), Value: data.Member.Name},
-			{Label: ctxi18n.T(ctx, "fields.description"), Value: data.Member.Description},
-			{Label: ctxi18n.T(ctx, "members.total_events"), Value: utils.FormatNumberLocalized(ctx, int64(len(data.Events)))},
-			{Label: ctxi18n.T(ctx, "members.total_cut"), Value: utils.FormatNumberLocalized(ctx, data.TotalCut)},
-			{Label: ctxi18n.T(ctx, "members.total_expense"), Value: utils.FormatNumberLocalized(ctx, data.TotalExpense)},
-			{Label: ctxi18n.T(ctx, "members.total_payout"), Value: utils.FormatNumberLocalized(ctx, data.TotalPayout)},
-		}, MemberShowDetailsActions(data))
-	} else {
-		@shared.DetailGrid([]shared.DetailGridRow{
-			{Label: ctxi18n.T(ctx, "fields.name"), Value: data.Member.Name},
-			{Label: ctxi18n.T(ctx, "fields.description"), Value: data.Member.Description},
-			{Label: ctxi18n.T(ctx, "members.total_events"), Value: utils.FormatNumberLocalized(ctx, int64(len(data.Events)))},
-			{Label: ctxi18n.T(ctx, "members.total_cut"), Value: utils.FormatNumberLocalized(ctx, data.TotalCut)},
-			{Label: ctxi18n.T(ctx, "members.total_expense"), Value: utils.FormatNumberLocalized(ctx, data.TotalExpense)},
-			{Label: ctxi18n.T(ctx, "members.total_payout"), Value: utils.FormatNumberLocalized(ctx, data.TotalPayout)},
-		})
+		@shared.DetailsActions(MemberShowDetailsActions(data))
 	}
+	@shared.DetailsGrid([]shared.DetailsRow{
+		{Label: ctxi18n.T(ctx, "fields.name"), Value: data.Member.Name},
+		{Label: ctxi18n.T(ctx, "fields.description"), Value: data.Member.Description},
+		{Label: ctxi18n.T(ctx, "members.total_events"), Value: utils.FormatNumberLocalized(ctx, int64(len(data.Events)))},
+		{Label: ctxi18n.T(ctx, "members.total_cut"), Value: utils.FormatNumberLocalized(ctx, data.TotalCut)},
+		{Label: ctxi18n.T(ctx, "members.total_expense"), Value: utils.FormatNumberLocalized(ctx, data.TotalExpense)},
+		{Label: ctxi18n.T(ctx, "members.total_payout"), Value: utils.FormatNumberLocalized(ctx, data.TotalPayout)},
+	})
 	@shared.TableSearchFormWithClass(fmt.Sprintf("/groups/%s/members/%s", data.GroupID, data.Member.ID), data.Query, "table.search_placeholder_member_events", "pt")
 	@shared.TablePaginationRow(fmt.Sprintf("/groups/%s/members/%s", data.GroupID, data.Member.ID), data.Query, data.Pager)
 	@shared.TableOpenFixed(data.EventsTable, "") {

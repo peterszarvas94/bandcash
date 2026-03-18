@@ -182,6 +182,10 @@ hu:
     edit: "Szerkesztés"
     delete: "Törlés"
     cancel: "Mégse"
+    toggle_paid: "Fizetés állapot váltás"
+  paid_status:
+    marked_as_paid: "Fizetettnek jelölve"
+    marked_as_unpaid: "Fizetetlennek jelölve"
   confirm:
     destructive_message: "Ez a művelet nem vonható vissza."
     leave_message: "Később újra meghívhatnak."
@@ -203,6 +207,7 @@ hu:
       create_failed: "Nem sikerült eseményt létrehozni. Próbáld újra."
       update_failed: "Nem sikerült eseményt frissíteni. Próbáld újra."
       delete_failed: "Nem sikerült eseményt törölni. Próbáld újra."
+      toggle_paid_failed: "Nem sikerült a fizetés állapotot frissíteni. Próbáld újra."
   expenses:
     title: "Költségek"
     page_title: "Bandcash - Költségek"
@@ -220,6 +225,7 @@ hu:
       create_failed: "Nem sikerült költséget létrehozni. Próbáld újra."
       update_failed: "Nem sikerült költséget frissíteni. Próbáld újra."
       delete_failed: "Nem sikerült költséget törölni. Próbáld újra."
+      toggle_paid_failed: "Nem sikerült a fizetés állapotot frissíteni. Próbáld újra."
   members:
     title: "Tagok"
     page_title: "Bandcash - Tagok"
@@ -266,6 +272,7 @@ hu:
       add_failed: "Nem sikerült résztvevőt hozzáadni. Próbáld újra."
       update_failed: "Nem sikerült résztvevőt frissíteni. Próbáld újra."
       delete_failed: "Nem sikerült résztvevőt eltávolítani. Próbáld újra."
+      toggle_paid_failed: "Nem sikerült a fizetés állapotot frissíteni. Próbáld újra."
     bulk_validation_error: "Ellenőrizd a résztvevői értékeket, majd próbáld újra."
   validation:
     required: "Kötelező"

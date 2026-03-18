@@ -1,6 +1,6 @@
 -- name: AddParticipant :one
-INSERT INTO participants (group_id, event_id, member_id, amount, expense)
-VALUES (?, ?, ?, ?, ?)
+INSERT INTO participants (group_id, event_id, member_id, amount, expense, paid)
+VALUES (?, ?, ?, ?, ?, ?)
 RETURNING *;
 
 -- name: RemoveParticipant :exec
@@ -12,15 +12,21 @@ UPDATE participants
 SET amount = ?, expense = ?
 WHERE event_id = ? AND member_id = ? AND group_id = ?;
 
+-- name: ToggleParticipantPaid :one
+UPDATE participants
+SET paid = CASE WHEN paid = 1 THEN 0 ELSE 1 END
+WHERE event_id = ? AND member_id = ? AND group_id = ?
+RETURNING *;
+
 -- name: ListParticipantsByEvent :many
-SELECT members.*, participants.amount AS participant_amount, participants.expense AS participant_expense
+SELECT members.*, participants.amount AS participant_amount, participants.expense AS participant_expense, participants.paid AS participant_paid
 FROM members
 JOIN participants ON participants.member_id = members.id
 WHERE participants.event_id = ? AND participants.group_id = ?
 ORDER BY members.name ASC;
 
 -- name: ListParticipantsByMember :many
-SELECT events.*, participants.amount AS participant_amount, participants.expense AS participant_expense
+SELECT events.*, participants.amount AS participant_amount, participants.expense AS participant_expense, participants.paid AS participant_paid
 FROM events
 JOIN participants ON participants.event_id = events.id
 WHERE participants.member_id = ? AND participants.group_id = ?

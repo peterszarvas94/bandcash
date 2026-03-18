@@ -2,33 +2,31 @@ package shared
 
 import icons "bandcash/models/shared/icons"
 
-type DetailGridRow struct {
-	Label string
-	Value string
+type DetailsRow struct {
+	Label  string
+	Value  string
+	Action templ.Component
 }
 
-templ DetailGrid(rows []DetailGridRow) {
+templ DetailsGrid(rows []DetailsRow) {
 	<div class="detail-grid">
 		for _, row := range rows {
 			<div class="detail-row">
 				<p class="detail-key">{ row.Label }</p>
-				<p class="detail-val">{ row.Value }</p>
+				<p class="detail-val">
+					if row.Action != nil {
+						@row.Action
+					}
+					{ row.Value }
+				</p>
 			</div>
 		}
 	</div>
 }
 
-templ DetailGridWithActions(rows []DetailGridRow, actions templ.Component) {
+templ DetailsActions(actions templ.Component) {
 	<div class="detail-actions">
 		@actions
-	</div>
-	<div class="detail-grid">
-		for _, row := range rows {
-			<div class="detail-row">
-				<p class="detail-key">{ row.Label }</p>
-				<p class="detail-val">{ row.Value }</p>
-			</div>
-		}
 	</div>
 }
 

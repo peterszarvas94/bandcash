@@ -46,6 +46,12 @@
     & td[data-actions-col] {
       width: 1%;
       white-space: nowrap;
+      padding: 0;
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 0;
     }
 
     &.table-sticky-actions {
@@ -56,12 +62,6 @@
         z-index: 1;
         background: var(--page-bg);
         padding: 0;
-      }
-
-      th[data-actions-col] > .row,
-      td[data-actions-col] > .row {
-        width: 100%;
-        justify-content: flex-end;
       }
 
       tbody td[data-actions-col] {
@@ -192,7 +192,7 @@
 
     &:focus-visible {
       outline: var(--focus-ring);
-      outline-offset: var(--focus-ring-offset);
+      outline-offset: calc(var(--focus-ring-offset) * -1);
     }
 
     &:disabled,
@@ -252,6 +252,10 @@
       &:not(:disabled):not([disabled]):active {
         background: transparent;
         border-color: transparent;
+      }
+
+      &:focus-visible {
+        outline-offset: var(--focus-ring-offset);
       }
     }
 
@@ -318,7 +322,7 @@
 
     &:focus-visible {
       outline: var(--focus-ring);
-      outline-offset: var(--focus-ring-offset);
+      outline-offset: calc(var(--focus-ring-offset) * -1);
       border-radius: 0;
       border-color: color-mix(
         in srgb,
@@ -444,6 +448,37 @@
 
     &:focus-visible {
       outline-color: var(--error-color);
+    }
+  }
+
+  .btn-success {
+    color: var(--color-success);
+
+    &:not(:disabled):not([disabled]):hover {
+      background: color-mix(in srgb, var(--color-success) 12%, transparent);
+    }
+
+    &:not(:disabled):not([disabled]):active {
+      background: color-mix(in srgb, var(--color-success) 20%, transparent);
+    }
+
+    &:focus-visible {
+      outline-color: var(--color-success);
+    }
+  }
+
+  .btn-inactive {
+    opacity: 0.4;
+    color: var(--muted-text-color);
+
+    &:not(:disabled):not([disabled]):hover {
+      background: var(--surface-hover);
+      opacity: 0.7;
+    }
+
+    &:not(:disabled):not([disabled]):active {
+      background: color-mix(in srgb, var(--page-bg) 88%, var(--text-color) 12%);
+      opacity: 0.9;
     }
   }
 
@@ -802,10 +837,9 @@
 
   .detail-grid {
     display: grid;
-    gap: var(--space);
     flex: 0 1 var(--details-width);
     max-width: var(--details-width);
-    padding: var(--space);
+    padding: calc(var(--space) * 0.5) var(--space);
     border: var(--border) solid var(--border-color);
     background: color-mix(in srgb, var(--page-bg) 97%, var(--text-color) 3%);
 
@@ -814,6 +848,7 @@
       grid-template-columns: minmax(8rem, 15rem) minmax(0, 1fr);
       gap: var(--space);
       align-items: center;
+      min-height: 2rem;
 
       .detail-key,
       .detail-val {
@@ -834,10 +869,13 @@
         font-weight: 400;
         font-variant-numeric: tabular-nums;
         font-feature-settings: "tnum" 1;
-        text-align: right;
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
+        display: flex;
+        align-items: center;
+        justify-content: flex-end;
+        gap: calc(var(--space) * 0.5);
 
         .native-checkbox {
           all: revert;

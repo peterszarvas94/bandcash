@@ -17,6 +17,7 @@ func RegisterRoutes(e *echo.Echo) *Expenses {
 	admin.POST("/expenses", expenses.Create)
 	admin.PUT("/expenses/:id", expenses.Update)
 	admin.DELETE("/expenses/:id", expenses.Destroy)
+	admin.PUT("/expenses/:id/toggle-paid", expenses.TogglePaid)
 
 	return expenses
 }

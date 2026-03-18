@@ -1,6 +1,6 @@
 -- name: CreateEvent :one
-INSERT INTO events (id, group_id, title, time, description, amount)
-VALUES (?, ?, ?, ?, ?, ?)
+INSERT INTO events (id, group_id, title, time, description, amount, paid)
+VALUES (?, ?, ?, ?, ?, ?, ?)
 RETURNING *;
 
 -- name: GetEvent :one
@@ -247,6 +247,12 @@ LIMIT sqlc.arg(limit) OFFSET sqlc.arg(offset);
 -- name: UpdateEvent :one
 UPDATE events
 SET title = ?, time = ?, description = ?, amount = ?
+WHERE id = ? AND group_id = ?
+RETURNING *;
+
+-- name: ToggleEventPaid :one
+UPDATE events
+SET paid = CASE WHEN paid = 1 THEN 0 ELSE 1 END
 WHERE id = ? AND group_id = ?
 RETURNING *;
 

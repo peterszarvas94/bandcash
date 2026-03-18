@@ -28,6 +28,8 @@ func RegisterRoutes(e *echo.Echo) *Events {
 	admin.DELETE("/events/:id/participants/draft/:memberId", events.ExcludeParticipantsDraftMember)
 	admin.DELETE("/events/:id", events.Destroy)
 	admin.DELETE("/events/:id/participants/:memberId", events.DeleteParticipantTable)
+	admin.PUT("/events/:id/toggle-paid", events.TogglePaid)
+	admin.PUT("/events/:id/participants/:memberId/toggle-paid", events.ToggleParticipantPaid)
 
 	return events
 }

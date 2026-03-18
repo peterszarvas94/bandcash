@@ -39,26 +39,34 @@ func ExpenseShowMain(data ExpenseData) templ.Component {
 			templ_7745c5c3_Var1 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		if data.IsAdmin {
-			templ_7745c5c3_Err = shared.DetailGridWithActions([]shared.DetailGridRow{
-				{Label: ctxi18n.T(ctx, "fields.title"), Value: data.Expense.Title},
-				{Label: ctxi18n.T(ctx, "fields.description"), Value: data.Expense.Description},
-				{Label: ctxi18n.T(ctx, "fields.amount"), Value: utils.FormatNumberLocalized(ctx, data.Expense.Amount)},
-				{Label: ctxi18n.T(ctx, "fields.date"), Value: utils.FormatDateLocalized(ctx, data.Expense.Date)},
-			}, ExpenseShowDetailsActions(data)).Render(ctx, templ_7745c5c3_Buffer)
-			if templ_7745c5c3_Err != nil {
-				return templ_7745c5c3_Err
-			}
+		togglePaidExpr := fmt.Sprintf("@put('/groups/%s/expenses/%s/toggle-paid')", data.GroupID, data.Expense.ID)
+		paidClass := "btn btn-sm btn-icon"
+		if data.Expense.Paid == 1 {
+			paidClass += " btn-success"
 		} else {
-			templ_7745c5c3_Err = shared.DetailGrid([]shared.DetailGridRow{
-				{Label: ctxi18n.T(ctx, "fields.title"), Value: data.Expense.Title},
-				{Label: ctxi18n.T(ctx, "fields.description"), Value: data.Expense.Description},
-				{Label: ctxi18n.T(ctx, "fields.amount"), Value: utils.FormatNumberLocalized(ctx, data.Expense.Amount)},
-				{Label: ctxi18n.T(ctx, "fields.date"), Value: utils.FormatDateLocalized(ctx, data.Expense.Date)},
-			}).Render(ctx, templ_7745c5c3_Buffer)
+			paidClass += " btn-inactive"
+		}
+		if data.IsAdmin {
+			templ_7745c5c3_Err = shared.DetailsActions(ExpenseShowDetailsActions(data)).Render(ctx, templ_7745c5c3_Buffer)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
+		}
+		templ_7745c5c3_Err = shared.DetailsGrid([]shared.DetailsRow{
+			{Label: ctxi18n.T(ctx, "fields.title"), Value: data.Expense.Title},
+			{Label: ctxi18n.T(ctx, "fields.description"), Value: data.Expense.Description},
+			{Label: ctxi18n.T(ctx, "fields.amount"), Value: utils.FormatNumberLocalized(ctx, data.Expense.Amount), Action: shared.IconActionButton(shared.IconActionButtonProps{
+				ClassName:    paidClass + " btn-icon",
+				OnClick:      togglePaidExpr,
+				DisabledExpr: "$_fetching",
+				AriaLabel:    ctxi18n.T(ctx, "actions.toggle_paid"),
+				Title:        ctxi18n.T(ctx, "actions.toggle_paid"),
+				IconName:     icons.IconBanknoteArrowUp,
+			})},
+			{Label: ctxi18n.T(ctx, "fields.date"), Value: utils.FormatDateLocalized(ctx, data.Expense.Date)},
+		}).Render(ctx, templ_7745c5c3_Buffer)
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
 		}
 		return nil
 	})

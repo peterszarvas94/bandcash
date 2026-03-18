@@ -357,6 +357,7 @@ func (e *Events) Create(c echo.Context) error {
 		Time:        signals.FormData.Time,
 		Description: signals.FormData.Description,
 		Amount:      signals.FormData.Amount,
+		Paid:        0,
 	})
 	if err != nil {
 		slog.Error("event.create.table: failed to create event", "err", err)
@@ -579,6 +580,7 @@ func (e *Events) CreateParticipant(c echo.Context) error {
 		MemberID: signals.FormData.MemberID,
 		Amount:   signals.FormData.Amount,
 		Expense:  expense,
+		Paid:     0,
 	})
 	if err != nil {
 		slog.Error("participant.create.table: failed to add participant", "err", err)
@@ -728,6 +730,66 @@ func (e *Events) DeleteParticipantTable(c echo.Context) error {
 	utils.SSEHub.PatchSignals(c, defaultParticipantSignals)
 
 	slog.Debug("participant.delete", "event_id", eventID, "member_id", memberID)
+	return c.NoContent(http.StatusOK)
+}
+
+func (e *Events) ToggleParticipantPaid(c echo.Context) error {
+	groupID := middleware.GetGroupID(c)
+	userEmail := getUserEmail(c)
+
+	eventID := c.Param("id")
+	if !utils.IsValidID(eventID, utils.PrefixEvent) {
+		slog.Info("participant.togglePaid: invalid event id")
+		return c.NoContent(http.StatusBadRequest)
+	}
+
+	memberID := c.Param("memberId")
+	if !utils.IsValidID(memberID, utils.PrefixMember) {
+		slog.Info("participant.togglePaid: invalid member id")
+		return c.NoContent(http.StatusBadRequest)
+	}
+
+	var signals participantTableParams
+	err := datastar.ReadSignals(c.Request(), &signals)
+	if err != nil {
+		slog.Info("participant.togglePaid: failed to read signals", "err", err)
+		return c.NoContent(http.StatusBadRequest)
+	}
+
+	result, err := db.Qry.ToggleParticipantPaid(c.Request().Context(), db.ToggleParticipantPaidParams{
+		EventID:  eventID,
+		MemberID: memberID,
+		GroupID:  groupID,
+	})
+	if err != nil {
+		slog.Error("participant.togglePaid: failed to toggle paid status", "err", err)
+		utils.Notify(c, "error", ctxi18n.T(c.Request().Context(), "participants.notifications.toggle_paid_failed"))
+		return c.NoContent(http.StatusInternalServerError)
+	}
+
+	slog.Debug("participant.togglePaid", "event_id", eventID, "member_id", memberID)
+
+	if result.Paid == 1 {
+		utils.Notify(c, "success", ctxi18n.T(c.Request().Context(), "paid_status.marked_as_paid"))
+	} else {
+		utils.Notify(c, "success", ctxi18n.T(c.Request().Context(), "paid_status.marked_as_unpaid"))
+	}
+
+	query := utils.NormalizeTableQuery(signals.TableQuery, e.ParticipantTableQuerySpec())
+	data, err := e.GetShowData(c.Request().Context(), groupID, eventID, query)
+	if err != nil {
+		slog.Error("participant.togglePaid: failed to get data", "err", err)
+		return c.NoContent(http.StatusInternalServerError)
+	}
+	applyEventShowTableByRole(&data, middleware.IsAdmin(c))
+	data.UserEmail = userEmail
+	html, err := utils.RenderHTMLForRequest(c, EventShow(data))
+	if err != nil {
+		slog.Error("participant.togglePaid: failed to render", "err", err)
+		return c.NoContent(http.StatusInternalServerError)
+	}
+
+	utils.SSEHub.PatchHTML(c, html)
 	return c.NoContent(http.StatusOK)
 }
 
@@ -1060,5 +1122,76 @@ func (e *Events) SaveParticipantsBulk(c echo.Context) error {
 	}
 
 	slog.Debug("participant.bulk", "event_id", eventID, "rows", len(signals.Wizard.Rows))
+	return c.NoContent(http.StatusOK)
+}
+
+func (e *Events) TogglePaid(c echo.Context) error {
+	groupID := middleware.GetGroupID(c)
+	userEmail := getUserEmail(c)
+
+	id := c.Param("id")
+	if !utils.IsValidID(id, utils.PrefixEvent) {
+		slog.Info("event.togglePaid: invalid id")
+		return c.NoContent(http.StatusBadRequest)
+	}
+
+	var signals modeParams
+	err := datastar.ReadSignals(c.Request(), &signals)
+	if err != nil {
+		slog.Info("event.togglePaid: failed to read signals", "err", err)
+		return c.NoContent(http.StatusBadRequest)
+	}
+
+	result, err := db.Qry.ToggleEventPaid(c.Request().Context(), db.ToggleEventPaidParams{
+		ID:      id,
+		GroupID: groupID,
+	})
+	if err != nil {
+		slog.Error("event.togglePaid: failed to toggle paid status", "err", err)
+		utils.Notify(c, "error", ctxi18n.T(c.Request().Context(), "events.notifications.toggle_paid_failed"))
+		return c.NoContent(http.StatusInternalServerError)
+	}
+
+	slog.Debug("event.togglePaid", "id", id)
+
+	if result.Paid == 1 {
+		utils.Notify(c, "success", ctxi18n.T(c.Request().Context(), "paid_status.marked_as_paid"))
+	} else {
+		utils.Notify(c, "success", ctxi18n.T(c.Request().Context(), "paid_status.marked_as_unpaid"))
+	}
+
+	if signals.Mode == "single" {
+		query := utils.NormalizeTableQuery(signals.TableQuery, e.ParticipantTableQuerySpec())
+		data, err := e.GetShowData(c.Request().Context(), groupID, id, query)
+		if err != nil {
+			slog.Error("event.togglePaid: failed to get data", "err", err)
+			return c.NoContent(http.StatusInternalServerError)
+		}
+		applyEventShowTableByRole(&data, middleware.IsAdmin(c))
+		data.UserEmail = userEmail
+		html, err := utils.RenderHTMLForRequest(c, EventShow(data))
+		if err != nil {
+			slog.Error("event.togglePaid: failed to render", "err", err)
+			return c.NoContent(http.StatusInternalServerError)
+		}
+		utils.SSEHub.PatchHTML(c, html)
+		return c.NoContent(http.StatusOK)
+	}
+
+	query := utils.NormalizeTableQuery(signals.TableQuery, e.TableQuerySpec())
+	data, err := e.GetIndexData(c.Request().Context(), groupID, query)
+	if err != nil {
+		slog.Error("event.togglePaid: failed to get data", "err", err)
+		return c.NoContent(http.StatusInternalServerError)
+	}
+	applyEventIndexTableByRole(&data, middleware.IsAdmin(c))
+	data.UserEmail = userEmail
+	html, err := utils.RenderHTMLForRequest(c, EventIndex(data))
+	if err != nil {
+		slog.Error("event.togglePaid: failed to render", "err", err)
+		return c.NoContent(http.StatusInternalServerError)
+	}
+
+	utils.SSEHub.PatchHTML(c, html)
 	return c.NoContent(http.StatusOK)
 }

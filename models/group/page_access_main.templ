@@ -25,20 +25,18 @@ templ GroupAccessMain(data AccessPageData) {
 				@shared.THCol(data.AccessTable.Col("status")) {
 					@shared.TableSortHeader(ctxi18n.T(ctx, "fields.status"), "status", data.Query, utils.BuildTableSortURL(accessTablePath(data.GroupID), data.Query, "status"))
 				}
-				if data.IsAdmin {
-					@shared.THActions(data.AccessTable.ActionsWidthRem) {
-						<div class="row row-right row-tight">
-							@shared.IconActionButton(shared.IconActionButtonProps{
-								ClassName:     "btn btn-ghost btn-sm btn-icon",
-								OnClick:       "$formState = 'add'; $formData = {email: '', role: 'viewer'}",
-								DisabledExpr:  "$formState !== '' || $_fetching",
-								AriaLabel:     ctxi18n.T(ctx, "groups.invite_access"),
-								Title:         ctxi18n.T(ctx, "groups.invite_access"),
-								IconName:      icons.IconPlus,
-							})
-						</div>
-					}
+			if data.IsAdmin {
+				@shared.THActions(data.AccessTable.ActionsWidthRem) {
+					@shared.IconActionButton(shared.IconActionButtonProps{
+						ClassName:     "btn btn-ghost btn-sm btn-icon",
+						OnClick:       "$formState = 'add'; $formData = {email: '', role: 'viewer'}",
+						DisabledExpr:  "$formState !== '' || $_fetching",
+						AriaLabel:     ctxi18n.T(ctx, "groups.invite_access"),
+						Title:         ctxi18n.T(ctx, "groups.invite_access"),
+						IconName:      icons.IconPlus,
+					})
 				}
+			}
 			</tr>
 		</thead>
 		<tbody>
@@ -76,46 +74,44 @@ templ GroupAccessMain(data AccessPageData) {
 					</td>
 					if data.IsAdmin {
 						<td data-actions-col>
-							<div class="row row-right row-tight">
-								if row.Kind == "invite" {
+							if row.Kind == "invite" {
+								@shared.IconActionButton(shared.IconActionButtonProps{
+									ClassName:     "btn btn-ghost btn-sm btn-danger btn-icon",
+									OnClick:       inviteDeleteExpr,
+									DisabledExpr:  "$_fetching",
+									AriaLabel:     ctxi18n.T(ctx, "actions.delete"),
+									Title:         ctxi18n.T(ctx, "actions.delete"),
+									IconName:      icons.IconTrash2,
+								})
+							} else {
+								if row.Role == "viewer" {
 									@shared.IconActionButton(shared.IconActionButtonProps{
-										ClassName:     "btn btn-ghost btn-sm btn-danger btn-icon",
-										OnClick:       inviteDeleteExpr,
+										ClassName:     "btn btn-ghost btn-sm btn-icon",
+										OnClick:       makeAdminExpr,
 										DisabledExpr:  "$_fetching",
-										AriaLabel:     ctxi18n.T(ctx, "actions.delete"),
-										Title:         ctxi18n.T(ctx, "actions.delete"),
-										IconName:      icons.IconTrash2,
+										AriaLabel:     ctxi18n.T(ctx, "groups.make_admin"),
+										Title:         ctxi18n.T(ctx, "groups.make_admin"),
+										IconName:      icons.IconShieldPlus,
 									})
 								} else {
-									if row.Role == "viewer" {
-										@shared.IconActionButton(shared.IconActionButtonProps{
-											ClassName:     "btn btn-ghost btn-sm btn-icon",
-											OnClick:       makeAdminExpr,
-											DisabledExpr:  "$_fetching",
-											AriaLabel:     ctxi18n.T(ctx, "groups.make_admin"),
-											Title:         ctxi18n.T(ctx, "groups.make_admin"),
-											IconName:      icons.IconShieldPlus,
-										})
-									} else {
-										@shared.IconActionButton(shared.IconActionButtonProps{
-											ClassName:     "btn btn-ghost btn-sm btn-icon",
-											OnClick:       makeViewerExpr,
-											DisabledExpr:  "$_fetching",
-											AriaLabel:     ctxi18n.T(ctx, "groups.make_viewer"),
-											Title:         ctxi18n.T(ctx, "groups.make_viewer"),
-											IconName:      icons.IconEye,
-										})
-									}
 									@shared.IconActionButton(shared.IconActionButtonProps{
-										ClassName:     "btn btn-ghost btn-sm btn-danger btn-icon",
-										OnClick:       removeUserExpr,
+										ClassName:     "btn btn-ghost btn-sm btn-icon",
+										OnClick:       makeViewerExpr,
 										DisabledExpr:  "$_fetching",
-										AriaLabel:     ctxi18n.T(ctx, "actions.delete"),
-										Title:         ctxi18n.T(ctx, "actions.delete"),
-										IconName:      icons.IconTrash2,
+										AriaLabel:     ctxi18n.T(ctx, "groups.make_viewer"),
+										Title:         ctxi18n.T(ctx, "groups.make_viewer"),
+										IconName:      icons.IconEye,
 									})
 								}
-							</div>
+								@shared.IconActionButton(shared.IconActionButtonProps{
+									ClassName:     "btn btn-ghost btn-sm btn-danger btn-icon",
+									OnClick:       removeUserExpr,
+									DisabledExpr:  "$_fetching",
+									AriaLabel:     ctxi18n.T(ctx, "actions.delete"),
+									Title:         ctxi18n.T(ctx, "actions.delete"),
+									IconName:      icons.IconTrash2,
+								})
+							}
 						</td>
 					}
 				</tr>

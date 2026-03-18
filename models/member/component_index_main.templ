@@ -26,16 +26,14 @@ templ MemberIndexMain(data MembersData) {
 				}
 				if data.IsAdmin {
 					@shared.THActions(data.MembersTable.ActionsWidthRem) {
-						<div class="row row-right row-tight">
-							@shared.IconActionButton(shared.IconActionButtonProps{
-								ClassName:     "btn btn-ghost btn-sm btn-icon",
-								OnClick:       addExpr,
-								DisabledExpr:  "$formState !== '' || $_fetching",
-								AriaLabel:     ctxi18n.T(ctx, "members.add"),
-								Title:         ctxi18n.T(ctx, "members.add"),
-								IconName:      icons.IconPlus,
-							})
-						</div>
+						@shared.IconActionButton(shared.IconActionButtonProps{
+							ClassName:     "btn btn-ghost btn-sm btn-icon",
+							OnClick:       addExpr,
+							DisabledExpr:  "$formState !== '' || $_fetching",
+							AriaLabel:     ctxi18n.T(ctx, "members.add"),
+							Title:         ctxi18n.T(ctx, "members.add"),
+							IconName:      icons.IconPlus,
+						})
 					}
 				}
 			</tr>
@@ -60,24 +58,22 @@ templ MemberIndexMain(data MembersData) {
 					<td><span class="cell-ellipsis">{ member.Description }</span></td>
 					if data.IsAdmin {
 						<td data-actions-col>
-							<div class="row row-right row-tight">
-								@shared.IconActionButton(shared.IconActionButtonProps{
-									ClassName:     "btn btn-ghost btn-sm btn-icon",
-									OnClick:       editExpr,
-									DisabledExpr:  "$formState !== '' || $_fetching",
-									AriaLabel:     ctxi18n.T(ctx, "actions.edit"),
-									Title:         ctxi18n.T(ctx, "actions.edit"),
-									IconName:      icons.IconPencil,
-								})
-								@shared.IconActionButton(shared.IconActionButtonProps{
-									ClassName:     "btn btn-ghost btn-sm btn-danger btn-icon",
-									OnClick:       deleteExpr,
-									DisabledExpr:  "$formState !== '' || $_fetching",
-									AriaLabel:     ctxi18n.T(ctx, "actions.delete"),
-									Title:         ctxi18n.T(ctx, "actions.delete"),
-									IconName:      icons.IconTrash2,
-								})
-							</div>
+							@shared.IconActionButton(shared.IconActionButtonProps{
+								ClassName:     "btn btn-ghost btn-sm btn-icon",
+								OnClick:       editExpr,
+								DisabledExpr:  "$formState !== '' || $_fetching",
+								AriaLabel:     ctxi18n.T(ctx, "actions.edit"),
+								Title:         ctxi18n.T(ctx, "actions.edit"),
+								IconName:      icons.IconPencil,
+							})
+							@shared.IconActionButton(shared.IconActionButtonProps{
+								ClassName:     "btn btn-ghost btn-sm btn-danger btn-icon",
+								OnClick:       deleteExpr,
+								DisabledExpr:  "$formState !== '' || $_fetching",
+								AriaLabel:     ctxi18n.T(ctx, "actions.delete"),
+								Title:         ctxi18n.T(ctx, "actions.delete"),
+								IconName:      icons.IconTrash2,
+							})
 						</td>
 					}
 				</tr>

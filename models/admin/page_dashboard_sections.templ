@@ -28,7 +28,7 @@ templ FlagsContent(signupEnabled bool) {
 }
 
 templ DashboardStats(data DashboardData) {
-	@shared.DetailGrid([]shared.DetailGridRow{
+	@shared.DetailsGrid([]shared.DetailsRow{
 		{Label: ctxi18n.T(ctx, "admin.total_users"), Value: utils.FormatNumberLocalized(ctx, data.UsersCount)},
 		{Label: ctxi18n.T(ctx, "admin.total_groups"), Value: utils.FormatNumberLocalized(ctx, data.GroupsCount)},
 		{Label: ctxi18n.T(ctx, "admin.total_events"), Value: utils.FormatNumberLocalized(ctx, data.EventsCount)},
@@ -74,27 +74,25 @@ templ DashboardStats(data DashboardData) {
 							}
 						</td>
 						<td data-actions-col>
-							<div class="row row-right row-tight">
-								if user.IsBanned {
-									@shared.LoadingIconActionButton(shared.LoadingIconActionButtonProps{
-										ClassName:     "btn btn-sm btn-icon",
-										OnClick:       fmt.Sprintf("@post('/admin/users/%s/unban')", user.ID),
-										DisabledExpr:  "$_fetching",
-										AriaLabel:     ctxi18n.T(ctx, "admin.users.unban"),
-										Title:         ctxi18n.T(ctx, "admin.users.unban"),
-										IconName:      icons.IconCheck,
-									})
-								} else {
-									@shared.LoadingIconActionButton(shared.LoadingIconActionButtonProps{
-										ClassName:     "btn btn-sm btn-danger btn-icon",
-										OnClick:       fmt.Sprintf("@post('/admin/users/%s/ban')", user.ID),
-										DisabledExpr:  "$_fetching",
-										AriaLabel:     ctxi18n.T(ctx, "admin.users.ban"),
-										Title:         ctxi18n.T(ctx, "admin.users.ban"),
-										IconName:      icons.IconTrash2,
-									})
-								}
-							</div>
+							if user.IsBanned {
+								@shared.LoadingIconActionButton(shared.LoadingIconActionButtonProps{
+									ClassName:     "btn btn-sm btn-icon",
+									OnClick:       fmt.Sprintf("@post('/admin/users/%s/unban')", user.ID),
+									DisabledExpr:  "$_fetching",
+									AriaLabel:     ctxi18n.T(ctx, "admin.users.unban"),
+									Title:         ctxi18n.T(ctx, "admin.users.unban"),
+									IconName:      icons.IconCheck,
+								})
+							} else {
+								@shared.LoadingIconActionButton(shared.LoadingIconActionButtonProps{
+									ClassName:     "btn btn-sm btn-danger btn-icon",
+									OnClick:       fmt.Sprintf("@post('/admin/users/%s/ban')", user.ID),
+									DisabledExpr:  "$_fetching",
+									AriaLabel:     ctxi18n.T(ctx, "admin.users.ban"),
+									Title:         ctxi18n.T(ctx, "admin.users.ban"),
+									IconName:      icons.IconTrash2,
+								})
+							}
 						</td>
 					</tr>
 				}
