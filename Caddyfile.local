@@ -1,11 +1,7 @@
-http://bandcash.localhost {
+http://bandcash.localhost:9080 {
 	reverse_proxy 127.0.0.1:2222
 }
 
-http://email.bandcash.localhost {
+http://email.bandcash.localhost:9080 {
 	reverse_proxy 127.0.0.1:8025
 }
-
-# add these to your /etc/hosts file
-# 127.0.0.1 bandcash.localhost
-# 127.0.0.1 email.bandcash.localhost

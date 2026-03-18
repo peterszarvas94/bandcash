@@ -10,7 +10,11 @@ import (
 )
 
 templ TableSearchForm(basePath string, query utils.TableQuery, placeholderKey string) {
-	<form class="row row-tight pb" method="get" action={ basePath }>
+	@TableSearchFormWithClass(basePath, query, placeholderKey, "")
+}
+
+templ TableSearchFormWithClass(basePath string, query utils.TableQuery, placeholderKey string, className string) {
+	<form class={ "row row-tight pb " + className } method="get" action={ basePath }>
 		<input type="search" name="q" value={ query.Search } placeholder={ ctxi18n.T(ctx, placeholderKey) } aria-label={ ctxi18n.T(ctx, "table.search") } class="input input-sm"/>
 		if query.SortSet {
 			<input type="hidden" name="sort" value={ query.Sort }/>

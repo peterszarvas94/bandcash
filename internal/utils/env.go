@@ -51,7 +51,7 @@ type envVars struct {
 	// DBPath is the SQLite database file path.
 	DBPath string `env:"DB_PATH" envDefault:"sqlite.db" validate:"required"`
 	// URL is the public base URL used for links and callbacks.
-	URL string `env:"URL" envDefault:"http://bandcash.localhost" validate:"required_if=AppEnv production"`
+	URL string `env:"URL" envDefault:"http://bandcash.localhost:9080" validate:"required_if=AppEnv production"`
 	// SuperadminEmail is the bootstrap superadmin account email.
 	SuperadminEmail string `env:"SUPERADMIN_EMAIL" validate:"required,email"`
 	// DisableRateLimit disables request rate limiting (useful for local dev).
