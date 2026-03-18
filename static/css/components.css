@@ -807,7 +807,7 @@
     max-width: var(--details-width);
     padding: var(--space);
     border: var(--border) solid var(--border-color);
-    background: color-mix(in srgb, var(--page-bg) 96%, var(--text-color) 4%);
+    background: color-mix(in srgb, var(--page-bg) 97%, var(--text-color) 3%);
 
     .detail-row {
       display: grid;
