@@ -8,7 +8,7 @@ type DetailGridRow struct {
 }
 
 templ DetailGrid(rows []DetailGridRow) {
-	<div class="detail-grid pb">
+	<div class="detail-grid">
 		for _, row := range rows {
 			<div class="detail-row">
 				<p class="detail-key">{ row.Label }</p>
@@ -19,20 +19,16 @@ templ DetailGrid(rows []DetailGridRow) {
 }
 
 templ DetailGridWithActions(rows []DetailGridRow, actions templ.Component) {
-	<div class="detail-grid-with-actions pb">
-		<div>
-			<div class="detail-grid">
-				for _, row := range rows {
-					<div class="detail-row">
-						<p class="detail-key">{ row.Label }</p>
-						<p class="detail-val">{ row.Value }</p>
-					</div>
-				}
+	<div class="detail-actions">
+		@actions
+	</div>
+	<div class="detail-grid">
+		for _, row := range rows {
+			<div class="detail-row">
+				<p class="detail-key">{ row.Label }</p>
+				<p class="detail-val">{ row.Value }</p>
 			</div>
-		</div>
-		<div class="detail-grid-actions">
-			@actions
-		</div>
+		}
 	</div>
 }
 
