@@ -17,6 +17,8 @@ type ExpensesData struct {
 	UserEmail          string
 	TotalExpenseAmount int64
 	FilteredTotal      int64
+	FilteredPaid       int64
+	FilteredUnpaid     int64
 	ExpensesTable      utils.TableLayout
 }
 

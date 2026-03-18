@@ -200,6 +200,8 @@ en:
     delete_confirm: "Delete this event?"
     total_all: "All Events Total"
     total_filtered: "Filtered Events Total"
+    total_paid: "Paid"
+    total_unpaid: "Unpaid"
     notifications:
       created: "Event created."
       updated: "Event updated."
@@ -218,6 +220,8 @@ en:
     delete_confirm: "Delete this expense?"
     total_all: "All Expenses Total"
     total_filtered: "Filtered Expenses Total"
+    total_paid: "Paid"
+    total_unpaid: "Unpaid"
     notifications:
       created: "Expense created."
       updated: "Expense updated."

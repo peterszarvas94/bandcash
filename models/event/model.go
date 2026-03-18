@@ -168,10 +168,16 @@ func (e *Events) GetShowData(ctx context.Context, groupID, eventID string, query
 	}
 	displayParticipants := participants[start:end]
 
-	// Calculate total distributed and leftover
-	var totalDistributed int64
+	// Calculate total distributed, paid/unpaid, and leftover
+	var totalDistributed, totalPaid, totalUnpaid int64
 	for _, p := range allParticipants {
-		totalDistributed += p.ParticipantAmount + p.ParticipantExpense
+		amount := p.ParticipantAmount + p.ParticipantExpense
+		totalDistributed += amount
+		if p.ParticipantPaid == 1 {
+			totalPaid += amount
+		} else {
+			totalUnpaid += amount
+		}
 	}
 	leftover := event.Amount - totalDistributed
 
@@ -189,6 +195,8 @@ func (e *Events) GetShowData(ctx context.Context, groupID, eventID string, query
 		WizardAddableMembers: filteredMembers,
 		Leftover:             leftover,
 		TotalDistributed:     totalDistributed,
+		TotalPaid:            totalPaid,
+		TotalUnpaid:          totalUnpaid,
 		WizardEventAmount:    event.Amount,
 		WizardError:          "",
 		EditorMode:           "read",
@@ -209,80 +217,143 @@ func (e *Events) GetIndexData(ctx context.Context, groupID string, query utils.T
 		return EventsData{}, err
 	}
 
-	totalItems, err := db.Qry.CountEventsFiltered(ctx, db.CountEventsFilteredParams{
-		GroupID:    groupID,
-		Search:     query.Search,
-		YearFilter: query.Year,
-		FromDate:   query.From,
-		ToDate:     query.To,
-	})
+	// Check cache first
+	cacheKey := groupID + ":events:" + query.Search + ":" + query.Year + ":" + query.From + ":" + query.To
+	if cached, ok := utils.CalcCacheInstance.Get(cacheKey); ok {
+		if result, valid := cached.(eventCalcTotals); valid {
+			return e.buildEventsData(ctx, groupID, group, query, result)
+		}
+	}
+
+	// Get all events for the group to calculate in-memory
+	allEvents, err := db.Qry.ListEvents(ctx, groupID)
 	if err != nil {
 		return EventsData{}, err
 	}
 
-	filteredTotal, err := db.Qry.SumEventsFiltered(ctx, db.SumEventsFilteredParams{
-		GroupID:    groupID,
-		Search:     query.Search,
-		YearFilter: query.Year,
-		FromDate:   query.From,
-		ToDate:     query.To,
-	})
-	if err != nil {
-		return EventsData{}, err
+	// Filter and calculate totals in-memory
+	filteredEvents := make([]db.Event, 0, len(allEvents))
+	var filteredTotal, totalPaid, totalUnpaid int64
+
+	for _, event := range allEvents {
+		// Apply filters
+		if matchesFilters(event, query) {
+			filteredEvents = append(filteredEvents, event)
+			filteredTotal += event.Amount
+			if event.Paid == 1 {
+				totalPaid += event.Amount
+			} else {
+				totalUnpaid += event.Amount
+			}
+		}
 	}
 
+	// Sort filtered events
+	sortEvents(filteredEvents, query.Sort, query.Dir)
+
+	// Store in cache
+	totals := eventCalcTotals{
+		Filtered: filteredEvents,
+		Total:    filteredTotal,
+		Paid:     totalPaid,
+		Unpaid:   totalUnpaid,
+	}
+	utils.CalcCacheInstance.Set(cacheKey, totals)
+
+	return e.buildEventsData(ctx, groupID, group, query, totals)
+}
+
+type eventCalcTotals struct {
+	Filtered []db.Event
+	Total    int64
+	Paid     int64
+	Unpaid   int64
+}
+
+func matchesFilters(event db.Event, query utils.TableQuery) bool {
+	// Search filter
+	if query.Search != "" {
+		searchLower := strings.ToLower(query.Search)
+		if !strings.Contains(strings.ToLower(event.Title), searchLower) &&
+			!strings.Contains(strings.ToLower(event.Description), searchLower) {
+			return false
+		}
+	}
+
+	// Year filter
+	if query.Year != "" && !strings.HasPrefix(event.Time, query.Year) {
+		return false
+	}
+
+	// Date range filters
+	if query.From != "" && event.Time < query.From {
+		return false
+	}
+	if query.To != "" && event.Time > query.To {
+		return false
+	}
+
+	return true
+}
+
+func sortEvents(events []db.Event, sortField, dir string) {
+	less := func(i, j int) bool {
+		switch sortField {
+		case "title":
+			if dir == "desc" {
+				return events[i].Title > events[j].Title
+			}
+			return events[i].Title < events[j].Title
+		case "amount":
+			if dir == "desc" {
+				return events[i].Amount > events[j].Amount
+			}
+			return events[i].Amount < events[j].Amount
+		case "description":
+			if dir == "desc" {
+				return events[i].Description > events[j].Description
+			}
+			return events[i].Description < events[j].Description
+		default: // time
+			if dir == "desc" {
+				return events[i].Time > events[j].Time
+			}
+			return events[i].Time < events[j].Time
+		}
+	}
+	sort.Slice(events, less)
+}
+
+func (e *Events) buildEventsData(ctx context.Context, groupID string, group db.Group, query utils.TableQuery, totals eventCalcTotals) (EventsData, error) {
+	totalItems := int64(len(totals.Filtered))
 	query = utils.ClampPage(query, totalItems)
 
-	params := db.ListEventsByTimeAscFilteredParams{
-		GroupID:    groupID,
-		Search:     query.Search,
-		YearFilter: query.Year,
-		FromDate:   query.From,
-		ToDate:     query.To,
-		Limit:      int64(query.PageSize),
-		Offset:     query.Offset(),
+	// Paginate
+	start := query.Offset()
+	end := start + int64(query.PageSize)
+	if end > totalItems {
+		end = totalItems
+	}
+	if start > totalItems {
+		start = totalItems
 	}
 
-	var events []db.Event
-	switch query.Sort {
-	case "title":
-		if query.Dir == "desc" {
-			events, err = db.Qry.ListEventsByTitleDescFiltered(ctx, db.ListEventsByTitleDescFilteredParams(params))
-		} else {
-			events, err = db.Qry.ListEventsByTitleAscFiltered(ctx, db.ListEventsByTitleAscFilteredParams(params))
-		}
-	case "amount":
-		if query.Dir == "desc" {
-			events, err = db.Qry.ListEventsByAmountDescFiltered(ctx, db.ListEventsByAmountDescFilteredParams(params))
-		} else {
-			events, err = db.Qry.ListEventsByAmountAscFiltered(ctx, db.ListEventsByAmountAscFilteredParams(params))
-		}
-	case "description":
-		if query.Dir == "desc" {
-			events, err = db.Qry.ListEventsByDescriptionDescFiltered(ctx, db.ListEventsByDescriptionDescFilteredParams(params))
-		} else {
-			events, err = db.Qry.ListEventsByDescriptionAscFiltered(ctx, db.ListEventsByDescriptionAscFilteredParams(params))
-		}
-	default:
-		if query.Dir == "desc" {
-			events, err = db.Qry.ListEventsByTimeDescFiltered(ctx, db.ListEventsByTimeDescFilteredParams(params))
-		} else {
-			events, err = db.Qry.ListEventsByTimeAscFiltered(ctx, params)
-		}
-	}
-	if err != nil {
-		return EventsData{}, err
+	var paginatedEvents []db.Event
+	if start < totalItems {
+		paginatedEvents = totals.Filtered[start:end]
 	}
 
 	return EventsData{
 		Title:            ctxi18n.T(ctx, "events.page_title"),
-		Events:           events,
+		Events:           paginatedEvents,
 		RecentYears:      utils.RecentYears(3),
 		Query:            query,
 		Pager:            utils.BuildTablePagination(totalItems, query),
 		GroupID:          groupID,
 		TotalEventAmount: group.TotalEventAmount,
-		FilteredTotal:    filteredTotal,
+		FilteredTotal:    totals.Total,
+		FilteredPaid:     totals.Paid,
+		FilteredUnpaid:   totals.Unpaid,
 		Breadcrumbs: []utils.Crumb{
 			{Label: ctxi18n.T(ctx, "groups.title"), Href: "/dashboard"},
 			{Label: group.Name, Href: "/groups/" + groupID},

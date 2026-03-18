@@ -200,6 +200,8 @@ hu:
     delete_confirm: "Törlöd ezt az eseményt?"
     total_all: "Összes esemény összege"
     total_filtered: "Szűrt események összege"
+    total_paid: "Fizetett"
+    total_unpaid: "Fizetetlen"
     notifications:
       created: "Esemény létrehozva."
       updated: "Esemény frissítve."
@@ -218,6 +220,8 @@ hu:
     delete_confirm: "Törlöd ezt a költséget?"
     total_all: "Összes költség összege"
     total_filtered: "Szűrt költségek összege"
+    total_paid: "Fizetett"
+    total_unpaid: "Fizetetlen"
     notifications:
       created: "Költség létrehozva."
       updated: "Költség frissítve."

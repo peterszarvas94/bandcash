@@ -2,6 +2,8 @@ package expense
 
 import (
 	"context"
+	"sort"
+	"strings"
 
 	ctxi18n "github.com/invopop/ctxi18n/i18n"
 
@@ -29,74 +31,133 @@ func (e *Expenses) GetIndexData(ctx context.Context, groupID string, query utils
 		return ExpensesData{}, err
 	}
 
-	totalItems, err := db.Qry.CountExpensesFiltered(ctx, db.CountExpensesFilteredParams{
-		GroupID:    groupID,
-		Search:     query.Search,
-		YearFilter: query.Year,
-		FromDate:   query.From,
-		ToDate:     query.To,
-	})
+	// Check cache first
+	cacheKey := groupID + ":expenses:" + query.Search + ":" + query.Year + ":" + query.From + ":" + query.To
+	if cached, ok := utils.CalcCacheInstance.Get(cacheKey); ok {
+		if result, valid := cached.(expenseCalcTotals); valid {
+			return e.buildExpensesData(ctx, groupID, group, query, result)
+		}
+	}
+
+	// Get all expenses for the group to calculate in-memory
+	allExpenses, err := db.Qry.ListExpenses(ctx, groupID)
 	if err != nil {
 		return ExpensesData{}, err
 	}
 
-	filteredTotal, err := db.Qry.SumExpensesFiltered(ctx, db.SumExpensesFilteredParams{
-		GroupID:    groupID,
-		Search:     query.Search,
-		YearFilter: query.Year,
-		FromDate:   query.From,
-		ToDate:     query.To,
-	})
-	if err != nil {
-		return ExpensesData{}, err
+	// Filter and calculate totals in-memory
+	filteredExpenses := make([]db.Expense, 0, len(allExpenses))
+	var filteredTotal, totalPaid, totalUnpaid int64
+
+	for _, expense := range allExpenses {
+		if matchesExpenseFilters(expense, query) {
+			filteredExpenses = append(filteredExpenses, expense)
+			filteredTotal += expense.Amount
+			if expense.Paid == 1 {
+				totalPaid += expense.Amount
+			} else {
+				totalUnpaid += expense.Amount
+			}
+		}
 	}
 
+	// Sort filtered expenses
+	sortExpenses(filteredExpenses, query.Sort, query.Dir)
+
+	// Store in cache
+	totals := expenseCalcTotals{
+		Filtered: filteredExpenses,
+		Total:    filteredTotal,
+		Paid:     totalPaid,
+		Unpaid:   totalUnpaid,
+	}
+	utils.CalcCacheInstance.Set(cacheKey, totals)
+
+	return e.buildExpensesData(ctx, groupID, group, query, totals)
+}
+
+type expenseCalcTotals struct {
+	Filtered []db.Expense
+	Total    int64
+	Paid     int64
+	Unpaid   int64
+}
+
+func matchesExpenseFilters(expense db.Expense, query utils.TableQuery) bool {
+	if query.Search != "" {
+		searchLower := strings.ToLower(query.Search)
+		if !strings.Contains(strings.ToLower(expense.Title), searchLower) &&
+			!strings.Contains(strings.ToLower(expense.Description), searchLower) {
+			return false
+		}
+	}
+
+	if query.Year != "" && !strings.HasPrefix(expense.Date, query.Year) {
+		return false
+	}
+
+	if query.From != "" && expense.Date < query.From {
+		return false
+	}
+	if query.To != "" && expense.Date > query.To {
+		return false
+	}
+
+	return true
+}
+
+func sortExpenses(expenses []db.Expense, sortField, dir string) {
+	less := func(i, j int) bool {
+		switch sortField {
+		case "title":
+			if dir == "desc" {
+				return expenses[i].Title > expenses[j].Title
+			}
+			return expenses[i].Title < expenses[j].Title
+		case "amount":
+			if dir == "desc" {
+				return expenses[i].Amount > expenses[j].Amount
+			}
+			return expenses[i].Amount < expenses[j].Amount
+		default: // date
+			if dir == "asc" {
+				return expenses[i].Date < expenses[j].Date
+			}
+			return expenses[i].Date > expenses[j].Date
+		}
+	}
+	sort.Slice(expenses, less)
+}
+
+func (e *Expenses) buildExpensesData(ctx context.Context, groupID string, group db.Group, query utils.TableQuery, totals expenseCalcTotals) (ExpensesData, error) {
+	totalItems := int64(len(totals.Filtered))
 	query = utils.ClampPage(query, totalItems)
 
-	params := db.ListExpensesByDateDescFilteredParams{
-		GroupID:    groupID,
-		Search:     query.Search,
-		YearFilter: query.Year,
-		FromDate:   query.From,
-		ToDate:     query.To,
-		Limit:      int64(query.PageSize),
-		Offset:     query.Offset(),
+	start := query.Offset()
+	end := start + int64(query.PageSize)
+	if end > totalItems {
+		end = totalItems
+	}
+	if start > totalItems {
+		start = totalItems
 	}
 
-	var expenses []db.Expense
-	switch query.Sort {
-	case "title":
-		if query.Dir == "desc" {
-			expenses, err = db.Qry.ListExpensesByTitleDescFiltered(ctx, db.ListExpensesByTitleDescFilteredParams(params))
-		} else {
-			expenses, err = db.Qry.ListExpensesByTitleAscFiltered(ctx, db.ListExpensesByTitleAscFilteredParams(params))
-		}
-	case "amount":
-		if query.Dir == "desc" {
-			expenses, err = db.Qry.ListExpensesByAmountDescFiltered(ctx, db.ListExpensesByAmountDescFilteredParams(params))
-		} else {
-			expenses, err = db.Qry.ListExpensesByAmountAscFiltered(ctx, db.ListExpensesByAmountAscFilteredParams(params))
-		}
-	default:
-		if query.Dir == "asc" {
-			expenses, err = db.Qry.ListExpensesByDateAscFiltered(ctx, db.ListExpensesByDateAscFilteredParams(params))
-		} else {
-			expenses, err = db.Qry.ListExpensesByDateDescFiltered(ctx, params)
-		}
-	}
-	if err != nil {
-		return ExpensesData{}, err
+	var paginatedExpenses []db.Expense
+	if start < totalItems {
+		paginatedExpenses = totals.Filtered[start:end]
 	}
 
 	return ExpensesData{
 		Title:              ctxi18n.T(ctx, "expenses.page_title"),
-		Expenses:           expenses,
+		Expenses:           paginatedExpenses,
 		RecentYears:        utils.RecentYears(3),
 		Query:              query,
 		Pager:              utils.BuildTablePagination(totalItems, query),
 		GroupID:            groupID,
 		TotalExpenseAmount: group.TotalExpenseAmount,
-		FilteredTotal:      filteredTotal,
+		FilteredTotal:      totals.Total,
+		FilteredPaid:       totals.Paid,
+		FilteredUnpaid:     totals.Unpaid,
 		Breadcrumbs: []utils.Crumb{
 			{Label: ctxi18n.T(ctx, "groups.title"), Href: "/dashboard"},
 			{Label: group.Name, Href: "/groups/" + groupID},

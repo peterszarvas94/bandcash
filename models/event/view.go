@@ -18,6 +18,8 @@ type EventData struct {
 	Breadcrumbs          []utils.Crumb
 	Leftover             int64
 	TotalDistributed     int64
+	TotalPaid            int64
+	TotalUnpaid          int64
 	WizardEventAmount    int64
 	WizardError          string
 	EditorMode           string
@@ -47,5 +49,7 @@ type EventsData struct {
 	UserEmail        string
 	TotalEventAmount int64
 	FilteredTotal    int64
+	FilteredPaid     int64
+	FilteredUnpaid   int64
 	EventsTable      utils.TableLayout
 }
