@@ -24,7 +24,7 @@
     --content-width: 90rem;
     --nav-width: 14rem;
     --sidebar-width: 22rem;
-    --details-width: 38rem;
+    --details-width: 40rem;
     --mobile-drawer-width: min(20rem, calc(100vw - 3rem));
     --page-padding-inline: var(--space);
     --page-padding-top: var(--space);
@@ -149,8 +149,8 @@
     );
     --muted-text-color: color-mix(
       in srgb,
-      var(--text-color) 70%,
-      var(--page-bg) 30%
+      var(--text-color) 80%,
+      var(--page-bg) 20%
     );
 
     --focus-ring: 2px solid var(--link-color);
