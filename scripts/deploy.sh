@@ -7,9 +7,9 @@ BUMP_TYPE="${1:-}"
 # If no argument provided, prompt user
 if [ -z "$BUMP_TYPE" ]; then
   echo "Select version bump type:"
-  echo "  1) major (X.0.0)"
-  echo "  2) minor (x.Y.0)"
-  echo "  3) patch (x.y.Z)"
+  echo "  1) major (x+1.0.0)"
+  echo "  2) minor (x.x+1.0)"
+  echo "  3) patch (x.x.x+1)"
   read -p "Enter choice (1-3): " choice
   
   case "$choice" in
