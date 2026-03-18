@@ -1023,16 +1023,21 @@ func (g *Group) groupPageData(c echo.Context, groupID string) (GroupPageData, er
 		return GroupPageData{}, err
 	}
 
+	totals, err := utils.CalculateGroupTotals(ctx, groupID)
+	if err != nil {
+		return GroupPageData{}, err
+	}
+
 	return GroupPageData{
 		Title:       "Bandcash - " + group.Name,
 		Breadcrumbs: []utils.Crumb{{Label: ctxi18n.T(ctx, "groups.title"), Href: "/dashboard"}, {Label: group.Name, Href: "/groups/" + groupID}, {Label: ctxi18n.T(ctx, "nav.overview")}},
 		UserEmail:   getUserEmail(c),
 		Group:       group,
 		Admin:       admin,
-		Income:      group.TotalEventAmount,
-		Payouts:     group.TotalPayoutAmount,
-		Expenses:    group.TotalExpenseAmount,
-		Leftover:    group.TotalLeftover,
+		Income:      totals.TotalEventAmount,
+		Payouts:     totals.TotalPayoutAmount,
+		Expenses:    totals.TotalExpenseAmount,
+		Leftover:    totals.TotalLeftover,
 		IsAdmin:     middleware.IsAdmin(c),
 	}, nil
 }

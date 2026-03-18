@@ -168,18 +168,24 @@ func (e *Events) GetShowData(ctx context.Context, groupID, eventID string, query
 	}
 	displayParticipants := participants[start:end]
 
-	// Calculate total distributed, paid/unpaid, and leftover
-	var totalDistributed, totalPaid, totalUnpaid int64
+	// Calculate paid/unpaid amounts and leftover
+	// If event is unpaid: leftover = -totalPaid (we paid out but haven't received)
+	// If event is paid: leftover = event.Amount - totalPaid (received minus paid out)
+	var totalPaid, totalUnpaid int64
 	for _, p := range allParticipants {
 		amount := p.ParticipantAmount + p.ParticipantExpense
-		totalDistributed += amount
 		if p.ParticipantPaid == 1 {
 			totalPaid += amount
 		} else {
 			totalUnpaid += amount
 		}
 	}
-	leftover := event.Amount - totalDistributed
+	var leftover int64
+	if event.Paid == 1 {
+		leftover = event.Amount - totalPaid
+	} else {
+		leftover = -totalPaid
+	}
 
 	slog.Info("event.show.data", "event_id", eventID, "participants", len(participants), "members_total", len(members), "members_filtered", len(filteredMembers), "leftover", leftover)
 
@@ -194,7 +200,6 @@ func (e *Events) GetShowData(ctx context.Context, groupID, eventID string, query
 		AllMembers:           members,
 		WizardAddableMembers: filteredMembers,
 		Leftover:             leftover,
-		TotalDistributed:     totalDistributed,
 		TotalPaid:            totalPaid,
 		TotalUnpaid:          totalUnpaid,
 		WizardEventAmount:    event.Amount,
@@ -218,7 +223,7 @@ func (e *Events) GetIndexData(ctx context.Context, groupID string, query utils.T
 	}
 
 	// Check cache first
-	cacheKey := groupID + ":events:" + query.Search + ":" + query.Year + ":" + query.From + ":" + query.To
+	cacheKey := utils.EventsFilterKey(groupID, query.Search, query.Year, query.From, query.To)
 	if cached, ok := utils.CalcCacheInstance.Get(cacheKey); ok {
 		if result, valid := cached.(eventCalcTotals); valid {
 			return e.buildEventsData(ctx, groupID, group, query, result)
@@ -343,6 +348,12 @@ func (e *Events) buildEventsData(ctx context.Context, groupID string, group db.G
 		paginatedEvents = totals.Filtered[start:end]
 	}
 
+	// Calculate group totals for display
+	groupTotals, err := utils.CalculateGroupTotals(ctx, groupID)
+	if err != nil {
+		return EventsData{}, err
+	}
+
 	return EventsData{
 		Title:            ctxi18n.T(ctx, "events.page_title"),
 		Events:           paginatedEvents,
@@ -350,7 +361,7 @@ func (e *Events) buildEventsData(ctx context.Context, groupID string, group db.G
 		Query:            query,
 		Pager:            utils.BuildTablePagination(totalItems, query),
 		GroupID:          groupID,
-		TotalEventAmount: group.TotalEventAmount,
+		TotalEventAmount: groupTotals.TotalEventAmount,
 		FilteredTotal:    totals.Total,
 		FilteredPaid:     totals.Paid,
 		FilteredUnpaid:   totals.Unpaid,

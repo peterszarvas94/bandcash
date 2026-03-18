@@ -1,9 +1,14 @@
 package utils
 
-import "sync"
+import (
+	"crypto/sha256"
+	"encoding/hex"
+	"fmt"
+	"sync"
+)
 
-// CalcCache is a simple thread-safe cache for calculation results
-// Key: hash string, Value: any calculated result
+// CalcCache is a simple thread-safe KV cache for calculation results
+// Uses hash-based keys for efficient cache lookups
 type CalcCache struct {
 	mu   sync.RWMutex
 	data map[string]any
@@ -14,6 +19,32 @@ func NewCalcCache() *CalcCache {
 	return &CalcCache{
 		data: make(map[string]any),
 	}
+}
+
+// makeKey creates a deterministic hash key from components
+func makeKey(prefix string, components ...string) string {
+	h := sha256.New()
+	h.Write([]byte(prefix))
+	for _, c := range components {
+		h.Write([]byte("|"))
+		h.Write([]byte(c))
+	}
+	return prefix + ":" + hex.EncodeToString(h.Sum(nil))[:16]
+}
+
+// GroupTotalsKey creates a cache key for group financial totals
+func GroupTotalsKey(groupID string) string {
+	return makeKey("group_totals", groupID)
+}
+
+// EventsFilterKey creates a cache key for filtered event calculations
+func EventsFilterKey(groupID, search, year, from, to string) string {
+	return makeKey("events", groupID, search, year, from, to)
+}
+
+// ExpensesFilterKey creates a cache key for filtered expense calculations
+func ExpensesFilterKey(groupID, search, year, from, to string) string {
+	return makeKey("expenses", groupID, search, year, from, to)
 }
 
 // Get retrieves a value from cache
@@ -49,5 +80,43 @@ func (c *CalcCache) ClearPrefix(prefix string) {
 	}
 }
 
+// Stats returns cache statistics for debugging
+func (c *CalcCache) Stats() (total int, byPrefix map[string]int) {
+	c.mu.RLock()
+	defer c.mu.RUnlock()
+
+	total = len(c.data)
+	byPrefix = make(map[string]int)
+	for key := range c.data {
+		// Extract prefix (everything before first colon)
+		for i, ch := range key {
+			if ch == ':' {
+				byPrefix[key[:i]]++
+				break
+			}
+		}
+	}
+	return total, byPrefix
+}
+
 // Global cache instance for shared use
 var CalcCacheInstance = NewCalcCache()
+
+// GroupTotals holds calculated financial totals for a group
+type GroupTotals struct {
+	TotalEventAmount   int64
+	TotalExpenseAmount int64
+	TotalPayoutAmount  int64
+	TotalLeftover      int64
+	EventPaid          int64
+	EventUnpaid        int64
+	ExpensePaid        int64
+	ExpenseUnpaid      int64
+}
+
+func (gt GroupTotals) String() string {
+	return fmt.Sprintf("events=%d/%d expenses=%d/%d payouts=%d leftover=%d",
+		gt.EventPaid, gt.EventUnpaid,
+		gt.ExpensePaid, gt.ExpenseUnpaid,
+		gt.TotalPayoutAmount, gt.TotalLeftover)
+}

@@ -17,7 +17,6 @@ type EventData struct {
 	WizardAddableMembers []db.Member
 	Breadcrumbs          []utils.Crumb
 	Leftover             int64
-	TotalDistributed     int64
 	TotalPaid            int64
 	TotalUnpaid          int64
 	WizardEventAmount    int64

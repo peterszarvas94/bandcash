@@ -39,7 +39,6 @@ templ EventShowMain(data EventData) {
 				Title:        ctxi18n.T(ctx, "actions.toggle_paid"),
 				IconName:     icons.IconBanknoteArrowUp,
 			})},
-			{Label: ctxi18n.T(ctx, "participants.payout_total"), Value: utils.FormatNumberLocalized(ctx, data.TotalDistributed)},
 			{Label: ctxi18n.T(ctx, "events.total_paid"), Value: utils.FormatNumberLocalized(ctx, data.TotalPaid)},
 			{Label: ctxi18n.T(ctx, "events.total_unpaid"), Value: utils.FormatNumberLocalized(ctx, data.TotalUnpaid)},
 			{Label: ctxi18n.T(ctx, "events.leftover"), Value: utils.FormatNumberLocalized(ctx, data.Leftover)},

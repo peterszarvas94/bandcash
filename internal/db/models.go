@@ -46,14 +46,10 @@ type Expense struct {
 }
 
 type Group struct {
-	ID                 string       `json:"id"`
-	Name               string       `json:"name"`
-	AdminUserID        string       `json:"admin_user_id"`
-	CreatedAt          sql.NullTime `json:"created_at"`
-	TotalEventAmount   int64        `json:"total_event_amount"`
-	TotalExpenseAmount int64        `json:"total_expense_amount"`
-	TotalPayoutAmount  int64        `json:"total_payout_amount"`
-	TotalLeftover      int64        `json:"total_leftover"`
+	ID          string       `json:"id"`
+	Name        string       `json:"name"`
+	AdminUserID string       `json:"admin_user_id"`
+	CreatedAt   sql.NullTime `json:"created_at"`
 }
 
 type GroupAdmin struct {

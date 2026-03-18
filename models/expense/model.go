@@ -32,7 +32,7 @@ func (e *Expenses) GetIndexData(ctx context.Context, groupID string, query utils
 	}
 
 	// Check cache first
-	cacheKey := groupID + ":expenses:" + query.Search + ":" + query.Year + ":" + query.From + ":" + query.To
+	cacheKey := utils.ExpensesFilterKey(groupID, query.Search, query.Year, query.From, query.To)
 	if cached, ok := utils.CalcCacheInstance.Get(cacheKey); ok {
 		if result, valid := cached.(expenseCalcTotals); valid {
 			return e.buildExpensesData(ctx, groupID, group, query, result)
@@ -147,6 +147,12 @@ func (e *Expenses) buildExpensesData(ctx context.Context, groupID string, group 
 		paginatedExpenses = totals.Filtered[start:end]
 	}
 
+	// Calculate group totals for display
+	groupTotals, err := utils.CalculateGroupTotals(ctx, groupID)
+	if err != nil {
+		return ExpensesData{}, err
+	}
+
 	return ExpensesData{
 		Title:              ctxi18n.T(ctx, "expenses.page_title"),
 		Expenses:           paginatedExpenses,
@@ -154,7 +160,7 @@ func (e *Expenses) buildExpensesData(ctx context.Context, groupID string, group 
 		Query:              query,
 		Pager:              utils.BuildTablePagination(totalItems, query),
 		GroupID:            groupID,
-		TotalExpenseAmount: group.TotalExpenseAmount,
+		TotalExpenseAmount: groupTotals.TotalExpenseAmount,
 		FilteredTotal:      totals.Total,
 		FilteredPaid:       totals.Paid,
 		FilteredUnpaid:     totals.Unpaid,
