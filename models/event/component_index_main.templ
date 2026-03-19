@@ -82,7 +82,7 @@ templ EventIndexMain(data EventsData) {
 					@shared.TableSortHeader(ctxi18n.T(ctx, "fields.time"), "time", data.Query, utils.BuildTableSortURL(fmt.Sprintf("/groups/%s/events", data.GroupID), data.Query, "time"))
 				}
 				@shared.THCol(data.EventsTable.Col("amount")) {
-					@shared.TableSortHeader(ctxi18n.T(ctx, "fields.amount"), "amount", data.Query, utils.BuildTableSortURL(fmt.Sprintf("/groups/%s/events", data.GroupID), data.Query, "amount"))
+					@shared.TableSortHeader(ctxi18n.T(ctx, "fields.income"), "amount", data.Query, utils.BuildTableSortURL(fmt.Sprintf("/groups/%s/events", data.GroupID), data.Query, "amount"))
 				}
 				@shared.THCol(data.EventsTable.Col("paid")) {
 					@shared.TableSortHeader(ctxi18n.T(ctx, "table.paid"), "paid", data.Query, utils.BuildTableSortURL(fmt.Sprintf("/groups/%s/events", data.GroupID), data.Query, "paid"))

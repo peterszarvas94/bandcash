@@ -36,6 +36,13 @@ ORDER BY events.created_at DESC;
 SELECT CAST(COALESCE(SUM(amount), 0) AS INTEGER) FROM participants
 WHERE group_id = ?;
 
+-- name: SumParticipantPaidAmountsByGroup :one
+SELECT
+  CAST(COALESCE(SUM(CASE WHEN paid = 1 THEN amount ELSE 0 END), 0) AS INTEGER) AS paid_amount,
+  CAST(COALESCE(SUM(CASE WHEN paid = 0 THEN amount ELSE 0 END), 0) AS INTEGER) AS unpaid_amount
+FROM participants
+WHERE group_id = ?;
+
 -- name: CountParticipantsByMemberFiltered :one
 SELECT COUNT(*) FROM events
 JOIN participants ON participants.event_id = events.id

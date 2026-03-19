@@ -1469,6 +1469,26 @@ func (q *Queries) SumParticipantAmountsByGroup(ctx context.Context, groupID stri
 	return column_1, err
 }
 
+const sumParticipantPaidAmountsByGroup = `-- name: SumParticipantPaidAmountsByGroup :one
+SELECT
+  CAST(COALESCE(SUM(CASE WHEN paid = 1 THEN amount ELSE 0 END), 0) AS INTEGER) AS paid_amount,
+  CAST(COALESCE(SUM(CASE WHEN paid = 0 THEN amount ELSE 0 END), 0) AS INTEGER) AS unpaid_amount
+FROM participants
+WHERE group_id = ?
+`
+
+type SumParticipantPaidAmountsByGroupRow struct {
+	PaidAmount   int64 `json:"paid_amount"`
+	UnpaidAmount int64 `json:"unpaid_amount"`
+}
+
+func (q *Queries) SumParticipantPaidAmountsByGroup(ctx context.Context, groupID string) (SumParticipantPaidAmountsByGroupRow, error) {
+	row := q.db.QueryRowContext(ctx, sumParticipantPaidAmountsByGroup, groupID)
+	var i SumParticipantPaidAmountsByGroupRow
+	err := row.Scan(&i.PaidAmount, &i.UnpaidAmount)
+	return i, err
+}
+
 const sumParticipantTotalsByMemberFiltered = `-- name: SumParticipantTotalsByMemberFiltered :one
 SELECT 
   CAST(COALESCE(SUM(participants.amount), 0) AS INTEGER) as total_cut,

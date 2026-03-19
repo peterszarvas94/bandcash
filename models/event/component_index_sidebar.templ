@@ -38,7 +38,7 @@ templ EventIndexSidebar(data EventsData) {
 					<div data-show="$errors && $errors.description" class="color-error" data-text="$errors.description"></div>
 				</div>
 				<div class="field">
-					<label for="event-sidebar-amount" class="row">{ctxi18n.T(ctx, "fields.amount")} <span class="color-error">*</span></label>
+					<label for="event-sidebar-amount" class="row">{ctxi18n.T(ctx, "fields.income")} <span class="color-error">*</span></label>
 					<input id="event-sidebar-amount" type="number" data-bind="formData.amount" step="1" class="input"/>
 					<div data-show="$errors && $errors.amount" class="color-error" data-text="$errors.amount"></div>
 				</div>

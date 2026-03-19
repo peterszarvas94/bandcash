@@ -32,7 +32,7 @@ func (e *Expenses) GetIndexData(ctx context.Context, groupID string, query utils
 	}
 
 	// Check cache first
-	cacheKey := utils.ExpensesFilterKey(groupID, query.Search, query.Year, query.From, query.To, query.Sort, query.Dir)
+	cacheKey := ExpensesFilterKey(groupID, query.Search, query.Year, query.From, query.To, query.Sort, query.Dir)
 	if cached, ok := utils.CalcCacheInstance.Get(cacheKey); ok {
 		if result, valid := cached.(expenseCalcTotals); valid {
 			return e.buildExpensesData(ctx, groupID, group, query, result)

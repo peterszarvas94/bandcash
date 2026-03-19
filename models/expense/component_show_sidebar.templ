@@ -32,7 +32,7 @@ templ ExpenseShowSidebar(data ExpenseData) {
 					</div>
 					<div class="form-row">
 						<div class="field">
-							<label for="expense-show-amount" class="row">{ ctxi18n.T(ctx, "fields.amount") } <span class="color-error">*</span></label>
+							<label for="expense-show-amount" class="row">{ ctxi18n.T(ctx, "fields.expense") } <span class="color-error">*</span></label>
 							<input id="expense-show-amount" type="number" data-bind="formData.amount" step="1" class="input"/>
 							<div data-show="$errors && $errors.amount" class="color-error" data-text="$errors.amount"></div>
 						</div>

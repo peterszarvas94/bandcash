@@ -63,14 +63,18 @@ type GroupAccessRow struct {
 }
 
 type GroupPageData struct {
-	Title       string
-	Breadcrumbs []utils.Crumb
-	UserEmail   string
-	Group       db.Group
-	Admin       db.User
-	Income      int64
-	Payouts     int64
-	Expenses    int64
-	Leftover    int64
-	IsAdmin     bool
+	Title          string
+	Breadcrumbs    []utils.Crumb
+	UserEmail      string
+	Group          db.Group
+	Admin          db.User
+	Income         int64
+	Payouts        int64
+	PayoutsPaid    int64
+	PayoutsUnpaid  int64
+	Expenses       int64
+	ExpensesPaid   int64
+	ExpensesUnpaid int64
+	Leftover       int64
+	IsAdmin        bool
 }

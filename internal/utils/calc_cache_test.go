@@ -8,12 +8,12 @@ import (
 func TestCacheKeysAreGroupScopedForPrefixInvalidation(t *testing.T) {
 	groupID := "grp_test"
 
-	groupTotalsKey := GroupTotalsKey(groupID)
-	eventsKey := EventsFilterKey(groupID, "search", "2026", "2026-01-01", "2026-12-31", "time", "desc")
-	expensesKey := ExpensesFilterKey(groupID, "search", "2026", "2026-01-01", "2026-12-31", "date", "desc")
+	groupTotalsKey := GroupTotalsCacheKey(groupID)
+	eventsKey := EventsCachePrefix(groupID) + "search_search_year_2026_from_2026-01-01_to_2026-12-31_sort_time_dir_desc"
+	expensesKey := ExpensesCachePrefix(groupID) + "search_search_year_2026_from_2026-01-01_to_2026-12-31_sort_date_dir_desc"
 
 	if want := "group_totals_group_" + groupID; !strings.HasPrefix(groupTotalsKey, want) {
-		t.Fatalf("GroupTotalsKey prefix mismatch: got %q, want prefix %q", groupTotalsKey, want)
+		t.Fatalf("GroupTotalsCacheKey prefix mismatch: got %q, want prefix %q", groupTotalsKey, want)
 	}
 	if want := "events_group_" + groupID + "_"; !strings.HasPrefix(eventsKey, want) {
 		t.Fatalf("EventsFilterKey prefix mismatch: got %q, want prefix %q", eventsKey, want)
@@ -40,33 +40,33 @@ func TestInvalidateGroupCachesClearsOnlyTargetGroup(t *testing.T) {
 	groupA := "grp_a"
 	groupB := "grp_b"
 
-	cache.Set(GroupTotalsKey(groupA), GroupTotals{TotalEventAmount: 1})
-	cache.Set(EventsFilterKey(groupA, "", "", "", "", "", ""), 1)
-	cache.Set(ExpensesFilterKey(groupA, "", "", "", "", "", ""), 1)
+	cache.Set(GroupTotalsCacheKey(groupA), GroupTotals{TotalEventAmount: 1})
+	cache.Set(EventsCachePrefix(groupA)+"x", 1)
+	cache.Set(ExpensesCachePrefix(groupA)+"x", 1)
 
-	cache.Set(GroupTotalsKey(groupB), GroupTotals{TotalEventAmount: 2})
-	cache.Set(EventsFilterKey(groupB, "", "", "", "", "", ""), 2)
-	cache.Set(ExpensesFilterKey(groupB, "", "", "", "", "", ""), 2)
+	cache.Set(GroupTotalsCacheKey(groupB), GroupTotals{TotalEventAmount: 2})
+	cache.Set(EventsCachePrefix(groupB)+"x", 2)
+	cache.Set(ExpensesCachePrefix(groupB)+"x", 2)
 
 	InvalidateGroupCaches(groupA)
 
-	if _, ok := cache.Get(GroupTotalsKey(groupA)); ok {
+	if _, ok := cache.Get(GroupTotalsCacheKey(groupA)); ok {
 		t.Fatal("expected group A group_totals cache to be cleared")
 	}
-	if _, ok := cache.Get(EventsFilterKey(groupA, "", "", "", "", "", "")); ok {
+	if _, ok := cache.Get(EventsCachePrefix(groupA) + "x"); ok {
 		t.Fatal("expected group A events cache to be cleared")
 	}
-	if _, ok := cache.Get(ExpensesFilterKey(groupA, "", "", "", "", "", "")); ok {
+	if _, ok := cache.Get(ExpensesCachePrefix(groupA) + "x"); ok {
 		t.Fatal("expected group A expenses cache to be cleared")
 	}
 
-	if _, ok := cache.Get(GroupTotalsKey(groupB)); !ok {
+	if _, ok := cache.Get(GroupTotalsCacheKey(groupB)); !ok {
 		t.Fatal("expected group B group_totals cache to remain")
 	}
-	if _, ok := cache.Get(EventsFilterKey(groupB, "", "", "", "", "", "")); !ok {
+	if _, ok := cache.Get(EventsCachePrefix(groupB) + "x"); !ok {
 		t.Fatal("expected group B events cache to remain")
 	}
-	if _, ok := cache.Get(ExpensesFilterKey(groupB, "", "", "", "", "", "")); !ok {
+	if _, ok := cache.Get(ExpensesCachePrefix(groupB) + "x"); !ok {
 		t.Fatal("expected group B expenses cache to remain")
 	}
 }

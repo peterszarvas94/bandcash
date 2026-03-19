@@ -253,7 +253,7 @@ func (e *Events) GetIndexData(ctx context.Context, groupID string, query utils.T
 	}
 
 	// Check cache first
-	cacheKey := utils.EventsFilterKey(groupID, query.Search, query.Year, query.From, query.To, query.Sort, query.Dir)
+	cacheKey := EventsFilterKey(groupID, query.Search, query.Year, query.From, query.To, query.Sort, query.Dir)
 	if cached, ok := utils.CalcCacheInstance.Get(cacheKey); ok {
 		if result, valid := cached.(eventCalcTotals); valid {
 			return e.buildEventsData(ctx, groupID, group, query, result)

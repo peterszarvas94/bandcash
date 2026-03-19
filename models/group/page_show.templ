@@ -49,8 +49,10 @@ templ GroupDetailsContent(data GroupPageData) {
 	</div>
 	@shared.DetailsGrid([]shared.DetailsRow{
 		{Label: ctxi18n.T(ctx, "groups.income"), Value: utils.FormatNumberLocalized(ctx, data.Income)},
-		{Label: ctxi18n.T(ctx, "groups.payouts"), Value: utils.FormatNumberLocalized(ctx, data.Payouts)},
-		{Label: ctxi18n.T(ctx, "groups.expenses"), Value: utils.FormatNumberLocalized(ctx, data.Expenses)},
+		{Label: ctxi18n.T(ctx, "groups.unpaid_payouts"), Value: utils.FormatNumberLocalizedWithSign(ctx, data.PayoutsUnpaid, false), ValueClass: "text-muted"},
+		{Label: ctxi18n.T(ctx, "groups.paid_payouts"), Value: utils.FormatNumberLocalizedWithSign(ctx, data.PayoutsPaid, false)},
+		{Label: ctxi18n.T(ctx, "groups.unpaid_expenses"), Value: utils.FormatNumberLocalizedWithSign(ctx, data.ExpensesUnpaid, false), ValueClass: "text-muted"},
+		{Label: ctxi18n.T(ctx, "groups.paid_expenses"), Value: utils.FormatNumberLocalizedWithSign(ctx, data.ExpensesPaid, false)},
 		{Label: ctxi18n.T(ctx, "groups.leftover"), Value: utils.FormatNumberLocalized(ctx, data.Leftover)},
 	})
 }

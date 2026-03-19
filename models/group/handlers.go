@@ -1029,15 +1029,19 @@ func (g *Group) groupPageData(c echo.Context, groupID string) (GroupPageData, er
 	}
 
 	return GroupPageData{
-		Title:       "Bandcash - " + group.Name,
-		Breadcrumbs: []utils.Crumb{{Label: ctxi18n.T(ctx, "groups.title"), Href: "/dashboard"}, {Label: group.Name, Href: "/groups/" + groupID}, {Label: ctxi18n.T(ctx, "nav.overview")}},
-		UserEmail:   getUserEmail(c),
-		Group:       group,
-		Admin:       admin,
-		Income:      totals.TotalEventAmount,
-		Payouts:     totals.TotalPayoutAmount,
-		Expenses:    totals.TotalExpenseAmount,
-		Leftover:    totals.TotalLeftover,
-		IsAdmin:     middleware.IsAdmin(c),
+		Title:          "Bandcash - " + group.Name,
+		Breadcrumbs:    []utils.Crumb{{Label: ctxi18n.T(ctx, "groups.title"), Href: "/dashboard"}, {Label: group.Name, Href: "/groups/" + groupID}, {Label: ctxi18n.T(ctx, "nav.overview")}},
+		UserEmail:      getUserEmail(c),
+		Group:          group,
+		Admin:          admin,
+		Income:         totals.TotalEventAmount,
+		Payouts:        totals.TotalPayoutAmount,
+		PayoutsPaid:    totals.PayoutPaid,
+		PayoutsUnpaid:  totals.PayoutUnpaid,
+		Expenses:       totals.TotalExpenseAmount,
+		ExpensesPaid:   totals.ExpensePaid,
+		ExpensesUnpaid: totals.ExpenseUnpaid,
+		Leftover:       totals.TotalLeftover,
+		IsAdmin:        middleware.IsAdmin(c),
 	}, nil
 }

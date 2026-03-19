@@ -34,7 +34,7 @@ templ EventShowMain(data EventData) {
 				{Label: ctxi18n.T(ctx, "fields.title"), Value: data.Event.Title},
 				{Label: ctxi18n.T(ctx, "fields.time"), Value: utils.FormatDateTimeLocalized(ctx, data.Event.Time)},
 				{Label: ctxi18n.T(ctx, "fields.description"), Value: data.Event.Description},
-				{Label: ctxi18n.T(ctx, "fields.amount"), Value: utils.FormatNumberLocalized(ctx, data.Event.Amount), Action: shared.IconActionButton(shared.IconActionButtonProps{
+				{Label: ctxi18n.T(ctx, "fields.income"), Value: utils.FormatNumberLocalized(ctx, data.Event.Amount), Action: shared.IconActionButton(shared.IconActionButtonProps{
 					ClassName:    paidClass + " btn-icon",
 					OnClick:      togglePaidExpr,
 					DisabledExpr: "$_fetching",
@@ -94,9 +94,9 @@ templ EventShowMain(data EventData) {
 					}}
 					<tr>
 						<td><a class="link" href={ fmt.Sprintf("/groups/%s/members/%s", data.GroupID, participant.ID) }>{ participant.Name }</a></td>
-						<td class="text-right">{ utils.FormatNumberLocalized(ctx, participant.ParticipantAmount) }</td>
-						<td class="text-right">{ utils.FormatNumberLocalized(ctx, participant.ParticipantExpense) }</td>
-						<td class="text-right">{ utils.FormatNumberLocalized(ctx, participant.ParticipantAmount+participant.ParticipantExpense) }</td>
+						<td class="text-right">{ utils.FormatNumberLocalizedWithSign(ctx, participant.ParticipantAmount, false) }</td>
+						<td class="text-right">{ utils.FormatNumberLocalizedWithSign(ctx, participant.ParticipantExpense, false) }</td>
+						<td class="text-right">{ utils.FormatNumberLocalizedWithSign(ctx, participant.ParticipantAmount+participant.ParticipantExpense, false) }</td>
 						<td>{ paidLabel }</td>
 						if data.IsAdmin {
 							<td data-actions-col>
@@ -146,7 +146,7 @@ templ EventShowMain(data EventData) {
 					<div data-show="$errors && $errors.description" class="color-error" data-text="$errors.description"></div>
 				</div>
 				<div class="field">
-					<label for="event-edit-amount" class="row">{ ctxi18n.T(ctx, "fields.amount") } <span class="color-error">*</span></label>
+					<label for="event-edit-amount" class="row">{ ctxi18n.T(ctx, "fields.income") } <span class="color-error">*</span></label>
 					<input id="event-edit-amount" type="number" data-bind="eventFormData.amount" step="1" min="1" class="input"/>
 					<div data-show="$errors && $errors.amount" class="color-error" data-text="$errors.amount"></div>
 				</div>

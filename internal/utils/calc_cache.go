@@ -7,6 +7,30 @@ import (
 	"sync"
 )
 
+func normalizeKeyPart(value string) string {
+	trimmed := strings.TrimSpace(value)
+	if trimmed == "" {
+		return "all"
+	}
+	return url.QueryEscape(trimmed)
+}
+
+func EventsCachePrefix(groupID string) string {
+	return fmt.Sprintf("events_group_%s_", normalizeKeyPart(groupID))
+}
+
+func ExpensesCachePrefix(groupID string) string {
+	return fmt.Sprintf("expenses_group_%s_", normalizeKeyPart(groupID))
+}
+
+func GroupTotalsCachePrefix(groupID string) string {
+	return fmt.Sprintf("group_totals_group_%s", normalizeKeyPart(groupID))
+}
+
+func GroupTotalsCacheKey(groupID string) string {
+	return GroupTotalsCachePrefix(groupID)
+}
+
 // CalcCache is a simple thread-safe KV cache for calculation results
 // Uses hash-based keys for efficient cache lookups
 type CalcCache struct {
@@ -19,57 +43,6 @@ func NewCalcCache() *CalcCache {
 	return &CalcCache{
 		data: make(map[string]any),
 	}
-}
-
-func normalizeKeyPart(value string) string {
-	trimmed := strings.TrimSpace(value)
-	if trimmed == "" {
-		return "all"
-	}
-	return url.QueryEscape(trimmed)
-}
-
-func eventsCachePrefix(groupID string) string {
-	return fmt.Sprintf("events_group_%s_", normalizeKeyPart(groupID))
-}
-
-func expensesCachePrefix(groupID string) string {
-	return fmt.Sprintf("expenses_group_%s_", normalizeKeyPart(groupID))
-}
-
-func groupTotalsCachePrefix(groupID string) string {
-	return fmt.Sprintf("group_totals_group_%s", normalizeKeyPart(groupID))
-}
-
-// GroupTotalsKey creates a cache key for group financial totals
-func GroupTotalsKey(groupID string) string {
-	return groupTotalsCachePrefix(groupID)
-}
-
-// EventsFilterKey creates a cache key for filtered event calculations
-func EventsFilterKey(groupID, search, year, from, to, sort, dir string) string {
-	return fmt.Sprintf("%ssearch_%s_year_%s_from_%s_to_%s_sort_%s_dir_%s",
-		eventsCachePrefix(groupID),
-		normalizeKeyPart(search),
-		normalizeKeyPart(year),
-		normalizeKeyPart(from),
-		normalizeKeyPart(to),
-		normalizeKeyPart(sort),
-		normalizeKeyPart(dir),
-	)
-}
-
-// ExpensesFilterKey creates a cache key for filtered expense calculations
-func ExpensesFilterKey(groupID, search, year, from, to, sort, dir string) string {
-	return fmt.Sprintf("%ssearch_%s_year_%s_from_%s_to_%s_sort_%s_dir_%s",
-		expensesCachePrefix(groupID),
-		normalizeKeyPart(search),
-		normalizeKeyPart(year),
-		normalizeKeyPart(from),
-		normalizeKeyPart(to),
-		normalizeKeyPart(sort),
-		normalizeKeyPart(dir),
-	)
 }
 
 // Get retrieves a value from cache
@@ -133,6 +106,8 @@ type GroupTotals struct {
 	TotalExpenseAmount int64
 	TotalPayoutAmount  int64
 	TotalLeftover      int64
+	PayoutPaid         int64
+	PayoutUnpaid       int64
 	EventPaid          int64
 	EventUnpaid        int64
 	ExpensePaid        int64

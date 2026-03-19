@@ -11,7 +11,7 @@ import (
 // respecting paid/unpaid status. Results are cached.
 func CalculateGroupTotals(ctx context.Context, groupID string) (GroupTotals, error) {
 	// Check cache first
-	cacheKey := GroupTotalsKey(groupID)
+	cacheKey := GroupTotalsCacheKey(groupID)
 	if cached, ok := CalcCacheInstance.Get(cacheKey); ok {
 		if totals, valid := cached.(GroupTotals); valid {
 			return totals, nil
@@ -51,12 +51,14 @@ func CalculateGroupTotals(ctx context.Context, groupID string) (GroupTotals, err
 	}
 
 	// Calculate from participants
-	payoutSum, err := db.Qry.SumParticipantAmountsByGroup(ctx, groupID)
+	payoutTotals, err := db.Qry.SumParticipantPaidAmountsByGroup(ctx, groupID)
 	if err != nil {
 		slog.Error("failed to sum participants for totals", "group_id", groupID, "err", err)
 		return totals, err
 	}
-	totals.TotalPayoutAmount = payoutSum
+	totals.PayoutPaid = payoutTotals.PaidAmount
+	totals.PayoutUnpaid = payoutTotals.UnpaidAmount
+	totals.TotalPayoutAmount = payoutTotals.PaidAmount + payoutTotals.UnpaidAmount
 
 	// Calculate leftover: events - expenses - payouts
 	totals.TotalLeftover = totals.TotalEventAmount - totals.TotalExpenseAmount - totals.TotalPayoutAmount
@@ -70,13 +72,13 @@ func CalculateGroupTotals(ctx context.Context, groupID string) (GroupTotals, err
 
 // InvalidateGroupTotals clears the cached totals for a group
 func InvalidateGroupTotals(groupID string) {
-	CalcCacheInstance.ClearPrefix(groupTotalsCachePrefix(groupID))
+	CalcCacheInstance.ClearPrefix(GroupTotalsCachePrefix(groupID))
 }
 
 // InvalidateGroupCaches clears all cached calculations for a group
 // Call this when any event, expense, or participant changes
 func InvalidateGroupCaches(groupID string) {
-	CalcCacheInstance.ClearPrefix(groupTotalsCachePrefix(groupID))
-	CalcCacheInstance.ClearPrefix(eventsCachePrefix(groupID))
-	CalcCacheInstance.ClearPrefix(expensesCachePrefix(groupID))
+	CalcCacheInstance.ClearPrefix(GroupTotalsCachePrefix(groupID))
+	CalcCacheInstance.ClearPrefix(EventsCachePrefix(groupID))
+	CalcCacheInstance.ClearPrefix(ExpensesCachePrefix(groupID))
 }
