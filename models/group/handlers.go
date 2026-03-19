@@ -1035,6 +1035,8 @@ func (g *Group) groupPageData(c echo.Context, groupID string) (GroupPageData, er
 		Group:          group,
 		Admin:          admin,
 		Income:         totals.TotalEventAmount,
+		IncomePaid:     totals.EventPaid,
+		IncomeUnpaid:   totals.EventUnpaid,
 		Payouts:        totals.TotalPayoutAmount,
 		PayoutsPaid:    totals.PayoutPaid,
 		PayoutsUnpaid:  totals.PayoutUnpaid,

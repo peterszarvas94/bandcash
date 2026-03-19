@@ -5,8 +5,9 @@ import "fmt"
 import icons "bandcash/models/shared/icons"
 
 type DetailsRow struct {
-	Label  string
-	Value  string
+	Label      string
+	LabelClass string
+	Value      string
 	ValueClass string
 	Action templ.Component
 }
@@ -15,7 +16,7 @@ templ DetailsGrid(rows []DetailsRow) {
 	<div class="detail-grid">
 		for _, row := range rows {
 			<div class="detail-row">
-				<p class="detail-key">{ row.Label }</p>
+				<p class={ fmt.Sprintf("detail-key %s", row.LabelClass) }>{ row.Label }</p>
 				<p class={ fmt.Sprintf("detail-val %s", row.ValueClass) }>
 					if row.Action != nil {
 						@row.Action
@@ -24,6 +25,12 @@ templ DetailsGrid(rows []DetailsRow) {
 				</p>
 			</div>
 		}
+	</div>
+}
+
+templ DetailsSection(rows []DetailsRow) {
+	<div class="pb">
+		@DetailsGrid(rows)
 	</div>
 }
 

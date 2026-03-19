@@ -69,6 +69,8 @@ type GroupPageData struct {
 	Group          db.Group
 	Admin          db.User
 	Income         int64
+	IncomePaid     int64
+	IncomeUnpaid   int64
 	Payouts        int64
 	PayoutsPaid    int64
 	PayoutsUnpaid  int64

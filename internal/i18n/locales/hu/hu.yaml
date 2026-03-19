@@ -154,6 +154,10 @@ hu:
     filtered: "Szűrt"
     unpaid: "Nem fizetett"
     paid: "Fizetett"
+    future_payouts: "Jövőbeli kifizetések"
+    future_expense: "Jövőbeli költség"
+    future_expenses: "Jövőbeli költségek"
+    future_leftover: "Jövőbeli maradék"
     custom: "Egyéni"
     date_filters: "Dátumszűrők"
     search: "Keresés"
@@ -206,6 +210,7 @@ hu:
     delete_confirm: "Törlöd ezt az eseményt?"
     total_all: "Összes esemény összege"
     total_filtered: "Összes bevétel"
+    total_paid_amount: "Összes fizetett bevétel"
     total_paid: "Fizetett"
     total_unpaid: "Fizetetlen"
     notifications:

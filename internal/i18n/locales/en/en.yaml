@@ -154,6 +154,10 @@ en:
     filtered: "Filtered"
     unpaid: "Unpaid"
     paid: "Paid"
+    future_payouts: "Future Payouts"
+    future_expense: "Future Expense"
+    future_expenses: "Future Expenses"
+    future_leftover: "Future Leftover"
     custom: "Custom"
     date_filters: "Date filters"
     search: "Search"
@@ -206,6 +210,7 @@ en:
     delete_confirm: "Delete this event?"
     total_all: "All Events Total"
     total_filtered: "Total Income"
+    total_paid_amount: "Total Paid Amount"
     total_paid: "Paid"
     total_unpaid: "Unpaid"
     notifications:

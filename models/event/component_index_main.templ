@@ -10,10 +10,26 @@ import (
 )
 
 templ EventTotalsContent(data EventsData) {
+	@shared.DetailsSection([]shared.DetailsRow{
+		{Label: ctxi18n.T(ctx, "table.paid"), LabelClass: "section-title", Value: ""},
+		{Label: ctxi18n.T(ctx, "groups.income"), Value: utils.FormatNumberLocalized(ctx, data.FilteredIncomePaid)},
+		{Label: ctxi18n.T(ctx, "groups.payouts"), Value: utils.FormatNumberLocalizedWithSign(ctx, data.FilteredPayoutsPaid, false)},
+		{Label: ctxi18n.T(ctx, "groups.expenses"), Value: utils.FormatNumberLocalizedWithSign(ctx, data.FilteredExpensesPaid, false)},
+		{Label: ctxi18n.T(ctx, "groups.leftover"), Value: utils.FormatNumberLocalized(ctx, data.FilteredIncomePaid-data.FilteredPayoutsPaid-data.FilteredExpensesPaid)},
+	})
+	@shared.DetailsSection([]shared.DetailsRow{
+		{Label: ctxi18n.T(ctx, "table.unpaid"), LabelClass: "section-title", Value: ""},
+		{Label: ctxi18n.T(ctx, "groups.income"), Value: utils.FormatNumberLocalized(ctx, data.FilteredIncomeUnpaid)},
+		{Label: ctxi18n.T(ctx, "groups.payouts"), Value: utils.FormatNumberLocalizedWithSign(ctx, data.FilteredPayoutsUnpaid, false)},
+		{Label: ctxi18n.T(ctx, "groups.expenses"), Value: utils.FormatNumberLocalizedWithSign(ctx, data.FilteredExpensesUnpaid, false)},
+		{Label: ctxi18n.T(ctx, "groups.leftover"), Value: utils.FormatNumberLocalized(ctx, data.FilteredIncomeUnpaid-data.FilteredPayoutsUnpaid-data.FilteredExpensesUnpaid)},
+	})
 	@shared.DetailsGrid([]shared.DetailsRow{
-		{Label: ctxi18n.T(ctx, "events.total_filtered"), Value: utils.FormatNumberLocalized(ctx, data.FilteredTotal)},
-		{Label: ctxi18n.T(ctx, "table.unpaid"), Value: utils.FormatNumberLocalized(ctx, data.FilteredUnpaid), ValueClass: "text-muted"},
-		{Label: ctxi18n.T(ctx, "table.paid"), Value: utils.FormatNumberLocalized(ctx, data.FilteredPaid)},
+		{Label: ctxi18n.T(ctx, "table.all"), LabelClass: "section-title", Value: ""},
+		{Label: ctxi18n.T(ctx, "groups.income"), Value: utils.FormatNumberLocalized(ctx, data.FilteredTotal)},
+		{Label: ctxi18n.T(ctx, "groups.payouts"), Value: utils.FormatNumberLocalizedWithSign(ctx, data.FilteredPayoutsPaid+data.FilteredPayoutsUnpaid, false)},
+		{Label: ctxi18n.T(ctx, "groups.expenses"), Value: utils.FormatNumberLocalizedWithSign(ctx, data.FilteredExpensesPaid+data.FilteredExpensesUnpaid, false)},
+		{Label: ctxi18n.T(ctx, "groups.leftover"), Value: utils.FormatNumberLocalized(ctx, data.FilteredTotal-(data.FilteredPayoutsPaid+data.FilteredPayoutsUnpaid)-(data.FilteredExpensesPaid+data.FilteredExpensesUnpaid))},
 	})
 }
 

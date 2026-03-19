@@ -20,15 +20,23 @@ templ MemberShowMain(data MemberData) {
 		}
 		<div class="pb">
 			@shared.DetailsGrid([]shared.DetailsRow{
+				{Label: ctxi18n.T(ctx, "nav.overview"), LabelClass: "section-title", Value: ""},
 				{Label: ctxi18n.T(ctx, "fields.name"), Value: data.Member.Name},
 				{Label: ctxi18n.T(ctx, "fields.description"), Value: data.Member.Description},
 				{Label: ctxi18n.T(ctx, "members.total_events"), Value: utils.FormatNumberLocalized(ctx, int64(data.Pager.TotalItems))},
 			})
 		</div>
+		@shared.DetailsSection([]shared.DetailsRow{
+			{Label: ctxi18n.T(ctx, "table.paid"), LabelClass: "section-title", Value: ""},
+			{Label: ctxi18n.T(ctx, "members.total_payout"), Value: utils.FormatNumberLocalizedWithSign(ctx, data.TotalPaid, false)},
+		})
+		@shared.DetailsSection([]shared.DetailsRow{
+			{Label: ctxi18n.T(ctx, "table.unpaid"), LabelClass: "section-title", Value: ""},
+			{Label: ctxi18n.T(ctx, "members.total_payout"), Value: utils.FormatNumberLocalizedWithSign(ctx, data.TotalUnpaid, false)},
+		})
 		@shared.DetailsGrid([]shared.DetailsRow{
-			{Label: ctxi18n.T(ctx, "members.total_payout"), Value: utils.FormatNumberLocalized(ctx, data.TotalPayout)},
-			{Label: ctxi18n.T(ctx, "table.unpaid"), Value: utils.FormatNumberLocalized(ctx, data.TotalUnpaid), ValueClass: "text-muted"},
-			{Label: ctxi18n.T(ctx, "table.paid"), Value: utils.FormatNumberLocalized(ctx, data.TotalPaid)},
+			{Label: ctxi18n.T(ctx, "table.all"), LabelClass: "section-title", Value: ""},
+			{Label: ctxi18n.T(ctx, "members.total_payout"), Value: utils.FormatNumberLocalizedWithSign(ctx, data.TotalPayout, false)},
 		})
 		@shared.TableSearchFormWithClass(fmt.Sprintf("/groups/%s/members/%s", data.GroupID, data.Member.ID), data.Query, "table.search_placeholder_member_events", "pt")
 		<div class="row row-wrap justify-between pb" role="radiogroup" aria-label={ ctxi18n.T(ctx, "table.date_filters") }>

@@ -283,3 +283,30 @@ WHERE group_id = sqlc.arg(group_id)
       )
     )
   );
+
+-- name: SumExpenseTotalsFiltered :one
+SELECT
+  CAST(COALESCE(SUM(CASE WHEN paid = 1 THEN amount ELSE 0 END), 0) AS INTEGER) AS total_paid,
+  CAST(COALESCE(SUM(CASE WHEN paid = 0 THEN amount ELSE 0 END), 0) AS INTEGER) AS total_unpaid
+FROM expenses
+WHERE group_id = sqlc.arg(group_id)
+  AND (
+    sqlc.arg(search) = ''
+    OR title LIKE '%' || sqlc.arg(search) || '%'
+    OR description LIKE '%' || sqlc.arg(search) || '%'
+  )
+  AND (
+    (
+      sqlc.arg(from_date) != ''
+      AND sqlc.arg(to_date) != ''
+      AND date(expenses.date) >= date(sqlc.arg(from_date))
+      AND date(expenses.date) <= date(sqlc.arg(to_date))
+    )
+    OR (
+      (sqlc.arg(from_date) = '' OR sqlc.arg(to_date) = '')
+      AND (
+        sqlc.arg(year_filter) = ''
+        OR strftime('%Y', expenses.date) = sqlc.arg(year_filter)
+      )
+    )
+  );

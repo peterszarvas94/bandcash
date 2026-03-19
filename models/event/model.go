@@ -200,19 +200,8 @@ func (e *Events) GetShowData(ctx context.Context, groupID, eventID string, query
 		}
 	}
 
-	var leftover int64
-	if event.Paid == 1 {
-		leftover = event.Amount - totalPaid
-	} else {
-		leftover = -totalPaid
-	}
-
-	var filteredLeftover int64
-	if event.Paid == 1 {
-		filteredLeftover = event.Amount - filteredPaid
-	} else {
-		filteredLeftover = -filteredPaid
-	}
+	leftover := event.Amount - totalPaid
+	filteredLeftover := event.Amount - filteredPaid
 
 	slog.Info("event.show.data", "event_id", eventID, "participants", len(participants), "members_total", len(members), "members_filtered", len(filteredMembers), "leftover", leftover)
 
@@ -268,7 +257,7 @@ func (e *Events) GetIndexData(ctx context.Context, groupID string, query utils.T
 
 	// Filter and calculate totals in-memory
 	filteredEvents := make([]db.Event, 0, len(allEvents))
-	var filteredTotal, totalPaid, totalUnpaid int64
+	var filteredTotal, filteredIncomePaid int64
 
 	for _, event := range allEvents {
 		// Apply filters
@@ -276,11 +265,31 @@ func (e *Events) GetIndexData(ctx context.Context, groupID string, query utils.T
 			filteredEvents = append(filteredEvents, event)
 			filteredTotal += event.Amount
 			if event.Paid == 1 {
-				totalPaid += event.Amount
-			} else {
-				totalUnpaid += event.Amount
+				filteredIncomePaid += event.Amount
 			}
 		}
+	}
+
+	participantTotals, err := db.Qry.SumParticipantTotalsByGroupFiltered(ctx, db.SumParticipantTotalsByGroupFilteredParams{
+		GroupID: groupID,
+		Search:  query.Search,
+		Year:    query.Year,
+		From:    query.From,
+		To:      query.To,
+	})
+	if err != nil {
+		return EventsData{}, err
+	}
+
+	expenseTotals, err := db.Qry.SumExpenseTotalsFiltered(ctx, db.SumExpenseTotalsFilteredParams{
+		GroupID:    groupID,
+		Search:     query.Search,
+		YearFilter: query.Year,
+		FromDate:   query.From,
+		ToDate:     query.To,
+	})
+	if err != nil {
+		return EventsData{}, err
 	}
 
 	// Sort filtered events
@@ -288,10 +297,14 @@ func (e *Events) GetIndexData(ctx context.Context, groupID string, query utils.T
 
 	// Store in cache
 	totals := eventCalcTotals{
-		Filtered: filteredEvents,
-		Total:    filteredTotal,
-		Paid:     totalPaid,
-		Unpaid:   totalUnpaid,
+		Filtered:      filteredEvents,
+		Total:         filteredTotal,
+		IncomePaid:    filteredIncomePaid,
+		IncomeUnpaid:  filteredTotal - filteredIncomePaid,
+		Paid:          participantTotals.TotalPaid,
+		Unpaid:        participantTotals.TotalUnpaid,
+		ExpensePaid:   expenseTotals.TotalPaid,
+		ExpenseUnpaid: expenseTotals.TotalUnpaid,
 	}
 	utils.CalcCacheInstance.Set(cacheKey, totals)
 
@@ -299,10 +312,14 @@ func (e *Events) GetIndexData(ctx context.Context, groupID string, query utils.T
 }
 
 type eventCalcTotals struct {
-	Filtered []db.Event
-	Total    int64
-	Paid     int64
-	Unpaid   int64
+	Filtered      []db.Event
+	Total         int64
+	IncomePaid    int64
+	IncomeUnpaid  int64
+	Paid          int64
+	Unpaid        int64
+	ExpensePaid   int64
+	ExpenseUnpaid int64
 }
 
 func matchesFilters(event db.Event, query utils.TableQuery) bool {
@@ -390,18 +407,22 @@ func (e *Events) buildEventsData(ctx context.Context, groupID string, group db.G
 	}
 
 	return EventsData{
-		Title:            ctxi18n.T(ctx, "events.page_title"),
-		Events:           paginatedEvents,
-		RecentYears:      utils.RecentYears(3),
-		Query:            query,
-		Pager:            utils.BuildTablePagination(totalItems, query),
-		GroupID:          groupID,
-		TotalEventAmount: groupTotals.TotalEventAmount,
-		TotalPaid:        groupTotals.EventPaid,
-		TotalUnpaid:      groupTotals.EventUnpaid,
-		FilteredTotal:    totals.Total,
-		FilteredPaid:     totals.Paid,
-		FilteredUnpaid:   totals.Unpaid,
+		Title:                  ctxi18n.T(ctx, "events.page_title"),
+		Events:                 paginatedEvents,
+		RecentYears:            utils.RecentYears(3),
+		Query:                  query,
+		Pager:                  utils.BuildTablePagination(totalItems, query),
+		GroupID:                groupID,
+		TotalEventAmount:       groupTotals.TotalEventAmount,
+		TotalPaid:              groupTotals.EventPaid,
+		TotalUnpaid:            groupTotals.EventUnpaid,
+		FilteredTotal:          totals.Total,
+		FilteredIncomePaid:     totals.IncomePaid,
+		FilteredIncomeUnpaid:   totals.IncomeUnpaid,
+		FilteredPayoutsPaid:    totals.Paid,
+		FilteredPayoutsUnpaid:  totals.Unpaid,
+		FilteredExpensesPaid:   totals.ExpensePaid,
+		FilteredExpensesUnpaid: totals.ExpenseUnpaid,
 		Breadcrumbs: []utils.Crumb{
 			{Label: ctxi18n.T(ctx, "groups.title"), Href: "/dashboard"},
 			{Label: group.Name, Href: "/groups/" + groupID},

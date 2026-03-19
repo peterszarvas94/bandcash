@@ -40,20 +40,24 @@ type ParticipantWizardRow struct {
 }
 
 type EventsData struct {
-	Title            string
-	Events           []db.Event
-	RecentYears      []int
-	Query            utils.TableQuery
-	Pager            utils.TablePagination
-	Breadcrumbs      []utils.Crumb
-	GroupID          string
-	IsAdmin          bool
-	UserEmail        string
-	TotalEventAmount int64
-	TotalPaid        int64
-	TotalUnpaid      int64
-	FilteredTotal    int64
-	FilteredPaid     int64
-	FilteredUnpaid   int64
-	EventsTable      utils.TableLayout
+	Title                  string
+	Events                 []db.Event
+	RecentYears            []int
+	Query                  utils.TableQuery
+	Pager                  utils.TablePagination
+	Breadcrumbs            []utils.Crumb
+	GroupID                string
+	IsAdmin                bool
+	UserEmail              string
+	TotalEventAmount       int64
+	TotalPaid              int64
+	TotalUnpaid            int64
+	FilteredTotal          int64
+	FilteredIncomePaid     int64
+	FilteredIncomeUnpaid   int64
+	FilteredPayoutsPaid    int64
+	FilteredPayoutsUnpaid  int64
+	FilteredExpensesPaid   int64
+	FilteredExpensesUnpaid int64
+	EventsTable            utils.TableLayout
 }

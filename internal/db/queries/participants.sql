@@ -43,6 +43,31 @@ SELECT
 FROM participants
 WHERE group_id = ?;
 
+-- name: SumParticipantTotalsByGroupFiltered :one
+SELECT
+  CAST(COALESCE(SUM(CASE WHEN participants.paid = 1 THEN participants.amount + participants.expense ELSE 0 END), 0) AS INTEGER) AS total_paid,
+  CAST(COALESCE(SUM(CASE WHEN participants.paid = 0 THEN participants.amount + participants.expense ELSE 0 END), 0) AS INTEGER) AS total_unpaid
+FROM participants
+JOIN events ON events.id = participants.event_id
+WHERE participants.group_id = sqlc.arg(group_id)
+  AND (
+    sqlc.arg(search) = ''
+    OR events.title LIKE '%' || sqlc.arg(search) || '%'
+    OR events.description LIKE '%' || sqlc.arg(search) || '%'
+  )
+  AND (
+    sqlc.arg(year) = ''
+    OR events.time LIKE sqlc.arg(year) || '%'
+  )
+  AND (
+    sqlc.arg(from) = ''
+    OR events.time >= sqlc.arg(from)
+  )
+  AND (
+    sqlc.arg(to) = ''
+    OR events.time <= sqlc.arg(to)
+  );
+
 -- name: CountParticipantsByMemberFiltered :one
 SELECT COUNT(*) FROM events
 JOIN participants ON participants.event_id = events.id

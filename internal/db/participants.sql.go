@@ -1489,6 +1489,58 @@ func (q *Queries) SumParticipantPaidAmountsByGroup(ctx context.Context, groupID 
 	return i, err
 }
 
+const sumParticipantTotalsByGroupFiltered = `-- name: SumParticipantTotalsByGroupFiltered :one
+SELECT
+  CAST(COALESCE(SUM(CASE WHEN participants.paid = 1 THEN participants.amount + participants.expense ELSE 0 END), 0) AS INTEGER) AS total_paid,
+  CAST(COALESCE(SUM(CASE WHEN participants.paid = 0 THEN participants.amount + participants.expense ELSE 0 END), 0) AS INTEGER) AS total_unpaid
+FROM participants
+JOIN events ON events.id = participants.event_id
+WHERE participants.group_id = ?1
+  AND (
+    ?2 = ''
+    OR events.title LIKE '%' || ?2 || '%'
+    OR events.description LIKE '%' || ?2 || '%'
+  )
+  AND (
+    ?3 = ''
+    OR events.time LIKE ?3 || '%'
+  )
+  AND (
+    ?4 = ''
+    OR events.time >= ?4
+  )
+  AND (
+    ?5 = ''
+    OR events.time <= ?5
+  )
+`
+
+type SumParticipantTotalsByGroupFilteredParams struct {
+	GroupID string      `json:"group_id"`
+	Search  interface{} `json:"search"`
+	Year    interface{} `json:"year"`
+	From    interface{} `json:"from"`
+	To      interface{} `json:"to"`
+}
+
+type SumParticipantTotalsByGroupFilteredRow struct {
+	TotalPaid   int64 `json:"total_paid"`
+	TotalUnpaid int64 `json:"total_unpaid"`
+}
+
+func (q *Queries) SumParticipantTotalsByGroupFiltered(ctx context.Context, arg SumParticipantTotalsByGroupFilteredParams) (SumParticipantTotalsByGroupFilteredRow, error) {
+	row := q.db.QueryRowContext(ctx, sumParticipantTotalsByGroupFiltered,
+		arg.GroupID,
+		arg.Search,
+		arg.Year,
+		arg.From,
+		arg.To,
+	)
+	var i SumParticipantTotalsByGroupFilteredRow
+	err := row.Scan(&i.TotalPaid, &i.TotalUnpaid)
+	return i, err
+}
+
 const sumParticipantTotalsByMemberFiltered = `-- name: SumParticipantTotalsByMemberFiltered :one
 SELECT 
   CAST(COALESCE(SUM(participants.amount), 0) AS INTEGER) as total_cut,

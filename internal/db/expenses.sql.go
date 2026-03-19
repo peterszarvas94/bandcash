@@ -801,6 +801,60 @@ func (q *Queries) ListExpensesByTitleDescFiltered(ctx context.Context, arg ListE
 	return items, nil
 }
 
+const sumExpenseTotalsFiltered = `-- name: SumExpenseTotalsFiltered :one
+SELECT
+  CAST(COALESCE(SUM(CASE WHEN paid = 1 THEN amount ELSE 0 END), 0) AS INTEGER) AS total_paid,
+  CAST(COALESCE(SUM(CASE WHEN paid = 0 THEN amount ELSE 0 END), 0) AS INTEGER) AS total_unpaid
+FROM expenses
+WHERE group_id = ?1
+  AND (
+    ?2 = ''
+    OR title LIKE '%' || ?2 || '%'
+    OR description LIKE '%' || ?2 || '%'
+  )
+  AND (
+    (
+      ?3 != ''
+      AND ?4 != ''
+      AND date(expenses.date) >= date(?3)
+      AND date(expenses.date) <= date(?4)
+    )
+    OR (
+      (?3 = '' OR ?4 = '')
+      AND (
+        ?5 = ''
+        OR strftime('%Y', expenses.date) = ?5
+      )
+    )
+  )
+`
+
+type SumExpenseTotalsFilteredParams struct {
+	GroupID    string      `json:"group_id"`
+	Search     interface{} `json:"search"`
+	FromDate   interface{} `json:"from_date"`
+	ToDate     interface{} `json:"to_date"`
+	YearFilter interface{} `json:"year_filter"`
+}
+
+type SumExpenseTotalsFilteredRow struct {
+	TotalPaid   int64 `json:"total_paid"`
+	TotalUnpaid int64 `json:"total_unpaid"`
+}
+
+func (q *Queries) SumExpenseTotalsFiltered(ctx context.Context, arg SumExpenseTotalsFilteredParams) (SumExpenseTotalsFilteredRow, error) {
+	row := q.db.QueryRowContext(ctx, sumExpenseTotalsFiltered,
+		arg.GroupID,
+		arg.Search,
+		arg.FromDate,
+		arg.ToDate,
+		arg.YearFilter,
+	)
+	var i SumExpenseTotalsFilteredRow
+	err := row.Scan(&i.TotalPaid, &i.TotalUnpaid)
+	return i, err
+}
+
 const sumExpensesFiltered = `-- name: SumExpensesFiltered :one
 SELECT CAST(COALESCE(SUM(amount), 0) AS INTEGER) FROM expenses
 WHERE group_id = ?1
