@@ -19,6 +19,7 @@ func RegisterRoutes(e *echo.Echo) *Members {
 	admin := g.Group("", middleware.RequireAdmin())
 	admin.POST("/members", members.Create)
 	admin.PUT("/members/:id", members.Update)
+	admin.PUT("/members/:id/events/:eventId/toggle-paid", members.ToggleParticipantPaid)
 	admin.DELETE("/members/:id", members.Destroy)
 
 	return members

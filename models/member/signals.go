@@ -1,5 +1,7 @@
 package member
 
+import "bandcash/internal/utils"
+
 func memberIndexSignals(csrfToken string, query map[string]any) map[string]any {
 	return map[string]any{
 		"csrf":           csrfToken,
@@ -17,6 +19,7 @@ func memberShowSignals(data MemberData, csrfToken string) map[string]any {
 	return map[string]any{
 		"csrf":           csrfToken,
 		"mode":           "single",
+		"tableQuery":     utils.TableQuerySignals(data.Query),
 		"formState":      "",
 		"eventFormState": "",
 		"formData": map[string]any{

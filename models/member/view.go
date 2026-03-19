@@ -14,6 +14,7 @@ type MemberEvent struct {
 	Amount             int64
 	ParticipantAmount  int64
 	ParticipantExpense int64
+	ParticipantPaid    int64
 }
 
 type MemberData struct {

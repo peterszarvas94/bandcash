@@ -199,7 +199,8 @@ const listParticipantsByMemberByAmountAscFiltered = `-- name: ListParticipantsBy
 SELECT 
   events.id, events.group_id, events.title, events.time, events.description, events.amount, events.created_at, events.updated_at, events.paid, 
   participants.amount AS participant_amount, 
-  participants.expense AS participant_expense
+  participants.expense AS participant_expense,
+  participants.paid AS participant_paid
 FROM events
 JOIN participants ON participants.event_id = events.id
 WHERE participants.member_id = ?1
@@ -233,6 +234,7 @@ type ListParticipantsByMemberByAmountAscFilteredRow struct {
 	Paid               int64        `json:"paid"`
 	ParticipantAmount  int64        `json:"participant_amount"`
 	ParticipantExpense int64        `json:"participant_expense"`
+	ParticipantPaid    int64        `json:"participant_paid"`
 }
 
 func (q *Queries) ListParticipantsByMemberByAmountAscFiltered(ctx context.Context, arg ListParticipantsByMemberByAmountAscFilteredParams) ([]ListParticipantsByMemberByAmountAscFilteredRow, error) {
@@ -262,6 +264,7 @@ func (q *Queries) ListParticipantsByMemberByAmountAscFiltered(ctx context.Contex
 			&i.Paid,
 			&i.ParticipantAmount,
 			&i.ParticipantExpense,
+			&i.ParticipantPaid,
 		); err != nil {
 			return nil, err
 		}
@@ -280,7 +283,8 @@ const listParticipantsByMemberByAmountDescFiltered = `-- name: ListParticipantsB
 SELECT 
   events.id, events.group_id, events.title, events.time, events.description, events.amount, events.created_at, events.updated_at, events.paid, 
   participants.amount AS participant_amount, 
-  participants.expense AS participant_expense
+  participants.expense AS participant_expense,
+  participants.paid AS participant_paid
 FROM events
 JOIN participants ON participants.event_id = events.id
 WHERE participants.member_id = ?1
@@ -314,6 +318,7 @@ type ListParticipantsByMemberByAmountDescFilteredRow struct {
 	Paid               int64        `json:"paid"`
 	ParticipantAmount  int64        `json:"participant_amount"`
 	ParticipantExpense int64        `json:"participant_expense"`
+	ParticipantPaid    int64        `json:"participant_paid"`
 }
 
 func (q *Queries) ListParticipantsByMemberByAmountDescFiltered(ctx context.Context, arg ListParticipantsByMemberByAmountDescFilteredParams) ([]ListParticipantsByMemberByAmountDescFilteredRow, error) {
@@ -343,6 +348,7 @@ func (q *Queries) ListParticipantsByMemberByAmountDescFiltered(ctx context.Conte
 			&i.Paid,
 			&i.ParticipantAmount,
 			&i.ParticipantExpense,
+			&i.ParticipantPaid,
 		); err != nil {
 			return nil, err
 		}
@@ -361,7 +367,8 @@ const listParticipantsByMemberByCutAscFiltered = `-- name: ListParticipantsByMem
 SELECT 
   events.id, events.group_id, events.title, events.time, events.description, events.amount, events.created_at, events.updated_at, events.paid, 
   participants.amount AS participant_amount, 
-  participants.expense AS participant_expense
+  participants.expense AS participant_expense,
+  participants.paid AS participant_paid
 FROM events
 JOIN participants ON participants.event_id = events.id
 WHERE participants.member_id = ?1
@@ -395,6 +402,7 @@ type ListParticipantsByMemberByCutAscFilteredRow struct {
 	Paid               int64        `json:"paid"`
 	ParticipantAmount  int64        `json:"participant_amount"`
 	ParticipantExpense int64        `json:"participant_expense"`
+	ParticipantPaid    int64        `json:"participant_paid"`
 }
 
 func (q *Queries) ListParticipantsByMemberByCutAscFiltered(ctx context.Context, arg ListParticipantsByMemberByCutAscFilteredParams) ([]ListParticipantsByMemberByCutAscFilteredRow, error) {
@@ -424,6 +432,7 @@ func (q *Queries) ListParticipantsByMemberByCutAscFiltered(ctx context.Context, 
 			&i.Paid,
 			&i.ParticipantAmount,
 			&i.ParticipantExpense,
+			&i.ParticipantPaid,
 		); err != nil {
 			return nil, err
 		}
@@ -442,7 +451,8 @@ const listParticipantsByMemberByCutDescFiltered = `-- name: ListParticipantsByMe
 SELECT 
   events.id, events.group_id, events.title, events.time, events.description, events.amount, events.created_at, events.updated_at, events.paid, 
   participants.amount AS participant_amount, 
-  participants.expense AS participant_expense
+  participants.expense AS participant_expense,
+  participants.paid AS participant_paid
 FROM events
 JOIN participants ON participants.event_id = events.id
 WHERE participants.member_id = ?1
@@ -476,6 +486,7 @@ type ListParticipantsByMemberByCutDescFilteredRow struct {
 	Paid               int64        `json:"paid"`
 	ParticipantAmount  int64        `json:"participant_amount"`
 	ParticipantExpense int64        `json:"participant_expense"`
+	ParticipantPaid    int64        `json:"participant_paid"`
 }
 
 func (q *Queries) ListParticipantsByMemberByCutDescFiltered(ctx context.Context, arg ListParticipantsByMemberByCutDescFilteredParams) ([]ListParticipantsByMemberByCutDescFilteredRow, error) {
@@ -505,6 +516,7 @@ func (q *Queries) ListParticipantsByMemberByCutDescFiltered(ctx context.Context,
 			&i.Paid,
 			&i.ParticipantAmount,
 			&i.ParticipantExpense,
+			&i.ParticipantPaid,
 		); err != nil {
 			return nil, err
 		}
@@ -523,7 +535,8 @@ const listParticipantsByMemberByExpenseAscFiltered = `-- name: ListParticipantsB
 SELECT 
   events.id, events.group_id, events.title, events.time, events.description, events.amount, events.created_at, events.updated_at, events.paid, 
   participants.amount AS participant_amount, 
-  participants.expense AS participant_expense
+  participants.expense AS participant_expense,
+  participants.paid AS participant_paid
 FROM events
 JOIN participants ON participants.event_id = events.id
 WHERE participants.member_id = ?1
@@ -557,6 +570,7 @@ type ListParticipantsByMemberByExpenseAscFilteredRow struct {
 	Paid               int64        `json:"paid"`
 	ParticipantAmount  int64        `json:"participant_amount"`
 	ParticipantExpense int64        `json:"participant_expense"`
+	ParticipantPaid    int64        `json:"participant_paid"`
 }
 
 func (q *Queries) ListParticipantsByMemberByExpenseAscFiltered(ctx context.Context, arg ListParticipantsByMemberByExpenseAscFilteredParams) ([]ListParticipantsByMemberByExpenseAscFilteredRow, error) {
@@ -586,6 +600,7 @@ func (q *Queries) ListParticipantsByMemberByExpenseAscFiltered(ctx context.Conte
 			&i.Paid,
 			&i.ParticipantAmount,
 			&i.ParticipantExpense,
+			&i.ParticipantPaid,
 		); err != nil {
 			return nil, err
 		}
@@ -604,7 +619,8 @@ const listParticipantsByMemberByExpenseDescFiltered = `-- name: ListParticipants
 SELECT 
   events.id, events.group_id, events.title, events.time, events.description, events.amount, events.created_at, events.updated_at, events.paid, 
   participants.amount AS participant_amount, 
-  participants.expense AS participant_expense
+  participants.expense AS participant_expense,
+  participants.paid AS participant_paid
 FROM events
 JOIN participants ON participants.event_id = events.id
 WHERE participants.member_id = ?1
@@ -638,6 +654,7 @@ type ListParticipantsByMemberByExpenseDescFilteredRow struct {
 	Paid               int64        `json:"paid"`
 	ParticipantAmount  int64        `json:"participant_amount"`
 	ParticipantExpense int64        `json:"participant_expense"`
+	ParticipantPaid    int64        `json:"participant_paid"`
 }
 
 func (q *Queries) ListParticipantsByMemberByExpenseDescFiltered(ctx context.Context, arg ListParticipantsByMemberByExpenseDescFilteredParams) ([]ListParticipantsByMemberByExpenseDescFilteredRow, error) {
@@ -667,6 +684,7 @@ func (q *Queries) ListParticipantsByMemberByExpenseDescFiltered(ctx context.Cont
 			&i.Paid,
 			&i.ParticipantAmount,
 			&i.ParticipantExpense,
+			&i.ParticipantPaid,
 		); err != nil {
 			return nil, err
 		}
@@ -685,7 +703,8 @@ const listParticipantsByMemberByTimeAscFiltered = `-- name: ListParticipantsByMe
 SELECT 
   events.id, events.group_id, events.title, events.time, events.description, events.amount, events.created_at, events.updated_at, events.paid, 
   participants.amount AS participant_amount, 
-  participants.expense AS participant_expense
+  participants.expense AS participant_expense,
+  participants.paid AS participant_paid
 FROM events
 JOIN participants ON participants.event_id = events.id
 WHERE participants.member_id = ?1
@@ -719,6 +738,7 @@ type ListParticipantsByMemberByTimeAscFilteredRow struct {
 	Paid               int64        `json:"paid"`
 	ParticipantAmount  int64        `json:"participant_amount"`
 	ParticipantExpense int64        `json:"participant_expense"`
+	ParticipantPaid    int64        `json:"participant_paid"`
 }
 
 func (q *Queries) ListParticipantsByMemberByTimeAscFiltered(ctx context.Context, arg ListParticipantsByMemberByTimeAscFilteredParams) ([]ListParticipantsByMemberByTimeAscFilteredRow, error) {
@@ -748,6 +768,7 @@ func (q *Queries) ListParticipantsByMemberByTimeAscFiltered(ctx context.Context,
 			&i.Paid,
 			&i.ParticipantAmount,
 			&i.ParticipantExpense,
+			&i.ParticipantPaid,
 		); err != nil {
 			return nil, err
 		}
@@ -766,7 +787,8 @@ const listParticipantsByMemberByTimeDescFiltered = `-- name: ListParticipantsByM
 SELECT 
   events.id, events.group_id, events.title, events.time, events.description, events.amount, events.created_at, events.updated_at, events.paid, 
   participants.amount AS participant_amount, 
-  participants.expense AS participant_expense
+  participants.expense AS participant_expense,
+  participants.paid AS participant_paid
 FROM events
 JOIN participants ON participants.event_id = events.id
 WHERE participants.member_id = ?1
@@ -800,6 +822,7 @@ type ListParticipantsByMemberByTimeDescFilteredRow struct {
 	Paid               int64        `json:"paid"`
 	ParticipantAmount  int64        `json:"participant_amount"`
 	ParticipantExpense int64        `json:"participant_expense"`
+	ParticipantPaid    int64        `json:"participant_paid"`
 }
 
 func (q *Queries) ListParticipantsByMemberByTimeDescFiltered(ctx context.Context, arg ListParticipantsByMemberByTimeDescFilteredParams) ([]ListParticipantsByMemberByTimeDescFilteredRow, error) {
@@ -829,6 +852,7 @@ func (q *Queries) ListParticipantsByMemberByTimeDescFiltered(ctx context.Context
 			&i.Paid,
 			&i.ParticipantAmount,
 			&i.ParticipantExpense,
+			&i.ParticipantPaid,
 		); err != nil {
 			return nil, err
 		}
@@ -847,7 +871,8 @@ const listParticipantsByMemberByTitleAscFiltered = `-- name: ListParticipantsByM
 SELECT 
   events.id, events.group_id, events.title, events.time, events.description, events.amount, events.created_at, events.updated_at, events.paid, 
   participants.amount AS participant_amount, 
-  participants.expense AS participant_expense
+  participants.expense AS participant_expense,
+  participants.paid AS participant_paid
 FROM events
 JOIN participants ON participants.event_id = events.id
 WHERE participants.member_id = ?1
@@ -881,6 +906,7 @@ type ListParticipantsByMemberByTitleAscFilteredRow struct {
 	Paid               int64        `json:"paid"`
 	ParticipantAmount  int64        `json:"participant_amount"`
 	ParticipantExpense int64        `json:"participant_expense"`
+	ParticipantPaid    int64        `json:"participant_paid"`
 }
 
 func (q *Queries) ListParticipantsByMemberByTitleAscFiltered(ctx context.Context, arg ListParticipantsByMemberByTitleAscFilteredParams) ([]ListParticipantsByMemberByTitleAscFilteredRow, error) {
@@ -910,6 +936,7 @@ func (q *Queries) ListParticipantsByMemberByTitleAscFiltered(ctx context.Context
 			&i.Paid,
 			&i.ParticipantAmount,
 			&i.ParticipantExpense,
+			&i.ParticipantPaid,
 		); err != nil {
 			return nil, err
 		}
@@ -928,7 +955,8 @@ const listParticipantsByMemberByTitleDescFiltered = `-- name: ListParticipantsBy
 SELECT 
   events.id, events.group_id, events.title, events.time, events.description, events.amount, events.created_at, events.updated_at, events.paid, 
   participants.amount AS participant_amount, 
-  participants.expense AS participant_expense
+  participants.expense AS participant_expense,
+  participants.paid AS participant_paid
 FROM events
 JOIN participants ON participants.event_id = events.id
 WHERE participants.member_id = ?1
@@ -962,6 +990,7 @@ type ListParticipantsByMemberByTitleDescFilteredRow struct {
 	Paid               int64        `json:"paid"`
 	ParticipantAmount  int64        `json:"participant_amount"`
 	ParticipantExpense int64        `json:"participant_expense"`
+	ParticipantPaid    int64        `json:"participant_paid"`
 }
 
 func (q *Queries) ListParticipantsByMemberByTitleDescFiltered(ctx context.Context, arg ListParticipantsByMemberByTitleDescFilteredParams) ([]ListParticipantsByMemberByTitleDescFilteredRow, error) {
@@ -991,6 +1020,7 @@ func (q *Queries) ListParticipantsByMemberByTitleDescFiltered(ctx context.Contex
 			&i.Paid,
 			&i.ParticipantAmount,
 			&i.ParticipantExpense,
+			&i.ParticipantPaid,
 		); err != nil {
 			return nil, err
 		}

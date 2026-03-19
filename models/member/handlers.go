@@ -54,6 +54,13 @@ func getUserEmail(c echo.Context) string {
 	return user.Email
 }
 
+func applyMemberShowTableByRole(data *MemberData, isAdmin bool) {
+	data.IsAdmin = isAdmin
+	if !isAdmin {
+		data.EventsTable.ActionsWidthRem = 0
+	}
+}
+
 func (p *Members) Index(c echo.Context) error {
 	utils.EnsureClientID(c)
 	groupID := middleware.GetGroupID(c)
@@ -97,7 +104,7 @@ func (p *Members) Show(c echo.Context) error {
 		slog.Error("member.show: failed to get data", "err", err)
 		return c.NoContent(http.StatusInternalServerError)
 	}
-	data.IsAdmin = middleware.IsAdmin(c)
+	applyMemberShowTableByRole(&data, middleware.IsAdmin(c))
 	data.UserEmail = userEmail
 
 	return utils.RenderPage(c, MemberShow(data))
@@ -213,7 +220,7 @@ func (p *Members) Update(c echo.Context) error {
 			slog.Error("member.update: failed to get show data", "err", err)
 			return c.NoContent(http.StatusInternalServerError)
 		}
-		data.IsAdmin = middleware.IsAdmin(c)
+		applyMemberShowTableByRole(&data, middleware.IsAdmin(c))
 		data.UserEmail = userEmail
 
 		html, err := utils.RenderHTMLForRequest(c, MemberShow(data))
@@ -301,5 +308,64 @@ func (p *Members) Destroy(c echo.Context) error {
 
 	utils.SSEHub.PatchHTML(c, html)
 
+	return c.NoContent(http.StatusOK)
+}
+
+func (p *Members) ToggleParticipantPaid(c echo.Context) error {
+	groupID := middleware.GetGroupID(c)
+	userEmail := getUserEmail(c)
+
+	memberID := c.Param("id")
+	if !utils.IsValidID(memberID, utils.PrefixMember) {
+		slog.Info("member.toggleParticipantPaid: invalid member id")
+		return c.NoContent(http.StatusBadRequest)
+	}
+
+	eventID := c.Param("eventId")
+	if !utils.IsValidID(eventID, utils.PrefixEvent) {
+		slog.Info("member.toggleParticipantPaid: invalid event id")
+		return c.NoContent(http.StatusBadRequest)
+	}
+
+	var signals modeParams
+	err := datastar.ReadSignals(c.Request(), &signals)
+	if err != nil {
+		slog.Info("member.toggleParticipantPaid: failed to read signals", "err", err)
+		return c.NoContent(http.StatusBadRequest)
+	}
+
+	result, err := db.Qry.ToggleParticipantPaid(c.Request().Context(), db.ToggleParticipantPaidParams{
+		EventID:  eventID,
+		MemberID: memberID,
+		GroupID:  groupID,
+	})
+	if err != nil {
+		slog.Error("member.toggleParticipantPaid: failed to toggle paid status", "err", err)
+		utils.Notify(c, "error", ctxi18n.T(c.Request().Context(), "participants.notifications.toggle_paid_failed"))
+		return c.NoContent(http.StatusInternalServerError)
+	}
+
+	if result.Paid == 1 {
+		utils.Notify(c, "success", ctxi18n.T(c.Request().Context(), "paid_status.marked_as_paid"))
+	} else {
+		utils.Notify(c, "success", ctxi18n.T(c.Request().Context(), "paid_status.marked_as_unpaid"))
+	}
+
+	query := utils.NormalizeTableQuery(signals.TableQuery, p.MemberEventsTableQuerySpec())
+	data, err := p.GetShowData(c.Request().Context(), groupID, memberID, query)
+	if err != nil {
+		slog.Error("member.toggleParticipantPaid: failed to get data", "err", err)
+		return c.NoContent(http.StatusInternalServerError)
+	}
+	applyMemberShowTableByRole(&data, middleware.IsAdmin(c))
+	data.UserEmail = userEmail
+
+	html, err := utils.RenderHTMLForRequest(c, MemberShow(data))
+	if err != nil {
+		slog.Error("member.toggleParticipantPaid: failed to render", "err", err)
+		return c.NoContent(http.StatusInternalServerError)
+	}
+
+	utils.SSEHub.PatchHTML(c, html)
 	return c.NoContent(http.StatusOK)
 }

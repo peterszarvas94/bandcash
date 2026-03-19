@@ -46,7 +46,7 @@ func MemberEventsTableLayout() TableLayout {
 		{Key: "participant_amount", WidthCh: 12},
 		{Key: "participant_expense", WidthCh: 12},
 		{Key: "total", WidthCh: 12},
-	}, 0)
+	}, 2)
 }
 
 func ViewersAdminsTableLayout() TableLayout {

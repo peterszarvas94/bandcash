@@ -51,7 +51,8 @@ WHERE participants.member_id = sqlc.arg(member_id)
 SELECT 
   events.*, 
   participants.amount AS participant_amount, 
-  participants.expense AS participant_expense
+  participants.expense AS participant_expense,
+  participants.paid AS participant_paid
 FROM events
 JOIN participants ON participants.event_id = events.id
 WHERE participants.member_id = sqlc.arg(member_id)
@@ -68,7 +69,8 @@ LIMIT sqlc.arg(limit) OFFSET sqlc.arg(offset);
 SELECT 
   events.*, 
   participants.amount AS participant_amount, 
-  participants.expense AS participant_expense
+  participants.expense AS participant_expense,
+  participants.paid AS participant_paid
 FROM events
 JOIN participants ON participants.event_id = events.id
 WHERE participants.member_id = sqlc.arg(member_id)
@@ -85,7 +87,8 @@ LIMIT sqlc.arg(limit) OFFSET sqlc.arg(offset);
 SELECT 
   events.*, 
   participants.amount AS participant_amount, 
-  participants.expense AS participant_expense
+  participants.expense AS participant_expense,
+  participants.paid AS participant_paid
 FROM events
 JOIN participants ON participants.event_id = events.id
 WHERE participants.member_id = sqlc.arg(member_id)
@@ -102,7 +105,8 @@ LIMIT sqlc.arg(limit) OFFSET sqlc.arg(offset);
 SELECT 
   events.*, 
   participants.amount AS participant_amount, 
-  participants.expense AS participant_expense
+  participants.expense AS participant_expense,
+  participants.paid AS participant_paid
 FROM events
 JOIN participants ON participants.event_id = events.id
 WHERE participants.member_id = sqlc.arg(member_id)
@@ -119,7 +123,8 @@ LIMIT sqlc.arg(limit) OFFSET sqlc.arg(offset);
 SELECT 
   events.*, 
   participants.amount AS participant_amount, 
-  participants.expense AS participant_expense
+  participants.expense AS participant_expense,
+  participants.paid AS participant_paid
 FROM events
 JOIN participants ON participants.event_id = events.id
 WHERE participants.member_id = sqlc.arg(member_id)
@@ -136,7 +141,8 @@ LIMIT sqlc.arg(limit) OFFSET sqlc.arg(offset);
 SELECT 
   events.*, 
   participants.amount AS participant_amount, 
-  participants.expense AS participant_expense
+  participants.expense AS participant_expense,
+  participants.paid AS participant_paid
 FROM events
 JOIN participants ON participants.event_id = events.id
 WHERE participants.member_id = sqlc.arg(member_id)
@@ -153,7 +159,8 @@ LIMIT sqlc.arg(limit) OFFSET sqlc.arg(offset);
 SELECT 
   events.*, 
   participants.amount AS participant_amount, 
-  participants.expense AS participant_expense
+  participants.expense AS participant_expense,
+  participants.paid AS participant_paid
 FROM events
 JOIN participants ON participants.event_id = events.id
 WHERE participants.member_id = sqlc.arg(member_id)
@@ -170,7 +177,8 @@ LIMIT sqlc.arg(limit) OFFSET sqlc.arg(offset);
 SELECT 
   events.*, 
   participants.amount AS participant_amount, 
-  participants.expense AS participant_expense
+  participants.expense AS participant_expense,
+  participants.paid AS participant_paid
 FROM events
 JOIN participants ON participants.event_id = events.id
 WHERE participants.member_id = sqlc.arg(member_id)
@@ -187,7 +195,8 @@ LIMIT sqlc.arg(limit) OFFSET sqlc.arg(offset);
 SELECT 
   events.*, 
   participants.amount AS participant_amount, 
-  participants.expense AS participant_expense
+  participants.expense AS participant_expense,
+  participants.paid AS participant_paid
 FROM events
 JOIN participants ON participants.event_id = events.id
 WHERE participants.member_id = sqlc.arg(member_id)
@@ -204,7 +213,8 @@ LIMIT sqlc.arg(limit) OFFSET sqlc.arg(offset);
 SELECT 
   events.*, 
   participants.amount AS participant_amount, 
-  participants.expense AS participant_expense
+  participants.expense AS participant_expense,
+  participants.paid AS participant_paid
 FROM events
 JOIN participants ON participants.event_id = events.id
 WHERE participants.member_id = sqlc.arg(member_id)
