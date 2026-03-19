@@ -829,6 +829,210 @@ func (q *Queries) ListParticipantsByMemberByExpenseDescFiltered(ctx context.Cont
 	return items, nil
 }
 
+const listParticipantsByMemberByPaidAscFiltered = `-- name: ListParticipantsByMemberByPaidAscFiltered :many
+SELECT 
+  events.id, events.group_id, events.title, events.time, events.description, events.amount, events.created_at, events.updated_at, events.paid, 
+  participants.amount AS participant_amount, 
+  participants.expense AS participant_expense,
+  participants.paid AS participant_paid
+FROM events
+JOIN participants ON participants.event_id = events.id
+WHERE participants.member_id = ?1
+  AND participants.group_id = ?2
+  AND (
+    ?3 = ''
+    OR events.title LIKE '%' || ?3 || '%'
+    OR events.description LIKE '%' || ?3 || '%'
+  )
+  AND (
+    ?4 = ''
+    OR events.time LIKE ?4 || '%'
+  )
+  AND (
+    ?5 = ''
+    OR events.time >= ?5
+  )
+  AND (
+    ?6 = ''
+    OR events.time <= ?6
+  )
+ORDER BY participants.paid ASC, events.time DESC
+LIMIT ?8 OFFSET ?7
+`
+
+type ListParticipantsByMemberByPaidAscFilteredParams struct {
+	MemberID string      `json:"member_id"`
+	GroupID  string      `json:"group_id"`
+	Search   interface{} `json:"search"`
+	Year     interface{} `json:"year"`
+	From     interface{} `json:"from"`
+	To       interface{} `json:"to"`
+	Offset   int64       `json:"offset"`
+	Limit    int64       `json:"limit"`
+}
+
+type ListParticipantsByMemberByPaidAscFilteredRow struct {
+	ID                 string       `json:"id"`
+	GroupID            string       `json:"group_id"`
+	Title              string       `json:"title"`
+	Time               string       `json:"time"`
+	Description        string       `json:"description"`
+	Amount             int64        `json:"amount"`
+	CreatedAt          sql.NullTime `json:"created_at"`
+	UpdatedAt          sql.NullTime `json:"updated_at"`
+	Paid               int64        `json:"paid"`
+	ParticipantAmount  int64        `json:"participant_amount"`
+	ParticipantExpense int64        `json:"participant_expense"`
+	ParticipantPaid    int64        `json:"participant_paid"`
+}
+
+func (q *Queries) ListParticipantsByMemberByPaidAscFiltered(ctx context.Context, arg ListParticipantsByMemberByPaidAscFilteredParams) ([]ListParticipantsByMemberByPaidAscFilteredRow, error) {
+	rows, err := q.db.QueryContext(ctx, listParticipantsByMemberByPaidAscFiltered,
+		arg.MemberID,
+		arg.GroupID,
+		arg.Search,
+		arg.Year,
+		arg.From,
+		arg.To,
+		arg.Offset,
+		arg.Limit,
+	)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []ListParticipantsByMemberByPaidAscFilteredRow{}
+	for rows.Next() {
+		var i ListParticipantsByMemberByPaidAscFilteredRow
+		if err := rows.Scan(
+			&i.ID,
+			&i.GroupID,
+			&i.Title,
+			&i.Time,
+			&i.Description,
+			&i.Amount,
+			&i.CreatedAt,
+			&i.UpdatedAt,
+			&i.Paid,
+			&i.ParticipantAmount,
+			&i.ParticipantExpense,
+			&i.ParticipantPaid,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const listParticipantsByMemberByPaidDescFiltered = `-- name: ListParticipantsByMemberByPaidDescFiltered :many
+SELECT 
+  events.id, events.group_id, events.title, events.time, events.description, events.amount, events.created_at, events.updated_at, events.paid, 
+  participants.amount AS participant_amount, 
+  participants.expense AS participant_expense,
+  participants.paid AS participant_paid
+FROM events
+JOIN participants ON participants.event_id = events.id
+WHERE participants.member_id = ?1
+  AND participants.group_id = ?2
+  AND (
+    ?3 = ''
+    OR events.title LIKE '%' || ?3 || '%'
+    OR events.description LIKE '%' || ?3 || '%'
+  )
+  AND (
+    ?4 = ''
+    OR events.time LIKE ?4 || '%'
+  )
+  AND (
+    ?5 = ''
+    OR events.time >= ?5
+  )
+  AND (
+    ?6 = ''
+    OR events.time <= ?6
+  )
+ORDER BY participants.paid DESC, events.time DESC
+LIMIT ?8 OFFSET ?7
+`
+
+type ListParticipantsByMemberByPaidDescFilteredParams struct {
+	MemberID string      `json:"member_id"`
+	GroupID  string      `json:"group_id"`
+	Search   interface{} `json:"search"`
+	Year     interface{} `json:"year"`
+	From     interface{} `json:"from"`
+	To       interface{} `json:"to"`
+	Offset   int64       `json:"offset"`
+	Limit    int64       `json:"limit"`
+}
+
+type ListParticipantsByMemberByPaidDescFilteredRow struct {
+	ID                 string       `json:"id"`
+	GroupID            string       `json:"group_id"`
+	Title              string       `json:"title"`
+	Time               string       `json:"time"`
+	Description        string       `json:"description"`
+	Amount             int64        `json:"amount"`
+	CreatedAt          sql.NullTime `json:"created_at"`
+	UpdatedAt          sql.NullTime `json:"updated_at"`
+	Paid               int64        `json:"paid"`
+	ParticipantAmount  int64        `json:"participant_amount"`
+	ParticipantExpense int64        `json:"participant_expense"`
+	ParticipantPaid    int64        `json:"participant_paid"`
+}
+
+func (q *Queries) ListParticipantsByMemberByPaidDescFiltered(ctx context.Context, arg ListParticipantsByMemberByPaidDescFilteredParams) ([]ListParticipantsByMemberByPaidDescFilteredRow, error) {
+	rows, err := q.db.QueryContext(ctx, listParticipantsByMemberByPaidDescFiltered,
+		arg.MemberID,
+		arg.GroupID,
+		arg.Search,
+		arg.Year,
+		arg.From,
+		arg.To,
+		arg.Offset,
+		arg.Limit,
+	)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []ListParticipantsByMemberByPaidDescFilteredRow{}
+	for rows.Next() {
+		var i ListParticipantsByMemberByPaidDescFilteredRow
+		if err := rows.Scan(
+			&i.ID,
+			&i.GroupID,
+			&i.Title,
+			&i.Time,
+			&i.Description,
+			&i.Amount,
+			&i.CreatedAt,
+			&i.UpdatedAt,
+			&i.Paid,
+			&i.ParticipantAmount,
+			&i.ParticipantExpense,
+			&i.ParticipantPaid,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const listParticipantsByMemberByTimeAscFiltered = `-- name: ListParticipantsByMemberByTimeAscFiltered :many
 SELECT 
   events.id, events.group_id, events.title, events.time, events.description, events.amount, events.created_at, events.updated_at, events.paid, 

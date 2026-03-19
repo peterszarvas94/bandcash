@@ -19,7 +19,7 @@ func (e *Events) TableQuerySpec() utils.TableQuerySpec {
 	return utils.StandardTableQuerySpec(utils.StandardTableQuerySpecParams{
 		DefaultSort:  "time",
 		DefaultDir:   "desc",
-		AllowedSorts: []string{"time", "title", "amount", "description"},
+		AllowedSorts: []string{"time", "title", "amount", "description", "paid"},
 	})
 }
 
@@ -31,7 +31,7 @@ func (e *Events) ParticipantTableQuerySpec() utils.TableQuerySpec {
 	return utils.StandardTableQuerySpec(utils.StandardTableQuerySpecParams{
 		DefaultSort:  "name",
 		DefaultDir:   "asc",
-		AllowedSorts: []string{"name", "amount", "expense", "total"},
+		AllowedSorts: []string{"name", "amount", "expense", "total", "paid"},
 	})
 }
 
@@ -137,6 +137,15 @@ func (e *Events) GetShowData(ctx context.Context, groupID, eventID string, query
 				equal = leftName == rightName
 			} else {
 				less = left.ParticipantExpense < right.ParticipantExpense
+			}
+		case "paid":
+			if left.ParticipantPaid == right.ParticipantPaid {
+				leftName := strings.ToLower(left.Name)
+				rightName := strings.ToLower(right.Name)
+				less = leftName < rightName
+				equal = leftName == rightName
+			} else {
+				less = left.ParticipantPaid < right.ParticipantPaid
 			}
 		default:
 			leftName := strings.ToLower(left.Name)
@@ -244,7 +253,7 @@ func (e *Events) GetIndexData(ctx context.Context, groupID string, query utils.T
 	}
 
 	// Check cache first
-	cacheKey := utils.EventsFilterKey(groupID, query.Search, query.Year, query.From, query.To)
+	cacheKey := utils.EventsFilterKey(groupID, query.Search, query.Year, query.From, query.To, query.Sort, query.Dir)
 	if cached, ok := utils.CalcCacheInstance.Get(cacheKey); ok {
 		if result, valid := cached.(eventCalcTotals); valid {
 			return e.buildEventsData(ctx, groupID, group, query, result)
@@ -340,6 +349,11 @@ func sortEvents(events []db.Event, sortField, dir string) {
 				return events[i].Description > events[j].Description
 			}
 			return events[i].Description < events[j].Description
+		case "paid":
+			if dir == "desc" {
+				return events[i].Paid > events[j].Paid
+			}
+			return events[i].Paid < events[j].Paid
 		default: // time
 			if dir == "desc" {
 				return events[i].Time > events[j].Time

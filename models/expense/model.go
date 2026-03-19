@@ -17,7 +17,7 @@ func (e *Expenses) TableQuerySpec() utils.TableQuerySpec {
 	return utils.StandardTableQuerySpec(utils.StandardTableQuerySpecParams{
 		DefaultSort:  "date",
 		DefaultDir:   "desc",
-		AllowedSorts: []string{"date", "title", "amount"},
+		AllowedSorts: []string{"date", "title", "amount", "paid"},
 	})
 }
 
@@ -32,7 +32,7 @@ func (e *Expenses) GetIndexData(ctx context.Context, groupID string, query utils
 	}
 
 	// Check cache first
-	cacheKey := utils.ExpensesFilterKey(groupID, query.Search, query.Year, query.From, query.To)
+	cacheKey := utils.ExpensesFilterKey(groupID, query.Search, query.Year, query.From, query.To, query.Sort, query.Dir)
 	if cached, ok := utils.CalcCacheInstance.Get(cacheKey); ok {
 		if result, valid := cached.(expenseCalcTotals); valid {
 			return e.buildExpensesData(ctx, groupID, group, query, result)
@@ -119,6 +119,11 @@ func sortExpenses(expenses []db.Expense, sortField, dir string) {
 				return expenses[i].Amount > expenses[j].Amount
 			}
 			return expenses[i].Amount < expenses[j].Amount
+		case "paid":
+			if dir == "desc" {
+				return expenses[i].Paid > expenses[j].Paid
+			}
+			return expenses[i].Paid < expenses[j].Paid
 		default: // date
 			if dir == "asc" {
 				return expenses[i].Date < expenses[j].Date

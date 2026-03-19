@@ -47,24 +47,28 @@ func GroupTotalsKey(groupID string) string {
 }
 
 // EventsFilterKey creates a cache key for filtered event calculations
-func EventsFilterKey(groupID, search, year, from, to string) string {
-	return fmt.Sprintf("%ssearch_%s_year_%s_from_%s_to_%s",
+func EventsFilterKey(groupID, search, year, from, to, sort, dir string) string {
+	return fmt.Sprintf("%ssearch_%s_year_%s_from_%s_to_%s_sort_%s_dir_%s",
 		eventsCachePrefix(groupID),
 		normalizeKeyPart(search),
 		normalizeKeyPart(year),
 		normalizeKeyPart(from),
 		normalizeKeyPart(to),
+		normalizeKeyPart(sort),
+		normalizeKeyPart(dir),
 	)
 }
 
 // ExpensesFilterKey creates a cache key for filtered expense calculations
-func ExpensesFilterKey(groupID, search, year, from, to string) string {
-	return fmt.Sprintf("%ssearch_%s_year_%s_from_%s_to_%s",
+func ExpensesFilterKey(groupID, search, year, from, to, sort, dir string) string {
+	return fmt.Sprintf("%ssearch_%s_year_%s_from_%s_to_%s_sort_%s_dir_%s",
 		expensesCachePrefix(groupID),
 		normalizeKeyPart(search),
 		normalizeKeyPart(year),
 		normalizeKeyPart(from),
 		normalizeKeyPart(to),
+		normalizeKeyPart(sort),
+		normalizeKeyPart(dir),
 	)
 }
 

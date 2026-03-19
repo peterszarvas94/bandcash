@@ -28,7 +28,7 @@ func (p *Members) MemberEventsTableQuerySpec() utils.TableQuerySpec {
 	return utils.StandardTableQuerySpec(utils.StandardTableQuerySpecParams{
 		DefaultSort:  "time",
 		DefaultDir:   "desc",
-		AllowedSorts: []string{"title", "time", "participant_amount", "participant_expense"},
+		AllowedSorts: []string{"title", "time", "participant_amount", "participant_expense", "paid"},
 	})
 }
 
@@ -154,6 +154,30 @@ func convertToMemberEvent(row interface{}) MemberEvent {
 			ParticipantExpense: r.ParticipantExpense,
 			ParticipantPaid:    r.ParticipantPaid,
 		}
+	case db.ListParticipantsByMemberByPaidAscFilteredRow:
+		return MemberEvent{
+			ID:                 r.ID,
+			GroupID:            r.GroupID,
+			Title:              r.Title,
+			Time:               r.Time,
+			Description:        r.Description,
+			Amount:             r.Amount,
+			ParticipantAmount:  r.ParticipantAmount,
+			ParticipantExpense: r.ParticipantExpense,
+			ParticipantPaid:    r.ParticipantPaid,
+		}
+	case db.ListParticipantsByMemberByPaidDescFilteredRow:
+		return MemberEvent{
+			ID:                 r.ID,
+			GroupID:            r.GroupID,
+			Title:              r.Title,
+			Time:               r.Time,
+			Description:        r.Description,
+			Amount:             r.Amount,
+			ParticipantAmount:  r.ParticipantAmount,
+			ParticipantExpense: r.ParticipantExpense,
+			ParticipantPaid:    r.ParticipantPaid,
+		}
 	}
 	return MemberEvent{}
 }
@@ -258,6 +282,24 @@ func (p *Members) GetShowData(ctx context.Context, groupID, memberID string, que
 			}
 		} else {
 			rows, err := db.Qry.ListParticipantsByMemberByExpenseAscFiltered(ctx, db.ListParticipantsByMemberByExpenseAscFilteredParams(params))
+			if err != nil {
+				return MemberData{}, err
+			}
+			for _, r := range rows {
+				events = append(events, convertToMemberEvent(r))
+			}
+		}
+	case "paid":
+		if query.Dir == "desc" {
+			rows, err := db.Qry.ListParticipantsByMemberByPaidDescFiltered(ctx, db.ListParticipantsByMemberByPaidDescFilteredParams(params))
+			if err != nil {
+				return MemberData{}, err
+			}
+			for _, r := range rows {
+				events = append(events, convertToMemberEvent(r))
+			}
+		} else {
+			rows, err := db.Qry.ListParticipantsByMemberByPaidAscFiltered(ctx, db.ListParticipantsByMemberByPaidAscFilteredParams(params))
 			if err != nil {
 				return MemberData{}, err
 			}
