@@ -27,6 +27,7 @@ type MemberData struct {
 	UserEmail    string
 	Query        utils.TableQuery
 	Pager        utils.TablePagination
+	RecentYears  []int
 	TotalCut     int64
 	TotalExpense int64
 	TotalPayout  int64

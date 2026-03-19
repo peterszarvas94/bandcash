@@ -168,6 +168,16 @@ func GroupAccessMain(data AccessPageData) templ.Component {
 				inviteDeleteExpr := fmt.Sprintf("@delete('/groups/%s/access/invites/%s')", data.Group.ID, row.InviteID)
 				makeAdminExpr := fmt.Sprintf("@put('/groups/%s/access/users/%s/admin')", data.Group.ID, row.UserID)
 				makeViewerExpr := fmt.Sprintf("@put('/groups/%s/access/users/%s/viewer')", data.Group.ID, row.UserID)
+				roleToggleExpr := makeAdminExpr
+				roleToggleClass := "btn btn-ghost btn-sm btn-icon btn-inactive"
+				roleToggleIcon := icons.IconShieldX
+				roleToggleLabel := ctxi18n.T(ctx, "groups.make_admin")
+				if row.Role == "admin" {
+					roleToggleExpr = makeViewerExpr
+					roleToggleClass = "btn btn-ghost btn-sm btn-icon btn-success"
+					roleToggleIcon = icons.IconShield
+					roleToggleLabel = ctxi18n.T(ctx, "groups.make_viewer")
+				}
 				removeUserExpr := fmt.Sprintf(
 					"$sure = {title: %s, message: %s, submitLabel: %s, cancelLabel: %s, method: 'delete', url: '/groups/%s/access/users/%s', triggerID: %s, open: true, fetching: false}",
 					utils.JSONString(ctxi18n.T(ctx, "groups.remove_viewer_confirm")),
@@ -185,7 +195,7 @@ func GroupAccessMain(data AccessPageData) templ.Component {
 				var templ_7745c5c3_Var7 string
 				templ_7745c5c3_Var7, templ_7745c5c3_Err = templ.JoinStringErrs(row.Email)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/group/page_access_main.templ`, Line: 60, Col: 20}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/group/page_access_main.templ`, Line: 70, Col: 20}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var7))
 				if templ_7745c5c3_Err != nil {
@@ -203,7 +213,7 @@ func GroupAccessMain(data AccessPageData) templ.Component {
 					var templ_7745c5c3_Var8 string
 					templ_7745c5c3_Var8, templ_7745c5c3_Err = templ.JoinStringErrs(ctxi18n.T(ctx, "groups.role_admin"))
 					if templ_7745c5c3_Err != nil {
-						return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/group/page_access_main.templ`, Line: 63, Col: 78}
+						return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/group/page_access_main.templ`, Line: 73, Col: 78}
 					}
 					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var8))
 					if templ_7745c5c3_Err != nil {
@@ -221,7 +231,7 @@ func GroupAccessMain(data AccessPageData) templ.Component {
 					var templ_7745c5c3_Var9 string
 					templ_7745c5c3_Var9, templ_7745c5c3_Err = templ.JoinStringErrs(ctxi18n.T(ctx, "groups.role_viewer"))
 					if templ_7745c5c3_Err != nil {
-						return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/group/page_access_main.templ`, Line: 65, Col: 65}
+						return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/group/page_access_main.templ`, Line: 75, Col: 65}
 					}
 					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var9))
 					if templ_7745c5c3_Err != nil {
@@ -244,7 +254,7 @@ func GroupAccessMain(data AccessPageData) templ.Component {
 					var templ_7745c5c3_Var10 string
 					templ_7745c5c3_Var10, templ_7745c5c3_Err = templ.JoinStringErrs(ctxi18n.T(ctx, "groups.pending"))
 					if templ_7745c5c3_Err != nil {
-						return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/group/page_access_main.templ`, Line: 70, Col: 61}
+						return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/group/page_access_main.templ`, Line: 80, Col: 61}
 					}
 					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var10))
 					if templ_7745c5c3_Err != nil {
@@ -262,7 +272,7 @@ func GroupAccessMain(data AccessPageData) templ.Component {
 					var templ_7745c5c3_Var11 string
 					templ_7745c5c3_Var11, templ_7745c5c3_Err = templ.JoinStringErrs(ctxi18n.T(ctx, "groups.active"))
 					if templ_7745c5c3_Err != nil {
-						return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/group/page_access_main.templ`, Line: 72, Col: 74}
+						return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/group/page_access_main.templ`, Line: 82, Col: 74}
 					}
 					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var11))
 					if templ_7745c5c3_Err != nil {
@@ -295,30 +305,16 @@ func GroupAccessMain(data AccessPageData) templ.Component {
 							return templ_7745c5c3_Err
 						}
 					} else {
-						if row.Role == "viewer" {
-							templ_7745c5c3_Err = shared.IconActionButton(shared.IconActionButtonProps{
-								ClassName:    "btn btn-ghost btn-sm btn-icon",
-								OnClick:      makeAdminExpr,
-								DisabledExpr: "$_fetching",
-								AriaLabel:    ctxi18n.T(ctx, "groups.make_admin"),
-								Title:        ctxi18n.T(ctx, "groups.make_admin"),
-								IconName:     icons.IconShieldPlus,
-							}).Render(ctx, templ_7745c5c3_Buffer)
-							if templ_7745c5c3_Err != nil {
-								return templ_7745c5c3_Err
-							}
-						} else {
-							templ_7745c5c3_Err = shared.IconActionButton(shared.IconActionButtonProps{
-								ClassName:    "btn btn-ghost btn-sm btn-icon",
-								OnClick:      makeViewerExpr,
-								DisabledExpr: "$_fetching",
-								AriaLabel:    ctxi18n.T(ctx, "groups.make_viewer"),
-								Title:        ctxi18n.T(ctx, "groups.make_viewer"),
-								IconName:     icons.IconEye,
-							}).Render(ctx, templ_7745c5c3_Buffer)
-							if templ_7745c5c3_Err != nil {
-								return templ_7745c5c3_Err
-							}
+						templ_7745c5c3_Err = shared.IconActionButton(shared.IconActionButtonProps{
+							ClassName:    roleToggleClass,
+							OnClick:      roleToggleExpr,
+							DisabledExpr: "$_fetching",
+							AriaLabel:    roleToggleLabel,
+							Title:        roleToggleLabel,
+							IconName:     roleToggleIcon,
+						}).Render(ctx, templ_7745c5c3_Buffer)
+						if templ_7745c5c3_Err != nil {
+							return templ_7745c5c3_Err
 						}
 						templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 16, " ")
 						if templ_7745c5c3_Err != nil {
@@ -355,7 +351,7 @@ func GroupAccessMain(data AccessPageData) templ.Component {
 					var templ_7745c5c3_Var12 string
 					templ_7745c5c3_Var12, templ_7745c5c3_Err = templ.JoinStringErrs(ctxi18n.T(ctx, "table.empty"))
 					if templ_7745c5c3_Err != nil {
-						return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/group/page_access_main.templ`, Line: 121, Col: 56}
+						return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/group/page_access_main.templ`, Line: 120, Col: 56}
 					}
 					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var12))
 					if templ_7745c5c3_Err != nil {
@@ -373,7 +369,7 @@ func GroupAccessMain(data AccessPageData) templ.Component {
 					var templ_7745c5c3_Var13 string
 					templ_7745c5c3_Var13, templ_7745c5c3_Err = templ.JoinStringErrs(ctxi18n.T(ctx, "table.empty"))
 					if templ_7745c5c3_Err != nil {
-						return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/group/page_access_main.templ`, Line: 123, Col: 56}
+						return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/group/page_access_main.templ`, Line: 122, Col: 56}
 					}
 					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var13))
 					if templ_7745c5c3_Err != nil {

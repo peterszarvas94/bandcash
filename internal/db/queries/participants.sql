@@ -45,6 +45,18 @@ WHERE participants.member_id = sqlc.arg(member_id)
     sqlc.arg(search) = ''
     OR events.title LIKE '%' || sqlc.arg(search) || '%'
     OR events.description LIKE '%' || sqlc.arg(search) || '%'
+  )
+  AND (
+    sqlc.arg(year) = ''
+    OR events.time LIKE sqlc.arg(year) || '%'
+  )
+  AND (
+    sqlc.arg(from) = ''
+    OR events.time >= sqlc.arg(from)
+  )
+  AND (
+    sqlc.arg(to) = ''
+    OR events.time <= sqlc.arg(to)
   );
 
 -- name: ListParticipantsByMemberByTitleAscFiltered :many
@@ -61,6 +73,18 @@ WHERE participants.member_id = sqlc.arg(member_id)
     sqlc.arg(search) = ''
     OR events.title LIKE '%' || sqlc.arg(search) || '%'
     OR events.description LIKE '%' || sqlc.arg(search) || '%'
+  )
+  AND (
+    sqlc.arg(year) = ''
+    OR events.time LIKE sqlc.arg(year) || '%'
+  )
+  AND (
+    sqlc.arg(from) = ''
+    OR events.time >= sqlc.arg(from)
+  )
+  AND (
+    sqlc.arg(to) = ''
+    OR events.time <= sqlc.arg(to)
   )
 ORDER BY events.title COLLATE NOCASE ASC, events.time DESC
 LIMIT sqlc.arg(limit) OFFSET sqlc.arg(offset);
@@ -80,6 +104,18 @@ WHERE participants.member_id = sqlc.arg(member_id)
     OR events.title LIKE '%' || sqlc.arg(search) || '%'
     OR events.description LIKE '%' || sqlc.arg(search) || '%'
   )
+  AND (
+    sqlc.arg(year) = ''
+    OR events.time LIKE sqlc.arg(year) || '%'
+  )
+  AND (
+    sqlc.arg(from) = ''
+    OR events.time >= sqlc.arg(from)
+  )
+  AND (
+    sqlc.arg(to) = ''
+    OR events.time <= sqlc.arg(to)
+  )
 ORDER BY events.title COLLATE NOCASE DESC, events.time DESC
 LIMIT sqlc.arg(limit) OFFSET sqlc.arg(offset);
 
@@ -97,6 +133,18 @@ WHERE participants.member_id = sqlc.arg(member_id)
     sqlc.arg(search) = ''
     OR events.title LIKE '%' || sqlc.arg(search) || '%'
     OR events.description LIKE '%' || sqlc.arg(search) || '%'
+  )
+  AND (
+    sqlc.arg(year) = ''
+    OR events.time LIKE sqlc.arg(year) || '%'
+  )
+  AND (
+    sqlc.arg(from) = ''
+    OR events.time >= sqlc.arg(from)
+  )
+  AND (
+    sqlc.arg(to) = ''
+    OR events.time <= sqlc.arg(to)
   )
 ORDER BY events.time ASC, events.created_at DESC
 LIMIT sqlc.arg(limit) OFFSET sqlc.arg(offset);
@@ -116,6 +164,18 @@ WHERE participants.member_id = sqlc.arg(member_id)
     OR events.title LIKE '%' || sqlc.arg(search) || '%'
     OR events.description LIKE '%' || sqlc.arg(search) || '%'
   )
+  AND (
+    sqlc.arg(year) = ''
+    OR events.time LIKE sqlc.arg(year) || '%'
+  )
+  AND (
+    sqlc.arg(from) = ''
+    OR events.time >= sqlc.arg(from)
+  )
+  AND (
+    sqlc.arg(to) = ''
+    OR events.time <= sqlc.arg(to)
+  )
 ORDER BY events.time DESC, events.created_at DESC
 LIMIT sqlc.arg(limit) OFFSET sqlc.arg(offset);
 
@@ -133,6 +193,18 @@ WHERE participants.member_id = sqlc.arg(member_id)
     sqlc.arg(search) = ''
     OR events.title LIKE '%' || sqlc.arg(search) || '%'
     OR events.description LIKE '%' || sqlc.arg(search) || '%'
+  )
+  AND (
+    sqlc.arg(year) = ''
+    OR events.time LIKE sqlc.arg(year) || '%'
+  )
+  AND (
+    sqlc.arg(from) = ''
+    OR events.time >= sqlc.arg(from)
+  )
+  AND (
+    sqlc.arg(to) = ''
+    OR events.time <= sqlc.arg(to)
   )
 ORDER BY events.amount ASC, events.time DESC
 LIMIT sqlc.arg(limit) OFFSET sqlc.arg(offset);
@@ -152,6 +224,18 @@ WHERE participants.member_id = sqlc.arg(member_id)
     OR events.title LIKE '%' || sqlc.arg(search) || '%'
     OR events.description LIKE '%' || sqlc.arg(search) || '%'
   )
+  AND (
+    sqlc.arg(year) = ''
+    OR events.time LIKE sqlc.arg(year) || '%'
+  )
+  AND (
+    sqlc.arg(from) = ''
+    OR events.time >= sqlc.arg(from)
+  )
+  AND (
+    sqlc.arg(to) = ''
+    OR events.time <= sqlc.arg(to)
+  )
 ORDER BY events.amount DESC, events.time DESC
 LIMIT sqlc.arg(limit) OFFSET sqlc.arg(offset);
 
@@ -169,6 +253,18 @@ WHERE participants.member_id = sqlc.arg(member_id)
     sqlc.arg(search) = ''
     OR events.title LIKE '%' || sqlc.arg(search) || '%'
     OR events.description LIKE '%' || sqlc.arg(search) || '%'
+  )
+  AND (
+    sqlc.arg(year) = ''
+    OR events.time LIKE sqlc.arg(year) || '%'
+  )
+  AND (
+    sqlc.arg(from) = ''
+    OR events.time >= sqlc.arg(from)
+  )
+  AND (
+    sqlc.arg(to) = ''
+    OR events.time <= sqlc.arg(to)
   )
 ORDER BY participants.amount ASC, events.time DESC
 LIMIT sqlc.arg(limit) OFFSET sqlc.arg(offset);
@@ -188,6 +284,18 @@ WHERE participants.member_id = sqlc.arg(member_id)
     OR events.title LIKE '%' || sqlc.arg(search) || '%'
     OR events.description LIKE '%' || sqlc.arg(search) || '%'
   )
+  AND (
+    sqlc.arg(year) = ''
+    OR events.time LIKE sqlc.arg(year) || '%'
+  )
+  AND (
+    sqlc.arg(from) = ''
+    OR events.time >= sqlc.arg(from)
+  )
+  AND (
+    sqlc.arg(to) = ''
+    OR events.time <= sqlc.arg(to)
+  )
 ORDER BY participants.amount DESC, events.time DESC
 LIMIT sqlc.arg(limit) OFFSET sqlc.arg(offset);
 
@@ -205,6 +313,18 @@ WHERE participants.member_id = sqlc.arg(member_id)
     sqlc.arg(search) = ''
     OR events.title LIKE '%' || sqlc.arg(search) || '%'
     OR events.description LIKE '%' || sqlc.arg(search) || '%'
+  )
+  AND (
+    sqlc.arg(year) = ''
+    OR events.time LIKE sqlc.arg(year) || '%'
+  )
+  AND (
+    sqlc.arg(from) = ''
+    OR events.time >= sqlc.arg(from)
+  )
+  AND (
+    sqlc.arg(to) = ''
+    OR events.time <= sqlc.arg(to)
   )
 ORDER BY participants.expense ASC, events.time DESC
 LIMIT sqlc.arg(limit) OFFSET sqlc.arg(offset);
@@ -224,6 +344,18 @@ WHERE participants.member_id = sqlc.arg(member_id)
     OR events.title LIKE '%' || sqlc.arg(search) || '%'
     OR events.description LIKE '%' || sqlc.arg(search) || '%'
   )
+  AND (
+    sqlc.arg(year) = ''
+    OR events.time LIKE sqlc.arg(year) || '%'
+  )
+  AND (
+    sqlc.arg(from) = ''
+    OR events.time >= sqlc.arg(from)
+  )
+  AND (
+    sqlc.arg(to) = ''
+    OR events.time <= sqlc.arg(to)
+  )
 ORDER BY participants.expense DESC, events.time DESC
 LIMIT sqlc.arg(limit) OFFSET sqlc.arg(offset);
 
@@ -240,4 +372,16 @@ WHERE participants.member_id = sqlc.arg(member_id)
     sqlc.arg(search) = ''
     OR events.title LIKE '%' || sqlc.arg(search) || '%'
     OR events.description LIKE '%' || sqlc.arg(search) || '%'
+  )
+  AND (
+    sqlc.arg(year) = ''
+    OR events.time LIKE sqlc.arg(year) || '%'
+  )
+  AND (
+    sqlc.arg(from) = ''
+    OR events.time >= sqlc.arg(from)
+  )
+  AND (
+    sqlc.arg(to) = ''
+    OR events.time <= sqlc.arg(to)
   );

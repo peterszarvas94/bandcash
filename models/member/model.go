@@ -176,6 +176,9 @@ func (p *Members) GetShowData(ctx context.Context, groupID, memberID string, que
 		MemberID: memberID,
 		GroupID:  groupID,
 		Search:   query.Search,
+		Year:     query.Year,
+		From:     query.From,
+		To:       query.To,
 	})
 	if err != nil {
 		return MemberData{}, err
@@ -185,6 +188,9 @@ func (p *Members) GetShowData(ctx context.Context, groupID, memberID string, que
 		MemberID: memberID,
 		GroupID:  groupID,
 		Search:   query.Search,
+		Year:     query.Year,
+		From:     query.From,
+		To:       query.To,
 	})
 	if err != nil {
 		return MemberData{}, err
@@ -196,6 +202,9 @@ func (p *Members) GetShowData(ctx context.Context, groupID, memberID string, que
 		MemberID: memberID,
 		GroupID:  groupID,
 		Search:   query.Search,
+		Year:     query.Year,
+		From:     query.From,
+		To:       query.To,
 		Limit:    int64(query.PageSize),
 		Offset:   query.Offset(),
 	}
@@ -283,6 +292,7 @@ func (p *Members) GetShowData(ctx context.Context, groupID, memberID string, que
 		GroupID:      groupID,
 		Query:        query,
 		Pager:        utils.BuildTablePagination(int64(totalItems), query),
+		RecentYears:  utils.RecentYears(3),
 		TotalCut:     totals.TotalCut,
 		TotalExpense: totals.TotalExpense,
 		TotalPayout:  totals.TotalPayout,

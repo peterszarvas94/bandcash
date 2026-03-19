@@ -22,6 +22,54 @@ templ MemberShowMain(data MemberData) {
 		{Label: ctxi18n.T(ctx, "members.total_payout"), Value: utils.FormatNumberLocalized(ctx, data.TotalPayout)},
 	})
 	@shared.TableSearchFormWithClass(fmt.Sprintf("/groups/%s/members/%s", data.GroupID, data.Member.ID), data.Query, "table.search_placeholder_member_events", "pt")
+	<div class="row row-wrap justify-between pb" role="radiogroup" aria-label={ ctxi18n.T(ctx, "table.date_filters") }>
+			<div class="row row-tight">
+				<a
+					class={ utils.DateFilterAllButtonClass(data.Query) }
+					aria-pressed={ fmt.Sprintf("%t", utils.DateFilterAllActive(data.Query)) }
+					href={ utils.BuildTableDateClearURL(fmt.Sprintf("/groups/%s/members/%s", data.GroupID, data.Member.ID), data.Query) }
+				>
+					{ ctxi18n.T(ctx, "table.all") }
+				</a>
+				for _, year := range data.RecentYears {
+					<a
+						class={ utils.DateFilterYearButtonClass(data.Query, fmt.Sprintf("%d", year)) }
+						aria-pressed={ fmt.Sprintf("%t", utils.DateFilterYearActive(data.Query, fmt.Sprintf("%d", year))) }
+						href={ utils.BuildTableDateYearURL(fmt.Sprintf("/groups/%s/members/%s", data.GroupID, data.Member.ID), data.Query, fmt.Sprintf("%d", year)) }
+					>
+						{ fmt.Sprintf("%d", year) }
+					</a>
+				}
+				<a
+					class={ utils.DateFilterCustomButtonClass(data.Query) }
+					aria-pressed={ fmt.Sprintf("%t", utils.DateFilterCustomActive(data.Query)) }
+					href={ utils.BuildTableDateCustomURL(fmt.Sprintf("/groups/%s/members/%s", data.GroupID, data.Member.ID), data.Query) }
+				>
+					{ ctxi18n.T(ctx, "table.custom") }
+				</a>
+			</div>
+			if utils.DateFilterCustomActive(data.Query) {
+				<form class="row row-tight" method="get" action={ fmt.Sprintf("/groups/%s/members/%s", data.GroupID, data.Member.ID) }>
+					if data.Query.Search != "" {
+						<input type="hidden" name="q" value={ data.Query.Search }/>
+					}
+					if data.Query.SortSet {
+						<input type="hidden" name="sort" value={ data.Query.Sort }/>
+						<input type="hidden" name="dir" value={ data.Query.Dir }/>
+					}
+					if data.Query.PageSize != utils.DefaultTablePageSize {
+						<input type="hidden" name="pageSize" value={ fmt.Sprintf("%d", data.Query.PageSize) }/>
+					}
+					<input type="hidden" name="dateMode" value="custom"/>
+					<input type="date" class="input input-sm" name="from" value={ data.Query.From }/>
+					<span class="text-sm pr pl">-</span>
+					<input type="date" class="input input-sm" name="to" value={ data.Query.To }/>
+					<button class="btn btn-sm btn-icon" type="submit" aria-label={ ctxi18n.T(ctx, "table.apply") } title={ ctxi18n.T(ctx, "table.apply") }>
+						@icons.CalendarSearch(templ.Attributes{"class": "icon"})
+					</button>
+				</form>
+			}
+	</div>
 	@shared.TablePaginationRow(fmt.Sprintf("/groups/%s/members/%s", data.GroupID, data.Member.ID), data.Query, data.Pager)
 	@shared.TableOpenFixed(data.EventsTable, "") {
 		<thead>
@@ -51,8 +99,10 @@ templ MemberShowMain(data MemberData) {
 				{{
 					togglePaidExpr := fmt.Sprintf("@put('/groups/%s/members/%s/events/%s/toggle-paid', {tableQuery: $tableQuery})", data.GroupID, data.Member.ID, event.ID)
 					paidClass := "btn btn-ghost btn-sm btn-icon btn-table"
+					paidIcon := icons.IconBanknoteX
 					if event.ParticipantPaid == 1 {
 						paidClass += " btn-success"
+						paidIcon = icons.IconBanknote
 					} else {
 						paidClass += " btn-inactive"
 					}
@@ -71,7 +121,7 @@ templ MemberShowMain(data MemberData) {
 								DisabledExpr: "$_fetching",
 								AriaLabel:    ctxi18n.T(ctx, "actions.toggle_paid"),
 								Title:        ctxi18n.T(ctx, "actions.toggle_paid"),
-								IconName:     icons.IconBanknoteArrowUp,
+								IconName:     paidIcon,
 							})
 						</td>
 					}

@@ -17,8 +17,10 @@ templ EventShowMain(data EventData) {
 		cancelParticipantsEditExpr := fmt.Sprintf("@delete('/groups/%s/events/%s/participants/draft')", data.GroupID, data.Event.ID)
 		togglePaidExpr := fmt.Sprintf("@put('/groups/%s/events/%s/toggle-paid', {mode: 'single'})", data.GroupID, data.Event.ID)
 		paidClass := "btn btn-sm btn-icon"
+		paidIcon := icons.IconBanknoteX
 		if data.Event.Paid == 1 {
 			paidClass += " btn-success"
+			paidIcon = icons.IconBanknote
 		} else {
 			paidClass += " btn-inactive"
 		}
@@ -37,7 +39,7 @@ templ EventShowMain(data EventData) {
 				DisabledExpr: "$_fetching",
 				AriaLabel:    ctxi18n.T(ctx, "actions.toggle_paid"),
 				Title:        ctxi18n.T(ctx, "actions.toggle_paid"),
-				IconName:     icons.IconBanknoteArrowUp,
+				IconName:     paidIcon,
 			})},
 			{Label: ctxi18n.T(ctx, "events.total_unpaid"), Value: utils.FormatNumberLocalizedWithSign(ctx, data.TotalUnpaid, false), ValueClass: "text-muted"},
 			{Label: ctxi18n.T(ctx, "events.total_paid"), Value: utils.FormatNumberLocalizedWithSign(ctx, data.TotalPaid, false)},
@@ -70,8 +72,10 @@ templ EventShowMain(data EventData) {
 					{{
 						togglePaidExpr := fmt.Sprintf("@put('/groups/%s/events/%s/participants/%s/toggle-paid', {tableQuery: $tableQuery})", data.GroupID, data.Event.ID, participant.ID)
 						paidClass := "btn btn-ghost btn-sm btn-icon btn-table"
+						paidIcon := icons.IconBanknoteX
 						if participant.ParticipantPaid == 1 {
 							paidClass += " btn-success"
+							paidIcon = icons.IconBanknote
 						} else {
 							paidClass += " btn-inactive"
 						}
@@ -87,10 +91,10 @@ templ EventShowMain(data EventData) {
 									ClassName:     paidClass,
 									OnClick:       togglePaidExpr,
 									DisabledExpr:  "$_fetching",
-									AriaLabel:     ctxi18n.T(ctx, "actions.toggle_paid"),
-									Title:         ctxi18n.T(ctx, "actions.toggle_paid"),
-									IconName:      icons.IconBanknoteArrowUp,
-								})
+								AriaLabel:     ctxi18n.T(ctx, "actions.toggle_paid"),
+								Title:         ctxi18n.T(ctx, "actions.toggle_paid"),
+								IconName:      paidIcon,
+							})
 							</td>
 						}
 					</tr>

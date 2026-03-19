@@ -41,8 +41,10 @@ func ExpenseShowMain(data ExpenseData) templ.Component {
 		ctx = templ.ClearChildren(ctx)
 		togglePaidExpr := fmt.Sprintf("@put('/groups/%s/expenses/%s/toggle-paid', {mode: 'single'})", data.GroupID, data.Expense.ID)
 		paidClass := "btn btn-sm btn-icon"
+		paidIcon := icons.IconBanknoteX
 		if data.Expense.Paid == 1 {
 			paidClass += " btn-success"
+			paidIcon = icons.IconBanknote
 		} else {
 			paidClass += " btn-inactive"
 		}
@@ -61,7 +63,7 @@ func ExpenseShowMain(data ExpenseData) templ.Component {
 				DisabledExpr: "$_fetching",
 				AriaLabel:    ctxi18n.T(ctx, "actions.toggle_paid"),
 				Title:        ctxi18n.T(ctx, "actions.toggle_paid"),
-				IconName:     icons.IconBanknoteArrowUp,
+				IconName:     paidIcon,
 			})},
 			{Label: ctxi18n.T(ctx, "fields.date"), Value: utils.FormatDateLocalized(ctx, data.Expense.Date)},
 		}).Render(ctx, templ_7745c5c3_Buffer)

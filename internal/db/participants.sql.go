@@ -58,16 +58,38 @@ WHERE participants.member_id = ?1
     OR events.title LIKE '%' || ?3 || '%'
     OR events.description LIKE '%' || ?3 || '%'
   )
+  AND (
+    ?4 = ''
+    OR events.time LIKE ?4 || '%'
+  )
+  AND (
+    ?5 = ''
+    OR events.time >= ?5
+  )
+  AND (
+    ?6 = ''
+    OR events.time <= ?6
+  )
 `
 
 type CountParticipantsByMemberFilteredParams struct {
 	MemberID string      `json:"member_id"`
 	GroupID  string      `json:"group_id"`
 	Search   interface{} `json:"search"`
+	Year     interface{} `json:"year"`
+	From     interface{} `json:"from"`
+	To       interface{} `json:"to"`
 }
 
 func (q *Queries) CountParticipantsByMemberFiltered(ctx context.Context, arg CountParticipantsByMemberFilteredParams) (int64, error) {
-	row := q.db.QueryRowContext(ctx, countParticipantsByMemberFiltered, arg.MemberID, arg.GroupID, arg.Search)
+	row := q.db.QueryRowContext(ctx, countParticipantsByMemberFiltered,
+		arg.MemberID,
+		arg.GroupID,
+		arg.Search,
+		arg.Year,
+		arg.From,
+		arg.To,
+	)
 	var count int64
 	err := row.Scan(&count)
 	return count, err
@@ -210,14 +232,29 @@ WHERE participants.member_id = ?1
     OR events.title LIKE '%' || ?3 || '%'
     OR events.description LIKE '%' || ?3 || '%'
   )
+  AND (
+    ?4 = ''
+    OR events.time LIKE ?4 || '%'
+  )
+  AND (
+    ?5 = ''
+    OR events.time >= ?5
+  )
+  AND (
+    ?6 = ''
+    OR events.time <= ?6
+  )
 ORDER BY events.amount ASC, events.time DESC
-LIMIT ?5 OFFSET ?4
+LIMIT ?8 OFFSET ?7
 `
 
 type ListParticipantsByMemberByAmountAscFilteredParams struct {
 	MemberID string      `json:"member_id"`
 	GroupID  string      `json:"group_id"`
 	Search   interface{} `json:"search"`
+	Year     interface{} `json:"year"`
+	From     interface{} `json:"from"`
+	To       interface{} `json:"to"`
 	Offset   int64       `json:"offset"`
 	Limit    int64       `json:"limit"`
 }
@@ -242,6 +279,9 @@ func (q *Queries) ListParticipantsByMemberByAmountAscFiltered(ctx context.Contex
 		arg.MemberID,
 		arg.GroupID,
 		arg.Search,
+		arg.Year,
+		arg.From,
+		arg.To,
 		arg.Offset,
 		arg.Limit,
 	)
@@ -294,14 +334,29 @@ WHERE participants.member_id = ?1
     OR events.title LIKE '%' || ?3 || '%'
     OR events.description LIKE '%' || ?3 || '%'
   )
+  AND (
+    ?4 = ''
+    OR events.time LIKE ?4 || '%'
+  )
+  AND (
+    ?5 = ''
+    OR events.time >= ?5
+  )
+  AND (
+    ?6 = ''
+    OR events.time <= ?6
+  )
 ORDER BY events.amount DESC, events.time DESC
-LIMIT ?5 OFFSET ?4
+LIMIT ?8 OFFSET ?7
 `
 
 type ListParticipantsByMemberByAmountDescFilteredParams struct {
 	MemberID string      `json:"member_id"`
 	GroupID  string      `json:"group_id"`
 	Search   interface{} `json:"search"`
+	Year     interface{} `json:"year"`
+	From     interface{} `json:"from"`
+	To       interface{} `json:"to"`
 	Offset   int64       `json:"offset"`
 	Limit    int64       `json:"limit"`
 }
@@ -326,6 +381,9 @@ func (q *Queries) ListParticipantsByMemberByAmountDescFiltered(ctx context.Conte
 		arg.MemberID,
 		arg.GroupID,
 		arg.Search,
+		arg.Year,
+		arg.From,
+		arg.To,
 		arg.Offset,
 		arg.Limit,
 	)
@@ -378,14 +436,29 @@ WHERE participants.member_id = ?1
     OR events.title LIKE '%' || ?3 || '%'
     OR events.description LIKE '%' || ?3 || '%'
   )
+  AND (
+    ?4 = ''
+    OR events.time LIKE ?4 || '%'
+  )
+  AND (
+    ?5 = ''
+    OR events.time >= ?5
+  )
+  AND (
+    ?6 = ''
+    OR events.time <= ?6
+  )
 ORDER BY participants.amount ASC, events.time DESC
-LIMIT ?5 OFFSET ?4
+LIMIT ?8 OFFSET ?7
 `
 
 type ListParticipantsByMemberByCutAscFilteredParams struct {
 	MemberID string      `json:"member_id"`
 	GroupID  string      `json:"group_id"`
 	Search   interface{} `json:"search"`
+	Year     interface{} `json:"year"`
+	From     interface{} `json:"from"`
+	To       interface{} `json:"to"`
 	Offset   int64       `json:"offset"`
 	Limit    int64       `json:"limit"`
 }
@@ -410,6 +483,9 @@ func (q *Queries) ListParticipantsByMemberByCutAscFiltered(ctx context.Context, 
 		arg.MemberID,
 		arg.GroupID,
 		arg.Search,
+		arg.Year,
+		arg.From,
+		arg.To,
 		arg.Offset,
 		arg.Limit,
 	)
@@ -462,14 +538,29 @@ WHERE participants.member_id = ?1
     OR events.title LIKE '%' || ?3 || '%'
     OR events.description LIKE '%' || ?3 || '%'
   )
+  AND (
+    ?4 = ''
+    OR events.time LIKE ?4 || '%'
+  )
+  AND (
+    ?5 = ''
+    OR events.time >= ?5
+  )
+  AND (
+    ?6 = ''
+    OR events.time <= ?6
+  )
 ORDER BY participants.amount DESC, events.time DESC
-LIMIT ?5 OFFSET ?4
+LIMIT ?8 OFFSET ?7
 `
 
 type ListParticipantsByMemberByCutDescFilteredParams struct {
 	MemberID string      `json:"member_id"`
 	GroupID  string      `json:"group_id"`
 	Search   interface{} `json:"search"`
+	Year     interface{} `json:"year"`
+	From     interface{} `json:"from"`
+	To       interface{} `json:"to"`
 	Offset   int64       `json:"offset"`
 	Limit    int64       `json:"limit"`
 }
@@ -494,6 +585,9 @@ func (q *Queries) ListParticipantsByMemberByCutDescFiltered(ctx context.Context,
 		arg.MemberID,
 		arg.GroupID,
 		arg.Search,
+		arg.Year,
+		arg.From,
+		arg.To,
 		arg.Offset,
 		arg.Limit,
 	)
@@ -546,14 +640,29 @@ WHERE participants.member_id = ?1
     OR events.title LIKE '%' || ?3 || '%'
     OR events.description LIKE '%' || ?3 || '%'
   )
+  AND (
+    ?4 = ''
+    OR events.time LIKE ?4 || '%'
+  )
+  AND (
+    ?5 = ''
+    OR events.time >= ?5
+  )
+  AND (
+    ?6 = ''
+    OR events.time <= ?6
+  )
 ORDER BY participants.expense ASC, events.time DESC
-LIMIT ?5 OFFSET ?4
+LIMIT ?8 OFFSET ?7
 `
 
 type ListParticipantsByMemberByExpenseAscFilteredParams struct {
 	MemberID string      `json:"member_id"`
 	GroupID  string      `json:"group_id"`
 	Search   interface{} `json:"search"`
+	Year     interface{} `json:"year"`
+	From     interface{} `json:"from"`
+	To       interface{} `json:"to"`
 	Offset   int64       `json:"offset"`
 	Limit    int64       `json:"limit"`
 }
@@ -578,6 +687,9 @@ func (q *Queries) ListParticipantsByMemberByExpenseAscFiltered(ctx context.Conte
 		arg.MemberID,
 		arg.GroupID,
 		arg.Search,
+		arg.Year,
+		arg.From,
+		arg.To,
 		arg.Offset,
 		arg.Limit,
 	)
@@ -630,14 +742,29 @@ WHERE participants.member_id = ?1
     OR events.title LIKE '%' || ?3 || '%'
     OR events.description LIKE '%' || ?3 || '%'
   )
+  AND (
+    ?4 = ''
+    OR events.time LIKE ?4 || '%'
+  )
+  AND (
+    ?5 = ''
+    OR events.time >= ?5
+  )
+  AND (
+    ?6 = ''
+    OR events.time <= ?6
+  )
 ORDER BY participants.expense DESC, events.time DESC
-LIMIT ?5 OFFSET ?4
+LIMIT ?8 OFFSET ?7
 `
 
 type ListParticipantsByMemberByExpenseDescFilteredParams struct {
 	MemberID string      `json:"member_id"`
 	GroupID  string      `json:"group_id"`
 	Search   interface{} `json:"search"`
+	Year     interface{} `json:"year"`
+	From     interface{} `json:"from"`
+	To       interface{} `json:"to"`
 	Offset   int64       `json:"offset"`
 	Limit    int64       `json:"limit"`
 }
@@ -662,6 +789,9 @@ func (q *Queries) ListParticipantsByMemberByExpenseDescFiltered(ctx context.Cont
 		arg.MemberID,
 		arg.GroupID,
 		arg.Search,
+		arg.Year,
+		arg.From,
+		arg.To,
 		arg.Offset,
 		arg.Limit,
 	)
@@ -714,14 +844,29 @@ WHERE participants.member_id = ?1
     OR events.title LIKE '%' || ?3 || '%'
     OR events.description LIKE '%' || ?3 || '%'
   )
+  AND (
+    ?4 = ''
+    OR events.time LIKE ?4 || '%'
+  )
+  AND (
+    ?5 = ''
+    OR events.time >= ?5
+  )
+  AND (
+    ?6 = ''
+    OR events.time <= ?6
+  )
 ORDER BY events.time ASC, events.created_at DESC
-LIMIT ?5 OFFSET ?4
+LIMIT ?8 OFFSET ?7
 `
 
 type ListParticipantsByMemberByTimeAscFilteredParams struct {
 	MemberID string      `json:"member_id"`
 	GroupID  string      `json:"group_id"`
 	Search   interface{} `json:"search"`
+	Year     interface{} `json:"year"`
+	From     interface{} `json:"from"`
+	To       interface{} `json:"to"`
 	Offset   int64       `json:"offset"`
 	Limit    int64       `json:"limit"`
 }
@@ -746,6 +891,9 @@ func (q *Queries) ListParticipantsByMemberByTimeAscFiltered(ctx context.Context,
 		arg.MemberID,
 		arg.GroupID,
 		arg.Search,
+		arg.Year,
+		arg.From,
+		arg.To,
 		arg.Offset,
 		arg.Limit,
 	)
@@ -798,14 +946,29 @@ WHERE participants.member_id = ?1
     OR events.title LIKE '%' || ?3 || '%'
     OR events.description LIKE '%' || ?3 || '%'
   )
+  AND (
+    ?4 = ''
+    OR events.time LIKE ?4 || '%'
+  )
+  AND (
+    ?5 = ''
+    OR events.time >= ?5
+  )
+  AND (
+    ?6 = ''
+    OR events.time <= ?6
+  )
 ORDER BY events.time DESC, events.created_at DESC
-LIMIT ?5 OFFSET ?4
+LIMIT ?8 OFFSET ?7
 `
 
 type ListParticipantsByMemberByTimeDescFilteredParams struct {
 	MemberID string      `json:"member_id"`
 	GroupID  string      `json:"group_id"`
 	Search   interface{} `json:"search"`
+	Year     interface{} `json:"year"`
+	From     interface{} `json:"from"`
+	To       interface{} `json:"to"`
 	Offset   int64       `json:"offset"`
 	Limit    int64       `json:"limit"`
 }
@@ -830,6 +993,9 @@ func (q *Queries) ListParticipantsByMemberByTimeDescFiltered(ctx context.Context
 		arg.MemberID,
 		arg.GroupID,
 		arg.Search,
+		arg.Year,
+		arg.From,
+		arg.To,
 		arg.Offset,
 		arg.Limit,
 	)
@@ -882,14 +1048,29 @@ WHERE participants.member_id = ?1
     OR events.title LIKE '%' || ?3 || '%'
     OR events.description LIKE '%' || ?3 || '%'
   )
+  AND (
+    ?4 = ''
+    OR events.time LIKE ?4 || '%'
+  )
+  AND (
+    ?5 = ''
+    OR events.time >= ?5
+  )
+  AND (
+    ?6 = ''
+    OR events.time <= ?6
+  )
 ORDER BY events.title COLLATE NOCASE ASC, events.time DESC
-LIMIT ?5 OFFSET ?4
+LIMIT ?8 OFFSET ?7
 `
 
 type ListParticipantsByMemberByTitleAscFilteredParams struct {
 	MemberID string      `json:"member_id"`
 	GroupID  string      `json:"group_id"`
 	Search   interface{} `json:"search"`
+	Year     interface{} `json:"year"`
+	From     interface{} `json:"from"`
+	To       interface{} `json:"to"`
 	Offset   int64       `json:"offset"`
 	Limit    int64       `json:"limit"`
 }
@@ -914,6 +1095,9 @@ func (q *Queries) ListParticipantsByMemberByTitleAscFiltered(ctx context.Context
 		arg.MemberID,
 		arg.GroupID,
 		arg.Search,
+		arg.Year,
+		arg.From,
+		arg.To,
 		arg.Offset,
 		arg.Limit,
 	)
@@ -966,14 +1150,29 @@ WHERE participants.member_id = ?1
     OR events.title LIKE '%' || ?3 || '%'
     OR events.description LIKE '%' || ?3 || '%'
   )
+  AND (
+    ?4 = ''
+    OR events.time LIKE ?4 || '%'
+  )
+  AND (
+    ?5 = ''
+    OR events.time >= ?5
+  )
+  AND (
+    ?6 = ''
+    OR events.time <= ?6
+  )
 ORDER BY events.title COLLATE NOCASE DESC, events.time DESC
-LIMIT ?5 OFFSET ?4
+LIMIT ?8 OFFSET ?7
 `
 
 type ListParticipantsByMemberByTitleDescFilteredParams struct {
 	MemberID string      `json:"member_id"`
 	GroupID  string      `json:"group_id"`
 	Search   interface{} `json:"search"`
+	Year     interface{} `json:"year"`
+	From     interface{} `json:"from"`
+	To       interface{} `json:"to"`
 	Offset   int64       `json:"offset"`
 	Limit    int64       `json:"limit"`
 }
@@ -998,6 +1197,9 @@ func (q *Queries) ListParticipantsByMemberByTitleDescFiltered(ctx context.Contex
 		arg.MemberID,
 		arg.GroupID,
 		arg.Search,
+		arg.Year,
+		arg.From,
+		arg.To,
 		arg.Offset,
 		arg.Limit,
 	)
@@ -1077,12 +1279,27 @@ WHERE participants.member_id = ?1
     OR events.title LIKE '%' || ?3 || '%'
     OR events.description LIKE '%' || ?3 || '%'
   )
+  AND (
+    ?4 = ''
+    OR events.time LIKE ?4 || '%'
+  )
+  AND (
+    ?5 = ''
+    OR events.time >= ?5
+  )
+  AND (
+    ?6 = ''
+    OR events.time <= ?6
+  )
 `
 
 type SumParticipantTotalsByMemberFilteredParams struct {
 	MemberID string      `json:"member_id"`
 	GroupID  string      `json:"group_id"`
 	Search   interface{} `json:"search"`
+	Year     interface{} `json:"year"`
+	From     interface{} `json:"from"`
+	To       interface{} `json:"to"`
 }
 
 type SumParticipantTotalsByMemberFilteredRow struct {
@@ -1092,7 +1309,14 @@ type SumParticipantTotalsByMemberFilteredRow struct {
 }
 
 func (q *Queries) SumParticipantTotalsByMemberFiltered(ctx context.Context, arg SumParticipantTotalsByMemberFilteredParams) (SumParticipantTotalsByMemberFilteredRow, error) {
-	row := q.db.QueryRowContext(ctx, sumParticipantTotalsByMemberFiltered, arg.MemberID, arg.GroupID, arg.Search)
+	row := q.db.QueryRowContext(ctx, sumParticipantTotalsByMemberFiltered,
+		arg.MemberID,
+		arg.GroupID,
+		arg.Search,
+		arg.Year,
+		arg.From,
+		arg.To,
+	)
 	var i SumParticipantTotalsByMemberFilteredRow
 	err := row.Scan(&i.TotalCut, &i.TotalExpense, &i.TotalPayout)
 	return i, err
