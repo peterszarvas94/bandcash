@@ -16,6 +16,8 @@ type ExpensesData struct {
 	IsAdmin            bool
 	UserEmail          string
 	TotalExpenseAmount int64
+	TotalPaid          int64
+	TotalUnpaid        int64
 	FilteredTotal      int64
 	FilteredPaid       int64
 	FilteredUnpaid     int64

@@ -150,6 +150,10 @@ en:
   table:
     empty: "no items"
     all: "All"
+    total: "Total"
+    filtered: "Filtered"
+    unpaid: "Unpaid"
+    paid: "Paid"
     custom: "Custom"
     date_filters: "Date filters"
     search: "Search"
@@ -199,7 +203,7 @@ en:
     leftover: "Leftover"
     delete_confirm: "Delete this event?"
     total_all: "All Events Total"
-    total_filtered: "Filtered Events Total"
+    total_filtered: "Total Amount"
     total_paid: "Paid"
     total_unpaid: "Unpaid"
     notifications:
@@ -219,7 +223,7 @@ en:
     update: "Update Expense"
     delete_confirm: "Delete this expense?"
     total_all: "All Expenses Total"
-    total_filtered: "Filtered Expenses Total"
+    total_filtered: "Total Expense"
     total_paid: "Paid"
     total_unpaid: "Unpaid"
     notifications:

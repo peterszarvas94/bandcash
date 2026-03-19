@@ -29,21 +29,26 @@ templ EventShowMain(data EventData) {
 		if data.IsAdmin {
 			@shared.DetailsActions(ReadModeActions(data))
 		}
+		<div class="pb">
+			@shared.DetailsGrid([]shared.DetailsRow{
+				{Label: ctxi18n.T(ctx, "fields.title"), Value: data.Event.Title},
+				{Label: ctxi18n.T(ctx, "fields.time"), Value: utils.FormatDateTimeLocalized(ctx, data.Event.Time)},
+				{Label: ctxi18n.T(ctx, "fields.description"), Value: data.Event.Description},
+				{Label: ctxi18n.T(ctx, "fields.amount"), Value: utils.FormatNumberLocalized(ctx, data.Event.Amount), Action: shared.IconActionButton(shared.IconActionButtonProps{
+					ClassName:    paidClass + " btn-icon",
+					OnClick:      togglePaidExpr,
+					DisabledExpr: "$_fetching",
+					AriaLabel:    ctxi18n.T(ctx, "actions.toggle_paid"),
+					Title:        ctxi18n.T(ctx, "actions.toggle_paid"),
+					IconName:     paidIcon,
+				})},
+			})
+		</div>
 		@shared.DetailsGrid([]shared.DetailsRow{
-			{Label: ctxi18n.T(ctx, "fields.title"), Value: data.Event.Title},
-			{Label: ctxi18n.T(ctx, "fields.time"), Value: utils.FormatDateTimeLocalized(ctx, data.Event.Time)},
-			{Label: ctxi18n.T(ctx, "fields.description"), Value: data.Event.Description},
-			{Label: ctxi18n.T(ctx, "fields.amount"), Value: utils.FormatNumberLocalized(ctx, data.Event.Amount), Action: shared.IconActionButton(shared.IconActionButtonProps{
-				ClassName:    paidClass + " btn-icon",
-				OnClick:      togglePaidExpr,
-				DisabledExpr: "$_fetching",
-				AriaLabel:    ctxi18n.T(ctx, "actions.toggle_paid"),
-				Title:        ctxi18n.T(ctx, "actions.toggle_paid"),
-				IconName:     paidIcon,
-			})},
-			{Label: ctxi18n.T(ctx, "events.total_unpaid"), Value: utils.FormatNumberLocalizedWithSign(ctx, data.TotalUnpaid, false), ValueClass: "text-muted"},
-			{Label: ctxi18n.T(ctx, "events.total_paid"), Value: utils.FormatNumberLocalizedWithSign(ctx, data.TotalPaid, false)},
-			{Label: ctxi18n.T(ctx, "events.leftover"), Value: utils.FormatNumberLocalized(ctx, data.Leftover)},
+			{Label: ctxi18n.T(ctx, "participants.payout_total"), Value: utils.FormatNumberLocalizedWithSign(ctx, data.FilteredPaid+data.FilteredUnpaid, false)},
+			{Label: ctxi18n.T(ctx, "table.unpaid"), Value: utils.FormatNumberLocalizedWithSign(ctx, data.FilteredUnpaid, false), ValueClass: "text-muted"},
+			{Label: ctxi18n.T(ctx, "table.paid"), Value: utils.FormatNumberLocalizedWithSign(ctx, data.FilteredPaid, false)},
+			{Label: ctxi18n.T(ctx, "events.leftover"), Value: utils.FormatNumberLocalized(ctx, data.FilteredLeftover)},
 		})
 		@shared.TableSearchFormWithClass(fmt.Sprintf("/groups/%s/events/%s", data.GroupID, data.Event.ID), data.Query, "table.search_placeholder_members", "pt")
 		@shared.TablePaginationRow(fmt.Sprintf("/groups/%s/events/%s", data.GroupID, data.Event.ID), data.Query, data.Pager)

@@ -150,6 +150,10 @@ hu:
   table:
     empty: "nincs elem"
     all: "Mind"
+    total: "Összesen"
+    filtered: "Szűrt"
+    unpaid: "Nem fizetett"
+    paid: "Fizetett"
     custom: "Egyéni"
     date_filters: "Dátumszűrők"
     search: "Keresés"
@@ -199,7 +203,7 @@ hu:
     leftover: "Maradék"
     delete_confirm: "Törlöd ezt az eseményt?"
     total_all: "Összes esemény összege"
-    total_filtered: "Szűrt események összege"
+    total_filtered: "Összeg"
     total_paid: "Fizetett"
     total_unpaid: "Fizetetlen"
     notifications:
@@ -219,7 +223,7 @@ hu:
     update: "Költség frissítése"
     delete_confirm: "Törlöd ezt a költséget?"
     total_all: "Összes költség összege"
-    total_filtered: "Szűrt költségek összege"
+    total_filtered: "Összes költség"
     total_paid: "Fizetett"
     total_unpaid: "Fizetetlen"
     notifications:

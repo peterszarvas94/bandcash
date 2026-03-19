@@ -363,7 +363,9 @@ LIMIT sqlc.arg(limit) OFFSET sqlc.arg(offset);
 SELECT 
   CAST(COALESCE(SUM(participants.amount), 0) AS INTEGER) as total_cut,
   CAST(COALESCE(SUM(participants.expense), 0) AS INTEGER) as total_expense,
-  CAST(COALESCE(SUM(participants.amount + participants.expense), 0) AS INTEGER) as total_payout
+  CAST(COALESCE(SUM(participants.amount + participants.expense), 0) AS INTEGER) as total_payout,
+  CAST(COALESCE(SUM(CASE WHEN participants.paid = 1 THEN participants.amount + participants.expense ELSE 0 END), 0) AS INTEGER) as total_paid,
+  CAST(COALESCE(SUM(CASE WHEN participants.paid = 0 THEN participants.amount + participants.expense ELSE 0 END), 0) AS INTEGER) as total_unpaid
 FROM events
 JOIN participants ON participants.event_id = events.id
 WHERE participants.member_id = sqlc.arg(member_id)

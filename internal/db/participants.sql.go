@@ -1269,7 +1269,9 @@ const sumParticipantTotalsByMemberFiltered = `-- name: SumParticipantTotalsByMem
 SELECT 
   CAST(COALESCE(SUM(participants.amount), 0) AS INTEGER) as total_cut,
   CAST(COALESCE(SUM(participants.expense), 0) AS INTEGER) as total_expense,
-  CAST(COALESCE(SUM(participants.amount + participants.expense), 0) AS INTEGER) as total_payout
+  CAST(COALESCE(SUM(participants.amount + participants.expense), 0) AS INTEGER) as total_payout,
+  CAST(COALESCE(SUM(CASE WHEN participants.paid = 1 THEN participants.amount + participants.expense ELSE 0 END), 0) AS INTEGER) as total_paid,
+  CAST(COALESCE(SUM(CASE WHEN participants.paid = 0 THEN participants.amount + participants.expense ELSE 0 END), 0) AS INTEGER) as total_unpaid
 FROM events
 JOIN participants ON participants.event_id = events.id
 WHERE participants.member_id = ?1
@@ -1306,6 +1308,8 @@ type SumParticipantTotalsByMemberFilteredRow struct {
 	TotalCut     int64 `json:"total_cut"`
 	TotalExpense int64 `json:"total_expense"`
 	TotalPayout  int64 `json:"total_payout"`
+	TotalPaid    int64 `json:"total_paid"`
+	TotalUnpaid  int64 `json:"total_unpaid"`
 }
 
 func (q *Queries) SumParticipantTotalsByMemberFiltered(ctx context.Context, arg SumParticipantTotalsByMemberFilteredParams) (SumParticipantTotalsByMemberFilteredRow, error) {
@@ -1318,7 +1322,13 @@ func (q *Queries) SumParticipantTotalsByMemberFiltered(ctx context.Context, arg 
 		arg.To,
 	)
 	var i SumParticipantTotalsByMemberFilteredRow
-	err := row.Scan(&i.TotalCut, &i.TotalExpense, &i.TotalPayout)
+	err := row.Scan(
+		&i.TotalCut,
+		&i.TotalExpense,
+		&i.TotalPayout,
+		&i.TotalPaid,
+		&i.TotalUnpaid,
+	)
 	return i, err
 }
 

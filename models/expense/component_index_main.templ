@@ -11,10 +11,9 @@ import (
 
 templ ExpenseTotalsContent(data ExpensesData) {
 	@shared.DetailsGrid([]shared.DetailsRow{
-		{Label: ctxi18n.T(ctx, "expenses.total_all"), Value: utils.FormatNumberLocalizedWithSign(ctx, data.TotalExpenseAmount, false)},
 		{Label: ctxi18n.T(ctx, "expenses.total_filtered"), Value: utils.FormatNumberLocalizedWithSign(ctx, data.FilteredTotal, false)},
-		{Label: ctxi18n.T(ctx, "expenses.total_unpaid"), Value: utils.FormatNumberLocalizedWithSign(ctx, data.FilteredUnpaid, false), ValueClass: "text-muted"},
-		{Label: ctxi18n.T(ctx, "expenses.total_paid"), Value: utils.FormatNumberLocalizedWithSign(ctx, data.FilteredPaid, false)},
+		{Label: ctxi18n.T(ctx, "table.unpaid"), Value: utils.FormatNumberLocalizedWithSign(ctx, data.FilteredUnpaid, false), ValueClass: "text-muted"},
+		{Label: ctxi18n.T(ctx, "table.paid"), Value: utils.FormatNumberLocalizedWithSign(ctx, data.FilteredPaid, false)},
 	})
 }
 

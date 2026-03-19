@@ -180,11 +180,29 @@ func (e *Events) GetShowData(ctx context.Context, groupID, eventID string, query
 			totalUnpaid += amount
 		}
 	}
+
+	var filteredPaid, filteredUnpaid int64
+	for _, p := range participants {
+		amount := p.ParticipantAmount + p.ParticipantExpense
+		if p.ParticipantPaid == 1 {
+			filteredPaid += amount
+		} else {
+			filteredUnpaid += amount
+		}
+	}
+
 	var leftover int64
 	if event.Paid == 1 {
 		leftover = event.Amount - totalPaid
 	} else {
 		leftover = -totalPaid
+	}
+
+	var filteredLeftover int64
+	if event.Paid == 1 {
+		filteredLeftover = event.Amount - filteredPaid
+	} else {
+		filteredLeftover = -filteredPaid
 	}
 
 	slog.Info("event.show.data", "event_id", eventID, "participants", len(participants), "members_total", len(members), "members_filtered", len(filteredMembers), "leftover", leftover)
@@ -202,6 +220,9 @@ func (e *Events) GetShowData(ctx context.Context, groupID, eventID string, query
 		Leftover:             leftover,
 		TotalPaid:            totalPaid,
 		TotalUnpaid:          totalUnpaid,
+		FilteredPaid:         filteredPaid,
+		FilteredUnpaid:       filteredUnpaid,
+		FilteredLeftover:     filteredLeftover,
 		WizardEventAmount:    event.Amount,
 		WizardError:          "",
 		EditorMode:           "read",
@@ -362,6 +383,8 @@ func (e *Events) buildEventsData(ctx context.Context, groupID string, group db.G
 		Pager:            utils.BuildTablePagination(totalItems, query),
 		GroupID:          groupID,
 		TotalEventAmount: groupTotals.TotalEventAmount,
+		TotalPaid:        groupTotals.EventPaid,
+		TotalUnpaid:      groupTotals.EventUnpaid,
 		FilteredTotal:    totals.Total,
 		FilteredPaid:     totals.Paid,
 		FilteredUnpaid:   totals.Unpaid,

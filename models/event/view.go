@@ -19,6 +19,9 @@ type EventData struct {
 	Leftover             int64
 	TotalPaid            int64
 	TotalUnpaid          int64
+	FilteredPaid         int64
+	FilteredUnpaid       int64
+	FilteredLeftover     int64
 	WizardEventAmount    int64
 	WizardError          string
 	EditorMode           string
@@ -47,6 +50,8 @@ type EventsData struct {
 	IsAdmin          bool
 	UserEmail        string
 	TotalEventAmount int64
+	TotalPaid        int64
+	TotalUnpaid      int64
 	FilteredTotal    int64
 	FilteredPaid     int64
 	FilteredUnpaid   int64

@@ -31,6 +31,8 @@ type MemberData struct {
 	TotalCut     int64
 	TotalExpense int64
 	TotalPayout  int64
+	TotalPaid    int64
+	TotalUnpaid  int64
 	EventsTable  utils.TableLayout
 }
 

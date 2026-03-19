@@ -296,6 +296,8 @@ func (p *Members) GetShowData(ctx context.Context, groupID, memberID string, que
 		TotalCut:     totals.TotalCut,
 		TotalExpense: totals.TotalExpense,
 		TotalPayout:  totals.TotalPayout,
+		TotalPaid:    totals.TotalPaid,
+		TotalUnpaid:  totals.TotalUnpaid,
 		Breadcrumbs: []utils.Crumb{
 			{Label: ctxi18n.T(ctx, "groups.title"), Href: "/dashboard"},
 			{Label: group.Name, Href: "/groups/" + groupID},

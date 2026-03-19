@@ -25,9 +25,14 @@ templ ExpenseShowMain(data ExpenseData) {
 	if data.IsAdmin {
 		@shared.DetailsActions(ExpenseShowDetailsActions(data))
 	}
+	<div class="pb">
+		@shared.DetailsGrid([]shared.DetailsRow{
+			{Label: ctxi18n.T(ctx, "fields.title"), Value: data.Expense.Title},
+			{Label: ctxi18n.T(ctx, "fields.description"), Value: data.Expense.Description},
+			{Label: ctxi18n.T(ctx, "fields.date"), Value: utils.FormatDateLocalized(ctx, data.Expense.Date)},
+		})
+	</div>
 	@shared.DetailsGrid([]shared.DetailsRow{
-		{Label: ctxi18n.T(ctx, "fields.title"), Value: data.Expense.Title},
-		{Label: ctxi18n.T(ctx, "fields.description"), Value: data.Expense.Description},
 		{Label: ctxi18n.T(ctx, "fields.amount"), Value: utils.FormatNumberLocalizedWithSign(ctx, data.Expense.Amount, false), Action: shared.IconActionButton(shared.IconActionButtonProps{
 			ClassName:    paidClass + " btn-icon",
 			OnClick:      togglePaidExpr,
@@ -36,7 +41,6 @@ templ ExpenseShowMain(data ExpenseData) {
 			Title:        ctxi18n.T(ctx, "actions.toggle_paid"),
 			IconName:     paidIcon,
 		})},
-		{Label: ctxi18n.T(ctx, "fields.date"), Value: utils.FormatDateLocalized(ctx, data.Expense.Date)},
 	})
 }
 

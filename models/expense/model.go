@@ -161,6 +161,8 @@ func (e *Expenses) buildExpensesData(ctx context.Context, groupID string, group 
 		Pager:              utils.BuildTablePagination(totalItems, query),
 		GroupID:            groupID,
 		TotalExpenseAmount: groupTotals.TotalExpenseAmount,
+		TotalPaid:          groupTotals.ExpensePaid,
+		TotalUnpaid:        groupTotals.ExpenseUnpaid,
 		FilteredTotal:      totals.Total,
 		FilteredPaid:       totals.Paid,
 		FilteredUnpaid:     totals.Unpaid,

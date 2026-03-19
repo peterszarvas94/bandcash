@@ -54,9 +54,23 @@ func ExpenseShowMain(data ExpenseData) templ.Component {
 				return templ_7745c5c3_Err
 			}
 		}
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<div class=\"pb\">")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
 		templ_7745c5c3_Err = shared.DetailsGrid([]shared.DetailsRow{
 			{Label: ctxi18n.T(ctx, "fields.title"), Value: data.Expense.Title},
 			{Label: ctxi18n.T(ctx, "fields.description"), Value: data.Expense.Description},
+			{Label: ctxi18n.T(ctx, "fields.date"), Value: utils.FormatDateLocalized(ctx, data.Expense.Date)},
+		}).Render(ctx, templ_7745c5c3_Buffer)
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "</div>")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Err = shared.DetailsGrid([]shared.DetailsRow{
 			{Label: ctxi18n.T(ctx, "fields.amount"), Value: utils.FormatNumberLocalizedWithSign(ctx, data.Expense.Amount, false), Action: shared.IconActionButton(shared.IconActionButtonProps{
 				ClassName:    paidClass + " btn-icon",
 				OnClick:      togglePaidExpr,
@@ -65,7 +79,6 @@ func ExpenseShowMain(data ExpenseData) templ.Component {
 				Title:        ctxi18n.T(ctx, "actions.toggle_paid"),
 				IconName:     paidIcon,
 			})},
-			{Label: ctxi18n.T(ctx, "fields.date"), Value: utils.FormatDateLocalized(ctx, data.Expense.Date)},
 		}).Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
@@ -106,7 +119,7 @@ func ExpenseShowDetailsActions(data ExpenseData) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, " ")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, " ")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}

@@ -32,18 +32,22 @@ templ GroupDetailsContent(data GroupPageData) {
 	if data.IsAdmin {
 		@shared.DetailsActions(GroupDetailsActions(data))
 	}
+	<div class="pb">
+		@shared.DetailsGrid([]shared.DetailsRow{
+			{Label: ctxi18n.T(ctx, "groups.name"), Value: data.Group.Name},
+			{Label: ctxi18n.T(ctx, "groups.admin"), Value: data.Admin.Email},
+			{
+				Label: ctxi18n.T(ctx, "groups.created"),
+				Value: func() string {
+					if data.Group.CreatedAt.Valid {
+						return utils.FormatTimeLocalized(ctx, data.Group.CreatedAt.Time)
+					}
+					return "-"
+				}(),
+			},
+		})
+	</div>
 	@shared.DetailsGrid([]shared.DetailsRow{
-		{Label: ctxi18n.T(ctx, "groups.name"), Value: data.Group.Name},
-		{Label: ctxi18n.T(ctx, "groups.admin"), Value: data.Admin.Email},
-		{
-			Label: ctxi18n.T(ctx, "groups.created"),
-			Value: func() string {
-				if data.Group.CreatedAt.Valid {
-					return utils.FormatTimeLocalized(ctx, data.Group.CreatedAt.Time)
-				}
-				return "-"
-			}(),
-		},
 		{Label: ctxi18n.T(ctx, "groups.income"), Value: utils.FormatNumberLocalized(ctx, data.Income)},
 		{Label: ctxi18n.T(ctx, "groups.payouts"), Value: utils.FormatNumberLocalized(ctx, data.Payouts)},
 		{Label: ctxi18n.T(ctx, "groups.expenses"), Value: utils.FormatNumberLocalized(ctx, data.Expenses)},
