@@ -10,23 +10,28 @@ import (
 )
 
 templ MemberShowMain(data MemberData) {
-	if data.IsAdmin {
-		@shared.DetailsActions(MemberShowDetailsActions(data))
-	}
-	<div class="pb">
+	{{
+		updateExpr := fmt.Sprintf("@put('/groups/%s/members/%s')", data.GroupID, data.Member.ID)
+		cancelExpr := "$formState = ''; $formData = {name: " + utils.JSONString(data.Member.Name) + ", description: " + utils.JSONString(data.Member.Description) + "}; $errors = {name: '', description: ''}"
+	}}
+	<div data-show="$formState !== 'edit'">
+		if data.IsAdmin {
+			@shared.DetailsActions(MemberShowDetailsActions(data))
+		}
+		<div class="pb">
+			@shared.DetailsGrid([]shared.DetailsRow{
+				{Label: ctxi18n.T(ctx, "fields.name"), Value: data.Member.Name},
+				{Label: ctxi18n.T(ctx, "fields.description"), Value: data.Member.Description},
+				{Label: ctxi18n.T(ctx, "members.total_events"), Value: utils.FormatNumberLocalized(ctx, int64(data.Pager.TotalItems))},
+			})
+		</div>
 		@shared.DetailsGrid([]shared.DetailsRow{
-			{Label: ctxi18n.T(ctx, "fields.name"), Value: data.Member.Name},
-			{Label: ctxi18n.T(ctx, "fields.description"), Value: data.Member.Description},
-			{Label: ctxi18n.T(ctx, "members.total_events"), Value: utils.FormatNumberLocalized(ctx, int64(data.Pager.TotalItems))},
+			{Label: ctxi18n.T(ctx, "members.total_payout"), Value: utils.FormatNumberLocalized(ctx, data.TotalPayout)},
+			{Label: ctxi18n.T(ctx, "table.unpaid"), Value: utils.FormatNumberLocalized(ctx, data.TotalUnpaid), ValueClass: "text-muted"},
+			{Label: ctxi18n.T(ctx, "table.paid"), Value: utils.FormatNumberLocalized(ctx, data.TotalPaid)},
 		})
-	</div>
-	@shared.DetailsGrid([]shared.DetailsRow{
-		{Label: ctxi18n.T(ctx, "members.total_payout"), Value: utils.FormatNumberLocalized(ctx, data.TotalPayout)},
-		{Label: ctxi18n.T(ctx, "table.unpaid"), Value: utils.FormatNumberLocalized(ctx, data.TotalUnpaid), ValueClass: "text-muted"},
-		{Label: ctxi18n.T(ctx, "table.paid"), Value: utils.FormatNumberLocalized(ctx, data.TotalPaid)},
-	})
-	@shared.TableSearchFormWithClass(fmt.Sprintf("/groups/%s/members/%s", data.GroupID, data.Member.ID), data.Query, "table.search_placeholder_member_events", "pt")
-	<div class="row row-wrap justify-between pb" role="radiogroup" aria-label={ ctxi18n.T(ctx, "table.date_filters") }>
+		@shared.TableSearchFormWithClass(fmt.Sprintf("/groups/%s/members/%s", data.GroupID, data.Member.ID), data.Query, "table.search_placeholder_member_events", "pt")
+		<div class="row row-wrap justify-between pb" role="radiogroup" aria-label={ ctxi18n.T(ctx, "table.date_filters") }>
 			<div class="row row-tight">
 				<a
 					class={ utils.DateFilterAllButtonClass(data.Query) }
@@ -73,9 +78,9 @@ templ MemberShowMain(data MemberData) {
 					</button>
 				</form>
 			}
-	</div>
-	@shared.TablePaginationRow(fmt.Sprintf("/groups/%s/members/%s", data.GroupID, data.Member.ID), data.Query, data.Pager)
-	@shared.TableOpenFixed(data.EventsTable, "") {
+		</div>
+		@shared.TablePaginationRow(fmt.Sprintf("/groups/%s/members/%s", data.GroupID, data.Member.ID), data.Query, data.Pager)
+		@shared.TableOpenFixed(data.EventsTable, "") {
 		<thead>
 			<tr>
 				@shared.THCol(data.EventsTable.Col("title")) {
@@ -149,6 +154,37 @@ templ MemberShowMain(data MemberData) {
 				</tr>
 			}
 		</tbody>
+		}
+	</div>
+	if data.IsAdmin {
+		<div data-show="$formState === 'edit'" style="display: none">
+			<form class="form" data-on:submit={ updateExpr } data-indicator:_fetching>
+				<div class="field">
+					<label for="member-show-name" class="row">{ctxi18n.T(ctx, "fields.name")} <span class="color-error">*</span></label>
+					<input id="member-show-name" type="text" data-bind="formData.name" class="input"/>
+					<div data-show="$errors && $errors.name" class="color-error" data-text="$errors.name"></div>
+				</div>
+				<div class="field">
+					<label for="member-show-description">{ctxi18n.T(ctx, "fields.description")}</label>
+					<textarea id="member-show-description" data-bind="formData.description" rows="3" class="input"></textarea>
+					<div data-show="$errors && $errors.description" class="color-error" data-text="$errors.description"></div>
+				</div>
+				<div class="row row-wrap">
+					@shared.LoadingSubmitButton(shared.LoadingSubmitButtonProps{
+						ClassName: "btn",
+						Label:     ctxi18n.T(ctx, "members.update"),
+						IconName:  icons.IconSave,
+					})
+					@shared.ActionButton(shared.ActionButtonProps{
+						ClassName:     "btn",
+						OnClick:       cancelExpr,
+						DisabledExpr:  "$_fetching",
+						Label:         ctxi18n.T(ctx, "actions.cancel"),
+						IconName:      icons.IconX,
+					})
+				</div>
+			</form>
+		</div>
 	}
 }
 

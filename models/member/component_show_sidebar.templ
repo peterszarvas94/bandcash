@@ -1,53 +1,5 @@
 package member
 
-import (
-	"fmt"
-
-	ctxi18n "github.com/invopop/ctxi18n/i18n"
-
-	"bandcash/internal/utils"
-	shared "bandcash/models/shared"
-	icons "bandcash/models/shared/icons"
-)
-
 templ MemberShowSidebar(data MemberData) {
-	if data.IsAdmin {
-		{{
-			submitExpr := fmt.Sprintf("$sidebarLoadingAction = 'member-details-update'; @put('/groups/%s/members/%s')", data.GroupID, data.Member.ID)
-			updateExpr := fmt.Sprintf("@put('/groups/%s/members/%s')", data.GroupID, data.Member.ID)
-			cancelExpr := "$formState = ''; $formData = {name: " + utils.JSONString(data.Member.Name) + ", description: " + utils.JSONString(data.Member.Description) + "}; $errors = {name: '', description: ''}"
-		}}
-		<div data-signals={ templ.JSONString(map[string]any{"sidebarLoadingAction": ""}) }>
-		<div data-show="$formState === 'edit'" style="display: none" class="pb">
-		<form class="form" data-on:submit={ submitExpr } data-indicator:_fetching>
-			<div>
-				<label for="member-show-name" class="row">{ctxi18n.T(ctx, "fields.name")} <span class="color-error">*</span></label>
-					<input id="member-show-name" type="text" data-bind="formData.name" class="input"/>
-					<div data-show="$errors && $errors.name" class="color-error" data-text="$errors.name"></div>
-				</div>
-				<div>
-				<label for="member-show-description">{ctxi18n.T(ctx, "fields.description")}</label>
-					<textarea id="member-show-description" data-bind="formData.description" rows="3" class="input"></textarea>
-					<div data-show="$errors && $errors.description" class="color-error" data-text="$errors.description"></div>
-				</div>
-				<div class="row row-wrap">
-					@shared.SidebarLoadingActionButton(shared.SidebarLoadingActionButtonProps{
-						ClassName: "btn",
-						OnClick:   updateExpr,
-						Label:     ctxi18n.T(ctx, "members.update"),
-						IconName:  icons.IconSave,
-						ActionID:  "member-details-update",
-					})
-					@shared.ActionButton(shared.ActionButtonProps{
-						ClassName:     "btn",
-						OnClick:       cancelExpr,
-						DisabledExpr:  "$_fetching",
-						Label:         ctxi18n.T(ctx, "actions.cancel"),
-						IconName:      icons.IconX,
-					})
-				</div>
-			</form>
-		</div>
-		</div>
-	}
+	<div></div>
 }

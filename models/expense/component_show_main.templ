@@ -13,6 +13,8 @@ import (
 templ ExpenseShowMain(data ExpenseData) {
 	{{
 		togglePaidExpr := fmt.Sprintf("@put('/groups/%s/expenses/%s/toggle-paid', {mode: 'single'})", data.GroupID, data.Expense.ID)
+		updateExpr := fmt.Sprintf("@put('/groups/%s/expenses/%s')", data.GroupID, data.Expense.ID)
+		cancelExpr := "$formState = ''; $formData = {title: " + utils.JSONString(data.Expense.Title) + ", description: " + utils.JSONString(data.Expense.Description) + ", amount: " + fmt.Sprintf("%d", data.Expense.Amount) + ", date: " + utils.JSONString(data.Expense.Date) + "}; $errors = {title: '', description: '', amount: '', date: ''}"
 		paidClass := "btn btn-sm btn-icon"
 		paidIcon := icons.IconBanknoteX
 		if data.Expense.Paid == 1 {
@@ -22,26 +24,70 @@ templ ExpenseShowMain(data ExpenseData) {
 			paidClass += " btn-inactive"
 		}
 	}}
-	if data.IsAdmin {
-		@shared.DetailsActions(ExpenseShowDetailsActions(data))
-	}
-	<div class="pb">
+	<div data-show="$formState !== 'edit'">
+		if data.IsAdmin {
+			@shared.DetailsActions(ExpenseShowDetailsActions(data))
+		}
+		<div class="pb">
+			@shared.DetailsGrid([]shared.DetailsRow{
+				{Label: ctxi18n.T(ctx, "fields.title"), Value: data.Expense.Title},
+				{Label: ctxi18n.T(ctx, "fields.description"), Value: data.Expense.Description},
+				{Label: ctxi18n.T(ctx, "fields.date"), Value: utils.FormatDateLocalized(ctx, data.Expense.Date)},
+			})
+		</div>
 		@shared.DetailsGrid([]shared.DetailsRow{
-			{Label: ctxi18n.T(ctx, "fields.title"), Value: data.Expense.Title},
-			{Label: ctxi18n.T(ctx, "fields.description"), Value: data.Expense.Description},
-			{Label: ctxi18n.T(ctx, "fields.date"), Value: utils.FormatDateLocalized(ctx, data.Expense.Date)},
+			{Label: ctxi18n.T(ctx, "fields.expense"), Value: utils.FormatNumberLocalizedWithSign(ctx, data.Expense.Amount, false), Action: shared.IconActionButton(shared.IconActionButtonProps{
+				ClassName:    paidClass + " btn-icon",
+				OnClick:      togglePaidExpr,
+				DisabledExpr: "$_fetching",
+				AriaLabel:    ctxi18n.T(ctx, "actions.toggle_paid"),
+				Title:        ctxi18n.T(ctx, "actions.toggle_paid"),
+				IconName:     paidIcon,
+			})},
 		})
 	</div>
-	@shared.DetailsGrid([]shared.DetailsRow{
-		{Label: ctxi18n.T(ctx, "fields.expense"), Value: utils.FormatNumberLocalizedWithSign(ctx, data.Expense.Amount, false), Action: shared.IconActionButton(shared.IconActionButtonProps{
-			ClassName:    paidClass + " btn-icon",
-			OnClick:      togglePaidExpr,
-			DisabledExpr: "$_fetching",
-			AriaLabel:    ctxi18n.T(ctx, "actions.toggle_paid"),
-			Title:        ctxi18n.T(ctx, "actions.toggle_paid"),
-			IconName:     paidIcon,
-		})},
-	})
+	if data.IsAdmin {
+		<div data-show="$formState === 'edit'" style="display: none">
+			<form class="form" data-on:submit={ updateExpr } data-indicator:_fetching>
+				<div class="field">
+					<label for="expense-show-title" class="row">{ ctxi18n.T(ctx, "fields.title") } <span class="color-error">*</span></label>
+					<input id="expense-show-title" type="text" data-bind="formData.title" class="input"/>
+					<div data-show="$errors && $errors.title" class="color-error" data-text="$errors.title"></div>
+				</div>
+				<div class="field">
+					<label for="expense-show-description">{ ctxi18n.T(ctx, "fields.description") }</label>
+					<input id="expense-show-description" type="text" data-bind="formData.description" class="input"/>
+					<div data-show="$errors && $errors.description" class="color-error" data-text="$errors.description"></div>
+				</div>
+				<div class="form-row">
+					<div class="field">
+						<label for="expense-show-amount" class="row">{ ctxi18n.T(ctx, "fields.expense") } <span class="color-error">*</span></label>
+						<input id="expense-show-amount" type="number" data-bind="formData.amount" step="1" class="input"/>
+						<div data-show="$errors && $errors.amount" class="color-error" data-text="$errors.amount"></div>
+					</div>
+					<div class="field">
+						<label for="expense-show-date" class="row">{ ctxi18n.T(ctx, "fields.date") } <span class="color-error">*</span></label>
+						<input id="expense-show-date" type="date" data-bind="formData.date" class="input"/>
+						<div data-show="$errors && $errors.date" class="color-error" data-text="$errors.date"></div>
+					</div>
+				</div>
+				<div class="row row-wrap">
+					@shared.LoadingSubmitButton(shared.LoadingSubmitButtonProps{
+						ClassName: "btn",
+						Label:     ctxi18n.T(ctx, "expenses.update"),
+						IconName:  icons.IconSave,
+					})
+					@shared.ActionButton(shared.ActionButtonProps{
+						ClassName:     "btn",
+						OnClick:       cancelExpr,
+						DisabledExpr:  "$_fetching",
+						Label:         ctxi18n.T(ctx, "actions.cancel"),
+						IconName:      icons.IconX,
+					})
+				</div>
+			</form>
+		</div>
+	}
 }
 
 templ ExpenseShowDetailsActions(data ExpenseData) {
