@@ -1,10 +1,13 @@
 package shared
 
+import "fmt"
+
 import icons "bandcash/models/shared/icons"
 
 type DetailsRow struct {
 	Label  string
 	Value  string
+	ValueClass string
 	Action templ.Component
 }
 
@@ -13,7 +16,7 @@ templ DetailsGrid(rows []DetailsRow) {
 		for _, row := range rows {
 			<div class="detail-row">
 				<p class="detail-key">{ row.Label }</p>
-				<p class="detail-val">
+				<p class={ fmt.Sprintf("detail-val %s", row.ValueClass) }>
 					if row.Action != nil {
 						@row.Action
 					}

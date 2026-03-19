@@ -49,7 +49,7 @@ func MemberShowMain(data MemberData) templ.Component {
 			{Label: ctxi18n.T(ctx, "fields.description"), Value: data.Member.Description},
 			{Label: ctxi18n.T(ctx, "members.total_events"), Value: utils.FormatNumberLocalized(ctx, int64(len(data.Events)))},
 			{Label: ctxi18n.T(ctx, "members.total_cut"), Value: utils.FormatNumberLocalized(ctx, data.TotalCut)},
-			{Label: ctxi18n.T(ctx, "members.total_expense"), Value: utils.FormatNumberLocalized(ctx, data.TotalExpense)},
+			{Label: ctxi18n.T(ctx, "members.total_expense"), Value: utils.FormatNumberLocalizedWithSign(ctx, data.TotalExpense, false), ValueClass: "text-muted"},
 			{Label: ctxi18n.T(ctx, "members.total_payout"), Value: utils.FormatNumberLocalized(ctx, data.TotalPayout)},
 		}).Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {

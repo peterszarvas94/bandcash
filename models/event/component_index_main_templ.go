@@ -41,8 +41,8 @@ func EventTotalsContent(data EventsData) templ.Component {
 		templ_7745c5c3_Err = shared.DetailsGrid([]shared.DetailsRow{
 			{Label: ctxi18n.T(ctx, "events.total_all"), Value: utils.FormatNumberLocalized(ctx, data.TotalEventAmount)},
 			{Label: ctxi18n.T(ctx, "events.total_filtered"), Value: utils.FormatNumberLocalized(ctx, data.FilteredTotal)},
+			{Label: ctxi18n.T(ctx, "events.total_unpaid"), Value: utils.FormatNumberLocalized(ctx, data.FilteredUnpaid), ValueClass: "text-muted"},
 			{Label: ctxi18n.T(ctx, "events.total_paid"), Value: utils.FormatNumberLocalized(ctx, data.FilteredPaid)},
-			{Label: ctxi18n.T(ctx, "events.total_unpaid"), Value: utils.FormatNumberLocalized(ctx, data.FilteredUnpaid)},
 		}).Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err

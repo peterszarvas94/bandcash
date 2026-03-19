@@ -70,13 +70,13 @@ func CalculateGroupTotals(ctx context.Context, groupID string) (GroupTotals, err
 
 // InvalidateGroupTotals clears the cached totals for a group
 func InvalidateGroupTotals(groupID string) {
-	CalcCacheInstance.ClearPrefix("group_totals:" + groupID)
+	CalcCacheInstance.ClearPrefix(groupTotalsCachePrefix(groupID))
 }
 
 // InvalidateGroupCaches clears all cached calculations for a group
 // Call this when any event, expense, or participant changes
 func InvalidateGroupCaches(groupID string) {
-	CalcCacheInstance.ClearPrefix("group_totals:" + groupID)
-	CalcCacheInstance.ClearPrefix("events:" + groupID)
-	CalcCacheInstance.ClearPrefix("expenses:" + groupID)
+	CalcCacheInstance.ClearPrefix(groupTotalsCachePrefix(groupID))
+	CalcCacheInstance.ClearPrefix(eventsCachePrefix(groupID))
+	CalcCacheInstance.ClearPrefix(expensesCachePrefix(groupID))
 }

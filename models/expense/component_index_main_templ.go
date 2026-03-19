@@ -39,10 +39,10 @@ func ExpenseTotalsContent(data ExpensesData) templ.Component {
 		}
 		ctx = templ.ClearChildren(ctx)
 		templ_7745c5c3_Err = shared.DetailsGrid([]shared.DetailsRow{
-			{Label: ctxi18n.T(ctx, "expenses.total_all"), Value: utils.FormatNumberLocalized(ctx, data.TotalExpenseAmount)},
-			{Label: ctxi18n.T(ctx, "expenses.total_filtered"), Value: utils.FormatNumberLocalized(ctx, data.FilteredTotal)},
-			{Label: ctxi18n.T(ctx, "expenses.total_paid"), Value: utils.FormatNumberLocalized(ctx, data.FilteredPaid)},
-			{Label: ctxi18n.T(ctx, "expenses.total_unpaid"), Value: utils.FormatNumberLocalized(ctx, data.FilteredUnpaid)},
+			{Label: ctxi18n.T(ctx, "expenses.total_all"), Value: utils.FormatNumberLocalizedWithSign(ctx, data.TotalExpenseAmount, false)},
+			{Label: ctxi18n.T(ctx, "expenses.total_filtered"), Value: utils.FormatNumberLocalizedWithSign(ctx, data.FilteredTotal, false)},
+			{Label: ctxi18n.T(ctx, "expenses.total_unpaid"), Value: utils.FormatNumberLocalizedWithSign(ctx, data.FilteredUnpaid, false), ValueClass: "text-muted"},
+			{Label: ctxi18n.T(ctx, "expenses.total_paid"), Value: utils.FormatNumberLocalizedWithSign(ctx, data.FilteredPaid, false)},
 		}).Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err

@@ -1,9 +1,9 @@
 package utils
 
 import (
-	"crypto/sha256"
-	"encoding/hex"
 	"fmt"
+	"net/url"
+	"strings"
 	"sync"
 )
 
@@ -21,30 +21,51 @@ func NewCalcCache() *CalcCache {
 	}
 }
 
-// makeKey creates a deterministic hash key from components
-func makeKey(prefix string, components ...string) string {
-	h := sha256.New()
-	h.Write([]byte(prefix))
-	for _, c := range components {
-		h.Write([]byte("|"))
-		h.Write([]byte(c))
+func normalizeKeyPart(value string) string {
+	trimmed := strings.TrimSpace(value)
+	if trimmed == "" {
+		return "all"
 	}
-	return prefix + ":" + hex.EncodeToString(h.Sum(nil))[:16]
+	return url.QueryEscape(trimmed)
+}
+
+func eventsCachePrefix(groupID string) string {
+	return fmt.Sprintf("events_group_%s_", normalizeKeyPart(groupID))
+}
+
+func expensesCachePrefix(groupID string) string {
+	return fmt.Sprintf("expenses_group_%s_", normalizeKeyPart(groupID))
+}
+
+func groupTotalsCachePrefix(groupID string) string {
+	return fmt.Sprintf("group_totals_group_%s", normalizeKeyPart(groupID))
 }
 
 // GroupTotalsKey creates a cache key for group financial totals
 func GroupTotalsKey(groupID string) string {
-	return makeKey("group_totals", groupID)
+	return groupTotalsCachePrefix(groupID)
 }
 
 // EventsFilterKey creates a cache key for filtered event calculations
 func EventsFilterKey(groupID, search, year, from, to string) string {
-	return makeKey("events", groupID, search, year, from, to)
+	return fmt.Sprintf("%ssearch_%s_year_%s_from_%s_to_%s",
+		eventsCachePrefix(groupID),
+		normalizeKeyPart(search),
+		normalizeKeyPart(year),
+		normalizeKeyPart(from),
+		normalizeKeyPart(to),
+	)
 }
 
 // ExpensesFilterKey creates a cache key for filtered expense calculations
 func ExpensesFilterKey(groupID, search, year, from, to string) string {
-	return makeKey("expenses", groupID, search, year, from, to)
+	return fmt.Sprintf("%ssearch_%s_year_%s_from_%s_to_%s",
+		expensesCachePrefix(groupID),
+		normalizeKeyPart(search),
+		normalizeKeyPart(year),
+		normalizeKeyPart(from),
+		normalizeKeyPart(to),
+	)
 }
 
 // Get retrieves a value from cache

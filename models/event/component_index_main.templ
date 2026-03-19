@@ -13,8 +13,8 @@ templ EventTotalsContent(data EventsData) {
 	@shared.DetailsGrid([]shared.DetailsRow{
 		{Label: ctxi18n.T(ctx, "events.total_all"), Value: utils.FormatNumberLocalized(ctx, data.TotalEventAmount)},
 		{Label: ctxi18n.T(ctx, "events.total_filtered"), Value: utils.FormatNumberLocalized(ctx, data.FilteredTotal)},
+		{Label: ctxi18n.T(ctx, "events.total_unpaid"), Value: utils.FormatNumberLocalized(ctx, data.FilteredUnpaid), ValueClass: "text-muted"},
 		{Label: ctxi18n.T(ctx, "events.total_paid"), Value: utils.FormatNumberLocalized(ctx, data.FilteredPaid)},
-		{Label: ctxi18n.T(ctx, "events.total_unpaid"), Value: utils.FormatNumberLocalized(ctx, data.FilteredUnpaid)},
 	})
 }
 

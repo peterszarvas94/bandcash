@@ -13,6 +13,14 @@ func FormatNumberLocalized(ctx context.Context, value int64) string {
 	return printer.Sprintf("%d", value)
 }
 
+func FormatNumberLocalizedWithSign(ctx context.Context, value int64, positive bool) string {
+	sign := "-"
+	if positive {
+		sign = "+"
+	}
+	return sign + " " + FormatNumberLocalized(ctx, value)
+}
+
 func numberPrinterByLocale(ctx context.Context) *message.Printer {
 	switch appi18n.LocaleCode(ctx) {
 	case "hu":

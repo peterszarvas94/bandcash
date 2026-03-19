@@ -55,7 +55,7 @@ func ExpenseShowMain(data ExpenseData) templ.Component {
 		templ_7745c5c3_Err = shared.DetailsGrid([]shared.DetailsRow{
 			{Label: ctxi18n.T(ctx, "fields.title"), Value: data.Expense.Title},
 			{Label: ctxi18n.T(ctx, "fields.description"), Value: data.Expense.Description},
-			{Label: ctxi18n.T(ctx, "fields.amount"), Value: utils.FormatNumberLocalized(ctx, data.Expense.Amount), Action: shared.IconActionButton(shared.IconActionButtonProps{
+			{Label: ctxi18n.T(ctx, "fields.amount"), Value: utils.FormatNumberLocalizedWithSign(ctx, data.Expense.Amount, false), Action: shared.IconActionButton(shared.IconActionButtonProps{
 				ClassName:    paidClass + " btn-icon",
 				OnClick:      togglePaidExpr,
 				DisabledExpr: "$_fetching",

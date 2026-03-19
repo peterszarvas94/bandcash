@@ -39,8 +39,8 @@ templ EventShowMain(data EventData) {
 				Title:        ctxi18n.T(ctx, "actions.toggle_paid"),
 				IconName:     icons.IconBanknoteArrowUp,
 			})},
-			{Label: ctxi18n.T(ctx, "events.total_paid"), Value: utils.FormatNumberLocalized(ctx, data.TotalPaid)},
-			{Label: ctxi18n.T(ctx, "events.total_unpaid"), Value: utils.FormatNumberLocalized(ctx, data.TotalUnpaid)},
+			{Label: ctxi18n.T(ctx, "events.total_unpaid"), Value: utils.FormatNumberLocalizedWithSign(ctx, data.TotalUnpaid, false), ValueClass: "text-muted"},
+			{Label: ctxi18n.T(ctx, "events.total_paid"), Value: utils.FormatNumberLocalizedWithSign(ctx, data.TotalPaid, false)},
 			{Label: ctxi18n.T(ctx, "events.leftover"), Value: utils.FormatNumberLocalized(ctx, data.Leftover)},
 		})
 		@shared.TableSearchFormWithClass(fmt.Sprintf("/groups/%s/events/%s", data.GroupID, data.Event.ID), data.Query, "table.search_placeholder_members", "pt")

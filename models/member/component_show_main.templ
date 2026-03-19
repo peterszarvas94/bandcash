@@ -18,7 +18,7 @@ templ MemberShowMain(data MemberData) {
 		{Label: ctxi18n.T(ctx, "fields.description"), Value: data.Member.Description},
 		{Label: ctxi18n.T(ctx, "members.total_events"), Value: utils.FormatNumberLocalized(ctx, int64(len(data.Events)))},
 		{Label: ctxi18n.T(ctx, "members.total_cut"), Value: utils.FormatNumberLocalized(ctx, data.TotalCut)},
-		{Label: ctxi18n.T(ctx, "members.total_expense"), Value: utils.FormatNumberLocalized(ctx, data.TotalExpense)},
+		{Label: ctxi18n.T(ctx, "members.total_expense"), Value: utils.FormatNumberLocalizedWithSign(ctx, data.TotalExpense, false), ValueClass: "text-muted"},
 		{Label: ctxi18n.T(ctx, "members.total_payout"), Value: utils.FormatNumberLocalized(ctx, data.TotalPayout)},
 	})
 	@shared.TableSearchFormWithClass(fmt.Sprintf("/groups/%s/members/%s", data.GroupID, data.Member.ID), data.Query, "table.search_placeholder_member_events", "pt")

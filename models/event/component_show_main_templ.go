@@ -71,8 +71,8 @@ func EventShowMain(data EventData) templ.Component {
 				Title:        ctxi18n.T(ctx, "actions.toggle_paid"),
 				IconName:     icons.IconBanknoteArrowUp,
 			})},
-			{Label: ctxi18n.T(ctx, "events.total_paid"), Value: utils.FormatNumberLocalized(ctx, data.TotalPaid)},
-			{Label: ctxi18n.T(ctx, "events.total_unpaid"), Value: utils.FormatNumberLocalized(ctx, data.TotalUnpaid)},
+			{Label: ctxi18n.T(ctx, "events.total_unpaid"), Value: utils.FormatNumberLocalizedWithSign(ctx, data.TotalUnpaid, false), ValueClass: "text-muted"},
+			{Label: ctxi18n.T(ctx, "events.total_paid"), Value: utils.FormatNumberLocalizedWithSign(ctx, data.TotalPaid, false)},
 			{Label: ctxi18n.T(ctx, "events.leftover"), Value: utils.FormatNumberLocalized(ctx, data.Leftover)},
 		}).Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
