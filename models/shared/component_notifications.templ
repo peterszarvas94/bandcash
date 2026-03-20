@@ -2,14 +2,18 @@ package shared
 
 import (
 	"bandcash/internal/utils"
+	icons "bandcash/models/shared/icons"
 )
 
 templ Notifications() {
-	<div id="notifications-popover" class="notifications-popover">
-		<ul class="notifications-list">
+	<div id="notifications-popover">
+		<ul>
 			for _, item := range utils.NotificationsFromContext(ctx) {
-				<li id={ "notification-item-" + item.ID } class={ "notification notification-" + item.Kind } data-notification-id={ item.ID } data-created-at-ms={ item.Created.UnixMilli() }>
+				<li id={ "notification-item-" + item.ID } class={ "notification-" + item.Kind } data-notification-id={ item.ID } data-created-at-ms={ item.Created.UnixMilli() }>
 					<p>{ item.Message }</p>
+					<button type="button" data-on:click="el.closest('[data-notification-id]').remove()" aria-label="Close notification" title="Close notification">
+						@icons.X(templ.Attributes{"class": "icon"})
+					</button>
 				</li>
 			}
 		</ul>

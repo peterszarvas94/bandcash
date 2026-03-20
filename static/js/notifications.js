@@ -22,13 +22,21 @@ function syncNotifications() {
     return;
   }
 
-  const list = popover.querySelector(".notifications-list");
+  const list = popover.querySelector("ul");
   if (!list) {
     return;
   }
 
   const nodes = list.querySelectorAll("[data-notification-id]");
   const nowMs = Date.now();
+
+  for (const notificationID of Object.keys(timers)) {
+    if (document.getElementById(`notification-item-${notificationID}`)) {
+      continue;
+    }
+    window.clearTimeout(timers[notificationID]);
+    delete timers[notificationID];
+  }
 
   for (const node of nodes) {
     const notificationID = node.getAttribute("data-notification-id");

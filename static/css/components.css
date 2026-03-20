@@ -798,7 +798,7 @@
     line-height: 1.5;
   }
 
-  .notifications-popover {
+  #notifications-popover {
     position: fixed;
     bottom: 1rem;
     right: 1rem;
@@ -810,6 +810,65 @@
     background: transparent;
     color: inherit;
     max-width: min(26rem, calc(100vw - 2rem));
+
+    > ul {
+      list-style: none;
+      display: flex;
+      flex-direction: column-reverse;
+      gap: calc(var(--space) * 0.5);
+      margin: 0;
+      padding: 0;
+
+      > li {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) auto;
+        align-items: start;
+        gap: calc(var(--space) * 0.5);
+        border: var(--border) solid var(--border-color);
+        border-left-width: calc(var(--border) * 3);
+        border-radius: var(--border);
+        background: var(--notification-bg);
+        padding: calc(var(--space) * 0.75) var(--space);
+
+        > p {
+          margin: 0;
+        }
+
+        > button {
+          all: unset;
+          cursor: pointer;
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          color: var(--muted-text-color);
+
+          &:hover {
+            color: var(--text-color);
+          }
+
+          &:focus-visible {
+            outline: var(--focus-ring);
+            outline-offset: var(--focus-ring-offset);
+          }
+        }
+
+        &.notification-success {
+          border-left-color: var(--color-success);
+        }
+
+        &.notification-error {
+          border-left-color: var(--color-danger);
+        }
+
+        &.notification-info {
+          border-left-color: var(--color-info);
+        }
+
+        &.notification-warning {
+          border-left-color: var(--color-warning);
+        }
+      }
+    }
   }
 
   .sure-popover {
@@ -852,43 +911,6 @@
     .sure-dialog {
       min-height: 100vh;
       align-content: center;
-    }
-  }
-
-  .notifications-list {
-    list-style: none;
-    display: flex;
-    flex-direction: column-reverse;
-    gap: calc(var(--space) * 0.5);
-    margin: 0;
-    padding: 0;
-  }
-
-  .notification {
-    border: var(--border) solid var(--border-color);
-    border-left-width: calc(var(--border) * 3);
-    border-radius: var(--border);
-    background: var(--notification-bg);
-    padding: calc(var(--space) * 0.75) var(--space);
-
-    > p {
-      margin: 0;
-    }
-
-    &.notification-success {
-      border-left-color: var(--color-success);
-    }
-
-    &.notification-error {
-      border-left-color: var(--color-danger);
-    }
-
-    &.notification-info {
-      border-left-color: var(--color-info);
-    }
-
-    &.notification-warning {
-      border-left-color: var(--color-warning);
     }
   }
 
