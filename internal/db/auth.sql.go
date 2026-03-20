@@ -66,7 +66,6 @@ SELECT COUNT(*) FROM magic_links
 WHERE action = 'invite'
   AND group_id = ?1
   AND used_at IS NULL
-  AND expires_at >= CURRENT_TIMESTAMP
   AND (
     ?2 = ''
     OR LOWER(email) LIKE '%' || LOWER(?2) || '%'
@@ -233,7 +232,7 @@ func (q *Queries) CreateGroupReader(ctx context.Context, arg CreateGroupReaderPa
 
 const createInviteMagicLink = `-- name: CreateInviteMagicLink :one
 INSERT INTO magic_links (id, token, email, action, group_id, expires_at, invite_role)
-VALUES (?, ?, ?, 'invite', ?, ?, ?)
+VALUES (?, ?, ?, 'invite', ?, CURRENT_TIMESTAMP, ?)
 RETURNING id, token, email, "action", group_id, expires_at, used_at, created_at, invite_role
 `
 
@@ -242,7 +241,6 @@ type CreateInviteMagicLinkParams struct {
 	Token      string         `json:"token"`
 	Email      string         `json:"email"`
 	GroupID    sql.NullString `json:"group_id"`
-	ExpiresAt  time.Time      `json:"expires_at"`
 	InviteRole string         `json:"invite_role"`
 }
 
@@ -252,7 +250,6 @@ func (q *Queries) CreateInviteMagicLink(ctx context.Context, arg CreateInviteMag
 		arg.Token,
 		arg.Email,
 		arg.GroupID,
-		arg.ExpiresAt,
 		arg.InviteRole,
 	)
 	var i MagicLink
@@ -335,7 +332,9 @@ func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (User, e
 
 const deleteExpiredMagicLinks = `-- name: DeleteExpiredMagicLinks :exec
 DELETE FROM magic_links
-WHERE expires_at < CURRENT_TIMESTAMP AND used_at IS NULL
+WHERE action != 'invite'
+  AND expires_at < CURRENT_TIMESTAMP
+  AND used_at IS NULL
 `
 
 func (q *Queries) DeleteExpiredMagicLinks(ctx context.Context) error {
@@ -718,7 +717,6 @@ SELECT id, token, email, "action", group_id, expires_at, used_at, created_at, in
 WHERE action = 'invite'
   AND group_id = ?
   AND used_at IS NULL
-  AND expires_at >= CURRENT_TIMESTAMP
 ORDER BY created_at DESC
 `
 
@@ -760,7 +758,6 @@ SELECT id, token, email, "action", group_id, expires_at, used_at, created_at, in
 WHERE action = 'invite'
   AND group_id = ?1
   AND used_at IS NULL
-  AND expires_at >= CURRENT_TIMESTAMP
   AND (
     ?2 = ''
     OR LOWER(email) LIKE '%' || LOWER(?2) || '%'
@@ -819,7 +816,6 @@ SELECT id, token, email, "action", group_id, expires_at, used_at, created_at, in
 WHERE action = 'invite'
   AND group_id = ?1
   AND used_at IS NULL
-  AND expires_at >= CURRENT_TIMESTAMP
   AND (
     ?2 = ''
     OR LOWER(email) LIKE '%' || LOWER(?2) || '%'
@@ -878,7 +874,6 @@ SELECT id, token, email, "action", group_id, expires_at, used_at, created_at, in
 WHERE action = 'invite'
   AND group_id = ?1
   AND used_at IS NULL
-  AND expires_at >= CURRENT_TIMESTAMP
   AND (
     ?2 = ''
     OR LOWER(email) LIKE '%' || LOWER(?2) || '%'
@@ -937,7 +932,6 @@ SELECT id, token, email, "action", group_id, expires_at, used_at, created_at, in
 WHERE action = 'invite'
   AND group_id = ?1
   AND used_at IS NULL
-  AND expires_at >= CURRENT_TIMESTAMP
   AND (
     ?2 = ''
     OR LOWER(email) LIKE '%' || LOWER(?2) || '%'

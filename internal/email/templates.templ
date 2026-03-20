@@ -35,7 +35,6 @@ templ GroupInvitationText(groupName, link string) {
 	{ ctxi18n.T(ctx, "email.invite.text.intro", groupName) }
 	{ ctxi18n.T(ctx, "email.invite.text.accept") }
 	{ link }
-	{ ctxi18n.T(ctx, "email.invite.text.expiry") }
 	{ ctxi18n.T(ctx, "email.invite.text.ignore") }
 }
 
@@ -45,7 +44,7 @@ templ GroupInvitationHTML(groupName, link string) {
 		ctxi18n.T(ctx, "email.invite.html.intro", groupName),
 		ctxi18n.T(ctx, "email.invite.html.cta"),
 		ctxi18n.T(ctx, "email.invite.html.copy_link"),
-		ctxi18n.T(ctx, "email.invite.html.expiry"),
+		"",
 		ctxi18n.T(ctx, "email.invite.html.ignore"),
 		link,
 	)

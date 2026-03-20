@@ -144,7 +144,7 @@ RETURNING *;
 
 -- name: CreateInviteMagicLink :one
 INSERT INTO magic_links (id, token, email, action, group_id, expires_at, invite_role)
-VALUES (?, ?, ?, 'invite', ?, ?, ?)
+VALUES (?, ?, ?, 'invite', ?, CURRENT_TIMESTAMP, ?)
 RETURNING *;
 
 -- name: GetMagicLinkByToken :one
@@ -158,14 +158,15 @@ WHERE id = ?;
 
 -- name: DeleteExpiredMagicLinks :exec
 DELETE FROM magic_links
-WHERE expires_at < CURRENT_TIMESTAMP AND used_at IS NULL;
+WHERE action != 'invite'
+  AND expires_at < CURRENT_TIMESTAMP
+  AND used_at IS NULL;
 
 -- name: ListGroupPendingInvites :many
 SELECT * FROM magic_links
 WHERE action = 'invite'
   AND group_id = ?
   AND used_at IS NULL
-  AND expires_at >= CURRENT_TIMESTAMP
 ORDER BY created_at DESC;
 
 -- name: CountGroupPendingInvitesFiltered :one
@@ -173,7 +174,6 @@ SELECT COUNT(*) FROM magic_links
 WHERE action = 'invite'
   AND group_id = sqlc.arg(group_id)
   AND used_at IS NULL
-  AND expires_at >= CURRENT_TIMESTAMP
   AND (
     sqlc.arg(search) = ''
     OR LOWER(email) LIKE '%' || LOWER(sqlc.arg(search)) || '%'
@@ -184,7 +184,6 @@ SELECT * FROM magic_links
 WHERE action = 'invite'
   AND group_id = sqlc.arg(group_id)
   AND used_at IS NULL
-  AND expires_at >= CURRENT_TIMESTAMP
   AND (
     sqlc.arg(search) = ''
     OR LOWER(email) LIKE '%' || LOWER(sqlc.arg(search)) || '%'
@@ -197,7 +196,6 @@ SELECT * FROM magic_links
 WHERE action = 'invite'
   AND group_id = sqlc.arg(group_id)
   AND used_at IS NULL
-  AND expires_at >= CURRENT_TIMESTAMP
   AND (
     sqlc.arg(search) = ''
     OR LOWER(email) LIKE '%' || LOWER(sqlc.arg(search)) || '%'
@@ -210,7 +208,6 @@ SELECT * FROM magic_links
 WHERE action = 'invite'
   AND group_id = sqlc.arg(group_id)
   AND used_at IS NULL
-  AND expires_at >= CURRENT_TIMESTAMP
   AND (
     sqlc.arg(search) = ''
     OR LOWER(email) LIKE '%' || LOWER(sqlc.arg(search)) || '%'
@@ -223,7 +220,6 @@ SELECT * FROM magic_links
 WHERE action = 'invite'
   AND group_id = sqlc.arg(group_id)
   AND used_at IS NULL
-  AND expires_at >= CURRENT_TIMESTAMP
   AND (
     sqlc.arg(search) = ''
     OR LOWER(email) LIKE '%' || LOWER(sqlc.arg(search)) || '%'

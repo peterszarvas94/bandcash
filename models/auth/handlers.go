@@ -341,8 +341,8 @@ func (a *Auth) VerifyMagicLink(c echo.Context) error {
 		return a.renderVerifyLinkError(c, http.StatusBadRequest)
 	}
 
-	// Check if expired
-	if time.Now().After(magicLink.ExpiresAt) {
+	// Invite links do not expire.
+	if magicLink.Action != "invite" && time.Now().After(magicLink.ExpiresAt) {
 		return a.renderVerifyLinkError(c, http.StatusBadRequest)
 	}
 

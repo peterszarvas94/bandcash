@@ -491,16 +491,14 @@ func (g *Group) AddViewer(c echo.Context) error {
 		}
 	}
 
-	// Create invite magic link
+	// Create invite magic link that does not expire.
 	token := utils.GenerateID("tok")
-	expiresAt := time.Now().Add(1 * time.Hour)
 
 	_, err = db.Qry.CreateInviteMagicLink(c.Request().Context(), db.CreateInviteMagicLinkParams{
 		ID:         utils.GenerateID("mag"),
 		Token:      token,
 		Email:      emailAddress,
 		GroupID:    sql.NullString{String: groupID, Valid: true},
-		ExpiresAt:  expiresAt,
 		InviteRole: inviteRole,
 	})
 	if err != nil {
