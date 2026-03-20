@@ -219,6 +219,14 @@
     display: block;
   }
 
+  button {
+    font: inherit;
+  }
+
+  .table {
+    font-family: inherit;
+  }
+
   /* View transitions - disabled animations */
   @view-transition {
     navigation: auto;

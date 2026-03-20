@@ -18,7 +18,7 @@ templ ExpenseTotalsContent(data ExpensesData) {
 		{Label: ctxi18n.T(ctx, "table.unpaid"), LabelClass: "section-title", Value: ""},
 		{Label: ctxi18n.T(ctx, "groups.expenses"), Value: utils.FormatNumberLocalizedWithSign(ctx, data.FilteredUnpaid, false)},
 	})
-	@shared.DetailsGrid([]shared.DetailsRow{
+	@shared.DetailsCard([]shared.DetailsRow{
 		{Label: ctxi18n.T(ctx, "table.all"), LabelClass: "section-title", Value: ""},
 		{Label: ctxi18n.T(ctx, "groups.expenses"), Value: utils.FormatNumberLocalizedWithSign(ctx, data.FilteredTotal, false)},
 	})
@@ -123,7 +123,7 @@ templ ExpenseIndexMain(data ExpensesData) {
 						utils.JSONString("expense-delete-"+expense.ID),
 					)
 					togglePaidExpr := fmt.Sprintf("@put('/groups/%s/expenses/%s/toggle-paid', {mode: 'list', tableQuery: $tableQuery})", data.GroupID, expense.ID)
-					paidClass := "btn btn-ghost btn-sm btn-icon btn-table"
+					paidClass := "btn btn-sm"
 					paidIcon := icons.IconBanknoteX
 					if expense.Paid == 1 {
 						paidClass += " btn-success"
@@ -139,18 +139,22 @@ templ ExpenseIndexMain(data ExpensesData) {
 				<tr>
 					<td><a class="link cell-ellipsis" href={ fmt.Sprintf("/groups/%s/expenses/%s", data.GroupID, expense.ID) }>{ expense.Title }</a></td>
 					<td>{ utils.FormatDateLocalized(ctx, expense.Date) }</td>
-					<td class="text-right">{ utils.FormatNumberLocalizedWithSign(ctx, expense.Amount, false) }</td>
-					<td>{ paidLabel }</td>
+					<td class="text-right">{ utils.FormatNumberLocalized(ctx, expense.Amount) }</td>
+					<td>
+						if data.IsAdmin {
+							@shared.ActionButton(shared.ActionButtonProps{
+								ClassName:    paidClass,
+								OnClick:      togglePaidExpr,
+								DisabledExpr: "$formState !== '' || $_fetching",
+								Label:        paidLabel,
+								IconName:     paidIcon,
+							})
+						} else {
+							{ paidLabel }
+						}
+					</td>
 				if data.IsAdmin {
 					<td data-actions-col>
-						@shared.IconActionButton(shared.IconActionButtonProps{
-							ClassName:     paidClass,
-							OnClick:       togglePaidExpr,
-							DisabledExpr:  "$formState !== '' || $_fetching",
-							AriaLabel:     ctxi18n.T(ctx, "actions.toggle_paid"),
-							Title:         ctxi18n.T(ctx, "actions.toggle_paid"),
-							IconName:      paidIcon,
-						})
 						@shared.IconActionButton(shared.IconActionButtonProps{
 							ClassName:     "btn btn-ghost btn-sm btn-icon",
 							OnClick:       editExpr,

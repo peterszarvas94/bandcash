@@ -16,11 +16,13 @@ templ EventShowMain(data EventData) {
 		addParticipantDisabledExpr := fmt.Sprintf("$_fetching || !$wizard.selectedMemberId || %t", len(data.WizardAddableMembers) == 0)
 		cancelParticipantsEditExpr := fmt.Sprintf("@delete('/groups/%s/events/%s/participants/draft')", data.GroupID, data.Event.ID)
 		togglePaidExpr := fmt.Sprintf("@put('/groups/%s/events/%s/toggle-paid', {mode: 'single'})", data.GroupID, data.Event.ID)
-		paidClass := "btn btn-sm btn-icon"
+		paidClass := "btn btn-sm"
 		paidIcon := icons.IconBanknoteX
+		paidLabel := ctxi18n.T(ctx, "table.unpaid")
 		if data.Event.Paid == 1 {
 			paidClass += " btn-success"
 			paidIcon = icons.IconBanknote
+			paidLabel = ctxi18n.T(ctx, "table.paid")
 		} else {
 			paidClass += " btn-inactive"
 		}
@@ -30,17 +32,16 @@ templ EventShowMain(data EventData) {
 			@shared.DetailsActions(ReadModeActions(data))
 		}
 		<div class="pb">
-			@shared.DetailsGrid([]shared.DetailsRow{
+			@shared.DetailsCard([]shared.DetailsRow{
 				{Label: ctxi18n.T(ctx, "nav.overview"), LabelClass: "section-title", Value: ""},
 				{Label: ctxi18n.T(ctx, "fields.title"), Value: data.Event.Title},
 				{Label: ctxi18n.T(ctx, "fields.time"), Value: utils.FormatDateTimeLocalized(ctx, data.Event.Time)},
 				{Label: ctxi18n.T(ctx, "fields.description"), Value: data.Event.Description},
-				{Label: ctxi18n.T(ctx, "fields.income"), Value: utils.FormatNumberLocalized(ctx, data.Event.Amount), Action: shared.IconActionButton(shared.IconActionButtonProps{
-					ClassName:    paidClass + " btn-icon",
+				{Label: ctxi18n.T(ctx, "fields.income"), Value: utils.FormatNumberLocalized(ctx, data.Event.Amount), Action: shared.ActionButton(shared.ActionButtonProps{
+					ClassName:    paidClass,
 					OnClick:      togglePaidExpr,
 					DisabledExpr: "$_fetching",
-					AriaLabel:    ctxi18n.T(ctx, "actions.toggle_paid"),
-					Title:        ctxi18n.T(ctx, "actions.toggle_paid"),
+					Label:        paidLabel,
 					IconName:     paidIcon,
 				})},
 			})
@@ -65,7 +66,7 @@ templ EventShowMain(data EventData) {
 			{Label: ctxi18n.T(ctx, "participants.payout_total"), Value: utils.FormatNumberLocalizedWithSign(ctx, data.FilteredUnpaid, false)},
 			{Label: ctxi18n.T(ctx, "events.leftover"), Value: utils.FormatNumberLocalized(ctx, incomeUnpaid-data.FilteredUnpaid)},
 		})
-		@shared.DetailsGrid([]shared.DetailsRow{
+		@shared.DetailsCard([]shared.DetailsRow{
 			{Label: ctxi18n.T(ctx, "table.all"), LabelClass: "section-title", Value: ""},
 			{Label: ctxi18n.T(ctx, "fields.income"), Value: utils.FormatNumberLocalized(ctx, data.Event.Amount)},
 			{Label: ctxi18n.T(ctx, "participants.payout_total"), Value: utils.FormatNumberLocalizedWithSign(ctx, data.FilteredPaid+data.FilteredUnpaid, false)},
@@ -91,16 +92,13 @@ templ EventShowMain(data EventData) {
 					@shared.THCol(data.ParticipantsTable.Col("paid")) {
 						@shared.TableSortHeader(ctxi18n.T(ctx, "table.paid"), "paid", data.Query, utils.BuildTableSortURL(fmt.Sprintf("/groups/%s/events/%s", data.GroupID, data.Event.ID), data.Query, "paid"))
 					}
-					if data.IsAdmin {
-						@shared.THActions(data.ParticipantsTable.ActionsWidthRem) {}
-					}
 				</tr>
 			</thead>
 			<tbody>
 				for _, participant := range data.Participants {
 					{{
 						togglePaidExpr := fmt.Sprintf("@put('/groups/%s/events/%s/participants/%s/toggle-paid', {tableQuery: $tableQuery})", data.GroupID, data.Event.ID, participant.ID)
-						paidClass := "btn btn-ghost btn-sm btn-icon btn-table"
+						paidClass := "btn btn-sm"
 						paidIcon := icons.IconBanknoteX
 						if participant.ParticipantPaid == 1 {
 							paidClass += " btn-success"
@@ -115,31 +113,27 @@ templ EventShowMain(data EventData) {
 					}}
 					<tr>
 						<td><a class="link" href={ fmt.Sprintf("/groups/%s/members/%s", data.GroupID, participant.ID) }>{ participant.Name }</a></td>
-						<td class="text-right">{ utils.FormatNumberLocalizedWithSign(ctx, participant.ParticipantAmount, false) }</td>
-						<td class="text-right">{ utils.FormatNumberLocalizedWithSign(ctx, participant.ParticipantExpense, false) }</td>
-						<td class="text-right">{ utils.FormatNumberLocalizedWithSign(ctx, participant.ParticipantAmount+participant.ParticipantExpense, false) }</td>
-						<td>{ paidLabel }</td>
-						if data.IsAdmin {
-							<td data-actions-col>
-								@shared.IconActionButton(shared.IconActionButtonProps{
-									ClassName:     paidClass,
-									OnClick:       togglePaidExpr,
-									DisabledExpr:  "$_fetching",
-								AriaLabel:     ctxi18n.T(ctx, "actions.toggle_paid"),
-								Title:         ctxi18n.T(ctx, "actions.toggle_paid"),
-								IconName:      paidIcon,
-							})
-							</td>
-						}
+						<td class="text-right">{ utils.FormatNumberLocalized(ctx, participant.ParticipantAmount) }</td>
+						<td class="text-right">{ utils.FormatNumberLocalized(ctx, participant.ParticipantExpense) }</td>
+						<td class="text-right">{ utils.FormatNumberLocalized(ctx, participant.ParticipantAmount+participant.ParticipantExpense) }</td>
+						<td>
+							if data.IsAdmin {
+								@shared.ActionButton(shared.ActionButtonProps{
+									ClassName:    paidClass,
+									OnClick:      togglePaidExpr,
+									DisabledExpr: "$_fetching",
+									Label:        paidLabel,
+									IconName:     paidIcon,
+								})
+							} else {
+								{ paidLabel }
+							}
+						</td>
 					</tr>
 				}
 				if len(data.Participants) == 0 {
 					<tr>
-						if data.IsAdmin {
-							<td colspan="6">{ ctxi18n.T(ctx, "table.empty") }</td>
-						} else {
-							<td colspan="5">{ ctxi18n.T(ctx, "table.empty") }</td>
-						}
+						<td colspan="5">{ ctxi18n.T(ctx, "table.empty") }</td>
 					</tr>
 				}
 			</tbody>

@@ -11,24 +11,37 @@ import (
 )
 
 templ FlagsContent(signupEnabled bool) {
-	<div id="admin-flags" class="detail-grid no-break pb">
-		<div class="detail-row">
-			<p class="detail-key">{ ctxi18n.T(ctx, "admin.flags.signup") }</p>
-			<p class="detail-val">
-				<input
-					id="admin-signup-enabled"
-					class="native-checkbox"
-					type="checkbox"
-					checked?={ signupEnabled }
-					data-on:change="@post('/admin/flags/signup?value=' + (el.checked ? '1' : '0'))"
-				/>
-			</p>
-		</div>
-	</div>
+	<details id="admin-flags" class="detail-card pb" open>
+		<summary>
+			<span>{ ctxi18n.T(ctx, "admin.tab.flags") }</span>
+			<span class="details-icon">
+				<span class="details-icon-closed">
+					@icons.ChevronDown(templ.Attributes{"class": "icon"})
+				</span>
+				<span class="details-icon-open">
+					@icons.ChevronUp(templ.Attributes{"class": "icon"})
+				</span>
+			</span>
+		</summary>
+		<dl>
+			<div>
+				<dt>{ ctxi18n.T(ctx, "admin.flags.signup") }</dt>
+				<dd>
+					<input
+						id="admin-signup-enabled"
+						class="native-checkbox"
+						type="checkbox"
+						checked?={ signupEnabled }
+						data-on:change="@post('/admin/flags/signup?value=' + (el.checked ? '1' : '0'))"
+					/>
+				</dd>
+			</div>
+		</dl>
+	</details>
 }
 
 templ DashboardStats(data DashboardData) {
-	@shared.DetailsGrid([]shared.DetailsRow{
+	@shared.DetailsCard([]shared.DetailsRow{
 		{Label: ctxi18n.T(ctx, "admin.total_users"), Value: utils.FormatNumberLocalized(ctx, data.UsersCount)},
 		{Label: ctxi18n.T(ctx, "admin.total_groups"), Value: utils.FormatNumberLocalized(ctx, data.GroupsCount)},
 		{Label: ctxi18n.T(ctx, "admin.total_events"), Value: utils.FormatNumberLocalized(ctx, data.EventsCount)},
@@ -36,7 +49,7 @@ templ DashboardStats(data DashboardData) {
 	})
 }
 
-	templ UsersTableSection(data DashboardData) {
+templ UsersTableSection(data DashboardData) {
 	<div class="table-section">
 		@shared.TableSearchForm(fmt.Sprintf("/admin/%s", "users"), data.UserQuery, "table.search_placeholder_admin_users")
 		@adminTablePagination(data.UserPager, data.UserQuery, "users")
@@ -76,21 +89,21 @@ templ DashboardStats(data DashboardData) {
 						<td data-actions-col>
 							if user.IsBanned {
 								@shared.LoadingIconActionButton(shared.LoadingIconActionButtonProps{
-									ClassName:     "btn btn-sm btn-icon",
-									OnClick:       fmt.Sprintf("@post('/admin/users/%s/unban')", user.ID),
-									DisabledExpr:  "$_fetching",
-									AriaLabel:     ctxi18n.T(ctx, "admin.users.unban"),
-									Title:         ctxi18n.T(ctx, "admin.users.unban"),
-									IconName:      icons.IconCheck,
+									ClassName:    "btn btn-sm btn-icon",
+									OnClick:      fmt.Sprintf("@post('/admin/users/%s/unban')", user.ID),
+									DisabledExpr: "$_fetching",
+									AriaLabel:    ctxi18n.T(ctx, "admin.users.unban"),
+									Title:        ctxi18n.T(ctx, "admin.users.unban"),
+									IconName:     icons.IconCheck,
 								})
 							} else {
 								@shared.LoadingIconActionButton(shared.LoadingIconActionButtonProps{
-									ClassName:     "btn btn-sm btn-danger btn-icon",
-									OnClick:       fmt.Sprintf("@post('/admin/users/%s/ban')", user.ID),
-									DisabledExpr:  "$_fetching",
-									AriaLabel:     ctxi18n.T(ctx, "admin.users.ban"),
-									Title:         ctxi18n.T(ctx, "admin.users.ban"),
-									IconName:      icons.IconTrash2,
+									ClassName:    "btn btn-sm btn-danger btn-icon",
+									OnClick:      fmt.Sprintf("@post('/admin/users/%s/ban')", user.ID),
+									DisabledExpr: "$_fetching",
+									AriaLabel:    ctxi18n.T(ctx, "admin.users.ban"),
+									Title:        ctxi18n.T(ctx, "admin.users.ban"),
+									IconName:     icons.IconTrash2,
 								})
 							}
 						</td>

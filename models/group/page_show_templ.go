@@ -158,7 +158,7 @@ func GroupDetailsContent(data GroupPageData) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = shared.DetailsGrid([]shared.DetailsRow{
+		templ_7745c5c3_Err = shared.DetailsCard([]shared.DetailsRow{
 			{Label: ctxi18n.T(ctx, "nav.overview"), LabelClass: "section-title", Value: ""},
 			{Label: ctxi18n.T(ctx, "groups.name"), Value: data.Group.Name},
 			{Label: ctxi18n.T(ctx, "groups.admin"), Value: data.Admin.Email},
@@ -199,7 +199,7 @@ func GroupDetailsContent(data GroupPageData) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = shared.DetailsGrid([]shared.DetailsRow{
+		templ_7745c5c3_Err = shared.DetailsCard([]shared.DetailsRow{
 			{Label: ctxi18n.T(ctx, "table.all"), LabelClass: "section-title", Value: ""},
 			{Label: ctxi18n.T(ctx, "groups.income"), Value: utils.FormatNumberLocalized(ctx, data.Income)},
 			{Label: ctxi18n.T(ctx, "groups.payouts"), Value: utils.FormatNumberLocalizedWithSign(ctx, data.Payouts, false)},
