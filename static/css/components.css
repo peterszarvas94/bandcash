@@ -471,6 +471,14 @@
     &:focus-visible {
       outline-color: var(--error-color);
     }
+
+    &:disabled,
+    &[disabled] {
+      opacity: 0.55;
+      color: color-mix(in srgb, var(--error-color) 60%, var(--text-color) 40%);
+      background: color-mix(in srgb, var(--page-bg) 90%, var(--error-color) 10%);
+      border-color: transparent;
+    }
   }
 
   .btn-success {
@@ -496,6 +504,18 @@
     &:focus-visible {
       outline-color: var(--btn-success-focus);
     }
+
+    &:disabled,
+    &[disabled] {
+      opacity: 0.55;
+      color: color-mix(in srgb, var(--color-success) 60%, var(--text-color) 40%);
+      background: color-mix(
+        in srgb,
+        var(--page-bg) 90%,
+        var(--color-success) 10%
+      );
+      border-color: transparent;
+    }
   }
 
   .btn-warning {
@@ -511,6 +531,18 @@
 
     &:focus-visible {
       outline-color: var(--color-warning);
+    }
+
+    &:disabled,
+    &[disabled] {
+      opacity: 0.55;
+      color: color-mix(in srgb, var(--color-warning) 60%, var(--text-color) 40%);
+      background: color-mix(
+        in srgb,
+        var(--page-bg) 90%,
+        var(--color-warning) 10%
+      );
+      border-color: transparent;
     }
   }
 
@@ -536,6 +568,11 @@
         var(--page-bg) 62%,
         var(--text-color) 38%
       );
+    }
+
+    &:disabled,
+    &[disabled] {
+      opacity: 0.55;
     }
   }
 

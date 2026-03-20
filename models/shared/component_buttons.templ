@@ -58,6 +58,7 @@ type ActionButtonProps struct {
 type ToggleProps struct {
 	Bind         string
 	IsOn         bool
+	Disabled     bool
 	OnClick      string
 	DisabledExpr string
 	Off          string
@@ -205,6 +206,14 @@ templ Toggle(props ToggleProps) {
 		if baseClass == "" {
 			baseClass = "btn btn-xs"
 		}
+		disabledExpr := props.DisabledExpr
+		if props.Disabled {
+			if disabledExpr == "" {
+				disabledExpr = "true"
+			} else {
+				disabledExpr = fmt.Sprintf("(true) || (%s)", disabledExpr)
+			}
+		}
 		falseExpr := fmt.Sprintf("!$%s", props.Bind)
 		trueExpr := fmt.Sprintf("$%s", props.Bind)
 		setTrueExpr := fmt.Sprintf("$%s = true", props.Bind)
@@ -213,25 +222,25 @@ templ Toggle(props ToggleProps) {
 	if props.Bind != "" {
 		<input type="checkbox" data-bind={ props.Bind } style="display: none"/>
 		<span data-show={ falseExpr }>
-			<button class={ fmt.Sprintf("%s %s", baseClass, offClass) } type="button" data-attr:disabled={ props.DisabledExpr } data-on:click={ setTrueExpr }>
+			<button class={ fmt.Sprintf("%s %s", baseClass, offClass) } type="button" disabled?={ props.Disabled } data-attr:disabled={ disabledExpr } data-on:click={ setTrueExpr }>
 				@icons.Icon(offIcon, templ.Attributes{"class": "icon"})
 				{ offText }
 			</button>
 		</span>
 		<span data-show={ trueExpr } style="display: none">
-			<button class={ fmt.Sprintf("%s %s", baseClass, onClass) } type="button" data-attr:disabled={ props.DisabledExpr } data-on:click={ setFalseExpr }>
+			<button class={ fmt.Sprintf("%s %s", baseClass, onClass) } type="button" disabled?={ props.Disabled } data-attr:disabled={ disabledExpr } data-on:click={ setFalseExpr }>
 				@icons.Icon(onIcon, templ.Attributes{"class": "icon"})
 				{ onText }
 			</button>
 		</span>
 	} else {
 		if props.IsOn {
-			<button class={ fmt.Sprintf("%s %s", baseClass, onClass) } type="button" data-attr:disabled={ props.DisabledExpr } data-on:click={ props.OnClick }>
+			<button class={ fmt.Sprintf("%s %s", baseClass, onClass) } type="button" disabled?={ props.Disabled } data-attr:disabled={ disabledExpr } data-on:click={ props.OnClick }>
 				@icons.Icon(onIcon, templ.Attributes{"class": "icon"})
 				{ onText }
 			</button>
 		} else {
-			<button class={ fmt.Sprintf("%s %s", baseClass, offClass) } type="button" data-attr:disabled={ props.DisabledExpr } data-on:click={ props.OnClick }>
+			<button class={ fmt.Sprintf("%s %s", baseClass, offClass) } type="button" disabled?={ props.Disabled } data-attr:disabled={ disabledExpr } data-on:click={ props.OnClick }>
 				@icons.Icon(offIcon, templ.Attributes{"class": "icon"})
 				{ offText }
 			</button>

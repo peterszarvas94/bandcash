@@ -78,7 +78,7 @@ func GroupAccessTableLayout() TableLayout {
 		{Key: "email", WidthCh: 30},
 		{Key: "role", WidthCh: 10},
 		{Key: "status", WidthCh: 10},
-	}, 4)
+	}, 2)
 }
 
 func AdminUsersTableLayout() TableLayout {
