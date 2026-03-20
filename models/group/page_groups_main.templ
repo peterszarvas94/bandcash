@@ -62,7 +62,7 @@ templ GroupsMain(data GroupsPageData) {
 					}}
 					<tr>
 						<td>
-							<a class="link" href={ "/groups/" + group.Group.ID }>{ group.Group.Name }</a>
+							<a class="link" href={ "/groups/" + group.Group.ID + "/events" }>{ group.Group.Name }</a>
 						</td>
 						<td>
 							if group.Role == "admin" {
@@ -72,9 +72,6 @@ templ GroupsMain(data GroupsPageData) {
 							}
 						</td>
 						<td data-actions-col>
-							<a class="btn btn-ghost btn-sm btn-icon" href={ "/groups/" + group.Group.ID + "/events" } aria-label={ ctxi18n.T(ctx, "events.title") } title={ ctxi18n.T(ctx, "events.title") }>
-								@icons.Icon(icons.IconCalendar, templ.Attributes{"class": "icon"})
-							</a>
 							if group.Role == "admin" {
 								@shared.IconActionButton(shared.IconActionButtonProps{
 									ClassName:     "btn btn-ghost btn-sm btn-icon",

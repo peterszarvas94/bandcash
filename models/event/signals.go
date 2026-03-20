@@ -11,7 +11,7 @@ func eventIndexSignals(csrfToken string, query utils.TableQuery) map[string]any 
 		"mode":            "table",
 		"formState":       "",
 		"editingId":       0,
-		"formData":        map[string]any{"title": "", "time": "", "description": "", "amount": 0},
+		"formData":        map[string]any{"title": "", "time": "", "description": "", "amount": 0, "paid": false},
 		"eventFormState":  "",
 		"errors":          map[string]any{"title": "", "time": "", "description": "", "amount": "", "memberId": "", "expense": ""},
 	}
@@ -21,6 +21,7 @@ func eventShowSignals(data EventData, csrfToken string) map[string]any {
 	wizardRows := make([]map[string]any, 0, len(data.WizardRows))
 	wizardAmounts := make(map[string]int64, len(data.WizardRows))
 	wizardExpenses := make(map[string]int64, len(data.WizardRows))
+	wizardPaids := make(map[string]bool, len(data.WizardRows))
 	wizardTotal := int64(0)
 	for _, row := range data.WizardRows {
 		wizardRows = append(wizardRows, map[string]any{
@@ -29,9 +30,11 @@ func eventShowSignals(data EventData, csrfToken string) map[string]any {
 			"included":   row.Included,
 			"amount":     row.Amount,
 			"expense":    row.Expense,
+			"paid":       row.Paid,
 		})
 		wizardAmounts[row.MemberID] = row.Amount
 		wizardExpenses[row.MemberID] = row.Expense
+		wizardPaids[row.MemberID] = row.Paid
 		wizardTotal += row.Amount + row.Expense
 	}
 
@@ -48,6 +51,7 @@ func eventShowSignals(data EventData, csrfToken string) map[string]any {
 			"rows":             wizardRows,
 			"amounts":          wizardAmounts,
 			"expenses":         wizardExpenses,
+			"paids":            wizardPaids,
 			"total":            wizardTotal,
 			"leftover":         data.WizardEventAmount - wizardTotal,
 		},
@@ -56,6 +60,7 @@ func eventShowSignals(data EventData, csrfToken string) map[string]any {
 			"time":        data.Event.Time,
 			"description": data.Event.Description,
 			"amount":      data.Event.Amount,
+			"paid":        data.Event.Paid == 1,
 		},
 		"formState":   "",
 		"editingId":   0,

@@ -41,8 +41,8 @@ func ExpenseShowMain(data ExpenseData) templ.Component {
 		ctx = templ.ClearChildren(ctx)
 		togglePaidExpr := fmt.Sprintf("@put('/groups/%s/expenses/%s/toggle-paid', {mode: 'single'})", data.GroupID, data.Expense.ID)
 		updateExpr := fmt.Sprintf("@put('/groups/%s/expenses/%s')", data.GroupID, data.Expense.ID)
-		cancelExpr := "$formState = ''; $formData = {title: " + utils.JSONString(data.Expense.Title) + ", description: " + utils.JSONString(data.Expense.Description) + ", amount: " + fmt.Sprintf("%d", data.Expense.Amount) + ", date: " + utils.JSONString(data.Expense.Date) + "}; $errors = {title: '', description: '', amount: '', date: ''}"
-		paidClass := "btn btn-sm"
+		cancelExpr := "$formState = ''; $formData = {title: " + utils.JSONString(data.Expense.Title) + ", description: " + utils.JSONString(data.Expense.Description) + ", amount: " + fmt.Sprintf("%d", data.Expense.Amount) + ", date: " + utils.JSONString(data.Expense.Date) + ", paid: " + fmt.Sprintf("%t", data.Expense.Paid == 1) + "}; $errors = {title: '', description: '', amount: '', date: ''}"
+		paidClass := "btn btn-xs"
 		paidIcon := icons.IconBanknoteX
 		paidLabel := ctxi18n.T(ctx, "table.unpaid")
 		if data.Expense.Paid == 1 {
@@ -148,7 +148,20 @@ func ExpenseShowMain(data ExpenseData) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 8, " <span class=\"color-error\">*</span></label> <input id=\"expense-show-date\" type=\"date\" data-bind=\"formData.date\" class=\"input\"><div data-show=\"$errors && $errors.date\" class=\"color-error\" data-text=\"$errors.date\"></div></div></div><div class=\"row row-wrap\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 8, " <span class=\"color-error\">*</span></label> <input id=\"expense-show-date\" type=\"date\" data-bind=\"formData.date\" class=\"input\"><div data-show=\"$errors && $errors.date\" class=\"color-error\" data-text=\"$errors.date\"></div></div></div><div class=\"field\"><label for=\"expense-show-paid\" class=\"row\">")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			var templ_7745c5c3_Var7 string
+			templ_7745c5c3_Var7, templ_7745c5c3_Err = templ.JoinStringErrs(ctxi18n.T(ctx, "table.paid"))
+			if templ_7745c5c3_Err != nil {
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/expense/component_show_main.templ`, Line: 73, Col: 78}
+			}
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var7))
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 9, "</label> <input id=\"expense-show-paid\" type=\"checkbox\" data-bind=\"formData.paid\"></div><div class=\"row row-wrap\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -170,7 +183,7 @@ func ExpenseShowMain(data ExpenseData) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 9, "</div></form></div>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 10, "</div></form></div>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -195,9 +208,9 @@ func ExpenseShowDetailsActions(data ExpenseData) templ.Component {
 			}()
 		}
 		ctx = templ.InitializeContext(ctx)
-		templ_7745c5c3_Var7 := templ.GetChildren(ctx)
-		if templ_7745c5c3_Var7 == nil {
-			templ_7745c5c3_Var7 = templ.NopComponent
+		templ_7745c5c3_Var8 := templ.GetChildren(ctx)
+		if templ_7745c5c3_Var8 == nil {
+			templ_7745c5c3_Var8 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
 		if data.IsAdmin {
@@ -211,7 +224,7 @@ func ExpenseShowDetailsActions(data ExpenseData) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 10, " ")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 11, " ")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}

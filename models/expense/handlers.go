@@ -19,6 +19,7 @@ type expenseParams struct {
 	Description string `json:"description" validate:"max=1000"`
 	Amount      int64  `json:"amount" validate:"required,gt=0"`
 	Date        string `json:"date" validate:"required"`
+	Paid        bool   `json:"paid"`
 }
 
 type expenseTableParams struct {
@@ -37,7 +38,7 @@ var (
 		"mode":      "table",
 		"formState": "",
 		"editingId": "",
-		"formData":  map[string]any{"title": "", "description": "", "amount": 0, "date": ""},
+		"formData":  map[string]any{"title": "", "description": "", "amount": 0, "date": "", "paid": false},
 		"errors":    map[string]any{"title": "", "description": "", "amount": "", "date": ""},
 	}
 	expenseErrorFields = []string{"title", "description", "amount", "date"}
@@ -127,7 +128,12 @@ func (e *Expenses) Create(c echo.Context) error {
 		Description: signals.FormData.Description,
 		Amount:      signals.FormData.Amount,
 		Date:        signals.FormData.Date,
-		Paid:        0,
+		Paid: func() int64 {
+			if signals.FormData.Paid {
+				return 1
+			}
+			return 0
+		}(),
 	})
 	if err != nil {
 		slog.Error("expense.create.table: failed to create expense", "err", err)
@@ -190,8 +196,14 @@ func (e *Expenses) Update(c echo.Context) error {
 		Description: signals.FormData.Description,
 		Amount:      signals.FormData.Amount,
 		Date:        signals.FormData.Date,
-		ID:          id,
-		GroupID:     groupID,
+		Paid: func() int64 {
+			if signals.FormData.Paid {
+				return 1
+			}
+			return 0
+		}(),
+		ID:      id,
+		GroupID: groupID,
 	})
 	if err != nil {
 		slog.Error("expense.update: failed to update expense", "err", err)
@@ -209,6 +221,7 @@ func (e *Expenses) Update(c echo.Context) error {
 				"description": signals.FormData.Description,
 				"amount":      signals.FormData.Amount,
 				"date":        signals.FormData.Date,
+				"paid":        signals.FormData.Paid,
 			},
 			"errors": map[string]any{"title": "", "description": "", "amount": "", "date": ""},
 		})

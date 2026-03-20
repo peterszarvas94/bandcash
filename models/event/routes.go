@@ -18,16 +18,13 @@ func RegisterRoutes(e *echo.Echo) *Events {
 	// Admin only routes
 	admin := g.Group("", middleware.RequireAdmin())
 	admin.POST("/events", events.Create)
-	admin.POST("/events/:id/participants", events.CreateParticipant)
 	admin.POST("/events/:id/participants/draft", events.OpenParticipantsDraft)
 	admin.POST("/events/:id/participants/draft/:memberId", events.IncludeParticipantsDraftMember)
 	admin.PUT("/events/:id", events.Update)
 	admin.PUT("/events/:id/participants", events.SaveParticipantsBulk)
-	admin.PUT("/events/:id/participants/:memberId", events.UpdateParticipant)
 	admin.DELETE("/events/:id/participants/draft", events.CancelParticipantsDraft)
 	admin.DELETE("/events/:id/participants/draft/:memberId", events.ExcludeParticipantsDraftMember)
 	admin.DELETE("/events/:id", events.Destroy)
-	admin.DELETE("/events/:id/participants/:memberId", events.DeleteParticipantTable)
 	admin.PUT("/events/:id/toggle-paid", events.TogglePaid)
 	admin.PUT("/events/:id/participants/:memberId/toggle-paid", events.ToggleParticipantPaid)
 

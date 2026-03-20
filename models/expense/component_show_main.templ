@@ -14,8 +14,8 @@ templ ExpenseShowMain(data ExpenseData) {
 	{{
 		togglePaidExpr := fmt.Sprintf("@put('/groups/%s/expenses/%s/toggle-paid', {mode: 'single'})", data.GroupID, data.Expense.ID)
 		updateExpr := fmt.Sprintf("@put('/groups/%s/expenses/%s')", data.GroupID, data.Expense.ID)
-		cancelExpr := "$formState = ''; $formData = {title: " + utils.JSONString(data.Expense.Title) + ", description: " + utils.JSONString(data.Expense.Description) + ", amount: " + fmt.Sprintf("%d", data.Expense.Amount) + ", date: " + utils.JSONString(data.Expense.Date) + "}; $errors = {title: '', description: '', amount: '', date: ''}"
-		paidClass := "btn btn-sm"
+		cancelExpr := "$formState = ''; $formData = {title: " + utils.JSONString(data.Expense.Title) + ", description: " + utils.JSONString(data.Expense.Description) + ", amount: " + fmt.Sprintf("%d", data.Expense.Amount) + ", date: " + utils.JSONString(data.Expense.Date) + ", paid: " + fmt.Sprintf("%t", data.Expense.Paid == 1) + "}; $errors = {title: '', description: '', amount: '', date: ''}"
+		paidClass := "btn btn-xs"
 		paidIcon := icons.IconBanknoteX
 		paidLabel := ctxi18n.T(ctx, "table.unpaid")
 		if data.Expense.Paid == 1 {
@@ -68,6 +68,10 @@ templ ExpenseShowMain(data ExpenseData) {
 						<input id="expense-show-date" type="date" data-bind="formData.date" class="input"/>
 						<div data-show="$errors && $errors.date" class="color-error" data-text="$errors.date"></div>
 					</div>
+				</div>
+				<div class="field">
+					<label for="expense-show-paid" class="row">{ ctxi18n.T(ctx, "table.paid") }</label>
+					<input id="expense-show-paid" type="checkbox" data-bind="formData.paid"/>
 				</div>
 				<div class="row row-wrap">
 					@shared.LoadingSubmitButton(shared.LoadingSubmitButtonProps{

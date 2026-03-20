@@ -70,11 +70,6 @@ templ AppShellMainOnly(id string, crumbs []utils.Crumb, userEmail string, nav te
 
 templ GroupTabs(groupID string, activeTab string) {
 	<nav class="tabs" role="tablist" aria-label={ ctxi18n.T(ctx, "groups.actions") }>
-		if activeTab == "overview" {
-			<a class="btn btn-active" href={ "/groups/" + groupID } role="tab" aria-selected="true">{ ctxi18n.T(ctx, "nav.overview") }</a>
-		} else {
-			<a class="btn" href={ "/groups/" + groupID } role="tab" aria-selected="false">{ ctxi18n.T(ctx, "nav.overview") }</a>
-		}
 		if activeTab == "events" {
 			<a class="btn btn-active" href={ "/groups/" + groupID + "/events" } role="tab" aria-selected="true">{ ctxi18n.T(ctx, "events.title") }</a>
 		} else {

@@ -41,7 +41,7 @@ func EventIndexSidebar(data EventsData) templ.Component {
 			submitExpr := fmt.Sprintf("$sidebarLoadingAction = ($formState === 'add' ? 'event-create' : 'event-update'); ($formState === 'add' ? @post('/groups/%s/events') : @put('/groups/%s/events/' + $editingId))", data.GroupID, data.GroupID)
 			createExpr := fmt.Sprintf("@post('/groups/%s/events')", data.GroupID)
 			updateExpr := fmt.Sprintf("@put('/groups/%s/events/' + $editingId)", data.GroupID)
-			cancelExpr := "$formState = ''; $editingId = 0; $formData = {title: '', time: '', description: '', amount: 0}; $errors = {title: '', time: '', description: '', amount: ''}"
+			cancelExpr := "$formState = ''; $editingId = 0; $formData = {title: '', time: '', description: '', amount: 0, paid: false}; $errors = {title: '', time: '', description: '', amount: ''}"
 			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<div data-signals=\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
@@ -133,7 +133,20 @@ func EventIndexSidebar(data EventsData) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 8, " <span class=\"color-error\">*</span></label> <input id=\"event-sidebar-amount\" type=\"number\" data-bind=\"formData.amount\" step=\"1\" class=\"input\"><div data-show=\"$errors && $errors.amount\" class=\"color-error\" data-text=\"$errors.amount\"></div></div><div class=\"row row-wrap\"><span data-show=\"$formState === 'add'\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 8, " <span class=\"color-error\">*</span></label> <input id=\"event-sidebar-amount\" type=\"number\" data-bind=\"formData.amount\" step=\"1\" class=\"input\"><div data-show=\"$errors && $errors.amount\" class=\"color-error\" data-text=\"$errors.amount\"></div></div><div class=\"field\"><label for=\"event-sidebar-paid\" class=\"row\">")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			var templ_7745c5c3_Var9 string
+			templ_7745c5c3_Var9, templ_7745c5c3_Err = templ.JoinStringErrs(ctxi18n.T(ctx, "table.paid"))
+			if templ_7745c5c3_Err != nil {
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/event/component_index_sidebar.templ`, Line: 46, Col: 79}
+			}
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var9))
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 9, "</label> <input id=\"event-sidebar-paid\" type=\"checkbox\" data-bind=\"formData.paid\"></div><div class=\"row row-wrap\"><span data-show=\"$formState === 'add'\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -147,7 +160,7 @@ func EventIndexSidebar(data EventsData) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 9, "</span> <span data-show=\"$formState === 'edit'\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 10, "</span> <span data-show=\"$formState === 'edit'\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -161,7 +174,7 @@ func EventIndexSidebar(data EventsData) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 10, "</span>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 11, "</span>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -175,7 +188,7 @@ func EventIndexSidebar(data EventsData) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 11, "</div></form></div></div>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 12, "</div></form></div></div>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}

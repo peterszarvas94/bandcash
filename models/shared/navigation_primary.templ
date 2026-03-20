@@ -148,17 +148,6 @@ templ GroupPrimaryNav(groupID string, active string, userEmail string) {
 			}
 		</div>
 		<div class="app-nav-secondary">
-			if active == "overview" {
-				<a class="btn app-nav-link btn-active" href={ "/groups/" + groupID }>
-					@icons.Info(templ.Attributes{"class": "icon"})
-					<span>{ ctxi18n.T(ctx, "nav.overview") }</span>
-				</a>
-			} else {
-				<a class="btn app-nav-link" href={ "/groups/" + groupID }>
-					@icons.Info(templ.Attributes{"class": "icon"})
-					<span>{ ctxi18n.T(ctx, "nav.overview") }</span>
-				</a>
-			}
 			if active == "events" {
 				<a class="btn app-nav-link btn-active" href={ "/groups/" + groupID + "/events" }>
 					@icons.Calendar(templ.Attributes{"class": "icon"})

@@ -1639,13 +1639,14 @@ func (q *Queries) ToggleParticipantPaid(ctx context.Context, arg ToggleParticipa
 
 const updateParticipant = `-- name: UpdateParticipant :exec
 UPDATE participants
-SET amount = ?, expense = ?
+SET amount = ?, expense = ?, paid = ?
 WHERE event_id = ? AND member_id = ? AND group_id = ?
 `
 
 type UpdateParticipantParams struct {
 	Amount   int64  `json:"amount"`
 	Expense  int64  `json:"expense"`
+	Paid     int64  `json:"paid"`
 	EventID  string `json:"event_id"`
 	MemberID string `json:"member_id"`
 	GroupID  string `json:"group_id"`
@@ -1655,6 +1656,7 @@ func (q *Queries) UpdateParticipant(ctx context.Context, arg UpdateParticipantPa
 	_, err := q.db.ExecContext(ctx, updateParticipant,
 		arg.Amount,
 		arg.Expense,
+		arg.Paid,
 		arg.EventID,
 		arg.MemberID,
 		arg.GroupID,

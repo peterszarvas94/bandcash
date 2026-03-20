@@ -932,7 +932,7 @@ func (q *Queries) ToggleExpensePaid(ctx context.Context, arg ToggleExpensePaidPa
 
 const updateExpense = `-- name: UpdateExpense :one
 UPDATE expenses
-SET title = ?, description = ?, amount = ?, date = ?
+SET title = ?, description = ?, amount = ?, date = ?, paid = ?
 WHERE id = ? AND group_id = ?
 RETURNING id, group_id, title, description, amount, date, created_at, updated_at, paid
 `
@@ -942,6 +942,7 @@ type UpdateExpenseParams struct {
 	Description string `json:"description"`
 	Amount      int64  `json:"amount"`
 	Date        string `json:"date"`
+	Paid        int64  `json:"paid"`
 	ID          string `json:"id"`
 	GroupID     string `json:"group_id"`
 }
@@ -952,6 +953,7 @@ func (q *Queries) UpdateExpense(ctx context.Context, arg UpdateExpenseParams) (E
 		arg.Description,
 		arg.Amount,
 		arg.Date,
+		arg.Paid,
 		arg.ID,
 		arg.GroupID,
 	)

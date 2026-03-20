@@ -115,7 +115,7 @@ templ MemberShowMain(data MemberData) {
 			for _, event := range data.Events {
 				{{
 					togglePaidExpr := fmt.Sprintf("@put('/groups/%s/members/%s/events/%s/toggle-paid', {tableQuery: $tableQuery})", data.GroupID, data.Member.ID, event.ID)
-					paidClass := "btn btn-sm"
+					paidClass := "btn btn-xs"
 					paidIcon := icons.IconBanknoteX
 					if event.ParticipantPaid == 1 {
 						paidClass += " btn-success"

@@ -887,7 +887,7 @@ func (q *Queries) ToggleEventPaid(ctx context.Context, arg ToggleEventPaidParams
 
 const updateEvent = `-- name: UpdateEvent :one
 UPDATE events
-SET title = ?, time = ?, description = ?, amount = ?
+SET title = ?, time = ?, description = ?, amount = ?, paid = ?
 WHERE id = ? AND group_id = ?
 RETURNING id, group_id, title, time, description, amount, created_at, updated_at, paid
 `
@@ -897,6 +897,7 @@ type UpdateEventParams struct {
 	Time        string `json:"time"`
 	Description string `json:"description"`
 	Amount      int64  `json:"amount"`
+	Paid        int64  `json:"paid"`
 	ID          string `json:"id"`
 	GroupID     string `json:"group_id"`
 }
@@ -907,6 +908,7 @@ func (q *Queries) UpdateEvent(ctx context.Context, arg UpdateEventParams) (Event
 		arg.Time,
 		arg.Description,
 		arg.Amount,
+		arg.Paid,
 		arg.ID,
 		arg.GroupID,
 	)

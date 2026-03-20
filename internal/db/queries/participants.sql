@@ -9,7 +9,7 @@ WHERE event_id = ? AND member_id = ? AND group_id = ?;
 
 -- name: UpdateParticipant :exec
 UPDATE participants
-SET amount = ?, expense = ?
+SET amount = ?, expense = ?, paid = ?
 WHERE event_id = ? AND member_id = ? AND group_id = ?;
 
 -- name: ToggleParticipantPaid :one

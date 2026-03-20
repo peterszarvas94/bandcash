@@ -100,6 +100,7 @@ type IDActionButtonProps struct {
 	ID        string
 	ClassName string
 	Label     string
+	IconName  icons.IconName
 }
 
 templ LoadingSubmitButton(props LoadingSubmitButtonProps) {
@@ -271,6 +272,9 @@ templ IconActionButton(props IconActionButtonProps) {
 
 templ IDActionButton(props IDActionButtonProps) {
 	<button id={ props.ID } type="button" class={ props.ClassName }>
-		<span>{ props.Label }</span>
+		if props.IconName != "" {
+			@icons.Icon(props.IconName, templ.Attributes{"class": "icon"})
+		}
+		{ props.Label }
 	</button>
 }

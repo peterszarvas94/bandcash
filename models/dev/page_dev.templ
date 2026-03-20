@@ -37,21 +37,182 @@ templ DevMain() {
 
 templ ButtonVariantsContent() {
 	<div class="row row-wrap">
-		<button class="btn" type="button">Default</button>
-		<button class="btn btn-ghost" type="button">Ghost</button>
-		<button class="btn btn-danger" type="button">Danger</button>
-		<button class="btn btn-active" type="button">Active</button>
-		<button class="btn" type="button" disabled>Disabled</button>
+		<button class="btn" type="button">
+			@icons.Plus(templ.Attributes{"class": "icon"})
+			<span>Default</span>
+		</button>
+		<button class="btn btn-ghost" type="button">
+			@icons.Info(templ.Attributes{"class": "icon"})
+			<span>Ghost</span>
+		</button>
+		<button class="btn btn-active" type="button">
+			@icons.Check(templ.Attributes{"class": "icon"})
+			<span>Active</span>
+		</button>
+		<button class="btn btn-inactive" type="button">
+			@icons.Icon(icons.IconBanknoteX, templ.Attributes{"class": "icon"})
+			<span>Inactive</span>
+		</button>
+		<button class="btn" type="button" disabled>
+			@icons.X(templ.Attributes{"class": "icon"})
+			<span>Disabled</span>
+		</button>
+		<button class="btn btn-success" type="button">
+			@icons.Check(templ.Attributes{"class": "icon"})
+			<span>Success</span>
+		</button>
+		<button class="btn btn-warning" type="button">
+			@icons.TriangleAlert(templ.Attributes{"class": "icon"})
+			<span>Warning</span>
+		</button>
+		<button class="btn btn-danger" type="button">
+			@icons.Trash2(templ.Attributes{"class": "icon"})
+			<span>Danger</span>
+		</button>
 	</div>
 	<div class="row row-wrap">
-		<button class="btn btn-sm" type="button">Small</button>
-		<button class="btn btn-sm btn-ghost" type="button">Small ghost</button>
-		<button class="btn btn-sm btn-active" type="button">Small active</button>
-		<button class="btn btn-sm" type="button" disabled>Small disabled</button>
-		<button class="btn btn-sm btn-icon" type="button" aria-label="Icon default" title="Icon default">
+		<button class="btn btn-sm" type="button">
+			@icons.Plus(templ.Attributes{"class": "icon"})
+			<span>Default</span>
+		</button>
+		<button class="btn btn-sm btn-ghost" type="button">
+			@icons.Info(templ.Attributes{"class": "icon"})
+			<span>Ghost</span>
+		</button>
+		<button class="btn btn-sm btn-active" type="button">
+			@icons.Check(templ.Attributes{"class": "icon"})
+			<span>Active</span>
+		</button>
+		<button class="btn btn-sm btn-inactive" type="button">
+			@icons.Icon(icons.IconBanknoteX, templ.Attributes{"class": "icon"})
+			<span>Inactive</span>
+		</button>
+		<button class="btn btn-sm" type="button" disabled>
+			@icons.X(templ.Attributes{"class": "icon"})
+			<span>Disabled</span>
+		</button>
+		<button class="btn btn-sm btn-success" type="button">
+			@icons.Check(templ.Attributes{"class": "icon"})
+			<span>Success</span>
+		</button>
+		<button class="btn btn-sm btn-warning" type="button">
+			@icons.TriangleAlert(templ.Attributes{"class": "icon"})
+			<span>Warning</span>
+		</button>
+		<button class="btn btn-sm btn-danger" type="button">
+			@icons.Trash2(templ.Attributes{"class": "icon"})
+			<span>Danger</span>
+		</button>
+	</div>
+	<div class="row row-wrap">
+		<button class="btn btn-xs" type="button">
+			@icons.Plus(templ.Attributes{"class": "icon"})
+			<span>Default</span>
+		</button>
+		<button class="btn btn-xs btn-ghost" type="button">
+			@icons.Info(templ.Attributes{"class": "icon"})
+			<span>Ghost</span>
+		</button>
+		<button class="btn btn-xs btn-active" type="button">
+			@icons.Check(templ.Attributes{"class": "icon"})
+			<span>Active</span>
+		</button>
+		<button class="btn btn-xs btn-inactive" type="button">
+			@icons.Icon(icons.IconBanknoteX, templ.Attributes{"class": "icon"})
+			<span>Inactive</span>
+		</button>
+		<button class="btn btn-xs" type="button" disabled>
+			@icons.X(templ.Attributes{"class": "icon"})
+			<span>Disabled</span>
+		</button>
+		<button class="btn btn-xs btn-success" type="button">
+			@icons.Check(templ.Attributes{"class": "icon"})
+			<span>Success</span>
+		</button>
+		<button class="btn btn-xs btn-warning" type="button">
+			@icons.TriangleAlert(templ.Attributes{"class": "icon"})
+			<span>Warning</span>
+		</button>
+		<button class="btn btn-xs btn-danger" type="button">
+			@icons.Trash2(templ.Attributes{"class": "icon"})
+			<span>Danger</span>
+		</button>
+	</div>
+	<div class="row row-wrap">
+		<button class="btn btn-icon" type="button" aria-label="Default icon" title="Default icon">
 			@icons.Plus(templ.Attributes{"class": "icon"})
 		</button>
-		<button class="btn btn-sm btn-icon btn-danger" type="button" aria-label="Icon danger" title="Icon danger">
+		<button class="btn btn-ghost btn-icon" type="button" aria-label="Ghost icon" title="Ghost icon">
+			@icons.Info(templ.Attributes{"class": "icon"})
+		</button>
+		<button class="btn btn-active btn-icon" type="button" aria-label="Active icon" title="Active icon">
+			@icons.Check(templ.Attributes{"class": "icon"})
+		</button>
+		<button class="btn btn-inactive btn-icon" type="button" aria-label="Inactive icon" title="Inactive icon">
+			@icons.Icon(icons.IconBanknoteX, templ.Attributes{"class": "icon"})
+		</button>
+		<button class="btn btn-icon" type="button" aria-label="Disabled icon" title="Disabled icon" disabled>
+			@icons.X(templ.Attributes{"class": "icon"})
+		</button>
+		<button class="btn btn-success btn-icon" type="button" aria-label="Success icon" title="Success icon">
+			@icons.Check(templ.Attributes{"class": "icon"})
+		</button>
+		<button class="btn btn-warning btn-icon" type="button" aria-label="Warning icon" title="Warning icon">
+			@icons.TriangleAlert(templ.Attributes{"class": "icon"})
+		</button>
+		<button class="btn btn-danger btn-icon" type="button" aria-label="Danger icon" title="Danger icon">
+			@icons.Trash2(templ.Attributes{"class": "icon"})
+		</button>
+	</div>
+	<div class="row row-wrap">
+		<button class="btn btn-sm btn-icon" type="button" aria-label="Small default icon" title="Small default icon">
+			@icons.Plus(templ.Attributes{"class": "icon"})
+		</button>
+		<button class="btn btn-sm btn-ghost btn-icon" type="button" aria-label="Small ghost icon" title="Small ghost icon">
+			@icons.Info(templ.Attributes{"class": "icon"})
+		</button>
+		<button class="btn btn-sm btn-active btn-icon" type="button" aria-label="Small active icon" title="Small active icon">
+			@icons.Check(templ.Attributes{"class": "icon"})
+		</button>
+		<button class="btn btn-sm btn-inactive btn-icon" type="button" aria-label="Small inactive icon" title="Small inactive icon">
+			@icons.Icon(icons.IconBanknoteX, templ.Attributes{"class": "icon"})
+		</button>
+		<button class="btn btn-sm btn-icon" type="button" aria-label="Small disabled icon" title="Small disabled icon" disabled>
+			@icons.X(templ.Attributes{"class": "icon"})
+		</button>
+		<button class="btn btn-sm btn-success btn-icon" type="button" aria-label="Small success icon" title="Small success icon">
+			@icons.Check(templ.Attributes{"class": "icon"})
+		</button>
+		<button class="btn btn-sm btn-warning btn-icon" type="button" aria-label="Small warning icon" title="Small warning icon">
+			@icons.TriangleAlert(templ.Attributes{"class": "icon"})
+		</button>
+		<button class="btn btn-sm btn-danger btn-icon" type="button" aria-label="Small danger icon" title="Small danger icon">
+			@icons.Trash2(templ.Attributes{"class": "icon"})
+		</button>
+	</div>
+	<div class="row row-wrap">
+		<button class="btn btn-xs btn-icon" type="button" aria-label="Extra small default icon" title="Extra small default icon">
+			@icons.Plus(templ.Attributes{"class": "icon"})
+		</button>
+		<button class="btn btn-xs btn-ghost btn-icon" type="button" aria-label="Extra small ghost icon" title="Extra small ghost icon">
+			@icons.Info(templ.Attributes{"class": "icon"})
+		</button>
+		<button class="btn btn-xs btn-active btn-icon" type="button" aria-label="Extra small active icon" title="Extra small active icon">
+			@icons.Check(templ.Attributes{"class": "icon"})
+		</button>
+		<button class="btn btn-xs btn-inactive btn-icon" type="button" aria-label="Extra small inactive icon" title="Extra small inactive icon">
+			@icons.Icon(icons.IconBanknoteX, templ.Attributes{"class": "icon"})
+		</button>
+		<button class="btn btn-xs btn-icon" type="button" aria-label="Extra small disabled icon" title="Extra small disabled icon" disabled>
+			@icons.X(templ.Attributes{"class": "icon"})
+		</button>
+		<button class="btn btn-xs btn-success btn-icon" type="button" aria-label="Extra small success icon" title="Extra small success icon">
+			@icons.Check(templ.Attributes{"class": "icon"})
+		</button>
+		<button class="btn btn-xs btn-warning btn-icon" type="button" aria-label="Extra small warning icon" title="Extra small warning icon">
+			@icons.TriangleAlert(templ.Attributes{"class": "icon"})
+		</button>
+		<button class="btn btn-xs btn-danger btn-icon" type="button" aria-label="Extra small danger icon" title="Extra small danger icon">
 			@icons.Trash2(templ.Attributes{"class": "icon"})
 		</button>
 	</div>
@@ -78,6 +239,26 @@ templ FormControlsContent() {
 	<div class="row row-wrap">
 		<textarea class="input" rows="6" disabled>Disabled textarea</textarea>
 	</div>
+	<div class="row row-wrap">
+		<input class="input input-sm w-half" type="text" placeholder="Small input placeholder" value="Small input value"/>
+		<select class="input input-sm w-half">
+			<option>Small alpha</option>
+			<option selected>Small selected option</option>
+			<option>Small gamma</option>
+		</select>
+	</div>
+	<div class="row row-wrap">
+		<textarea class="input input-sm" rows="3">Small textarea sample text</textarea>
+	</div>
+	<div class="row row-wrap">
+		<input class="input input-sm w-half" type="text" placeholder="Small disabled input" value="Small disabled input" disabled/>
+		<select class="input input-sm w-half" disabled>
+			<option selected>Small disabled select</option>
+		</select>
+	</div>
+	<div class="row row-wrap">
+		<textarea class="input input-sm" rows="3" disabled>Small disabled textarea</textarea>
+	</div>
 }
 
 templ TableQueryTestContent() {
@@ -103,8 +284,7 @@ templ TableQueryTestContent() {
 			Label:     "Expenses valid query",
 		})
 		<button id="query-test-clear" type="button" class="btn">
-			@icons.X(templ.Attributes{"class": "icon"})
-			<span>Clear</span>
+			Clear
 		</button>
 	</div>
 	<pre id="query-test-output">Ready.</pre>
@@ -183,14 +363,17 @@ templ NotificationsContent() {
 	<form class="form" data-on:submit="@post('/dev/notifications/inline')" data-indicator:_notifyInline>
 		<div class="field">
 			<label>Required field</label>
-			<div class="row">
+			<div class="row row-tight">
 				<input type="text" data-bind="formData.name" placeholder="Required field" class="input"/>
-				@shared.LoadingSubmitButtonWithSignal(shared.LoadingSubmitButtonWithSignalProps{
-					ClassName:     "btn",
-					Label:         "Inline validation",
-					IconName:      icons.IconSave,
-					LoadingSignal: "_notifyInline",
-				})
+				<button type="submit" class="btn" data-attr:disabled="$_notifyInline">
+					<span data-show="!$_notifyInline">
+						@icons.Save(templ.Attributes{"class": "icon"})
+					</span>
+					<span data-show="$_notifyInline" style="display: none">
+						@icons.LoaderCircle(templ.Attributes{"class": "icon icon-spin"})
+					</span>
+					Inline validation
+				</button>
 			</div>
 			<div data-show="$errors && $errors.name" class="color-error" data-text="$errors.name"></div>
 		</div>
@@ -205,7 +388,7 @@ templ NotificationsContent() {
 			LoadingSignal: "_notifyInfo",
 		})
 		@shared.LoadingActionButtonWithSignal(shared.LoadingActionButtonWithSignalProps{
-			ClassName:     "btn",
+			ClassName:     "btn btn-success",
 			OnClick:       "@post('/dev/notifications/success')",
 			DisabledExpr:  "$_notifySuccess",
 			Label:         "Success",
@@ -213,7 +396,7 @@ templ NotificationsContent() {
 			LoadingSignal: "_notifySuccess",
 		})
 		@shared.LoadingActionButtonWithSignal(shared.LoadingActionButtonWithSignalProps{
-			ClassName:     "btn",
+			ClassName:     "btn btn-warning",
 			OnClick:       "@post('/dev/notifications/warning')",
 			DisabledExpr:  "$_notifyWarning",
 			Label:         "Warning",
@@ -244,8 +427,7 @@ templ RateLimitContent() {
 			Label:     "Spam /auth/login",
 		})
 		<button id="rate-limit-clear" type="button" class="btn">
-			@icons.X(templ.Attributes{"class": "icon"})
-			<span>Clear</span>
+			Clear
 		</button>
 	</div>
 	<input id="rate-limit-csrf" type="hidden" value={ utils.CSRFTokenFromContext(ctx) }/>
@@ -279,8 +461,7 @@ templ BodyLimitContent() {
 			Label:     "POST /auth/login (too large)",
 		})
 		<button id="body-limit-clear" type="button" class="btn">
-			@icons.X(templ.Attributes{"class": "icon"})
-			<span>Clear</span>
+			Clear
 		</button>
 	</div>
 	<input id="body-limit-csrf" type="hidden" value={ utils.CSRFTokenFromContext(ctx) }/>

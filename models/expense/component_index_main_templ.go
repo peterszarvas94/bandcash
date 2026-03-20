@@ -84,7 +84,7 @@ func ExpenseIndexMain(data ExpensesData) templ.Component {
 			templ_7745c5c3_Var2 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		addExpr := "$formState = 'add'; $editingId = 0; $formData = {title: '', description: '', amount: 0, date: (() => { const d = new Date(); d.setMinutes(d.getMinutes() - d.getTimezoneOffset()); return d.toISOString().slice(0, 10) })()}; $errors = {title: '', description: '', amount: '', date: ''}"
+		addExpr := "$formState = 'add'; $editingId = 0; $formData = {title: '', description: '', amount: 0, date: (() => { const d = new Date(); d.setMinutes(d.getMinutes() - d.getTimezoneOffset()); return d.toISOString().slice(0, 10) })(), paid: false}; $errors = {title: '', description: '', amount: '', date: ''}"
 		templ_7745c5c3_Err = ExpenseTotalsContent(data).Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
@@ -596,7 +596,7 @@ func ExpenseIndexMain(data ExpensesData) templ.Component {
 				return templ_7745c5c3_Err
 			}
 			for _, expense := range data.Expenses {
-				editExpr := fmt.Sprintf("$formState = 'edit'; $editingId = %q; $formData = {title: %s, description: %s, amount: %d, date: %s}", expense.ID, utils.JSONString(expense.Title), utils.JSONString(expense.Description), expense.Amount, utils.JSONString(expense.Date))
+				editExpr := fmt.Sprintf("$formState = 'edit'; $editingId = %q; $formData = {title: %s, description: %s, amount: %d, date: %s, paid: %t}", expense.ID, utils.JSONString(expense.Title), utils.JSONString(expense.Description), expense.Amount, utils.JSONString(expense.Date), expense.Paid == 1)
 				deleteExpr := fmt.Sprintf(
 					"$sure = {title: %s, message: %s, submitLabel: %s, cancelLabel: %s, method: 'delete', url: '/groups/%s/expenses/%s', triggerID: %s, open: true, fetching: false}",
 					utils.JSONString(ctxi18n.T(ctx, "expenses.delete_confirm")),
@@ -608,7 +608,7 @@ func ExpenseIndexMain(data ExpensesData) templ.Component {
 					utils.JSONString("expense-delete-"+expense.ID),
 				)
 				togglePaidExpr := fmt.Sprintf("@put('/groups/%s/expenses/%s/toggle-paid', {mode: 'list', tableQuery: $tableQuery})", data.GroupID, expense.ID)
-				paidClass := "btn btn-sm"
+				paidClass := "btn btn-xs"
 				paidIcon := icons.IconBanknoteX
 				if expense.Paid == 1 {
 					paidClass += " btn-success"

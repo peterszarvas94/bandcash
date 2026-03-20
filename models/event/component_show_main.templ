@@ -16,7 +16,7 @@ templ EventShowMain(data EventData) {
 		addParticipantDisabledExpr := fmt.Sprintf("$_fetching || !$wizard.selectedMemberId || %t", len(data.WizardAddableMembers) == 0)
 		cancelParticipantsEditExpr := fmt.Sprintf("@delete('/groups/%s/events/%s/participants/draft')", data.GroupID, data.Event.ID)
 		togglePaidExpr := fmt.Sprintf("@put('/groups/%s/events/%s/toggle-paid', {mode: 'single'})", data.GroupID, data.Event.ID)
-		paidClass := "btn btn-sm"
+		paidClass := "btn btn-xs"
 		paidIcon := icons.IconBanknoteX
 		paidLabel := ctxi18n.T(ctx, "table.unpaid")
 		if data.Event.Paid == 1 {
@@ -98,7 +98,7 @@ templ EventShowMain(data EventData) {
 				for _, participant := range data.Participants {
 					{{
 						togglePaidExpr := fmt.Sprintf("@put('/groups/%s/events/%s/participants/%s/toggle-paid', {tableQuery: $tableQuery})", data.GroupID, data.Event.ID, participant.ID)
-						paidClass := "btn btn-sm"
+						paidClass := "btn btn-xs"
 						paidIcon := icons.IconBanknoteX
 						if participant.ParticipantPaid == 1 {
 							paidClass += " btn-success"
@@ -166,6 +166,10 @@ templ EventShowMain(data EventData) {
 					<div data-show="$errors && $errors.amount" class="color-error" data-text="$errors.amount"></div>
 				</div>
 				<div class="field">
+					<label for="event-edit-paid" class="row">{ ctxi18n.T(ctx, "table.paid") }</label>
+					<input id="event-edit-paid" type="checkbox" data-bind="eventFormData.paid"/>
+				</div>
+				<div class="field">
 					<label for="event-edit-total">{ ctxi18n.T(ctx, "participants.payout_total") }</label>
 					<input id="event-edit-total" type="number" class="input" disabled data-bind="wizard.total"/>
 				</div>
@@ -181,6 +185,7 @@ templ EventShowMain(data EventData) {
 								<th>{ ctxi18n.T(ctx, "participants.cut_amount") }</th>
 								<th>{ ctxi18n.T(ctx, "participants.expense") }</th>
 								<th>{ ctxi18n.T(ctx, "participants.total") }</th>
+								<th>{ ctxi18n.T(ctx, "table.paid") }</th>
 								<th>{ ctxi18n.T(ctx, "actions.delete") }</th>
 							</tr>
 						</thead>
@@ -192,6 +197,7 @@ templ EventShowMain(data EventData) {
 									<td class="text-right"><input type="number" class="input w-min-input" step="1" min="0" data-bind={ fmt.Sprintf("wizard.amounts.%s", row.MemberID) } value={ fmt.Sprintf("%d", row.Amount) }/></td>
 									<td class="text-right"><input type="number" class="input w-min-input" step="1" min="0" data-bind={ fmt.Sprintf("wizard.expenses.%s", row.MemberID) } value={ fmt.Sprintf("%d", row.Expense) }/></td>
 									<td class="text-right" data-text={ fmt.Sprintf("($wizard.amounts['%s'] || 0) + ($wizard.expenses['%s'] || 0)", row.MemberID, row.MemberID) }></td>
+									<td class="text-right"><input type="checkbox" data-bind={ fmt.Sprintf("wizard.paids.%s", row.MemberID) } checked?={ row.Paid }/></td>
 									<td class="text-right">
 										@shared.IconActionButton(shared.IconActionButtonProps{
 											ClassName:    "btn btn-ghost btn-sm btn-danger btn-icon",
@@ -206,7 +212,7 @@ templ EventShowMain(data EventData) {
 							}
 							if len(data.WizardRows) == 0 {
 								<tr>
-									<td colspan="5">{ ctxi18n.T(ctx, "table.empty") }</td>
+									<td colspan="6">{ ctxi18n.T(ctx, "table.empty") }</td>
 								</tr>
 							}
 							<tr>
@@ -227,6 +233,7 @@ templ EventShowMain(data EventData) {
 										IconName:     icons.IconPlus,
 									})
 								</td>
+								<td></td>
 								<td></td>
 								<td></td>
 								<td></td>

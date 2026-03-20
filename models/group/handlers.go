@@ -129,8 +129,8 @@ func (g *Group) CreateGroup(c echo.Context) error {
 	}
 	utils.Notify(c, "success", ctxi18n.T(c.Request().Context(), "groups.messages.created"))
 
-	// Redirect to group overview
-	err = utils.SSEHub.Redirect(c, "/groups/"+group.ID)
+	// Redirect to group events
+	err = utils.SSEHub.Redirect(c, "/groups/"+group.ID+"/events")
 	if err != nil {
 		return c.NoContent(http.StatusInternalServerError)
 	}
@@ -163,15 +163,8 @@ func (g *Group) GroupsPage(c echo.Context) error {
 
 // GroupPage shows group details and admin actions.
 func (g *Group) GroupPage(c echo.Context) error {
-	utils.EnsureClientID(c)
 	groupID := middleware.GetGroupID(c)
-	data, err := g.groupPageData(c, groupID)
-	if err != nil {
-		slog.Error("group.page: failed to load data", "group_id", groupID, "err", err)
-		return c.String(http.StatusInternalServerError, "Failed to load group")
-	}
-
-	return utils.RenderPage(c, GroupPage(data))
+	return c.Redirect(http.StatusFound, "/groups/"+groupID+"/events")
 }
 
 // UpdateGroup updates group name (admin only).
@@ -222,7 +215,7 @@ func (g *Group) UpdateGroup(c echo.Context) error {
 		return c.NoContent(http.StatusOK)
 	}
 
-	err = utils.SSEHub.Redirect(c, "/groups/"+groupID)
+	err = utils.SSEHub.Redirect(c, "/groups/"+groupID+"/events")
 	if err != nil {
 		return c.NoContent(http.StatusInternalServerError)
 	}
@@ -680,7 +673,7 @@ func (g *Group) accessPageData(c echo.Context, groupID string, values url.Values
 		Title: ctxi18n.T(ctx, "groups.access_page_title"),
 		Breadcrumbs: []utils.Crumb{
 			{Label: ctxi18n.T(ctx, "groups.title"), Href: "/dashboard"},
-			{Label: group.Name, Href: "/groups/" + group.ID},
+			{Label: group.Name, Href: "/groups/" + group.ID + "/events"},
 			{Label: ctxi18n.T(ctx, "groups.access"), Href: "/groups/" + group.ID + "/access"},
 		},
 		UserEmail:     getUserEmail(c),
@@ -1030,7 +1023,7 @@ func (g *Group) groupPageData(c echo.Context, groupID string) (GroupPageData, er
 
 	return GroupPageData{
 		Title:          "Bandcash - " + group.Name,
-		Breadcrumbs:    []utils.Crumb{{Label: ctxi18n.T(ctx, "groups.title"), Href: "/dashboard"}, {Label: group.Name, Href: "/groups/" + groupID}, {Label: ctxi18n.T(ctx, "nav.overview")}},
+		Breadcrumbs:    []utils.Crumb{{Label: ctxi18n.T(ctx, "groups.title"), Href: "/dashboard"}, {Label: group.Name, Href: "/groups/" + groupID + "/events"}, {Label: ctxi18n.T(ctx, "nav.overview")}},
 		UserEmail:      getUserEmail(c),
 		Group:          group,
 		Admin:          admin,

@@ -246,7 +246,7 @@ LIMIT sqlc.arg(limit) OFFSET sqlc.arg(offset);
 
 -- name: UpdateExpense :one
 UPDATE expenses
-SET title = ?, description = ?, amount = ?, date = ?
+SET title = ?, description = ?, amount = ?, date = ?, paid = ?
 WHERE id = ? AND group_id = ?
 RETURNING *;
 

@@ -246,7 +246,7 @@ LIMIT sqlc.arg(limit) OFFSET sqlc.arg(offset);
 
 -- name: UpdateEvent :one
 UPDATE events
-SET title = ?, time = ?, description = ?, amount = ?
+SET title = ?, time = ?, description = ?, amount = ?, paid = ?
 WHERE id = ? AND group_id = ?
 RETURNING *;
 

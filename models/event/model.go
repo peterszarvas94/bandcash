@@ -80,6 +80,7 @@ func (e *Events) GetShowData(ctx context.Context, groupID, eventID string, query
 				Included:   true,
 				Amount:     participant.ParticipantAmount,
 				Expense:    participant.ParticipantExpense,
+				Paid:       participant.ParticipantPaid == 1,
 			})
 		}
 
@@ -227,7 +228,7 @@ func (e *Events) GetShowData(ctx context.Context, groupID, eventID string, query
 		GroupID:              groupID,
 		Breadcrumbs: []utils.Crumb{
 			{Label: ctxi18n.T(ctx, "groups.title"), Href: "/dashboard"},
-			{Label: group.Name, Href: "/groups/" + groupID},
+			{Label: group.Name, Href: "/groups/" + groupID + "/events"},
 			{Label: ctxi18n.T(ctx, "events.title"), Href: "/groups/" + groupID + "/events"},
 			{Label: event.Title},
 		},
@@ -406,8 +407,21 @@ func (e *Events) buildEventsData(ctx context.Context, groupID string, group db.G
 		return EventsData{}, err
 	}
 
+	admin, err := db.Qry.GetUserByID(ctx, group.AdminUserID)
+	if err != nil {
+		return EventsData{}, err
+	}
+
+	groupCreatedAt := "-"
+	if group.CreatedAt.Valid {
+		groupCreatedAt = utils.FormatTimeLocalized(ctx, group.CreatedAt.Time)
+	}
+
 	return EventsData{
 		Title:                  ctxi18n.T(ctx, "events.page_title"),
+		GroupName:              group.Name,
+		GroupAdminEmail:        admin.Email,
+		GroupCreatedAt:         groupCreatedAt,
 		Events:                 paginatedEvents,
 		RecentYears:            utils.RecentYears(3),
 		Query:                  query,
@@ -425,7 +439,7 @@ func (e *Events) buildEventsData(ctx context.Context, groupID string, group db.G
 		FilteredExpensesUnpaid: totals.ExpenseUnpaid,
 		Breadcrumbs: []utils.Crumb{
 			{Label: ctxi18n.T(ctx, "groups.title"), Href: "/dashboard"},
-			{Label: group.Name, Href: "/groups/" + groupID},
+			{Label: group.Name, Href: "/groups/" + groupID + "/events"},
 			{Label: ctxi18n.T(ctx, "events.title")},
 		},
 		EventsTable: utils.EventsIndexTableLayout(),

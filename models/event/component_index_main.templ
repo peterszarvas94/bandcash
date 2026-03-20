@@ -10,6 +10,14 @@ import (
 )
 
 templ EventTotalsContent(data EventsData) {
+	<div class="pb">
+		@shared.DetailsCard(fmt.Sprintf("group_%s_overview", data.GroupID), []shared.DetailsRow{
+			{Label: ctxi18n.T(ctx, "nav.overview"), LabelClass: "section-title", Value: ""},
+			{Label: ctxi18n.T(ctx, "groups.name"), Value: data.GroupName},
+			{Label: ctxi18n.T(ctx, "groups.admin"), Value: data.GroupAdminEmail},
+			{Label: ctxi18n.T(ctx, "groups.created"), Value: data.GroupCreatedAt},
+		})
+	</div>
 	@shared.DetailsSection(fmt.Sprintf("group_%s_events_paid", data.GroupID), []shared.DetailsRow{
 		{Label: ctxi18n.T(ctx, "table.paid"), LabelClass: "section-title", Value: ""},
 		{Label: ctxi18n.T(ctx, "groups.income"), Value: utils.FormatNumberLocalized(ctx, data.FilteredIncomePaid)},
@@ -35,7 +43,7 @@ templ EventTotalsContent(data EventsData) {
 
 templ EventIndexMain(data EventsData) {
 	{{
-		addExpr := "$formState = 'add'; $editingId = 0; $formData = {title: '', time: (() => { const d = new Date(); d.setMinutes(d.getMinutes() - d.getTimezoneOffset()); return d.toISOString().slice(0, 16) })(), description: '', amount: 0}; $errors = {title: '', time: '', description: '', amount: ''}"
+		addExpr := "$formState = 'add'; $editingId = 0; $formData = {title: '', time: (() => { const d = new Date(); d.setMinutes(d.getMinutes() - d.getTimezoneOffset()); return d.toISOString().slice(0, 16) })(), description: '', amount: 0, paid: false}; $errors = {title: '', time: '', description: '', amount: ''}"
 	}}
 	@EventTotalsContent(data)
 	@shared.TableSearchFormWithClass(fmt.Sprintf("/groups/%s/events", data.GroupID), data.Query, "table.search_placeholder_events", "pt")
@@ -120,7 +128,7 @@ templ EventIndexMain(data EventsData) {
 		<tbody>
 			for _, event := range data.Events {
 				{{
-					editExpr := fmt.Sprintf("$formState = 'edit'; $editingId = %q; $formData = {title: %s, time: %s, description: %s, amount: %d}", event.ID, utils.JSONString(event.Title), utils.JSONString(event.Time), utils.JSONString(event.Description), event.Amount)
+					editExpr := fmt.Sprintf("$formState = 'edit'; $editingId = %q; $formData = {title: %s, time: %s, description: %s, amount: %d, paid: %t}", event.ID, utils.JSONString(event.Title), utils.JSONString(event.Time), utils.JSONString(event.Description), event.Amount, event.Paid == 1)
 					deleteExpr := fmt.Sprintf(
 						"$sure = {title: %s, message: %s, submitLabel: %s, cancelLabel: %s, method: 'delete', url: '/groups/%s/events/%s', triggerID: %s, open: true, fetching: false}",
 						utils.JSONString(ctxi18n.T(ctx, "events.delete_confirm")),
@@ -132,7 +140,7 @@ templ EventIndexMain(data EventsData) {
 						utils.JSONString("event-delete-"+event.ID),
 					)
 					togglePaidExpr := fmt.Sprintf("@put('/groups/%s/events/%s/toggle-paid', {mode: 'list', tableQuery: $tableQuery})", data.GroupID, event.ID)
-					paidClass := "btn btn-sm"
+					paidClass := "btn btn-xs"
 					paidIcon := icons.IconBanknoteX
 					if event.Paid == 1 {
 						paidClass += " btn-success"

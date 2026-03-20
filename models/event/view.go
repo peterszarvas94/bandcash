@@ -37,10 +37,14 @@ type ParticipantWizardRow struct {
 	Included   bool
 	Amount     int64
 	Expense    int64
+	Paid       bool
 }
 
 type EventsData struct {
 	Title                  string
+	GroupName              string
+	GroupAdminEmail        string
+	GroupCreatedAt         string
 	Events                 []db.Event
 	RecentYears            []int
 	Query                  utils.TableQuery
