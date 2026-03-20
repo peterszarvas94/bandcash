@@ -15,18 +15,18 @@ templ Breadcrumbs(crumbs []utils.Crumb, userEmail string) {
 	</header>
 }
 
-templ BreadcrumbTrail(crumbs []utils.Crumb) {
+	templ BreadcrumbTrail(crumbs []utils.Crumb) {
 	<nav class="breadcrumbs hide-mobile" aria-label="Breadcrumb">
-		<a class="crumb" href="/">
+		<a href="/">
 			@icons.Landmark(templ.Attributes{"class": "icon"})
 			{ ctxi18n.T(ctx, "nav.home") }
 		</a>
 		for _, crumb := range crumbs {
 			<span class="text-muted">/</span>
 			if crumb.Href != "" {
-				<a class="crumb" href={ crumb.Href }>{ crumb.Label }</a>
+				<a href={ crumb.Href }>{ crumb.Label }</a>
 			} else {
-				<span class="crumb text-muted">{ crumb.Label }</span>
+				<span class="text-muted">{ crumb.Label }</span>
 			}
 		}
 	</nav>

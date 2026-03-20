@@ -18,10 +18,10 @@ templ HomeIndex(data HomeData) {
 			@shared.Notifications()
 			<main id="app" class="single-col grid">
 				<figure class="home-hero">
-					<img src="/static/img/bandcash.png" alt="Bandcash app preview" class="home-hero-image"/>
-					<figcaption class="home-hero-content">
+					<img src="/static/img/bandcash.png" alt="Bandcash app preview"/>
+					<figcaption>
 						<h1>{ data.Title }</h1>
-						<p class="home-hero-quote">{ ctxi18n.T(ctx, "home.tagline") }</p>
+						<p>{ ctxi18n.T(ctx, "home.tagline") }</p>
 					</figcaption>
 				</figure>
 				<form class="form" data-on:change="@post('/settings/language')" data-indicator:_langFetching>

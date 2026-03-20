@@ -763,39 +763,39 @@
     border: var(--border) solid var(--border-color);
     background: color-mix(in srgb, var(--page-bg) 94%, var(--text-color) 6%);
     overflow: hidden;
-  }
 
-  .home-hero-image {
-    width: 100%;
-    height: auto;
-    aspect-ratio: 16 / 9;
-    object-fit: cover;
-    display: block;
-  }
-
-  .home-hero-content {
-    position: absolute;
-    inset: auto 0 0 0;
-    display: grid;
-    gap: calc(var(--space) * 0.5);
-    padding: calc(var(--space) * 2);
-    color: #fff;
-    background: linear-gradient(
-      to top,
-      color-mix(in srgb, #000 68%, transparent),
-      color-mix(in srgb, #000 8%, transparent)
-    );
-
-    h1,
-    p {
-      margin: 0;
+    > img {
+      width: 100%;
+      height: auto;
+      aspect-ratio: 16 / 9;
+      object-fit: cover;
+      display: block;
     }
-  }
 
-  .home-hero-quote {
-    max-width: 48ch;
-    font-size: 0.95rem;
-    line-height: 1.5;
+    > figcaption {
+      position: absolute;
+      inset: auto 0 0 0;
+      display: grid;
+      gap: calc(var(--space) * 0.5);
+      padding: calc(var(--space) * 2);
+      color: #fff;
+      background: linear-gradient(
+        to top,
+        color-mix(in srgb, #000 68%, transparent),
+        color-mix(in srgb, #000 8%, transparent)
+      );
+
+      h1,
+      p {
+        margin: 0;
+      }
+
+      > p {
+        max-width: 48ch;
+        font-size: 0.95rem;
+        line-height: 1.5;
+      }
+    }
   }
 
   #notifications-popover {
@@ -822,7 +822,7 @@
       > li {
         display: grid;
         grid-template-columns: minmax(0, 1fr) auto;
-        align-items: start;
+        align-items: center;
         gap: calc(var(--space) * 0.5);
         border: var(--border) solid var(--border-color);
         border-left-width: calc(var(--border) * 3);
@@ -879,11 +879,11 @@
     border: 0;
     background: transparent;
     color: inherit;
-  }
 
-  .sure-popover::backdrop {
-    background: var(--overlay-backdrop);
-    backdrop-filter: blur(2px);
+    &::backdrop {
+      background: var(--overlay-backdrop);
+      backdrop-filter: blur(2px);
+    }
   }
 
   .sure-dialog {
@@ -966,7 +966,7 @@
 
       > div {
         display: grid;
-        grid-template-columns: 8rem 1fr;
+        grid-template-columns: 1fr 1fr;
         gap: var(--space);
         align-items: center;
         min-height: 1.8rem;
@@ -1039,14 +1039,14 @@
     align-items: center;
     gap: var(--space);
     flex-wrap: wrap;
-  }
 
-  .topbar-actions {
-    margin-left: auto;
-    display: flex;
-    align-items: center;
-    gap: var(--space);
-    flex-wrap: wrap;
+    .topbar-actions {
+      margin-left: auto;
+      display: flex;
+      align-items: center;
+      gap: var(--space);
+      flex-wrap: wrap;
+    }
   }
 
   .breadcrumbs {
@@ -1057,7 +1057,8 @@
     line-height: 1.6;
     height: fit-content;
 
-    .crumb {
+    > a,
+    > span {
       color: inherit;
       display: inline-flex;
       align-items: center;
@@ -1079,6 +1080,33 @@
     min-height: 100lvh;
     align-items: start;
     align-content: stretch;
+
+    .app-shell-top {
+      grid-area: top;
+      border-bottom: var(--border) solid var(--border-color);
+      padding-bottom: var(--space);
+      display: grid;
+      gap: var(--space);
+      align-self: start;
+    }
+
+    .app-shell-mobile-toggles {
+      display: none;
+      gap: var(--space);
+    }
+
+    .app-shell-nav {
+      grid-area: nav;
+      border-right: var(--border) solid var(--border-color);
+      padding-right: var(--space);
+      align-self: stretch;
+    }
+
+    .app-shell-main {
+      grid-area: main;
+      min-width: 0;
+      align-self: start;
+    }
   }
 
   .app-shell {
@@ -1086,6 +1114,32 @@
     grid-template-areas:
       "nav top"
       "nav main";
+
+    .app-shell-panel {
+      position: fixed;
+      top: 0;
+      bottom: 0;
+      right: 0;
+      width: var(--sidebar-width);
+      background: var(--page-bg);
+      z-index: 30;
+      overflow-y: auto;
+      padding: var(--space);
+      border-left: var(--border) solid var(--border-color);
+      padding-left: calc(var(--space) * 2);
+      opacity: 1;
+      pointer-events: auto;
+      transform: translateX(105%);
+      transition: transform 180ms ease;
+    }
+
+    &:has(> input[id$="-panel-toggle"]:checked) .app-shell-panel {
+      transform: translateX(0);
+    }
+
+    &:has(> input[id$="-panel-toggle"]:checked) .app-shell-backdrop-panel {
+      display: block;
+    }
   }
 
   .app-shell-main-only {
@@ -1095,60 +1149,6 @@
       "nav main";
   }
 
-  .app-shell-top {
-    grid-area: top;
-    border-bottom: var(--border) solid var(--border-color);
-    padding-bottom: var(--space);
-    display: grid;
-    gap: var(--space);
-    align-self: start;
-  }
-
-  .app-shell-mobile-toggles {
-    display: none;
-    gap: var(--space);
-  }
-
-  .app-shell-nav {
-    grid-area: nav;
-    border-right: var(--border) solid var(--border-color);
-    padding-right: var(--space);
-    align-self: stretch;
-  }
-
-  .app-shell-main {
-    grid-area: main;
-    min-width: 0;
-    align-self: start;
-  }
-
-  .app-shell-panel {
-    position: fixed;
-    top: 0;
-    bottom: 0;
-    right: 0;
-    width: var(--sidebar-width);
-    background: var(--page-bg);
-    z-index: 30;
-    overflow-y: auto;
-    padding: var(--space);
-    border-left: var(--border) solid var(--border-color);
-    padding-left: calc(var(--space) * 2);
-    opacity: 1;
-    pointer-events: auto;
-    transform: translateX(105%);
-    transition: transform 180ms ease;
-  }
-
-  .app-shell:has(> input[id$="-panel-toggle"]:checked) .app-shell-panel {
-    transform: translateX(0);
-  }
-
-  .app-shell:has(> input[id$="-panel-toggle"]:checked)
-    .app-shell-backdrop-panel {
-    display: block;
-  }
-
   .app-nav {
     display: flex;
     flex-direction: column;
@@ -1156,31 +1156,31 @@
     position: sticky;
     top: 0;
     min-height: 0;
-  }
 
-  .app-nav:has(.app-nav-secondary) {
-    min-height: calc(100vh - (var(--space) * 2));
-  }
+    &:has(.app-nav-secondary) {
+      min-height: calc(100vh - (var(--space) * 2));
+    }
 
-  .app-nav-primary,
-  .app-nav-secondary {
-    display: grid;
-    gap: calc(var(--space) * 0.5);
-  }
+    .app-nav-primary,
+    .app-nav-secondary {
+      display: grid;
+      gap: calc(var(--space) * 0.5);
+    }
 
-  .app-nav-secondary {
-    padding-top: 0;
-    border-top: 0;
-  }
+    .app-nav-secondary {
+      padding-top: 0;
+      border-top: 0;
+    }
 
-  .app-nav-link {
-    justify-content: flex-start;
-    width: 100%;
-    text-decoration: none;
-  }
+    .app-nav-link {
+      justify-content: flex-start;
+      width: 100%;
+      text-decoration: none;
 
-  .app-nav-link:hover {
-    text-decoration: none;
+      &:hover {
+        text-decoration: none;
+      }
+    }
   }
 
   .shell-toggle {
@@ -1200,83 +1200,70 @@
   }
 
   @media (max-width: 1020px) {
-    .app-shell {
-      grid-template-columns: minmax(0, 1fr);
-      grid-template-areas:
-        "top"
-        "main";
-    }
-
+    .app-shell,
     .app-shell-main-only {
       grid-template-columns: minmax(0, 1fr);
       grid-template-areas:
         "top"
         "main";
-    }
 
-    .app-shell-top {
-      border-bottom: 0;
-      padding-bottom: 0;
-      padding-top: calc((var(--space) * 2) + 2.5rem);
-      gap: 0;
-    }
+      .app-shell-top {
+        border-bottom: 0;
+        padding-bottom: 0;
+        padding-top: calc((var(--space) * 2) + 2.5rem);
+        gap: 0;
+      }
 
-    .app-shell-mobile-toggles {
-      display: flex;
-      justify-content: flex-start;
-      width: fit-content;
-      position: fixed;
-      top: var(--space);
-      left: var(--space);
-      z-index: 15;
-      background: var(--page-bg);
-    }
+      .app-shell-mobile-toggles {
+        display: flex;
+        justify-content: flex-start;
+        width: fit-content;
+        position: fixed;
+        top: var(--space);
+        left: var(--space);
+        z-index: 15;
+        background: var(--page-bg);
+      }
 
-    .app-shell-nav,
-    .app-shell-panel {
-      position: fixed;
-      top: 0;
-      bottom: 0;
-      width: var(--mobile-drawer-width);
-      background: var(--page-bg);
-      z-index: 30;
-      overflow-y: auto;
-      padding: var(--space);
-      border: 0;
-    }
+      .app-shell-nav,
+      .app-shell-panel {
+        position: fixed;
+        top: 0;
+        bottom: 0;
+        width: var(--mobile-drawer-width);
+        background: var(--page-bg);
+        z-index: 30;
+        overflow-y: auto;
+        padding: var(--space);
+        border: 0;
+      }
 
-    .app-shell-nav {
-      left: 0;
-      border-right: var(--border) solid var(--border-color);
-      transform: translateX(-105%);
-      transition: transform 180ms ease;
-    }
-
-    .app-shell-panel {
-      right: 0;
-      border-left: var(--border) solid var(--border-color);
-      padding-left: calc(var(--space) * 2);
-      transform: translateX(105%);
-      transition: transform 180ms ease;
-    }
-
-    .app-shell:has(> input[id$="-nav-toggle"]:checked) .app-shell-nav {
-      transform: translateX(0);
-    }
-
-    .app-shell-main-only:has(> input[id$="-nav-toggle"]:checked)
       .app-shell-nav {
-      transform: translateX(0);
+        left: 0;
+        border-right: var(--border) solid var(--border-color);
+        transform: translateX(-105%);
+        transition: transform 180ms ease;
+      }
+
+      .app-shell-panel {
+        right: 0;
+        border-left: var(--border) solid var(--border-color);
+        padding-left: calc(var(--space) * 2);
+        transform: translateX(105%);
+        transition: transform 180ms ease;
+      }
+
+      &:has(> input[id$="-nav-toggle"]:checked) .app-shell-nav {
+        transform: translateX(0);
+      }
+
+      &:has(> input[id$="-nav-toggle"]:checked) .app-shell-backdrop-nav {
+        display: block;
+      }
     }
 
-    .app-shell:has(> input[id$="-nav-toggle"]:checked) .app-shell-backdrop-nav,
     .app-shell:has(> input[id$="-panel-toggle"]:checked)
       .app-shell-backdrop-panel {
-      display: block;
-    }
-
-    .app-shell-main-only:has(> input[id$="-nav-toggle"]:checked)
-      .app-shell-backdrop-nav {
       display: block;
     }
 
