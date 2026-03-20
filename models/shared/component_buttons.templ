@@ -55,6 +55,20 @@ type ActionButtonProps struct {
 	IconName     icons.IconName
 }
 
+type ToggleProps struct {
+	Bind         string
+	IsOn         bool
+	OnClick      string
+	DisabledExpr string
+	Off          string
+	On           string
+	OffIcon      icons.IconName
+	OnIcon       icons.IconName
+	ClassName    string
+	OffClass     string
+	OnClass      string
+}
+
 type SureActionButtonProps struct {
 	ClassName    string
 	DisabledExpr string
@@ -159,6 +173,70 @@ templ ActionButton(props ActionButtonProps) {
 		@icons.Icon(props.IconName, templ.Attributes{"class": "icon"})
 		<span>{ props.Label }</span>
 	</button>
+}
+
+templ Toggle(props ToggleProps) {
+	{{
+		offText := props.Off
+		if offText == "" {
+			offText = "Toggle"
+		}
+		onText := props.On
+		if onText == "" {
+			onText = "Toggle"
+		}
+		offClass := props.OffClass
+		if offClass == "" {
+			offClass = "btn-inactive"
+		}
+		onClass := props.OnClass
+		if onClass == "" {
+			onClass = ""
+		}
+		offIcon := props.OffIcon
+		if offIcon == "" {
+			offIcon = icons.IconSquare
+		}
+		onIcon := props.OnIcon
+		if onIcon == "" {
+			onIcon = icons.IconSquareCheckBig
+		}
+		baseClass := props.ClassName
+		if baseClass == "" {
+			baseClass = "btn btn-xs"
+		}
+		falseExpr := fmt.Sprintf("!$%s", props.Bind)
+		trueExpr := fmt.Sprintf("$%s", props.Bind)
+		setTrueExpr := fmt.Sprintf("$%s = true", props.Bind)
+		setFalseExpr := fmt.Sprintf("$%s = false", props.Bind)
+	}}
+	if props.Bind != "" {
+		<input type="checkbox" data-bind={ props.Bind } style="display: none"/>
+		<span data-show={ falseExpr }>
+			<button class={ fmt.Sprintf("%s %s", baseClass, offClass) } type="button" data-attr:disabled={ props.DisabledExpr } data-on:click={ setTrueExpr }>
+				@icons.Icon(offIcon, templ.Attributes{"class": "icon"})
+				{ offText }
+			</button>
+		</span>
+		<span data-show={ trueExpr } style="display: none">
+			<button class={ fmt.Sprintf("%s %s", baseClass, onClass) } type="button" data-attr:disabled={ props.DisabledExpr } data-on:click={ setFalseExpr }>
+				@icons.Icon(onIcon, templ.Attributes{"class": "icon"})
+				{ onText }
+			</button>
+		</span>
+	} else {
+		if props.IsOn {
+			<button class={ fmt.Sprintf("%s %s", baseClass, onClass) } type="button" data-attr:disabled={ props.DisabledExpr } data-on:click={ props.OnClick }>
+				@icons.Icon(onIcon, templ.Attributes{"class": "icon"})
+				{ onText }
+			</button>
+		} else {
+			<button class={ fmt.Sprintf("%s %s", baseClass, offClass) } type="button" data-attr:disabled={ props.DisabledExpr } data-on:click={ props.OnClick }>
+				@icons.Icon(offIcon, templ.Attributes{"class": "icon"})
+				{ offText }
+			</button>
+		}
+	}
 }
 
 templ SureActionButton(props SureActionButtonProps) {

@@ -115,14 +115,6 @@ templ MemberShowMain(data MemberData) {
 			for _, event := range data.Events {
 				{{
 					togglePaidExpr := fmt.Sprintf("@put('/groups/%s/members/%s/events/%s/toggle-paid', {tableQuery: $tableQuery})", data.GroupID, data.Member.ID, event.ID)
-					paidClass := "btn btn-xs"
-					paidIcon := icons.IconBanknoteX
-					if event.ParticipantPaid == 1 {
-						paidClass += " btn-success"
-						paidIcon = icons.IconBanknote
-					} else {
-						paidClass += " btn-inactive"
-					}
 					paidLabel := ctxi18n.T(ctx, "table.unpaid")
 					if event.ParticipantPaid == 1 {
 						paidLabel = ctxi18n.T(ctx, "table.paid")
@@ -136,12 +128,15 @@ templ MemberShowMain(data MemberData) {
 					<td class="text-right">{ utils.FormatNumberLocalized(ctx, event.ParticipantAmount+event.ParticipantExpense) }</td>
 					<td>
 						if data.IsAdmin {
-							@shared.ActionButton(shared.ActionButtonProps{
-								ClassName:    paidClass,
+							@shared.Toggle(shared.ToggleProps{
+								IsOn:         event.ParticipantPaid == 1,
 								OnClick:      togglePaidExpr,
 								DisabledExpr: "$_fetching",
-								Label:        paidLabel,
-								IconName:     paidIcon,
+								Off:          ctxi18n.T(ctx, "table.unpaid"),
+								On:           ctxi18n.T(ctx, "table.paid"),
+								ClassName:    "btn btn-xs",
+								OffClass:     "btn-inactive",
+								OnClass:      "btn-success",
 							})
 						} else {
 							{ paidLabel }

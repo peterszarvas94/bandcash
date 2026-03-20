@@ -13,7 +13,7 @@ templ DevPage() {
 	<html lang={ appi18n.LocaleCode(ctx) }>
 		@shared.Head("Bandcash - Dev tools")
 		<body>
-			<div data-signals={ templ.JSONString(map[string]any{"csrf": utils.CSRFTokenFromContext(ctx), "errors": map[string]any{"name": ""}, "formData": map[string]any{"name": ""}, "_fetching": false, "activeSpinner": "", "_notifyInline": false, "_notifyInfo": false, "_notifySuccess": false, "_notifyWarning": false, "_notifyError": false}) } data-init="@get('/sse')"></div>
+			<div data-signals={ templ.JSONString(map[string]any{"csrf": utils.CSRFTokenFromContext(ctx), "errors": map[string]any{"name": ""}, "formData": map[string]any{"name": ""}, "_fetching": false, "activeSpinner": "", "_notifyInline": false, "_notifyInfo": false, "_notifySuccess": false, "_notifyWarning": false, "_notifyError": false, "toggleDefault": true, "toggleSuccess": true, "toggleWarning": true, "toggleDanger": true}) } data-init="@get('/sse')"></div>
 			@shared.Notifications()
 			@shared.AppShellMainOnly("dev-page", []utils.Crumb{{Label: "Dev tools"}}, "", shared.DevPrimaryNav("dev"), DevMain())
 			<script type="module" src={ assets.AssetPath("js/rate_limit_tester.js") }></script>
@@ -215,6 +215,35 @@ templ ButtonVariantsContent() {
 		<button class="btn btn-xs btn-danger btn-icon" type="button" aria-label="Extra small danger icon" title="Extra small danger icon">
 			@icons.Trash2(templ.Attributes{"class": "icon"})
 		</button>
+	</div>
+	<div class="row row-wrap">
+		@shared.Toggle(shared.ToggleProps{
+			Bind:         "toggleDefault",
+			DisabledExpr: "$_fetching",
+			Off:          "Toggle off",
+			On:           "Toggle on",
+		})
+		@shared.Toggle(shared.ToggleProps{
+			Bind:         "toggleSuccess",
+			DisabledExpr: "$_fetching",
+			Off:          "Toggle off",
+			On:           "Toggle on",
+			OnClass:      "btn-success",
+		})
+		@shared.Toggle(shared.ToggleProps{
+			Bind:         "toggleWarning",
+			DisabledExpr: "$_fetching",
+			Off:          "Toggle off",
+			On:           "Toggle on",
+			OnClass:      "btn-warning",
+		})
+		@shared.Toggle(shared.ToggleProps{
+			Bind:         "toggleDanger",
+			DisabledExpr: "$_fetching",
+			Off:          "Toggle off",
+			On:           "Toggle on",
+			OnClass:      "btn-danger",
+		})
 	</div>
 }
 

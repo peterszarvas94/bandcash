@@ -44,7 +44,13 @@ templ ExpenseIndexSidebar(data ExpensesData) {
 					</div>
 					<div class="field">
 						<label for="expense-sidebar-paid" class="row">{ ctxi18n.T(ctx, "table.paid") }</label>
-						<input id="expense-sidebar-paid" type="checkbox" data-bind="formData.paid"/>
+						@shared.Toggle(shared.ToggleProps{
+							Bind:         "formData.paid",
+							DisabledExpr: "$_fetching",
+							Off:          ctxi18n.T(ctx, "table.unpaid"),
+							On:           ctxi18n.T(ctx, "table.paid"),
+							OnClass:      "btn-success",
+						})
 					</div>
 					<div class="row row-wrap">
 						<span data-show="$formState === 'add'">

@@ -16,16 +16,6 @@ templ EventShowMain(data EventData) {
 		addParticipantDisabledExpr := fmt.Sprintf("$_fetching || !$wizard.selectedMemberId || %t", len(data.WizardAddableMembers) == 0)
 		cancelParticipantsEditExpr := fmt.Sprintf("@delete('/groups/%s/events/%s/participants/draft')", data.GroupID, data.Event.ID)
 		togglePaidExpr := fmt.Sprintf("@put('/groups/%s/events/%s/toggle-paid', {mode: 'single'})", data.GroupID, data.Event.ID)
-		paidClass := "btn btn-xs"
-		paidIcon := icons.IconBanknoteX
-		paidLabel := ctxi18n.T(ctx, "table.unpaid")
-		if data.Event.Paid == 1 {
-			paidClass += " btn-success"
-			paidIcon = icons.IconBanknote
-			paidLabel = ctxi18n.T(ctx, "table.paid")
-		} else {
-			paidClass += " btn-inactive"
-		}
 	}}
 	<div data-show="$participantEditorMode === 'read'">
 		if data.IsAdmin {
@@ -37,13 +27,16 @@ templ EventShowMain(data EventData) {
 				{Label: ctxi18n.T(ctx, "fields.title"), Value: data.Event.Title},
 				{Label: ctxi18n.T(ctx, "fields.time"), Value: utils.FormatDateTimeLocalized(ctx, data.Event.Time)},
 				{Label: ctxi18n.T(ctx, "fields.description"), Value: data.Event.Description},
-				{Label: ctxi18n.T(ctx, "fields.income"), Value: utils.FormatNumberLocalized(ctx, data.Event.Amount), Action: shared.ActionButton(shared.ActionButtonProps{
-					ClassName:    paidClass,
-					OnClick:      togglePaidExpr,
-					DisabledExpr: "$_fetching",
-					Label:        paidLabel,
-					IconName:     paidIcon,
-				})},
+			{Label: ctxi18n.T(ctx, "fields.income"), Value: utils.FormatNumberLocalized(ctx, data.Event.Amount), Action: shared.Toggle(shared.ToggleProps{
+				IsOn:         data.Event.Paid == 1,
+				OnClick:      togglePaidExpr,
+				DisabledExpr: "$_fetching",
+				Off:          ctxi18n.T(ctx, "table.unpaid"),
+				On:           ctxi18n.T(ctx, "table.paid"),
+				ClassName:    "btn btn-xs",
+				OffClass:     "btn-inactive",
+				OnClass:      "btn-success",
+			})},
 			})
 		</div>
 		{{
@@ -98,14 +91,6 @@ templ EventShowMain(data EventData) {
 				for _, participant := range data.Participants {
 					{{
 						togglePaidExpr := fmt.Sprintf("@put('/groups/%s/events/%s/participants/%s/toggle-paid', {tableQuery: $tableQuery})", data.GroupID, data.Event.ID, participant.ID)
-						paidClass := "btn btn-xs"
-						paidIcon := icons.IconBanknoteX
-						if participant.ParticipantPaid == 1 {
-							paidClass += " btn-success"
-							paidIcon = icons.IconBanknote
-						} else {
-							paidClass += " btn-inactive"
-						}
 						paidLabel := ctxi18n.T(ctx, "table.unpaid")
 						if participant.ParticipantPaid == 1 {
 							paidLabel = ctxi18n.T(ctx, "table.paid")
@@ -118,12 +103,15 @@ templ EventShowMain(data EventData) {
 						<td class="text-right">{ utils.FormatNumberLocalized(ctx, participant.ParticipantAmount+participant.ParticipantExpense) }</td>
 						<td>
 							if data.IsAdmin {
-								@shared.ActionButton(shared.ActionButtonProps{
-									ClassName:    paidClass,
+								@shared.Toggle(shared.ToggleProps{
+									IsOn:         participant.ParticipantPaid == 1,
 									OnClick:      togglePaidExpr,
 									DisabledExpr: "$_fetching",
-									Label:        paidLabel,
-									IconName:     paidIcon,
+									Off:          ctxi18n.T(ctx, "table.unpaid"),
+									On:           ctxi18n.T(ctx, "table.paid"),
+									ClassName:    "btn btn-xs",
+									OffClass:     "btn-inactive",
+									OnClass:      "btn-success",
 								})
 							} else {
 								{ paidLabel }
@@ -167,7 +155,13 @@ templ EventShowMain(data EventData) {
 				</div>
 				<div class="field">
 					<label for="event-edit-paid" class="row">{ ctxi18n.T(ctx, "table.paid") }</label>
-					<input id="event-edit-paid" type="checkbox" data-bind="eventFormData.paid"/>
+					@shared.Toggle(shared.ToggleProps{
+						Bind:         "eventFormData.paid",
+						DisabledExpr: "$_fetching",
+						Off:          ctxi18n.T(ctx, "table.unpaid"),
+						On:           ctxi18n.T(ctx, "table.paid"),
+						OnClass:      "btn-success",
+					})
 				</div>
 				<div class="field">
 					<label for="event-edit-total">{ ctxi18n.T(ctx, "participants.payout_total") }</label>
@@ -197,7 +191,15 @@ templ EventShowMain(data EventData) {
 									<td class="text-right"><input type="number" class="input w-min-input" step="1" min="0" data-bind={ fmt.Sprintf("wizard.amounts.%s", row.MemberID) } value={ fmt.Sprintf("%d", row.Amount) }/></td>
 									<td class="text-right"><input type="number" class="input w-min-input" step="1" min="0" data-bind={ fmt.Sprintf("wizard.expenses.%s", row.MemberID) } value={ fmt.Sprintf("%d", row.Expense) }/></td>
 									<td class="text-right" data-text={ fmt.Sprintf("($wizard.amounts['%s'] || 0) + ($wizard.expenses['%s'] || 0)", row.MemberID, row.MemberID) }></td>
-									<td class="text-right"><input type="checkbox" data-bind={ fmt.Sprintf("wizard.paids.%s", row.MemberID) } checked?={ row.Paid }/></td>
+									<td class="text-right">
+										@shared.Toggle(shared.ToggleProps{
+											Bind:         fmt.Sprintf("wizard.paids.%s", row.MemberID),
+											DisabledExpr: "$_fetching",
+											Off:          ctxi18n.T(ctx, "table.unpaid"),
+											On:           ctxi18n.T(ctx, "table.paid"),
+											OnClass:      "btn-success",
+										})
+									</td>
 									<td class="text-right">
 										@shared.IconActionButton(shared.IconActionButtonProps{
 											ClassName:    "btn btn-ghost btn-sm btn-danger btn-icon",
