@@ -104,3 +104,11 @@ type User struct {
 	CreatedAt     sql.NullTime `json:"created_at"`
 	PreferredLang string       `json:"preferred_lang"`
 }
+
+type UserDetailCardState struct {
+	UserID    string    `json:"user_id"`
+	StateKey  string    `json:"state_key"`
+	IsOpen    int64     `json:"is_open"`
+	CreatedAt time.Time `json:"created_at"`
+	UpdatedAt time.Time `json:"updated_at"`
+}

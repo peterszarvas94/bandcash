@@ -2,49 +2,25 @@ package utils
 
 import (
 	"context"
-	"sync"
 )
 
-type detailStateStore struct {
-	mu       sync.RWMutex
-	byClient map[string]map[string]bool
-}
+type detailCardStatesContextKey string
 
-var detailStates = &detailStateStore{byClient: map[string]map[string]bool{}}
+const detailCardStatesKey detailCardStatesContextKey = "detail_card_states"
 
-func SetDetailCardOpen(clientID, key string, open bool) {
-	if clientID == "" || key == "" {
-		return
-	}
-
-	detailStates.mu.Lock()
-	defer detailStates.mu.Unlock()
-
-	if _, ok := detailStates.byClient[clientID]; !ok {
-		detailStates.byClient[clientID] = map[string]bool{}
-	}
-	detailStates.byClient[clientID][key] = open
+func WithDetailCardStates(ctx context.Context, states map[string]bool) context.Context {
+	return context.WithValue(ctx, detailCardStatesKey, states)
 }
 
 func DetailCardOpen(ctx context.Context, key string, defaultOpen bool) bool {
 	if key == "" {
 		return defaultOpen
 	}
-
-	clientID := ClientIDFromContext(ctx)
-	if clientID == "" {
-		return defaultOpen
-	}
-
-	detailStates.mu.RLock()
-	defer detailStates.mu.RUnlock()
-
-	clientStates, ok := detailStates.byClient[clientID]
+	states, ok := ctx.Value(detailCardStatesKey).(map[string]bool)
 	if !ok {
 		return defaultOpen
 	}
-
-	open, ok := clientStates[key]
+	open, ok := states[key]
 	if !ok {
 		return defaultOpen
 	}

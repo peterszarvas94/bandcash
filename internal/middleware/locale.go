@@ -10,18 +10,16 @@ import (
 	appi18n "bandcash/internal/i18n"
 )
 
-func Locale() echo.MiddlewareFunc {
-	return func(next echo.HandlerFunc) echo.HandlerFunc {
-		return func(c echo.Context) error {
-			locale := appi18n.LocaleFromRequest(c.Request())
+func Locale(next echo.HandlerFunc) echo.HandlerFunc {
+	return func(c echo.Context) error {
+		locale := appi18n.LocaleFromRequest(c.Request())
 
-			ctx, err := ctxi18n.WithLocale(c.Request().Context(), locale)
-			if err != nil {
-				slog.Error("i18n.locale: failed to set locale", "err", err)
-				return c.NoContent(http.StatusInternalServerError)
-			}
-			c.SetRequest(c.Request().WithContext(ctx))
-			return next(c)
+		ctx, err := ctxi18n.WithLocale(c.Request().Context(), locale)
+		if err != nil {
+			slog.Error("i18n.locale: failed to set locale", "err", err)
+			return c.NoContent(http.StatusInternalServerError)
 		}
+		c.SetRequest(c.Request().WithContext(ctx))
+		return next(c)
 	}
 }

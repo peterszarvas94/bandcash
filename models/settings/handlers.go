@@ -69,15 +69,28 @@ func (s *Settings) UpdateLanguage(c echo.Context) error {
 }
 
 func (s *Settings) UpdateDetailsState(c echo.Context) error {
-	clientID := utils.EnsureClientID(c)
 	key := strings.TrimSpace(c.QueryParam("key"))
 	if key == "" {
 		return c.NoContent(http.StatusBadRequest)
 	}
 
 	open := c.QueryParam("open") == "1"
-	utils.SetDetailCardOpen(clientID, key, open)
-	slog.Debug("settings.details_state: updated", "client_id", clientID, "key", key, "open", open)
+	userID := middleware.GetUserID(c)
+	err := db.Qry.UpsertUserDetailCardState(c.Request().Context(), db.UpsertUserDetailCardStateParams{
+		UserID:   userID,
+		StateKey: key,
+		IsOpen: func() int64 {
+			if open {
+				return 1
+			}
+			return 0
+		}(),
+	})
+	if err != nil {
+		slog.Error("settings.details_state: failed to upsert", "user_id", userID, "key", key, "err", err)
+		return c.NoContent(http.StatusInternalServerError)
+	}
+	slog.Debug("settings.details_state: updated", "user_id", userID, "key", key, "open", open)
 
 	return c.NoContent(http.StatusNoContent)
 }

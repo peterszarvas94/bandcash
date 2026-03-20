@@ -9,10 +9,10 @@ import (
 func RegisterRoutes(e *echo.Echo) *Settings {
 	settings := New()
 
-	e.GET("/language", settings.LanguagePage, middleware.RequireAuth())
-	e.GET("/settings", settings.Index, middleware.RequireAuth())
-	e.POST("/settings/language", settings.UpdateLanguage, middleware.RequireAuth())
-	e.POST("/settings/details-state", settings.UpdateDetailsState, middleware.RequireAuth())
+	e.GET("/language", settings.LanguagePage, middleware.RequireAuth, middleware.WithDetailState)
+	e.GET("/settings", settings.Index, middleware.RequireAuth, middleware.WithDetailState)
+	e.POST("/settings/language", settings.UpdateLanguage, middleware.RequireAuth, middleware.WithDetailState)
+	e.POST("/settings/details-state", settings.UpdateDetailsState, middleware.RequireAuth, middleware.WithDetailState)
 
 	return settings
 }

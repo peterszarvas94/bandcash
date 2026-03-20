@@ -13,10 +13,10 @@ func RegisterRoutes(e *echo.Echo) {
 	}
 
 	h := &DevNotifications{}
-	g := e.Group("/dev", middleware.RequireAuth())
+	g := e.Group("/dev", middleware.RequireAuth)
 	g.GET("", h.DevPageHandler)
 	g.POST("/body-limit/global", h.TestBodyLimitGlobal)
-	g.POST("/body-limit/auth", h.TestBodyLimitAuth, middleware.AuthBodyLimit())
+	g.POST("/body-limit/auth", h.TestBodyLimitAuth, middleware.AuthBodyLimit)
 	g.POST("/spinner", h.TestSpinner)
 	g.POST("/multi-action/:action", h.TestMultiAction)
 	g.POST("/notifications/inline", h.TestInline)

@@ -9,7 +9,7 @@ import (
 func RegisterRoutes(e *echo.Echo) *Admin {
 	a := New()
 
-	g := e.Group("/admin", middleware.RequireAuth(), middleware.RequireSuperadmin())
+	g := e.Group("/admin", middleware.RequireAuth, middleware.WithDetailState, middleware.RequireSuperadmin)
 	g.GET("/overview", a.OverviewPage)
 	g.GET("/flags", a.FlagsPage)
 	g.GET("/users", a.UsersPage)

@@ -6,10 +6,10 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
-func GlobalBodyLimit() echo.MiddlewareFunc {
-	return echoMiddleware.BodyLimit("1M")
+func GlobalBodyLimit(next echo.HandlerFunc) echo.HandlerFunc {
+	return echoMiddleware.BodyLimit("1M")(next)
 }
 
-func AuthBodyLimit() echo.MiddlewareFunc {
-	return echoMiddleware.BodyLimit("64K")
+func AuthBodyLimit(next echo.HandlerFunc) echo.HandlerFunc {
+	return echoMiddleware.BodyLimit("64K")(next)
 }

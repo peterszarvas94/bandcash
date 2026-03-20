@@ -10,13 +10,13 @@ func RegisterRoutes(e *echo.Echo) *Members {
 	members := New()
 
 	// Group routes under /groups/:groupId with auth middleware
-	g := e.Group("/groups/:groupId", middleware.RequireAuth(), middleware.RequireGroup())
+	g := e.Group("/groups/:groupId", middleware.RequireAuth, middleware.WithDetailState, middleware.RequireGroup)
 
 	g.GET("/members", members.Index)
 	g.GET("/members/:id", members.Show)
 
 	// Admin only routes
-	admin := g.Group("", middleware.RequireAdmin())
+	admin := g.Group("", middleware.RequireAdmin)
 	admin.POST("/members", members.Create)
 	admin.PUT("/members/:id", members.Update)
 	admin.PUT("/members/:id/events/:eventId/toggle-paid", members.ToggleParticipantPaid)

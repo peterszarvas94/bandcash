@@ -7,8 +7,8 @@ import (
 	echoMiddleware "github.com/labstack/echo/v4/middleware"
 )
 
-func RequestLogger() echo.MiddlewareFunc {
-	return echoMiddleware.RequestLoggerWithConfig(echoMiddleware.RequestLoggerConfig{
+func RequestLogger(next echo.HandlerFunc) echo.HandlerFunc {
+	mw := echoMiddleware.RequestLoggerWithConfig(echoMiddleware.RequestLoggerConfig{
 		LogStatus: true,
 		LogURI:    false,
 		LogValuesFunc: func(c echo.Context, v echoMiddleware.RequestLoggerValues) error {
@@ -22,4 +22,6 @@ func RequestLogger() echo.MiddlewareFunc {
 			return nil
 		},
 	})
+
+	return mw(next)
 }

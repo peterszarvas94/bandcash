@@ -9,8 +9,8 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
-// Compression returns an Echo middleware that compresses responses using Brotli.
-func Compression() echo.MiddlewareFunc {
+// Compression compresses responses using Brotli.
+func Compression(next echo.HandlerFunc) echo.HandlerFunc {
 	brEnc, err := brotli.New(brotli.Options{})
 	if err != nil {
 		panic("failed to create brotli encoder: " + err.Error())
@@ -24,29 +24,27 @@ func Compression() echo.MiddlewareFunc {
 		panic("failed to create compression adapter: " + err.Error())
 	}
 
-	return func(next echo.HandlerFunc) echo.HandlerFunc {
-		return func(c echo.Context) error {
-			req := c.Request()
-			res := c.Response()
+	return func(c echo.Context) error {
+		req := c.Request()
+		res := c.Response()
 
-			if req.URL.Path == "/sse" || strings.Contains(req.Header.Get("Accept"), "text/event-stream") {
-				return next(c)
-			}
-
-			// Create a handler that calls the next Echo handler
-			h := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-				c.SetRequest(r)
-				c.Response().Writer = w
-				err := next(c)
-				if err != nil {
-					c.Error(err)
-				}
-			})
-
-			// Wrap with compression and serve
-			compress(h).ServeHTTP(res.Writer, req)
-
-			return nil
+		if req.URL.Path == "/sse" || strings.Contains(req.Header.Get("Accept"), "text/event-stream") {
+			return next(c)
 		}
+
+		// Create a handler that calls the next Echo handler
+		h := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			c.SetRequest(r)
+			c.Response().Writer = w
+			err := next(c)
+			if err != nil {
+				c.Error(err)
+			}
+		})
+
+		// Wrap with compression and serve
+		compress(h).ServeHTTP(res.Writer, req)
+
+		return nil
 	}
 }

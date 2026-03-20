@@ -13,20 +13,18 @@ type contextKey string
 
 const RequestIDKey contextKey = "request_id"
 
-// RequestID generates a unique request ID and adds it to context and logs
-func RequestID() echo.MiddlewareFunc {
-	return func(next echo.HandlerFunc) echo.HandlerFunc {
-		return func(c echo.Context) error {
-			requestID := generateID()
-			c.Set(string(RequestIDKey), requestID)
-			c.Response().Header().Set("X-Request-ID", requestID)
+// RequestID generates a unique request ID and adds it to context and logs.
+func RequestID(next echo.HandlerFunc) echo.HandlerFunc {
+	return func(c echo.Context) error {
+		requestID := generateID()
+		c.Set(string(RequestIDKey), requestID)
+		c.Response().Header().Set("X-Request-ID", requestID)
 
-			// Store in request context for handlers
-			ctx := context.WithValue(c.Request().Context(), RequestIDKey, requestID)
-			c.SetRequest(c.Request().WithContext(ctx))
+		// Store in request context for handlers
+		ctx := context.WithValue(c.Request().Context(), RequestIDKey, requestID)
+		c.SetRequest(c.Request().WithContext(ctx))
 
-			return next(c)
-		}
+		return next(c)
 	}
 }
 

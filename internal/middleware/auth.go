@@ -21,125 +21,119 @@ const (
 	IsSuperadminKey contextKey = "is_superadmin"
 )
 
-// RequireAuth ensures user is logged in
-func RequireAuth() echo.MiddlewareFunc {
-	return func(next echo.HandlerFunc) echo.HandlerFunc {
-		return func(c echo.Context) error {
-			userID := getSessionUserID(c)
-			if userID == "" {
-				return c.Redirect(http.StatusFound, "/auth/login")
-			}
-
-			// Verify user exists
-			user, err := db.Qry.GetUserByID(c.Request().Context(), userID)
-			if err != nil {
-				slog.Warn("auth: invalid session user", "user_id", userID)
-				clearSession(c)
-				return c.Redirect(http.StatusFound, "/auth/login")
-			}
-
-			bannedCount, err := db.Qry.IsUserBanned(c.Request().Context(), user.ID)
-			if err != nil {
-				slog.Warn("auth: failed to check user ban", "user_id", user.ID, "err", err)
-				clearSession(c)
-				return c.Redirect(http.StatusFound, "/auth/login")
-			}
-			if bannedCount > 0 {
-				clearSession(c)
-				utils.Notify(c, "warning", ctxi18n.T(c.Request().Context(), "auth.banned"))
-				return c.Redirect(http.StatusFound, "/auth/login")
-			}
-
-			isSuperadmin := false
-			superadminEmail := strings.ToLower(strings.TrimSpace(utils.Env().SuperadminEmail))
-			if superadminEmail != "" && strings.ToLower(strings.TrimSpace(user.Email)) == superadminEmail {
-				isSuperadmin = true
-			}
-
-			preferredLang := appi18n.NormalizeLocale(user.PreferredLang)
-			if rawLang := strings.TrimSpace(c.QueryParam("lang")); rawLang != "" {
-				preferredLang = appi18n.NormalizeLocale(rawLang)
-			}
-			if localizedCtx, localeErr := ctxi18nlib.WithLocale(c.Request().Context(), preferredLang); localeErr == nil {
-				c.SetRequest(c.Request().WithContext(localizedCtx))
-			}
-
-			c.Set(string(UserIDKey), user.ID)
-			c.Set(string(IsSuperadminKey), isSuperadmin)
-			return next(c)
+// RequireAuth ensures user is logged in.
+func RequireAuth(next echo.HandlerFunc) echo.HandlerFunc {
+	return func(c echo.Context) error {
+		userID := getSessionUserID(c)
+		if userID == "" {
+			return c.Redirect(http.StatusFound, "/auth/login")
 		}
+
+		// Verify user exists
+		user, err := db.Qry.GetUserByID(c.Request().Context(), userID)
+		if err != nil {
+			slog.Warn("auth: invalid session user", "user_id", userID)
+			clearSession(c)
+			return c.Redirect(http.StatusFound, "/auth/login")
+		}
+
+		bannedCount, err := db.Qry.IsUserBanned(c.Request().Context(), user.ID)
+		if err != nil {
+			slog.Warn("auth: failed to check user ban", "user_id", user.ID, "err", err)
+			clearSession(c)
+			return c.Redirect(http.StatusFound, "/auth/login")
+		}
+		if bannedCount > 0 {
+			clearSession(c)
+			utils.Notify(c, "warning", ctxi18n.T(c.Request().Context(), "auth.banned"))
+			return c.Redirect(http.StatusFound, "/auth/login")
+		}
+
+		isSuperadmin := false
+		superadminEmail := strings.ToLower(strings.TrimSpace(utils.Env().SuperadminEmail))
+		if superadminEmail != "" && strings.ToLower(strings.TrimSpace(user.Email)) == superadminEmail {
+			isSuperadmin = true
+		}
+
+		preferredLang := appi18n.NormalizeLocale(user.PreferredLang)
+		if rawLang := strings.TrimSpace(c.QueryParam("lang")); rawLang != "" {
+			preferredLang = appi18n.NormalizeLocale(rawLang)
+		}
+		if localizedCtx, localeErr := ctxi18nlib.WithLocale(c.Request().Context(), preferredLang); localeErr == nil {
+			c.SetRequest(c.Request().WithContext(localizedCtx))
+		}
+
+		c.Set(string(UserIDKey), user.ID)
+		c.Set(string(IsSuperadminKey), isSuperadmin)
+		return next(c)
 	}
 }
 
-// RequireGroup ensures user has access to the requested group
-func RequireGroup() echo.MiddlewareFunc {
-	return func(next echo.HandlerFunc) echo.HandlerFunc {
-		return func(c echo.Context) error {
-			userID := c.Get(string(UserIDKey)).(string)
-			groupID := c.Param("groupId")
-			isSuperadmin := IsSuperadmin(c)
+// RequireGroup ensures user has access to the requested group.
+func RequireGroup(next echo.HandlerFunc) echo.HandlerFunc {
+	return func(c echo.Context) error {
+		userID := c.Get(string(UserIDKey)).(string)
+		groupID := c.Param("groupId")
+		isSuperadmin := IsSuperadmin(c)
 
-			if !utils.IsValidID(groupID, "grp") {
-				return c.String(http.StatusBadRequest, "Invalid group ID")
-			}
+		if !utils.IsValidID(groupID, "grp") {
+			return c.String(http.StatusBadRequest, "Invalid group ID")
+		}
 
-			group, err := db.Qry.GetGroupByID(c.Request().Context(), groupID)
-			if err != nil {
-				utils.Notify(c, "warning", ctxi18n.T(c.Request().Context(), "groups.errors.access_denied"))
-				return c.Redirect(http.StatusFound, "/dashboard")
-			}
+		group, err := db.Qry.GetGroupByID(c.Request().Context(), groupID)
+		if err != nil {
+			utils.Notify(c, "warning", ctxi18n.T(c.Request().Context(), "groups.errors.access_denied"))
+			return c.Redirect(http.StatusFound, "/dashboard")
+		}
 
-			if isSuperadmin {
-				c.Set(string(GroupIDKey), groupID)
-				c.Set(string(IsAdminKey), true)
-				return next(c)
-			}
-
-			// Check if admin
-			if group.AdminUserID == userID {
-				c.Set(string(GroupIDKey), groupID)
-				c.Set(string(IsAdminKey), true)
-				return next(c)
-			}
-
-			// Check if reader
-			adminCount, err := db.Qry.IsGroupAdmin(c.Request().Context(), db.IsGroupAdminParams{
-				UserID:  userID,
-				GroupID: groupID,
-			})
-			if err == nil && adminCount > 0 {
-				c.Set(string(GroupIDKey), groupID)
-				c.Set(string(IsAdminKey), true)
-				return next(c)
-			}
-
-			// Check if viewer
-			readerCount, err := db.Qry.IsGroupReader(c.Request().Context(), db.IsGroupReaderParams{
-				UserID:  userID,
-				GroupID: groupID,
-			})
-			if err != nil || readerCount == 0 {
-				utils.Notify(c, "warning", ctxi18n.T(c.Request().Context(), "groups.errors.access_denied"))
-				return c.Redirect(http.StatusFound, "/dashboard")
-			}
-
+		if isSuperadmin {
 			c.Set(string(GroupIDKey), groupID)
-			c.Set(string(IsAdminKey), false)
+			c.Set(string(IsAdminKey), true)
 			return next(c)
 		}
+
+		// Check if admin
+		if group.AdminUserID == userID {
+			c.Set(string(GroupIDKey), groupID)
+			c.Set(string(IsAdminKey), true)
+			return next(c)
+		}
+
+		// Check if reader
+		adminCount, err := db.Qry.IsGroupAdmin(c.Request().Context(), db.IsGroupAdminParams{
+			UserID:  userID,
+			GroupID: groupID,
+		})
+		if err == nil && adminCount > 0 {
+			c.Set(string(GroupIDKey), groupID)
+			c.Set(string(IsAdminKey), true)
+			return next(c)
+		}
+
+		// Check if viewer
+		readerCount, err := db.Qry.IsGroupReader(c.Request().Context(), db.IsGroupReaderParams{
+			UserID:  userID,
+			GroupID: groupID,
+		})
+		if err != nil || readerCount == 0 {
+			utils.Notify(c, "warning", ctxi18n.T(c.Request().Context(), "groups.errors.access_denied"))
+			return c.Redirect(http.StatusFound, "/dashboard")
+		}
+
+		c.Set(string(GroupIDKey), groupID)
+		c.Set(string(IsAdminKey), false)
+		return next(c)
 	}
 }
 
-// RequireAdmin ensures user is admin of the group
-func RequireAdmin() echo.MiddlewareFunc {
-	return func(next echo.HandlerFunc) echo.HandlerFunc {
-		return func(c echo.Context) error {
-			isAdmin, ok := c.Get(string(IsAdminKey)).(bool)
-			if !ok || !isAdmin {
-				return c.String(http.StatusForbidden, "Admin access required")
-			}
-			return next(c)
+// RequireAdmin ensures user is admin of the group.
+func RequireAdmin(next echo.HandlerFunc) echo.HandlerFunc {
+	return func(c echo.Context) error {
+		isAdmin, ok := c.Get(string(IsAdminKey)).(bool)
+		if !ok || !isAdmin {
+			return c.String(http.StatusForbidden, "Admin access required")
 		}
+		return next(c)
 	}
 }
 

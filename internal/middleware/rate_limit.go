@@ -12,12 +12,10 @@ import (
 	"bandcash/internal/utils"
 )
 
-func GlobalRateLimit() echo.MiddlewareFunc {
+func GlobalRateLimit(next echo.HandlerFunc) echo.HandlerFunc {
 	if utils.Env().DisableRateLimit {
-		return func(next echo.HandlerFunc) echo.HandlerFunc {
-			return func(c echo.Context) error {
-				return next(c)
-			}
+		return func(c echo.Context) error {
+			return next(c)
 		}
 	}
 
@@ -27,19 +25,19 @@ func GlobalRateLimit() echo.MiddlewareFunc {
 		ExpiresIn: 5 * time.Minute,
 	})
 
-	return echoMiddleware.RateLimiterWithConfig(echoMiddleware.RateLimiterConfig{
+	mw := echoMiddleware.RateLimiterWithConfig(echoMiddleware.RateLimiterConfig{
 		Store:               store,
 		IdentifierExtractor: rateLimitIdentifier,
 		DenyHandler:         rateLimitDenyHandler,
 	})
+
+	return mw(next)
 }
 
-func AuthRateLimit() echo.MiddlewareFunc {
+func AuthRateLimit(next echo.HandlerFunc) echo.HandlerFunc {
 	if utils.Env().DisableRateLimit {
-		return func(next echo.HandlerFunc) echo.HandlerFunc {
-			return func(c echo.Context) error {
-				return next(c)
-			}
+		return func(c echo.Context) error {
+			return next(c)
 		}
 	}
 
@@ -49,11 +47,13 @@ func AuthRateLimit() echo.MiddlewareFunc {
 		ExpiresIn: 10 * time.Minute,
 	})
 
-	return echoMiddleware.RateLimiterWithConfig(echoMiddleware.RateLimiterConfig{
+	mw := echoMiddleware.RateLimiterWithConfig(echoMiddleware.RateLimiterConfig{
 		Store:               store,
 		IdentifierExtractor: rateLimitIdentifier,
 		DenyHandler:         rateLimitDenyHandler,
 	})
+
+	return mw(next)
 }
 
 func rateLimitIdentifier(c echo.Context) (string, error) {
