@@ -38,21 +38,21 @@ func ExpenseTotalsContent(data ExpensesData) templ.Component {
 			templ_7745c5c3_Var1 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = shared.DetailsSection([]shared.DetailsRow{
+		templ_7745c5c3_Err = shared.DetailsSection(fmt.Sprintf("group_%s_expenses_paid", data.GroupID), []shared.DetailsRow{
 			{Label: ctxi18n.T(ctx, "table.paid"), LabelClass: "section-title", Value: ""},
 			{Label: ctxi18n.T(ctx, "groups.expenses"), Value: utils.FormatNumberLocalizedWithSign(ctx, data.FilteredPaid, false)},
 		}).Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = shared.DetailsSection([]shared.DetailsRow{
+		templ_7745c5c3_Err = shared.DetailsSection(fmt.Sprintf("group_%s_expenses_unpaid", data.GroupID), []shared.DetailsRow{
 			{Label: ctxi18n.T(ctx, "table.unpaid"), LabelClass: "section-title", Value: ""},
 			{Label: ctxi18n.T(ctx, "groups.expenses"), Value: utils.FormatNumberLocalizedWithSign(ctx, data.FilteredUnpaid, false)},
 		}).Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = shared.DetailsCard([]shared.DetailsRow{
+		templ_7745c5c3_Err = shared.DetailsCard(fmt.Sprintf("group_%s_expenses_all", data.GroupID), []shared.DetailsRow{
 			{Label: ctxi18n.T(ctx, "table.all"), LabelClass: "section-title", Value: ""},
 			{Label: ctxi18n.T(ctx, "groups.expenses"), Value: utils.FormatNumberLocalizedWithSign(ctx, data.FilteredTotal, false)},
 		}).Render(ctx, templ_7745c5c3_Buffer)

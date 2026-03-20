@@ -10,15 +10,15 @@ import (
 )
 
 templ ExpenseTotalsContent(data ExpensesData) {
-	@shared.DetailsSection([]shared.DetailsRow{
+	@shared.DetailsSection(fmt.Sprintf("group_%s_expenses_paid", data.GroupID), []shared.DetailsRow{
 		{Label: ctxi18n.T(ctx, "table.paid"), LabelClass: "section-title", Value: ""},
 		{Label: ctxi18n.T(ctx, "groups.expenses"), Value: utils.FormatNumberLocalizedWithSign(ctx, data.FilteredPaid, false)},
 	})
-	@shared.DetailsSection([]shared.DetailsRow{
+	@shared.DetailsSection(fmt.Sprintf("group_%s_expenses_unpaid", data.GroupID), []shared.DetailsRow{
 		{Label: ctxi18n.T(ctx, "table.unpaid"), LabelClass: "section-title", Value: ""},
 		{Label: ctxi18n.T(ctx, "groups.expenses"), Value: utils.FormatNumberLocalizedWithSign(ctx, data.FilteredUnpaid, false)},
 	})
-	@shared.DetailsCard([]shared.DetailsRow{
+	@shared.DetailsCard(fmt.Sprintf("group_%s_expenses_all", data.GroupID), []shared.DetailsRow{
 		{Label: ctxi18n.T(ctx, "table.all"), LabelClass: "section-title", Value: ""},
 		{Label: ctxi18n.T(ctx, "groups.expenses"), Value: utils.FormatNumberLocalizedWithSign(ctx, data.FilteredTotal, false)},
 	})

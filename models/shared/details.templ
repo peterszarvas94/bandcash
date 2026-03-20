@@ -1,5 +1,8 @@
 package shared
 
+import "fmt"
+
+import "bandcash/internal/utils"
 import icons "bandcash/models/shared/icons"
 
 	type DetailsRow struct {
@@ -10,16 +13,18 @@ import icons "bandcash/models/shared/icons"
 	Action     templ.Component
 }
 
-templ DetailsCard(rows []DetailsRow) {
+templ DetailsCard(stateKey string, rows []DetailsRow) {
 	{{
 		summary := ""
 		rowsBody := rows
+		open := utils.DetailCardOpen(ctx, stateKey, true)
+		toggleExpr := fmt.Sprintf("@post('/settings/details-state?key=%s&open=' + (el.open ? '1' : '0'))", stateKey)
 		if len(rows) > 0 && rows[0].LabelClass == "section-title" {
 			summary = rows[0].Label
 			rowsBody = rows[1:]
 		}
 	}}
-	<details class="detail-card" open>
+	<details class="detail-card" open?={ open } data-on:toggle={ toggleExpr }>
 		if summary != "" {
 			<summary>
 				<span>{ summary }</span>
@@ -49,9 +54,9 @@ templ DetailsCard(rows []DetailsRow) {
 	</details>
 }
 
-templ DetailsSection(rows []DetailsRow) {
+templ DetailsSection(stateKey string, rows []DetailsRow) {
 	<div class="pb">
-		@DetailsCard(rows)
+		@DetailsCard(stateKey, rows)
 	</div>
 }
 

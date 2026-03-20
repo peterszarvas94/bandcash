@@ -67,7 +67,7 @@ func EventShowMain(data EventData) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = shared.DetailsCard([]shared.DetailsRow{
+		templ_7745c5c3_Err = shared.DetailsCard(fmt.Sprintf("event_%s_overview", data.Event.ID), []shared.DetailsRow{
 			{Label: ctxi18n.T(ctx, "nav.overview"), LabelClass: "section-title", Value: ""},
 			{Label: ctxi18n.T(ctx, "fields.title"), Value: data.Event.Title},
 			{Label: ctxi18n.T(ctx, "fields.time"), Value: utils.FormatDateTimeLocalized(ctx, data.Event.Time)},
@@ -93,7 +93,7 @@ func EventShowMain(data EventData) templ.Component {
 			incomePaid = data.Event.Amount
 			incomeUnpaid = 0
 		}
-		templ_7745c5c3_Err = shared.DetailsSection([]shared.DetailsRow{
+		templ_7745c5c3_Err = shared.DetailsSection(fmt.Sprintf("event_%s_paid", data.Event.ID), []shared.DetailsRow{
 			{Label: ctxi18n.T(ctx, "table.paid"), LabelClass: "section-title", Value: ""},
 			{Label: ctxi18n.T(ctx, "fields.income"), Value: utils.FormatNumberLocalized(ctx, incomePaid)},
 			{Label: ctxi18n.T(ctx, "participants.payout_total"), Value: utils.FormatNumberLocalizedWithSign(ctx, data.FilteredPaid, false)},
@@ -102,7 +102,7 @@ func EventShowMain(data EventData) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = shared.DetailsSection([]shared.DetailsRow{
+		templ_7745c5c3_Err = shared.DetailsSection(fmt.Sprintf("event_%s_unpaid", data.Event.ID), []shared.DetailsRow{
 			{Label: ctxi18n.T(ctx, "table.unpaid"), LabelClass: "section-title", Value: ""},
 			{Label: ctxi18n.T(ctx, "fields.income"), Value: utils.FormatNumberLocalized(ctx, incomeUnpaid)},
 			{Label: ctxi18n.T(ctx, "participants.payout_total"), Value: utils.FormatNumberLocalizedWithSign(ctx, data.FilteredUnpaid, false)},
@@ -111,7 +111,7 @@ func EventShowMain(data EventData) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = shared.DetailsCard([]shared.DetailsRow{
+		templ_7745c5c3_Err = shared.DetailsCard(fmt.Sprintf("event_%s_all", data.Event.ID), []shared.DetailsRow{
 			{Label: ctxi18n.T(ctx, "table.all"), LabelClass: "section-title", Value: ""},
 			{Label: ctxi18n.T(ctx, "fields.income"), Value: utils.FormatNumberLocalized(ctx, data.Event.Amount)},
 			{Label: ctxi18n.T(ctx, "participants.payout_total"), Value: utils.FormatNumberLocalizedWithSign(ctx, data.FilteredPaid+data.FilteredUnpaid, false)},

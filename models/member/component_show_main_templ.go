@@ -54,7 +54,7 @@ func MemberShowMain(data MemberData) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = shared.DetailsCard([]shared.DetailsRow{
+		templ_7745c5c3_Err = shared.DetailsCard(fmt.Sprintf("member_%s_overview", data.Member.ID), []shared.DetailsRow{
 			{Label: ctxi18n.T(ctx, "nav.overview"), LabelClass: "section-title", Value: ""},
 			{Label: ctxi18n.T(ctx, "fields.name"), Value: data.Member.Name},
 			{Label: ctxi18n.T(ctx, "fields.description"), Value: data.Member.Description},
@@ -67,21 +67,21 @@ func MemberShowMain(data MemberData) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = shared.DetailsSection([]shared.DetailsRow{
+		templ_7745c5c3_Err = shared.DetailsSection(fmt.Sprintf("member_%s_paid", data.Member.ID), []shared.DetailsRow{
 			{Label: ctxi18n.T(ctx, "table.paid"), LabelClass: "section-title", Value: ""},
 			{Label: ctxi18n.T(ctx, "members.total_payout"), Value: utils.FormatNumberLocalizedWithSign(ctx, data.TotalPaid, false)},
 		}).Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = shared.DetailsSection([]shared.DetailsRow{
+		templ_7745c5c3_Err = shared.DetailsSection(fmt.Sprintf("member_%s_unpaid", data.Member.ID), []shared.DetailsRow{
 			{Label: ctxi18n.T(ctx, "table.unpaid"), LabelClass: "section-title", Value: ""},
 			{Label: ctxi18n.T(ctx, "members.total_payout"), Value: utils.FormatNumberLocalizedWithSign(ctx, data.TotalUnpaid, false)},
 		}).Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = shared.DetailsCard([]shared.DetailsRow{
+		templ_7745c5c3_Err = shared.DetailsCard(fmt.Sprintf("member_%s_all", data.Member.ID), []shared.DetailsRow{
 			{Label: ctxi18n.T(ctx, "table.all"), LabelClass: "section-title", Value: ""},
 			{Label: ctxi18n.T(ctx, "members.total_payout"), Value: utils.FormatNumberLocalizedWithSign(ctx, data.TotalPayout, false)},
 		}).Render(ctx, templ_7745c5c3_Buffer)

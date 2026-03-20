@@ -38,7 +38,7 @@ func EventTotalsContent(data EventsData) templ.Component {
 			templ_7745c5c3_Var1 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = shared.DetailsSection([]shared.DetailsRow{
+		templ_7745c5c3_Err = shared.DetailsSection(fmt.Sprintf("group_%s_events_paid", data.GroupID), []shared.DetailsRow{
 			{Label: ctxi18n.T(ctx, "table.paid"), LabelClass: "section-title", Value: ""},
 			{Label: ctxi18n.T(ctx, "groups.income"), Value: utils.FormatNumberLocalized(ctx, data.FilteredIncomePaid)},
 			{Label: ctxi18n.T(ctx, "groups.payouts"), Value: utils.FormatNumberLocalizedWithSign(ctx, data.FilteredPayoutsPaid, false)},
@@ -48,7 +48,7 @@ func EventTotalsContent(data EventsData) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = shared.DetailsSection([]shared.DetailsRow{
+		templ_7745c5c3_Err = shared.DetailsSection(fmt.Sprintf("group_%s_events_unpaid", data.GroupID), []shared.DetailsRow{
 			{Label: ctxi18n.T(ctx, "table.unpaid"), LabelClass: "section-title", Value: ""},
 			{Label: ctxi18n.T(ctx, "groups.income"), Value: utils.FormatNumberLocalized(ctx, data.FilteredIncomeUnpaid)},
 			{Label: ctxi18n.T(ctx, "groups.payouts"), Value: utils.FormatNumberLocalizedWithSign(ctx, data.FilteredPayoutsUnpaid, false)},
@@ -58,7 +58,7 @@ func EventTotalsContent(data EventsData) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = shared.DetailsCard([]shared.DetailsRow{
+		templ_7745c5c3_Err = shared.DetailsCard(fmt.Sprintf("group_%s_events_all", data.GroupID), []shared.DetailsRow{
 			{Label: ctxi18n.T(ctx, "table.all"), LabelClass: "section-title", Value: ""},
 			{Label: ctxi18n.T(ctx, "groups.income"), Value: utils.FormatNumberLocalized(ctx, data.FilteredTotal)},
 			{Label: ctxi18n.T(ctx, "groups.payouts"), Value: utils.FormatNumberLocalizedWithSign(ctx, data.FilteredPayoutsPaid+data.FilteredPayoutsUnpaid, false)},

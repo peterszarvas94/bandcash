@@ -158,7 +158,7 @@ func GroupDetailsContent(data GroupPageData) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = shared.DetailsCard([]shared.DetailsRow{
+		templ_7745c5c3_Err = shared.DetailsCard(fmt.Sprintf("group_%s_overview", data.Group.ID), []shared.DetailsRow{
 			{Label: ctxi18n.T(ctx, "nav.overview"), LabelClass: "section-title", Value: ""},
 			{Label: ctxi18n.T(ctx, "groups.name"), Value: data.Group.Name},
 			{Label: ctxi18n.T(ctx, "groups.admin"), Value: data.Admin.Email},
@@ -179,7 +179,7 @@ func GroupDetailsContent(data GroupPageData) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = shared.DetailsSection([]shared.DetailsRow{
+		templ_7745c5c3_Err = shared.DetailsSection(fmt.Sprintf("group_%s_paid", data.Group.ID), []shared.DetailsRow{
 			{Label: ctxi18n.T(ctx, "table.paid"), LabelClass: "section-title", Value: ""},
 			{Label: ctxi18n.T(ctx, "groups.income"), Value: utils.FormatNumberLocalized(ctx, data.IncomePaid)},
 			{Label: ctxi18n.T(ctx, "groups.payouts"), Value: utils.FormatNumberLocalizedWithSign(ctx, data.PayoutsPaid, false)},
@@ -189,7 +189,7 @@ func GroupDetailsContent(data GroupPageData) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = shared.DetailsSection([]shared.DetailsRow{
+		templ_7745c5c3_Err = shared.DetailsSection(fmt.Sprintf("group_%s_unpaid", data.Group.ID), []shared.DetailsRow{
 			{Label: ctxi18n.T(ctx, "table.unpaid"), LabelClass: "section-title", Value: ""},
 			{Label: ctxi18n.T(ctx, "groups.income"), Value: utils.FormatNumberLocalized(ctx, data.IncomeUnpaid)},
 			{Label: ctxi18n.T(ctx, "groups.payouts"), Value: utils.FormatNumberLocalizedWithSign(ctx, data.PayoutsUnpaid, false)},
@@ -199,7 +199,7 @@ func GroupDetailsContent(data GroupPageData) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = shared.DetailsCard([]shared.DetailsRow{
+		templ_7745c5c3_Err = shared.DetailsCard(fmt.Sprintf("group_%s_all", data.Group.ID), []shared.DetailsRow{
 			{Label: ctxi18n.T(ctx, "table.all"), LabelClass: "section-title", Value: ""},
 			{Label: ctxi18n.T(ctx, "groups.income"), Value: utils.FormatNumberLocalized(ctx, data.Income)},
 			{Label: ctxi18n.T(ctx, "groups.payouts"), Value: utils.FormatNumberLocalizedWithSign(ctx, data.Payouts, false)},

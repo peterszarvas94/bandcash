@@ -1,7 +1,9 @@
 package settings
 
 import (
+	"log/slog"
 	"net/http"
+	"strings"
 
 	ctxi18nlib "github.com/invopop/ctxi18n"
 	ctxi18n "github.com/invopop/ctxi18n/i18n"
@@ -64,4 +66,18 @@ func (s *Settings) UpdateLanguage(c echo.Context) error {
 		return c.NoContent(http.StatusInternalServerError)
 	}
 	return c.NoContent(http.StatusOK)
+}
+
+func (s *Settings) UpdateDetailsState(c echo.Context) error {
+	clientID := utils.EnsureClientID(c)
+	key := strings.TrimSpace(c.QueryParam("key"))
+	if key == "" {
+		return c.NoContent(http.StatusBadRequest)
+	}
+
+	open := c.QueryParam("open") == "1"
+	utils.SetDetailCardOpen(clientID, key, open)
+	slog.Debug("settings.details_state: updated", "client_id", clientID, "key", key, "open", open)
+
+	return c.NoContent(http.StatusNoContent)
 }

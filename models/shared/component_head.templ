@@ -29,6 +29,7 @@ templ Head(title string) {
 		<meta property="twitter:image" content={ socialImageURL }/>
 		<meta name="application-name" content={ siteName }/>
 		<title>{ title }</title>
+		<link rel="icon" href="/favicon.ico" type="image/x-icon"/>
 		<link rel="stylesheet" href={ assets.AssetPath("css/style.css") }/>
 		@templ.Raw(importMapScript)
 		<script type="module" src={ assets.AssetPath("js/main.js") }></script>

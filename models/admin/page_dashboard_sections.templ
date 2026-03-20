@@ -11,7 +11,11 @@ import (
 )
 
 templ FlagsContent(signupEnabled bool) {
-	<details id="admin-flags" class="detail-card pb" open>
+	{{
+		open := utils.DetailCardOpen(ctx, "admin_flags", true)
+		toggleExpr := "@post('/settings/details-state?key=admin_flags&open=' + (el.open ? '1' : '0'))"
+	}}
+	<details id="admin-flags" class="detail-card pb" open?={ open } data-on:toggle={ toggleExpr }>
 		<summary>
 			<span>{ ctxi18n.T(ctx, "admin.tab.flags") }</span>
 			<span class="details-icon">
@@ -41,7 +45,7 @@ templ FlagsContent(signupEnabled bool) {
 }
 
 templ DashboardStats(data DashboardData) {
-	@shared.DetailsCard([]shared.DetailsRow{
+	@shared.DetailsCard("admin_overview", []shared.DetailsRow{
 		{Label: ctxi18n.T(ctx, "admin.total_users"), Value: utils.FormatNumberLocalized(ctx, data.UsersCount)},
 		{Label: ctxi18n.T(ctx, "admin.total_groups"), Value: utils.FormatNumberLocalized(ctx, data.GroupsCount)},
 		{Label: ctxi18n.T(ctx, "admin.total_events"), Value: utils.FormatNumberLocalized(ctx, data.EventsCount)},

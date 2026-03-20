@@ -12,6 +12,7 @@ func RegisterRoutes(e *echo.Echo) *Settings {
 	e.GET("/language", settings.LanguagePage, middleware.RequireAuth())
 	e.GET("/settings", settings.Index, middleware.RequireAuth())
 	e.POST("/settings/language", settings.UpdateLanguage, middleware.RequireAuth())
+	e.POST("/settings/details-state", settings.UpdateDetailsState, middleware.RequireAuth())
 
 	return settings
 }
