@@ -179,6 +179,7 @@ en:
     page_size: "Page size"
   fields:
     title: "Title"
+    event_title: "Event title"
     time: "Time"
     date: "Date"
     paid_at: "Paid at"

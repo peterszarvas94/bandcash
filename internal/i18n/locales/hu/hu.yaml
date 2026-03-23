@@ -179,6 +179,7 @@ hu:
     page_size: "Oldalméret"
   fields:
     title: "Cím"
+    event_title: "Esemény címe"
     time: "Idő"
     date: "Dátum"
     paid_at: "Fizetve ekkor"

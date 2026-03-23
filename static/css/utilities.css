@@ -73,6 +73,10 @@
     padding-right: var(--space);
   }
 
+  .bb-0 {
+    border-bottom: 0;
+  }
+
   .color-error {
     color: var(--error-color);
   }

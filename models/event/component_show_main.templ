@@ -21,8 +21,7 @@ templ EventShowMain(data EventData) {
 		if data.IsAdmin {
 			@shared.DetailsActions(ReadModeActions(data))
 		}
-		<div class="pb">
-			@shared.DetailsCard(fmt.Sprintf("event_%s_overview", data.Event.ID), []shared.DetailsRow{
+			@shared.DetailsCardWithClass(fmt.Sprintf("event_%s_overview", data.Event.ID), []shared.DetailsRow{
 				{Label: ctxi18n.T(ctx, "nav.overview"), LabelClass: "section-title", Value: ""},
 				{Label: ctxi18n.T(ctx, "fields.title"), Value: data.Event.Title},
 				{Label: ctxi18n.T(ctx, "fields.time"), Value: utils.FormatDateTimeLocalized(ctx, data.Event.Time)},
@@ -43,8 +42,7 @@ templ EventShowMain(data EventData) {
 				OffClass:     "btn-inactive",
 				OnClass:      "btn-success",
 			})},
-			})
-		</div>
+			}, "bb-0")
 		{{
 			incomePaid := int64(0)
 			incomeUnpaid := data.Event.Amount
@@ -59,24 +57,60 @@ templ EventShowMain(data EventData) {
 					<dt>{ ctxi18n.T(ctx, "fields.calculations") }</dt>
 					<dd>
 						<div class="detail-box-controls" role="radiogroup" aria-label={ ctxi18n.T(ctx, "table.paid") }>
-							@shared.RadioLink(shared.RadioLinkProps{Href: utils.BuildTableSummaryURL(fmt.Sprintf("/groups/%s/events/%s", data.GroupID, data.Event.ID), data.Query, utils.SummaryModeAll), Label: ctxi18n.T(ctx, "table.all"), IsSelected: data.Query.Summary == utils.SummaryModeAll, ClassName: "btn btn-xs"})
-							@shared.RadioLink(shared.RadioLinkProps{Href: utils.BuildTableSummaryURL(fmt.Sprintf("/groups/%s/events/%s", data.GroupID, data.Event.ID), data.Query, utils.SummaryModePaid), Label: ctxi18n.T(ctx, "table.paid"), IsSelected: data.Query.Summary == utils.SummaryModePaid, ClassName: "btn btn-xs"})
-							@shared.RadioLink(shared.RadioLinkProps{Href: utils.BuildTableSummaryURL(fmt.Sprintf("/groups/%s/events/%s", data.GroupID, data.Event.ID), data.Query, utils.SummaryModeUnpaid), Label: ctxi18n.T(ctx, "table.unpaid"), IsSelected: data.Query.Summary == utils.SummaryModeUnpaid, ClassName: "btn btn-xs"})
+							@shared.RadioLink(shared.RadioLinkProps{
+								Href:       utils.BuildTableSummaryURL(fmt.Sprintf("/groups/%s/events/%s", data.GroupID, data.Event.ID), data.Query, utils.SummaryModeAll),
+								Label:      ctxi18n.T(ctx, "table.all"),
+								IsSelected: data.Query.Summary == utils.SummaryModeAll,
+								NoIcon:     true,
+								ClassName:  "btn btn-xs",
+							})
+							@shared.RadioLink(shared.RadioLinkProps{
+								Href:       utils.BuildTableSummaryURL(fmt.Sprintf("/groups/%s/events/%s", data.GroupID, data.Event.ID), data.Query, utils.SummaryModePaid),
+								Label:      ctxi18n.T(ctx, "table.paid"),
+								IsSelected: data.Query.Summary == utils.SummaryModePaid,
+								NoIcon:     true,
+								ClassName:  "btn btn-xs",
+							})
+							@shared.RadioLink(shared.RadioLinkProps{
+								Href:       utils.BuildTableSummaryURL(fmt.Sprintf("/groups/%s/events/%s", data.GroupID, data.Event.ID), data.Query, utils.SummaryModeUnpaid),
+								Label:      ctxi18n.T(ctx, "table.unpaid"),
+								IsSelected: data.Query.Summary == utils.SummaryModeUnpaid,
+								NoIcon:     true,
+								ClassName:  "btn btn-xs",
+							})
 						</div>
 					</dd>
 				</div>
 			</dl>
-			<dl data-show="$summaryMode === 'all'">
+			{{
+				// TODO: Replace this inline initial-visibility workaround with a reusable summary panel helper.
+			}}
+			<dl data-show="$summaryMode === 'all'" style={ func() string {
+				if data.Query.Summary == utils.SummaryModeAll {
+					return ""
+				}
+				return "display: none"
+			}() }>
 				<div><dt>{ ctxi18n.T(ctx, "fields.income") }</dt><dd>{ utils.FormatNumberLocalized(ctx, data.Event.Amount) }</dd></div>
 				<div><dt>{ ctxi18n.T(ctx, "participants.payout_total") }</dt><dd>{ utils.FormatNumberLocalizedWithSign(ctx, data.FilteredPaid+data.FilteredUnpaid, false) }</dd></div>
 				<div><dt>{ ctxi18n.T(ctx, "events.leftover") }</dt><dd>{ utils.FormatNumberLocalized(ctx, data.Event.Amount-(data.FilteredPaid+data.FilteredUnpaid)) }</dd></div>
 			</dl>
-			<dl data-show="$summaryMode === 'paid'" style="display: none">
+			<dl data-show="$summaryMode === 'paid'" style={ func() string {
+				if data.Query.Summary == utils.SummaryModePaid {
+					return ""
+				}
+				return "display: none"
+			}() }>
 				<div><dt>{ ctxi18n.T(ctx, "fields.income") }</dt><dd>{ utils.FormatNumberLocalized(ctx, incomePaid) }</dd></div>
 				<div><dt>{ ctxi18n.T(ctx, "participants.payout_total") }</dt><dd>{ utils.FormatNumberLocalizedWithSign(ctx, data.FilteredPaid, false) }</dd></div>
 				<div><dt>{ ctxi18n.T(ctx, "events.leftover") }</dt><dd>{ utils.FormatNumberLocalized(ctx, incomePaid-data.FilteredPaid) }</dd></div>
 			</dl>
-			<dl data-show="$summaryMode === 'unpaid'" style="display: none">
+			<dl data-show="$summaryMode === 'unpaid'" style={ func() string {
+				if data.Query.Summary == utils.SummaryModeUnpaid {
+					return ""
+				}
+				return "display: none"
+			}() }>
 				<div><dt>{ ctxi18n.T(ctx, "fields.income") }</dt><dd>{ utils.FormatNumberLocalized(ctx, incomeUnpaid) }</dd></div>
 				<div><dt>{ ctxi18n.T(ctx, "participants.payout_total") }</dt><dd>{ utils.FormatNumberLocalizedWithSign(ctx, data.FilteredUnpaid, false) }</dd></div>
 				<div><dt>{ ctxi18n.T(ctx, "events.leftover") }</dt><dd>{ utils.FormatNumberLocalized(ctx, incomeUnpaid-data.FilteredUnpaid) }</dd></div>

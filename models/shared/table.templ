@@ -86,14 +86,13 @@ templ TablePaginationRow(basePath string, query utils.TableQuery, pager utils.Ta
 		<div class="row row-wrap row-tight" role="radiogroup" aria-label={ ctxi18n.T(ctx, "table.page_size") }>
 			<span class="hide-tablet text-sm pr">{ ctxi18n.T(ctx, "table.page_size") }</span>
 			for _, pageSize := range utils.StandardTablePageSizes {
-				<a
-					class={ utils.PageSizeButtonClass(query.PageSize, pageSize) }
-					role="radio"
-					aria-checked={ fmt.Sprintf("%t", query.PageSize == pageSize) }
-					href={ utils.BuildTablePageSizeURL(basePath, query, pageSize) }
-				>
-					{ fmt.Sprintf("%d", pageSize) }
-				</a>
+				@RadioLink(RadioLinkProps{
+					Href:       utils.BuildTablePageSizeURL(basePath, query, pageSize),
+					Label:      fmt.Sprintf("%d", pageSize),
+					IsSelected: query.PageSize == pageSize,
+					NoIcon:     true,
+					ClassName:  "btn btn-xs",
+				})
 			}
 		</div>
 		@TablePaginationControls(basePath, query, pager)

@@ -205,15 +205,33 @@ func GroupDetailsContent(data GroupPageData) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = shared.RadioButton(shared.RadioButtonProps{Bind: "summaryMode", Value: "all", Label: ctxi18n.T(ctx, "table.all"), ClassName: "btn btn-xs"}).Render(ctx, templ_7745c5c3_Buffer)
+		templ_7745c5c3_Err = shared.RadioButton(shared.RadioButtonProps{
+			Bind:      "summaryMode",
+			Value:     "all",
+			Label:     ctxi18n.T(ctx, "table.all"),
+			NoIcon:    true,
+			ClassName: "btn btn-xs",
+		}).Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = shared.RadioButton(shared.RadioButtonProps{Bind: "summaryMode", Value: "paid", Label: ctxi18n.T(ctx, "table.paid"), ClassName: "btn btn-xs"}).Render(ctx, templ_7745c5c3_Buffer)
+		templ_7745c5c3_Err = shared.RadioButton(shared.RadioButtonProps{
+			Bind:      "summaryMode",
+			Value:     "paid",
+			Label:     ctxi18n.T(ctx, "table.paid"),
+			NoIcon:    true,
+			ClassName: "btn btn-xs",
+		}).Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = shared.RadioButton(shared.RadioButtonProps{Bind: "summaryMode", Value: "unpaid", Label: ctxi18n.T(ctx, "table.unpaid"), ClassName: "btn btn-xs"}).Render(ctx, templ_7745c5c3_Buffer)
+		templ_7745c5c3_Err = shared.RadioButton(shared.RadioButtonProps{
+			Bind:      "summaryMode",
+			Value:     "unpaid",
+			Label:     ctxi18n.T(ctx, "table.unpaid"),
+			NoIcon:    true,
+			ClassName: "btn btn-xs",
+		}).Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -224,7 +242,7 @@ func GroupDetailsContent(data GroupPageData) templ.Component {
 		var templ_7745c5c3_Var8 string
 		templ_7745c5c3_Var8, templ_7745c5c3_Err = templ.JoinStringErrs(ctxi18n.T(ctx, "groups.income"))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/group/page_show.templ`, Line: 65, Col: 45}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/group/page_show.templ`, Line: 83, Col: 45}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var8))
 		if templ_7745c5c3_Err != nil {
@@ -237,7 +255,7 @@ func GroupDetailsContent(data GroupPageData) templ.Component {
 		var templ_7745c5c3_Var9 string
 		templ_7745c5c3_Var9, templ_7745c5c3_Err = templ.JoinStringErrs(utils.FormatNumberLocalized(ctx, data.Income))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/group/page_show.templ`, Line: 65, Col: 103}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/group/page_show.templ`, Line: 83, Col: 103}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var9))
 		if templ_7745c5c3_Err != nil {
@@ -250,7 +268,7 @@ func GroupDetailsContent(data GroupPageData) templ.Component {
 		var templ_7745c5c3_Var10 string
 		templ_7745c5c3_Var10, templ_7745c5c3_Err = templ.JoinStringErrs(ctxi18n.T(ctx, "groups.payouts"))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/group/page_show.templ`, Line: 66, Col: 46}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/group/page_show.templ`, Line: 84, Col: 46}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var10))
 		if templ_7745c5c3_Err != nil {
@@ -263,7 +281,7 @@ func GroupDetailsContent(data GroupPageData) templ.Component {
 		var templ_7745c5c3_Var11 string
 		templ_7745c5c3_Var11, templ_7745c5c3_Err = templ.JoinStringErrs(utils.FormatNumberLocalizedWithSign(ctx, data.Payouts, false))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/group/page_show.templ`, Line: 66, Col: 120}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/group/page_show.templ`, Line: 84, Col: 120}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var11))
 		if templ_7745c5c3_Err != nil {
@@ -276,7 +294,7 @@ func GroupDetailsContent(data GroupPageData) templ.Component {
 		var templ_7745c5c3_Var12 string
 		templ_7745c5c3_Var12, templ_7745c5c3_Err = templ.JoinStringErrs(ctxi18n.T(ctx, "groups.expenses"))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/group/page_show.templ`, Line: 67, Col: 47}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/group/page_show.templ`, Line: 85, Col: 47}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var12))
 		if templ_7745c5c3_Err != nil {
@@ -289,7 +307,7 @@ func GroupDetailsContent(data GroupPageData) templ.Component {
 		var templ_7745c5c3_Var13 string
 		templ_7745c5c3_Var13, templ_7745c5c3_Err = templ.JoinStringErrs(utils.FormatNumberLocalizedWithSign(ctx, data.Expenses, false))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/group/page_show.templ`, Line: 67, Col: 122}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/group/page_show.templ`, Line: 85, Col: 122}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var13))
 		if templ_7745c5c3_Err != nil {
@@ -302,7 +320,7 @@ func GroupDetailsContent(data GroupPageData) templ.Component {
 		var templ_7745c5c3_Var14 string
 		templ_7745c5c3_Var14, templ_7745c5c3_Err = templ.JoinStringErrs(ctxi18n.T(ctx, "groups.leftover"))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/group/page_show.templ`, Line: 68, Col: 47}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/group/page_show.templ`, Line: 86, Col: 47}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var14))
 		if templ_7745c5c3_Err != nil {
@@ -315,7 +333,7 @@ func GroupDetailsContent(data GroupPageData) templ.Component {
 		var templ_7745c5c3_Var15 string
 		templ_7745c5c3_Var15, templ_7745c5c3_Err = templ.JoinStringErrs(utils.FormatNumberLocalized(ctx, data.Leftover))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/group/page_show.templ`, Line: 68, Col: 107}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/group/page_show.templ`, Line: 86, Col: 107}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var15))
 		if templ_7745c5c3_Err != nil {
@@ -328,7 +346,7 @@ func GroupDetailsContent(data GroupPageData) templ.Component {
 		var templ_7745c5c3_Var16 string
 		templ_7745c5c3_Var16, templ_7745c5c3_Err = templ.JoinStringErrs(ctxi18n.T(ctx, "groups.income"))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/group/page_show.templ`, Line: 71, Col: 45}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/group/page_show.templ`, Line: 89, Col: 45}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var16))
 		if templ_7745c5c3_Err != nil {
@@ -341,7 +359,7 @@ func GroupDetailsContent(data GroupPageData) templ.Component {
 		var templ_7745c5c3_Var17 string
 		templ_7745c5c3_Var17, templ_7745c5c3_Err = templ.JoinStringErrs(utils.FormatNumberLocalized(ctx, data.IncomePaid))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/group/page_show.templ`, Line: 71, Col: 107}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/group/page_show.templ`, Line: 89, Col: 107}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var17))
 		if templ_7745c5c3_Err != nil {
@@ -354,7 +372,7 @@ func GroupDetailsContent(data GroupPageData) templ.Component {
 		var templ_7745c5c3_Var18 string
 		templ_7745c5c3_Var18, templ_7745c5c3_Err = templ.JoinStringErrs(ctxi18n.T(ctx, "groups.payouts"))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/group/page_show.templ`, Line: 72, Col: 46}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/group/page_show.templ`, Line: 90, Col: 46}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var18))
 		if templ_7745c5c3_Err != nil {
@@ -367,7 +385,7 @@ func GroupDetailsContent(data GroupPageData) templ.Component {
 		var templ_7745c5c3_Var19 string
 		templ_7745c5c3_Var19, templ_7745c5c3_Err = templ.JoinStringErrs(utils.FormatNumberLocalizedWithSign(ctx, data.PayoutsPaid, false))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/group/page_show.templ`, Line: 72, Col: 124}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/group/page_show.templ`, Line: 90, Col: 124}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var19))
 		if templ_7745c5c3_Err != nil {
@@ -380,7 +398,7 @@ func GroupDetailsContent(data GroupPageData) templ.Component {
 		var templ_7745c5c3_Var20 string
 		templ_7745c5c3_Var20, templ_7745c5c3_Err = templ.JoinStringErrs(ctxi18n.T(ctx, "groups.expenses"))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/group/page_show.templ`, Line: 73, Col: 47}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/group/page_show.templ`, Line: 91, Col: 47}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var20))
 		if templ_7745c5c3_Err != nil {
@@ -393,7 +411,7 @@ func GroupDetailsContent(data GroupPageData) templ.Component {
 		var templ_7745c5c3_Var21 string
 		templ_7745c5c3_Var21, templ_7745c5c3_Err = templ.JoinStringErrs(utils.FormatNumberLocalizedWithSign(ctx, data.ExpensesPaid, false))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/group/page_show.templ`, Line: 73, Col: 126}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/group/page_show.templ`, Line: 91, Col: 126}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var21))
 		if templ_7745c5c3_Err != nil {
@@ -406,7 +424,7 @@ func GroupDetailsContent(data GroupPageData) templ.Component {
 		var templ_7745c5c3_Var22 string
 		templ_7745c5c3_Var22, templ_7745c5c3_Err = templ.JoinStringErrs(ctxi18n.T(ctx, "groups.leftover"))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/group/page_show.templ`, Line: 74, Col: 47}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/group/page_show.templ`, Line: 92, Col: 47}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var22))
 		if templ_7745c5c3_Err != nil {
@@ -419,7 +437,7 @@ func GroupDetailsContent(data GroupPageData) templ.Component {
 		var templ_7745c5c3_Var23 string
 		templ_7745c5c3_Var23, templ_7745c5c3_Err = templ.JoinStringErrs(utils.FormatNumberLocalized(ctx, data.IncomePaid-data.PayoutsPaid-data.ExpensesPaid))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/group/page_show.templ`, Line: 74, Col: 144}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/group/page_show.templ`, Line: 92, Col: 144}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var23))
 		if templ_7745c5c3_Err != nil {
@@ -432,7 +450,7 @@ func GroupDetailsContent(data GroupPageData) templ.Component {
 		var templ_7745c5c3_Var24 string
 		templ_7745c5c3_Var24, templ_7745c5c3_Err = templ.JoinStringErrs(ctxi18n.T(ctx, "groups.income"))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/group/page_show.templ`, Line: 77, Col: 45}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/group/page_show.templ`, Line: 95, Col: 45}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var24))
 		if templ_7745c5c3_Err != nil {
@@ -445,7 +463,7 @@ func GroupDetailsContent(data GroupPageData) templ.Component {
 		var templ_7745c5c3_Var25 string
 		templ_7745c5c3_Var25, templ_7745c5c3_Err = templ.JoinStringErrs(utils.FormatNumberLocalized(ctx, data.IncomeUnpaid))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/group/page_show.templ`, Line: 77, Col: 109}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/group/page_show.templ`, Line: 95, Col: 109}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var25))
 		if templ_7745c5c3_Err != nil {
@@ -458,7 +476,7 @@ func GroupDetailsContent(data GroupPageData) templ.Component {
 		var templ_7745c5c3_Var26 string
 		templ_7745c5c3_Var26, templ_7745c5c3_Err = templ.JoinStringErrs(ctxi18n.T(ctx, "groups.payouts"))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/group/page_show.templ`, Line: 78, Col: 46}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/group/page_show.templ`, Line: 96, Col: 46}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var26))
 		if templ_7745c5c3_Err != nil {
@@ -471,7 +489,7 @@ func GroupDetailsContent(data GroupPageData) templ.Component {
 		var templ_7745c5c3_Var27 string
 		templ_7745c5c3_Var27, templ_7745c5c3_Err = templ.JoinStringErrs(utils.FormatNumberLocalizedWithSign(ctx, data.PayoutsUnpaid, false))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/group/page_show.templ`, Line: 78, Col: 126}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/group/page_show.templ`, Line: 96, Col: 126}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var27))
 		if templ_7745c5c3_Err != nil {
@@ -484,7 +502,7 @@ func GroupDetailsContent(data GroupPageData) templ.Component {
 		var templ_7745c5c3_Var28 string
 		templ_7745c5c3_Var28, templ_7745c5c3_Err = templ.JoinStringErrs(ctxi18n.T(ctx, "groups.expenses"))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/group/page_show.templ`, Line: 79, Col: 47}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/group/page_show.templ`, Line: 97, Col: 47}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var28))
 		if templ_7745c5c3_Err != nil {
@@ -497,7 +515,7 @@ func GroupDetailsContent(data GroupPageData) templ.Component {
 		var templ_7745c5c3_Var29 string
 		templ_7745c5c3_Var29, templ_7745c5c3_Err = templ.JoinStringErrs(utils.FormatNumberLocalizedWithSign(ctx, data.ExpensesUnpaid, false))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/group/page_show.templ`, Line: 79, Col: 128}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/group/page_show.templ`, Line: 97, Col: 128}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var29))
 		if templ_7745c5c3_Err != nil {
@@ -510,7 +528,7 @@ func GroupDetailsContent(data GroupPageData) templ.Component {
 		var templ_7745c5c3_Var30 string
 		templ_7745c5c3_Var30, templ_7745c5c3_Err = templ.JoinStringErrs(ctxi18n.T(ctx, "groups.leftover"))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/group/page_show.templ`, Line: 80, Col: 47}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/group/page_show.templ`, Line: 98, Col: 47}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var30))
 		if templ_7745c5c3_Err != nil {
@@ -523,7 +541,7 @@ func GroupDetailsContent(data GroupPageData) templ.Component {
 		var templ_7745c5c3_Var31 string
 		templ_7745c5c3_Var31, templ_7745c5c3_Err = templ.JoinStringErrs(utils.FormatNumberLocalized(ctx, data.IncomeUnpaid-data.PayoutsUnpaid-data.ExpensesUnpaid))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/group/page_show.templ`, Line: 80, Col: 150}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/group/page_show.templ`, Line: 98, Col: 150}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var31))
 		if templ_7745c5c3_Err != nil {
@@ -626,7 +644,7 @@ func GroupSidebar(data GroupPageData) templ.Component {
 		var templ_7745c5c3_Var34 string
 		templ_7745c5c3_Var34, templ_7745c5c3_Err = templ.JoinStringErrs(templ.JSONString(map[string]any{"sidebarLoadingAction": ""}))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/group/page_show.templ`, Line: 117, Col: 81}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/group/page_show.templ`, Line: 135, Col: 81}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var34))
 		if templ_7745c5c3_Err != nil {
@@ -644,7 +662,7 @@ func GroupSidebar(data GroupPageData) templ.Component {
 			var templ_7745c5c3_Var35 string
 			templ_7745c5c3_Var35, templ_7745c5c3_Err = templ.JoinStringErrs(submitExpr)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/group/page_show.templ`, Line: 120, Col: 50}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/group/page_show.templ`, Line: 138, Col: 50}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var35))
 			if templ_7745c5c3_Err != nil {
@@ -657,7 +675,7 @@ func GroupSidebar(data GroupPageData) templ.Component {
 			var templ_7745c5c3_Var36 string
 			templ_7745c5c3_Var36, templ_7745c5c3_Err = templ.JoinStringErrs(ctxi18n.T(ctx, "groups.name"))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/group/page_show.templ`, Line: 122, Col: 78}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/group/page_show.templ`, Line: 140, Col: 78}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var36))
 			if templ_7745c5c3_Err != nil {
@@ -670,7 +688,7 @@ func GroupSidebar(data GroupPageData) templ.Component {
 			var templ_7745c5c3_Var37 string
 			templ_7745c5c3_Var37, templ_7745c5c3_Err = templ.JoinStringErrs(ctxi18n.T(ctx, "groups.name_placeholder"))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/group/page_show.templ`, Line: 123, Col: 127}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/group/page_show.templ`, Line: 141, Col: 127}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var37))
 			if templ_7745c5c3_Err != nil {

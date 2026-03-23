@@ -75,6 +75,7 @@ type RadioButtonProps struct {
 	Bind         string
 	Value        string
 	IsSelected   bool
+	NoIcon       bool
 	OnClick      string
 	DisabledExpr string
 	Label        string
@@ -87,6 +88,7 @@ type RadioLinkProps struct {
 	Href          string
 	Label         string
 	IsSelected    bool
+	NoIcon        bool
 	Disabled      bool
 	ClassName     string
 	ActiveClass   string
@@ -318,12 +320,14 @@ templ RadioButton(props RadioButtonProps) {
 			classExpr := fmt.Sprintf("(%s) ? %s : %s", selectedExpr, utils.JSONString(selectedClass), utils.JSONString(unselectedClass))
 		}}
 		<button type="button" class={ baseClass } data-attr:class={ classExpr } data-attr:aria-pressed={ selectedExpr } data-attr:disabled={ disabledExpr } data-on:click={ setExpr }>
-			<span data-show={ unselectedExpr }>
-				@icons.Circle(templ.Attributes{"class": "icon"})
-			</span>
-			<span data-show={ selectedExpr } style="display: none">
-				@icons.CircleCheckBig(templ.Attributes{"class": "icon"})
-			</span>
+			if !props.NoIcon {
+				<span data-show={ unselectedExpr }>
+					@icons.Circle(templ.Attributes{"class": "icon"})
+				</span>
+				<span data-show={ selectedExpr } style="display: none">
+					@icons.CircleDot(templ.Attributes{"class": "icon"})
+				</span>
+			}
 			<span>{ props.Label }</span>
 		</button>
 	} else {
@@ -335,19 +339,23 @@ templ RadioButton(props RadioButtonProps) {
 		}}
 		if props.OnClick != "" {
 			<button type="button" class={ className } data-attr:disabled={ disabledExpr } data-on:click={ props.OnClick }>
-				if props.IsSelected {
-					@icons.CircleCheckBig(templ.Attributes{"class": "icon"})
-				} else {
-					@icons.Circle(templ.Attributes{"class": "icon"})
+				if !props.NoIcon {
+					if props.IsSelected {
+						@icons.CircleDot(templ.Attributes{"class": "icon"})
+					} else {
+						@icons.Circle(templ.Attributes{"class": "icon"})
+					}
 				}
 				<span>{ props.Label }</span>
 			</button>
 		} else {
 			<button type="button" class={ className } data-attr:disabled={ disabledExpr }>
-				if props.IsSelected {
-					@icons.CircleCheckBig(templ.Attributes{"class": "icon"})
-				} else {
-					@icons.Circle(templ.Attributes{"class": "icon"})
+				if !props.NoIcon {
+					if props.IsSelected {
+						@icons.CircleDot(templ.Attributes{"class": "icon"})
+					} else {
+						@icons.Circle(templ.Attributes{"class": "icon"})
+					}
 				}
 				<span>{ props.Label }</span>
 			</button>
@@ -378,19 +386,23 @@ templ RadioLink(props RadioLinkProps) {
 	}}
 	if props.Disabled {
 		<a class={ className } disabled aria-disabled="true">
-			if props.IsSelected {
-				@icons.CircleCheckBig(templ.Attributes{"class": "icon"})
-			} else {
-				@icons.Circle(templ.Attributes{"class": "icon"})
+			if !props.NoIcon {
+				if props.IsSelected {
+					@icons.CircleDot(templ.Attributes{"class": "icon"})
+				} else {
+					@icons.Circle(templ.Attributes{"class": "icon"})
+				}
 			}
 			<span>{ props.Label }</span>
 		</a>
 	} else {
 		<a class={ className } href={ props.Href } aria-pressed={ fmt.Sprintf("%t", props.IsSelected) }>
-			if props.IsSelected {
-				@icons.CircleCheckBig(templ.Attributes{"class": "icon"})
-			} else {
-				@icons.Circle(templ.Attributes{"class": "icon"})
+			if !props.NoIcon {
+				if props.IsSelected {
+					@icons.CircleDot(templ.Attributes{"class": "icon"})
+				} else {
+					@icons.Circle(templ.Attributes{"class": "icon"})
+				}
 			}
 			<span>{ props.Label }</span>
 		</a>

@@ -9,11 +9,19 @@ package shared
 }
 
 templ DetailsCard(stateKey string, rows []DetailsRow) {
+	@DetailsCardWithClass(stateKey, rows, "")
+}
+
+templ DetailsCardWithClass(stateKey string, rows []DetailsRow, className string) {
 	{{
 		_ = stateKey
 		rowsBody := rows
+		sectionClass := "detail-box"
+		if className != "" {
+			sectionClass = sectionClass + " " + className
+		}
 	}}
-	<section class="detail-box">
+	<section class={ sectionClass }>
 		<dl>
 			for _, row := range rowsBody {
 				if row.LabelClass != "section-title" {

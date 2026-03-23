@@ -18,7 +18,7 @@ templ MemberShowMain(data MemberData) {
 		if data.IsAdmin {
 			@shared.DetailsActions(MemberShowDetailsActions(data))
 		}
-		<section class="detail-box pb">
+		<section class="detail-box bb-0 pb">
 			<dl>
 				<div><dt>{ ctxi18n.T(ctx, "fields.name") }</dt><dd>{ data.Member.Name }</dd></div>
 				<div><dt>{ ctxi18n.T(ctx, "fields.description") }</dt><dd>{ data.Member.Description }</dd></div>
@@ -31,31 +31,85 @@ templ MemberShowMain(data MemberData) {
 					<dt>{ ctxi18n.T(ctx, "fields.calculations") }</dt>
 					<dd>
 						<div class="detail-box-controls" role="radiogroup" aria-label={ ctxi18n.T(ctx, "table.paid") }>
-							@shared.RadioLink(shared.RadioLinkProps{Href: utils.BuildTableSummaryURL(fmt.Sprintf("/groups/%s/members/%s", data.GroupID, data.Member.ID), data.Query, utils.SummaryModeAll), Label: ctxi18n.T(ctx, "table.all"), IsSelected: data.Query.Summary == utils.SummaryModeAll, ClassName: "btn btn-xs"})
-							@shared.RadioLink(shared.RadioLinkProps{Href: utils.BuildTableSummaryURL(fmt.Sprintf("/groups/%s/members/%s", data.GroupID, data.Member.ID), data.Query, utils.SummaryModePaid), Label: ctxi18n.T(ctx, "table.paid"), IsSelected: data.Query.Summary == utils.SummaryModePaid, ClassName: "btn btn-xs"})
-							@shared.RadioLink(shared.RadioLinkProps{Href: utils.BuildTableSummaryURL(fmt.Sprintf("/groups/%s/members/%s", data.GroupID, data.Member.ID), data.Query, utils.SummaryModeUnpaid), Label: ctxi18n.T(ctx, "table.unpaid"), IsSelected: data.Query.Summary == utils.SummaryModeUnpaid, ClassName: "btn btn-xs"})
+							@shared.RadioLink(shared.RadioLinkProps{
+								Href:       utils.BuildTableSummaryURL(fmt.Sprintf("/groups/%s/members/%s", data.GroupID, data.Member.ID), data.Query, utils.SummaryModeAll),
+								Label:      ctxi18n.T(ctx, "table.all"),
+								IsSelected: data.Query.Summary == utils.SummaryModeAll,
+								NoIcon:     true,
+								ClassName:  "btn btn-xs",
+							})
+							@shared.RadioLink(shared.RadioLinkProps{
+								Href:       utils.BuildTableSummaryURL(fmt.Sprintf("/groups/%s/members/%s", data.GroupID, data.Member.ID), data.Query, utils.SummaryModePaid),
+								Label:      ctxi18n.T(ctx, "table.paid"),
+								IsSelected: data.Query.Summary == utils.SummaryModePaid,
+								NoIcon:     true,
+								ClassName:  "btn btn-xs",
+							})
+							@shared.RadioLink(shared.RadioLinkProps{
+								Href:       utils.BuildTableSummaryURL(fmt.Sprintf("/groups/%s/members/%s", data.GroupID, data.Member.ID), data.Query, utils.SummaryModeUnpaid),
+								Label:      ctxi18n.T(ctx, "table.unpaid"),
+								IsSelected: data.Query.Summary == utils.SummaryModeUnpaid,
+								NoIcon:     true,
+								ClassName:  "btn btn-xs",
+							})
 						</div>
 					</dd>
 				</div>
 			</dl>
-			<dl data-show="$summaryMode === 'all'">
+			{{
+				// TODO: Replace this inline initial-visibility workaround with a reusable summary panel helper.
+			}}
+			<dl data-show="$summaryMode === 'all'" style={ func() string {
+				if data.Query.Summary == utils.SummaryModeAll {
+					return ""
+				}
+				return "display: none"
+			}() }>
 				<div><dt>{ ctxi18n.T(ctx, "members.total_payout") }</dt><dd>{ utils.FormatNumberLocalizedWithSign(ctx, data.TotalPayout, false) }</dd></div>
 			</dl>
-			<dl data-show="$summaryMode === 'paid'" style="display: none">
+			<dl data-show="$summaryMode === 'paid'" style={ func() string {
+				if data.Query.Summary == utils.SummaryModePaid {
+					return ""
+				}
+				return "display: none"
+			}() }>
 				<div><dt>{ ctxi18n.T(ctx, "members.total_payout") }</dt><dd>{ utils.FormatNumberLocalizedWithSign(ctx, data.TotalPaid, false) }</dd></div>
 			</dl>
-			<dl data-show="$summaryMode === 'unpaid'" style="display: none">
+			<dl data-show="$summaryMode === 'unpaid'" style={ func() string {
+				if data.Query.Summary == utils.SummaryModeUnpaid {
+					return ""
+				}
+				return "display: none"
+			}() }>
 				<div><dt>{ ctxi18n.T(ctx, "members.total_payout") }</dt><dd>{ utils.FormatNumberLocalizedWithSign(ctx, data.TotalUnpaid, false) }</dd></div>
 			</dl>
 		</section>
 		@shared.TableSearchFormWithClass(fmt.Sprintf("/groups/%s/members/%s", data.GroupID, data.Member.ID), data.Query, "table.search_placeholder_member_events", "pt")
 		<div class="row row-wrap justify-between pb" role="radiogroup" aria-label={ ctxi18n.T(ctx, "table.date_filters") }>
 			<div class="row row-tight">
-				@shared.RadioLink(shared.RadioLinkProps{Href: utils.BuildTableDateClearURL(fmt.Sprintf("/groups/%s/members/%s", data.GroupID, data.Member.ID), data.Query), Label: ctxi18n.T(ctx, "table.all"), IsSelected: utils.DateFilterAllActive(data.Query), ClassName: "btn btn-xs"})
+				@shared.RadioLink(shared.RadioLinkProps{
+					Href:       utils.BuildTableDateClearURL(fmt.Sprintf("/groups/%s/members/%s", data.GroupID, data.Member.ID), data.Query),
+					Label:      ctxi18n.T(ctx, "table.all"),
+					IsSelected: utils.DateFilterAllActive(data.Query),
+					NoIcon:     true,
+					ClassName:  "btn btn-xs",
+				})
 				for _, year := range data.RecentYears {
-					@shared.RadioLink(shared.RadioLinkProps{Href: utils.BuildTableDateYearURL(fmt.Sprintf("/groups/%s/members/%s", data.GroupID, data.Member.ID), data.Query, fmt.Sprintf("%d", year)), Label: fmt.Sprintf("%d", year), IsSelected: utils.DateFilterYearActive(data.Query, fmt.Sprintf("%d", year)), ClassName: "btn btn-xs"})
+					@shared.RadioLink(shared.RadioLinkProps{
+						Href:       utils.BuildTableDateYearURL(fmt.Sprintf("/groups/%s/members/%s", data.GroupID, data.Member.ID), data.Query, fmt.Sprintf("%d", year)),
+						Label:      fmt.Sprintf("%d", year),
+						IsSelected: utils.DateFilterYearActive(data.Query, fmt.Sprintf("%d", year)),
+						NoIcon:     true,
+						ClassName:  "btn btn-xs",
+					})
 				}
-				@shared.RadioLink(shared.RadioLinkProps{Href: utils.BuildTableDateCustomURL(fmt.Sprintf("/groups/%s/members/%s", data.GroupID, data.Member.ID), data.Query), Label: ctxi18n.T(ctx, "table.custom"), IsSelected: utils.DateFilterCustomActive(data.Query), ClassName: "btn btn-xs"})
+				@shared.RadioLink(shared.RadioLinkProps{
+					Href:       utils.BuildTableDateCustomURL(fmt.Sprintf("/groups/%s/members/%s", data.GroupID, data.Member.ID), data.Query),
+					Label:      ctxi18n.T(ctx, "table.custom"),
+					IsSelected: utils.DateFilterCustomActive(data.Query),
+					NoIcon:     true,
+					ClassName:  "btn btn-xs",
+				})
 			</div>
 			if utils.DateFilterCustomActive(data.Query) {
 				<form class="row row-tight" method="get" action={ fmt.Sprintf("/groups/%s/members/%s", data.GroupID, data.Member.ID) }>
@@ -87,7 +141,7 @@ templ MemberShowMain(data MemberData) {
 		<thead>
 			<tr>
 				@shared.THCol(data.EventsTable.Col("title")) {
-					@shared.TableSortHeader(ctxi18n.T(ctx, "fields.title"), "title", data.Query, utils.BuildTableSortURL(fmt.Sprintf("/groups/%s/members/%s", data.GroupID, data.Member.ID), data.Query, "title"))
+					@shared.TableSortHeader(ctxi18n.T(ctx, "fields.event_title"), "title", data.Query, utils.BuildTableSortURL(fmt.Sprintf("/groups/%s/members/%s", data.GroupID, data.Member.ID), data.Query, "title"))
 				}
 				@shared.THCol(data.EventsTable.Col("time")) {
 					@shared.TableSortHeader(ctxi18n.T(ctx, "fields.time"), "time", data.Query, utils.BuildTableSortURL(fmt.Sprintf("/groups/%s/members/%s", data.GroupID, data.Member.ID), data.Query, "time"))

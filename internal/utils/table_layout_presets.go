@@ -27,6 +27,7 @@ func ExpensesIndexTableLayout() TableLayout {
 		{Key: "date", WidthCh: 12},
 		{Key: "amount", WidthCh: 12},
 		{Key: "paid", WidthCh: 14},
+		{Key: "paid_at", WidthCh: 14},
 	}, 4)
 }
 

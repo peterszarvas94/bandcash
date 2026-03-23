@@ -54,9 +54,27 @@ templ GroupDetailsContent(data GroupPageData) {
 				<dt>{ ctxi18n.T(ctx, "fields.calculations") }</dt>
 				<dd>
 					<div class="detail-box-controls" role="radiogroup" aria-label={ ctxi18n.T(ctx, "table.paid") }>
-						@shared.RadioButton(shared.RadioButtonProps{Bind: "summaryMode", Value: "all", Label: ctxi18n.T(ctx, "table.all"), ClassName: "btn btn-xs"})
-						@shared.RadioButton(shared.RadioButtonProps{Bind: "summaryMode", Value: "paid", Label: ctxi18n.T(ctx, "table.paid"), ClassName: "btn btn-xs"})
-						@shared.RadioButton(shared.RadioButtonProps{Bind: "summaryMode", Value: "unpaid", Label: ctxi18n.T(ctx, "table.unpaid"), ClassName: "btn btn-xs"})
+						@shared.RadioButton(shared.RadioButtonProps{
+							Bind:      "summaryMode",
+							Value:     "all",
+							Label:     ctxi18n.T(ctx, "table.all"),
+							NoIcon:    true,
+							ClassName: "btn btn-xs",
+						})
+						@shared.RadioButton(shared.RadioButtonProps{
+							Bind:      "summaryMode",
+							Value:     "paid",
+							Label:     ctxi18n.T(ctx, "table.paid"),
+							NoIcon:    true,
+							ClassName: "btn btn-xs",
+						})
+						@shared.RadioButton(shared.RadioButtonProps{
+							Bind:      "summaryMode",
+							Value:     "unpaid",
+							Label:     ctxi18n.T(ctx, "table.unpaid"),
+							NoIcon:    true,
+							ClassName: "btn btn-xs",
+						})
 					</div>
 				</dd>
 			</div>
