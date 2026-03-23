@@ -17,7 +17,7 @@ func (e *Expenses) TableQuerySpec() utils.TableQuerySpec {
 	return utils.StandardTableQuerySpec(utils.StandardTableQuerySpecParams{
 		DefaultSort:  "date",
 		DefaultDir:   "desc",
-		AllowedSorts: []string{"date", "title", "amount", "paid"},
+		AllowedSorts: []string{"date", "title", "amount", "paid", "paid_at"},
 	})
 }
 
@@ -124,6 +124,23 @@ func sortExpenses(expenses []db.Expense, sortField, dir string) {
 				return expenses[i].Paid > expenses[j].Paid
 			}
 			return expenses[i].Paid < expenses[j].Paid
+		case "paid_at":
+			if expenses[i].PaidAt.Valid && expenses[j].PaidAt.Valid {
+				if dir == "desc" {
+					return expenses[i].PaidAt.String > expenses[j].PaidAt.String
+				}
+				return expenses[i].PaidAt.String < expenses[j].PaidAt.String
+			}
+			if expenses[i].PaidAt.Valid != expenses[j].PaidAt.Valid {
+				if dir == "desc" {
+					return !expenses[i].PaidAt.Valid
+				}
+				return expenses[i].PaidAt.Valid
+			}
+			if dir == "asc" {
+				return expenses[i].Date < expenses[j].Date
+			}
+			return expenses[i].Date > expenses[j].Date
 		default: // date
 			if dir == "asc" {
 				return expenses[i].Date < expenses[j].Date

@@ -485,6 +485,68 @@ WHERE participants.member_id = sqlc.arg(member_id)
 ORDER BY participants.paid DESC, events.time DESC
 LIMIT sqlc.arg(limit) OFFSET sqlc.arg(offset);
 
+-- name: ListParticipantsByMemberByPaidAtAscFiltered :many
+SELECT 
+  events.*, 
+  participants.amount AS participant_amount, 
+  participants.expense AS participant_expense,
+  participants.paid AS participant_paid,
+  participants.paid_at AS participant_paid_at
+FROM events
+JOIN participants ON participants.event_id = events.id
+WHERE participants.member_id = sqlc.arg(member_id)
+  AND participants.group_id = sqlc.arg(group_id)
+  AND (
+    sqlc.arg(search) = ''
+    OR events.title LIKE '%' || sqlc.arg(search) || '%'
+    OR events.description LIKE '%' || sqlc.arg(search) || '%'
+  )
+  AND (
+    sqlc.arg(year) = ''
+    OR events.time LIKE sqlc.arg(year) || '%'
+  )
+  AND (
+    sqlc.arg(from) = ''
+    OR events.time >= sqlc.arg(from)
+  )
+  AND (
+    sqlc.arg(to) = ''
+    OR events.time <= sqlc.arg(to)
+  )
+ORDER BY participants.paid_at ASC, events.time DESC
+LIMIT sqlc.arg(limit) OFFSET sqlc.arg(offset);
+
+-- name: ListParticipantsByMemberByPaidAtDescFiltered :many
+SELECT 
+  events.*, 
+  participants.amount AS participant_amount, 
+  participants.expense AS participant_expense,
+  participants.paid AS participant_paid,
+  participants.paid_at AS participant_paid_at
+FROM events
+JOIN participants ON participants.event_id = events.id
+WHERE participants.member_id = sqlc.arg(member_id)
+  AND participants.group_id = sqlc.arg(group_id)
+  AND (
+    sqlc.arg(search) = ''
+    OR events.title LIKE '%' || sqlc.arg(search) || '%'
+    OR events.description LIKE '%' || sqlc.arg(search) || '%'
+  )
+  AND (
+    sqlc.arg(year) = ''
+    OR events.time LIKE sqlc.arg(year) || '%'
+  )
+  AND (
+    sqlc.arg(from) = ''
+    OR events.time >= sqlc.arg(from)
+  )
+  AND (
+    sqlc.arg(to) = ''
+    OR events.time <= sqlc.arg(to)
+  )
+ORDER BY participants.paid_at DESC, events.time DESC
+LIMIT sqlc.arg(limit) OFFSET sqlc.arg(offset);
+
 -- name: SumParticipantTotalsByMemberFiltered :one
 SELECT 
   CAST(COALESCE(SUM(participants.amount), 0) AS INTEGER) as total_cut,

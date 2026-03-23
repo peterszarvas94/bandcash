@@ -159,7 +159,7 @@ templ MemberShowMain(data MemberData) {
 					@shared.TableSortHeader(ctxi18n.T(ctx, "table.paid"), "paid", data.Query, utils.BuildTableSortURL(fmt.Sprintf("/groups/%s/members/%s", data.GroupID, data.Member.ID), data.Query, "paid"))
 				}
 				@shared.THCol(data.EventsTable.Col("paid_at")) {
-					{ ctxi18n.T(ctx, "fields.paid_at") }
+					@shared.TableSortHeader(ctxi18n.T(ctx, "fields.paid_at"), "paid_at", data.Query, utils.BuildTableSortURL(fmt.Sprintf("/groups/%s/members/%s", data.GroupID, data.Member.ID), data.Query, "paid_at"))
 				}
 			</tr>
 		</thead>

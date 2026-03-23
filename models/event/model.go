@@ -19,7 +19,7 @@ func (e *Events) TableQuerySpec() utils.TableQuerySpec {
 	return utils.StandardTableQuerySpec(utils.StandardTableQuerySpecParams{
 		DefaultSort:  "time",
 		DefaultDir:   "desc",
-		AllowedSorts: []string{"time", "title", "amount", "description", "paid"},
+		AllowedSorts: []string{"time", "title", "amount", "description", "paid", "paid_at"},
 	})
 }
 
@@ -31,7 +31,7 @@ func (e *Events) ParticipantTableQuerySpec() utils.TableQuerySpec {
 	return utils.StandardTableQuerySpec(utils.StandardTableQuerySpecParams{
 		DefaultSort:  "name",
 		DefaultDir:   "asc",
-		AllowedSorts: []string{"name", "amount", "expense", "total", "paid"},
+		AllowedSorts: []string{"name", "amount", "expense", "total", "paid", "paid_at"},
 	})
 }
 
@@ -153,6 +153,24 @@ func (e *Events) GetShowData(ctx context.Context, groupID, eventID string, query
 				equal = leftName == rightName
 			} else {
 				less = left.ParticipantPaid < right.ParticipantPaid
+			}
+		case "paid_at":
+			if left.ParticipantPaidAt.Valid && right.ParticipantPaidAt.Valid {
+				if left.ParticipantPaidAt.String == right.ParticipantPaidAt.String {
+					leftName := strings.ToLower(left.Name)
+					rightName := strings.ToLower(right.Name)
+					less = leftName < rightName
+					equal = leftName == rightName
+				} else {
+					less = left.ParticipantPaidAt.String < right.ParticipantPaidAt.String
+				}
+			} else if left.ParticipantPaidAt.Valid != right.ParticipantPaidAt.Valid {
+				less = right.ParticipantPaidAt.Valid
+			} else {
+				leftName := strings.ToLower(left.Name)
+				rightName := strings.ToLower(right.Name)
+				less = leftName < rightName
+				equal = leftName == rightName
 			}
 		default:
 			leftName := strings.ToLower(left.Name)
@@ -378,6 +396,23 @@ func sortEvents(events []db.Event, sortField, dir string) {
 				return events[i].Paid > events[j].Paid
 			}
 			return events[i].Paid < events[j].Paid
+		case "paid_at":
+			if events[i].PaidAt.Valid && events[j].PaidAt.Valid {
+				if dir == "desc" {
+					return events[i].PaidAt.String > events[j].PaidAt.String
+				}
+				return events[i].PaidAt.String < events[j].PaidAt.String
+			}
+			if events[i].PaidAt.Valid != events[j].PaidAt.Valid {
+				if dir == "desc" {
+					return !events[i].PaidAt.Valid
+				}
+				return events[i].PaidAt.Valid
+			}
+			if dir == "desc" {
+				return events[i].Time > events[j].Time
+			}
+			return events[i].Time < events[j].Time
 		default: // time
 			if dir == "desc" {
 				return events[i].Time > events[j].Time
