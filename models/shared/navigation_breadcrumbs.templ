@@ -15,10 +15,10 @@ templ Breadcrumbs(crumbs []utils.Crumb, userEmail string) {
 	</header>
 }
 
-	templ BreadcrumbTrail(crumbs []utils.Crumb) {
+templ BreadcrumbTrail(crumbs []utils.Crumb) {
 	<nav class="breadcrumbs hide-mobile" aria-label="Breadcrumb">
 		<a href="/">
-			@icons.Landmark(templ.Attributes{"class": "icon"})
+			@icons.BadgeEuro(templ.Attributes{"class": "icon"})
 			{ ctxi18n.T(ctx, "nav.home") }
 		</a>
 		for _, crumb := range crumbs {
@@ -40,7 +40,9 @@ templ LanguageSelect(id string, currentLang string, loadingSignal string) {
 				<option value="en" selected?={ currentLang == "en" }>{ ctxi18n.T(ctx, "language.en") }</option>
 				<option value="hu" selected?={ currentLang == "hu" }>{ ctxi18n.T(ctx, "language.hu") }</option>
 			</select>
-			<span data-show={ fmt.Sprintf("$%s", loadingSignal) } style="display: none">@icons.LoaderCircle(templ.Attributes{"class": "icon icon-spin"})</span>
+			<span data-show={ fmt.Sprintf("$%s", loadingSignal) } style="display: none">
+				@icons.LoaderCircle(templ.Attributes{"class": "icon icon-spin"})
+			</span>
 		</div>
 	</div>
 }

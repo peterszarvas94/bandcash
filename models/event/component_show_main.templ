@@ -190,17 +190,15 @@ templ EventShowMain(data EventData) {
 		<div data-show="$participantEditorMode === 'edit'" style="display: none">
 			<form class="form" data-on:submit={ participantsSubmitExpr } data-effect="$wizard.total = $wizard.rows.reduce((sum, row) => sum + ($wizard.amounts[row.memberId] || 0) + ($wizard.expenses[row.memberId] || 0), 0); $wizard.leftover = ($eventFormData.amount || 0) - $wizard.total" data-indicator:_fetching>
 				<div data-show="$wizard.error" class="color-error" data-text="$wizard.error"></div>
-				<div class="form-row">
-					<div class="field">
-						<label for="event-edit-title" class="row">{ ctxi18n.T(ctx, "fields.title") } <span class="color-error">*</span></label>
-						<input id="event-edit-title" type="text" data-bind="eventFormData.title" class="input w-details"/>
-						<div data-show="$errors && $errors.title" class="color-error" data-text="$errors.title"></div>
-					</div>
-					<div class="field">
-						<label for="event-edit-time" class="row">{ ctxi18n.T(ctx, "fields.time") } <span class="color-error">*</span></label>
-						<input id="event-edit-time" type="datetime-local" data-bind="eventFormData.time" class="input w-details"/>
-						<div data-show="$errors && $errors.time" class="color-error" data-text="$errors.time"></div>
-					</div>
+				<div class="field">
+					<label for="event-edit-title" class="row">{ ctxi18n.T(ctx, "fields.title") } <span class="color-error">*</span></label>
+					<input id="event-edit-title" type="text" data-bind="eventFormData.title" class="input w-details"/>
+					<div data-show="$errors && $errors.title" class="color-error" data-text="$errors.title"></div>
+				</div>
+				<div class="field">
+					<label for="event-edit-time" class="row">{ ctxi18n.T(ctx, "fields.time") } <span class="color-error">*</span></label>
+					<input id="event-edit-time" type="datetime-local" data-bind="eventFormData.time" class="input w-details"/>
+					<div data-show="$errors && $errors.time" class="color-error" data-text="$errors.time"></div>
 				</div>
 				<div class="field">
 					<label for="event-edit-description">{ ctxi18n.T(ctx, "fields.description") }</label>

@@ -126,14 +126,14 @@ func ExpenseShowMain(data ExpenseData) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 6, "</label> <input id=\"expense-show-description\" type=\"text\" data-bind=\"formData.description\" class=\"input w-details\"><div data-show=\"$errors && $errors.description\" class=\"color-error\" data-text=\"$errors.description\"></div></div><div class=\"form-row\"><div class=\"field\"><label for=\"expense-show-amount\" class=\"row\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 6, "</label> <input id=\"expense-show-description\" type=\"text\" data-bind=\"formData.description\" class=\"input w-details\"><div data-show=\"$errors && $errors.description\" class=\"color-error\" data-text=\"$errors.description\"></div></div><div class=\"field\"><label for=\"expense-show-amount\" class=\"row\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			var templ_7745c5c3_Var5 string
 			templ_7745c5c3_Var5, templ_7745c5c3_Err = templ.JoinStringErrs(ctxi18n.T(ctx, "fields.expense"))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/expense/component_show_main.templ`, Line: 66, Col: 85}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/expense/component_show_main.templ`, Line: 65, Col: 84}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var5))
 			if templ_7745c5c3_Err != nil {
@@ -146,20 +146,20 @@ func ExpenseShowMain(data ExpenseData) templ.Component {
 			var templ_7745c5c3_Var6 string
 			templ_7745c5c3_Var6, templ_7745c5c3_Err = templ.JoinStringErrs(ctxi18n.T(ctx, "fields.date"))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/expense/component_show_main.templ`, Line: 71, Col: 80}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/expense/component_show_main.templ`, Line: 70, Col: 79}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var6))
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 8, " <span class=\"color-error\">*</span></label> <input id=\"expense-show-date\" type=\"date\" data-bind=\"formData.date\" class=\"input w-details\"><div data-show=\"$errors && $errors.date\" class=\"color-error\" data-text=\"$errors.date\"></div></div></div><div class=\"field\"><label for=\"expense-show-paid\" class=\"row\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 8, " <span class=\"color-error\">*</span></label> <input id=\"expense-show-date\" type=\"date\" data-bind=\"formData.date\" class=\"input w-details\"><div data-show=\"$errors && $errors.date\" class=\"color-error\" data-text=\"$errors.date\"></div></div><div class=\"field\"><label for=\"expense-show-paid\" class=\"row\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			var templ_7745c5c3_Var7 string
 			templ_7745c5c3_Var7, templ_7745c5c3_Err = templ.JoinStringErrs(ctxi18n.T(ctx, "table.paid"))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/expense/component_show_main.templ`, Line: 77, Col: 78}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/expense/component_show_main.templ`, Line: 75, Col: 78}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var7))
 			if templ_7745c5c3_Err != nil {
@@ -186,7 +186,7 @@ func ExpenseShowMain(data ExpenseData) templ.Component {
 			var templ_7745c5c3_Var8 string
 			templ_7745c5c3_Var8, templ_7745c5c3_Err = templ.JoinStringErrs(ctxi18n.T(ctx, "fields.paid_at"))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/expense/component_show_main.templ`, Line: 87, Col: 85}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/expense/component_show_main.templ`, Line: 85, Col: 85}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var8))
 			if templ_7745c5c3_Err != nil {
