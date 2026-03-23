@@ -38,6 +38,7 @@ type ParticipantWizardRow struct {
 	Amount     int64
 	Expense    int64
 	Paid       bool
+	PaidAt     string
 }
 
 type EventsData struct {

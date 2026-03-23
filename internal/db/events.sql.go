@@ -56,19 +56,32 @@ func (q *Queries) CountEventsFiltered(ctx context.Context, arg CountEventsFilter
 }
 
 const createEvent = `-- name: CreateEvent :one
-INSERT INTO events (id, group_id, title, time, description, amount, paid)
-VALUES (?, ?, ?, ?, ?, ?, ?)
-RETURNING id, group_id, title, time, description, amount, created_at, updated_at, paid
+INSERT INTO events (id, group_id, title, time, description, amount, paid, paid_at)
+VALUES (
+  ?1,
+  ?2,
+  ?3,
+  ?4,
+  ?5,
+  ?6,
+  ?7,
+  CASE
+    WHEN ?7 = 1 THEN COALESCE(?8, CURRENT_TIMESTAMP)
+    ELSE NULL
+  END
+)
+RETURNING id, group_id, title, time, description, amount, created_at, updated_at, paid, paid_at
 `
 
 type CreateEventParams struct {
-	ID          string `json:"id"`
-	GroupID     string `json:"group_id"`
-	Title       string `json:"title"`
-	Time        string `json:"time"`
-	Description string `json:"description"`
-	Amount      int64  `json:"amount"`
-	Paid        int64  `json:"paid"`
+	ID          string      `json:"id"`
+	GroupID     string      `json:"group_id"`
+	Title       string      `json:"title"`
+	Time        string      `json:"time"`
+	Description string      `json:"description"`
+	Amount      int64       `json:"amount"`
+	Paid        int64       `json:"paid"`
+	PaidAt      interface{} `json:"paid_at"`
 }
 
 func (q *Queries) CreateEvent(ctx context.Context, arg CreateEventParams) (Event, error) {
@@ -80,6 +93,7 @@ func (q *Queries) CreateEvent(ctx context.Context, arg CreateEventParams) (Event
 		arg.Description,
 		arg.Amount,
 		arg.Paid,
+		arg.PaidAt,
 	)
 	var i Event
 	err := row.Scan(
@@ -92,6 +106,7 @@ func (q *Queries) CreateEvent(ctx context.Context, arg CreateEventParams) (Event
 		&i.CreatedAt,
 		&i.UpdatedAt,
 		&i.Paid,
+		&i.PaidAt,
 	)
 	return i, err
 }
@@ -121,7 +136,7 @@ func (q *Queries) DeleteEvent(ctx context.Context, arg DeleteEventParams) error 
 }
 
 const getEvent = `-- name: GetEvent :one
-SELECT id, group_id, title, time, description, amount, created_at, updated_at, paid FROM events
+SELECT id, group_id, title, time, description, amount, created_at, updated_at, paid, paid_at FROM events
 WHERE id = ? AND group_id = ?
 `
 
@@ -143,12 +158,13 @@ func (q *Queries) GetEvent(ctx context.Context, arg GetEventParams) (Event, erro
 		&i.CreatedAt,
 		&i.UpdatedAt,
 		&i.Paid,
+		&i.PaidAt,
 	)
 	return i, err
 }
 
 const listEvents = `-- name: ListEvents :many
-SELECT id, group_id, title, time, description, amount, created_at, updated_at, paid FROM events
+SELECT id, group_id, title, time, description, amount, created_at, updated_at, paid, paid_at FROM events
 WHERE group_id = ?
 ORDER BY time ASC
 `
@@ -172,6 +188,7 @@ func (q *Queries) ListEvents(ctx context.Context, groupID string) ([]Event, erro
 			&i.CreatedAt,
 			&i.UpdatedAt,
 			&i.Paid,
+			&i.PaidAt,
 		); err != nil {
 			return nil, err
 		}
@@ -187,7 +204,7 @@ func (q *Queries) ListEvents(ctx context.Context, groupID string) ([]Event, erro
 }
 
 const listEventsByAmountAscFiltered = `-- name: ListEventsByAmountAscFiltered :many
-SELECT id, group_id, title, time, description, amount, created_at, updated_at, paid FROM events
+SELECT id, group_id, title, time, description, amount, created_at, updated_at, paid, paid_at FROM events
 WHERE group_id = ?1
   AND (
     ?2 = ''
@@ -250,6 +267,7 @@ func (q *Queries) ListEventsByAmountAscFiltered(ctx context.Context, arg ListEve
 			&i.CreatedAt,
 			&i.UpdatedAt,
 			&i.Paid,
+			&i.PaidAt,
 		); err != nil {
 			return nil, err
 		}
@@ -265,7 +283,7 @@ func (q *Queries) ListEventsByAmountAscFiltered(ctx context.Context, arg ListEve
 }
 
 const listEventsByAmountDescFiltered = `-- name: ListEventsByAmountDescFiltered :many
-SELECT id, group_id, title, time, description, amount, created_at, updated_at, paid FROM events
+SELECT id, group_id, title, time, description, amount, created_at, updated_at, paid, paid_at FROM events
 WHERE group_id = ?1
   AND (
     ?2 = ''
@@ -328,6 +346,7 @@ func (q *Queries) ListEventsByAmountDescFiltered(ctx context.Context, arg ListEv
 			&i.CreatedAt,
 			&i.UpdatedAt,
 			&i.Paid,
+			&i.PaidAt,
 		); err != nil {
 			return nil, err
 		}
@@ -343,7 +362,7 @@ func (q *Queries) ListEventsByAmountDescFiltered(ctx context.Context, arg ListEv
 }
 
 const listEventsByDescriptionAscFiltered = `-- name: ListEventsByDescriptionAscFiltered :many
-SELECT id, group_id, title, time, description, amount, created_at, updated_at, paid FROM events
+SELECT id, group_id, title, time, description, amount, created_at, updated_at, paid, paid_at FROM events
 WHERE group_id = ?1
   AND (
     ?2 = ''
@@ -406,6 +425,7 @@ func (q *Queries) ListEventsByDescriptionAscFiltered(ctx context.Context, arg Li
 			&i.CreatedAt,
 			&i.UpdatedAt,
 			&i.Paid,
+			&i.PaidAt,
 		); err != nil {
 			return nil, err
 		}
@@ -421,7 +441,7 @@ func (q *Queries) ListEventsByDescriptionAscFiltered(ctx context.Context, arg Li
 }
 
 const listEventsByDescriptionDescFiltered = `-- name: ListEventsByDescriptionDescFiltered :many
-SELECT id, group_id, title, time, description, amount, created_at, updated_at, paid FROM events
+SELECT id, group_id, title, time, description, amount, created_at, updated_at, paid, paid_at FROM events
 WHERE group_id = ?1
   AND (
     ?2 = ''
@@ -484,6 +504,7 @@ func (q *Queries) ListEventsByDescriptionDescFiltered(ctx context.Context, arg L
 			&i.CreatedAt,
 			&i.UpdatedAt,
 			&i.Paid,
+			&i.PaidAt,
 		); err != nil {
 			return nil, err
 		}
@@ -499,7 +520,7 @@ func (q *Queries) ListEventsByDescriptionDescFiltered(ctx context.Context, arg L
 }
 
 const listEventsByTimeAscFiltered = `-- name: ListEventsByTimeAscFiltered :many
-SELECT id, group_id, title, time, description, amount, created_at, updated_at, paid FROM events
+SELECT id, group_id, title, time, description, amount, created_at, updated_at, paid, paid_at FROM events
 WHERE group_id = ?1
   AND (
     ?2 = ''
@@ -562,6 +583,7 @@ func (q *Queries) ListEventsByTimeAscFiltered(ctx context.Context, arg ListEvent
 			&i.CreatedAt,
 			&i.UpdatedAt,
 			&i.Paid,
+			&i.PaidAt,
 		); err != nil {
 			return nil, err
 		}
@@ -577,7 +599,7 @@ func (q *Queries) ListEventsByTimeAscFiltered(ctx context.Context, arg ListEvent
 }
 
 const listEventsByTimeDescFiltered = `-- name: ListEventsByTimeDescFiltered :many
-SELECT id, group_id, title, time, description, amount, created_at, updated_at, paid FROM events
+SELECT id, group_id, title, time, description, amount, created_at, updated_at, paid, paid_at FROM events
 WHERE group_id = ?1
   AND (
     ?2 = ''
@@ -640,6 +662,7 @@ func (q *Queries) ListEventsByTimeDescFiltered(ctx context.Context, arg ListEven
 			&i.CreatedAt,
 			&i.UpdatedAt,
 			&i.Paid,
+			&i.PaidAt,
 		); err != nil {
 			return nil, err
 		}
@@ -655,7 +678,7 @@ func (q *Queries) ListEventsByTimeDescFiltered(ctx context.Context, arg ListEven
 }
 
 const listEventsByTitleAscFiltered = `-- name: ListEventsByTitleAscFiltered :many
-SELECT id, group_id, title, time, description, amount, created_at, updated_at, paid FROM events
+SELECT id, group_id, title, time, description, amount, created_at, updated_at, paid, paid_at FROM events
 WHERE group_id = ?1
   AND (
     ?2 = ''
@@ -718,6 +741,7 @@ func (q *Queries) ListEventsByTitleAscFiltered(ctx context.Context, arg ListEven
 			&i.CreatedAt,
 			&i.UpdatedAt,
 			&i.Paid,
+			&i.PaidAt,
 		); err != nil {
 			return nil, err
 		}
@@ -733,7 +757,7 @@ func (q *Queries) ListEventsByTitleAscFiltered(ctx context.Context, arg ListEven
 }
 
 const listEventsByTitleDescFiltered = `-- name: ListEventsByTitleDescFiltered :many
-SELECT id, group_id, title, time, description, amount, created_at, updated_at, paid FROM events
+SELECT id, group_id, title, time, description, amount, created_at, updated_at, paid, paid_at FROM events
 WHERE group_id = ?1
   AND (
     ?2 = ''
@@ -796,6 +820,7 @@ func (q *Queries) ListEventsByTitleDescFiltered(ctx context.Context, arg ListEve
 			&i.CreatedAt,
 			&i.UpdatedAt,
 			&i.Paid,
+			&i.PaidAt,
 		); err != nil {
 			return nil, err
 		}
@@ -858,9 +883,10 @@ func (q *Queries) SumEventsFiltered(ctx context.Context, arg SumEventsFilteredPa
 
 const toggleEventPaid = `-- name: ToggleEventPaid :one
 UPDATE events
-SET paid = CASE WHEN paid = 1 THEN 0 ELSE 1 END
+SET paid = CASE WHEN paid = 1 THEN 0 ELSE 1 END,
+    paid_at = CASE WHEN paid = 1 THEN NULL ELSE CURRENT_TIMESTAMP END
 WHERE id = ? AND group_id = ?
-RETURNING id, group_id, title, time, description, amount, created_at, updated_at, paid
+RETURNING id, group_id, title, time, description, amount, created_at, updated_at, paid, paid_at
 `
 
 type ToggleEventPaidParams struct {
@@ -881,25 +907,37 @@ func (q *Queries) ToggleEventPaid(ctx context.Context, arg ToggleEventPaidParams
 		&i.CreatedAt,
 		&i.UpdatedAt,
 		&i.Paid,
+		&i.PaidAt,
 	)
 	return i, err
 }
 
 const updateEvent = `-- name: UpdateEvent :one
 UPDATE events
-SET title = ?, time = ?, description = ?, amount = ?, paid = ?
-WHERE id = ? AND group_id = ?
-RETURNING id, group_id, title, time, description, amount, created_at, updated_at, paid
+SET title = ?1,
+    time = ?2,
+    description = ?3,
+    amount = ?4,
+    paid = ?5,
+    paid_at = CASE
+      WHEN ?5 = 0 THEN NULL
+      WHEN ?6 IS NOT NULL THEN ?6
+      WHEN paid = 0 THEN CURRENT_TIMESTAMP
+      ELSE paid_at
+    END
+WHERE id = ?7 AND group_id = ?8
+RETURNING id, group_id, title, time, description, amount, created_at, updated_at, paid, paid_at
 `
 
 type UpdateEventParams struct {
-	Title       string `json:"title"`
-	Time        string `json:"time"`
-	Description string `json:"description"`
-	Amount      int64  `json:"amount"`
-	Paid        int64  `json:"paid"`
-	ID          string `json:"id"`
-	GroupID     string `json:"group_id"`
+	Title       string      `json:"title"`
+	Time        string      `json:"time"`
+	Description string      `json:"description"`
+	Amount      int64       `json:"amount"`
+	Paid        int64       `json:"paid"`
+	PaidAt      interface{} `json:"paid_at"`
+	ID          string      `json:"id"`
+	GroupID     string      `json:"group_id"`
 }
 
 func (q *Queries) UpdateEvent(ctx context.Context, arg UpdateEventParams) (Event, error) {
@@ -909,6 +947,7 @@ func (q *Queries) UpdateEvent(ctx context.Context, arg UpdateEventParams) (Event
 		arg.Description,
 		arg.Amount,
 		arg.Paid,
+		arg.PaidAt,
 		arg.ID,
 		arg.GroupID,
 	)
@@ -923,6 +962,7 @@ func (q *Queries) UpdateEvent(ctx context.Context, arg UpdateEventParams) (Event
 		&i.CreatedAt,
 		&i.UpdatedAt,
 		&i.Paid,
+		&i.PaidAt,
 	)
 	return i, err
 }

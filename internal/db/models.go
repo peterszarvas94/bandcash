@@ -22,27 +22,29 @@ type BannedUser struct {
 }
 
 type Event struct {
-	ID          string       `json:"id"`
-	GroupID     string       `json:"group_id"`
-	Title       string       `json:"title"`
-	Time        string       `json:"time"`
-	Description string       `json:"description"`
-	Amount      int64        `json:"amount"`
-	CreatedAt   sql.NullTime `json:"created_at"`
-	UpdatedAt   sql.NullTime `json:"updated_at"`
-	Paid        int64        `json:"paid"`
+	ID          string         `json:"id"`
+	GroupID     string         `json:"group_id"`
+	Title       string         `json:"title"`
+	Time        string         `json:"time"`
+	Description string         `json:"description"`
+	Amount      int64          `json:"amount"`
+	CreatedAt   sql.NullTime   `json:"created_at"`
+	UpdatedAt   sql.NullTime   `json:"updated_at"`
+	Paid        int64          `json:"paid"`
+	PaidAt      sql.NullString `json:"paid_at"`
 }
 
 type Expense struct {
-	ID          string       `json:"id"`
-	GroupID     string       `json:"group_id"`
-	Title       string       `json:"title"`
-	Description string       `json:"description"`
-	Amount      int64        `json:"amount"`
-	Date        string       `json:"date"`
-	CreatedAt   sql.NullTime `json:"created_at"`
-	UpdatedAt   sql.NullTime `json:"updated_at"`
-	Paid        int64        `json:"paid"`
+	ID          string         `json:"id"`
+	GroupID     string         `json:"group_id"`
+	Title       string         `json:"title"`
+	Description string         `json:"description"`
+	Amount      int64          `json:"amount"`
+	Date        string         `json:"date"`
+	CreatedAt   sql.NullTime   `json:"created_at"`
+	UpdatedAt   sql.NullTime   `json:"updated_at"`
+	Paid        int64          `json:"paid"`
+	PaidAt      sql.NullString `json:"paid_at"`
 }
 
 type Group struct {
@@ -88,14 +90,15 @@ type Member struct {
 }
 
 type Participant struct {
-	GroupID   string       `json:"group_id"`
-	EventID   string       `json:"event_id"`
-	MemberID  string       `json:"member_id"`
-	Amount    int64        `json:"amount"`
-	Expense   int64        `json:"expense"`
-	CreatedAt sql.NullTime `json:"created_at"`
-	UpdatedAt sql.NullTime `json:"updated_at"`
-	Paid      int64        `json:"paid"`
+	GroupID   string         `json:"group_id"`
+	EventID   string         `json:"event_id"`
+	MemberID  string         `json:"member_id"`
+	Amount    int64          `json:"amount"`
+	Expense   int64          `json:"expense"`
+	CreatedAt sql.NullTime   `json:"created_at"`
+	UpdatedAt sql.NullTime   `json:"updated_at"`
+	Paid      int64          `json:"paid"`
+	PaidAt    sql.NullString `json:"paid_at"`
 }
 
 type User struct {

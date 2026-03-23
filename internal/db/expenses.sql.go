@@ -56,19 +56,32 @@ func (q *Queries) CountExpensesFiltered(ctx context.Context, arg CountExpensesFi
 }
 
 const createExpense = `-- name: CreateExpense :one
-INSERT INTO expenses (id, group_id, title, description, amount, date, paid)
-VALUES (?, ?, ?, ?, ?, ?, ?)
-RETURNING id, group_id, title, description, amount, date, created_at, updated_at, paid
+INSERT INTO expenses (id, group_id, title, description, amount, date, paid, paid_at)
+VALUES (
+  ?1,
+  ?2,
+  ?3,
+  ?4,
+  ?5,
+  ?6,
+  ?7,
+  CASE
+    WHEN ?7 = 1 THEN COALESCE(?8, CURRENT_TIMESTAMP)
+    ELSE NULL
+  END
+)
+RETURNING id, group_id, title, description, amount, date, created_at, updated_at, paid, paid_at
 `
 
 type CreateExpenseParams struct {
-	ID          string `json:"id"`
-	GroupID     string `json:"group_id"`
-	Title       string `json:"title"`
-	Description string `json:"description"`
-	Amount      int64  `json:"amount"`
-	Date        string `json:"date"`
-	Paid        int64  `json:"paid"`
+	ID          string      `json:"id"`
+	GroupID     string      `json:"group_id"`
+	Title       string      `json:"title"`
+	Description string      `json:"description"`
+	Amount      int64       `json:"amount"`
+	Date        string      `json:"date"`
+	Paid        int64       `json:"paid"`
+	PaidAt      interface{} `json:"paid_at"`
 }
 
 func (q *Queries) CreateExpense(ctx context.Context, arg CreateExpenseParams) (Expense, error) {
@@ -80,6 +93,7 @@ func (q *Queries) CreateExpense(ctx context.Context, arg CreateExpenseParams) (E
 		arg.Amount,
 		arg.Date,
 		arg.Paid,
+		arg.PaidAt,
 	)
 	var i Expense
 	err := row.Scan(
@@ -92,6 +106,7 @@ func (q *Queries) CreateExpense(ctx context.Context, arg CreateExpenseParams) (E
 		&i.CreatedAt,
 		&i.UpdatedAt,
 		&i.Paid,
+		&i.PaidAt,
 	)
 	return i, err
 }
@@ -112,7 +127,7 @@ func (q *Queries) DeleteExpense(ctx context.Context, arg DeleteExpenseParams) er
 }
 
 const getExpense = `-- name: GetExpense :one
-SELECT id, group_id, title, description, amount, date, created_at, updated_at, paid FROM expenses
+SELECT id, group_id, title, description, amount, date, created_at, updated_at, paid, paid_at FROM expenses
 WHERE id = ? AND group_id = ?
 `
 
@@ -134,12 +149,13 @@ func (q *Queries) GetExpense(ctx context.Context, arg GetExpenseParams) (Expense
 		&i.CreatedAt,
 		&i.UpdatedAt,
 		&i.Paid,
+		&i.PaidAt,
 	)
 	return i, err
 }
 
 const listExpenses = `-- name: ListExpenses :many
-SELECT id, group_id, title, description, amount, date, created_at, updated_at, paid FROM expenses
+SELECT id, group_id, title, description, amount, date, created_at, updated_at, paid, paid_at FROM expenses
 WHERE group_id = ?
 ORDER BY date DESC, created_at DESC
 `
@@ -163,6 +179,7 @@ func (q *Queries) ListExpenses(ctx context.Context, groupID string) ([]Expense, 
 			&i.CreatedAt,
 			&i.UpdatedAt,
 			&i.Paid,
+			&i.PaidAt,
 		); err != nil {
 			return nil, err
 		}
@@ -178,7 +195,7 @@ func (q *Queries) ListExpenses(ctx context.Context, groupID string) ([]Expense, 
 }
 
 const listExpensesByAmountAscFiltered = `-- name: ListExpensesByAmountAscFiltered :many
-SELECT id, group_id, title, description, amount, date, created_at, updated_at, paid FROM expenses
+SELECT id, group_id, title, description, amount, date, created_at, updated_at, paid, paid_at FROM expenses
 WHERE group_id = ?1
   AND (
     ?2 = ''
@@ -241,6 +258,7 @@ func (q *Queries) ListExpensesByAmountAscFiltered(ctx context.Context, arg ListE
 			&i.CreatedAt,
 			&i.UpdatedAt,
 			&i.Paid,
+			&i.PaidAt,
 		); err != nil {
 			return nil, err
 		}
@@ -256,7 +274,7 @@ func (q *Queries) ListExpensesByAmountAscFiltered(ctx context.Context, arg ListE
 }
 
 const listExpensesByAmountDescFiltered = `-- name: ListExpensesByAmountDescFiltered :many
-SELECT id, group_id, title, description, amount, date, created_at, updated_at, paid FROM expenses
+SELECT id, group_id, title, description, amount, date, created_at, updated_at, paid, paid_at FROM expenses
 WHERE group_id = ?1
   AND (
     ?2 = ''
@@ -319,6 +337,7 @@ func (q *Queries) ListExpensesByAmountDescFiltered(ctx context.Context, arg List
 			&i.CreatedAt,
 			&i.UpdatedAt,
 			&i.Paid,
+			&i.PaidAt,
 		); err != nil {
 			return nil, err
 		}
@@ -334,7 +353,7 @@ func (q *Queries) ListExpensesByAmountDescFiltered(ctx context.Context, arg List
 }
 
 const listExpensesByDateAscFiltered = `-- name: ListExpensesByDateAscFiltered :many
-SELECT id, group_id, title, description, amount, date, created_at, updated_at, paid FROM expenses
+SELECT id, group_id, title, description, amount, date, created_at, updated_at, paid, paid_at FROM expenses
 WHERE group_id = ?1
   AND (
     ?2 = ''
@@ -397,6 +416,7 @@ func (q *Queries) ListExpensesByDateAscFiltered(ctx context.Context, arg ListExp
 			&i.CreatedAt,
 			&i.UpdatedAt,
 			&i.Paid,
+			&i.PaidAt,
 		); err != nil {
 			return nil, err
 		}
@@ -412,7 +432,7 @@ func (q *Queries) ListExpensesByDateAscFiltered(ctx context.Context, arg ListExp
 }
 
 const listExpensesByDateDescFiltered = `-- name: ListExpensesByDateDescFiltered :many
-SELECT id, group_id, title, description, amount, date, created_at, updated_at, paid FROM expenses
+SELECT id, group_id, title, description, amount, date, created_at, updated_at, paid, paid_at FROM expenses
 WHERE group_id = ?1
   AND (
     ?2 = ''
@@ -475,6 +495,7 @@ func (q *Queries) ListExpensesByDateDescFiltered(ctx context.Context, arg ListEx
 			&i.CreatedAt,
 			&i.UpdatedAt,
 			&i.Paid,
+			&i.PaidAt,
 		); err != nil {
 			return nil, err
 		}
@@ -490,7 +511,7 @@ func (q *Queries) ListExpensesByDateDescFiltered(ctx context.Context, arg ListEx
 }
 
 const listExpensesByDescriptionAscFiltered = `-- name: ListExpensesByDescriptionAscFiltered :many
-SELECT id, group_id, title, description, amount, date, created_at, updated_at, paid FROM expenses
+SELECT id, group_id, title, description, amount, date, created_at, updated_at, paid, paid_at FROM expenses
 WHERE group_id = ?1
   AND (
     ?2 = ''
@@ -553,6 +574,7 @@ func (q *Queries) ListExpensesByDescriptionAscFiltered(ctx context.Context, arg 
 			&i.CreatedAt,
 			&i.UpdatedAt,
 			&i.Paid,
+			&i.PaidAt,
 		); err != nil {
 			return nil, err
 		}
@@ -568,7 +590,7 @@ func (q *Queries) ListExpensesByDescriptionAscFiltered(ctx context.Context, arg 
 }
 
 const listExpensesByDescriptionDescFiltered = `-- name: ListExpensesByDescriptionDescFiltered :many
-SELECT id, group_id, title, description, amount, date, created_at, updated_at, paid FROM expenses
+SELECT id, group_id, title, description, amount, date, created_at, updated_at, paid, paid_at FROM expenses
 WHERE group_id = ?1
   AND (
     ?2 = ''
@@ -631,6 +653,7 @@ func (q *Queries) ListExpensesByDescriptionDescFiltered(ctx context.Context, arg
 			&i.CreatedAt,
 			&i.UpdatedAt,
 			&i.Paid,
+			&i.PaidAt,
 		); err != nil {
 			return nil, err
 		}
@@ -646,7 +669,7 @@ func (q *Queries) ListExpensesByDescriptionDescFiltered(ctx context.Context, arg
 }
 
 const listExpensesByTitleAscFiltered = `-- name: ListExpensesByTitleAscFiltered :many
-SELECT id, group_id, title, description, amount, date, created_at, updated_at, paid FROM expenses
+SELECT id, group_id, title, description, amount, date, created_at, updated_at, paid, paid_at FROM expenses
 WHERE group_id = ?1
   AND (
     ?2 = ''
@@ -709,6 +732,7 @@ func (q *Queries) ListExpensesByTitleAscFiltered(ctx context.Context, arg ListEx
 			&i.CreatedAt,
 			&i.UpdatedAt,
 			&i.Paid,
+			&i.PaidAt,
 		); err != nil {
 			return nil, err
 		}
@@ -724,7 +748,7 @@ func (q *Queries) ListExpensesByTitleAscFiltered(ctx context.Context, arg ListEx
 }
 
 const listExpensesByTitleDescFiltered = `-- name: ListExpensesByTitleDescFiltered :many
-SELECT id, group_id, title, description, amount, date, created_at, updated_at, paid FROM expenses
+SELECT id, group_id, title, description, amount, date, created_at, updated_at, paid, paid_at FROM expenses
 WHERE group_id = ?1
   AND (
     ?2 = ''
@@ -787,6 +811,7 @@ func (q *Queries) ListExpensesByTitleDescFiltered(ctx context.Context, arg ListE
 			&i.CreatedAt,
 			&i.UpdatedAt,
 			&i.Paid,
+			&i.PaidAt,
 		); err != nil {
 			return nil, err
 		}
@@ -903,9 +928,10 @@ func (q *Queries) SumExpensesFiltered(ctx context.Context, arg SumExpensesFilter
 
 const toggleExpensePaid = `-- name: ToggleExpensePaid :one
 UPDATE expenses
-SET paid = CASE WHEN paid = 1 THEN 0 ELSE 1 END
+SET paid = CASE WHEN paid = 1 THEN 0 ELSE 1 END,
+    paid_at = CASE WHEN paid = 1 THEN NULL ELSE CURRENT_TIMESTAMP END
 WHERE id = ? AND group_id = ?
-RETURNING id, group_id, title, description, amount, date, created_at, updated_at, paid
+RETURNING id, group_id, title, description, amount, date, created_at, updated_at, paid, paid_at
 `
 
 type ToggleExpensePaidParams struct {
@@ -926,25 +952,37 @@ func (q *Queries) ToggleExpensePaid(ctx context.Context, arg ToggleExpensePaidPa
 		&i.CreatedAt,
 		&i.UpdatedAt,
 		&i.Paid,
+		&i.PaidAt,
 	)
 	return i, err
 }
 
 const updateExpense = `-- name: UpdateExpense :one
 UPDATE expenses
-SET title = ?, description = ?, amount = ?, date = ?, paid = ?
-WHERE id = ? AND group_id = ?
-RETURNING id, group_id, title, description, amount, date, created_at, updated_at, paid
+SET title = ?1,
+    description = ?2,
+    amount = ?3,
+    date = ?4,
+    paid = ?5,
+    paid_at = CASE
+      WHEN ?5 = 0 THEN NULL
+      WHEN ?6 IS NOT NULL THEN ?6
+      WHEN paid = 0 THEN CURRENT_TIMESTAMP
+      ELSE paid_at
+    END
+WHERE id = ?7 AND group_id = ?8
+RETURNING id, group_id, title, description, amount, date, created_at, updated_at, paid, paid_at
 `
 
 type UpdateExpenseParams struct {
-	Title       string `json:"title"`
-	Description string `json:"description"`
-	Amount      int64  `json:"amount"`
-	Date        string `json:"date"`
-	Paid        int64  `json:"paid"`
-	ID          string `json:"id"`
-	GroupID     string `json:"group_id"`
+	Title       string      `json:"title"`
+	Description string      `json:"description"`
+	Amount      int64       `json:"amount"`
+	Date        string      `json:"date"`
+	Paid        int64       `json:"paid"`
+	PaidAt      interface{} `json:"paid_at"`
+	ID          string      `json:"id"`
+	GroupID     string      `json:"group_id"`
 }
 
 func (q *Queries) UpdateExpense(ctx context.Context, arg UpdateExpenseParams) (Expense, error) {
@@ -954,6 +992,7 @@ func (q *Queries) UpdateExpense(ctx context.Context, arg UpdateExpenseParams) (E
 		arg.Amount,
 		arg.Date,
 		arg.Paid,
+		arg.PaidAt,
 		arg.ID,
 		arg.GroupID,
 	)
@@ -968,6 +1007,7 @@ func (q *Queries) UpdateExpense(ctx context.Context, arg UpdateExpenseParams) (E
 		&i.CreatedAt,
 		&i.UpdatedAt,
 		&i.Paid,
+		&i.PaidAt,
 	)
 	return i, err
 }

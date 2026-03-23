@@ -11,7 +11,7 @@ func eventIndexSignals(csrfToken string, query utils.TableQuery) map[string]any 
 		"mode":            "table",
 		"formState":       "",
 		"editingId":       0,
-		"formData":        map[string]any{"title": "", "time": "", "description": "", "amount": 0, "paid": false},
+		"formData":        map[string]any{"title": "", "time": "", "description": "", "amount": 0, "paid": false, "paidAt": ""},
 		"eventFormState":  "",
 		"errors":          map[string]any{"title": "", "time": "", "description": "", "amount": "", "memberId": "", "expense": ""},
 	}
@@ -22,6 +22,7 @@ func eventShowSignals(data EventData, csrfToken string) map[string]any {
 	wizardAmounts := make(map[string]int64, len(data.WizardRows))
 	wizardExpenses := make(map[string]int64, len(data.WizardRows))
 	wizardPaids := make(map[string]bool, len(data.WizardRows))
+	wizardPaidAts := make(map[string]string, len(data.WizardRows))
 	wizardTotal := int64(0)
 	for _, row := range data.WizardRows {
 		wizardRows = append(wizardRows, map[string]any{
@@ -31,10 +32,12 @@ func eventShowSignals(data EventData, csrfToken string) map[string]any {
 			"amount":     row.Amount,
 			"expense":    row.Expense,
 			"paid":       row.Paid,
+			"paidAt":     row.PaidAt,
 		})
 		wizardAmounts[row.MemberID] = row.Amount
 		wizardExpenses[row.MemberID] = row.Expense
 		wizardPaids[row.MemberID] = row.Paid
+		wizardPaidAts[row.MemberID] = row.PaidAt
 		wizardTotal += row.Amount + row.Expense
 	}
 
@@ -52,6 +55,7 @@ func eventShowSignals(data EventData, csrfToken string) map[string]any {
 			"amounts":          wizardAmounts,
 			"expenses":         wizardExpenses,
 			"paids":            wizardPaids,
+			"paidAts":          wizardPaidAts,
 			"total":            wizardTotal,
 			"leftover":         data.WizardEventAmount - wizardTotal,
 		},
@@ -61,6 +65,12 @@ func eventShowSignals(data EventData, csrfToken string) map[string]any {
 			"description": data.Event.Description,
 			"amount":      data.Event.Amount,
 			"paid":        data.Event.Paid == 1,
+			"paidAt": func() string {
+				if !data.Event.PaidAt.Valid {
+					return ""
+				}
+				return utils.FormatDateInput(data.Event.PaidAt.String)
+			}(),
 		},
 		"formState":   "",
 		"editingId":   0,

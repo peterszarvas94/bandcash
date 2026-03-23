@@ -81,6 +81,12 @@ func (e *Events) GetShowData(ctx context.Context, groupID, eventID string, query
 				Amount:     participant.ParticipantAmount,
 				Expense:    participant.ParticipantExpense,
 				Paid:       participant.ParticipantPaid == 1,
+				PaidAt: func() string {
+					if !participant.ParticipantPaidAt.Valid {
+						return ""
+					}
+					return utils.FormatDateInput(participant.ParticipantPaidAt.String)
+				}(),
 			})
 		}
 

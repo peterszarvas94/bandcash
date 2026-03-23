@@ -45,6 +45,7 @@ func convertToMemberEvent(row interface{}) MemberEvent {
 			ParticipantAmount:  r.ParticipantAmount,
 			ParticipantExpense: r.ParticipantExpense,
 			ParticipantPaid:    r.ParticipantPaid,
+			ParticipantPaidAt:  r.ParticipantPaidAt,
 		}
 	case db.ListParticipantsByMemberByTitleDescFilteredRow:
 		return MemberEvent{
@@ -57,6 +58,7 @@ func convertToMemberEvent(row interface{}) MemberEvent {
 			ParticipantAmount:  r.ParticipantAmount,
 			ParticipantExpense: r.ParticipantExpense,
 			ParticipantPaid:    r.ParticipantPaid,
+			ParticipantPaidAt:  r.ParticipantPaidAt,
 		}
 	case db.ListParticipantsByMemberByTimeAscFilteredRow:
 		return MemberEvent{
@@ -69,6 +71,7 @@ func convertToMemberEvent(row interface{}) MemberEvent {
 			ParticipantAmount:  r.ParticipantAmount,
 			ParticipantExpense: r.ParticipantExpense,
 			ParticipantPaid:    r.ParticipantPaid,
+			ParticipantPaidAt:  r.ParticipantPaidAt,
 		}
 	case db.ListParticipantsByMemberByTimeDescFilteredRow:
 		return MemberEvent{
@@ -81,6 +84,7 @@ func convertToMemberEvent(row interface{}) MemberEvent {
 			ParticipantAmount:  r.ParticipantAmount,
 			ParticipantExpense: r.ParticipantExpense,
 			ParticipantPaid:    r.ParticipantPaid,
+			ParticipantPaidAt:  r.ParticipantPaidAt,
 		}
 	case db.ListParticipantsByMemberByAmountAscFilteredRow:
 		return MemberEvent{
@@ -93,6 +97,7 @@ func convertToMemberEvent(row interface{}) MemberEvent {
 			ParticipantAmount:  r.ParticipantAmount,
 			ParticipantExpense: r.ParticipantExpense,
 			ParticipantPaid:    r.ParticipantPaid,
+			ParticipantPaidAt:  r.ParticipantPaidAt,
 		}
 	case db.ListParticipantsByMemberByAmountDescFilteredRow:
 		return MemberEvent{
@@ -105,6 +110,7 @@ func convertToMemberEvent(row interface{}) MemberEvent {
 			ParticipantAmount:  r.ParticipantAmount,
 			ParticipantExpense: r.ParticipantExpense,
 			ParticipantPaid:    r.ParticipantPaid,
+			ParticipantPaidAt:  r.ParticipantPaidAt,
 		}
 	case db.ListParticipantsByMemberByCutAscFilteredRow:
 		return MemberEvent{
@@ -117,6 +123,7 @@ func convertToMemberEvent(row interface{}) MemberEvent {
 			ParticipantAmount:  r.ParticipantAmount,
 			ParticipantExpense: r.ParticipantExpense,
 			ParticipantPaid:    r.ParticipantPaid,
+			ParticipantPaidAt:  r.ParticipantPaidAt,
 		}
 	case db.ListParticipantsByMemberByCutDescFilteredRow:
 		return MemberEvent{
@@ -129,6 +136,7 @@ func convertToMemberEvent(row interface{}) MemberEvent {
 			ParticipantAmount:  r.ParticipantAmount,
 			ParticipantExpense: r.ParticipantExpense,
 			ParticipantPaid:    r.ParticipantPaid,
+			ParticipantPaidAt:  r.ParticipantPaidAt,
 		}
 	case db.ListParticipantsByMemberByExpenseAscFilteredRow:
 		return MemberEvent{
@@ -141,6 +149,7 @@ func convertToMemberEvent(row interface{}) MemberEvent {
 			ParticipantAmount:  r.ParticipantAmount,
 			ParticipantExpense: r.ParticipantExpense,
 			ParticipantPaid:    r.ParticipantPaid,
+			ParticipantPaidAt:  r.ParticipantPaidAt,
 		}
 	case db.ListParticipantsByMemberByExpenseDescFilteredRow:
 		return MemberEvent{
@@ -153,6 +162,7 @@ func convertToMemberEvent(row interface{}) MemberEvent {
 			ParticipantAmount:  r.ParticipantAmount,
 			ParticipantExpense: r.ParticipantExpense,
 			ParticipantPaid:    r.ParticipantPaid,
+			ParticipantPaidAt:  r.ParticipantPaidAt,
 		}
 	case db.ListParticipantsByMemberByPaidAscFilteredRow:
 		return MemberEvent{
@@ -165,6 +175,7 @@ func convertToMemberEvent(row interface{}) MemberEvent {
 			ParticipantAmount:  r.ParticipantAmount,
 			ParticipantExpense: r.ParticipantExpense,
 			ParticipantPaid:    r.ParticipantPaid,
+			ParticipantPaidAt:  r.ParticipantPaidAt,
 		}
 	case db.ListParticipantsByMemberByPaidDescFilteredRow:
 		return MemberEvent{
@@ -177,6 +188,7 @@ func convertToMemberEvent(row interface{}) MemberEvent {
 			ParticipantAmount:  r.ParticipantAmount,
 			ParticipantExpense: r.ParticipantExpense,
 			ParticipantPaid:    r.ParticipantPaid,
+			ParticipantPaidAt:  r.ParticipantPaidAt,
 		}
 	}
 	return MemberEvent{}

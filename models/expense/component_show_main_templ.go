@@ -41,7 +41,12 @@ func ExpenseShowMain(data ExpenseData) templ.Component {
 		ctx = templ.ClearChildren(ctx)
 		togglePaidExpr := fmt.Sprintf("@put('/groups/%s/expenses/%s/toggle-paid', {mode: 'single'})", data.GroupID, data.Expense.ID)
 		updateExpr := fmt.Sprintf("@put('/groups/%s/expenses/%s')", data.GroupID, data.Expense.ID)
-		cancelExpr := "$formState = ''; $formData = {title: " + utils.JSONString(data.Expense.Title) + ", description: " + utils.JSONString(data.Expense.Description) + ", amount: " + fmt.Sprintf("%d", data.Expense.Amount) + ", date: " + utils.JSONString(data.Expense.Date) + ", paid: " + fmt.Sprintf("%t", data.Expense.Paid == 1) + "}; $errors = {title: '', description: '', amount: '', date: ''}"
+		cancelExpr := "$formState = ''; $formData = {title: " + utils.JSONString(data.Expense.Title) + ", description: " + utils.JSONString(data.Expense.Description) + ", amount: " + fmt.Sprintf("%d", data.Expense.Amount) + ", date: " + utils.JSONString(data.Expense.Date) + ", paid: " + fmt.Sprintf("%t", data.Expense.Paid == 1) + ", paidAt: " + utils.JSONString(func() string {
+			if !data.Expense.PaidAt.Valid {
+				return ""
+			}
+			return utils.FormatDateInput(data.Expense.PaidAt.String)
+		}()) + "}; $errors = {title: '', description: '', amount: '', date: ''}"
 		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<div data-show=\"$formState !== 'edit'\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
@@ -57,6 +62,12 @@ func ExpenseShowMain(data ExpenseData) templ.Component {
 			{Label: ctxi18n.T(ctx, "fields.title"), Value: data.Expense.Title},
 			{Label: ctxi18n.T(ctx, "fields.description"), Value: data.Expense.Description},
 			{Label: ctxi18n.T(ctx, "fields.date"), Value: utils.FormatDateLocalized(ctx, data.Expense.Date)},
+			{Label: ctxi18n.T(ctx, "fields.paid_at"), Value: func() string {
+				if !data.Expense.PaidAt.Valid {
+					return "-"
+				}
+				return utils.FormatDateLocalized(ctx, utils.FormatDateInput(data.Expense.PaidAt.String))
+			}()},
 			{Label: ctxi18n.T(ctx, "fields.expense"), Value: utils.FormatNumberLocalizedWithSign(ctx, data.Expense.Amount, false), Action: shared.Toggle(shared.ToggleProps{
 				IsOn:         data.Expense.Paid == 1,
 				OnClick:      togglePaidExpr,
@@ -83,7 +94,7 @@ func ExpenseShowMain(data ExpenseData) templ.Component {
 			var templ_7745c5c3_Var2 string
 			templ_7745c5c3_Var2, templ_7745c5c3_Err = templ.JoinStringErrs(updateExpr)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/expense/component_show_main.templ`, Line: 42, Col: 49}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/expense/component_show_main.templ`, Line: 53, Col: 49}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var2))
 			if templ_7745c5c3_Err != nil {
@@ -96,7 +107,7 @@ func ExpenseShowMain(data ExpenseData) templ.Component {
 			var templ_7745c5c3_Var3 string
 			templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.JoinStringErrs(ctxi18n.T(ctx, "fields.title"))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/expense/component_show_main.templ`, Line: 44, Col: 81}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/expense/component_show_main.templ`, Line: 55, Col: 81}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var3))
 			if templ_7745c5c3_Err != nil {
@@ -109,7 +120,7 @@ func ExpenseShowMain(data ExpenseData) templ.Component {
 			var templ_7745c5c3_Var4 string
 			templ_7745c5c3_Var4, templ_7745c5c3_Err = templ.JoinStringErrs(ctxi18n.T(ctx, "fields.description"))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/expense/component_show_main.templ`, Line: 49, Col: 81}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/expense/component_show_main.templ`, Line: 60, Col: 81}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var4))
 			if templ_7745c5c3_Err != nil {
@@ -122,7 +133,7 @@ func ExpenseShowMain(data ExpenseData) templ.Component {
 			var templ_7745c5c3_Var5 string
 			templ_7745c5c3_Var5, templ_7745c5c3_Err = templ.JoinStringErrs(ctxi18n.T(ctx, "fields.expense"))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/expense/component_show_main.templ`, Line: 55, Col: 85}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/expense/component_show_main.templ`, Line: 66, Col: 85}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var5))
 			if templ_7745c5c3_Err != nil {
@@ -135,7 +146,7 @@ func ExpenseShowMain(data ExpenseData) templ.Component {
 			var templ_7745c5c3_Var6 string
 			templ_7745c5c3_Var6, templ_7745c5c3_Err = templ.JoinStringErrs(ctxi18n.T(ctx, "fields.date"))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/expense/component_show_main.templ`, Line: 60, Col: 80}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/expense/component_show_main.templ`, Line: 71, Col: 80}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var6))
 			if templ_7745c5c3_Err != nil {
@@ -148,7 +159,7 @@ func ExpenseShowMain(data ExpenseData) templ.Component {
 			var templ_7745c5c3_Var7 string
 			templ_7745c5c3_Var7, templ_7745c5c3_Err = templ.JoinStringErrs(ctxi18n.T(ctx, "table.paid"))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/expense/component_show_main.templ`, Line: 66, Col: 78}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/expense/component_show_main.templ`, Line: 77, Col: 78}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var7))
 			if templ_7745c5c3_Err != nil {
@@ -168,7 +179,20 @@ func ExpenseShowMain(data ExpenseData) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 10, "</div><div class=\"row row-wrap\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 10, "</div><div class=\"field\" data-show=\"$formData.paid\" style=\"display: none\"><label for=\"expense-show-paid-at\" class=\"row\">")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			var templ_7745c5c3_Var8 string
+			templ_7745c5c3_Var8, templ_7745c5c3_Err = templ.JoinStringErrs(ctxi18n.T(ctx, "fields.paid_at"))
+			if templ_7745c5c3_Err != nil {
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/expense/component_show_main.templ`, Line: 87, Col: 85}
+			}
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var8))
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 11, "</label> <input id=\"expense-show-paid-at\" type=\"date\" data-bind=\"formData.paidAt\" class=\"input\"></div><div class=\"row row-wrap\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -190,7 +214,7 @@ func ExpenseShowMain(data ExpenseData) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 11, "</div></form></div>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 12, "</div></form></div>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -215,9 +239,9 @@ func ExpenseShowDetailsActions(data ExpenseData) templ.Component {
 			}()
 		}
 		ctx = templ.InitializeContext(ctx)
-		templ_7745c5c3_Var8 := templ.GetChildren(ctx)
-		if templ_7745c5c3_Var8 == nil {
-			templ_7745c5c3_Var8 = templ.NopComponent
+		templ_7745c5c3_Var9 := templ.GetChildren(ctx)
+		if templ_7745c5c3_Var9 == nil {
+			templ_7745c5c3_Var9 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
 		if data.IsAdmin {
@@ -231,7 +255,7 @@ func ExpenseShowDetailsActions(data ExpenseData) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 12, " ")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 13, " ")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}

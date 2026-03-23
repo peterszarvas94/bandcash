@@ -1,6 +1,18 @@
 -- name: CreateEvent :one
-INSERT INTO events (id, group_id, title, time, description, amount, paid)
-VALUES (?, ?, ?, ?, ?, ?, ?)
+INSERT INTO events (id, group_id, title, time, description, amount, paid, paid_at)
+VALUES (
+  sqlc.arg(id),
+  sqlc.arg(group_id),
+  sqlc.arg(title),
+  sqlc.arg(time),
+  sqlc.arg(description),
+  sqlc.arg(amount),
+  sqlc.arg(paid),
+  CASE
+    WHEN sqlc.arg(paid) = 1 THEN COALESCE(sqlc.narg(paid_at), CURRENT_TIMESTAMP)
+    ELSE NULL
+  END
+)
 RETURNING *;
 
 -- name: GetEvent :one
@@ -246,13 +258,24 @@ LIMIT sqlc.arg(limit) OFFSET sqlc.arg(offset);
 
 -- name: UpdateEvent :one
 UPDATE events
-SET title = ?, time = ?, description = ?, amount = ?, paid = ?
-WHERE id = ? AND group_id = ?
+SET title = sqlc.arg(title),
+    time = sqlc.arg(time),
+    description = sqlc.arg(description),
+    amount = sqlc.arg(amount),
+    paid = sqlc.arg(paid),
+    paid_at = CASE
+      WHEN sqlc.arg(paid) = 0 THEN NULL
+      WHEN sqlc.narg(paid_at) IS NOT NULL THEN sqlc.narg(paid_at)
+      WHEN paid = 0 THEN CURRENT_TIMESTAMP
+      ELSE paid_at
+    END
+WHERE id = sqlc.arg(id) AND group_id = sqlc.arg(group_id)
 RETURNING *;
 
 -- name: ToggleEventPaid :one
 UPDATE events
-SET paid = CASE WHEN paid = 1 THEN 0 ELSE 1 END
+SET paid = CASE WHEN paid = 1 THEN 0 ELSE 1 END,
+    paid_at = CASE WHEN paid = 1 THEN NULL ELSE CURRENT_TIMESTAMP END
 WHERE id = ? AND group_id = ?
 RETURNING *;
 

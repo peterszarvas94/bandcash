@@ -43,7 +43,7 @@ templ EventTotalsContent(data EventsData) {
 
 templ EventIndexMain(data EventsData) {
 	{{
-		addExpr := "$formState = 'add'; $editingId = 0; $formData = {title: '', time: (() => { const d = new Date(); d.setMinutes(d.getMinutes() - d.getTimezoneOffset()); return d.toISOString().slice(0, 16) })(), description: '', amount: 0, paid: false}; $errors = {title: '', time: '', description: '', amount: ''}"
+		addExpr := "$formState = 'add'; $editingId = 0; $formData = {title: '', time: (() => { const d = new Date(); d.setMinutes(d.getMinutes() - d.getTimezoneOffset()); return d.toISOString().slice(0, 16) })(), description: '', amount: 0, paid: false, paidAt: ''}; $errors = {title: '', time: '', description: '', amount: ''}"
 	}}
 	@EventTotalsContent(data)
 	@shared.TableSearchFormWithClass(fmt.Sprintf("/groups/%s/events", data.GroupID), data.Query, "table.search_placeholder_events", "pt")
@@ -111,6 +111,9 @@ templ EventIndexMain(data EventsData) {
 				@shared.THCol(data.EventsTable.Col("paid")) {
 					@shared.TableSortHeader(ctxi18n.T(ctx, "table.paid"), "paid", data.Query, utils.BuildTableSortURL(fmt.Sprintf("/groups/%s/events", data.GroupID), data.Query, "paid"))
 				}
+				@shared.THCol(data.EventsTable.Col("paid_at")) {
+					{ ctxi18n.T(ctx, "fields.paid_at") }
+				}
 			if data.IsAdmin {
 				@shared.THActions(data.EventsTable.ActionsWidthRem) {
 					@shared.IconActionButton(shared.IconActionButtonProps{
@@ -128,7 +131,12 @@ templ EventIndexMain(data EventsData) {
 		<tbody>
 			for _, event := range data.Events {
 				{{
-					editExpr := fmt.Sprintf("$formState = 'edit'; $editingId = %q; $formData = {title: %s, time: %s, description: %s, amount: %d, paid: %t}", event.ID, utils.JSONString(event.Title), utils.JSONString(event.Time), utils.JSONString(event.Description), event.Amount, event.Paid == 1)
+					editExpr := fmt.Sprintf("$formState = 'edit'; $editingId = %q; $formData = {title: %s, time: %s, description: %s, amount: %d, paid: %t, paidAt: %s}", event.ID, utils.JSONString(event.Title), utils.JSONString(event.Time), utils.JSONString(event.Description), event.Amount, event.Paid == 1, utils.JSONString(func() string {
+						if !event.PaidAt.Valid {
+							return ""
+						}
+						return utils.FormatDateInput(event.PaidAt.String)
+					}()))
 					deleteExpr := fmt.Sprintf(
 						"$sure = {title: %s, message: %s, submitLabel: %s, cancelLabel: %s, method: 'delete', url: '/groups/%s/events/%s', triggerID: %s, open: true, fetching: false}",
 						utils.JSONString(ctxi18n.T(ctx, "events.delete_confirm")),
@@ -143,6 +151,10 @@ templ EventIndexMain(data EventsData) {
 					paidLabel := ctxi18n.T(ctx, "table.unpaid")
 					if event.Paid == 1 {
 						paidLabel = ctxi18n.T(ctx, "table.paid")
+					}
+					paidAtLabel := "-"
+					if event.PaidAt.Valid {
+						paidAtLabel = utils.FormatDateLocalized(ctx, utils.FormatDateInput(event.PaidAt.String))
 					}
 				}}
 				<tr>
@@ -165,6 +177,7 @@ templ EventIndexMain(data EventsData) {
 							{ paidLabel }
 						}
 					</td>
+					<td>{ paidAtLabel }</td>
 				if data.IsAdmin {
 					<td data-actions-col>
 						@shared.IconActionButton(shared.IconActionButtonProps{
@@ -190,9 +203,9 @@ templ EventIndexMain(data EventsData) {
 			if len(data.Events) == 0 {
 				<tr>
 					if data.IsAdmin {
-						<td colspan="5">{ ctxi18n.T(ctx, "table.empty") }</td>
+						<td colspan="6">{ ctxi18n.T(ctx, "table.empty") }</td>
 					} else {
-						<td colspan="4">{ ctxi18n.T(ctx, "table.empty") }</td>
+						<td colspan="5">{ ctxi18n.T(ctx, "table.empty") }</td>
 					}
 				</tr>
 			}

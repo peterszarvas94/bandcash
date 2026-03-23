@@ -1,6 +1,7 @@
 package expense
 
 import (
+	"database/sql"
 	"log/slog"
 	"net/http"
 	"strings"
@@ -20,6 +21,7 @@ type expenseParams struct {
 	Amount      int64  `json:"amount" validate:"required,gt=0"`
 	Date        string `json:"date" validate:"required"`
 	Paid        bool   `json:"paid"`
+	PaidAt      string `json:"paidAt"`
 }
 
 type expenseTableParams struct {
@@ -38,7 +40,7 @@ var (
 		"mode":      "table",
 		"formState": "",
 		"editingId": "",
-		"formData":  map[string]any{"title": "", "description": "", "amount": 0, "date": "", "paid": false},
+		"formData":  map[string]any{"title": "", "description": "", "amount": 0, "date": "", "paid": false, "paidAt": ""},
 		"errors":    map[string]any{"title": "", "description": "", "amount": "", "date": ""},
 	}
 	expenseErrorFields = []string{"title", "description", "amount", "date"}
@@ -61,6 +63,33 @@ func applyExpenseTableByRole(data *ExpensesData, isAdmin bool) {
 	if !isAdmin {
 		data.ExpensesTable.ActionsWidthRem = 0
 	}
+}
+
+func normalizePaidAtInput(value string) string {
+	trimmed := strings.TrimSpace(value)
+	if trimmed == "" {
+		return ""
+	}
+
+	formatted := utils.FormatDateInput(trimmed)
+	if formatted != "" {
+		return formatted
+	}
+
+	return trimmed
+}
+
+func paidAtArg(isPaid bool, paidAt string) sql.NullString {
+	if !isPaid {
+		return sql.NullString{}
+	}
+
+	normalized := normalizePaidAtInput(paidAt)
+	if normalized == "" {
+		return sql.NullString{}
+	}
+
+	return sql.NullString{String: normalized, Valid: true}
 }
 
 func (e *Expenses) Index(c echo.Context) error {
@@ -115,6 +144,7 @@ func (e *Expenses) Create(c echo.Context) error {
 	signals.FormData.Title = strings.TrimSpace(signals.FormData.Title)
 	signals.FormData.Description = strings.TrimSpace(signals.FormData.Description)
 	signals.FormData.Date = strings.TrimSpace(signals.FormData.Date)
+	signals.FormData.PaidAt = normalizePaidAtInput(signals.FormData.PaidAt)
 
 	if errs := utils.ValidateWithLocale(c.Request().Context(), signals.FormData); errs != nil {
 		utils.SSEHub.PatchSignals(c, map[string]any{"errors": utils.WithErrors(expenseErrorFields, errs)})
@@ -134,6 +164,7 @@ func (e *Expenses) Create(c echo.Context) error {
 			}
 			return 0
 		}(),
+		PaidAt: paidAtArg(signals.FormData.Paid, signals.FormData.PaidAt),
 	})
 	if err != nil {
 		slog.Error("expense.create.table: failed to create expense", "err", err)
@@ -185,6 +216,7 @@ func (e *Expenses) Update(c echo.Context) error {
 	signals.FormData.Title = strings.TrimSpace(signals.FormData.Title)
 	signals.FormData.Description = strings.TrimSpace(signals.FormData.Description)
 	signals.FormData.Date = strings.TrimSpace(signals.FormData.Date)
+	signals.FormData.PaidAt = normalizePaidAtInput(signals.FormData.PaidAt)
 
 	if errs := utils.ValidateWithLocale(c.Request().Context(), signals.FormData); errs != nil {
 		utils.SSEHub.PatchSignals(c, map[string]any{"errors": utils.WithErrors(expenseErrorFields, errs)})
@@ -202,6 +234,7 @@ func (e *Expenses) Update(c echo.Context) error {
 			}
 			return 0
 		}(),
+		PaidAt:  paidAtArg(signals.FormData.Paid, signals.FormData.PaidAt),
 		ID:      id,
 		GroupID: groupID,
 	})
@@ -222,6 +255,7 @@ func (e *Expenses) Update(c echo.Context) error {
 				"amount":      signals.FormData.Amount,
 				"date":        signals.FormData.Date,
 				"paid":        signals.FormData.Paid,
+				"paidAt":      signals.FormData.PaidAt,
 			},
 			"errors": map[string]any{"title": "", "description": "", "amount": "", "date": ""},
 		})

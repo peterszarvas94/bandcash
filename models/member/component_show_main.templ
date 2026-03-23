@@ -109,6 +109,9 @@ templ MemberShowMain(data MemberData) {
 				@shared.THCol(data.EventsTable.Col("paid")) {
 					@shared.TableSortHeader(ctxi18n.T(ctx, "table.paid"), "paid", data.Query, utils.BuildTableSortURL(fmt.Sprintf("/groups/%s/members/%s", data.GroupID, data.Member.ID), data.Query, "paid"))
 				}
+				@shared.THCol(data.EventsTable.Col("paid_at")) {
+					{ ctxi18n.T(ctx, "fields.paid_at") }
+				}
 			</tr>
 		</thead>
 		<tbody>
@@ -118,6 +121,10 @@ templ MemberShowMain(data MemberData) {
 					paidLabel := ctxi18n.T(ctx, "table.unpaid")
 					if event.ParticipantPaid == 1 {
 						paidLabel = ctxi18n.T(ctx, "table.paid")
+					}
+					paidAtLabel := "-"
+					if event.ParticipantPaidAt.Valid {
+						paidAtLabel = utils.FormatDateLocalized(ctx, utils.FormatDateInput(event.ParticipantPaidAt.String))
 					}
 				}}
 				<tr>
@@ -142,11 +149,12 @@ templ MemberShowMain(data MemberData) {
 							{ paidLabel }
 						}
 					</td>
+					<td>{ paidAtLabel }</td>
 				</tr>
 			}
 			if len(data.Events) == 0 {
 				<tr>
-					<td colspan="6">{ ctxi18n.T(ctx, "table.empty") }</td>
+					<td colspan="7">{ ctxi18n.T(ctx, "table.empty") }</td>
 				</tr>
 			}
 		</tbody>

@@ -1,6 +1,8 @@
 package member
 
 import (
+	"database/sql"
+
 	"bandcash/internal/db"
 	"bandcash/internal/utils"
 )
@@ -15,6 +17,7 @@ type MemberEvent struct {
 	ParticipantAmount  int64
 	ParticipantExpense int64
 	ParticipantPaid    int64
+	ParticipantPaidAt  sql.NullString
 }
 
 type MemberData struct {

@@ -181,6 +181,7 @@ en:
     title: "Title"
     time: "Time"
     date: "Date"
+    paid_at: "Paid at"
     description: "Description"
     amount: "Amount"
     income: "Income"

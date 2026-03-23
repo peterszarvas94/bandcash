@@ -23,6 +23,26 @@ func FormatDateLocalized(ctx context.Context, value string) string {
 	return formatDateByLocale(ctx, t)
 }
 
+func FormatDateTimeInput(value string) string {
+	t, ok := parseDateTime(value)
+	if !ok {
+		return ""
+	}
+	return t.Format("2006-01-02T15:04")
+}
+
+func FormatDateInput(value string) string {
+	if t, ok := parseDateTime(value); ok {
+		return t.Format("2006-01-02")
+	}
+
+	if t, ok := parseDate(value); ok {
+		return t.Format("2006-01-02")
+	}
+
+	return ""
+}
+
 func FormatTimeLocalized(ctx context.Context, t time.Time) string {
 	if t.IsZero() {
 		return ""

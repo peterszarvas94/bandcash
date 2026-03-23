@@ -14,7 +14,12 @@ templ ExpenseShowMain(data ExpenseData) {
 	{{
 		togglePaidExpr := fmt.Sprintf("@put('/groups/%s/expenses/%s/toggle-paid', {mode: 'single'})", data.GroupID, data.Expense.ID)
 		updateExpr := fmt.Sprintf("@put('/groups/%s/expenses/%s')", data.GroupID, data.Expense.ID)
-		cancelExpr := "$formState = ''; $formData = {title: " + utils.JSONString(data.Expense.Title) + ", description: " + utils.JSONString(data.Expense.Description) + ", amount: " + fmt.Sprintf("%d", data.Expense.Amount) + ", date: " + utils.JSONString(data.Expense.Date) + ", paid: " + fmt.Sprintf("%t", data.Expense.Paid == 1) + "}; $errors = {title: '', description: '', amount: '', date: ''}"
+		cancelExpr := "$formState = ''; $formData = {title: " + utils.JSONString(data.Expense.Title) + ", description: " + utils.JSONString(data.Expense.Description) + ", amount: " + fmt.Sprintf("%d", data.Expense.Amount) + ", date: " + utils.JSONString(data.Expense.Date) + ", paid: " + fmt.Sprintf("%t", data.Expense.Paid == 1) + ", paidAt: " + utils.JSONString(func() string {
+			if !data.Expense.PaidAt.Valid {
+				return ""
+			}
+			return utils.FormatDateInput(data.Expense.PaidAt.String)
+		}()) + "}; $errors = {title: '', description: '', amount: '', date: ''}"
 	}}
 	<div data-show="$formState !== 'edit'">
 		if data.IsAdmin {
@@ -25,6 +30,12 @@ templ ExpenseShowMain(data ExpenseData) {
 			{Label: ctxi18n.T(ctx, "fields.title"), Value: data.Expense.Title},
 			{Label: ctxi18n.T(ctx, "fields.description"), Value: data.Expense.Description},
 			{Label: ctxi18n.T(ctx, "fields.date"), Value: utils.FormatDateLocalized(ctx, data.Expense.Date)},
+			{Label: ctxi18n.T(ctx, "fields.paid_at"), Value: func() string {
+				if !data.Expense.PaidAt.Valid {
+					return "-"
+				}
+				return utils.FormatDateLocalized(ctx, utils.FormatDateInput(data.Expense.PaidAt.String))
+			}()},
 			{Label: ctxi18n.T(ctx, "fields.expense"), Value: utils.FormatNumberLocalizedWithSign(ctx, data.Expense.Amount, false), Action: shared.Toggle(shared.ToggleProps{
 				IsOn:         data.Expense.Paid == 1,
 				OnClick:      togglePaidExpr,
@@ -71,6 +82,10 @@ templ ExpenseShowMain(data ExpenseData) {
 						On:           ctxi18n.T(ctx, "table.paid"),
 						OnClass:      "btn-success",
 					})
+				</div>
+				<div class="field" data-show="$formData.paid" style="display: none">
+					<label for="expense-show-paid-at" class="row">{ ctxi18n.T(ctx, "fields.paid_at") }</label>
+					<input id="expense-show-paid-at" type="date" data-bind="formData.paidAt" class="input"/>
 				</div>
 				<div class="row row-wrap">
 					@shared.LoadingSubmitButton(shared.LoadingSubmitButtonProps{

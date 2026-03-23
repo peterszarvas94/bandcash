@@ -26,7 +26,7 @@ templ ExpenseTotalsContent(data ExpensesData) {
 
 templ ExpenseIndexMain(data ExpensesData) {
 	{{
-		addExpr := "$formState = 'add'; $editingId = 0; $formData = {title: '', description: '', amount: 0, date: (() => { const d = new Date(); d.setMinutes(d.getMinutes() - d.getTimezoneOffset()); return d.toISOString().slice(0, 10) })(), paid: false}; $errors = {title: '', description: '', amount: '', date: ''}"
+		addExpr := "$formState = 'add'; $editingId = 0; $formData = {title: '', description: '', amount: 0, date: (() => { const d = new Date(); d.setMinutes(d.getMinutes() - d.getTimezoneOffset()); return d.toISOString().slice(0, 10) })(), paid: false, paidAt: ''}; $errors = {title: '', description: '', amount: '', date: ''}"
 	}}
 	@ExpenseTotalsContent(data)
 	@shared.TableSearchFormWithClass(fmt.Sprintf("/groups/%s/expenses", data.GroupID), data.Query, "table.search_placeholder_expenses", "pt")
@@ -111,7 +111,12 @@ templ ExpenseIndexMain(data ExpensesData) {
 		<tbody>
 			for _, expense := range data.Expenses {
 				{{
-					editExpr := fmt.Sprintf("$formState = 'edit'; $editingId = %q; $formData = {title: %s, description: %s, amount: %d, date: %s, paid: %t}", expense.ID, utils.JSONString(expense.Title), utils.JSONString(expense.Description), expense.Amount, utils.JSONString(expense.Date), expense.Paid == 1)
+					editExpr := fmt.Sprintf("$formState = 'edit'; $editingId = %q; $formData = {title: %s, description: %s, amount: %d, date: %s, paid: %t, paidAt: %s}", expense.ID, utils.JSONString(expense.Title), utils.JSONString(expense.Description), expense.Amount, utils.JSONString(expense.Date), expense.Paid == 1, utils.JSONString(func() string {
+						if !expense.PaidAt.Valid {
+							return ""
+						}
+						return utils.FormatDateInput(expense.PaidAt.String)
+					}()))
 					deleteExpr := fmt.Sprintf(
 						"$sure = {title: %s, message: %s, submitLabel: %s, cancelLabel: %s, method: 'delete', url: '/groups/%s/expenses/%s', triggerID: %s, open: true, fetching: false}",
 						utils.JSONString(ctxi18n.T(ctx, "expenses.delete_confirm")),
@@ -126,6 +131,10 @@ templ ExpenseIndexMain(data ExpensesData) {
 					paidLabel := ctxi18n.T(ctx, "table.unpaid")
 					if expense.Paid == 1 {
 						paidLabel = ctxi18n.T(ctx, "table.paid")
+					}
+					paidAtLabel := ""
+					if expense.Paid == 1 && expense.PaidAt.Valid {
+						paidAtLabel = utils.FormatDateLocalized(ctx, utils.FormatDateInput(expense.PaidAt.String))
 					}
 				}}
 				<tr>
@@ -146,6 +155,9 @@ templ ExpenseIndexMain(data ExpensesData) {
 							})
 						} else {
 							{ paidLabel }
+						}
+						if paidAtLabel != "" {
+							<div class="text-sm color-muted">{ paidAtLabel }</div>
 						}
 					</td>
 				if data.IsAdmin {

@@ -14,7 +14,7 @@ templ EventIndexSidebar(data EventsData) {
 			submitExpr := fmt.Sprintf("$sidebarLoadingAction = ($formState === 'add' ? 'event-create' : 'event-update'); ($formState === 'add' ? @post('/groups/%s/events') : @put('/groups/%s/events/' + $editingId))", data.GroupID, data.GroupID)
 			createExpr := fmt.Sprintf("@post('/groups/%s/events')", data.GroupID)
 			updateExpr := fmt.Sprintf("@put('/groups/%s/events/' + $editingId)", data.GroupID)
-			cancelExpr := "$formState = ''; $editingId = 0; $formData = {title: '', time: '', description: '', amount: 0, paid: false}; $errors = {title: '', time: '', description: '', amount: ''}"
+			cancelExpr := "$formState = ''; $editingId = 0; $formData = {title: '', time: '', description: '', amount: 0, paid: false, paidAt: ''}; $errors = {title: '', time: '', description: '', amount: ''}"
 		}}
 		<div data-signals={ templ.JSONString(map[string]any{"sidebarLoadingAction": ""}) }>
 		<div data-show="$formState !== ''" style="display: none" class="pb">
@@ -51,6 +51,10 @@ templ EventIndexSidebar(data EventsData) {
 						On:           ctxi18n.T(ctx, "table.paid"),
 						OnClass:      "btn-success",
 					})
+				</div>
+				<div class="field" data-show="$formData.paid" style="display: none">
+					<label for="event-sidebar-paid-at" class="row">{ ctxi18n.T(ctx, "fields.paid_at") }</label>
+					<input id="event-sidebar-paid-at" type="date" data-bind="formData.paidAt" class="input"/>
 				</div>
 				<div class="row row-wrap">
 					<span data-show="$formState === 'add'">

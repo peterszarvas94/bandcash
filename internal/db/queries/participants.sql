@@ -1,6 +1,17 @@
 -- name: AddParticipant :one
-INSERT INTO participants (group_id, event_id, member_id, amount, expense, paid)
-VALUES (?, ?, ?, ?, ?, ?)
+INSERT INTO participants (group_id, event_id, member_id, amount, expense, paid, paid_at)
+VALUES (
+  sqlc.arg(group_id),
+  sqlc.arg(event_id),
+  sqlc.arg(member_id),
+  sqlc.arg(amount),
+  sqlc.arg(expense),
+  sqlc.arg(paid),
+  CASE
+    WHEN sqlc.arg(paid) = 1 THEN COALESCE(sqlc.narg(paid_at), CURRENT_TIMESTAMP)
+    ELSE NULL
+  END
+)
 RETURNING *;
 
 -- name: RemoveParticipant :exec
@@ -9,24 +20,35 @@ WHERE event_id = ? AND member_id = ? AND group_id = ?;
 
 -- name: UpdateParticipant :exec
 UPDATE participants
-SET amount = ?, expense = ?, paid = ?
-WHERE event_id = ? AND member_id = ? AND group_id = ?;
+SET amount = sqlc.arg(amount),
+    expense = sqlc.arg(expense),
+    paid = sqlc.arg(paid),
+    paid_at = CASE
+      WHEN sqlc.arg(paid) = 0 THEN NULL
+      WHEN sqlc.narg(paid_at) IS NOT NULL THEN sqlc.narg(paid_at)
+      WHEN paid = 0 THEN CURRENT_TIMESTAMP
+      ELSE paid_at
+    END
+WHERE event_id = sqlc.arg(event_id)
+  AND member_id = sqlc.arg(member_id)
+  AND group_id = sqlc.arg(group_id);
 
 -- name: ToggleParticipantPaid :one
 UPDATE participants
-SET paid = CASE WHEN paid = 1 THEN 0 ELSE 1 END
+SET paid = CASE WHEN paid = 1 THEN 0 ELSE 1 END,
+    paid_at = CASE WHEN paid = 1 THEN NULL ELSE CURRENT_TIMESTAMP END
 WHERE event_id = ? AND member_id = ? AND group_id = ?
 RETURNING *;
 
 -- name: ListParticipantsByEvent :many
-SELECT members.*, participants.amount AS participant_amount, participants.expense AS participant_expense, participants.paid AS participant_paid
+SELECT members.*, participants.amount AS participant_amount, participants.expense AS participant_expense, participants.paid AS participant_paid, participants.paid_at AS participant_paid_at
 FROM members
 JOIN participants ON participants.member_id = members.id
 WHERE participants.event_id = ? AND participants.group_id = ?
 ORDER BY members.name ASC;
 
 -- name: ListParticipantsByMember :many
-SELECT events.*, participants.amount AS participant_amount, participants.expense AS participant_expense, participants.paid AS participant_paid
+SELECT events.*, participants.amount AS participant_amount, participants.expense AS participant_expense, participants.paid AS participant_paid, participants.paid_at AS participant_paid_at
 FROM events
 JOIN participants ON participants.event_id = events.id
 WHERE participants.member_id = ? AND participants.group_id = ?
@@ -96,7 +118,8 @@ SELECT
   events.*, 
   participants.amount AS participant_amount, 
   participants.expense AS participant_expense,
-  participants.paid AS participant_paid
+  participants.paid AS participant_paid,
+  participants.paid_at AS participant_paid_at
 FROM events
 JOIN participants ON participants.event_id = events.id
 WHERE participants.member_id = sqlc.arg(member_id)
@@ -126,7 +149,8 @@ SELECT
   events.*, 
   participants.amount AS participant_amount, 
   participants.expense AS participant_expense,
-  participants.paid AS participant_paid
+  participants.paid AS participant_paid,
+  participants.paid_at AS participant_paid_at
 FROM events
 JOIN participants ON participants.event_id = events.id
 WHERE participants.member_id = sqlc.arg(member_id)
@@ -156,7 +180,8 @@ SELECT
   events.*, 
   participants.amount AS participant_amount, 
   participants.expense AS participant_expense,
-  participants.paid AS participant_paid
+  participants.paid AS participant_paid,
+  participants.paid_at AS participant_paid_at
 FROM events
 JOIN participants ON participants.event_id = events.id
 WHERE participants.member_id = sqlc.arg(member_id)
@@ -186,7 +211,8 @@ SELECT
   events.*, 
   participants.amount AS participant_amount, 
   participants.expense AS participant_expense,
-  participants.paid AS participant_paid
+  participants.paid AS participant_paid,
+  participants.paid_at AS participant_paid_at
 FROM events
 JOIN participants ON participants.event_id = events.id
 WHERE participants.member_id = sqlc.arg(member_id)
@@ -216,7 +242,8 @@ SELECT
   events.*, 
   participants.amount AS participant_amount, 
   participants.expense AS participant_expense,
-  participants.paid AS participant_paid
+  participants.paid AS participant_paid,
+  participants.paid_at AS participant_paid_at
 FROM events
 JOIN participants ON participants.event_id = events.id
 WHERE participants.member_id = sqlc.arg(member_id)
@@ -246,7 +273,8 @@ SELECT
   events.*, 
   participants.amount AS participant_amount, 
   participants.expense AS participant_expense,
-  participants.paid AS participant_paid
+  participants.paid AS participant_paid,
+  participants.paid_at AS participant_paid_at
 FROM events
 JOIN participants ON participants.event_id = events.id
 WHERE participants.member_id = sqlc.arg(member_id)
@@ -276,7 +304,8 @@ SELECT
   events.*, 
   participants.amount AS participant_amount, 
   participants.expense AS participant_expense,
-  participants.paid AS participant_paid
+  participants.paid AS participant_paid,
+  participants.paid_at AS participant_paid_at
 FROM events
 JOIN participants ON participants.event_id = events.id
 WHERE participants.member_id = sqlc.arg(member_id)
@@ -306,7 +335,8 @@ SELECT
   events.*, 
   participants.amount AS participant_amount, 
   participants.expense AS participant_expense,
-  participants.paid AS participant_paid
+  participants.paid AS participant_paid,
+  participants.paid_at AS participant_paid_at
 FROM events
 JOIN participants ON participants.event_id = events.id
 WHERE participants.member_id = sqlc.arg(member_id)
@@ -336,7 +366,8 @@ SELECT
   events.*, 
   participants.amount AS participant_amount, 
   participants.expense AS participant_expense,
-  participants.paid AS participant_paid
+  participants.paid AS participant_paid,
+  participants.paid_at AS participant_paid_at
 FROM events
 JOIN participants ON participants.event_id = events.id
 WHERE participants.member_id = sqlc.arg(member_id)
@@ -366,7 +397,8 @@ SELECT
   events.*, 
   participants.amount AS participant_amount, 
   participants.expense AS participant_expense,
-  participants.paid AS participant_paid
+  participants.paid AS participant_paid,
+  participants.paid_at AS participant_paid_at
 FROM events
 JOIN participants ON participants.event_id = events.id
 WHERE participants.member_id = sqlc.arg(member_id)
@@ -396,7 +428,8 @@ SELECT
   events.*, 
   participants.amount AS participant_amount, 
   participants.expense AS participant_expense,
-  participants.paid AS participant_paid
+  participants.paid AS participant_paid,
+  participants.paid_at AS participant_paid_at
 FROM events
 JOIN participants ON participants.event_id = events.id
 WHERE participants.member_id = sqlc.arg(member_id)
@@ -426,7 +459,8 @@ SELECT
   events.*, 
   participants.amount AS participant_amount, 
   participants.expense AS participant_expense,
-  participants.paid AS participant_paid
+  participants.paid AS participant_paid,
+  participants.paid_at AS participant_paid_at
 FROM events
 JOIN participants ON participants.event_id = events.id
 WHERE participants.member_id = sqlc.arg(member_id)

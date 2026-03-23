@@ -6,6 +6,7 @@ func EventsIndexTableLayout() TableLayout {
 		{Key: "time", WidthCh: 19},
 		{Key: "amount", WidthCh: 12},
 		{Key: "paid", WidthCh: 14},
+		{Key: "paid_at", WidthCh: 14},
 	}, 4)
 }
 
@@ -16,6 +17,7 @@ func EventParticipantsTableLayout() TableLayout {
 		{Key: "expense", WidthCh: 12},
 		{Key: "total", WidthCh: 12},
 		{Key: "paid", WidthCh: 14},
+		{Key: "paid_at", WidthCh: 20},
 	}, 0)
 }
 
@@ -50,6 +52,7 @@ func MemberEventsTableLayout() TableLayout {
 		{Key: "participant_expense", WidthCh: 12},
 		{Key: "total", WidthCh: 12},
 		{Key: "paid", WidthCh: 14},
+		{Key: "paid_at", WidthCh: 14},
 	}, 0)
 }
 
