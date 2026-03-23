@@ -54,11 +54,18 @@ templ EventShowMain(data EventData) {
 			}
 		}}
 		<section class="detail-box pb">
-			<div class="detail-box-controls" role="radiogroup" aria-label={ ctxi18n.T(ctx, "table.paid") }>
-				@shared.RadioButton(shared.RadioButtonProps{Bind: "summaryMode", Value: "all", Label: ctxi18n.T(ctx, "table.all"), ClassName: "btn btn-xs"})
-				@shared.RadioButton(shared.RadioButtonProps{Bind: "summaryMode", Value: "paid", Label: ctxi18n.T(ctx, "table.paid"), ClassName: "btn btn-xs"})
-				@shared.RadioButton(shared.RadioButtonProps{Bind: "summaryMode", Value: "unpaid", Label: ctxi18n.T(ctx, "table.unpaid"), ClassName: "btn btn-xs"})
-			</div>
+			<dl>
+				<div>
+					<dt>{ ctxi18n.T(ctx, "fields.calculations") }</dt>
+					<dd>
+						<div class="detail-box-controls" role="radiogroup" aria-label={ ctxi18n.T(ctx, "table.paid") }>
+							@shared.RadioButton(shared.RadioButtonProps{Bind: "summaryMode", Value: "all", Label: ctxi18n.T(ctx, "table.all"), ClassName: "btn btn-xs"})
+							@shared.RadioButton(shared.RadioButtonProps{Bind: "summaryMode", Value: "paid", Label: ctxi18n.T(ctx, "table.paid"), ClassName: "btn btn-xs"})
+							@shared.RadioButton(shared.RadioButtonProps{Bind: "summaryMode", Value: "unpaid", Label: ctxi18n.T(ctx, "table.unpaid"), ClassName: "btn btn-xs"})
+						</div>
+					</dd>
+				</div>
+			</dl>
 			<dl data-show="$summaryMode === 'all'">
 				<div><dt>{ ctxi18n.T(ctx, "fields.income") }</dt><dd>{ utils.FormatNumberLocalized(ctx, data.Event.Amount) }</dd></div>
 				<div><dt>{ ctxi18n.T(ctx, "participants.payout_total") }</dt><dd>{ utils.FormatNumberLocalizedWithSign(ctx, data.FilteredPaid+data.FilteredUnpaid, false) }</dd></div>

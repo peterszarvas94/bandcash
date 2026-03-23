@@ -451,23 +451,23 @@ func BuildTableDateCustomURL(basePath string, query TableQuery) string {
 
 func DateFilterAllButtonClass(query TableQuery) string {
 	if DateFilterAllActive(query) {
-		return "btn btn-sm btn-active"
+		return "btn btn-xs btn-active"
 	}
-	return "btn btn-sm"
+	return "btn btn-xs"
 }
 
 func DateFilterYearButtonClass(query TableQuery, year string) string {
 	if DateFilterYearActive(query, year) {
-		return "btn btn-sm btn-active"
+		return "btn btn-xs btn-active"
 	}
-	return "btn btn-sm"
+	return "btn btn-xs"
 }
 
 func DateFilterCustomButtonClass(query TableQuery) string {
 	if DateFilterCustomActive(query) {
-		return "btn btn-sm btn-active"
+		return "btn btn-xs btn-active"
 	}
-	return "btn btn-sm"
+	return "btn btn-xs"
 }
 
 func DateFilterAllActive(query TableQuery) bool {
@@ -484,9 +484,9 @@ func DateFilterCustomActive(query TableQuery) bool {
 
 func PageSizeButtonClass(current, value int) string {
 	if current == value {
-		return "btn btn-sm btn-active"
+		return "btn btn-xs btn-active"
 	}
-	return "btn btn-sm"
+	return "btn btn-xs"
 }
 
 func BuildTableQueryURLWith(basePath string, query TableQuery, patch TableQueryPatch) string {

@@ -52,6 +52,11 @@
     padding: calc(var(--space) * 0.5) calc(var(--space) * 1.25);
   }
 
+  .input-xs {
+    height: 1.75rem;
+    padding: calc(var(--space) * 0.25) var(--space);
+  }
+
   .pb {
     padding-bottom: var(--space);
   }

@@ -182,6 +182,7 @@ en:
     time: "Time"
     date: "Date"
     paid_at: "Paid at"
+    calculations: "Calculations"
     description: "Description"
     amount: "Amount"
     income: "Income"

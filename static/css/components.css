@@ -193,6 +193,7 @@
     color: var(--btn-tone-color);
     width: fit-content;
     height: fit-content;
+    flex-shrink: 0;
 
     &:not(:disabled):not([disabled]):hover {
       background: var(--btn-tone-hover-bg);
@@ -917,12 +918,12 @@
       display: flex;
       flex-wrap: wrap;
       gap: 0;
-      padding-bottom: calc(var(--space) * 0.5);
+      padding-top: 0;
     }
 
     > dl {
       margin: 0;
-      padding: calc(var(--space) * 0.5) 0 0 0;
+      padding: 0;
 
       > div {
         display: grid;
@@ -966,6 +967,14 @@
     }
 
     @media (max-width: 480px) {
+      > dl:not(:last-child) {
+        padding-bottom: var(--space);
+      }
+
+      .detail-box-controls {
+        padding-top: var(--space);
+      }
+
       > dl {
         display: flex;
         flex-direction: column;

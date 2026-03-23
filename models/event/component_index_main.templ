@@ -16,11 +16,20 @@ templ EventTotalsContent(data EventsData) {
 			<div><dt>{ ctxi18n.T(ctx, "groups.admin") }</dt><dd>{ data.GroupAdminEmail }</dd></div>
 			<div><dt>{ ctxi18n.T(ctx, "groups.created") }</dt><dd>{ data.GroupCreatedAt }</dd></div>
 		</dl>
-		<div class="detail-box-controls" role="radiogroup" aria-label={ ctxi18n.T(ctx, "table.paid") }>
-			@shared.RadioButton(shared.RadioButtonProps{Bind: "summaryMode", Value: "all", Label: ctxi18n.T(ctx, "table.all"), ClassName: "btn btn-xs"})
-			@shared.RadioButton(shared.RadioButtonProps{Bind: "summaryMode", Value: "paid", Label: ctxi18n.T(ctx, "table.paid"), ClassName: "btn btn-xs"})
-			@shared.RadioButton(shared.RadioButtonProps{Bind: "summaryMode", Value: "unpaid", Label: ctxi18n.T(ctx, "table.unpaid"), ClassName: "btn btn-xs"})
-		</div>
+	</section>
+	<section class="detail-box pb">
+		<dl>
+			<div>
+				<dt>{ ctxi18n.T(ctx, "fields.calculations") }</dt>
+				<dd>
+					<div class="detail-box-controls" role="radiogroup" aria-label={ ctxi18n.T(ctx, "table.paid") }>
+						@shared.RadioButton(shared.RadioButtonProps{Bind: "summaryMode", Value: "all", Label: ctxi18n.T(ctx, "table.all"), ClassName: "btn btn-xs"})
+						@shared.RadioButton(shared.RadioButtonProps{Bind: "summaryMode", Value: "paid", Label: ctxi18n.T(ctx, "table.paid"), ClassName: "btn btn-xs"})
+						@shared.RadioButton(shared.RadioButtonProps{Bind: "summaryMode", Value: "unpaid", Label: ctxi18n.T(ctx, "table.unpaid"), ClassName: "btn btn-xs"})
+					</div>
+				</dd>
+			</div>
+		</dl>
 		<dl data-show="$summaryMode === 'all'">
 			<div><dt>{ ctxi18n.T(ctx, "groups.income") }</dt><dd>{ utils.FormatNumberLocalized(ctx, data.FilteredTotal) }</dd></div>
 			<div><dt>{ ctxi18n.T(ctx, "groups.payouts") }</dt><dd>{ utils.FormatNumberLocalizedWithSign(ctx, data.FilteredPayoutsPaid+data.FilteredPayoutsUnpaid, false) }</dd></div>
@@ -69,10 +78,10 @@ templ EventIndexMain(data EventsData) {
 						<input type="hidden" name="pageSize" value={ fmt.Sprintf("%d", data.Query.PageSize) }/>
 					}
 					<input type="hidden" name="dateMode" value="custom"/>
-					<input type="date" class="input input-sm" name="from" value={ data.Query.From }/>
+					<input type="date" class="input input-xs" name="from" value={ data.Query.From }/>
 					<span class="text-sm pr pl">-</span>
-					<input type="date" class="input input-sm" name="to" value={ data.Query.To }/>
-					<button class="btn btn-sm btn-icon" type="submit" aria-label={ ctxi18n.T(ctx, "table.apply") } title={ ctxi18n.T(ctx, "table.apply") }>
+					<input type="date" class="input input-xs" name="to" value={ data.Query.To }/>
+					<button class="btn btn-xs btn-icon" type="submit" aria-label={ ctxi18n.T(ctx, "table.apply") } title={ ctxi18n.T(ctx, "table.apply") }>
 						@icons.CalendarSearch(templ.Attributes{"class": "icon"})
 					</button>
 				</form>
