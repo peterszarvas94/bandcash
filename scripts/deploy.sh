@@ -3,7 +3,7 @@ set -e
 
 usage() {
   echo "Usage: $0 [major|minor|patch] [--skip-tag]"
-  echo "Run without bump type to be prompted"
+  echo "Run without bump type to be prompted (press Enter to skip tag creation)"
 }
 
 # Parse arguments
@@ -20,7 +20,7 @@ for arg in "$@"; do
       fi
       BUMP_TYPE="$arg"
       ;;
-    --skip-tag|--no-tag)
+    -s|--skip-tag)
       SKIP_TAG=true
       ;;
     -h|--help)
@@ -35,26 +35,27 @@ for arg in "$@"; do
   esac
 done
 
+# If no bump type provided, prompt user unless skip was explicitly requested.
+if [ "$SKIP_TAG" = false ] && [ -z "$BUMP_TYPE" ]; then
+  echo "Select version bump type (press Enter to skip tag creation):"
+  echo "  1) major (x+1.0.0)"
+  echo "  2) minor (x.x+1.0)"
+  echo "  3) patch (x.x.x+1)"
+  read -p "Enter choice (1-3, Enter to skip): " choice
+
+  case "$choice" in
+    "") SKIP_TAG=true ;;
+    1) BUMP_TYPE="major" ;;
+    2) BUMP_TYPE="minor" ;;
+    3) BUMP_TYPE="patch" ;;
+    *)
+      echo "Invalid choice: $choice"
+      exit 1
+      ;;
+  esac
+fi
+
 if [ "$SKIP_TAG" = false ]; then
-  # If no bump type provided, prompt user
-  if [ -z "$BUMP_TYPE" ]; then
-    echo "Select version bump type:"
-    echo "  1) major (x+1.0.0)"
-    echo "  2) minor (x.x+1.0)"
-    echo "  3) patch (x.x.x+1)"
-    read -p "Enter choice (1-3): " choice
-
-    case "$choice" in
-      1) BUMP_TYPE="major" ;;
-      2) BUMP_TYPE="minor" ;;
-      3) BUMP_TYPE="patch" ;;
-      *)
-        echo "Invalid choice: $choice"
-        exit 1
-        ;;
-    esac
-  fi
-
   # Get the latest tag, default to v0.0.0 if none exists
   latest_tag=$(git tag --list 'v*' --sort=-v:refname | head -1)
 
