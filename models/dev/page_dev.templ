@@ -13,7 +13,7 @@ templ DevPage(linkSelector string) {
 	<html lang={ appi18n.LocaleCode(ctx) }>
 		@shared.Head("Bandcash - Dev tools")
 		<body>
-			<div data-signals={ templ.JSONString(map[string]any{"csrf": utils.CSRFTokenFromContext(ctx), "errors": map[string]any{"name": ""}, "formData": map[string]any{"name": ""}, "_fetching": false, "activeSpinner": "", "_notifyInline": false, "_notifyInfo": false, "_notifySuccess": false, "_notifyWarning": false, "_notifyError": false, "toggleDefault": true, "toggleSuccess": true, "toggleWarning": true, "toggleDanger": true, "radioDemo": "all"}) } data-init="@get('/sse')"></div>
+			<div data-signals={ templ.JSONString(map[string]any{"csrf": utils.CSRFTokenFromContext(ctx), "errors": map[string]any{"name": ""}, "formData": map[string]any{"name": ""}, "_fetching": false, "activeSpinner": "", "_notifyInline": false, "_notifyInfo": false, "_notifySuccess": false, "_notifyError": false, "toggleDefault": true, "toggleSuccess": true, "toggleDanger": true, "radioDemo": "all"}) } data-init="@get('/sse')"></div>
 			@shared.Notifications()
 			@shared.AppShellMainOnly("dev-page", []utils.Crumb{{Label: "Dev tools"}}, "", shared.DevPrimaryNav("dev"), DevMain(linkSelector))
 			<script type="module" src={ assets.AssetPath("js/rate_limit_tester.js") }></script>
@@ -52,7 +52,7 @@ templ ButtonVariantsContent(linkSelector string) {
 			<span>Active</span>
 		</button>
 		<button class="btn btn-inactive" type="button">
-			@icons.Icon(icons.IconBanknoteX, templ.Attributes{"class": "icon"})
+			@icons.Icon(icons.IconCircleOff, templ.Attributes{"class": "icon"})
 			<span>Inactive</span>
 		</button>
 		<button class="btn" type="button" disabled>
@@ -63,10 +63,6 @@ templ ButtonVariantsContent(linkSelector string) {
 			@icons.Check(templ.Attributes{"class": "icon"})
 			<span>Success</span>
 		</button>
-		<button class="btn btn-warning" type="button">
-			@icons.TriangleAlert(templ.Attributes{"class": "icon"})
-			<span>Warning</span>
-		</button>
 		<button class="btn btn-danger" type="button">
 			@icons.Trash2(templ.Attributes{"class": "icon"})
 			<span>Danger</span>
@@ -74,10 +70,6 @@ templ ButtonVariantsContent(linkSelector string) {
 		<button class="btn btn-success" type="button" disabled>
 			@icons.Check(templ.Attributes{"class": "icon"})
 			<span>Success disabled</span>
-		</button>
-		<button class="btn btn-warning" type="button" disabled>
-			@icons.TriangleAlert(templ.Attributes{"class": "icon"})
-			<span>Warning disabled</span>
 		</button>
 		<button class="btn btn-danger" type="button" disabled>
 			@icons.Trash2(templ.Attributes{"class": "icon"})
@@ -98,7 +90,7 @@ templ ButtonVariantsContent(linkSelector string) {
 			<span>Active</span>
 		</button>
 		<button class="btn btn-sm btn-inactive" type="button">
-			@icons.Icon(icons.IconBanknoteX, templ.Attributes{"class": "icon"})
+			@icons.Icon(icons.IconCircleOff, templ.Attributes{"class": "icon"})
 			<span>Inactive</span>
 		</button>
 		<button class="btn btn-sm" type="button" disabled>
@@ -109,10 +101,6 @@ templ ButtonVariantsContent(linkSelector string) {
 			@icons.Check(templ.Attributes{"class": "icon"})
 			<span>Success</span>
 		</button>
-		<button class="btn btn-sm btn-warning" type="button">
-			@icons.TriangleAlert(templ.Attributes{"class": "icon"})
-			<span>Warning</span>
-		</button>
 		<button class="btn btn-sm btn-danger" type="button">
 			@icons.Trash2(templ.Attributes{"class": "icon"})
 			<span>Danger</span>
@@ -120,10 +108,6 @@ templ ButtonVariantsContent(linkSelector string) {
 		<button class="btn btn-sm btn-success" type="button" disabled>
 			@icons.Check(templ.Attributes{"class": "icon"})
 			<span>Success disabled</span>
-		</button>
-		<button class="btn btn-sm btn-warning" type="button" disabled>
-			@icons.TriangleAlert(templ.Attributes{"class": "icon"})
-			<span>Warning disabled</span>
 		</button>
 		<button class="btn btn-sm btn-danger" type="button" disabled>
 			@icons.Trash2(templ.Attributes{"class": "icon"})
@@ -144,7 +128,7 @@ templ ButtonVariantsContent(linkSelector string) {
 			<span>Active</span>
 		</button>
 		<button class="btn btn-xs btn-inactive" type="button">
-			@icons.Icon(icons.IconBanknoteX, templ.Attributes{"class": "icon"})
+			@icons.Icon(icons.IconCircleOff, templ.Attributes{"class": "icon"})
 			<span>Inactive</span>
 		</button>
 		<button class="btn btn-xs" type="button" disabled>
@@ -155,10 +139,6 @@ templ ButtonVariantsContent(linkSelector string) {
 			@icons.Check(templ.Attributes{"class": "icon"})
 			<span>Success</span>
 		</button>
-		<button class="btn btn-xs btn-warning" type="button">
-			@icons.TriangleAlert(templ.Attributes{"class": "icon"})
-			<span>Warning</span>
-		</button>
 		<button class="btn btn-xs btn-danger" type="button">
 			@icons.Trash2(templ.Attributes{"class": "icon"})
 			<span>Danger</span>
@@ -166,10 +146,6 @@ templ ButtonVariantsContent(linkSelector string) {
 		<button class="btn btn-xs btn-success" type="button" disabled>
 			@icons.Check(templ.Attributes{"class": "icon"})
 			<span>Success disabled</span>
-		</button>
-		<button class="btn btn-xs btn-warning" type="button" disabled>
-			@icons.TriangleAlert(templ.Attributes{"class": "icon"})
-			<span>Warning disabled</span>
 		</button>
 		<button class="btn btn-xs btn-danger" type="button" disabled>
 			@icons.Trash2(templ.Attributes{"class": "icon"})
@@ -187,7 +163,7 @@ templ ButtonVariantsContent(linkSelector string) {
 			@icons.Check(templ.Attributes{"class": "icon"})
 		</button>
 		<button class="btn btn-inactive btn-icon" type="button" aria-label="Inactive icon" title="Inactive icon">
-			@icons.Icon(icons.IconBanknoteX, templ.Attributes{"class": "icon"})
+			@icons.Icon(icons.IconCircleOff, templ.Attributes{"class": "icon"})
 		</button>
 		<button class="btn btn-icon" type="button" aria-label="Disabled icon" title="Disabled icon" disabled>
 			@icons.X(templ.Attributes{"class": "icon"})
@@ -195,17 +171,11 @@ templ ButtonVariantsContent(linkSelector string) {
 		<button class="btn btn-success btn-icon" type="button" aria-label="Success icon" title="Success icon">
 			@icons.Check(templ.Attributes{"class": "icon"})
 		</button>
-		<button class="btn btn-warning btn-icon" type="button" aria-label="Warning icon" title="Warning icon">
-			@icons.TriangleAlert(templ.Attributes{"class": "icon"})
-		</button>
 		<button class="btn btn-danger btn-icon" type="button" aria-label="Danger icon" title="Danger icon">
 			@icons.Trash2(templ.Attributes{"class": "icon"})
 		</button>
 		<button class="btn btn-success btn-icon" type="button" aria-label="Success icon disabled" title="Success icon disabled" disabled>
 			@icons.Check(templ.Attributes{"class": "icon"})
-		</button>
-		<button class="btn btn-warning btn-icon" type="button" aria-label="Warning icon disabled" title="Warning icon disabled" disabled>
-			@icons.TriangleAlert(templ.Attributes{"class": "icon"})
 		</button>
 		<button class="btn btn-danger btn-icon" type="button" aria-label="Danger icon disabled" title="Danger icon disabled" disabled>
 			@icons.Trash2(templ.Attributes{"class": "icon"})
@@ -222,7 +192,7 @@ templ ButtonVariantsContent(linkSelector string) {
 			@icons.Check(templ.Attributes{"class": "icon"})
 		</button>
 		<button class="btn btn-sm btn-inactive btn-icon" type="button" aria-label="Small inactive icon" title="Small inactive icon">
-			@icons.Icon(icons.IconBanknoteX, templ.Attributes{"class": "icon"})
+			@icons.Icon(icons.IconCircleOff, templ.Attributes{"class": "icon"})
 		</button>
 		<button class="btn btn-sm btn-icon" type="button" aria-label="Small disabled icon" title="Small disabled icon" disabled>
 			@icons.X(templ.Attributes{"class": "icon"})
@@ -230,17 +200,11 @@ templ ButtonVariantsContent(linkSelector string) {
 		<button class="btn btn-sm btn-success btn-icon" type="button" aria-label="Small success icon" title="Small success icon">
 			@icons.Check(templ.Attributes{"class": "icon"})
 		</button>
-		<button class="btn btn-sm btn-warning btn-icon" type="button" aria-label="Small warning icon" title="Small warning icon">
-			@icons.TriangleAlert(templ.Attributes{"class": "icon"})
-		</button>
 		<button class="btn btn-sm btn-danger btn-icon" type="button" aria-label="Small danger icon" title="Small danger icon">
 			@icons.Trash2(templ.Attributes{"class": "icon"})
 		</button>
 		<button class="btn btn-sm btn-success btn-icon" type="button" aria-label="Small success icon disabled" title="Small success icon disabled" disabled>
 			@icons.Check(templ.Attributes{"class": "icon"})
-		</button>
-		<button class="btn btn-sm btn-warning btn-icon" type="button" aria-label="Small warning icon disabled" title="Small warning icon disabled" disabled>
-			@icons.TriangleAlert(templ.Attributes{"class": "icon"})
 		</button>
 		<button class="btn btn-sm btn-danger btn-icon" type="button" aria-label="Small danger icon disabled" title="Small danger icon disabled" disabled>
 			@icons.Trash2(templ.Attributes{"class": "icon"})
@@ -257,7 +221,7 @@ templ ButtonVariantsContent(linkSelector string) {
 			@icons.Check(templ.Attributes{"class": "icon"})
 		</button>
 		<button class="btn btn-xs btn-inactive btn-icon" type="button" aria-label="Extra small inactive icon" title="Extra small inactive icon">
-			@icons.Icon(icons.IconBanknoteX, templ.Attributes{"class": "icon"})
+			@icons.Icon(icons.IconCircleOff, templ.Attributes{"class": "icon"})
 		</button>
 		<button class="btn btn-xs btn-icon" type="button" aria-label="Extra small disabled icon" title="Extra small disabled icon" disabled>
 			@icons.X(templ.Attributes{"class": "icon"})
@@ -265,17 +229,11 @@ templ ButtonVariantsContent(linkSelector string) {
 		<button class="btn btn-xs btn-success btn-icon" type="button" aria-label="Extra small success icon" title="Extra small success icon">
 			@icons.Check(templ.Attributes{"class": "icon"})
 		</button>
-		<button class="btn btn-xs btn-warning btn-icon" type="button" aria-label="Extra small warning icon" title="Extra small warning icon">
-			@icons.TriangleAlert(templ.Attributes{"class": "icon"})
-		</button>
 		<button class="btn btn-xs btn-danger btn-icon" type="button" aria-label="Extra small danger icon" title="Extra small danger icon">
 			@icons.Trash2(templ.Attributes{"class": "icon"})
 		</button>
 		<button class="btn btn-xs btn-success btn-icon" type="button" aria-label="Extra small success icon disabled" title="Extra small success icon disabled" disabled>
 			@icons.Check(templ.Attributes{"class": "icon"})
-		</button>
-		<button class="btn btn-xs btn-warning btn-icon" type="button" aria-label="Extra small warning icon disabled" title="Extra small warning icon disabled" disabled>
-			@icons.TriangleAlert(templ.Attributes{"class": "icon"})
 		</button>
 		<button class="btn btn-xs btn-danger btn-icon" type="button" aria-label="Extra small danger icon disabled" title="Extra small danger icon disabled" disabled>
 			@icons.Trash2(templ.Attributes{"class": "icon"})
@@ -301,13 +259,6 @@ templ ToggleVariantsContent() {
 			OnClass:      "btn-success",
 		})
 		@shared.Toggle(shared.ToggleProps{
-			Bind:         "toggleWarning",
-			DisabledExpr: "$_fetching",
-			Off:          "Toggle off",
-			On:           "Toggle on",
-			OnClass:      "btn-warning",
-		})
-		@shared.Toggle(shared.ToggleProps{
 			Bind:         "toggleDanger",
 			DisabledExpr: "$_fetching",
 			Off:          "Toggle off",
@@ -318,13 +269,11 @@ templ ToggleVariantsContent() {
 	<div class="row row-wrap">
 		@shared.Toggle(shared.ToggleProps{IsOn: true, Disabled: true, Off: "Toggle off", On: "Toggle on (disabled)"})
 		@shared.Toggle(shared.ToggleProps{IsOn: true, Disabled: true, Off: "Toggle off", On: "Toggle on (disabled)", OnClass: "btn-success"})
-		@shared.Toggle(shared.ToggleProps{IsOn: true, Disabled: true, Off: "Toggle off", On: "Toggle on (disabled)", OnClass: "btn-warning"})
 		@shared.Toggle(shared.ToggleProps{IsOn: true, Disabled: true, Off: "Toggle off", On: "Toggle on (disabled)", OnClass: "btn-danger"})
 	</div>
 	<div class="row row-wrap">
 		@shared.Toggle(shared.ToggleProps{IsOn: false, Disabled: true, Off: "Toggle off (disabled)", On: "Toggle on"})
 		@shared.Toggle(shared.ToggleProps{IsOn: false, Disabled: true, Off: "Toggle off (disabled)", On: "Toggle on", OnClass: "btn-success"})
-		@shared.Toggle(shared.ToggleProps{IsOn: false, Disabled: true, Off: "Toggle off (disabled)", On: "Toggle on", OnClass: "btn-warning"})
 		@shared.Toggle(shared.ToggleProps{IsOn: false, Disabled: true, Off: "Toggle off (disabled)", On: "Toggle on", OnClass: "btn-danger"})
 	</div>
 }
@@ -333,27 +282,67 @@ templ RadioVariantsContent(linkSelector string) {
 	<div class="field">
 		<label>Client side (button)</label>
 		<div class="row row-tight row-wrap">
-			@shared.RadioButton(shared.RadioButtonProps{Bind: "radioDemo", Value: "all", Label: "All", ClassName: "btn btn-xs"})
-			@shared.RadioButton(shared.RadioButtonProps{Bind: "radioDemo", Value: "paid", Label: "Paid", ClassName: "btn btn-xs"})
-			@shared.RadioButton(shared.RadioButtonProps{Bind: "radioDemo", Value: "unpaid", Label: "Unpaid", ClassName: "btn btn-xs"})
+			@shared.RadioButton(shared.RadioButtonProps{Bind: "radioDemo", Value: "all", Label: "Option 1", ClassName: "btn btn-xs"})
+			@shared.RadioButton(shared.RadioButtonProps{Bind: "radioDemo", Value: "paid", Label: "Option 2", ClassName: "btn btn-xs"})
+			@shared.RadioButton(shared.RadioButtonProps{Bind: "radioDemo", Value: "unpaid", Label: "Option 3", ClassName: "btn btn-xs"})
 		</div>
 		<div class="row row-tight row-wrap">
-			@shared.RadioButton(shared.RadioButtonProps{Bind: "radioDemo", Value: "all", Label: "All (disabled)", ClassName: "btn btn-xs", DisabledExpr: "true"})
-			@shared.RadioButton(shared.RadioButtonProps{Bind: "radioDemo", Value: "paid", Label: "Paid (disabled)", ClassName: "btn btn-xs", DisabledExpr: "true"})
-			@shared.RadioButton(shared.RadioButtonProps{Bind: "radioDemo", Value: "unpaid", Label: "Unpaid (disabled)", ClassName: "btn btn-xs", DisabledExpr: "true"})
+			@shared.RadioButton(shared.RadioButtonProps{IsSelected: true, Label: "Option 1 (disabled)", ClassName: "btn btn-xs", DisabledExpr: "true"})
+			@shared.RadioButton(shared.RadioButtonProps{IsSelected: false, Label: "Option 2 (disabled)", ClassName: "btn btn-xs", DisabledExpr: "true"})
+			@shared.RadioButton(shared.RadioButtonProps{IsSelected: false, Label: "Option 3 (disabled)", ClassName: "btn btn-xs", DisabledExpr: "true"})
+		</div>
+		<div class="row row-tight row-wrap">
+			@shared.RadioButton(shared.RadioButtonProps{Bind: "radioDemo", Value: "all", Label: "Option 1 success", ClassName: "btn btn-xs", ActiveClass: "btn-success"})
+			@shared.RadioButton(shared.RadioButtonProps{Bind: "radioDemo", Value: "paid", Label: "Option 2 success", ClassName: "btn btn-xs", ActiveClass: "btn-success"})
+			@shared.RadioButton(shared.RadioButtonProps{Bind: "radioDemo", Value: "unpaid", Label: "Option 3 success", ClassName: "btn btn-xs", ActiveClass: "btn-success"})
+		</div>
+		<div class="row row-tight row-wrap">
+			@shared.RadioButton(shared.RadioButtonProps{IsSelected: true, Label: "Option 1 success (disabled)", ClassName: "btn btn-xs", ActiveClass: "btn-success", DisabledExpr: "true"})
+			@shared.RadioButton(shared.RadioButtonProps{IsSelected: false, Label: "Option 2 success (disabled)", ClassName: "btn btn-xs", ActiveClass: "btn-success", DisabledExpr: "true"})
+			@shared.RadioButton(shared.RadioButtonProps{IsSelected: false, Label: "Option 3 success (disabled)", ClassName: "btn btn-xs", ActiveClass: "btn-success", DisabledExpr: "true"})
+		</div>
+		<div class="row row-tight row-wrap">
+			@shared.RadioButton(shared.RadioButtonProps{Bind: "radioDemo", Value: "all", Label: "Option 1 danger", ClassName: "btn btn-xs", ActiveClass: "btn-danger"})
+			@shared.RadioButton(shared.RadioButtonProps{Bind: "radioDemo", Value: "paid", Label: "Option 2 danger", ClassName: "btn btn-xs", ActiveClass: "btn-danger"})
+			@shared.RadioButton(shared.RadioButtonProps{Bind: "radioDemo", Value: "unpaid", Label: "Option 3 danger", ClassName: "btn btn-xs", ActiveClass: "btn-danger"})
+		</div>
+		<div class="row row-tight row-wrap">
+			@shared.RadioButton(shared.RadioButtonProps{IsSelected: true, Label: "Option 1 danger (disabled)", ClassName: "btn btn-xs", ActiveClass: "btn-danger", DisabledExpr: "true"})
+			@shared.RadioButton(shared.RadioButtonProps{IsSelected: false, Label: "Option 2 danger (disabled)", ClassName: "btn btn-xs", ActiveClass: "btn-danger", DisabledExpr: "true"})
+			@shared.RadioButton(shared.RadioButtonProps{IsSelected: false, Label: "Option 3 danger (disabled)", ClassName: "btn btn-xs", ActiveClass: "btn-danger", DisabledExpr: "true"})
 		</div>
 	</div>
 	<div class="field">
 		<label>Server side (link)</label>
 		<div class="row row-tight row-wrap">
-			@shared.RadioLink(shared.RadioLinkProps{Href: "/dev?selector=all", Label: "All", IsSelected: linkSelector == "all", ClassName: "btn btn-xs"})
-			@shared.RadioLink(shared.RadioLinkProps{Href: "/dev?selector=2026", Label: "2026", IsSelected: linkSelector == "2026", ClassName: "btn btn-xs"})
-			@shared.RadioLink(shared.RadioLinkProps{Href: "/dev?selector=custom", Label: "Custom", IsSelected: linkSelector == "custom", ClassName: "btn btn-xs"})
+			@shared.RadioLink(shared.RadioLinkProps{Href: "/dev?selector=all", Label: "Option 1", IsSelected: linkSelector == "all", ClassName: "btn btn-xs"})
+			@shared.RadioLink(shared.RadioLinkProps{Href: "/dev?selector=2026", Label: "Option 2", IsSelected: linkSelector == "2026", ClassName: "btn btn-xs"})
+			@shared.RadioLink(shared.RadioLinkProps{Href: "/dev?selector=custom", Label: "Option 3", IsSelected: linkSelector == "custom", ClassName: "btn btn-xs"})
 		</div>
 		<div class="row row-tight row-wrap">
-			@shared.RadioLink(shared.RadioLinkProps{Href: "/dev?selector=all", Label: "All (disabled)", IsSelected: linkSelector == "all", Disabled: true, ClassName: "btn btn-xs"})
-			@shared.RadioLink(shared.RadioLinkProps{Href: "/dev?selector=2026", Label: "2026 (disabled)", IsSelected: linkSelector == "2026", Disabled: true, ClassName: "btn btn-xs"})
-			@shared.RadioLink(shared.RadioLinkProps{Href: "/dev?selector=custom", Label: "Custom (disabled)", IsSelected: linkSelector == "custom", Disabled: true, ClassName: "btn btn-xs"})
+			@shared.RadioLink(shared.RadioLinkProps{Href: "/dev?selector=all", Label: "Option 1 (disabled)", IsSelected: true, Disabled: true, ClassName: "btn btn-xs"})
+			@shared.RadioLink(shared.RadioLinkProps{Href: "/dev?selector=2026", Label: "Option 2 (disabled)", IsSelected: false, Disabled: true, ClassName: "btn btn-xs"})
+			@shared.RadioLink(shared.RadioLinkProps{Href: "/dev?selector=custom", Label: "Option 3 (disabled)", IsSelected: false, Disabled: true, ClassName: "btn btn-xs"})
+		</div>
+		<div class="row row-tight row-wrap">
+			@shared.RadioLink(shared.RadioLinkProps{Href: "/dev?selector=all", Label: "Option 1 success", IsSelected: linkSelector == "all", ClassName: "btn btn-xs", ActiveClass: "btn-success"})
+			@shared.RadioLink(shared.RadioLinkProps{Href: "/dev?selector=2026", Label: "Option 2 success", IsSelected: linkSelector == "2026", ClassName: "btn btn-xs", ActiveClass: "btn-success"})
+			@shared.RadioLink(shared.RadioLinkProps{Href: "/dev?selector=custom", Label: "Option 3 success", IsSelected: linkSelector == "custom", ClassName: "btn btn-xs", ActiveClass: "btn-success"})
+		</div>
+		<div class="row row-tight row-wrap">
+			@shared.RadioLink(shared.RadioLinkProps{Href: "/dev?selector=all", Label: "Option 1 success (disabled)", IsSelected: true, Disabled: true, ClassName: "btn btn-xs", ActiveClass: "btn-success"})
+			@shared.RadioLink(shared.RadioLinkProps{Href: "/dev?selector=2026", Label: "Option 2 success (disabled)", IsSelected: false, Disabled: true, ClassName: "btn btn-xs", ActiveClass: "btn-success"})
+			@shared.RadioLink(shared.RadioLinkProps{Href: "/dev?selector=custom", Label: "Option 3 success (disabled)", IsSelected: false, Disabled: true, ClassName: "btn btn-xs", ActiveClass: "btn-success"})
+		</div>
+		<div class="row row-tight row-wrap">
+			@shared.RadioLink(shared.RadioLinkProps{Href: "/dev?selector=all", Label: "Option 1 danger", IsSelected: linkSelector == "all", ClassName: "btn btn-xs", ActiveClass: "btn-danger"})
+			@shared.RadioLink(shared.RadioLinkProps{Href: "/dev?selector=2026", Label: "Option 2 danger", IsSelected: linkSelector == "2026", ClassName: "btn btn-xs", ActiveClass: "btn-danger"})
+			@shared.RadioLink(shared.RadioLinkProps{Href: "/dev?selector=custom", Label: "Option 3 danger", IsSelected: linkSelector == "custom", ClassName: "btn btn-xs", ActiveClass: "btn-danger"})
+		</div>
+		<div class="row row-tight row-wrap">
+			@shared.RadioLink(shared.RadioLinkProps{Href: "/dev?selector=all", Label: "Option 1 danger (disabled)", IsSelected: true, Disabled: true, ClassName: "btn btn-xs", ActiveClass: "btn-danger"})
+			@shared.RadioLink(shared.RadioLinkProps{Href: "/dev?selector=2026", Label: "Option 2 danger (disabled)", IsSelected: false, Disabled: true, ClassName: "btn btn-xs", ActiveClass: "btn-danger"})
+			@shared.RadioLink(shared.RadioLinkProps{Href: "/dev?selector=custom", Label: "Option 3 danger (disabled)", IsSelected: false, Disabled: true, ClassName: "btn btn-xs", ActiveClass: "btn-danger"})
 		</div>
 	</div>
 }
@@ -534,14 +523,6 @@ templ NotificationsContent() {
 			Label:         "Success",
 			IconName:      icons.IconCheck,
 			LoadingSignal: "_notifySuccess",
-		})
-		@shared.LoadingActionButtonWithSignal(shared.LoadingActionButtonWithSignalProps{
-			ClassName:     "btn btn-warning",
-			OnClick:       "@post('/dev/notifications/warning')",
-			DisabledExpr:  "$_notifyWarning",
-			Label:         "Warning",
-			IconName:      icons.IconTriangleAlert,
-			LoadingSignal: "_notifyWarning",
 		})
 		@shared.LoadingActionButtonWithSignal(shared.LoadingActionButtonWithSignalProps{
 			ClassName:     "btn btn-danger",

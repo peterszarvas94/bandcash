@@ -148,6 +148,33 @@
   }
 
   .btn {
+    --btn-tone-color: var(--text-color);
+    --btn-tone-bg: var(--btn-bg);
+    --btn-tone-border: transparent;
+    --btn-tone-hover-bg: color-mix(in srgb, var(--page-bg) 90%, var(--text-color) 10%);
+    --btn-tone-hover-border: color-mix(
+      in srgb,
+      var(--page-bg) 72%,
+      var(--text-color) 28%
+    );
+    --btn-tone-active-bg: color-mix(
+      in srgb,
+      var(--page-bg) 86%,
+      var(--text-color) 14%
+    );
+    --btn-tone-active-border: color-mix(
+      in srgb,
+      var(--page-bg) 62%,
+      var(--text-color) 38%
+    );
+    --btn-tone-disabled-color: var(--btn-tone-color);
+    --btn-tone-disabled-bg: color-mix(
+      in srgb,
+      var(--page-bg) 97%,
+      var(--text-color) 3%
+    );
+    --btn-tone-disabled-border: transparent;
+
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -160,29 +187,21 @@
     text-align: center;
     white-space: nowrap;
     cursor: pointer;
-    border: var(--border) solid transparent;
+    border: var(--border) solid var(--btn-tone-border);
     border-radius: 0;
-    background: var(--btn-bg);
-    color: var(--text-color);
+    background: var(--btn-tone-bg);
+    color: var(--btn-tone-color);
     width: fit-content;
     height: fit-content;
 
     &:not(:disabled):not([disabled]):hover {
-      background: color-mix(in srgb, var(--page-bg) 90%, var(--text-color) 10%);
-      border-color: color-mix(
-        in srgb,
-        var(--page-bg) 72%,
-        var(--text-color) 28%
-      );
+      background: var(--btn-tone-hover-bg);
+      border-color: var(--btn-tone-hover-border);
     }
 
     &:not(:disabled):not([disabled]):active {
-      background: color-mix(in srgb, var(--page-bg) 86%, var(--text-color) 14%);
-      border-color: color-mix(
-        in srgb,
-        var(--page-bg) 62%,
-        var(--text-color) 38%
-      );
+      background: var(--btn-tone-active-bg);
+      border-color: var(--btn-tone-active-border);
     }
 
     &:focus-visible {
@@ -194,8 +213,9 @@
     &[disabled] {
       opacity: 0.55;
       cursor: not-allowed;
-      background: color-mix(in srgb, var(--page-bg) 97%, var(--text-color) 3%);
-      border-color: transparent;
+      color: var(--btn-tone-disabled-color);
+      background: var(--btn-tone-disabled-bg);
+      border-color: var(--btn-tone-disabled-border);
     }
 
     &.btn-sm {
@@ -290,8 +310,28 @@
     }
 
     &.btn-active {
-      background: var(--btn-active-bg);
-      border-color: var(--btn-active-border);
+      --btn-tone-bg: var(--btn-active-bg);
+      --btn-tone-border: var(--btn-active-border);
+      --btn-tone-hover-bg: color-mix(
+        in srgb,
+        var(--btn-active-bg) 86%,
+        var(--text-color) 14%
+      );
+      --btn-tone-hover-border: color-mix(
+        in srgb,
+        var(--btn-active-border) 82%,
+        var(--text-color) 18%
+      );
+      --btn-tone-active-bg: color-mix(
+        in srgb,
+        var(--btn-active-bg) 78%,
+        var(--text-color) 22%
+      );
+      --btn-tone-active-border: color-mix(
+        in srgb,
+        var(--btn-active-border) 74%,
+        var(--text-color) 26%
+      );
     }
 
     .icon {
@@ -435,114 +475,66 @@
   }
 
   .btn-danger {
-    color: color-mix(in srgb, var(--error-color) 85%, var(--text-color) 15%);
-    background: color-mix(in srgb, var(--page-bg) 86%, var(--error-color) 14%);
+    --btn-tone-color: color-mix(in srgb, var(--error-color) 85%, var(--text-color) 15%);
+    --btn-tone-bg: color-mix(in srgb, var(--page-bg) 86%, var(--error-color) 14%);
+    --btn-tone-hover-bg: color-mix(in srgb, var(--page-bg) 82%, var(--error-color) 18%);
+    --btn-tone-hover-border: color-mix(in srgb, var(--page-bg) 62%, var(--error-color) 38%);
+    --btn-tone-active-bg: color-mix(in srgb, var(--page-bg) 78%, var(--error-color) 22%);
+    --btn-tone-active-border: color-mix(in srgb, var(--page-bg) 52%, var(--error-color) 48%);
+    --btn-tone-disabled-color: color-mix(
+      in srgb,
+      var(--error-color) 60%,
+      var(--text-color) 40%
+    );
+    --btn-tone-disabled-bg: color-mix(in srgb, var(--page-bg) 90%, var(--error-color) 10%);
+    --btn-tone-disabled-border: transparent;
 
     &.btn-ghost {
       background: transparent;
-    }
-
-    &:not(:disabled):not([disabled]):hover {
-      background: color-mix(
-        in srgb,
-        var(--page-bg) 82%,
-        var(--error-color) 18%
-      );
-      border-color: color-mix(
-        in srgb,
-        var(--page-bg) 62%,
-        var(--error-color) 38%
-      );
-    }
-
-    &:not(:disabled):not([disabled]):active {
-      background: color-mix(
-        in srgb,
-        var(--page-bg) 78%,
-        var(--error-color) 22%
-      );
-      border-color: color-mix(
-        in srgb,
-        var(--page-bg) 52%,
-        var(--error-color) 48%
-      );
     }
 
     &:focus-visible {
       outline-color: var(--error-color);
     }
 
-    &:disabled,
-    &[disabled] {
-      opacity: 0.55;
-      color: color-mix(in srgb, var(--error-color) 60%, var(--text-color) 40%);
-      background: color-mix(in srgb, var(--page-bg) 90%, var(--error-color) 10%);
-      border-color: transparent;
+
+    &.btn-active {
+      --btn-tone-border: color-mix(in srgb, var(--page-bg) 56%, var(--error-color) 44%);
     }
   }
 
   .btn-success {
-    color: var(--color-success);
-    background: color-mix(
+    --btn-tone-color: var(--color-success);
+    --btn-tone-bg: color-mix(in srgb, var(--page-bg) 88%, var(--color-success) 12%);
+    --btn-tone-hover-bg: var(--btn-success-hover-bg);
+    --btn-tone-active-bg: color-mix(
       in srgb,
-      var(--page-bg) 88%,
-      var(--color-success) 12%
+      var(--page-bg) 78%,
+      var(--color-success) 22%
     );
-
-    &:not(:disabled):not([disabled]):hover {
-      background: var(--btn-success-hover-bg);
-    }
-
-    &:not(:disabled):not([disabled]):active {
-      background: color-mix(
-        in srgb,
-        var(--page-bg) 78%,
-        var(--color-success) 22%
-      );
-    }
+    --btn-tone-disabled-color: color-mix(
+      in srgb,
+      var(--color-success) 60%,
+      var(--text-color) 40%
+    );
+    --btn-tone-disabled-bg: color-mix(
+      in srgb,
+      var(--page-bg) 90%,
+      var(--color-success) 10%
+    );
+    --btn-tone-disabled-border: transparent;
 
     &:focus-visible {
       outline-color: var(--btn-success-focus);
     }
 
-    &:disabled,
-    &[disabled] {
-      opacity: 0.55;
-      color: color-mix(in srgb, var(--color-success) 60%, var(--text-color) 40%);
-      background: color-mix(
+
+    &.btn-active {
+      --btn-tone-border: color-mix(
         in srgb,
-        var(--page-bg) 90%,
-        var(--color-success) 10%
+        var(--page-bg) 56%,
+        var(--color-success) 44%
       );
-      border-color: transparent;
-    }
-  }
-
-  .btn-warning {
-    color: var(--color-warning);
-
-    &:not(:disabled):not([disabled]):hover {
-      background: color-mix(in srgb, var(--color-warning) 12%, transparent);
-    }
-
-    &:not(:disabled):not([disabled]):active {
-      background: color-mix(in srgb, var(--color-warning) 20%, transparent);
-    }
-
-    &:focus-visible {
-      outline-color: var(--color-warning);
-    }
-
-    &:disabled,
-    &[disabled] {
-      opacity: 0.55;
-      color: color-mix(in srgb, var(--color-warning) 60%, var(--text-color) 40%);
-      background: color-mix(
-        in srgb,
-        var(--page-bg) 90%,
-        var(--color-warning) 10%
-      );
-      border-color: transparent;
     }
   }
 
@@ -866,9 +858,6 @@
           border-left-color: var(--color-info);
         }
 
-        &.notification-warning {
-          border-left-color: var(--color-warning);
-        }
       }
     }
   }

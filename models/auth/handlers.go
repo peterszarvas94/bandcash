@@ -380,7 +380,7 @@ func (a *Auth) VerifyMagicLink(c echo.Context) error {
 		return a.renderVerifyLinkError(c, http.StatusBadRequest)
 	}
 	if bannedCount > 0 {
-		utils.Notify(c, "warning", ctxi18n.T(c.Request().Context(), "auth.banned"))
+		utils.Notify(c, "error", ctxi18n.T(c.Request().Context(), "auth.banned"))
 		return c.Redirect(http.StatusFound, "/auth/login")
 	}
 

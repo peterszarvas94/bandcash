@@ -215,7 +215,9 @@ templ Toggle(props ToggleProps) {
 		}
 		onClass := props.OnClass
 		if onClass == "" {
-			onClass = ""
+			onClass = "btn-active"
+		} else {
+			onClass = strings.TrimSpace(onClass + " btn-active")
 		}
 		offIcon := props.OffIcon
 		if offIcon == "" {
@@ -298,8 +300,13 @@ templ RadioButton(props RadioButtonProps) {
 		activeClass := props.ActiveClass
 		if activeClass == "" {
 			activeClass = "btn-active"
+		} else {
+			activeClass = strings.TrimSpace(activeClass + " btn-active")
 		}
 		inactiveClass := props.InactiveClass
+		if inactiveClass == "" {
+			inactiveClass = "btn-inactive"
+		}
 		selectedClass := strings.TrimSpace(baseClass + " " + activeClass)
 		unselectedClass := strings.TrimSpace(baseClass + " " + inactiveClass)
 	}}
@@ -357,8 +364,13 @@ templ RadioLink(props RadioLinkProps) {
 		activeClass := props.ActiveClass
 		if activeClass == "" {
 			activeClass = "btn-active"
+		} else {
+			activeClass = strings.TrimSpace(activeClass + " btn-active")
 		}
 		inactiveClass := props.InactiveClass
+		if inactiveClass == "" {
+			inactiveClass = "btn-inactive"
+		}
 		className := strings.TrimSpace(baseClass + " " + inactiveClass)
 		if props.IsSelected {
 			className = strings.TrimSpace(baseClass + " " + activeClass)
