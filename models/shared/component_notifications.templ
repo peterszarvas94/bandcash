@@ -11,7 +11,7 @@ templ Notifications() {
 			for _, item := range utils.NotificationsFromContext(ctx) {
 				<li id={ "notification-item-" + item.ID } class={ "notification-" + item.Kind } data-notification-id={ item.ID } data-created-at-ms={ item.Created.UnixMilli() }>
 					<p>{ item.Message }</p>
-					<button type="button" data-on:click="el.closest('[data-notification-id]').remove()" aria-label="Close notification" title="Close notification">
+					<button type="button" aria-label="Close notification" title="Close notification">
 						@icons.X(templ.Attributes{"class": "icon"})
 					</button>
 				</li>

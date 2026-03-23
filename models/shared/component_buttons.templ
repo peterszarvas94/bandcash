@@ -235,15 +235,29 @@ templ Toggle(props ToggleProps) {
 		</span>
 	} else {
 		if props.IsOn {
-			<button class={ fmt.Sprintf("%s %s", baseClass, onClass) } type="button" disabled?={ props.Disabled } data-attr:disabled={ disabledExpr } data-on:click={ props.OnClick }>
-				@icons.Icon(onIcon, templ.Attributes{"class": "icon"})
-				{ onText }
-			</button>
+			if props.OnClick != "" {
+				<button class={ fmt.Sprintf("%s %s", baseClass, onClass) } type="button" disabled?={ props.Disabled } data-attr:disabled={ disabledExpr } data-on:click={ props.OnClick }>
+					@icons.Icon(onIcon, templ.Attributes{"class": "icon"})
+					{ onText }
+				</button>
+			} else {
+				<button class={ fmt.Sprintf("%s %s", baseClass, onClass) } type="button" disabled?={ props.Disabled } data-attr:disabled={ disabledExpr }>
+					@icons.Icon(onIcon, templ.Attributes{"class": "icon"})
+					{ onText }
+				</button>
+			}
 		} else {
-			<button class={ fmt.Sprintf("%s %s", baseClass, offClass) } type="button" disabled?={ props.Disabled } data-attr:disabled={ disabledExpr } data-on:click={ props.OnClick }>
-				@icons.Icon(offIcon, templ.Attributes{"class": "icon"})
-				{ offText }
-			</button>
+			if props.OnClick != "" {
+				<button class={ fmt.Sprintf("%s %s", baseClass, offClass) } type="button" disabled?={ props.Disabled } data-attr:disabled={ disabledExpr } data-on:click={ props.OnClick }>
+					@icons.Icon(offIcon, templ.Attributes{"class": "icon"})
+					{ offText }
+				</button>
+			} else {
+				<button class={ fmt.Sprintf("%s %s", baseClass, offClass) } type="button" disabled?={ props.Disabled } data-attr:disabled={ disabledExpr }>
+					@icons.Icon(offIcon, templ.Attributes{"class": "icon"})
+					{ offText }
+				</button>
+			}
 		}
 	}
 }

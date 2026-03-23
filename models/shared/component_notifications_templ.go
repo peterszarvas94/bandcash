@@ -109,7 +109,7 @@ func Notifications() templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 7, "</p><button type=\"button\" data-on:click=\"el.closest('[data-notification-id]').remove()\" aria-label=\"Close notification\" title=\"Close notification\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 7, "</p><button type=\"button\" aria-label=\"Close notification\" title=\"Close notification\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
