@@ -102,6 +102,10 @@
     min-width: 7rem;
   }
 
+  .w-details {
+    max-width: var(--details-width);
+  }
+
   .hide-tablet {
     @media (max-width: 780px) {
       display: none !important;

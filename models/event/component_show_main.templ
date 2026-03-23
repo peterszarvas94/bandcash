@@ -193,23 +193,23 @@ templ EventShowMain(data EventData) {
 				<div class="form-row">
 					<div class="field">
 						<label for="event-edit-title" class="row">{ ctxi18n.T(ctx, "fields.title") } <span class="color-error">*</span></label>
-						<input id="event-edit-title" type="text" data-bind="eventFormData.title" class="input"/>
+						<input id="event-edit-title" type="text" data-bind="eventFormData.title" class="input w-details"/>
 						<div data-show="$errors && $errors.title" class="color-error" data-text="$errors.title"></div>
 					</div>
 					<div class="field">
 						<label for="event-edit-time" class="row">{ ctxi18n.T(ctx, "fields.time") } <span class="color-error">*</span></label>
-						<input id="event-edit-time" type="datetime-local" data-bind="eventFormData.time" class="input"/>
+						<input id="event-edit-time" type="datetime-local" data-bind="eventFormData.time" class="input w-details"/>
 						<div data-show="$errors && $errors.time" class="color-error" data-text="$errors.time"></div>
 					</div>
 				</div>
 				<div class="field">
 					<label for="event-edit-description">{ ctxi18n.T(ctx, "fields.description") }</label>
-					<textarea id="event-edit-description" data-bind="eventFormData.description" rows="3" class="input">{ data.Event.Description }</textarea>
+					<textarea id="event-edit-description" data-bind="eventFormData.description" rows="3" class="input w-details">{ data.Event.Description }</textarea>
 					<div data-show="$errors && $errors.description" class="color-error" data-text="$errors.description"></div>
 				</div>
 				<div class="field">
 					<label for="event-edit-amount" class="row">{ ctxi18n.T(ctx, "fields.income") } <span class="color-error">*</span></label>
-					<input id="event-edit-amount" type="number" data-bind="eventFormData.amount" step="1" min="1" class="input"/>
+					<input id="event-edit-amount" type="number" data-bind="eventFormData.amount" step="1" min="1" class="input w-details"/>
 					<div data-show="$errors && $errors.amount" class="color-error" data-text="$errors.amount"></div>
 				</div>
 				<div class="field">
@@ -224,15 +224,15 @@ templ EventShowMain(data EventData) {
 				</div>
 				<div class="field" data-show="$eventFormData.paid" style="display: none">
 					<label for="event-edit-paid-at" class="row">{ ctxi18n.T(ctx, "fields.paid_at") }</label>
-					<input id="event-edit-paid-at" type="date" data-bind="eventFormData.paidAt" class="input"/>
+					<input id="event-edit-paid-at" type="date" data-bind="eventFormData.paidAt" class="input w-details"/>
 				</div>
 				<div class="field">
 					<label for="event-edit-total">{ ctxi18n.T(ctx, "participants.payout_total") }</label>
-					<input id="event-edit-total" type="number" class="input" disabled data-bind="wizard.total"/>
+					<input id="event-edit-total" type="number" class="input w-details" disabled data-bind="wizard.total"/>
 				</div>
 				<div class="field">
 					<label for="event-edit-leftover">{ ctxi18n.T(ctx, "events.leftover") }</label>
-					<input id="event-edit-leftover" type="number" class="input" disabled data-bind="wizard.leftover"/>
+					<input id="event-edit-leftover" type="number" class="input w-details" disabled data-bind="wizard.leftover"/>
 				</div>
 				<div class="table-scroll pt">
 					<table class="table">

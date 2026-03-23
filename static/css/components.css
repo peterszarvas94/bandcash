@@ -151,7 +151,11 @@
     --btn-tone-color: var(--text-color);
     --btn-tone-bg: var(--btn-bg);
     --btn-tone-border: transparent;
-    --btn-tone-hover-bg: color-mix(in srgb, var(--page-bg) 90%, var(--text-color) 10%);
+    --btn-tone-hover-bg: color-mix(
+      in srgb,
+      var(--page-bg) 90%,
+      var(--text-color) 10%
+    );
     --btn-tone-hover-border: color-mix(
       in srgb,
       var(--page-bg) 72%,
@@ -335,6 +339,142 @@
       );
     }
 
+    &.btn-danger {
+      --btn-tone-color: color-mix(
+        in srgb,
+        var(--error-color) 85%,
+        var(--text-color) 15%
+      );
+      --btn-tone-bg: color-mix(
+        in srgb,
+        var(--page-bg) 86%,
+        var(--error-color) 14%
+      );
+      --btn-tone-hover-bg: color-mix(
+        in srgb,
+        var(--page-bg) 82%,
+        var(--error-color) 18%
+      );
+      --btn-tone-hover-border: color-mix(
+        in srgb,
+        var(--page-bg) 62%,
+        var(--error-color) 38%
+      );
+      --btn-tone-active-bg: color-mix(
+        in srgb,
+        var(--page-bg) 78%,
+        var(--error-color) 22%
+      );
+      --btn-tone-active-border: color-mix(
+        in srgb,
+        var(--page-bg) 52%,
+        var(--error-color) 48%
+      );
+      --btn-tone-disabled-color: color-mix(
+        in srgb,
+        var(--error-color) 60%,
+        var(--text-color) 40%
+      );
+      --btn-tone-disabled-bg: color-mix(
+        in srgb,
+        var(--page-bg) 90%,
+        var(--error-color) 10%
+      );
+      --btn-tone-disabled-border: transparent;
+
+      &.btn-ghost {
+        background: transparent;
+      }
+
+      &:focus-visible {
+        outline-color: var(--error-color);
+      }
+
+      &.btn-active {
+        --btn-tone-border: color-mix(
+          in srgb,
+          var(--page-bg) 56%,
+          var(--error-color) 44%
+        );
+      }
+    }
+
+    &.btn-success {
+      --btn-tone-color: var(--color-success);
+      --btn-tone-bg: color-mix(
+        in srgb,
+        var(--page-bg) 88%,
+        var(--color-success) 12%
+      );
+      --btn-tone-hover-bg: var(--btn-success-hover-bg);
+      --btn-tone-active-bg: color-mix(
+        in srgb,
+        var(--page-bg) 78%,
+        var(--color-success) 22%
+      );
+      --btn-tone-disabled-color: color-mix(
+        in srgb,
+        var(--color-success) 60%,
+        var(--text-color) 40%
+      );
+      --btn-tone-disabled-bg: color-mix(
+        in srgb,
+        var(--page-bg) 90%,
+        var(--color-success) 10%
+      );
+      --btn-tone-disabled-border: transparent;
+
+      &:focus-visible {
+        outline-color: var(--btn-success-focus);
+      }
+
+      &.btn-active {
+        --btn-tone-border: color-mix(
+          in srgb,
+          var(--page-bg) 56%,
+          var(--color-success) 44%
+        );
+      }
+    }
+
+    &.btn-inactive {
+      opacity: 1;
+      color: var(--muted-text-color);
+      background: color-mix(in srgb, var(--page-bg) 90%, var(--text-color) 10%);
+      border-color: transparent;
+
+      &:not(:disabled):not([disabled]):hover {
+        background: color-mix(
+          in srgb,
+          var(--page-bg) 86%,
+          var(--text-color) 14%
+        );
+        border-color: transparent;
+      }
+
+      &:not(:disabled):not([disabled]):active {
+        background: color-mix(
+          in srgb,
+          var(--page-bg) 82%,
+          var(--text-color) 18%
+        );
+        border-color: transparent;
+      }
+
+      &:focus-visible {
+        border-color: color-mix(
+          in srgb,
+          var(--page-bg) 62%,
+          var(--text-color) 38%
+        );
+      }
+
+      &:disabled,
+      &[disabled] {
+        opacity: 0.55;
+      }
+    }
+
     .icon {
       width: 1.1em;
       height: 1.1em;
@@ -475,126 +615,6 @@
     white-space: nowrap;
   }
 
-  .btn-danger {
-    --btn-tone-color: color-mix(in srgb, var(--error-color) 85%, var(--text-color) 15%);
-    --btn-tone-bg: color-mix(in srgb, var(--page-bg) 86%, var(--error-color) 14%);
-    --btn-tone-hover-bg: color-mix(in srgb, var(--page-bg) 82%, var(--error-color) 18%);
-    --btn-tone-hover-border: color-mix(in srgb, var(--page-bg) 62%, var(--error-color) 38%);
-    --btn-tone-active-bg: color-mix(in srgb, var(--page-bg) 78%, var(--error-color) 22%);
-    --btn-tone-active-border: color-mix(in srgb, var(--page-bg) 52%, var(--error-color) 48%);
-    --btn-tone-disabled-color: color-mix(
-      in srgb,
-      var(--error-color) 60%,
-      var(--text-color) 40%
-    );
-    --btn-tone-disabled-bg: color-mix(in srgb, var(--page-bg) 90%, var(--error-color) 10%);
-    --btn-tone-disabled-border: transparent;
-
-    &.btn-ghost {
-      background: transparent;
-    }
-
-    &:focus-visible {
-      outline-color: var(--error-color);
-    }
-
-
-    &.btn-active {
-      --btn-tone-border: color-mix(in srgb, var(--page-bg) 56%, var(--error-color) 44%);
-    }
-  }
-
-  .btn-success {
-    --btn-tone-color: var(--color-success);
-    --btn-tone-bg: color-mix(in srgb, var(--page-bg) 88%, var(--color-success) 12%);
-    --btn-tone-hover-bg: var(--btn-success-hover-bg);
-    --btn-tone-active-bg: color-mix(
-      in srgb,
-      var(--page-bg) 78%,
-      var(--color-success) 22%
-    );
-    --btn-tone-disabled-color: color-mix(
-      in srgb,
-      var(--color-success) 60%,
-      var(--text-color) 40%
-    );
-    --btn-tone-disabled-bg: color-mix(
-      in srgb,
-      var(--page-bg) 90%,
-      var(--color-success) 10%
-    );
-    --btn-tone-disabled-border: transparent;
-
-    &:focus-visible {
-      outline-color: var(--btn-success-focus);
-    }
-
-
-    &.btn-active {
-      --btn-tone-border: color-mix(
-        in srgb,
-        var(--page-bg) 56%,
-        var(--color-success) 44%
-      );
-    }
-  }
-
-  .btn-inactive {
-    opacity: 1;
-    color: var(--muted-text-color);
-    background: color-mix(in srgb, var(--page-bg) 90%, var(--text-color) 10%);
-    border-color: transparent;
-
-    &:not(:disabled):not([disabled]):hover {
-      background: color-mix(in srgb, var(--page-bg) 86%, var(--text-color) 14%);
-      border-color: transparent;
-    }
-
-    &:not(:disabled):not([disabled]):active {
-      background: color-mix(in srgb, var(--page-bg) 82%, var(--text-color) 18%);
-      border-color: transparent;
-    }
-
-    &:focus-visible {
-      border-color: color-mix(
-        in srgb,
-        var(--page-bg) 62%,
-        var(--text-color) 38%
-      );
-    }
-
-    &:disabled,
-    &[disabled] {
-      opacity: 0.55;
-    }
-  }
-
-  .detail-box {
-    border: var(--border) solid var(--border-color);
-    border-radius: var(--border);
-    background: var(--btn-bg);
-    padding: calc(var(--space) * 0.5) calc(var(--space) * 0.75);
-
-    .tabs {
-      margin-top: calc(var(--space) * 0.5);
-    }
-  }
-
-  @media (max-width: 768px) {
-    .detail-box {
-      [role="tablist"] {
-        flex-direction: column;
-        flex-wrap: nowrap;
-        gap: calc(var(--space) * 0.5);
-      }
-
-      [role="tablist"] .btn {
-        width: 100%;
-        justify-content: flex-start;
-      }
-    }
-  }
-
   .form {
     display: grid;
     gap: var(--space);
@@ -619,14 +639,14 @@
     button {
       width: fit-content;
     }
-  }
 
-  .form-row {
-    display: flex;
-    flex-direction: row;
-    align-items: flex-start;
-    gap: var(--space);
-    flex-wrap: wrap;
+    .form-row {
+      display: flex;
+      flex-direction: row;
+      align-items: flex-start;
+      gap: var(--space);
+      flex-wrap: wrap;
+    }
   }
 
   .field {
@@ -714,42 +734,42 @@
   .error-page {
     min-height: 100vh;
     align-content: center;
-  }
 
-  .error-card {
-    display: grid;
-    gap: var(--space);
-    padding: calc(var(--space) * 2);
-    border: var(--border) solid var(--border-color);
-    background: color-mix(in srgb, var(--page-bg) 96%, var(--text-color) 4%);
-    text-align: center;
+    .error-card {
+      display: grid;
+      gap: var(--space);
+      padding: calc(var(--space) * 2);
+      border: var(--border) solid var(--border-color);
+      background: color-mix(in srgb, var(--page-bg) 96%, var(--text-color) 4%);
+      text-align: center;
 
-    > h1,
-    > p {
-      margin: 0;
+      > h1,
+      > p {
+        margin: 0;
+      }
     }
-  }
 
-  .error-icon {
-    width: 3rem;
-    height: 3rem;
-    margin: 0 auto;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    border: var(--border) solid var(--border-color);
-    background: color-mix(in srgb, var(--page-bg) 90%, var(--text-color) 10%);
+    .error-icon {
+      width: 3rem;
+      height: 3rem;
+      margin: 0 auto;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border: var(--border) solid var(--border-color);
+      background: color-mix(in srgb, var(--page-bg) 90%, var(--text-color) 10%);
 
-    .icon {
-      width: 1.25rem;
-      height: 1.25rem;
+      .icon {
+        width: 1.25rem;
+        height: 1.25rem;
+      }
     }
-  }
 
-  .error-status {
-    font-family: var(--font-mono);
-    font-size: 0.875rem;
-    color: var(--muted-text-color);
+    .error-status {
+      font-family: var(--font-mono);
+      font-size: 0.875rem;
+      color: var(--muted-text-color);
+    }
   }
 
   .home-hero {
@@ -858,7 +878,6 @@
         &.notification-info {
           border-left-color: var(--color-info);
         }
-
       }
     }
   }
@@ -1000,7 +1019,7 @@
     justify-content: flex-start;
     gap: var(--space);
     max-width: var(--details-width);
-    padding-bottom: calc(var(--space) * 1.5);
+    padding-bottom: calc(var(--space) * 1);
   }
 
   .topbar {

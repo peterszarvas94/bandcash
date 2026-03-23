@@ -783,7 +783,7 @@ func EventShowMain(data EventData) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 44, " <span class=\"color-error\">*</span></label> <input id=\"event-edit-title\" type=\"text\" data-bind=\"eventFormData.title\" class=\"input\"><div data-show=\"$errors && $errors.title\" class=\"color-error\" data-text=\"$errors.title\"></div></div><div class=\"field\"><label for=\"event-edit-time\" class=\"row\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 44, " <span class=\"color-error\">*</span></label> <input id=\"event-edit-title\" type=\"text\" data-bind=\"eventFormData.title\" class=\"input w-details\"><div data-show=\"$errors && $errors.title\" class=\"color-error\" data-text=\"$errors.title\"></div></div><div class=\"field\"><label for=\"event-edit-time\" class=\"row\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -796,7 +796,7 @@ func EventShowMain(data EventData) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 45, " <span class=\"color-error\">*</span></label> <input id=\"event-edit-time\" type=\"datetime-local\" data-bind=\"eventFormData.time\" class=\"input\"><div data-show=\"$errors && $errors.time\" class=\"color-error\" data-text=\"$errors.time\"></div></div></div><div class=\"field\"><label for=\"event-edit-description\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 45, " <span class=\"color-error\">*</span></label> <input id=\"event-edit-time\" type=\"datetime-local\" data-bind=\"eventFormData.time\" class=\"input w-details\"><div data-show=\"$errors && $errors.time\" class=\"color-error\" data-text=\"$errors.time\"></div></div></div><div class=\"field\"><label for=\"event-edit-description\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -809,14 +809,14 @@ func EventShowMain(data EventData) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 46, "</label> <textarea id=\"event-edit-description\" data-bind=\"eventFormData.description\" rows=\"3\" class=\"input\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 46, "</label> <textarea id=\"event-edit-description\" data-bind=\"eventFormData.description\" rows=\"3\" class=\"input w-details\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			var templ_7745c5c3_Var44 string
 			templ_7745c5c3_Var44, templ_7745c5c3_Err = templ.JoinStringErrs(data.Event.Description)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/event/component_show_main.templ`, Line: 207, Col: 128}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/event/component_show_main.templ`, Line: 207, Col: 138}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var44))
 			if templ_7745c5c3_Err != nil {
@@ -835,7 +835,7 @@ func EventShowMain(data EventData) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 48, " <span class=\"color-error\">*</span></label> <input id=\"event-edit-amount\" type=\"number\" data-bind=\"eventFormData.amount\" step=\"1\" min=\"1\" class=\"input\"><div data-show=\"$errors && $errors.amount\" class=\"color-error\" data-text=\"$errors.amount\"></div></div><div class=\"field\"><label for=\"event-edit-paid\" class=\"row\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 48, " <span class=\"color-error\">*</span></label> <input id=\"event-edit-amount\" type=\"number\" data-bind=\"eventFormData.amount\" step=\"1\" min=\"1\" class=\"input w-details\"><div data-show=\"$errors && $errors.amount\" class=\"color-error\" data-text=\"$errors.amount\"></div></div><div class=\"field\"><label for=\"event-edit-paid\" class=\"row\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -875,7 +875,7 @@ func EventShowMain(data EventData) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 51, "</label> <input id=\"event-edit-paid-at\" type=\"date\" data-bind=\"eventFormData.paidAt\" class=\"input\"></div><div class=\"field\"><label for=\"event-edit-total\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 51, "</label> <input id=\"event-edit-paid-at\" type=\"date\" data-bind=\"eventFormData.paidAt\" class=\"input w-details\"></div><div class=\"field\"><label for=\"event-edit-total\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -888,7 +888,7 @@ func EventShowMain(data EventData) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 52, "</label> <input id=\"event-edit-total\" type=\"number\" class=\"input\" disabled data-bind=\"wizard.total\"></div><div class=\"field\"><label for=\"event-edit-leftover\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 52, "</label> <input id=\"event-edit-total\" type=\"number\" class=\"input w-details\" disabled data-bind=\"wizard.total\"></div><div class=\"field\"><label for=\"event-edit-leftover\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -901,7 +901,7 @@ func EventShowMain(data EventData) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 53, "</label> <input id=\"event-edit-leftover\" type=\"number\" class=\"input\" disabled data-bind=\"wizard.leftover\"></div><div class=\"table-scroll pt\"><table class=\"table\"><thead><tr><th>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 53, "</label> <input id=\"event-edit-leftover\" type=\"number\" class=\"input w-details\" disabled data-bind=\"wizard.leftover\"></div><div class=\"table-scroll pt\"><table class=\"table\"><thead><tr><th>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
