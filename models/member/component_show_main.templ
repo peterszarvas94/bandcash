@@ -31,9 +31,9 @@ templ MemberShowMain(data MemberData) {
 					<dt>{ ctxi18n.T(ctx, "fields.calculations") }</dt>
 					<dd>
 						<div class="detail-box-controls" role="radiogroup" aria-label={ ctxi18n.T(ctx, "table.paid") }>
-							@shared.RadioButton(shared.RadioButtonProps{Bind: "summaryMode", Value: "all", Label: ctxi18n.T(ctx, "table.all"), ClassName: "btn btn-xs"})
-							@shared.RadioButton(shared.RadioButtonProps{Bind: "summaryMode", Value: "paid", Label: ctxi18n.T(ctx, "table.paid"), ClassName: "btn btn-xs"})
-							@shared.RadioButton(shared.RadioButtonProps{Bind: "summaryMode", Value: "unpaid", Label: ctxi18n.T(ctx, "table.unpaid"), ClassName: "btn btn-xs"})
+							@shared.RadioLink(shared.RadioLinkProps{Href: utils.BuildTableSummaryURL(fmt.Sprintf("/groups/%s/members/%s", data.GroupID, data.Member.ID), data.Query, utils.SummaryModeAll), Label: ctxi18n.T(ctx, "table.all"), IsSelected: data.Query.Summary == utils.SummaryModeAll, ClassName: "btn btn-xs"})
+							@shared.RadioLink(shared.RadioLinkProps{Href: utils.BuildTableSummaryURL(fmt.Sprintf("/groups/%s/members/%s", data.GroupID, data.Member.ID), data.Query, utils.SummaryModePaid), Label: ctxi18n.T(ctx, "table.paid"), IsSelected: data.Query.Summary == utils.SummaryModePaid, ClassName: "btn btn-xs"})
+							@shared.RadioLink(shared.RadioLinkProps{Href: utils.BuildTableSummaryURL(fmt.Sprintf("/groups/%s/members/%s", data.GroupID, data.Member.ID), data.Query, utils.SummaryModeUnpaid), Label: ctxi18n.T(ctx, "table.unpaid"), IsSelected: data.Query.Summary == utils.SummaryModeUnpaid, ClassName: "btn btn-xs"})
 						</div>
 					</dd>
 				</div>
@@ -68,6 +68,9 @@ templ MemberShowMain(data MemberData) {
 					}
 					if data.Query.PageSize != utils.DefaultTablePageSize {
 						<input type="hidden" name="pageSize" value={ fmt.Sprintf("%d", data.Query.PageSize) }/>
+					}
+					if data.Query.Summary != utils.SummaryModeAll {
+						<input type="hidden" name="summary" value={ data.Query.Summary }/>
 					}
 					<input type="hidden" name="dateMode" value="custom"/>
 					<input type="date" class="input input-xs" name="from" value={ data.Query.From }/>

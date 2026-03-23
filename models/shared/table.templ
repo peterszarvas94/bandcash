@@ -23,6 +23,9 @@ templ TableSearchFormWithClass(basePath string, query utils.TableQuery, placehol
 		if query.PageSize != utils.DefaultTablePageSize {
 			<input type="hidden" name="pageSize" value={ fmt.Sprintf("%d", query.PageSize) }/>
 		}
+		if query.Summary != utils.SummaryModeAll {
+			<input type="hidden" name="summary" value={ query.Summary }/>
+		}
 		if query.Year != "" {
 			<input type="hidden" name="year" value={ query.Year }/>
 		}
@@ -108,6 +111,9 @@ templ TablePaginationControls(basePath string, query utils.TableQuery, pager uti
 		}
 		if query.PageSize != utils.DefaultTablePageSize {
 			<input type="hidden" name="pageSize" value={ fmt.Sprintf("%d", query.PageSize) }/>
+		}
+		if query.Summary != utils.SummaryModeAll {
+			<input type="hidden" name="summary" value={ query.Summary }/>
 		}
 		if query.Year != "" {
 			<input type="hidden" name="year" value={ query.Year }/>

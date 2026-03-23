@@ -36,11 +36,18 @@ type TableQuery struct {
 	Sort     string `json:"sort"`
 	SortSet  bool   `json:"sortSet"`
 	Dir      string `json:"dir"`
+	Summary  string `json:"summary"`
 	DateMode string `json:"dateMode"`
 	Year     string `json:"year"`
 	From     string `json:"from"`
 	To       string `json:"to"`
 }
+
+const (
+	SummaryModeAll    = "all"
+	SummaryModePaid   = "paid"
+	SummaryModeUnpaid = "unpaid"
+)
 
 type TableQueryParseResult struct {
 	Query    TableQuery
@@ -69,6 +76,17 @@ func ParseTableQueryWithResult(c echo.Context, queryable Queryable) TableQueryPa
 		PageSize: intDefault(spec.DefaultSize, 20),
 		Sort:     spec.DefaultSort,
 		Dir:      defaultDirection(spec.DefaultDir),
+		Summary:  SummaryModeAll,
+	}
+
+	summary := strings.TrimSpace(c.QueryParam("summary"))
+	if summary != "" {
+		normalizedSummary := NormalizeSummaryMode(summary)
+		if normalizedSummary != summary {
+			rejected["summary"] = "must be all, paid, or unpaid"
+		} else {
+			query.Summary = normalizedSummary
+		}
 	}
 
 	if rawPage := c.QueryParam("page"); rawPage != "" {
@@ -238,11 +256,14 @@ func NormalizeTableQuery(query TableQuery, spec TableQuerySpec) TableQuery {
 		PageSize: intDefault(spec.DefaultSize, 20),
 		Sort:     spec.DefaultSort,
 		Dir:      defaultDirection(spec.DefaultDir),
+		Summary:  SummaryModeAll,
 		DateMode: strings.TrimSpace(query.DateMode),
 		Year:     strings.TrimSpace(query.Year),
 		From:     strings.TrimSpace(query.From),
 		To:       strings.TrimSpace(query.To),
 	}
+
+	normalized.Summary = NormalizeSummaryMode(query.Summary)
 
 	if normalized.DateMode != "custom" {
 		normalized.DateMode = ""
@@ -305,6 +326,7 @@ type TableQueryPatch struct {
 	Dir      *string
 	Page     *int
 	PageSize *int
+	Summary  *string
 	DateMode *string
 	Year     *string
 	From     *string
@@ -360,6 +382,11 @@ func BuildTablePageSizeURL(basePath string, query TableQuery, pageSize int) stri
 	})
 }
 
+func BuildTableSummaryURL(basePath string, query TableQuery, summary string) string {
+	normalizedSummary := NormalizeSummaryMode(summary)
+	return BuildTableQueryURLWith(basePath, query, TableQueryPatch{Summary: &normalizedSummary})
+}
+
 func TableQuerySignals(query TableQuery) map[string]any {
 	sort := ""
 	dir := ""
@@ -375,6 +402,7 @@ func TableQuerySignals(query TableQuery) map[string]any {
 		"dir":      dir,
 		"page":     query.Page,
 		"pageSize": query.PageSize,
+		"summary":  query.Summary,
 		"dateMode": query.DateMode,
 		"year":     query.Year,
 		"from":     query.From,
@@ -518,6 +546,10 @@ func BuildTableQueryURLWith(basePath string, query TableQuery, patch TableQueryP
 		resolved.PageSize = *patch.PageSize
 	}
 
+	if patch.Summary != nil {
+		resolved.Summary = strings.TrimSpace(*patch.Summary)
+	}
+
 	if patch.DateMode != nil {
 		resolved.DateMode = strings.TrimSpace(*patch.DateMode)
 	}
@@ -542,6 +574,8 @@ func BuildTableQueryURLWith(basePath string, query TableQuery, patch TableQueryP
 	if resolved.PageSize < 1 {
 		resolved.PageSize = DefaultTablePageSize
 	}
+
+	resolved.Summary = NormalizeSummaryMode(resolved.Summary)
 
 	if !isValidYear(resolved.Year) {
 		resolved.Year = ""
@@ -583,6 +617,9 @@ func BuildTableQueryURLWith(basePath string, query TableQuery, patch TableQueryP
 		}
 		if resolved.PageSize != DefaultTablePageSize {
 			values.Set("pageSize", strconv.Itoa(resolved.PageSize))
+		}
+		if resolved.Summary != SummaryModeAll {
+			values.Set("summary", resolved.Summary)
 		}
 		if resolved.Year != "" {
 			values.Set("year", resolved.Year)
@@ -629,6 +666,12 @@ func BuildTableQueryURLWith(basePath string, query TableQuery, patch TableQueryP
 		values.Set("pageSize", strconv.Itoa(resolved.PageSize))
 	} else {
 		values.Del("pageSize")
+	}
+
+	if resolved.Summary != SummaryModeAll {
+		values.Set("summary", resolved.Summary)
+	} else {
+		values.Del("summary")
 	}
 
 	if resolved.Year != "" {
@@ -691,4 +734,15 @@ func normalizeDateFilterPriority(query TableQuery) TableQuery {
 	}
 
 	return query
+}
+
+func NormalizeSummaryMode(value string) string {
+	switch strings.TrimSpace(value) {
+	case SummaryModePaid:
+		return SummaryModePaid
+	case SummaryModeUnpaid:
+		return SummaryModeUnpaid
+	default:
+		return SummaryModeAll
+	}
 }

@@ -22,7 +22,7 @@ func memberShowSignals(data MemberData, csrfToken string) map[string]any {
 		"tableQuery":     utils.TableQuerySignals(data.Query),
 		"formState":      "",
 		"eventFormState": "",
-		"summaryMode":    "all",
+		"summaryMode":    data.Query.Summary,
 		"formData": map[string]any{
 			"name":        data.Member.Name,
 			"description": data.Member.Description,
