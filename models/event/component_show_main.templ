@@ -53,24 +53,28 @@ templ EventShowMain(data EventData) {
 				incomeUnpaid = 0
 			}
 		}}
-		@shared.DetailsSection(fmt.Sprintf("event_%s_paid", data.Event.ID), []shared.DetailsRow{
-			{Label: ctxi18n.T(ctx, "table.paid"), LabelClass: "section-title", Value: ""},
-			{Label: ctxi18n.T(ctx, "fields.income"), Value: utils.FormatNumberLocalized(ctx, incomePaid)},
-			{Label: ctxi18n.T(ctx, "participants.payout_total"), Value: utils.FormatNumberLocalizedWithSign(ctx, data.FilteredPaid, false)},
-			{Label: ctxi18n.T(ctx, "events.leftover"), Value: utils.FormatNumberLocalized(ctx, incomePaid-data.FilteredPaid)},
-		})
-		@shared.DetailsSection(fmt.Sprintf("event_%s_unpaid", data.Event.ID), []shared.DetailsRow{
-			{Label: ctxi18n.T(ctx, "table.unpaid"), LabelClass: "section-title", Value: ""},
-			{Label: ctxi18n.T(ctx, "fields.income"), Value: utils.FormatNumberLocalized(ctx, incomeUnpaid)},
-			{Label: ctxi18n.T(ctx, "participants.payout_total"), Value: utils.FormatNumberLocalizedWithSign(ctx, data.FilteredUnpaid, false)},
-			{Label: ctxi18n.T(ctx, "events.leftover"), Value: utils.FormatNumberLocalized(ctx, incomeUnpaid-data.FilteredUnpaid)},
-		})
-		@shared.DetailsCard(fmt.Sprintf("event_%s_all", data.Event.ID), []shared.DetailsRow{
-			{Label: ctxi18n.T(ctx, "table.all"), LabelClass: "section-title", Value: ""},
-			{Label: ctxi18n.T(ctx, "fields.income"), Value: utils.FormatNumberLocalized(ctx, data.Event.Amount)},
-			{Label: ctxi18n.T(ctx, "participants.payout_total"), Value: utils.FormatNumberLocalizedWithSign(ctx, data.FilteredPaid+data.FilteredUnpaid, false)},
-			{Label: ctxi18n.T(ctx, "events.leftover"), Value: utils.FormatNumberLocalized(ctx, data.Event.Amount-(data.FilteredPaid+data.FilteredUnpaid))},
-		})
+		<section class="detail-box pb">
+			<div class="detail-box-controls" role="radiogroup" aria-label={ ctxi18n.T(ctx, "table.paid") }>
+				@shared.RadioButton(shared.RadioButtonProps{Bind: "summaryMode", Value: "all", Label: ctxi18n.T(ctx, "table.all"), ClassName: "btn btn-xs"})
+				@shared.RadioButton(shared.RadioButtonProps{Bind: "summaryMode", Value: "paid", Label: ctxi18n.T(ctx, "table.paid"), ClassName: "btn btn-xs"})
+				@shared.RadioButton(shared.RadioButtonProps{Bind: "summaryMode", Value: "unpaid", Label: ctxi18n.T(ctx, "table.unpaid"), ClassName: "btn btn-xs"})
+			</div>
+			<dl data-show="$summaryMode === 'all'">
+				<div><dt>{ ctxi18n.T(ctx, "fields.income") }</dt><dd>{ utils.FormatNumberLocalized(ctx, data.Event.Amount) }</dd></div>
+				<div><dt>{ ctxi18n.T(ctx, "participants.payout_total") }</dt><dd>{ utils.FormatNumberLocalizedWithSign(ctx, data.FilteredPaid+data.FilteredUnpaid, false) }</dd></div>
+				<div><dt>{ ctxi18n.T(ctx, "events.leftover") }</dt><dd>{ utils.FormatNumberLocalized(ctx, data.Event.Amount-(data.FilteredPaid+data.FilteredUnpaid)) }</dd></div>
+			</dl>
+			<dl data-show="$summaryMode === 'paid'" style="display: none">
+				<div><dt>{ ctxi18n.T(ctx, "fields.income") }</dt><dd>{ utils.FormatNumberLocalized(ctx, incomePaid) }</dd></div>
+				<div><dt>{ ctxi18n.T(ctx, "participants.payout_total") }</dt><dd>{ utils.FormatNumberLocalizedWithSign(ctx, data.FilteredPaid, false) }</dd></div>
+				<div><dt>{ ctxi18n.T(ctx, "events.leftover") }</dt><dd>{ utils.FormatNumberLocalized(ctx, incomePaid-data.FilteredPaid) }</dd></div>
+			</dl>
+			<dl data-show="$summaryMode === 'unpaid'" style="display: none">
+				<div><dt>{ ctxi18n.T(ctx, "fields.income") }</dt><dd>{ utils.FormatNumberLocalized(ctx, incomeUnpaid) }</dd></div>
+				<div><dt>{ ctxi18n.T(ctx, "participants.payout_total") }</dt><dd>{ utils.FormatNumberLocalizedWithSign(ctx, data.FilteredUnpaid, false) }</dd></div>
+				<div><dt>{ ctxi18n.T(ctx, "events.leftover") }</dt><dd>{ utils.FormatNumberLocalized(ctx, incomeUnpaid-data.FilteredUnpaid) }</dd></div>
+			</dl>
+		</section>
 		@shared.TableSearchFormWithClass(fmt.Sprintf("/groups/%s/events/%s", data.GroupID, data.Event.ID), data.Query, "table.search_placeholder_members", "pt")
 		@shared.TablePaginationRow(fmt.Sprintf("/groups/%s/events/%s", data.GroupID, data.Event.ID), data.Query, data.Pager)
 		@shared.TableOpenFixed(data.ParticipantsTable, "") {

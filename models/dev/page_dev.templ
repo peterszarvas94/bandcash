@@ -8,14 +8,14 @@ import (
 	icons "bandcash/models/shared/icons"
 )
 
-templ DevPage() {
+templ DevPage(linkSelector string) {
 	<!DOCTYPE html>
 	<html lang={ appi18n.LocaleCode(ctx) }>
 		@shared.Head("Bandcash - Dev tools")
 		<body>
-			<div data-signals={ templ.JSONString(map[string]any{"csrf": utils.CSRFTokenFromContext(ctx), "errors": map[string]any{"name": ""}, "formData": map[string]any{"name": ""}, "_fetching": false, "activeSpinner": "", "_notifyInline": false, "_notifyInfo": false, "_notifySuccess": false, "_notifyWarning": false, "_notifyError": false, "toggleDefault": true, "toggleSuccess": true, "toggleWarning": true, "toggleDanger": true}) } data-init="@get('/sse')"></div>
+			<div data-signals={ templ.JSONString(map[string]any{"csrf": utils.CSRFTokenFromContext(ctx), "errors": map[string]any{"name": ""}, "formData": map[string]any{"name": ""}, "_fetching": false, "activeSpinner": "", "_notifyInline": false, "_notifyInfo": false, "_notifySuccess": false, "_notifyWarning": false, "_notifyError": false, "toggleDefault": true, "toggleSuccess": true, "toggleWarning": true, "toggleDanger": true, "radioDemo": "all"}) } data-init="@get('/sse')"></div>
 			@shared.Notifications()
-			@shared.AppShellMainOnly("dev-page", []utils.Crumb{{Label: "Dev tools"}}, "", shared.DevPrimaryNav("dev"), DevMain())
+			@shared.AppShellMainOnly("dev-page", []utils.Crumb{{Label: "Dev tools"}}, "", shared.DevPrimaryNav("dev"), DevMain(linkSelector))
 			<script type="module" src={ assets.AssetPath("js/rate_limit_tester.js") }></script>
 			<script type="module" src={ assets.AssetPath("js/body_limit_tester.js") }></script>
 			<script type="module" src={ assets.AssetPath("js/table_query_tester.js") }></script>
@@ -23,8 +23,10 @@ templ DevPage() {
 	</html>
 }
 
-templ DevMain() {
-	@shared.Section("Button variants", ButtonVariantsContent())
+templ DevMain(linkSelector string) {
+	@shared.Section("Button variants", ButtonVariantsContent(linkSelector))
+	@shared.Section("Toggle variants", ToggleVariantsContent())
+	@shared.Section("Radio variants", RadioVariantsContent(linkSelector))
 	@shared.Section("Form controls", FormControlsContent())
 	@shared.Section("Notifications", NotificationsContent())
 	@shared.Section("Email previews", EmailPreviewContent())
@@ -35,7 +37,7 @@ templ DevMain() {
 	@shared.Section("Body limit", BodyLimitContent())
 }
 
-templ ButtonVariantsContent() {
+templ ButtonVariantsContent(linkSelector string) {
 	<div class="row row-wrap">
 		<button class="btn" type="button">
 			@icons.Plus(templ.Attributes{"class": "icon"})
@@ -280,6 +282,11 @@ templ ButtonVariantsContent() {
 		</button>
 	</div>
 	<div class="row row-wrap">
+	</div>
+}
+
+templ ToggleVariantsContent() {
+	<div class="row row-wrap">
 		@shared.Toggle(shared.ToggleProps{
 			Bind:         "toggleDefault",
 			DisabledExpr: "$_fetching",
@@ -319,6 +326,35 @@ templ ButtonVariantsContent() {
 		@shared.Toggle(shared.ToggleProps{IsOn: false, Disabled: true, Off: "Toggle off (disabled)", On: "Toggle on", OnClass: "btn-success"})
 		@shared.Toggle(shared.ToggleProps{IsOn: false, Disabled: true, Off: "Toggle off (disabled)", On: "Toggle on", OnClass: "btn-warning"})
 		@shared.Toggle(shared.ToggleProps{IsOn: false, Disabled: true, Off: "Toggle off (disabled)", On: "Toggle on", OnClass: "btn-danger"})
+	</div>
+}
+
+templ RadioVariantsContent(linkSelector string) {
+	<div class="field">
+		<label>Client side (button)</label>
+		<div class="row row-tight row-wrap">
+			@shared.RadioButton(shared.RadioButtonProps{Bind: "radioDemo", Value: "all", Label: "All", ClassName: "btn btn-xs"})
+			@shared.RadioButton(shared.RadioButtonProps{Bind: "radioDemo", Value: "paid", Label: "Paid", ClassName: "btn btn-xs"})
+			@shared.RadioButton(shared.RadioButtonProps{Bind: "radioDemo", Value: "unpaid", Label: "Unpaid", ClassName: "btn btn-xs"})
+		</div>
+		<div class="row row-tight row-wrap">
+			@shared.RadioButton(shared.RadioButtonProps{Bind: "radioDemo", Value: "all", Label: "All (disabled)", ClassName: "btn btn-xs", DisabledExpr: "true"})
+			@shared.RadioButton(shared.RadioButtonProps{Bind: "radioDemo", Value: "paid", Label: "Paid (disabled)", ClassName: "btn btn-xs", DisabledExpr: "true"})
+			@shared.RadioButton(shared.RadioButtonProps{Bind: "radioDemo", Value: "unpaid", Label: "Unpaid (disabled)", ClassName: "btn btn-xs", DisabledExpr: "true"})
+		</div>
+	</div>
+	<div class="field">
+		<label>Server side (link)</label>
+		<div class="row row-tight row-wrap">
+			@shared.RadioLink(shared.RadioLinkProps{Href: "/dev?selector=all", Label: "All", IsSelected: linkSelector == "all", ClassName: "btn btn-xs"})
+			@shared.RadioLink(shared.RadioLinkProps{Href: "/dev?selector=2026", Label: "2026", IsSelected: linkSelector == "2026", ClassName: "btn btn-xs"})
+			@shared.RadioLink(shared.RadioLinkProps{Href: "/dev?selector=custom", Label: "Custom", IsSelected: linkSelector == "custom", ClassName: "btn btn-xs"})
+		</div>
+		<div class="row row-tight row-wrap">
+			@shared.RadioLink(shared.RadioLinkProps{Href: "/dev?selector=all", Label: "All (disabled)", IsSelected: linkSelector == "all", Disabled: true, ClassName: "btn btn-xs"})
+			@shared.RadioLink(shared.RadioLinkProps{Href: "/dev?selector=2026", Label: "2026 (disabled)", IsSelected: linkSelector == "2026", Disabled: true, ClassName: "btn btn-xs"})
+			@shared.RadioLink(shared.RadioLinkProps{Href: "/dev?selector=custom", Label: "Custom (disabled)", IsSelected: linkSelector == "custom", Disabled: true, ClassName: "btn btn-xs"})
+		</div>
 	</div>
 }
 

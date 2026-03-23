@@ -11,22 +11,7 @@ import (
 )
 
 templ FlagsContent(signupEnabled bool) {
-	{{
-		open := utils.DetailCardOpen(ctx, "admin_flags", true)
-		toggleExpr := "@post('/settings/details-state?key=admin_flags&open=' + (el.open ? '1' : '0'))"
-	}}
-	<details id="admin-flags" class="detail-card pb" open?={ open } data-on:toggle={ toggleExpr }>
-		<summary>
-			<span>{ ctxi18n.T(ctx, "admin.tab.flags") }</span>
-			<span class="details-icon">
-				<span class="details-icon-closed">
-					@icons.ChevronDown(templ.Attributes{"class": "icon"})
-				</span>
-				<span class="details-icon-open">
-					@icons.ChevronUp(templ.Attributes{"class": "icon"})
-				</span>
-			</span>
-		</summary>
+	<div id="admin-flags" class="detail-box pb">
 		<dl>
 			<div>
 				<dt>{ ctxi18n.T(ctx, "admin.flags.signup") }</dt>
@@ -41,7 +26,7 @@ templ FlagsContent(signupEnabled bool) {
 				</dd>
 			</div>
 		</dl>
-	</details>
+	</div>
 }
 
 templ DashboardStats(data DashboardData) {

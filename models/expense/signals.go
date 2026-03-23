@@ -11,6 +11,7 @@ func expenseIndexSignals(csrfToken string, query utils.TableQuery) map[string]an
 		"mode":            "table",
 		"formState":       "",
 		"eventFormState":  "",
+		"summaryMode":     "all",
 		"editingId":       0,
 		"formData":        map[string]any{"title": "", "description": "", "amount": 0, "date": "", "paid": false, "paidAt": ""},
 		"errors":          map[string]any{"title": "", "description": "", "amount": "", "date": ""},

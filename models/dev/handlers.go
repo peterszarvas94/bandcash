@@ -33,7 +33,13 @@ var devErrorFields = []string{"name"}
 
 func (h *DevNotifications) DevPageHandler(c echo.Context) error {
 	utils.EnsureClientID(c)
-	return utils.RenderPage(c, DevPage())
+	selector := strings.TrimSpace(c.QueryParam("selector"))
+	switch selector {
+	case "all", "2026", "custom":
+	default:
+		selector = "all"
+	}
+	return utils.RenderPage(c, DevPage(selector))
 }
 
 func (h *DevNotifications) TestInline(c echo.Context) error {

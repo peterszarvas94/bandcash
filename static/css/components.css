@@ -576,46 +576,11 @@
     }
   }
 
-  .details {
+  .detail-box {
     border: var(--border) solid var(--border-color);
     border-radius: var(--border);
     background: var(--btn-bg);
     padding: calc(var(--space) * 0.5) calc(var(--space) * 0.75);
-
-    summary {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      cursor: pointer;
-      user-select: none;
-      font-weight: 600;
-      list-style: none;
-      padding: calc(var(--space) * 0.5) calc(var(--space) * 0.75);
-    }
-
-    summary::-webkit-details-marker {
-      display: none;
-    }
-
-    .details-icon {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    .details-icon-open {
-      display: none;
-    }
-
-    &[open] {
-      .details-icon-closed {
-        display: none;
-      }
-
-      .details-icon-open {
-        display: inline-flex;
-      }
-    }
 
     .tabs {
       margin-top: calc(var(--space) * 0.5);
@@ -623,7 +588,7 @@
   }
 
   @media (max-width: 768px) {
-    .details {
+    .detail-box {
       [role="tablist"] {
         flex-direction: column;
         flex-wrap: nowrap;
@@ -951,7 +916,7 @@
     }
   }
 
-  .detail-card {
+  .detail-box {
     display: grid;
     flex: 0 1 var(--details-width);
     max-width: var(--details-width);
@@ -959,42 +924,11 @@
     border: var(--border) solid var(--border-color);
     background: color-mix(in srgb, var(--page-bg) 97%, var(--text-color) 3%);
 
-    > summary {
+    .detail-box-controls {
       display: flex;
-      align-items: center;
-      justify-content: space-between;
-      cursor: pointer;
-      user-select: none;
-      list-style: none;
-      color: var(--text-color);
-      font-size: 0.95rem;
-      font-weight: 700;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-
-      &::-webkit-details-marker {
-        display: none;
-      }
-    }
-
-    .details-icon {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-
-      .details-icon-open {
-        display: none;
-      }
-    }
-
-    &[open] .details-icon {
-      .details-icon-closed {
-        display: none;
-      }
-
-      .details-icon-open {
-        display: inline-flex;
-      }
+      flex-wrap: wrap;
+      gap: 0;
+      padding-bottom: calc(var(--space) * 0.5);
     }
 
     > dl {

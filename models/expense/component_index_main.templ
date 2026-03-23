@@ -10,18 +10,22 @@ import (
 )
 
 templ ExpenseTotalsContent(data ExpensesData) {
-	@shared.DetailsSection(fmt.Sprintf("group_%s_expenses_paid", data.GroupID), []shared.DetailsRow{
-		{Label: ctxi18n.T(ctx, "table.paid"), LabelClass: "section-title", Value: ""},
-		{Label: ctxi18n.T(ctx, "groups.expenses"), Value: utils.FormatNumberLocalizedWithSign(ctx, data.FilteredPaid, false)},
-	})
-	@shared.DetailsSection(fmt.Sprintf("group_%s_expenses_unpaid", data.GroupID), []shared.DetailsRow{
-		{Label: ctxi18n.T(ctx, "table.unpaid"), LabelClass: "section-title", Value: ""},
-		{Label: ctxi18n.T(ctx, "groups.expenses"), Value: utils.FormatNumberLocalizedWithSign(ctx, data.FilteredUnpaid, false)},
-	})
-	@shared.DetailsCard(fmt.Sprintf("group_%s_expenses_all", data.GroupID), []shared.DetailsRow{
-		{Label: ctxi18n.T(ctx, "table.all"), LabelClass: "section-title", Value: ""},
-		{Label: ctxi18n.T(ctx, "groups.expenses"), Value: utils.FormatNumberLocalizedWithSign(ctx, data.FilteredTotal, false)},
-	})
+	<section class="detail-box pb">
+		<div class="detail-box-controls" role="radiogroup" aria-label={ ctxi18n.T(ctx, "table.paid") }>
+			@shared.RadioButton(shared.RadioButtonProps{Bind: "summaryMode", Value: "all", Label: ctxi18n.T(ctx, "table.all"), ClassName: "btn btn-xs"})
+			@shared.RadioButton(shared.RadioButtonProps{Bind: "summaryMode", Value: "paid", Label: ctxi18n.T(ctx, "table.paid"), ClassName: "btn btn-xs"})
+			@shared.RadioButton(shared.RadioButtonProps{Bind: "summaryMode", Value: "unpaid", Label: ctxi18n.T(ctx, "table.unpaid"), ClassName: "btn btn-xs"})
+		</div>
+		<dl data-show="$summaryMode === 'all'">
+			<div><dt>{ ctxi18n.T(ctx, "groups.expenses") }</dt><dd>{ utils.FormatNumberLocalizedWithSign(ctx, data.FilteredTotal, false) }</dd></div>
+		</dl>
+		<dl data-show="$summaryMode === 'paid'" style="display: none">
+			<div><dt>{ ctxi18n.T(ctx, "groups.expenses") }</dt><dd>{ utils.FormatNumberLocalizedWithSign(ctx, data.FilteredPaid, false) }</dd></div>
+		</dl>
+		<dl data-show="$summaryMode === 'unpaid'" style="display: none">
+			<div><dt>{ ctxi18n.T(ctx, "groups.expenses") }</dt><dd>{ utils.FormatNumberLocalizedWithSign(ctx, data.FilteredUnpaid, false) }</dd></div>
+		</dl>
+	</section>
 }
 
 templ ExpenseIndexMain(data ExpensesData) {
@@ -32,29 +36,11 @@ templ ExpenseIndexMain(data ExpensesData) {
 	@shared.TableSearchFormWithClass(fmt.Sprintf("/groups/%s/expenses", data.GroupID), data.Query, "table.search_placeholder_expenses", "pt")
 	<div class="row row-wrap justify-between pb" role="radiogroup" aria-label={ ctxi18n.T(ctx, "table.date_filters") }>
 			<div class="row row-tight">
-				<a
-					class={ utils.DateFilterAllButtonClass(data.Query) }
-					aria-pressed={ fmt.Sprintf("%t", utils.DateFilterAllActive(data.Query)) }
-					href={ utils.BuildTableDateClearURL(fmt.Sprintf("/groups/%s/expenses", data.GroupID), data.Query) }
-				>
-					{ ctxi18n.T(ctx, "table.all") }
-				</a>
+				@shared.RadioLink(shared.RadioLinkProps{Href: utils.BuildTableDateClearURL(fmt.Sprintf("/groups/%s/expenses", data.GroupID), data.Query), Label: ctxi18n.T(ctx, "table.all"), IsSelected: utils.DateFilterAllActive(data.Query), ClassName: "btn btn-xs"})
 				for _, year := range data.RecentYears {
-					<a
-						class={ utils.DateFilterYearButtonClass(data.Query, fmt.Sprintf("%d", year)) }
-						aria-pressed={ fmt.Sprintf("%t", utils.DateFilterYearActive(data.Query, fmt.Sprintf("%d", year))) }
-						href={ utils.BuildTableDateYearURL(fmt.Sprintf("/groups/%s/expenses", data.GroupID), data.Query, fmt.Sprintf("%d", year)) }
-					>
-						{ fmt.Sprintf("%d", year) }
-					</a>
+					@shared.RadioLink(shared.RadioLinkProps{Href: utils.BuildTableDateYearURL(fmt.Sprintf("/groups/%s/expenses", data.GroupID), data.Query, fmt.Sprintf("%d", year)), Label: fmt.Sprintf("%d", year), IsSelected: utils.DateFilterYearActive(data.Query, fmt.Sprintf("%d", year)), ClassName: "btn btn-xs"})
 				}
-				<a
-					class={ utils.DateFilterCustomButtonClass(data.Query) }
-					aria-pressed={ fmt.Sprintf("%t", utils.DateFilterCustomActive(data.Query)) }
-					href={ utils.BuildTableDateCustomURL(fmt.Sprintf("/groups/%s/expenses", data.GroupID), data.Query) }
-				>
-					{ ctxi18n.T(ctx, "table.custom") }
-				</a>
+				@shared.RadioLink(shared.RadioLinkProps{Href: utils.BuildTableDateCustomURL(fmt.Sprintf("/groups/%s/expenses", data.GroupID), data.Query), Label: ctxi18n.T(ctx, "table.custom"), IsSelected: utils.DateFilterCustomActive(data.Query), ClassName: "btn btn-xs"})
 			</div>
 			if utils.DateFilterCustomActive(data.Query) {
 				<form class="row row-tight" method="get" action={ fmt.Sprintf("/groups/%s/expenses", data.GroupID) }>

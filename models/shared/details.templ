@@ -1,10 +1,5 @@
 package shared
 
-import "fmt"
-
-import "bandcash/internal/utils"
-import icons "bandcash/models/shared/icons"
-
 	type DetailsRow struct {
 		Label      string
 		LabelClass string
@@ -15,43 +10,26 @@ import icons "bandcash/models/shared/icons"
 
 templ DetailsCard(stateKey string, rows []DetailsRow) {
 	{{
-		summary := ""
+		_ = stateKey
 		rowsBody := rows
-		open := utils.DetailCardOpen(ctx, stateKey, true)
-		toggleExpr := fmt.Sprintf("@post('/settings/details-state?key=%s&open=' + (el.open ? '1' : '0'))", stateKey)
-		if len(rows) > 0 && rows[0].LabelClass == "section-title" {
-			summary = rows[0].Label
-			rowsBody = rows[1:]
-		}
 	}}
-	<details class="detail-card" open?={ open } data-on:toggle={ toggleExpr }>
-		if summary != "" {
-			<summary>
-				<span>{ summary }</span>
-				<span class="details-icon">
-					<span class="details-icon-closed">
-						@icons.ChevronDown(templ.Attributes{"class": "icon"})
-					</span>
-					<span class="details-icon-open">
-						@icons.ChevronUp(templ.Attributes{"class": "icon"})
-					</span>
-				</span>
-			</summary>
-		}
+	<section class="detail-box">
 		<dl>
 			for _, row := range rowsBody {
-				<div>
-					<dt>{ row.Label }</dt>
-					<dd>
-						if row.Action != nil {
-							@row.Action
-						}
-						{ row.Value }
-					</dd>
-				</div>
+				if row.LabelClass != "section-title" {
+					<div>
+						<dt>{ row.Label }</dt>
+						<dd>
+							if row.Action != nil {
+								@row.Action
+							}
+							{ row.Value }
+						</dd>
+					</div>
+				}
 			}
 		</dl>
-	</details>
+	</section>
 }
 
 templ DetailsSection(stateKey string, rows []DetailsRow) {
@@ -67,20 +45,10 @@ templ DetailsActions(actions templ.Component) {
 }
 
 templ Details(summary string, content templ.Component) {
+	{{ _ = summary }}
 	<div class="pb">
-		<details class="details">
-			<summary>
-				<span>{ summary }</span>
-				<span class="details-icon">
-					<span class="details-icon-closed">
-						@icons.ChevronDown(templ.Attributes{"class": "icon"})
-					</span>
-					<span class="details-icon-open">
-						@icons.ChevronUp(templ.Attributes{"class": "icon"})
-					</span>
-				</span>
-			</summary>
+		<div class="detail-box">
 			@content
-		</details>
+		</div>
 	</div>
 }
