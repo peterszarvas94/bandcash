@@ -562,6 +562,7 @@
   }
 
   textarea.input {
+    field-sizing: content;
     height: auto;
     min-height: 6rem;
     resize: vertical;
@@ -625,9 +626,13 @@
     }
 
     input,
-    select,
-    textarea {
+    select {
       field-sizing: fixed;
+      width: 100%;
+    }
+
+    textarea {
+      field-sizing: content;
       width: 100%;
     }
 

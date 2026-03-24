@@ -16,9 +16,9 @@ func EventParticipantsTableLayout() TableLayout {
 		{Key: "amount", WidthCh: 12},
 		{Key: "expense", WidthCh: 12},
 		{Key: "total", WidthCh: 12},
-		{Key: "note", WidthCh: 24},
 		{Key: "paid", WidthCh: 14},
 		{Key: "paid_at", WidthCh: 20},
+		{Key: "note", WidthCh: 24},
 	}, 0)
 }
 

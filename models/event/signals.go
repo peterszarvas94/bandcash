@@ -52,6 +52,11 @@ func eventShowSignals(data EventData, csrfToken string) map[string]any {
 		wizardTotal += row.Amount + row.Expense
 	}
 
+	noteExpanded := make(map[string]bool, len(data.Participants))
+	for _, participant := range data.Participants {
+		noteExpanded[participant.ID] = false
+	}
+
 	return map[string]any{
 		"csrf":                  csrfToken,
 		"mode":                  "single",
@@ -86,10 +91,11 @@ func eventShowSignals(data EventData, csrfToken string) map[string]any {
 				return utils.FormatDateInput(data.Event.PaidAt.String)
 			}(),
 		},
-		"formState":   "",
-		"editingId":   0,
-		"calcPercent": 0,
-		"summaryMode": data.Query.Summary,
+		"formState":    "",
+		"editingId":    0,
+		"calcPercent":  0,
+		"summaryMode":  data.Query.Summary,
+		"noteExpanded": noteExpanded,
 		"formData": map[string]any{
 			"memberId":   "",
 			"memberName": "",
