@@ -181,6 +181,7 @@ hu:
     title: "Cím"
     event_title: "Esemény címe"
     time: "Idő"
+    place: "Helyiség"
     date: "Dátum"
     paid_at: "Fizetve ekkor"
     calculations: "Számítások"

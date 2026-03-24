@@ -4,6 +4,7 @@ func EventsIndexTableLayout() TableLayout {
 	return NewTableLayout([]TableColumn{
 		{Key: "title", WidthCh: 28},
 		{Key: "time", WidthCh: 19},
+		{Key: "place", WidthCh: 18},
 		{Key: "amount", WidthCh: 12},
 		{Key: "paid", WidthCh: 14},
 		{Key: "paid_at", WidthCh: 14},

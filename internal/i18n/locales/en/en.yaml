@@ -181,6 +181,7 @@ en:
     title: "Title"
     event_title: "Event title"
     time: "Time"
+    place: "Place"
     date: "Date"
     paid_at: "Paid at"
     calculations: "Calculations"

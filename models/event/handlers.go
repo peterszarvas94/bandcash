@@ -30,6 +30,7 @@ type modeParams struct {
 type eventData struct {
 	Title       string `json:"title" validate:"required,min=1,max=255"`
 	Time        string `json:"time" validate:"required"`
+	Place       string `json:"place" validate:"max=255"`
 	Description string `json:"description" validate:"max=1000"`
 	Amount      int64  `json:"amount" validate:"required,gt=0"`
 	Paid        bool   `json:"paid"`
@@ -127,11 +128,11 @@ var (
 		"mode":      "table",
 		"formState": "",
 		"editingId": "",
-		"formData":  map[string]any{"title": "", "time": "", "description": "", "amount": 0, "paid": false, "paidAt": ""},
-		"errors":    map[string]any{"title": "", "time": "", "description": "", "amount": ""},
+		"formData":  map[string]any{"title": "", "time": "", "place": "", "description": "", "amount": 0, "paid": false, "paidAt": ""},
+		"errors":    map[string]any{"title": "", "time": "", "place": "", "description": "", "amount": ""},
 	}
 	// Error field lists for validation
-	eventErrorFields = []string{"title", "time", "description", "amount"}
+	eventErrorFields = []string{"title", "time", "place", "description", "amount"}
 )
 
 func getUserEmail(c echo.Context) string {
@@ -317,9 +318,10 @@ func (e *Events) patchEventShow(c echo.Context, groupID, eventID, userEmail stri
 		data.EditorMode = editorMode
 	}
 
-	if eventForm.Title != "" || eventForm.Time != "" || eventForm.Amount > 0 {
+	if eventForm.Title != "" || eventForm.Time != "" || eventForm.Place != "" || eventForm.Amount > 0 {
 		data.Event.Title = eventForm.Title
 		data.Event.Time = eventForm.Time
+		data.Event.Place = eventForm.Place
 		data.Event.Description = eventForm.Description
 		data.Event.Amount = eventForm.Amount
 		if eventForm.Paid {
@@ -415,6 +417,7 @@ func (e *Events) Create(c echo.Context) error {
 	}
 	signals.FormData.Title = strings.TrimSpace(signals.FormData.Title)
 	signals.FormData.Time = strings.TrimSpace(signals.FormData.Time)
+	signals.FormData.Place = strings.TrimSpace(signals.FormData.Place)
 	signals.FormData.Description = strings.TrimSpace(signals.FormData.Description)
 	signals.FormData.PaidAt = normalizePaidAtInput(signals.FormData.PaidAt)
 
@@ -432,6 +435,7 @@ func (e *Events) Create(c echo.Context) error {
 		GroupID:     groupID,
 		Title:       signals.FormData.Title,
 		Time:        signals.FormData.Time,
+		Place:       signals.FormData.Place,
 		Description: signals.FormData.Description,
 		Amount:      signals.FormData.Amount,
 		Paid: func() int64 {
@@ -494,15 +498,17 @@ func (e *Events) Update(c echo.Context) error {
 	}
 	signals.FormData.Title = strings.TrimSpace(signals.FormData.Title)
 	signals.FormData.Time = strings.TrimSpace(signals.FormData.Time)
+	signals.FormData.Place = strings.TrimSpace(signals.FormData.Place)
 	signals.FormData.Description = strings.TrimSpace(signals.FormData.Description)
 	signals.FormData.PaidAt = normalizePaidAtInput(signals.FormData.PaidAt)
 	signals.EventFormData.Title = strings.TrimSpace(signals.EventFormData.Title)
 	signals.EventFormData.Time = strings.TrimSpace(signals.EventFormData.Time)
+	signals.EventFormData.Place = strings.TrimSpace(signals.EventFormData.Place)
 	signals.EventFormData.Description = strings.TrimSpace(signals.EventFormData.Description)
 	signals.EventFormData.PaidAt = normalizePaidAtInput(signals.EventFormData.PaidAt)
 
 	eventForm := signals.FormData
-	if signals.EventFormData.Title != "" || signals.EventFormData.Time != "" || signals.EventFormData.Amount != 0 {
+	if signals.EventFormData.Title != "" || signals.EventFormData.Time != "" || signals.EventFormData.Place != "" || signals.EventFormData.Amount != 0 {
 		eventForm = signals.EventFormData
 	}
 
@@ -515,6 +521,7 @@ func (e *Events) Update(c echo.Context) error {
 	_, err = db.Qry.UpdateEvent(c.Request().Context(), db.UpdateEventParams{
 		Title:       eventForm.Title,
 		Time:        eventForm.Time,
+		Place:       eventForm.Place,
 		Description: eventForm.Description,
 		Amount:      eventForm.Amount,
 		Paid: func() int64 {
@@ -542,12 +549,13 @@ func (e *Events) Update(c echo.Context) error {
 			"eventFormData": map[string]any{
 				"title":       eventForm.Title,
 				"time":        eventForm.Time,
+				"place":       eventForm.Place,
 				"description": eventForm.Description,
 				"amount":      eventForm.Amount,
 				"paid":        eventForm.Paid,
 				"paidAt":      eventForm.PaidAt,
 			},
-			"errors": map[string]any{"title": "", "time": "", "description": "", "amount": ""},
+			"errors": map[string]any{"title": "", "time": "", "place": "", "description": "", "amount": ""},
 		})
 		query := utils.NormalizeTableQuery(signals.TableQuery, e.ParticipantTableQuerySpec())
 		data, err := e.GetShowData(c.Request().Context(), groupID, id, query)
@@ -778,6 +786,7 @@ func (e *Events) UpdateParticipantsDraftRows(c echo.Context) error {
 
 	signals.EventFormData.Title = strings.TrimSpace(signals.EventFormData.Title)
 	signals.EventFormData.Time = strings.TrimSpace(signals.EventFormData.Time)
+	signals.EventFormData.Place = strings.TrimSpace(signals.EventFormData.Place)
 	signals.EventFormData.Description = strings.TrimSpace(signals.EventFormData.Description)
 	signals.EventFormData.PaidAt = normalizePaidAtInput(signals.EventFormData.PaidAt)
 
@@ -920,6 +929,7 @@ func (e *Events) SaveParticipantsBulk(c echo.Context) error {
 
 	signals.EventFormData.Title = strings.TrimSpace(signals.EventFormData.Title)
 	signals.EventFormData.Time = strings.TrimSpace(signals.EventFormData.Time)
+	signals.EventFormData.Place = strings.TrimSpace(signals.EventFormData.Place)
 	signals.EventFormData.Description = strings.TrimSpace(signals.EventFormData.Description)
 	signals.EventFormData.PaidAt = normalizePaidAtInput(signals.EventFormData.PaidAt)
 
@@ -1025,6 +1035,7 @@ func (e *Events) SaveParticipantsBulk(c echo.Context) error {
 	_, err = qtx.UpdateEvent(c.Request().Context(), db.UpdateEventParams{
 		Title:       signals.EventFormData.Title,
 		Time:        signals.EventFormData.Time,
+		Place:       signals.EventFormData.Place,
 		Description: signals.EventFormData.Description,
 		Amount:      signals.EventFormData.Amount,
 		Paid: func() int64 {

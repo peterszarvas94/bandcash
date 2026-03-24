@@ -19,7 +19,7 @@ func (e *Events) TableQuerySpec() utils.TableQuerySpec {
 	return utils.StandardTableQuerySpec(utils.StandardTableQuerySpecParams{
 		DefaultSort:  "time",
 		DefaultDir:   "desc",
-		AllowedSorts: []string{"time", "title", "amount", "description", "paid", "paid_at"},
+		AllowedSorts: []string{"time", "title", "place", "amount", "description", "paid", "paid_at"},
 	})
 }
 
@@ -353,6 +353,7 @@ func matchesFilters(event db.Event, query utils.TableQuery) bool {
 	if query.Search != "" {
 		searchLower := strings.ToLower(query.Search)
 		if !strings.Contains(strings.ToLower(event.Title), searchLower) &&
+			!strings.Contains(strings.ToLower(event.Place), searchLower) &&
 			!strings.Contains(strings.ToLower(event.Description), searchLower) {
 			return false
 		}
@@ -382,6 +383,11 @@ func sortEvents(events []db.Event, sortField, dir string) {
 				return events[i].Title > events[j].Title
 			}
 			return events[i].Title < events[j].Title
+		case "place":
+			if dir == "desc" {
+				return events[i].Place > events[j].Place
+			}
+			return events[i].Place < events[j].Place
 		case "amount":
 			if dir == "desc" {
 				return events[i].Amount > events[j].Amount

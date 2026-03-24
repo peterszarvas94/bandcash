@@ -73,6 +73,10 @@
     padding-left: var(--space);
   }
 
+  .pl-0 {
+    padding-left: 0;
+  }
+
   .pr {
     padding-right: var(--space);
   }

@@ -25,6 +25,13 @@ templ EventShowMain(data EventData) {
 			{Label: ctxi18n.T(ctx, "nav.overview"), LabelClass: "section-title", Value: ""},
 			{Label: ctxi18n.T(ctx, "fields.title"), Value: data.Event.Title},
 			{Label: ctxi18n.T(ctx, "fields.time"), Value: utils.FormatDateTimeLocalized(ctx, data.Event.Time)},
+			{Label: ctxi18n.T(ctx, "fields.place"), Value: func() string {
+				place := strings.TrimSpace(data.Event.Place)
+				if place == "" {
+					return "-"
+				}
+				return place
+			}()},
 			{Label: ctxi18n.T(ctx, "fields.description"), Value: data.Event.Description},
 			{Label: ctxi18n.T(ctx, "fields.income"), Value: utils.FormatNumberLocalized(ctx, data.Event.Amount), Action: shared.Toggle(shared.ToggleProps{
 				IsOn:         data.Event.Paid == 1,
@@ -167,9 +174,9 @@ templ EventShowMain(data EventData) {
 							}
 						</td>
 						<td>{ paidAtLabel }</td>
-						<td>
+						<td class="pl-0">
 							if noteValue != "" {
-								<div class="row items-start gap-xs">
+								<div class="row row-tight items-start">
 									<button
 										type="button"
 										class="btn btn-ghost btn-xs btn-icon"
@@ -221,6 +228,11 @@ templ EventShowMain(data EventData) {
 					<label for="event-edit-time" class="row">{ ctxi18n.T(ctx, "fields.time") } <span class="color-error">*</span></label>
 					<input id="event-edit-time" type="datetime-local" data-bind="eventFormData.time" class="input w-details"/>
 					<div data-show="$errors && $errors.time" class="color-error" data-text="$errors.time"></div>
+				</div>
+				<div class="field">
+					<label for="event-edit-place">{ ctxi18n.T(ctx, "fields.place") }</label>
+					<input id="event-edit-place" type="text" data-bind="eventFormData.place" class="input w-details"/>
+					<div data-show="$errors && $errors.place" class="color-error" data-text="$errors.place"></div>
 				</div>
 				<div class="field">
 					<label for="event-edit-description">{ ctxi18n.T(ctx, "fields.description") }</label>

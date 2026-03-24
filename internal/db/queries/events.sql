@@ -1,10 +1,11 @@
 -- name: CreateEvent :one
-INSERT INTO events (id, group_id, title, time, description, amount, paid, paid_at)
+INSERT INTO events (id, group_id, title, time, place, description, amount, paid, paid_at)
 VALUES (
   sqlc.arg(id),
   sqlc.arg(group_id),
   sqlc.arg(title),
   sqlc.arg(time),
+  sqlc.arg(place),
   sqlc.arg(description),
   sqlc.arg(amount),
   sqlc.arg(paid),
@@ -260,6 +261,7 @@ LIMIT sqlc.arg(limit) OFFSET sqlc.arg(offset);
 UPDATE events
 SET title = sqlc.arg(title),
     time = sqlc.arg(time),
+    place = sqlc.arg(place),
     description = sqlc.arg(description),
     amount = sqlc.arg(amount),
     paid = sqlc.arg(paid),

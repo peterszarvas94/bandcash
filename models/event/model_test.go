@@ -15,7 +15,7 @@ func TestEventTableSpecs(t *testing.T) {
 	if mainSpec.DefaultSort != "time" || mainSpec.DefaultDir != "desc" {
 		t.Fatalf("unexpected events table defaults: %+v", mainSpec)
 	}
-	for _, key := range []string{"time", "title", "amount", "description", "paid", "paid_at"} {
+	for _, key := range []string{"time", "title", "place", "amount", "description", "paid", "paid_at"} {
 		if _, ok := mainSpec.AllowedSorts[key]; !ok {
 			t.Fatalf("expected allowed sort %q in events spec", key)
 		}
@@ -33,7 +33,7 @@ func TestEventTableSpecs(t *testing.T) {
 }
 
 func TestMatchesFilters(t *testing.T) {
-	event := db.Event{Title: "Band Rehearsal", Description: "Weekly practice", Time: "2026-03-12T19:00"}
+	event := db.Event{Title: "Band Rehearsal", Place: "Budapest", Description: "Weekly practice", Time: "2026-03-12T19:00"}
 
 	if !matchesFilters(event, utils.TableQuery{}) {
 		t.Fatal("expected empty query to match")
@@ -43,6 +43,9 @@ func TestMatchesFilters(t *testing.T) {
 	}
 	if !matchesFilters(event, utils.TableQuery{Search: "weekly"}) {
 		t.Fatal("expected description search to match")
+	}
+	if !matchesFilters(event, utils.TableQuery{Search: "bud"}) {
+		t.Fatal("expected place search to match")
 	}
 	if matchesFilters(event, utils.TableQuery{Year: "2025"}) {
 		t.Fatal("expected wrong year to fail")
