@@ -81,6 +81,7 @@ func (e *Events) GetShowData(ctx context.Context, groupID, eventID string, query
 				Included:   true,
 				Amount:     participant.ParticipantAmount,
 				Expense:    participant.ParticipantExpense,
+				Note:       strings.TrimSpace(participant.ParticipantNote),
 				Paid:       participant.ParticipantPaid == 1,
 				PaidAt: func() string {
 					if !participant.ParticipantPaidAt.Valid {
@@ -102,7 +103,7 @@ func (e *Events) GetShowData(ctx context.Context, groupID, eventID string, query
 		search := strings.ToLower(strings.TrimSpace(query.Search))
 		filtered := make([]db.ListParticipantsByEventRow, 0, len(allParticipants))
 		for _, participant := range allParticipants {
-			if strings.Contains(strings.ToLower(participant.Name), search) {
+			if strings.Contains(strings.ToLower(participant.Name), search) || strings.Contains(strings.ToLower(participant.ParticipantNote), search) {
 				filtered = append(filtered, participant)
 			}
 		}

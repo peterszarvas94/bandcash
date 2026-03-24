@@ -1,11 +1,12 @@
 -- name: AddParticipant :one
-INSERT INTO participants (group_id, event_id, member_id, amount, expense, paid, paid_at)
+INSERT INTO participants (group_id, event_id, member_id, amount, expense, note, paid, paid_at)
 VALUES (
   sqlc.arg(group_id),
   sqlc.arg(event_id),
   sqlc.arg(member_id),
   sqlc.arg(amount),
   sqlc.arg(expense),
+  sqlc.arg(note),
   sqlc.arg(paid),
   CASE
     WHEN sqlc.arg(paid) = 1 THEN COALESCE(sqlc.narg(paid_at), CURRENT_TIMESTAMP)
@@ -22,6 +23,7 @@ WHERE event_id = ? AND member_id = ? AND group_id = ?;
 UPDATE participants
 SET amount = sqlc.arg(amount),
     expense = sqlc.arg(expense),
+    note = sqlc.arg(note),
     paid = sqlc.arg(paid),
     paid_at = CASE
       WHEN sqlc.arg(paid) = 0 THEN NULL
@@ -41,7 +43,7 @@ WHERE event_id = ? AND member_id = ? AND group_id = ?
 RETURNING *;
 
 -- name: ListParticipantsByEvent :many
-SELECT members.*, participants.amount AS participant_amount, participants.expense AS participant_expense, participants.paid AS participant_paid, participants.paid_at AS participant_paid_at
+SELECT members.*, participants.amount AS participant_amount, participants.expense AS participant_expense, participants.note AS participant_note, participants.paid AS participant_paid, participants.paid_at AS participant_paid_at
 FROM members
 JOIN participants ON participants.member_id = members.id
 WHERE participants.event_id = ? AND participants.group_id = ?

@@ -23,6 +23,7 @@ func eventShowSignals(data EventData, csrfToken string) map[string]any {
 	wizardMemberIDs := make(map[string]string, len(data.WizardRows))
 	wizardAmounts := make(map[string]int64, len(data.WizardRows))
 	wizardExpenses := make(map[string]int64, len(data.WizardRows))
+	wizardNotes := make(map[string]string, len(data.WizardRows))
 	wizardPaids := make(map[string]bool, len(data.WizardRows))
 	wizardPaidAts := make(map[string]string, len(data.WizardRows))
 	wizardTotal := int64(0)
@@ -38,12 +39,14 @@ func eventShowSignals(data EventData, csrfToken string) map[string]any {
 			"included":   row.Included,
 			"amount":     row.Amount,
 			"expense":    row.Expense,
+			"note":       row.Note,
 			"paid":       row.Paid,
 			"paidAt":     row.PaidAt,
 		})
 		wizardMemberIDs[rowID] = row.MemberID
 		wizardAmounts[rowID] = row.Amount
 		wizardExpenses[rowID] = row.Expense
+		wizardNotes[rowID] = row.Note
 		wizardPaids[rowID] = row.Paid
 		wizardPaidAts[rowID] = row.PaidAt
 		wizardTotal += row.Amount + row.Expense
@@ -64,6 +67,7 @@ func eventShowSignals(data EventData, csrfToken string) map[string]any {
 			"memberIds":   wizardMemberIDs,
 			"amounts":     wizardAmounts,
 			"expenses":    wizardExpenses,
+			"notes":       wizardNotes,
 			"paids":       wizardPaids,
 			"paidAts":     wizardPaidAts,
 			"total":       wizardTotal,

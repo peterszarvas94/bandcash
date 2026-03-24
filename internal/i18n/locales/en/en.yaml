@@ -278,6 +278,7 @@ en:
     cut_amount: "Cut"
     expense: "Expense"
     total: "Total"
+    note: "Note"
     payout_total: "Payout"
     quick_calc: "Quick Calc (% of event)"
     quick_calc_placeholder: "e.g., 20"

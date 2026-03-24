@@ -11,7 +11,7 @@ import (
 )
 
 const addParticipant = `-- name: AddParticipant :one
-INSERT INTO participants (group_id, event_id, member_id, amount, expense, paid, paid_at)
+INSERT INTO participants (group_id, event_id, member_id, amount, expense, note, paid, paid_at)
 VALUES (
   ?1,
   ?2,
@@ -19,12 +19,13 @@ VALUES (
   ?4,
   ?5,
   ?6,
+  ?7,
   CASE
-    WHEN ?6 = 1 THEN COALESCE(?7, CURRENT_TIMESTAMP)
+    WHEN ?7 = 1 THEN COALESCE(?8, CURRENT_TIMESTAMP)
     ELSE NULL
   END
 )
-RETURNING group_id, event_id, member_id, amount, expense, created_at, updated_at, paid, paid_at
+RETURNING group_id, event_id, member_id, amount, expense, created_at, updated_at, paid, paid_at, note
 `
 
 type AddParticipantParams struct {
@@ -33,6 +34,7 @@ type AddParticipantParams struct {
 	MemberID string      `json:"member_id"`
 	Amount   int64       `json:"amount"`
 	Expense  int64       `json:"expense"`
+	Note     string      `json:"note"`
 	Paid     int64       `json:"paid"`
 	PaidAt   interface{} `json:"paid_at"`
 }
@@ -44,6 +46,7 @@ func (q *Queries) AddParticipant(ctx context.Context, arg AddParticipantParams) 
 		arg.MemberID,
 		arg.Amount,
 		arg.Expense,
+		arg.Note,
 		arg.Paid,
 		arg.PaidAt,
 	)
@@ -58,6 +61,7 @@ func (q *Queries) AddParticipant(ctx context.Context, arg AddParticipantParams) 
 		&i.UpdatedAt,
 		&i.Paid,
 		&i.PaidAt,
+		&i.Note,
 	)
 	return i, err
 }
@@ -110,7 +114,7 @@ func (q *Queries) CountParticipantsByMemberFiltered(ctx context.Context, arg Cou
 }
 
 const listParticipantsByEvent = `-- name: ListParticipantsByEvent :many
-SELECT members.id, members.group_id, members.name, members.description, members.created_at, members.updated_at, participants.amount AS participant_amount, participants.expense AS participant_expense, participants.paid AS participant_paid, participants.paid_at AS participant_paid_at
+SELECT members.id, members.group_id, members.name, members.description, members.created_at, members.updated_at, participants.amount AS participant_amount, participants.expense AS participant_expense, participants.note AS participant_note, participants.paid AS participant_paid, participants.paid_at AS participant_paid_at
 FROM members
 JOIN participants ON participants.member_id = members.id
 WHERE participants.event_id = ? AND participants.group_id = ?
@@ -131,6 +135,7 @@ type ListParticipantsByEventRow struct {
 	UpdatedAt          sql.NullTime   `json:"updated_at"`
 	ParticipantAmount  int64          `json:"participant_amount"`
 	ParticipantExpense int64          `json:"participant_expense"`
+	ParticipantNote    string         `json:"participant_note"`
 	ParticipantPaid    int64          `json:"participant_paid"`
 	ParticipantPaidAt  sql.NullString `json:"participant_paid_at"`
 }
@@ -153,6 +158,7 @@ func (q *Queries) ListParticipantsByEvent(ctx context.Context, arg ListParticipa
 			&i.UpdatedAt,
 			&i.ParticipantAmount,
 			&i.ParticipantExpense,
+			&i.ParticipantNote,
 			&i.ParticipantPaid,
 			&i.ParticipantPaidAt,
 		); err != nil {
@@ -1907,7 +1913,7 @@ UPDATE participants
 SET paid = CASE WHEN paid = 1 THEN 0 ELSE 1 END,
     paid_at = CASE WHEN paid = 1 THEN NULL ELSE CURRENT_TIMESTAMP END
 WHERE event_id = ? AND member_id = ? AND group_id = ?
-RETURNING group_id, event_id, member_id, amount, expense, created_at, updated_at, paid, paid_at
+RETURNING group_id, event_id, member_id, amount, expense, created_at, updated_at, paid, paid_at, note
 `
 
 type ToggleParticipantPaidParams struct {
@@ -1929,6 +1935,7 @@ func (q *Queries) ToggleParticipantPaid(ctx context.Context, arg ToggleParticipa
 		&i.UpdatedAt,
 		&i.Paid,
 		&i.PaidAt,
+		&i.Note,
 	)
 	return i, err
 }
@@ -1937,21 +1944,23 @@ const updateParticipant = `-- name: UpdateParticipant :exec
 UPDATE participants
 SET amount = ?1,
     expense = ?2,
-    paid = ?3,
+    note = ?3,
+    paid = ?4,
     paid_at = CASE
-      WHEN ?3 = 0 THEN NULL
-      WHEN ?4 IS NOT NULL THEN ?4
+      WHEN ?4 = 0 THEN NULL
+      WHEN ?5 IS NOT NULL THEN ?5
       WHEN paid = 0 THEN CURRENT_TIMESTAMP
       ELSE paid_at
     END
-WHERE event_id = ?5
-  AND member_id = ?6
-  AND group_id = ?7
+WHERE event_id = ?6
+  AND member_id = ?7
+  AND group_id = ?8
 `
 
 type UpdateParticipantParams struct {
 	Amount   int64       `json:"amount"`
 	Expense  int64       `json:"expense"`
+	Note     string      `json:"note"`
 	Paid     int64       `json:"paid"`
 	PaidAt   interface{} `json:"paid_at"`
 	EventID  string      `json:"event_id"`
@@ -1963,6 +1972,7 @@ func (q *Queries) UpdateParticipant(ctx context.Context, arg UpdateParticipantPa
 	_, err := q.db.ExecContext(ctx, updateParticipant,
 		arg.Amount,
 		arg.Expense,
+		arg.Note,
 		arg.Paid,
 		arg.PaidAt,
 		arg.EventID,

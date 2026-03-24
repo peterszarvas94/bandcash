@@ -99,6 +99,7 @@ type Participant struct {
 	UpdatedAt sql.NullTime   `json:"updated_at"`
 	Paid      int64          `json:"paid"`
 	PaidAt    sql.NullString `json:"paid_at"`
+	Note      string         `json:"note"`
 }
 
 type User struct {

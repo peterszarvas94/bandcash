@@ -37,6 +37,7 @@ type ParticipantWizardRow struct {
 	Included   bool
 	Amount     int64
 	Expense    int64
+	Note       string
 	Paid       bool
 	PaidAt     string
 }

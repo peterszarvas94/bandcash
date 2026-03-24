@@ -43,6 +43,7 @@ type participantBulkRowData struct {
 	Included   bool   `json:"included"`
 	Amount     int64  `json:"amount" validate:"gte=0"`
 	Expense    int64  `json:"expense" validate:"gte=0"`
+	Note       string `json:"note" validate:"max=1000"`
 	Paid       bool   `json:"paid"`
 	PaidAt     string `json:"paidAt"`
 }
@@ -53,6 +54,7 @@ type participantWizardSignals struct {
 	MemberIDs   map[string]string        `json:"memberIds"`
 	Amounts     map[string]int64         `json:"amounts"`
 	Expenses    map[string]int64         `json:"expenses"`
+	Notes       map[string]string        `json:"notes"`
 	Paids       map[string]bool          `json:"paids"`
 	PaidAts     map[string]string        `json:"paidAts"`
 	Total       int64                    `json:"total"`
@@ -158,7 +160,7 @@ func applyEventShowTableByRole(data *EventData, isAdmin bool) {
 	}
 }
 
-func mergeWizardRows(base []ParticipantWizardRow, allMembers []db.Member, incoming []participantBulkRowData, wizardMemberIDs map[string]string, wizardAmounts map[string]int64, wizardExpenses map[string]int64, wizardPaids map[string]bool, wizardPaidAts map[string]string) []ParticipantWizardRow {
+func mergeWizardRows(base []ParticipantWizardRow, allMembers []db.Member, incoming []participantBulkRowData, wizardMemberIDs map[string]string, wizardAmounts map[string]int64, wizardExpenses map[string]int64, wizardNotes map[string]string, wizardPaids map[string]bool, wizardPaidAts map[string]string) []ParticipantWizardRow {
 	if len(incoming) == 0 {
 		for i := range base {
 			if wizardMemberIDs != nil {
@@ -174,6 +176,11 @@ func mergeWizardRows(base []ParticipantWizardRow, allMembers []db.Member, incomi
 			if wizardExpenses != nil {
 				if expense, ok := wizardExpenses[base[i].RowID]; ok {
 					base[i].Expense = expense
+				}
+			}
+			if wizardNotes != nil {
+				if note, ok := wizardNotes[base[i].RowID]; ok {
+					base[i].Note = strings.TrimSpace(note)
 				}
 			}
 			if wizardPaids != nil {
@@ -236,6 +243,13 @@ func mergeWizardRows(base []ParticipantWizardRow, allMembers []db.Member, incomi
 			}
 		}
 
+		note := strings.TrimSpace(incomingRow.Note)
+		if wizardNotes != nil {
+			if value, ok := wizardNotes[rowID]; ok {
+				note = strings.TrimSpace(value)
+			}
+		}
+
 		paid := incomingRow.Paid
 		if wizardPaids != nil {
 			if value, ok := wizardPaids[rowID]; ok {
@@ -263,6 +277,7 @@ func mergeWizardRows(base []ParticipantWizardRow, allMembers []db.Member, incomi
 			Included:   incomingRow.Included,
 			Amount:     amount,
 			Expense:    expense,
+			Note:       note,
 			Paid:       paid,
 			PaidAt:     paidAt,
 		})
@@ -279,6 +294,7 @@ func patchWizardError(c echo.Context, wizard participantWizardSignals, message s
 			"memberIds":   wizard.MemberIDs,
 			"amounts":     wizard.Amounts,
 			"expenses":    wizard.Expenses,
+			"notes":       wizard.Notes,
 			"paids":       wizard.Paids,
 			"paidAts":     wizard.PaidAts,
 			"total":       wizard.Total,
@@ -288,7 +304,7 @@ func patchWizardError(c echo.Context, wizard participantWizardSignals, message s
 	})
 }
 
-func (e *Events) patchEventShow(c echo.Context, groupID, eventID, userEmail string, query utils.TableQuery, editorMode string, eventForm eventData, wizardEventAmount int64, wizardRows []participantBulkRowData, wizardMemberIDs map[string]string, wizardAmounts map[string]int64, wizardExpenses map[string]int64, wizardPaids map[string]bool, wizardPaidAts map[string]string, wizardError string) error {
+func (e *Events) patchEventShow(c echo.Context, groupID, eventID, userEmail string, query utils.TableQuery, editorMode string, eventForm eventData, wizardEventAmount int64, wizardRows []participantBulkRowData, wizardMemberIDs map[string]string, wizardAmounts map[string]int64, wizardExpenses map[string]int64, wizardNotes map[string]string, wizardPaids map[string]bool, wizardPaidAts map[string]string, wizardError string) error {
 	data, err := e.GetShowData(c.Request().Context(), groupID, eventID, query)
 	if err != nil {
 		return err
@@ -328,10 +344,10 @@ func (e *Events) patchEventShow(c echo.Context, groupID, eventID, userEmail stri
 		if len(wizardRows) == 0 {
 			data.WizardRows = []ParticipantWizardRow{}
 		} else {
-			data.WizardRows = mergeWizardRows(data.WizardRows, data.AllMembers, wizardRows, wizardMemberIDs, wizardAmounts, wizardExpenses, wizardPaids, wizardPaidAts)
+			data.WizardRows = mergeWizardRows(data.WizardRows, data.AllMembers, wizardRows, wizardMemberIDs, wizardAmounts, wizardExpenses, wizardNotes, wizardPaids, wizardPaidAts)
 		}
-	} else if wizardMemberIDs != nil || wizardAmounts != nil || wizardExpenses != nil || wizardPaids != nil || wizardPaidAts != nil {
-		data.WizardRows = mergeWizardRows(data.WizardRows, data.AllMembers, nil, wizardMemberIDs, wizardAmounts, wizardExpenses, wizardPaids, wizardPaidAts)
+	} else if wizardMemberIDs != nil || wizardAmounts != nil || wizardExpenses != nil || wizardNotes != nil || wizardPaids != nil || wizardPaidAts != nil {
+		data.WizardRows = mergeWizardRows(data.WizardRows, data.AllMembers, nil, wizardMemberIDs, wizardAmounts, wizardExpenses, wizardNotes, wizardPaids, wizardPaidAts)
 	}
 
 	data.WizardError = wizardError
@@ -712,7 +728,7 @@ func (e *Events) OpenParticipantsDraft(c echo.Context) error {
 		query = utils.NormalizeTableQuery(signals.TableQuery, e.ParticipantTableQuerySpec())
 	}
 
-	if err := e.patchEventShow(c, groupID, eventID, userEmail, query, "edit", eventData{}, 0, nil, nil, nil, nil, nil, nil, ""); err != nil {
+	if err := e.patchEventShow(c, groupID, eventID, userEmail, query, "edit", eventData{}, 0, nil, nil, nil, nil, nil, nil, nil, ""); err != nil {
 		slog.Error("participant.draft.open: failed to render", "err", err)
 		return c.NoContent(http.StatusInternalServerError)
 	}
@@ -736,7 +752,7 @@ func (e *Events) CancelParticipantsDraft(c echo.Context) error {
 		query = utils.NormalizeTableQuery(signals.TableQuery, e.ParticipantTableQuerySpec())
 	}
 
-	if err := e.patchEventShow(c, groupID, eventID, userEmail, query, "read", eventData{}, 0, nil, nil, nil, nil, nil, nil, ""); err != nil {
+	if err := e.patchEventShow(c, groupID, eventID, userEmail, query, "read", eventData{}, 0, nil, nil, nil, nil, nil, nil, nil, ""); err != nil {
 		slog.Error("participant.draft.cancel: failed to render", "err", err)
 		return c.NoContent(http.StatusInternalServerError)
 	}
@@ -781,6 +797,9 @@ func (e *Events) UpdateParticipantsDraftRows(c echo.Context) error {
 	if signals.Wizard.Expenses == nil {
 		signals.Wizard.Expenses = map[string]int64{}
 	}
+	if signals.Wizard.Notes == nil {
+		signals.Wizard.Notes = map[string]string{}
+	}
 	if signals.Wizard.Paids == nil {
 		signals.Wizard.Paids = map[string]bool{}
 	}
@@ -795,6 +814,7 @@ func (e *Events) UpdateParticipantsDraftRows(c echo.Context) error {
 		signals.Wizard.MemberIDs[rowID] = ""
 		signals.Wizard.Amounts[rowID] = 0
 		signals.Wizard.Expenses[rowID] = 0
+		signals.Wizard.Notes[rowID] = ""
 		signals.Wizard.Paids[rowID] = false
 		signals.Wizard.PaidAts[rowID] = ""
 	case "copy":
@@ -822,6 +842,10 @@ func (e *Events) UpdateParticipantsDraftRows(c echo.Context) error {
 		if value, ok := signals.Wizard.Expenses[source.RowID]; ok {
 			sourceExpense = value
 		}
+		sourceNote := strings.TrimSpace(source.Note)
+		if value, ok := signals.Wizard.Notes[source.RowID]; ok {
+			sourceNote = strings.TrimSpace(value)
+		}
 		sourcePaid := source.Paid
 		if value, ok := signals.Wizard.Paids[source.RowID]; ok {
 			sourcePaid = value
@@ -836,12 +860,14 @@ func (e *Events) UpdateParticipantsDraftRows(c echo.Context) error {
 			Included: true,
 			Amount:   sourceAmount,
 			Expense:  sourceExpense,
+			Note:     sourceNote,
 			Paid:     sourcePaid,
 			PaidAt:   sourcePaidAt,
 		})
 		signals.Wizard.MemberIDs[newRowID] = ""
 		signals.Wizard.Amounts[newRowID] = sourceAmount
 		signals.Wizard.Expenses[newRowID] = sourceExpense
+		signals.Wizard.Notes[newRowID] = sourceNote
 		signals.Wizard.Paids[newRowID] = sourcePaid
 		signals.Wizard.PaidAts[newRowID] = sourcePaidAt
 	case "remove":
@@ -860,6 +886,7 @@ func (e *Events) UpdateParticipantsDraftRows(c echo.Context) error {
 		delete(signals.Wizard.MemberIDs, targetRowID)
 		delete(signals.Wizard.Amounts, targetRowID)
 		delete(signals.Wizard.Expenses, targetRowID)
+		delete(signals.Wizard.Notes, targetRowID)
 		delete(signals.Wizard.Paids, targetRowID)
 		delete(signals.Wizard.PaidAts, targetRowID)
 	default:
@@ -867,7 +894,7 @@ func (e *Events) UpdateParticipantsDraftRows(c echo.Context) error {
 	}
 
 	query := utils.NormalizeTableQuery(signals.TableQuery, e.ParticipantTableQuerySpec())
-	if err := e.patchEventShow(c, groupID, eventID, userEmail, query, "edit", signals.EventFormData, signals.Wizard.EventAmount, rows, signals.Wizard.MemberIDs, signals.Wizard.Amounts, signals.Wizard.Expenses, signals.Wizard.Paids, signals.Wizard.PaidAts, ""); err != nil {
+	if err := e.patchEventShow(c, groupID, eventID, userEmail, query, "edit", signals.EventFormData, signals.Wizard.EventAmount, rows, signals.Wizard.MemberIDs, signals.Wizard.Amounts, signals.Wizard.Expenses, signals.Wizard.Notes, signals.Wizard.Paids, signals.Wizard.PaidAts, ""); err != nil {
 		slog.Error("participant.draft.rows: failed to render", "err", err)
 		return c.NoContent(http.StatusInternalServerError)
 	}
@@ -930,6 +957,7 @@ func (e *Events) SaveParticipantsBulk(c echo.Context) error {
 			signals.Wizard.Rows[i].MemberID = strings.TrimSpace(memberID)
 		}
 		signals.Wizard.Rows[i].MemberName = strings.TrimSpace(signals.Wizard.Rows[i].MemberName)
+		signals.Wizard.Rows[i].Note = strings.TrimSpace(signals.Wizard.Rows[i].Note)
 		signals.Wizard.Rows[i].PaidAt = normalizePaidAtInput(signals.Wizard.Rows[i].PaidAt)
 		if signals.Wizard.Amounts != nil {
 			if value, ok := signals.Wizard.Amounts[signals.Wizard.Rows[i].RowID]; ok {
@@ -939,6 +967,11 @@ func (e *Events) SaveParticipantsBulk(c echo.Context) error {
 		if signals.Wizard.Expenses != nil {
 			if value, ok := signals.Wizard.Expenses[signals.Wizard.Rows[i].RowID]; ok {
 				signals.Wizard.Rows[i].Expense = value
+			}
+		}
+		if signals.Wizard.Notes != nil {
+			if value, ok := signals.Wizard.Notes[signals.Wizard.Rows[i].RowID]; ok {
+				signals.Wizard.Rows[i].Note = strings.TrimSpace(value)
 			}
 		}
 		if signals.Wizard.Paids != nil {
@@ -953,7 +986,7 @@ func (e *Events) SaveParticipantsBulk(c echo.Context) error {
 		}
 
 		if signals.Wizard.Rows[i].MemberID == "" {
-			if signals.Wizard.Rows[i].Amount == 0 && signals.Wizard.Rows[i].Expense == 0 && !signals.Wizard.Rows[i].Paid && signals.Wizard.Rows[i].PaidAt == "" {
+			if signals.Wizard.Rows[i].Amount == 0 && signals.Wizard.Rows[i].Expense == 0 && signals.Wizard.Rows[i].Note == "" && !signals.Wizard.Rows[i].Paid && signals.Wizard.Rows[i].PaidAt == "" {
 				continue
 			}
 			patchWizardError(c, signals.Wizard, ctxi18n.T(c.Request().Context(), "participants.bulk_validation_error"))
@@ -1037,6 +1070,7 @@ func (e *Events) SaveParticipantsBulk(c echo.Context) error {
 			err = qtx.UpdateParticipant(c.Request().Context(), db.UpdateParticipantParams{
 				Amount:  amount,
 				Expense: expense,
+				Note:    row.Note,
 				Paid: func() int64 {
 					if paid {
 						return 1
@@ -1055,6 +1089,7 @@ func (e *Events) SaveParticipantsBulk(c echo.Context) error {
 				MemberID: row.MemberID,
 				Amount:   amount,
 				Expense:  expense,
+				Note:     row.Note,
 				Paid: func() int64 {
 					if paid {
 						return 1
@@ -1096,7 +1131,7 @@ func (e *Events) SaveParticipantsBulk(c echo.Context) error {
 	utils.Notify(c, "success", ctxi18n.T(c.Request().Context(), "participants.notifications.updated"))
 
 	query := utils.NormalizeTableQuery(signals.TableQuery, e.ParticipantTableQuerySpec())
-	if err := e.patchEventShow(c, groupID, eventID, userEmail, query, "read", eventData{}, 0, nil, nil, nil, nil, nil, nil, ""); err != nil {
+	if err := e.patchEventShow(c, groupID, eventID, userEmail, query, "read", eventData{}, 0, nil, nil, nil, nil, nil, nil, nil, ""); err != nil {
 		slog.Error("participant.bulk: failed to render", "err", err)
 		return c.NoContent(http.StatusInternalServerError)
 	}
