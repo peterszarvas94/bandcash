@@ -62,12 +62,6 @@ func ExpenseShowMain(data ExpenseData) templ.Component {
 			{Label: ctxi18n.T(ctx, "fields.title"), Value: data.Expense.Title},
 			{Label: ctxi18n.T(ctx, "fields.description"), Value: data.Expense.Description},
 			{Label: ctxi18n.T(ctx, "fields.date"), Value: utils.FormatDateLocalized(ctx, data.Expense.Date)},
-			{Label: ctxi18n.T(ctx, "fields.paid_at"), Value: func() string {
-				if !data.Expense.PaidAt.Valid {
-					return ""
-				}
-				return utils.FormatDateLocalized(ctx, utils.FormatDateInput(data.Expense.PaidAt.String))
-			}()},
 			{Label: ctxi18n.T(ctx, "fields.expense"), Value: utils.FormatNumberLocalizedWithSign(ctx, data.Expense.Amount, false), Action: shared.Toggle(shared.ToggleProps{
 				IsOn:         data.Expense.Paid == 1,
 				OnClick:      togglePaidExpr,
@@ -78,6 +72,12 @@ func ExpenseShowMain(data ExpenseData) templ.Component {
 				OffClass:     "btn-inactive",
 				OnClass:      "btn-success",
 			})},
+			{Label: ctxi18n.T(ctx, "fields.paid_at"), Value: func() string {
+				if !data.Expense.PaidAt.Valid {
+					return "-"
+				}
+				return utils.FormatDateLocalized(ctx, utils.FormatDateInput(data.Expense.PaidAt.String))
+			}()},
 		}).Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err

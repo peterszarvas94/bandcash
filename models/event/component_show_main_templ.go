@@ -58,12 +58,6 @@ func EventShowMain(data EventData) templ.Component {
 			{Label: ctxi18n.T(ctx, "fields.title"), Value: data.Event.Title},
 			{Label: ctxi18n.T(ctx, "fields.time"), Value: utils.FormatDateTimeLocalized(ctx, data.Event.Time)},
 			{Label: ctxi18n.T(ctx, "fields.description"), Value: data.Event.Description},
-			{Label: ctxi18n.T(ctx, "fields.paid_at"), Value: func() string {
-				if !data.Event.PaidAt.Valid {
-					return ""
-				}
-				return utils.FormatDateLocalized(ctx, utils.FormatDateInput(data.Event.PaidAt.String))
-			}()},
 			{Label: ctxi18n.T(ctx, "fields.income"), Value: utils.FormatNumberLocalized(ctx, data.Event.Amount), Action: shared.Toggle(shared.ToggleProps{
 				IsOn:         data.Event.Paid == 1,
 				OnClick:      togglePaidExpr,
@@ -74,6 +68,12 @@ func EventShowMain(data EventData) templ.Component {
 				OffClass:     "btn-inactive",
 				OnClass:      "btn-success",
 			})},
+			{Label: ctxi18n.T(ctx, "fields.paid_at"), Value: func() string {
+				if !data.Event.PaidAt.Valid {
+					return "-"
+				}
+				return utils.FormatDateLocalized(ctx, utils.FormatDateInput(data.Event.PaidAt.String))
+			}()},
 		}, "bb-0").Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err

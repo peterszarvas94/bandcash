@@ -30,12 +30,6 @@ templ ExpenseShowMain(data ExpenseData) {
 			{Label: ctxi18n.T(ctx, "fields.title"), Value: data.Expense.Title},
 			{Label: ctxi18n.T(ctx, "fields.description"), Value: data.Expense.Description},
 			{Label: ctxi18n.T(ctx, "fields.date"), Value: utils.FormatDateLocalized(ctx, data.Expense.Date)},
-			{Label: ctxi18n.T(ctx, "fields.paid_at"), Value: func() string {
-				if !data.Expense.PaidAt.Valid {
-					return ""
-				}
-				return utils.FormatDateLocalized(ctx, utils.FormatDateInput(data.Expense.PaidAt.String))
-			}()},
 			{Label: ctxi18n.T(ctx, "fields.expense"), Value: utils.FormatNumberLocalizedWithSign(ctx, data.Expense.Amount, false), Action: shared.Toggle(shared.ToggleProps{
 				IsOn:         data.Expense.Paid == 1,
 				OnClick:      togglePaidExpr,
@@ -46,6 +40,12 @@ templ ExpenseShowMain(data ExpenseData) {
 				OffClass:     "btn-inactive",
 				OnClass:      "btn-success",
 			})},
+			{Label: ctxi18n.T(ctx, "fields.paid_at"), Value: func() string {
+				if !data.Expense.PaidAt.Valid {
+					return "-"
+				}
+				return utils.FormatDateLocalized(ctx, utils.FormatDateInput(data.Expense.PaidAt.String))
+			}()},
 		})
 	</div>
 	if data.IsAdmin {
