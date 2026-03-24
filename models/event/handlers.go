@@ -115,7 +115,7 @@ func paidAtArg(isPaid bool, paidAt string) sql.NullString {
 
 	normalized := normalizePaidAtInput(paidAt)
 	if normalized == "" {
-		return sql.NullString{}
+		return sql.NullString{String: "", Valid: true}
 	}
 
 	return sql.NullString{String: normalized, Valid: true}

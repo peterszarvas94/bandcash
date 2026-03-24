@@ -9,7 +9,7 @@ VALUES (
   sqlc.arg(date),
   sqlc.arg(paid),
   CASE
-    WHEN sqlc.arg(paid) = 1 THEN COALESCE(sqlc.narg(paid_at), CURRENT_TIMESTAMP)
+    WHEN sqlc.arg(paid) = 1 THEN COALESCE(NULLIF(sqlc.narg(paid_at), ''), CURRENT_TIMESTAMP)
     ELSE NULL
   END
 )
@@ -265,7 +265,7 @@ SET title = sqlc.arg(title),
     paid = sqlc.arg(paid),
     paid_at = CASE
       WHEN sqlc.arg(paid) = 0 THEN NULL
-      WHEN sqlc.narg(paid_at) IS NOT NULL THEN sqlc.narg(paid_at)
+      WHEN sqlc.narg(paid_at) IS NOT NULL THEN NULLIF(sqlc.narg(paid_at), '')
       WHEN paid = 0 THEN CURRENT_TIMESTAMP
       ELSE paid_at
     END

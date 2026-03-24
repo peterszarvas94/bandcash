@@ -66,7 +66,7 @@ VALUES (
   ?6,
   ?7,
   CASE
-    WHEN ?7 = 1 THEN COALESCE(?8, CURRENT_TIMESTAMP)
+    WHEN ?7 = 1 THEN COALESCE(NULLIF(?8, ''), CURRENT_TIMESTAMP)
     ELSE NULL
   END
 )
@@ -966,7 +966,7 @@ SET title = ?1,
     paid = ?5,
     paid_at = CASE
       WHEN ?5 = 0 THEN NULL
-      WHEN ?6 IS NOT NULL THEN ?6
+      WHEN ?6 IS NOT NULL THEN NULLIF(?6, '')
       WHEN paid = 0 THEN CURRENT_TIMESTAMP
       ELSE paid_at
     END
