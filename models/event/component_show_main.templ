@@ -12,8 +12,7 @@ import (
 templ EventShowMain(data EventData) {
 	{{
 		participantsSubmitExpr := fmt.Sprintf("@put('/groups/%s/events/%s/participants')", data.GroupID, data.Event.ID)
-		addParticipantExpr := fmt.Sprintf("if (!$wizard.selectedMemberId) return; @post('/groups/%s/events/%s/participants/draft/' + $wizard.selectedMemberId)", data.GroupID, data.Event.ID)
-		addParticipantDisabledExpr := fmt.Sprintf("$_fetching || !$wizard.selectedMemberId || %t", len(data.WizardAddableMembers) == 0)
+		addEmptyRowExpr := fmt.Sprintf("$draftRowsAction='add'; $draftRowsRowId=''; @post('/groups/%s/events/%s/participants/draft/rows')", data.GroupID, data.Event.ID)
 		cancelParticipantsEditExpr := fmt.Sprintf("@delete('/groups/%s/events/%s/participants/draft')", data.GroupID, data.Event.ID)
 		togglePaidExpr := fmt.Sprintf("@put('/groups/%s/events/%s/toggle-paid', {mode: 'single'})", data.GroupID, data.Event.ID)
 	}}
@@ -21,17 +20,17 @@ templ EventShowMain(data EventData) {
 		if data.IsAdmin {
 			@shared.DetailsActions(ReadModeActions(data))
 		}
-			@shared.DetailsCardWithClass(fmt.Sprintf("event_%s_overview", data.Event.ID), []shared.DetailsRow{
-				{Label: ctxi18n.T(ctx, "nav.overview"), LabelClass: "section-title", Value: ""},
-				{Label: ctxi18n.T(ctx, "fields.title"), Value: data.Event.Title},
-				{Label: ctxi18n.T(ctx, "fields.time"), Value: utils.FormatDateTimeLocalized(ctx, data.Event.Time)},
-				{Label: ctxi18n.T(ctx, "fields.description"), Value: data.Event.Description},
-				{Label: ctxi18n.T(ctx, "fields.paid_at"), Value: func() string {
-					if !data.Event.PaidAt.Valid {
-						return "-"
-					}
-					return utils.FormatDateLocalized(ctx, utils.FormatDateInput(data.Event.PaidAt.String))
-				}()},
+		@shared.DetailsCardWithClass(fmt.Sprintf("event_%s_overview", data.Event.ID), []shared.DetailsRow{
+			{Label: ctxi18n.T(ctx, "nav.overview"), LabelClass: "section-title", Value: ""},
+			{Label: ctxi18n.T(ctx, "fields.title"), Value: data.Event.Title},
+			{Label: ctxi18n.T(ctx, "fields.time"), Value: utils.FormatDateTimeLocalized(ctx, data.Event.Time)},
+			{Label: ctxi18n.T(ctx, "fields.description"), Value: data.Event.Description},
+			{Label: ctxi18n.T(ctx, "fields.paid_at"), Value: func() string {
+				if !data.Event.PaidAt.Valid {
+					return "-"
+				}
+				return utils.FormatDateLocalized(ctx, utils.FormatDateInput(data.Event.PaidAt.String))
+			}()},
 			{Label: ctxi18n.T(ctx, "fields.income"), Value: utils.FormatNumberLocalized(ctx, data.Event.Amount), Action: shared.Toggle(shared.ToggleProps{
 				IsOn:         data.Event.Paid == 1,
 				OnClick:      togglePaidExpr,
@@ -42,7 +41,7 @@ templ EventShowMain(data EventData) {
 				OffClass:     "btn-inactive",
 				OnClass:      "btn-success",
 			})},
-			}, "bb-0")
+		}, "bb-0")
 		{{
 			incomePaid := int64(0)
 			incomeUnpaid := data.Event.Amount
@@ -50,6 +49,18 @@ templ EventShowMain(data EventData) {
 				incomePaid = data.Event.Amount
 				incomeUnpaid = 0
 			}
+
+			incomeValue := data.Event.Amount
+			payoutValue := data.FilteredPaid + data.FilteredUnpaid
+			switch data.Query.Summary {
+			case utils.SummaryModePaid:
+				incomeValue = incomePaid
+				payoutValue = data.FilteredPaid
+			case utils.SummaryModeUnpaid:
+				incomeValue = incomeUnpaid
+				payoutValue = data.FilteredUnpaid
+			}
+			leftoverValue := incomeValue - payoutValue
 		}}
 		<section class="detail-box pb">
 			<dl>
@@ -82,38 +93,10 @@ templ EventShowMain(data EventData) {
 					</dd>
 				</div>
 			</dl>
-			{{
-				// TODO: Replace this inline initial-visibility workaround with a reusable summary panel helper.
-			}}
-			<dl data-show="$summaryMode === 'all'" style={ func() string {
-				if data.Query.Summary == utils.SummaryModeAll {
-					return ""
-				}
-				return "display: none"
-			}() }>
-				<div><dt>{ ctxi18n.T(ctx, "fields.income") }</dt><dd>{ utils.FormatNumberLocalized(ctx, data.Event.Amount) }</dd></div>
-				<div><dt>{ ctxi18n.T(ctx, "participants.payout_total") }</dt><dd>{ utils.FormatNumberLocalizedWithSign(ctx, data.FilteredPaid+data.FilteredUnpaid, false) }</dd></div>
-				<div><dt>{ ctxi18n.T(ctx, "events.leftover") }</dt><dd>{ utils.FormatNumberLocalized(ctx, data.Event.Amount-(data.FilteredPaid+data.FilteredUnpaid)) }</dd></div>
-			</dl>
-			<dl data-show="$summaryMode === 'paid'" style={ func() string {
-				if data.Query.Summary == utils.SummaryModePaid {
-					return ""
-				}
-				return "display: none"
-			}() }>
-				<div><dt>{ ctxi18n.T(ctx, "fields.income") }</dt><dd>{ utils.FormatNumberLocalized(ctx, incomePaid) }</dd></div>
-				<div><dt>{ ctxi18n.T(ctx, "participants.payout_total") }</dt><dd>{ utils.FormatNumberLocalizedWithSign(ctx, data.FilteredPaid, false) }</dd></div>
-				<div><dt>{ ctxi18n.T(ctx, "events.leftover") }</dt><dd>{ utils.FormatNumberLocalized(ctx, incomePaid-data.FilteredPaid) }</dd></div>
-			</dl>
-			<dl data-show="$summaryMode === 'unpaid'" style={ func() string {
-				if data.Query.Summary == utils.SummaryModeUnpaid {
-					return ""
-				}
-				return "display: none"
-			}() }>
-				<div><dt>{ ctxi18n.T(ctx, "fields.income") }</dt><dd>{ utils.FormatNumberLocalized(ctx, incomeUnpaid) }</dd></div>
-				<div><dt>{ ctxi18n.T(ctx, "participants.payout_total") }</dt><dd>{ utils.FormatNumberLocalizedWithSign(ctx, data.FilteredUnpaid, false) }</dd></div>
-				<div><dt>{ ctxi18n.T(ctx, "events.leftover") }</dt><dd>{ utils.FormatNumberLocalized(ctx, incomeUnpaid-data.FilteredUnpaid) }</dd></div>
+			<dl>
+				<div><dt>{ ctxi18n.T(ctx, "fields.income") }</dt><dd>{ utils.FormatNumberLocalized(ctx, incomeValue) }</dd></div>
+				<div><dt>{ ctxi18n.T(ctx, "participants.payout_total") }</dt><dd>{ utils.FormatNumberLocalizedWithSign(ctx, payoutValue, false) }</dd></div>
+				<div><dt>{ ctxi18n.T(ctx, "events.leftover") }</dt><dd>{ utils.FormatNumberLocalized(ctx, leftoverValue) }</dd></div>
 			</dl>
 		</section>
 		@shared.TableSearchFormWithClass(fmt.Sprintf("/groups/%s/events/%s", data.GroupID, data.Event.ID), data.Query, "table.search_placeholder_members", "pt")
@@ -146,14 +129,14 @@ templ EventShowMain(data EventData) {
 					{{
 						togglePaidExpr := fmt.Sprintf("@put('/groups/%s/events/%s/participants/%s/toggle-paid', {tableQuery: $tableQuery})", data.GroupID, data.Event.ID, participant.ID)
 						paidLabel := ctxi18n.T(ctx, "table.unpaid")
-					if participant.ParticipantPaid == 1 {
-						paidLabel = ctxi18n.T(ctx, "table.paid")
-					}
-					paidAtLabel := "-"
-					if participant.ParticipantPaidAt.Valid {
-						paidAtLabel = utils.FormatDateLocalized(ctx, utils.FormatDateInput(participant.ParticipantPaidAt.String))
-					}
-				}}
+						if participant.ParticipantPaid == 1 {
+							paidLabel = ctxi18n.T(ctx, "table.paid")
+						}
+						paidAtLabel := "-"
+						if participant.ParticipantPaidAt.Valid {
+							paidAtLabel = utils.FormatDateLocalized(ctx, utils.FormatDateInput(participant.ParticipantPaidAt.String))
+						}
+					}}
 					<tr>
 						<td><a class="link" href={ fmt.Sprintf("/groups/%s/members/%s", data.GroupID, participant.ID) }>{ participant.Name }</a></td>
 						<td class="text-right">{ utils.FormatNumberLocalized(ctx, participant.ParticipantAmount) }</td>
@@ -188,7 +171,7 @@ templ EventShowMain(data EventData) {
 	</div>
 	if data.IsAdmin {
 		<div data-show="$participantEditorMode === 'edit'" style="display: none">
-			<form class="form" data-on:submit={ participantsSubmitExpr } data-effect="$wizard.total = $wizard.rows.reduce((sum, row) => sum + ($wizard.amounts[row.memberId] || 0) + ($wizard.expenses[row.memberId] || 0), 0); $wizard.leftover = ($eventFormData.amount || 0) - $wizard.total" data-indicator:_fetching>
+			<form class="form" data-on:submit={ participantsSubmitExpr } data-effect="$wizard.total = $wizard.rows.reduce((sum, row) => sum + (row.amount || 0) + (row.expense || 0), 0); $wizard.leftover = ($eventFormData.amount || 0) - $wizard.total" data-indicator:_fetching>
 				<div data-show="$wizard.error" class="color-error" data-text="$wizard.error"></div>
 				<div class="field">
 					<label for="event-edit-title" class="row">{ ctxi18n.T(ctx, "fields.title") } <span class="color-error">*</span></label>
@@ -242,31 +225,49 @@ templ EventShowMain(data EventData) {
 								<th>{ ctxi18n.T(ctx, "participants.total") }</th>
 								<th>{ ctxi18n.T(ctx, "table.paid") }</th>
 								<th>{ ctxi18n.T(ctx, "fields.paid_at") }</th>
-								<th>{ ctxi18n.T(ctx, "actions.delete") }</th>
+								<th></th>
 							</tr>
 						</thead>
 						<tbody>
 							for _, row := range data.WizardRows {
-								{{ removeDraftExpr := fmt.Sprintf("@delete('/groups/%s/events/%s/participants/draft/%s')", data.GroupID, data.Event.ID, row.MemberID) }}
+								{{
+									removeDraftExpr := fmt.Sprintf("$draftRowsAction='remove'; $draftRowsRowId=%s; @post('/groups/%s/events/%s/participants/draft/rows')", utils.JSONString(row.RowID), data.GroupID, data.Event.ID)
+									copyDraftExpr := fmt.Sprintf("$draftRowsAction='copy'; $draftRowsRowId=%s; @post('/groups/%s/events/%s/participants/draft/rows')", utils.JSONString(row.RowID), data.GroupID, data.Event.ID)
+								}}
 								<tr>
-									<td><a class="link" href={ fmt.Sprintf("/groups/%s/members/%s", data.GroupID, row.MemberID) }>{ row.MemberName }</a></td>
-									<td class="text-right"><input type="number" class="input w-min-input" step="1" min="0" data-bind={ fmt.Sprintf("wizard.amounts.%s", row.MemberID) } value={ fmt.Sprintf("%d", row.Amount) }/></td>
-									<td class="text-right"><input type="number" class="input w-min-input" step="1" min="0" data-bind={ fmt.Sprintf("wizard.expenses.%s", row.MemberID) } value={ fmt.Sprintf("%d", row.Expense) }/></td>
-									<td class="text-right" data-text={ fmt.Sprintf("($wizard.amounts['%s'] || 0) + ($wizard.expenses['%s'] || 0)", row.MemberID, row.MemberID) }></td>
+									<td>
+										<select class="input w-min-input" data-bind={ fmt.Sprintf("wizard.memberIds.%s", row.RowID) }>
+											<option value="">{ ctxi18n.T(ctx, "participants.select_member") }</option>
+											for _, member := range data.AllMembers {
+												<option value={ member.ID }>{ member.Name }</option>
+											}
+										</select>
+									</td>
+									<td class="text-right"><input type="number" class="input w-min-input" step="1" min="0" data-bind={ fmt.Sprintf("wizard.amounts.%s", row.RowID) }/></td>
+									<td class="text-right"><input type="number" class="input w-min-input" step="1" min="0" data-bind={ fmt.Sprintf("wizard.expenses.%s", row.RowID) }/></td>
+									<td class="text-right" data-text={ fmt.Sprintf("($wizard.amounts['%s'] || 0) + ($wizard.expenses['%s'] || 0)", row.RowID, row.RowID) }></td>
 									<td class="text-right">
 										@shared.Toggle(shared.ToggleProps{
-											Bind:         fmt.Sprintf("wizard.paids.%s", row.MemberID),
+											Bind:         fmt.Sprintf("wizard.paids.%s", row.RowID),
 											DisabledExpr: "$_fetching",
-										Off:          ctxi18n.T(ctx, "table.unpaid"),
-										On:           ctxi18n.T(ctx, "table.paid"),
-										OnClass:      "btn-success",
-									})
-								</td>
-								<td class="text-right">
-									<input type="date" class="input w-min-input" data-bind={ fmt.Sprintf("wizard.paidAts.%s", row.MemberID) } value={ row.PaidAt } data-attr:disabled={ fmt.Sprintf("!$wizard.paids.%s || $_fetching", row.MemberID) }/>
-								</td>
-								<td class="text-right">
-									@shared.IconActionButton(shared.IconActionButtonProps{
+											Off:          ctxi18n.T(ctx, "table.unpaid"),
+											On:           ctxi18n.T(ctx, "table.paid"),
+											OnClass:      "btn-success",
+										})
+									</td>
+									<td class="text-right">
+										<input type="date" class="input w-min-input" data-bind={ fmt.Sprintf("wizard.paidAts.%s", row.RowID) } data-attr:disabled={ fmt.Sprintf("!$wizard.paids.%s || $_fetching", row.RowID) }/>
+									</td>
+									<td class="text-right">
+										@shared.IconActionButton(shared.IconActionButtonProps{
+											ClassName:    "btn btn-ghost btn-sm btn-icon",
+											OnClick:      copyDraftExpr,
+											DisabledExpr: "$_fetching",
+											AriaLabel:    ctxi18n.T(ctx, "actions.copy"),
+											Title:        ctxi18n.T(ctx, "actions.copy"),
+											IconName:     icons.IconCopy,
+										})
+										@shared.IconActionButton(shared.IconActionButtonProps{
 											ClassName:    "btn btn-ghost btn-sm btn-danger btn-icon",
 											OnClick:      removeDraftExpr,
 											DisabledExpr: "$_fetching",
@@ -277,34 +278,16 @@ templ EventShowMain(data EventData) {
 									</td>
 								</tr>
 							}
-							if len(data.WizardRows) == 0 {
-								<tr>
-									<td colspan="7">{ ctxi18n.T(ctx, "table.empty") }</td>
-								</tr>
-							}
 							<tr>
-								<td>
-									<select id="event-wizard-add-member" data-bind="wizard.selectedMemberId" class="input w-min-input" data-attr:disabled={ fmt.Sprintf("$_fetching || %t", len(data.WizardAddableMembers) == 0) }>
-										<option value="">{ ctxi18n.T(ctx, "participants.select_member") }</option>
-										for _, member := range data.WizardAddableMembers {
-											<option value={ member.ID }>{ member.Name }</option>
-										}
-									</select>
-								</td>
-								<td>
+								<td colspan="7">
 									@shared.ActionButton(shared.ActionButtonProps{
 										ClassName:    "btn",
-										OnClick:      addParticipantExpr,
-										DisabledExpr: addParticipantDisabledExpr,
+										OnClick:      addEmptyRowExpr,
+										DisabledExpr: "$_fetching",
 										Label:        ctxi18n.T(ctx, "participants.add"),
 										IconName:     icons.IconPlus,
 									})
 								</td>
-								<td></td>
-								<td></td>
-								<td></td>
-								<td></td>
-								<td></td>
 							</tr>
 						</tbody>
 					</table>

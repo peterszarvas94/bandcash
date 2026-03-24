@@ -18,6 +18,22 @@ templ EventTotalsContent(data EventsData) {
 		</dl>
 	</section>
 	<section class="detail-box pb">
+		{{
+			incomeValue := data.FilteredTotal
+			payoutValue := data.FilteredPayoutsPaid + data.FilteredPayoutsUnpaid
+			expensesValue := data.FilteredExpensesPaid + data.FilteredExpensesUnpaid
+			switch data.Query.Summary {
+			case utils.SummaryModePaid:
+				incomeValue = data.FilteredIncomePaid
+				payoutValue = data.FilteredPayoutsPaid
+				expensesValue = data.FilteredExpensesPaid
+			case utils.SummaryModeUnpaid:
+				incomeValue = data.FilteredIncomeUnpaid
+				payoutValue = data.FilteredPayoutsUnpaid
+				expensesValue = data.FilteredExpensesUnpaid
+			}
+			leftoverValue := incomeValue - payoutValue - expensesValue
+		}}
 		<dl>
 			<div>
 				<dt>{ ctxi18n.T(ctx, "fields.calculations") }</dt>
@@ -48,41 +64,11 @@ templ EventTotalsContent(data EventsData) {
 				</dd>
 			</div>
 		</dl>
-		{{
-			// TODO: Replace this inline initial-visibility workaround with a reusable summary panel helper.
-		}}
-		<dl data-show="$summaryMode === 'all'" style={ func() string {
-			if data.Query.Summary == utils.SummaryModeAll {
-				return ""
-			}
-			return "display: none"
-		}() }>
-			<div><dt>{ ctxi18n.T(ctx, "groups.income") }</dt><dd>{ utils.FormatNumberLocalized(ctx, data.FilteredTotal) }</dd></div>
-			<div><dt>{ ctxi18n.T(ctx, "groups.payouts") }</dt><dd>{ utils.FormatNumberLocalizedWithSign(ctx, data.FilteredPayoutsPaid+data.FilteredPayoutsUnpaid, false) }</dd></div>
-			<div><dt>{ ctxi18n.T(ctx, "groups.expenses") }</dt><dd>{ utils.FormatNumberLocalizedWithSign(ctx, data.FilteredExpensesPaid+data.FilteredExpensesUnpaid, false) }</dd></div>
-			<div><dt>{ ctxi18n.T(ctx, "groups.leftover") }</dt><dd>{ utils.FormatNumberLocalized(ctx, data.FilteredTotal-(data.FilteredPayoutsPaid+data.FilteredPayoutsUnpaid)-(data.FilteredExpensesPaid+data.FilteredExpensesUnpaid)) }</dd></div>
-		</dl>
-		<dl data-show="$summaryMode === 'paid'" style={ func() string {
-			if data.Query.Summary == utils.SummaryModePaid {
-				return ""
-			}
-			return "display: none"
-		}() }>
-			<div><dt>{ ctxi18n.T(ctx, "groups.income") }</dt><dd>{ utils.FormatNumberLocalized(ctx, data.FilteredIncomePaid) }</dd></div>
-			<div><dt>{ ctxi18n.T(ctx, "groups.payouts") }</dt><dd>{ utils.FormatNumberLocalizedWithSign(ctx, data.FilteredPayoutsPaid, false) }</dd></div>
-			<div><dt>{ ctxi18n.T(ctx, "groups.expenses") }</dt><dd>{ utils.FormatNumberLocalizedWithSign(ctx, data.FilteredExpensesPaid, false) }</dd></div>
-			<div><dt>{ ctxi18n.T(ctx, "groups.leftover") }</dt><dd>{ utils.FormatNumberLocalized(ctx, data.FilteredIncomePaid-data.FilteredPayoutsPaid-data.FilteredExpensesPaid) }</dd></div>
-		</dl>
-		<dl data-show="$summaryMode === 'unpaid'" style={ func() string {
-			if data.Query.Summary == utils.SummaryModeUnpaid {
-				return ""
-			}
-			return "display: none"
-		}() }>
-			<div><dt>{ ctxi18n.T(ctx, "groups.income") }</dt><dd>{ utils.FormatNumberLocalized(ctx, data.FilteredIncomeUnpaid) }</dd></div>
-			<div><dt>{ ctxi18n.T(ctx, "groups.payouts") }</dt><dd>{ utils.FormatNumberLocalizedWithSign(ctx, data.FilteredPayoutsUnpaid, false) }</dd></div>
-			<div><dt>{ ctxi18n.T(ctx, "groups.expenses") }</dt><dd>{ utils.FormatNumberLocalizedWithSign(ctx, data.FilteredExpensesUnpaid, false) }</dd></div>
-			<div><dt>{ ctxi18n.T(ctx, "groups.leftover") }</dt><dd>{ utils.FormatNumberLocalized(ctx, data.FilteredIncomeUnpaid-data.FilteredPayoutsUnpaid-data.FilteredExpensesUnpaid) }</dd></div>
+		<dl>
+			<div><dt>{ ctxi18n.T(ctx, "groups.income") }</dt><dd>{ utils.FormatNumberLocalized(ctx, incomeValue) }</dd></div>
+			<div><dt>{ ctxi18n.T(ctx, "groups.payouts") }</dt><dd>{ utils.FormatNumberLocalizedWithSign(ctx, payoutValue, false) }</dd></div>
+			<div><dt>{ ctxi18n.T(ctx, "groups.expenses") }</dt><dd>{ utils.FormatNumberLocalizedWithSign(ctx, expensesValue, false) }</dd></div>
+			<div><dt>{ ctxi18n.T(ctx, "groups.leftover") }</dt><dd>{ utils.FormatNumberLocalized(ctx, leftoverValue) }</dd></div>
 		</dl>
 	</section>
 }

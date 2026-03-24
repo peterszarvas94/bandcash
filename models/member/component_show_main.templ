@@ -26,6 +26,15 @@ templ MemberShowMain(data MemberData) {
 			</dl>
 		</section>
 		<section class="detail-box pb">
+			{{
+				totalPayoutValue := data.TotalPayout
+				switch data.Query.Summary {
+				case utils.SummaryModePaid:
+					totalPayoutValue = data.TotalPaid
+				case utils.SummaryModeUnpaid:
+					totalPayoutValue = data.TotalUnpaid
+				}
+			}}
 			<dl>
 				<div>
 					<dt>{ ctxi18n.T(ctx, "fields.calculations") }</dt>
@@ -52,36 +61,12 @@ templ MemberShowMain(data MemberData) {
 								NoIcon:     true,
 								ClassName:  "btn btn-xs",
 							})
-						</div>
-					</dd>
-				</div>
+					</div>
+				</dd>
+			</div>
 			</dl>
-			{{
-				// TODO: Replace this inline initial-visibility workaround with a reusable summary panel helper.
-			}}
-			<dl data-show="$summaryMode === 'all'" style={ func() string {
-				if data.Query.Summary == utils.SummaryModeAll {
-					return ""
-				}
-				return "display: none"
-			}() }>
-				<div><dt>{ ctxi18n.T(ctx, "members.total_payout") }</dt><dd>{ utils.FormatNumberLocalizedWithSign(ctx, data.TotalPayout, false) }</dd></div>
-			</dl>
-			<dl data-show="$summaryMode === 'paid'" style={ func() string {
-				if data.Query.Summary == utils.SummaryModePaid {
-					return ""
-				}
-				return "display: none"
-			}() }>
-				<div><dt>{ ctxi18n.T(ctx, "members.total_payout") }</dt><dd>{ utils.FormatNumberLocalizedWithSign(ctx, data.TotalPaid, false) }</dd></div>
-			</dl>
-			<dl data-show="$summaryMode === 'unpaid'" style={ func() string {
-				if data.Query.Summary == utils.SummaryModeUnpaid {
-					return ""
-				}
-				return "display: none"
-			}() }>
-				<div><dt>{ ctxi18n.T(ctx, "members.total_payout") }</dt><dd>{ utils.FormatNumberLocalizedWithSign(ctx, data.TotalUnpaid, false) }</dd></div>
+			<dl>
+				<div><dt>{ ctxi18n.T(ctx, "members.total_payout") }</dt><dd>{ utils.FormatNumberLocalizedWithSign(ctx, totalPayoutValue, false) }</dd></div>
 			</dl>
 		</section>
 		@shared.TableSearchFormWithClass(fmt.Sprintf("/groups/%s/members/%s", data.GroupID, data.Member.ID), data.Query, "table.search_placeholder_member_events", "pt")

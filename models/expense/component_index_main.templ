@@ -11,6 +11,15 @@ import (
 
 templ ExpenseTotalsContent(data ExpensesData) {
 	<section class="detail-box pb">
+		{{
+			expenseValue := data.FilteredTotal
+			switch data.Query.Summary {
+			case utils.SummaryModePaid:
+				expenseValue = data.FilteredPaid
+			case utils.SummaryModeUnpaid:
+				expenseValue = data.FilteredUnpaid
+			}
+		}}
 		<dl>
 			<div>
 				<dt>{ ctxi18n.T(ctx, "fields.calculations") }</dt>
@@ -41,32 +50,8 @@ templ ExpenseTotalsContent(data ExpensesData) {
 				</dd>
 			</div>
 		</dl>
-		{{
-			// TODO: Replace this inline initial-visibility workaround with a reusable summary panel helper.
-		}}
-		<dl data-show="$summaryMode === 'all'" style={ func() string {
-			if data.Query.Summary == utils.SummaryModeAll {
-				return ""
-			}
-			return "display: none"
-		}() }>
-			<div><dt>{ ctxi18n.T(ctx, "groups.expenses") }</dt><dd>{ utils.FormatNumberLocalizedWithSign(ctx, data.FilteredTotal, false) }</dd></div>
-		</dl>
-		<dl data-show="$summaryMode === 'paid'" style={ func() string {
-			if data.Query.Summary == utils.SummaryModePaid {
-				return ""
-			}
-			return "display: none"
-		}() }>
-			<div><dt>{ ctxi18n.T(ctx, "groups.expenses") }</dt><dd>{ utils.FormatNumberLocalizedWithSign(ctx, data.FilteredPaid, false) }</dd></div>
-		</dl>
-		<dl data-show="$summaryMode === 'unpaid'" style={ func() string {
-			if data.Query.Summary == utils.SummaryModeUnpaid {
-				return ""
-			}
-			return "display: none"
-		}() }>
-			<div><dt>{ ctxi18n.T(ctx, "groups.expenses") }</dt><dd>{ utils.FormatNumberLocalizedWithSign(ctx, data.FilteredUnpaid, false) }</dd></div>
+		<dl>
+			<div><dt>{ ctxi18n.T(ctx, "groups.expenses") }</dt><dd>{ utils.FormatNumberLocalizedWithSign(ctx, expenseValue, false) }</dd></div>
 		</dl>
 	</section>
 }
