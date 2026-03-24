@@ -752,7 +752,7 @@ func EventIndexMain(data EventsData) templ.Component {
 				if event.Paid == 1 {
 					paidLabel = ctxi18n.T(ctx, "table.paid")
 				}
-				paidAtLabel := "-"
+				paidAtLabel := ""
 				if event.PaidAt.Valid {
 					paidAtLabel = utils.FormatDateLocalized(ctx, utils.FormatDateInput(event.PaidAt.String))
 				}

@@ -589,7 +589,7 @@ func ExpenseIndexMain(data ExpensesData) templ.Component {
 				if expense.Paid == 1 {
 					paidLabel = ctxi18n.T(ctx, "table.paid")
 				}
-				paidAtLabel := "-"
+				paidAtLabel := ""
 				if expense.PaidAt.Valid {
 					paidAtLabel = utils.FormatDateLocalized(ctx, utils.FormatDateInput(expense.PaidAt.String))
 				}

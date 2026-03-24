@@ -32,7 +32,7 @@ templ ExpenseShowMain(data ExpenseData) {
 			{Label: ctxi18n.T(ctx, "fields.date"), Value: utils.FormatDateLocalized(ctx, data.Expense.Date)},
 			{Label: ctxi18n.T(ctx, "fields.paid_at"), Value: func() string {
 				if !data.Expense.PaidAt.Valid {
-					return "-"
+					return ""
 				}
 				return utils.FormatDateLocalized(ctx, utils.FormatDateInput(data.Expense.PaidAt.String))
 			}()},

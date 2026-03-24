@@ -28,7 +28,7 @@ templ EventShowMain(data EventData) {
 			{Label: ctxi18n.T(ctx, "fields.description"), Value: data.Event.Description},
 			{Label: ctxi18n.T(ctx, "fields.paid_at"), Value: func() string {
 				if !data.Event.PaidAt.Valid {
-					return "-"
+					return ""
 				}
 				return utils.FormatDateLocalized(ctx, utils.FormatDateInput(data.Event.PaidAt.String))
 			}()},
@@ -140,7 +140,7 @@ templ EventShowMain(data EventData) {
 						if participant.ParticipantPaid == 1 {
 							paidLabel = ctxi18n.T(ctx, "table.paid")
 						}
-						paidAtLabel := "-"
+						paidAtLabel := ""
 						if participant.ParticipantPaidAt.Valid {
 							paidAtLabel = utils.FormatDateLocalized(ctx, utils.FormatDateInput(participant.ParticipantPaidAt.String))
 						}
@@ -168,9 +168,7 @@ templ EventShowMain(data EventData) {
 						</td>
 						<td>{ paidAtLabel }</td>
 						<td>
-							if noteValue == "" {
-								-
-							} else {
+							if noteValue != "" {
 								<div class="row items-start gap-xs">
 									<button
 										type="button"
