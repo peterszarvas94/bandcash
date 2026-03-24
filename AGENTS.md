@@ -124,6 +124,8 @@ Tips:
 - Use `utils.ValidateWithLocale` for localized validation errors.
 - Prefer `utils.SSEHub.PatchHTML` and `PatchSignals` for partial updates.
 - Use `utils.Notify` for user-visible success/error/warning notifications.
+- For multi-step draft editors, prefer client-owned transient state (`wizard.*`) with server-assisted transitions: send current signals + action, compute next state, patch UI/signals, and persist only on final save.
+- If rows are rendered by server-side templ loops, do not rely on signal-only array mutation for visible row add/remove; trigger a server transition endpoint or use an explicit client-side repeater.
 
 ### Error Handling and Logging
 

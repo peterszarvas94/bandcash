@@ -34,6 +34,15 @@ Use this when implementing interactive UI behaviors with Datastar.
 - Logout action: use Datastar POST (`@post('/auth/logout')`) with bound `csrf` signal.
 - Table search action: use `tableSearchAction('/path', $tableQuery, 50)`.
 - Loading state: `data-indicator:fetching` + `data-attr:disabled="$fetching"`.
+- Multi-step drafts: keep transient edits in signals, and post transition actions (`add/copy/remove`) that return patched UI/signals.
+
+## Server-rendered loop caveat
+
+- If rows/items are rendered by server-side templ loops, mutating signal arrays alone does not create/remove DOM rows.
+- Use one of these approaches:
+  - server-assisted transition endpoint that patches updated HTML, or
+  - explicit client-side repeater rendering for that list.
+- Keep persistence separate: write to DB only on final save when possible.
 
 ## Example: active search
 

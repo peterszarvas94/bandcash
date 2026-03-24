@@ -20,13 +20,19 @@ func eventIndexSignals(csrfToken string, query utils.TableQuery) map[string]any 
 
 func eventShowSignals(data EventData, csrfToken string) map[string]any {
 	wizardRows := make([]map[string]any, 0, len(data.WizardRows))
+	wizardMemberIDs := make(map[string]string, len(data.WizardRows))
 	wizardAmounts := make(map[string]int64, len(data.WizardRows))
 	wizardExpenses := make(map[string]int64, len(data.WizardRows))
 	wizardPaids := make(map[string]bool, len(data.WizardRows))
 	wizardPaidAts := make(map[string]string, len(data.WizardRows))
 	wizardTotal := int64(0)
 	for _, row := range data.WizardRows {
+		rowID := row.RowID
+		if rowID == "" {
+			rowID = row.MemberID
+		}
 		wizardRows = append(wizardRows, map[string]any{
+			"rowId":      rowID,
 			"memberId":   row.MemberID,
 			"memberName": row.MemberName,
 			"included":   row.Included,
@@ -35,30 +41,33 @@ func eventShowSignals(data EventData, csrfToken string) map[string]any {
 			"paid":       row.Paid,
 			"paidAt":     row.PaidAt,
 		})
-		wizardAmounts[row.MemberID] = row.Amount
-		wizardExpenses[row.MemberID] = row.Expense
-		wizardPaids[row.MemberID] = row.Paid
-		wizardPaidAts[row.MemberID] = row.PaidAt
+		wizardMemberIDs[rowID] = row.MemberID
+		wizardAmounts[rowID] = row.Amount
+		wizardExpenses[rowID] = row.Expense
+		wizardPaids[rowID] = row.Paid
+		wizardPaidAts[rowID] = row.PaidAt
 		wizardTotal += row.Amount + row.Expense
 	}
 
 	return map[string]any{
 		"csrf":                  csrfToken,
 		"mode":                  "single",
+		"draftRowsAction":       "",
+		"draftRowsRowId":        "",
 		"tableQuery":            utils.TableQuerySignals(data.Query),
 		"eventFormState":        "",
 		"participantEditorMode": data.EditorMode,
 		"wizard": map[string]any{
-			"error":            data.WizardError,
-			"eventAmount":      data.WizardEventAmount,
-			"selectedMemberId": "",
-			"rows":             wizardRows,
-			"amounts":          wizardAmounts,
-			"expenses":         wizardExpenses,
-			"paids":            wizardPaids,
-			"paidAts":          wizardPaidAts,
-			"total":            wizardTotal,
-			"leftover":         data.WizardEventAmount - wizardTotal,
+			"error":       data.WizardError,
+			"eventAmount": data.WizardEventAmount,
+			"rows":        wizardRows,
+			"memberIds":   wizardMemberIDs,
+			"amounts":     wizardAmounts,
+			"expenses":    wizardExpenses,
+			"paids":       wizardPaids,
+			"paidAts":     wizardPaidAts,
+			"total":       wizardTotal,
+			"leftover":    data.WizardEventAmount - wizardTotal,
 		},
 		"eventFormData": map[string]any{
 			"title":       data.Event.Title,

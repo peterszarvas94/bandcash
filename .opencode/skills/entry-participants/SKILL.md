@@ -28,6 +28,12 @@ Use this when adding participant UI or wiring add/remove participant actions.
 - Use `utils.SSEHub.PatchSignals(c, ...)` for form/UI state updates.
 - Use `utils.SSEHub.Redirect(c, url)` after successful mutations.
 
+## Draft-state pattern (preferred)
+- Keep in-progress participant edits in client signals (`wizard.*`) until final save.
+- For add/copy/remove row actions, treat handlers as transition endpoints: read current signals + action, compute next `wizard.rows`, then patch HTML/signals.
+- Persist participant changes only on final save submit, after full validation.
+- If table rows are server-rendered via templ loop, do not expect signal-only array updates to add/remove visible rows without a server patch.
+
 ## Handler pattern
 - Parse signals first; on parse failure return `c.NoContent(http.StatusBadRequest)`.
 - Validate with `utils.ValidateWithLocale`; return `c.NoContent(http.StatusUnprocessableEntity)` for validation failures.

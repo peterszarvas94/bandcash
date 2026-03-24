@@ -193,6 +193,7 @@ en:
     status: "Status"
   actions:
     edit: "Edit"
+    copy: "Copy"
     delete: "Delete"
     cancel: "Cancel"
     toggle_paid: "Toggle paid status"

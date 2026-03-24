@@ -193,6 +193,7 @@ hu:
     status: "Státusz"
   actions:
     edit: "Szerkesztés"
+    copy: "Másolás"
     delete: "Törlés"
     cancel: "Mégse"
     toggle_paid: "Fizetés állapot váltás"
