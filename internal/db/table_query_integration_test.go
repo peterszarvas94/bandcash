@@ -186,3 +186,265 @@ func TestExpensesFilteredQueries(t *testing.T) {
 		}
 	})
 }
+
+func TestExpensePaidAtCanBeClearedWhenPaid(t *testing.T) {
+	q, cleanup := setupQueryTestDB(t)
+	defer cleanup()
+
+	ctx := context.Background()
+	groupID := seedBaseGroup(t, q)
+
+	created, err := q.CreateExpense(ctx, CreateExpenseParams{
+		ID:          "exp_paid_clear",
+		GroupID:     groupID,
+		Title:       "Paid expense",
+		Description: "",
+		Amount:      100,
+		Date:        "2026-02-01",
+		Paid:        1,
+		PaidAt:      sql.NullString{String: "2026-02-10", Valid: true},
+	})
+	if err != nil {
+		t.Fatalf("create expense: %v", err)
+	}
+	if !created.PaidAt.Valid {
+		t.Fatalf("expected created paid_at to be set")
+	}
+
+	updated, err := q.UpdateExpense(ctx, UpdateExpenseParams{
+		ID:          created.ID,
+		GroupID:     groupID,
+		Title:       created.Title,
+		Description: created.Description,
+		Amount:      created.Amount,
+		Date:        created.Date,
+		Paid:        1,
+		PaidAt:      sql.NullString{String: "", Valid: true},
+	})
+	if err != nil {
+		t.Fatalf("update expense: %v", err)
+	}
+	if updated.PaidAt.Valid {
+		t.Fatalf("expected paid_at to be cleared, got %q", updated.PaidAt.String)
+	}
+}
+
+func TestEventPaidAtCanBeClearedWhenPaid(t *testing.T) {
+	q, cleanup := setupQueryTestDB(t)
+	defer cleanup()
+
+	ctx := context.Background()
+	groupID := seedBaseGroup(t, q)
+
+	created, err := q.CreateEvent(ctx, CreateEventParams{
+		ID:          "evt_paid_clear",
+		GroupID:     groupID,
+		Title:       "Paid event",
+		Time:        "2026-02-01T10:00",
+		Description: "",
+		Amount:      500,
+		Paid:        1,
+		PaidAt:      sql.NullString{String: "2026-02-10", Valid: true},
+	})
+	if err != nil {
+		t.Fatalf("create event: %v", err)
+	}
+	if !created.PaidAt.Valid {
+		t.Fatalf("expected created paid_at to be set")
+	}
+
+	updated, err := q.UpdateEvent(ctx, UpdateEventParams{
+		ID:          created.ID,
+		GroupID:     groupID,
+		Title:       created.Title,
+		Time:        created.Time,
+		Description: created.Description,
+		Amount:      created.Amount,
+		Paid:        1,
+		PaidAt:      sql.NullString{String: "", Valid: true},
+	})
+	if err != nil {
+		t.Fatalf("update event: %v", err)
+	}
+	if updated.PaidAt.Valid {
+		t.Fatalf("expected paid_at to be cleared, got %q", updated.PaidAt.String)
+	}
+}
+
+func TestParticipantNoteRoundTrip(t *testing.T) {
+	q, cleanup := setupQueryTestDB(t)
+	defer cleanup()
+
+	ctx := context.Background()
+	groupID := seedBaseGroup(t, q)
+
+	if _, err := q.CreateMember(ctx, CreateMemberParams{ID: "mem_note", GroupID: groupID, Name: "Note Member", Description: ""}); err != nil {
+		t.Fatalf("create member: %v", err)
+	}
+	if _, err := q.CreateEvent(ctx, CreateEventParams{ID: "evt_note", GroupID: groupID, Title: "Note Event", Time: "2026-03-01T10:00", Description: "", Amount: 250}); err != nil {
+		t.Fatalf("create event: %v", err)
+	}
+
+	if _, err := q.AddParticipant(ctx, AddParticipantParams{
+		GroupID:  groupID,
+		EventID:  "evt_note",
+		MemberID: "mem_note",
+		Amount:   100,
+		Expense:  20,
+		Note:     "original note",
+		Paid:     0,
+	}); err != nil {
+		t.Fatalf("add participant: %v", err)
+	}
+
+	if err := q.UpdateParticipant(ctx, UpdateParticipantParams{
+		GroupID:  groupID,
+		EventID:  "evt_note",
+		MemberID: "mem_note",
+		Amount:   100,
+		Expense:  20,
+		Note:     "updated note text",
+		Paid:     0,
+	}); err != nil {
+		t.Fatalf("update participant: %v", err)
+	}
+
+	list, err := q.ListParticipantsByEvent(ctx, ListParticipantsByEventParams{EventID: "evt_note", GroupID: groupID})
+	if err != nil {
+		t.Fatalf("list participants: %v", err)
+	}
+	if len(list) != 1 {
+		t.Fatalf("expected 1 participant, got %d", len(list))
+	}
+	if list[0].ParticipantNote != "updated note text" {
+		t.Fatalf("expected updated note, got %q", list[0].ParticipantNote)
+	}
+}
+
+func TestCreateExpensePaidWithEmptyPaidAtDefaultsTimestamp(t *testing.T) {
+	q, cleanup := setupQueryTestDB(t)
+	defer cleanup()
+
+	ctx := context.Background()
+	groupID := seedBaseGroup(t, q)
+
+	created, err := q.CreateExpense(ctx, CreateExpenseParams{
+		ID:          "exp_paid_default_ts",
+		GroupID:     groupID,
+		Title:       "Paid with default timestamp",
+		Description: "",
+		Amount:      120,
+		Date:        "2026-02-11",
+		Paid:        1,
+		PaidAt:      sql.NullString{String: "", Valid: true},
+	})
+	if err != nil {
+		t.Fatalf("create expense: %v", err)
+	}
+	if !created.PaidAt.Valid || created.PaidAt.String == "" {
+		t.Fatalf("expected paid_at default timestamp, got %+v", created.PaidAt)
+	}
+}
+
+func TestCreateEventPaidWithEmptyPaidAtDefaultsTimestamp(t *testing.T) {
+	q, cleanup := setupQueryTestDB(t)
+	defer cleanup()
+
+	ctx := context.Background()
+	groupID := seedBaseGroup(t, q)
+
+	created, err := q.CreateEvent(ctx, CreateEventParams{
+		ID:          "evt_paid_default_ts",
+		GroupID:     groupID,
+		Title:       "Paid with default timestamp",
+		Time:        "2026-02-11T10:00",
+		Description: "",
+		Amount:      220,
+		Paid:        1,
+		PaidAt:      sql.NullString{String: "", Valid: true},
+	})
+	if err != nil {
+		t.Fatalf("create event: %v", err)
+	}
+	if !created.PaidAt.Valid || created.PaidAt.String == "" {
+		t.Fatalf("expected paid_at default timestamp, got %+v", created.PaidAt)
+	}
+}
+
+func TestUpdateExpenseUnpaidAlwaysClearsPaidAt(t *testing.T) {
+	q, cleanup := setupQueryTestDB(t)
+	defer cleanup()
+
+	ctx := context.Background()
+	groupID := seedBaseGroup(t, q)
+
+	created, err := q.CreateExpense(ctx, CreateExpenseParams{
+		ID:          "exp_unpaid_clears",
+		GroupID:     groupID,
+		Title:       "Initially paid",
+		Description: "",
+		Amount:      80,
+		Date:        "2026-02-12",
+		Paid:        1,
+		PaidAt:      sql.NullString{String: "2026-02-12", Valid: true},
+	})
+	if err != nil {
+		t.Fatalf("create expense: %v", err)
+	}
+
+	updated, err := q.UpdateExpense(ctx, UpdateExpenseParams{
+		ID:          created.ID,
+		GroupID:     groupID,
+		Title:       created.Title,
+		Description: created.Description,
+		Amount:      created.Amount,
+		Date:        created.Date,
+		Paid:        0,
+		PaidAt:      sql.NullString{String: "2026-12-31", Valid: true},
+	})
+	if err != nil {
+		t.Fatalf("update expense: %v", err)
+	}
+	if updated.PaidAt.Valid {
+		t.Fatalf("expected paid_at to be null when unpaid, got %q", updated.PaidAt.String)
+	}
+}
+
+func TestUpdateEventUnpaidAlwaysClearsPaidAt(t *testing.T) {
+	q, cleanup := setupQueryTestDB(t)
+	defer cleanup()
+
+	ctx := context.Background()
+	groupID := seedBaseGroup(t, q)
+
+	created, err := q.CreateEvent(ctx, CreateEventParams{
+		ID:          "evt_unpaid_clears",
+		GroupID:     groupID,
+		Title:       "Initially paid",
+		Time:        "2026-02-12T10:00",
+		Description: "",
+		Amount:      180,
+		Paid:        1,
+		PaidAt:      sql.NullString{String: "2026-02-12", Valid: true},
+	})
+	if err != nil {
+		t.Fatalf("create event: %v", err)
+	}
+
+	updated, err := q.UpdateEvent(ctx, UpdateEventParams{
+		ID:          created.ID,
+		GroupID:     groupID,
+		Title:       created.Title,
+		Time:        created.Time,
+		Description: created.Description,
+		Amount:      created.Amount,
+		Paid:        0,
+		PaidAt:      sql.NullString{String: "2026-12-31", Valid: true},
+	})
+	if err != nil {
+		t.Fatalf("update event: %v", err)
+	}
+	if updated.PaidAt.Valid {
+		t.Fatalf("expected paid_at to be null when unpaid, got %q", updated.PaidAt.String)
+	}
+}
