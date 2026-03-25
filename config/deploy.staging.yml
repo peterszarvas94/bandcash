@@ -1,4 +1,4 @@
-service: bandcash-staging
+service: bandcash
 image: peterszarvashu/bandcash-staging
 
 servers:
@@ -50,7 +50,7 @@ env:
 
 accessories:
   better-stack:
-    service: better-stack-staging
+    service: better-stack
     image: timberio/vector:0.42.0-debian
     host: bandcash_staging
     cmd: "--config /etc/vector/vector.toml"
