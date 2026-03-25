@@ -6,8 +6,6 @@ import (
 	"encoding/base64"
 )
 
-const CSRFCookieName = "_csrf"
-
 type csrfContextKey struct{}
 
 func GenerateCSRFToken() (string, error) {

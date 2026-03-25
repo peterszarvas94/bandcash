@@ -1,17 +1,19 @@
 package member
 
 import (
+	
 	appi18n "bandcash/internal/i18n"
 	"bandcash/internal/utils"
 	shared "bandcash/models/shared"
 )
 
 templ MemberIndex(data MembersData) {
+	{{ tabID := utils.GenerateID("tab") }}
 	<!doctype html>
 	<html lang={appi18n.LocaleCode(ctx)}>
 		@shared.Head(data.Title)
 		<body>
-			<div data-signals={templ.JSONString(memberIndexSignals(utils.CSRFTokenFromContext(ctx), utils.TableQuerySignals(data.Query)))} data-init="@get('/sse')"></div>
+			<div data-signals={templ.JSONString(memberIndexSignals(tabID, utils.CSRFTokenFromContext(ctx), utils.TableQuerySignals(data.Query)))} data-init="@get('/sse')"></div>
 			@shared.Notifications()
 			@shared.SureDialog()
 			@shared.AppShell("member-index", data.Breadcrumbs, data.UserEmail, shared.GroupPrimaryNav(data.GroupID, "members", data.UserEmail), MemberIndexMain(data), MemberIndexSidebar(data))

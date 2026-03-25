@@ -87,8 +87,12 @@ func Notify(c echo.Context, kind, message string) {
 	if message == "" {
 		return
 	}
-	clientID := EnsureClientID(c)
-	Notifications.Add(clientID, Notification{
+	tabID := TabIDFromContext(c.Request().Context())
+	if tabID == "" {
+		// Fallback: generate a new tab ID for notifications
+		tabID = EnsureTabID(c)
+	}
+	Notifications.Add(tabID, Notification{
 		ID:      GenerateID("ntf"),
 		Kind:    kind,
 		Message: message,

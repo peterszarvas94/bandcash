@@ -48,12 +48,14 @@ func New() *Group {
 }
 
 type createGroupSignals struct {
+	TabID    string `json:"tab_id"`
 	FormData struct {
 		Name string `json:"name" validate:"required,min=1,max=255"`
 	} `json:"formData"`
 }
 
 type addViewerSignals struct {
+	TabID      string           `json:"tab_id"`
 	TableQuery utils.TableQuery `json:"tableQuery"`
 	FormData   struct {
 		Email string `json:"email" validate:"required,email,max=320"`
@@ -62,6 +64,7 @@ type addViewerSignals struct {
 }
 
 type updateGroupSignals struct {
+	TabID      string           `json:"tab_id"`
 	Mode       string           `json:"mode"`
 	TableQuery utils.TableQuery `json:"tableQuery"`
 	FormData   struct {
@@ -70,13 +73,18 @@ type updateGroupSignals struct {
 }
 
 type deleteGroupSignals struct {
+	TabID      string           `json:"tab_id"`
 	Mode       string           `json:"mode"`
 	TableQuery utils.TableQuery `json:"tableQuery"`
 }
 
+type tabSignals struct {
+	TabID string `json:"tab_id"`
+}
+
 // NewGroupPage shows the form to create a new group
 func (g *Group) NewGroupPage(c echo.Context) error {
-	utils.EnsureClientID(c)
+	utils.EnsureTabID(c)
 	userEmail := getUserEmail(c)
 	data := NewGroupPageData{
 		Title:       ctxi18n.T(c.Request().Context(), "groups.new_page_title"),
@@ -99,6 +107,9 @@ func (g *Group) CreateGroup(c echo.Context) error {
 
 	signals := createGroupSignals{}
 	if err := datastar.ReadSignals(c.Request(), &signals); err != nil {
+		return c.NoContent(http.StatusBadRequest)
+	}
+	if !utils.SetTabID(c, signals.TabID) {
 		return c.NoContent(http.StatusBadRequest)
 	}
 	signals.FormData.Name = strings.TrimSpace(signals.FormData.Name)
@@ -139,7 +150,7 @@ func (g *Group) CreateGroup(c echo.Context) error {
 
 // GroupsPage lists groups the user can access
 func (g *Group) GroupsPage(c echo.Context) error {
-	utils.EnsureClientID(c)
+	utils.EnsureTabID(c)
 	userID := middleware.GetUserID(c)
 	userEmail := getUserEmail(c)
 	if userID == "" {
@@ -174,6 +185,9 @@ func (g *Group) UpdateGroup(c echo.Context) error {
 
 	signals := updateGroupSignals{}
 	if err := datastar.ReadSignals(c.Request(), &signals); err != nil {
+		return c.NoContent(http.StatusBadRequest)
+	}
+	if !utils.SetTabID(c, signals.TabID) {
 		return c.NoContent(http.StatusBadRequest)
 	}
 
@@ -225,6 +239,14 @@ func (g *Group) UpdateGroup(c echo.Context) error {
 
 // LeaveGroup removes viewer access for the current user.
 func (g *Group) LeaveGroup(c echo.Context) error {
+	signals := tabSignals{}
+	if err := datastar.ReadSignals(c.Request(), &signals); err != nil {
+		return c.NoContent(http.StatusBadRequest)
+	}
+	if !utils.SetTabID(c, signals.TabID) {
+		return c.NoContent(http.StatusBadRequest)
+	}
+
 	groupID := middleware.GetGroupID(c)
 	userID := middleware.GetUserID(c)
 	var err error
@@ -296,7 +318,10 @@ func (g *Group) DeleteGroup(c echo.Context) error {
 	userID := middleware.GetUserID(c)
 	signals := deleteGroupSignals{}
 	if err := datastar.ReadSignals(c.Request(), &signals); err != nil {
-		signals = deleteGroupSignals{}
+		return c.NoContent(http.StatusBadRequest)
+	}
+	if !utils.SetTabID(c, signals.TabID) {
+		return c.NoContent(http.StatusBadRequest)
 	}
 	var err error
 	if userID == "" {
@@ -367,7 +392,7 @@ func (g *Group) DeleteGroup(c echo.Context) error {
 
 // AccessPage shows unified access table and invite form.
 func (g *Group) AccessPage(c echo.Context) error {
-	utils.EnsureClientID(c)
+	utils.EnsureTabID(c)
 	groupID := middleware.GetGroupID(c)
 	data, err := g.accessPageData(c, groupID, c.QueryParams())
 	if err != nil {
@@ -429,6 +454,9 @@ func (g *Group) AddViewer(c echo.Context) error {
 	groupID := middleware.GetGroupID(c)
 	signals := addViewerSignals{}
 	if err := datastar.ReadSignals(c.Request(), &signals); err != nil {
+		return c.NoContent(http.StatusBadRequest)
+	}
+	if !utils.SetTabID(c, signals.TabID) {
 		return c.NoContent(http.StatusBadRequest)
 	}
 	signals.FormData.Email = strings.ToLower(strings.TrimSpace(signals.FormData.Email))
@@ -518,6 +546,14 @@ func (g *Group) AddViewer(c echo.Context) error {
 
 // RemoveViewer removes user access from the group.
 func (g *Group) RemoveViewer(c echo.Context) error {
+	signals := tabSignals{}
+	if err := datastar.ReadSignals(c.Request(), &signals); err != nil {
+		return c.NoContent(http.StatusBadRequest)
+	}
+	if !utils.SetTabID(c, signals.TabID) {
+		return c.NoContent(http.StatusBadRequest)
+	}
+
 	groupID := middleware.GetGroupID(c)
 	userID := c.Param("userId")
 	if !utils.IsValidID(userID, "usr") {
@@ -550,6 +586,14 @@ func (g *Group) RemoveViewer(c echo.Context) error {
 }
 
 func (g *Group) PromoteViewerToAdmin(c echo.Context) error {
+	signals := tabSignals{}
+	if err := datastar.ReadSignals(c.Request(), &signals); err != nil {
+		return c.NoContent(http.StatusBadRequest)
+	}
+	if !utils.SetTabID(c, signals.TabID) {
+		return c.NoContent(http.StatusBadRequest)
+	}
+
 	groupID := middleware.GetGroupID(c)
 	userID := c.Param("userId")
 	ctx := c.Request().Context()
@@ -600,6 +644,14 @@ func (g *Group) PromoteViewerToAdmin(c echo.Context) error {
 }
 
 func (g *Group) DemoteAdminToViewer(c echo.Context) error {
+	signals := tabSignals{}
+	if err := datastar.ReadSignals(c.Request(), &signals); err != nil {
+		return c.NoContent(http.StatusBadRequest)
+	}
+	if !utils.SetTabID(c, signals.TabID) {
+		return c.NoContent(http.StatusBadRequest)
+	}
+
 	groupID := middleware.GetGroupID(c)
 	userID := c.Param("userId")
 	ctx := c.Request().Context()
@@ -630,6 +682,14 @@ func (g *Group) DemoteAdminToViewer(c echo.Context) error {
 
 // CancelInvite removes a pending invitation from the group.
 func (g *Group) CancelInvite(c echo.Context) error {
+	signals := tabSignals{}
+	if err := datastar.ReadSignals(c.Request(), &signals); err != nil {
+		return c.NoContent(http.StatusBadRequest)
+	}
+	if !utils.SetTabID(c, signals.TabID) {
+		return c.NoContent(http.StatusBadRequest)
+	}
+
 	groupID := middleware.GetGroupID(c)
 	inviteID := c.Param("inviteId")
 	if !utils.IsValidID(inviteID, "mag") {

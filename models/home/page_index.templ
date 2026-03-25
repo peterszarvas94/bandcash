@@ -10,11 +10,12 @@ import (
 )
 
 templ HomeIndex(data HomeData) {
+	{{ tabID := utils.GenerateID("tab") }}
 	<!DOCTYPE html>
 	<html lang={ appi18n.LocaleCode(ctx) }>
 		@shared.Head(data.Title)
 		<body>
-			<div data-signals={ templ.JSONString(map[string]any{"csrf": utils.CSRFTokenFromContext(ctx), "_langFetching": false, "authError": "", "authServerError": "", "authState": "form", "submittedEmail": "", "submittedEmailMasked": "", "resendRemaining": 0, "formData": map[string]any{"email": "", "lang": data.CurrentLang}}) } data-init="@get('/sse')"></div>
+			<div data-signals={ templ.JSONString(map[string]any{"tab_id": tabID, "csrf": utils.CSRFTokenFromContext(ctx), "authError": "", "authServerError": "", "authState": "form", "submittedEmail": "", "submittedEmailMasked": "", "resendRemaining": 0, "formData": map[string]any{"email": ""}}) } data-init="@get('/sse')"></div>
 			@shared.Notifications()
 			<main id="app" class="single-col grid">
 				<figure class="home-hero">
@@ -24,8 +25,16 @@ templ HomeIndex(data HomeData) {
 						<p>{ ctxi18n.T(ctx, "home.tagline") }</p>
 					</figcaption>
 				</figure>
-				<form class="form" data-on:change="@post('/settings/language')" data-indicator:_langFetching>
-					@shared.LanguageSelect("home-lang", data.CurrentLang, "_langFetching")
+				<form class="form" method="get" action="/">
+					<div class="field">
+						<label for="home-lang">{ ctxi18n.T(ctx, "settings.language") }</label>
+						<div class="row row-wrap items-center">
+							<select id="home-lang" name="lang" class="input w-fit" onchange="this.form.submit()">
+								<option value="en" selected?={ data.CurrentLang == "en" }>{ ctxi18n.T(ctx, "language.en") }</option>
+								<option value="hu" selected?={ data.CurrentLang == "hu" }>{ ctxi18n.T(ctx, "language.hu") }</option>
+							</select>
+						</div>
+					</div>
 				</form>
 				<div data-show="$authState === 'form'">
 					<form class="form" data-on:submit="@post('/auth/login')" data-indicator:_fetching>
@@ -66,9 +75,13 @@ templ HomeIndex(data HomeData) {
 						})
 					</div>
 				</div>
-				<div class="row">
+				<div class="row row-wrap text-sm pt">
+					<a class="link" href="/pricing">Pricing</a>
+					<a class="link" href="/terms-and-conditions">Terms and Conditions</a>
+					<a class="link" href="/privacy-policy">Privacy Policy</a>
+					<a class="link" href="/refund-policy">Refund Policy</a>
 					if utils.Env().AppEnv == "development" {
-						<a class="btn" href="/dev">Dev</a>
+						<a class="link" href="/dev">Dev</a>
 					}
 				</div>
 			</main>

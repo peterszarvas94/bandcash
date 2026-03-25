@@ -1,17 +1,19 @@
 package event
 
 import (
+	
 	appi18n "bandcash/internal/i18n"
 	"bandcash/internal/utils"
 	shared "bandcash/models/shared"
 )
 
 templ EventIndex(data EventsData) {
+	{{ tabID := utils.GenerateID("tab") }}
 	<!doctype html>
 	<html lang={appi18n.LocaleCode(ctx)}>
 		@shared.Head(data.Title)
 		<body>
-			<div data-signals={templ.JSONString(eventIndexSignals(utils.CSRFTokenFromContext(ctx), data.Query))} data-init="@get('/sse')"></div>
+			<div data-signals={templ.JSONString(eventIndexSignals(tabID, utils.CSRFTokenFromContext(ctx), data.Query))} data-init="@get('/sse')"></div>
 			@shared.Notifications()
 			@shared.SureDialog()
 			@shared.AppShell("event-index", data.Breadcrumbs, data.UserEmail, shared.GroupPrimaryNav(data.GroupID, "events", data.UserEmail), EventIndexMain(data), EventIndexSidebar(data))

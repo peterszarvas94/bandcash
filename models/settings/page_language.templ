@@ -10,11 +10,15 @@ import (
 )
 
 templ LanguagePage(data SettingsData) {
+	{{ tabID := utils.GenerateID("tab") }}
 	<!DOCTYPE html>
 	<html lang={ appi18n.LocaleCode(ctx) }>
 		@shared.Head(data.Title)
 		<body>
-			<div data-signals={ templ.JSONString(map[string]any{"csrf": utils.CSRFTokenFromContext(ctx), "formData": map[string]any{"lang": data.CurrentLang}}) } data-init="@get('/sse')"></div>
+			<div
+				data-signals={ templ.JSONString(map[string]any{"tab_id": tabID, "csrf": utils.CSRFTokenFromContext(ctx), "formData": map[string]any{"lang": data.CurrentLang}}) }
+				data-init="@get('/sse')"
+			></div>
 			@shared.Notifications()
 			@shared.AppShellMainOnly("public-language", data.Breadcrumbs, data.UserEmail, shared.PublicPrimaryNav("language"), LanguageMain(data))
 		</body>

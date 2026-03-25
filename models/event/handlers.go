@@ -16,6 +16,7 @@ import (
 )
 
 type eventInlineParams struct {
+	TabID         string           `json:"tab_id"`
 	FormData      eventData        `json:"formData"`
 	EventFormData eventData        `json:"eventFormData"`
 	TableQuery    utils.TableQuery `json:"tableQuery"`
@@ -23,6 +24,7 @@ type eventInlineParams struct {
 }
 
 type modeParams struct {
+	TabID      string           `json:"tab_id"`
 	Mode       string           `json:"mode"`
 	TableQuery utils.TableQuery `json:"tableQuery"`
 }
@@ -64,18 +66,21 @@ type participantWizardSignals struct {
 }
 
 type participantBulkParams struct {
+	TabID         string                   `json:"tab_id"`
 	EventFormData eventData                `json:"eventFormData"`
 	Wizard        participantWizardSignals `json:"wizard"`
 	TableQuery    utils.TableQuery         `json:"tableQuery"`
 }
 
 type participantDraftParams struct {
+	TabID         string                   `json:"tab_id"`
 	EventFormData eventData                `json:"eventFormData"`
 	Wizard        participantWizardSignals `json:"wizard"`
 	TableQuery    utils.TableQuery         `json:"tableQuery"`
 }
 
 type participantDraftRowParams struct {
+	TabID           string                   `json:"tab_id"`
 	DraftRowsAction string                   `json:"draftRowsAction"`
 	DraftRowsRowID  string                   `json:"draftRowsRowId"`
 	EventFormData   eventData                `json:"eventFormData"`
@@ -360,12 +365,12 @@ func (e *Events) patchEventShow(c echo.Context, groupID, eventID, userEmail stri
 	}
 
 	utils.SSEHub.PatchHTML(c, html)
-	utils.SSEHub.PatchSignals(c, eventShowSignals(data, utils.CSRFTokenFromContext(c.Request().Context())))
+	utils.SSEHub.PatchSignals(c, eventShowSignals(utils.EnsureTabID(c), data, utils.CSRFTokenFromContext(c.Request().Context())))
 	return nil
 }
 
 func (e *Events) Index(c echo.Context) error {
-	utils.EnsureClientID(c)
+	utils.EnsureTabID(c)
 	groupID := middleware.GetGroupID(c)
 	userEmail := getUserEmail(c)
 	query := utils.ParseTableQuery(c, e)
@@ -383,7 +388,7 @@ func (e *Events) Index(c echo.Context) error {
 }
 
 func (e *Events) Show(c echo.Context) error {
-	utils.EnsureClientID(c)
+	utils.EnsureTabID(c)
 	groupID := middleware.GetGroupID(c)
 	userEmail := getUserEmail(c)
 	query := parseParticipantTableQuery(c, e)
@@ -413,6 +418,9 @@ func (e *Events) Create(c echo.Context) error {
 	err := datastar.ReadSignals(c.Request(), &signals)
 	if err != nil {
 		slog.Info("event.create.table: failed to read signals", "err", err)
+		return c.NoContent(http.StatusBadRequest)
+	}
+	if !utils.SetTabID(c, signals.TabID) {
 		return c.NoContent(http.StatusBadRequest)
 	}
 	signals.FormData.Title = strings.TrimSpace(signals.FormData.Title)
@@ -494,6 +502,9 @@ func (e *Events) Update(c echo.Context) error {
 	err := datastar.ReadSignals(c.Request(), &signals)
 	if err != nil {
 		slog.Info("event.update: failed to read signals", "err", err)
+		return c.NoContent(http.StatusBadRequest)
+	}
+	if !utils.SetTabID(c, signals.TabID) {
 		return c.NoContent(http.StatusBadRequest)
 	}
 	signals.FormData.Title = strings.TrimSpace(signals.FormData.Title)
@@ -614,6 +625,9 @@ func (e *Events) Destroy(c echo.Context) error {
 		slog.Info("event.destroy: failed to read signals", "err", err)
 		return c.NoContent(http.StatusBadRequest)
 	}
+	if !utils.SetTabID(c, signals.TabID) {
+		return c.NoContent(http.StatusBadRequest)
+	}
 
 	err = db.Qry.DeleteEvent(c.Request().Context(), db.DeleteEventParams{
 		ID:      id,
@@ -682,6 +696,9 @@ func (e *Events) ToggleParticipantPaid(c echo.Context) error {
 		slog.Info("participant.togglePaid: failed to read signals", "err", err)
 		return c.NoContent(http.StatusBadRequest)
 	}
+	if !utils.SetTabID(c, signals.TabID) {
+		return c.NoContent(http.StatusBadRequest)
+	}
 
 	result, err := db.Qry.ToggleParticipantPaid(c.Request().Context(), db.ToggleParticipantPaidParams{
 		EventID:  eventID,
@@ -732,9 +749,13 @@ func (e *Events) OpenParticipantsDraft(c echo.Context) error {
 
 	query := parseParticipantTableQuery(c, e)
 	var signals modeParams
-	if err := datastar.ReadSignals(c.Request(), &signals); err == nil {
-		query = utils.NormalizeTableQuery(signals.TableQuery, e.ParticipantTableQuerySpec())
+	if err := datastar.ReadSignals(c.Request(), &signals); err != nil {
+		return c.NoContent(http.StatusBadRequest)
 	}
+	if !utils.SetTabID(c, signals.TabID) {
+		return c.NoContent(http.StatusBadRequest)
+	}
+	query = utils.NormalizeTableQuery(signals.TableQuery, e.ParticipantTableQuerySpec())
 
 	if err := e.patchEventShow(c, groupID, eventID, userEmail, query, "edit", eventData{}, 0, nil, nil, nil, nil, nil, nil, nil, ""); err != nil {
 		slog.Error("participant.draft.open: failed to render", "err", err)
@@ -756,9 +777,13 @@ func (e *Events) CancelParticipantsDraft(c echo.Context) error {
 
 	query := parseParticipantTableQuery(c, e)
 	var signals participantDraftParams
-	if err := datastar.ReadSignals(c.Request(), &signals); err == nil {
-		query = utils.NormalizeTableQuery(signals.TableQuery, e.ParticipantTableQuerySpec())
+	if err := datastar.ReadSignals(c.Request(), &signals); err != nil {
+		return c.NoContent(http.StatusBadRequest)
 	}
+	if !utils.SetTabID(c, signals.TabID) {
+		return c.NoContent(http.StatusBadRequest)
+	}
+	query = utils.NormalizeTableQuery(signals.TableQuery, e.ParticipantTableQuerySpec())
 
 	if err := e.patchEventShow(c, groupID, eventID, userEmail, query, "read", eventData{}, 0, nil, nil, nil, nil, nil, nil, nil, ""); err != nil {
 		slog.Error("participant.draft.cancel: failed to render", "err", err)
@@ -781,6 +806,9 @@ func (e *Events) UpdateParticipantsDraftRows(c echo.Context) error {
 	var signals participantDraftRowParams
 	if err := datastar.ReadSignals(c.Request(), &signals); err != nil {
 		slog.Info("participant.draft.rows: failed to read signals", "err", err)
+		return c.NoContent(http.StatusBadRequest)
+	}
+	if !utils.SetTabID(c, signals.TabID) {
 		return c.NoContent(http.StatusBadRequest)
 	}
 
@@ -924,6 +952,9 @@ func (e *Events) SaveParticipantsBulk(c echo.Context) error {
 	var signals participantBulkParams
 	if err := datastar.ReadSignals(c.Request(), &signals); err != nil {
 		slog.Info("participant.bulk: failed to read signals", "err", err)
+		return c.NoContent(http.StatusBadRequest)
+	}
+	if !utils.SetTabID(c, signals.TabID) {
 		return c.NoContent(http.StatusBadRequest)
 	}
 
@@ -1165,6 +1196,9 @@ func (e *Events) TogglePaid(c echo.Context) error {
 	err := datastar.ReadSignals(c.Request(), &signals)
 	if err != nil {
 		slog.Info("event.togglePaid: failed to read signals", "err", err)
+		return c.NoContent(http.StatusBadRequest)
+	}
+	if !utils.SetTabID(c, signals.TabID) {
 		return c.NoContent(http.StatusBadRequest)
 	}
 

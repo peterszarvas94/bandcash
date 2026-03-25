@@ -2,8 +2,9 @@ package expense
 
 import "bandcash/internal/utils"
 
-func expenseIndexSignals(csrfToken string, query utils.TableQuery) map[string]any {
+func expenseIndexSignals(tabID, csrfToken string, query utils.TableQuery) map[string]any {
 	return map[string]any{
+		"tab_id":          tabID,
 		"csrf":            csrfToken,
 		"tableQuery":      utils.TableQuerySignals(query),
 		"dateRange":       map[string]any{"from": query.From, "to": query.To},
@@ -18,8 +19,9 @@ func expenseIndexSignals(csrfToken string, query utils.TableQuery) map[string]an
 	}
 }
 
-func expenseShowSignals(data ExpenseData, csrfToken string) map[string]any {
+func expenseShowSignals(tabID string, data ExpenseData, csrfToken string) map[string]any {
 	return map[string]any{
+		"tab_id":    tabID,
 		"csrf":      csrfToken,
 		"mode":      "single",
 		"formState": "",

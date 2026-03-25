@@ -330,6 +330,37 @@ func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (User, e
 	return i, err
 }
 
+const createUserSession = `-- name: CreateUserSession :one
+INSERT INTO user_sessions (id, user_id, token, expires_at)
+VALUES (?, ?, ?, ?)
+RETURNING id, user_id, token, created_at, expires_at
+`
+
+type CreateUserSessionParams struct {
+	ID        string    `json:"id"`
+	UserID    string    `json:"user_id"`
+	Token     string    `json:"token"`
+	ExpiresAt time.Time `json:"expires_at"`
+}
+
+func (q *Queries) CreateUserSession(ctx context.Context, arg CreateUserSessionParams) (UserSession, error) {
+	row := q.db.QueryRowContext(ctx, createUserSession,
+		arg.ID,
+		arg.UserID,
+		arg.Token,
+		arg.ExpiresAt,
+	)
+	var i UserSession
+	err := row.Scan(
+		&i.ID,
+		&i.UserID,
+		&i.Token,
+		&i.CreatedAt,
+		&i.ExpiresAt,
+	)
+	return i, err
+}
+
 const deleteExpiredMagicLinks = `-- name: DeleteExpiredMagicLinks :exec
 DELETE FROM magic_links
 WHERE action != 'invite'
@@ -339,6 +370,16 @@ WHERE action != 'invite'
 
 func (q *Queries) DeleteExpiredMagicLinks(ctx context.Context) error {
 	_, err := q.db.ExecContext(ctx, deleteExpiredMagicLinks)
+	return err
+}
+
+const deleteExpiredUserSessions = `-- name: DeleteExpiredUserSessions :exec
+DELETE FROM user_sessions
+WHERE expires_at < CURRENT_TIMESTAMP
+`
+
+func (q *Queries) DeleteExpiredUserSessions(ctx context.Context) error {
+	_, err := q.db.ExecContext(ctx, deleteExpiredUserSessions)
 	return err
 }
 
@@ -367,6 +408,36 @@ type DeleteGroupPendingInviteParams struct {
 
 func (q *Queries) DeleteGroupPendingInvite(ctx context.Context, arg DeleteGroupPendingInviteParams) error {
 	_, err := q.db.ExecContext(ctx, deleteGroupPendingInvite, arg.ID, arg.GroupID)
+	return err
+}
+
+const deleteOtherUserSessions = `-- name: DeleteOtherUserSessions :exec
+DELETE FROM user_sessions
+WHERE user_id = ? AND id != ?
+`
+
+type DeleteOtherUserSessionsParams struct {
+	UserID string `json:"user_id"`
+	ID     string `json:"id"`
+}
+
+func (q *Queries) DeleteOtherUserSessions(ctx context.Context, arg DeleteOtherUserSessionsParams) error {
+	_, err := q.db.ExecContext(ctx, deleteOtherUserSessions, arg.UserID, arg.ID)
+	return err
+}
+
+const deleteUserSession = `-- name: DeleteUserSession :exec
+DELETE FROM user_sessions
+WHERE id = ? AND user_id = ?
+`
+
+type DeleteUserSessionParams struct {
+	ID     string `json:"id"`
+	UserID string `json:"user_id"`
+}
+
+func (q *Queries) DeleteUserSession(ctx context.Context, arg DeleteUserSessionParams) error {
+	_, err := q.db.ExecContext(ctx, deleteUserSession, arg.ID, arg.UserID)
 	return err
 }
 
@@ -501,6 +572,24 @@ func (q *Queries) GetUserByID(ctx context.Context, id string) (User, error) {
 		&i.Email,
 		&i.CreatedAt,
 		&i.PreferredLang,
+	)
+	return i, err
+}
+
+const getUserSessionByToken = `-- name: GetUserSessionByToken :one
+SELECT id, user_id, token, created_at, expires_at FROM user_sessions
+WHERE token = ? AND expires_at > CURRENT_TIMESTAMP
+`
+
+func (q *Queries) GetUserSessionByToken(ctx context.Context, token string) (UserSession, error) {
+	row := q.db.QueryRowContext(ctx, getUserSessionByToken, token)
+	var i UserSession
+	err := row.Scan(
+		&i.ID,
+		&i.UserID,
+		&i.Token,
+		&i.CreatedAt,
+		&i.ExpiresAt,
 	)
 	return i, err
 }
@@ -1815,6 +1904,41 @@ func (q *Queries) ListUserGroupsByNameDescFiltered(ctx context.Context, arg List
 			&i.AdminUserID,
 			&i.CreatedAt,
 			&i.Role,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const listUserSessions = `-- name: ListUserSessions :many
+SELECT id, user_id, token, created_at, expires_at FROM user_sessions
+WHERE user_id = ? AND expires_at > CURRENT_TIMESTAMP
+ORDER BY created_at DESC
+`
+
+func (q *Queries) ListUserSessions(ctx context.Context, userID string) ([]UserSession, error) {
+	rows, err := q.db.QueryContext(ctx, listUserSessions, userID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []UserSession{}
+	for rows.Next() {
+		var i UserSession
+		if err := rows.Scan(
+			&i.ID,
+			&i.UserID,
+			&i.Token,
+			&i.CreatedAt,
+			&i.ExpiresAt,
 		); err != nil {
 			return nil, err
 		}

@@ -12,11 +12,12 @@ import (
 )
 
 templ GroupPage(data GroupPageData) {
+	{{ tabID := utils.GenerateID("tab") }}
 	<!DOCTYPE html>
 	<html lang={ appi18n.LocaleCode(ctx) }>
 		@shared.Head(data.Title)
 		<body>
-			<div data-signals={ templ.JSONString(map[string]any{"csrf": utils.CSRFTokenFromContext(ctx), "mode": "single", "formState": "", "eventFormState": "", "summaryMode": "all", "formData": map[string]any{"name": data.Group.Name}, "errors": map[string]any{"name": ""}}) } data-init="@get('/sse')"></div>
+			<div data-signals={ templ.JSONString(map[string]any{"tab_id": tabID, "csrf": utils.CSRFTokenFromContext(ctx), "mode": "single", "formState": "", "eventFormState": "", "summaryMode": "all", "sidebarLoadingAction": "", "formData": map[string]any{"name": data.Group.Name}, "errors": map[string]any{"name": ""}}) } data-init="@get('/sse')"></div>
 			@shared.Notifications()
 			@shared.SureDialog()
 			@shared.AppShell("group-show", data.Breadcrumbs, data.UserEmail, shared.GroupPrimaryNav(data.Group.ID, "overview", data.UserEmail), GroupMain(data), GroupSidebar(data))
@@ -132,7 +133,7 @@ templ GroupSidebar(data GroupPageData) {
 		submitExpr := fmt.Sprintf("@put('/groups/%s')", data.Group.ID)
 		cancelExpr := "$formState = ''; $formData = {name: " + utils.JSONString(data.Group.Name) + "}; $errors = {name: ''}"
 	}}
-	<div data-signals={ templ.JSONString(map[string]any{"sidebarLoadingAction": ""}) }>
+	<div>
 		if data.IsAdmin {
 			<div data-show="$formState === 'edit'" style="display: none" class="pb">
 				<form class="form" data-on:submit={ submitExpr } data-indicator:_fetching>

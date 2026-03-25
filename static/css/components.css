@@ -777,6 +777,67 @@
     }
   }
 
+  .legal-banner {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    gap: var(--space);
+    align-items: start;
+    border: var(--border) solid color-mix(in srgb, var(--error-color) 60%, var(--border-color) 40%);
+    padding: calc(var(--space) * 1.25);
+    margin-bottom: calc(var(--space) * 1.5);
+    background: color-mix(in srgb, var(--page-bg) 90%, var(--error-color) 10%);
+
+    p {
+      color: color-mix(in srgb, var(--text-color) 88%, var(--error-color) 12%);
+    }
+  }
+
+  .legal-banner-warning {
+    width: 1.5rem;
+    height: 1.5rem;
+    color: var(--error-color);
+  }
+
+  .pricing-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--space);
+
+    @media (max-width: 780px) {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  .pricing-card {
+    display: grid;
+    gap: var(--space);
+    border: var(--border) solid var(--border-color);
+    background: color-mix(in srgb, var(--page-bg) 96%, var(--text-color) 4%);
+    padding: calc(var(--space) * 1.5);
+  }
+
+  .pricing-card-featured {
+    border-color: color-mix(in srgb, var(--link-color) 58%, var(--border-color) 42%);
+    background: color-mix(in srgb, var(--page-bg) 92%, var(--link-color) 8%);
+  }
+
+  .pricing-card-header {
+    display: grid;
+    gap: calc(var(--space) * 0.5);
+  }
+
+  .pricing-price {
+    font-size: 1.25rem;
+    font-weight: 600;
+  }
+
+  .pricing-features {
+    margin: 0;
+    padding-left: calc(var(--space) * 2);
+    display: grid;
+    gap: calc(var(--space) * 0.5);
+  }
+
   .home-hero {
     position: relative;
     margin: 0;
@@ -1163,6 +1224,10 @@
     .app-nav-secondary {
       padding-top: 0;
       border-top: 0;
+    }
+
+    .app-nav-footer {
+      margin-top: auto;
     }
 
     .app-nav-link {

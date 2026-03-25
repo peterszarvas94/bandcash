@@ -7,6 +7,8 @@ import (
 	"log/slog"
 
 	"github.com/labstack/echo/v4"
+
+	"bandcash/internal/utils"
 )
 
 type contextKey string
@@ -36,7 +38,7 @@ func GetRequestID(ctx context.Context) string {
 	return ""
 }
 
-// Logger returns a slog logger with request_id and client_id if available
+// Logger returns a slog logger with request_id and tab_id if available
 func Logger(c echo.Context) *slog.Logger {
 	attrs := []any{}
 
@@ -44,8 +46,8 @@ func Logger(c echo.Context) *slog.Logger {
 		attrs = append(attrs, "request_id", id)
 	}
 
-	if cookie, err := c.Cookie("client_id"); err == nil {
-		attrs = append(attrs, "client_id", cookie.Value)
+	if tabID := utils.TabIDFromContext(c.Request().Context()); tabID != "" {
+		attrs = append(attrs, "tab_id", tabID)
 	}
 
 	return slog.With(attrs...)

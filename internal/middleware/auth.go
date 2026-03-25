@@ -169,21 +169,33 @@ func IsSuperadmin(c echo.Context) bool {
 }
 
 func getSessionUserID(c echo.Context) string {
-	cookie, err := c.Cookie("session")
+	cookie, err := c.Cookie(utils.SessionCookieName)
 	if err != nil {
 		return ""
 	}
-	return cookie.Value
+
+	session, err := db.Qry.GetUserSessionByToken(c.Request().Context(), cookie.Value)
+	if err != nil {
+		return ""
+	}
+
+	return session.UserID
 }
 
 func clearSession(c echo.Context) {
-	c.SetCookie(&http.Cookie{
-		Name:     "session",
-		Value:    "",
-		Path:     "/",
-		MaxAge:   -1,
-		HttpOnly: true,
-		Secure:   true,
-		SameSite: http.SameSiteStrictMode,
-	})
+	cookie, err := c.Cookie(utils.SessionCookieName)
+	if err == nil {
+		// Try to get session and delete it from DB
+		session, err := db.Qry.GetUserSessionByToken(c.Request().Context(), cookie.Value)
+		if err == nil {
+			userID := GetUserID(c)
+			if userID != "" {
+				_ = db.Qry.DeleteUserSession(c.Request().Context(), db.DeleteUserSessionParams{
+					ID:     session.ID,
+					UserID: userID,
+				})
+			}
+		}
+	}
+	utils.ClearSessionCookie(c)
 }

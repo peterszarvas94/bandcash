@@ -1,0 +1,76 @@
+package settings
+
+import (
+	"fmt"
+
+	ctxi18n "github.com/invopop/ctxi18n/i18n"
+
+	appi18n "bandcash/internal/i18n"
+	"bandcash/internal/utils"
+	shared "bandcash/models/shared"
+	icons "bandcash/models/shared/icons"
+)
+
+templ SessionsPage(data SessionsData) {
+	{{ tabID := utils.GenerateID("tab") }}
+	<!DOCTYPE html>
+	<html lang={ appi18n.LocaleCode(ctx) }>
+		@shared.Head(data.Title)
+		<body>
+			<div data-signals={ templ.JSONString(map[string]any{"tab_id": tabID, "csrf": utils.CSRFTokenFromContext(ctx)}) } data-init="@get('/sse')"></div>
+			@shared.Notifications()
+			@shared.AppShellMainOnly("settings-sessions", data.Breadcrumbs, data.UserEmail, shared.AppPrimaryNav("settings", data.UserEmail), SessionsMain(data))
+		</body>
+	</html>
+}
+
+templ SessionsMain(data SessionsData) {
+	<section class="pb">
+		<header class="row items-center justify-between pb">
+			<h1>{ ctxi18n.T(ctx, "settings.sessions") }</h1>
+			if len(data.Sessions) > 1 {
+				@shared.LoadingActionButton(shared.LoadingActionButtonProps{
+					ClassName:    "btn btn-danger",
+					OnClick:      "@post('/settings/sessions/logout-all-others')",
+					DisabledExpr: "$_fetching",
+					Label:        ctxi18n.T(ctx, "settings.logout_all_others"),
+					IconName:      icons.IconLogOut,
+				})
+			}
+		</header>
+		
+		if len(data.Sessions) == 0 {
+			<p>{ ctxi18n.T(ctx, "settings.no_sessions") }</p>
+		} else {
+			<ul class="stack">
+				for _, session := range data.Sessions {
+					<li class="row items-center justify-between card">
+						<div>
+							<p class="font-medium">
+							if session.ID == data.CurrentSessionID {
+								{ ctxi18n.T(ctx, "settings.current_session") }
+							} else if session.CreatedAt.Valid {
+									{ ctxi18n.T(ctx, "settings.session_from") } { session.CreatedAt.Time.Format("2006-01-02 15:04") }
+								} else {
+									{ ctxi18n.T(ctx, "settings.session_from") } -
+								}
+							</p>
+							<p class="text-sm color-muted">
+								{ ctxi18n.T(ctx, "settings.expires") }: { session.ExpiresAt.Format("2006-01-02") }
+							</p>
+						</div>
+						if session.ID != data.CurrentSessionID {
+							@shared.LoadingActionButton(shared.LoadingActionButtonProps{
+								ClassName:    "btn btn-sm btn-danger",
+								OnClick:      fmt.Sprintf("@post('/settings/sessions/%s/logout')", session.ID),
+								DisabledExpr: "$_fetching",
+								Label:        ctxi18n.T(ctx, "auth.logout"),
+								IconName:      icons.IconLogOut,
+							})
+						}
+					</li>
+				}
+			</ul>
+		}
+	</section>
+}

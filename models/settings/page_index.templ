@@ -1,6 +1,7 @@
 package settings
 
 import (
+	
 	ctxi18n "github.com/invopop/ctxi18n/i18n"
 
 	appi18n "bandcash/internal/i18n"
@@ -10,11 +11,12 @@ import (
 )
 
 templ SettingsIndex(data SettingsData) {
+	{{ tabID := utils.GenerateID("tab") }}
 	<!DOCTYPE html>
 	<html lang={ appi18n.LocaleCode(ctx) }>
 		@shared.Head(data.Title)
 		<body>
-			<div data-signals={ templ.JSONString(map[string]any{"csrf": utils.CSRFTokenFromContext(ctx), "formData": map[string]any{"lang": data.CurrentLang}}) } data-init="@get('/sse')"></div>
+			<div data-signals={ templ.JSONString(map[string]any{"tab_id": tabID, "csrf": utils.CSRFTokenFromContext(ctx), "formData": map[string]any{"lang": data.CurrentLang}}) } data-init="@get('/sse')"></div>
 			@shared.Notifications()
 			@shared.AppShellMainOnly("settings-index", data.Breadcrumbs, data.UserEmail, shared.AppPrimaryNav("settings", data.UserEmail), SettingsMain(data))
 		</body>

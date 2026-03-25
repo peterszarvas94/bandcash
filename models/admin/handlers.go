@@ -9,6 +9,7 @@ import (
 
 	ctxi18n "github.com/invopop/ctxi18n/i18n"
 	"github.com/labstack/echo/v4"
+	"github.com/starfederation/datastar-go/datastar"
 
 	"bandcash/internal/db"
 	"bandcash/internal/middleware"
@@ -17,6 +18,10 @@ import (
 )
 
 type Admin struct{}
+
+type adminTabSignals struct {
+	TabID string `json:"tab_id"`
+}
 
 func New() *Admin {
 	return &Admin{}
@@ -43,7 +48,7 @@ func (a *Admin) Dashboard(c echo.Context) error {
 }
 
 func (a *Admin) renderDashboard(c echo.Context, tab string) error {
-	utils.EnsureClientID(c)
+	utils.EnsureTabID(c)
 
 	userID := middleware.GetUserID(c)
 	user, err := db.Qry.GetUserByID(c.Request().Context(), userID)
@@ -369,6 +374,14 @@ func parseIntParam(c echo.Context, name string, defaultVal int) int {
 }
 
 func (a *Admin) UpdateSignupFlag(c echo.Context) error {
+	signals := adminTabSignals{}
+	if err := datastar.ReadSignals(c.Request(), &signals); err != nil {
+		return c.NoContent(http.StatusBadRequest)
+	}
+	if !utils.SetTabID(c, signals.TabID) {
+		return c.NoContent(http.StatusBadRequest)
+	}
+
 	var next bool
 	switch c.QueryParam("value") {
 	case "1", "true", "on":
@@ -414,6 +427,14 @@ func (a *Admin) UnbanUser(c echo.Context) error {
 }
 
 func (a *Admin) setUserBanState(c echo.Context, banned bool) error {
+	signals := adminTabSignals{}
+	if err := datastar.ReadSignals(c.Request(), &signals); err != nil {
+		return c.NoContent(http.StatusBadRequest)
+	}
+	if !utils.SetTabID(c, signals.TabID) {
+		return c.NoContent(http.StatusBadRequest)
+	}
+
 	userID := c.Param("userId")
 	if !utils.IsValidID(userID, "usr") {
 		return c.NoContent(http.StatusBadRequest)

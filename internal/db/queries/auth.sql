@@ -705,3 +705,29 @@ WHERE gr.user_id = sqlc.arg(user_id)
   )
 ORDER BY admin_email COLLATE NOCASE DESC, g.name COLLATE NOCASE ASC
 LIMIT sqlc.arg(limit) OFFSET sqlc.arg(offset);
+
+-- name: CreateUserSession :one
+INSERT INTO user_sessions (id, user_id, token, expires_at)
+VALUES (?, ?, ?, ?)
+RETURNING *;
+
+-- name: GetUserSessionByToken :one
+SELECT * FROM user_sessions
+WHERE token = ? AND expires_at > CURRENT_TIMESTAMP;
+
+-- name: ListUserSessions :many
+SELECT * FROM user_sessions
+WHERE user_id = ? AND expires_at > CURRENT_TIMESTAMP
+ORDER BY created_at DESC;
+
+-- name: DeleteUserSession :exec
+DELETE FROM user_sessions
+WHERE id = ? AND user_id = ?;
+
+-- name: DeleteOtherUserSessions :exec
+DELETE FROM user_sessions
+WHERE user_id = ? AND id != ?;
+
+-- name: DeleteExpiredUserSessions :exec
+DELETE FROM user_sessions
+WHERE expires_at < CURRENT_TIMESTAMP;

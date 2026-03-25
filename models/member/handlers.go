@@ -20,12 +20,14 @@ type memberParams struct {
 }
 
 type memberTableParams struct {
+	TabID      string           `json:"tab_id"`
 	FormData   memberParams     `json:"formData"`
 	TableQuery utils.TableQuery `json:"tableQuery"`
 	Mode       string           `json:"mode"`
 }
 
 type modeParams struct {
+	TabID      string           `json:"tab_id"`
 	Mode       string           `json:"mode"`
 	TableQuery utils.TableQuery `json:"tableQuery"`
 }
@@ -62,7 +64,7 @@ func applyMemberShowTableByRole(data *MemberData, isAdmin bool) {
 }
 
 func (p *Members) Index(c echo.Context) error {
-	utils.EnsureClientID(c)
+	utils.EnsureTabID(c)
 	groupID := middleware.GetGroupID(c)
 	userEmail := getUserEmail(c)
 	query := utils.ParseTableQuery(c, p)
@@ -88,7 +90,7 @@ func (s staticTableQueryable) TableQuerySpec() utils.TableQuerySpec {
 }
 
 func (p *Members) Show(c echo.Context) error {
-	utils.EnsureClientID(c)
+	utils.EnsureTabID(c)
 	groupID := middleware.GetGroupID(c)
 	userEmail := getUserEmail(c)
 	query := utils.ParseTableQuery(c, staticTableQueryable{spec: p.MemberEventsTableQuerySpec()})
@@ -118,6 +120,9 @@ func (p *Members) Create(c echo.Context) error {
 	err := datastar.ReadSignals(c.Request(), &signals)
 	if err != nil {
 		slog.Info("member.create.table: failed to read signals", "err", err)
+		return c.NoContent(http.StatusBadRequest)
+	}
+	if !utils.SetTabID(c, signals.TabID) {
 		return c.NoContent(http.StatusBadRequest)
 	}
 	signals.FormData.Name = strings.TrimSpace(signals.FormData.Name)
@@ -178,6 +183,9 @@ func (p *Members) Update(c echo.Context) error {
 	err := datastar.ReadSignals(c.Request(), &signals)
 	if err != nil {
 		slog.Info("member.update: failed to read signals", "err", err)
+		return c.NoContent(http.StatusBadRequest)
+	}
+	if !utils.SetTabID(c, signals.TabID) {
 		return c.NoContent(http.StatusBadRequest)
 	}
 	signals.FormData.Name = strings.TrimSpace(signals.FormData.Name)
@@ -269,6 +277,9 @@ func (p *Members) Destroy(c echo.Context) error {
 		slog.Info("member.destroy: failed to read signals", "err", err)
 		return c.NoContent(http.StatusBadRequest)
 	}
+	if !utils.SetTabID(c, signals.TabID) {
+		return c.NoContent(http.StatusBadRequest)
+	}
 
 	err = db.Qry.DeleteMember(c.Request().Context(), db.DeleteMemberParams{
 		ID:      id,
@@ -331,6 +342,9 @@ func (p *Members) ToggleParticipantPaid(c echo.Context) error {
 	err := datastar.ReadSignals(c.Request(), &signals)
 	if err != nil {
 		slog.Info("member.toggleParticipantPaid: failed to read signals", "err", err)
+		return c.NoContent(http.StatusBadRequest)
+	}
+	if !utils.SetTabID(c, signals.TabID) {
 		return c.NoContent(http.StatusBadRequest)
 	}
 

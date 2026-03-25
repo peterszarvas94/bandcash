@@ -55,12 +55,12 @@ func (h *Hub) GetClient(id string) (*Client, error) {
 }
 
 func (h *Hub) PatchHTML(c echo.Context, html string) error {
-	clientID, err := GetClientID(c)
-	if err != nil {
-		return err
+	tabID := TabIDFromContext(c.Request().Context())
+	if tabID == "" {
+		return errors.New("no tab_id in context")
 	}
 
-	client, err := h.GetClient(clientID)
+	client, err := h.GetClient(tabID)
 	if err != nil {
 		return err
 	}
@@ -69,12 +69,12 @@ func (h *Hub) PatchHTML(c echo.Context, html string) error {
 }
 
 func (h *Hub) PatchSignals(c echo.Context, signals any) error {
-	clientID, err := GetClientID(c)
-	if err != nil {
-		return err
+	tabID := TabIDFromContext(c.Request().Context())
+	if tabID == "" {
+		return errors.New("no tab_id in context")
 	}
 
-	client, err := h.GetClient(clientID)
+	client, err := h.GetClient(tabID)
 	if err != nil {
 		return err
 	}
@@ -82,12 +82,12 @@ func (h *Hub) PatchSignals(c echo.Context, signals any) error {
 }
 
 func (h *Hub) Redirect(c echo.Context, url string) error {
-	clientID, err := GetClientID(c)
-	if err != nil {
-		return err
+	tabID := TabIDFromContext(c.Request().Context())
+	if tabID == "" {
+		return errors.New("no tab_id in context")
 	}
 
-	client, err := h.GetClient(clientID)
+	client, err := h.GetClient(tabID)
 	if err != nil {
 		return err
 	}
@@ -95,12 +95,12 @@ func (h *Hub) Redirect(c echo.Context, url string) error {
 }
 
 func (h *Hub) ExecuteScript(c echo.Context, script string) error {
-	clientID, err := GetClientID(c)
-	if err != nil {
-		return err
+	tabID := TabIDFromContext(c.Request().Context())
+	if tabID == "" {
+		return errors.New("no tab_id in context")
 	}
 
-	client, err := h.GetClient(clientID)
+	client, err := h.GetClient(tabID)
 	if err != nil {
 		return err
 	}

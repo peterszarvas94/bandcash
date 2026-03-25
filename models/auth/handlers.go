@@ -156,6 +156,7 @@ func requestIP(c echo.Context) string {
 var authLoginThrottle = newLoginThrottle()
 
 type authSignals struct {
+	TabID    string `json:"tab_id"`
 	FormData struct {
 		Email string `json:"email" validate:"required,email,max=320"`
 	} `json:"formData"`
@@ -224,6 +225,9 @@ func (a *Auth) LoginPage(c echo.Context) error {
 func (a *Auth) LoginRequest(c echo.Context) error {
 	signals := authSignals{}
 	if err := datastar.ReadSignals(c.Request(), &signals); err != nil {
+		return c.NoContent(http.StatusBadRequest)
+	}
+	if !utils.SetTabID(c, signals.TabID) {
 		return c.NoContent(http.StatusBadRequest)
 	}
 	signals.FormData.Email = strings.ToLower(strings.TrimSpace(signals.FormData.Email))
@@ -384,17 +388,19 @@ func (a *Auth) VerifyMagicLink(c echo.Context) error {
 		return c.Redirect(http.StatusFound, "/auth/login")
 	}
 
-	// Create session cookie
-	env := utils.Env()
-	c.SetCookie(&http.Cookie{
-		Name:     "session",
-		Value:    user.ID,
-		Path:     "/",
-		MaxAge:   86400 * 30, // 30 days
-		HttpOnly: true,
-		Secure:   env.AppEnv == "production",
-		SameSite: http.SameSiteLaxMode,
+	// Create session
+	expiresAt := time.Now().Add(30 * 24 * time.Hour)
+	session, err := db.Qry.CreateUserSession(c.Request().Context(), db.CreateUserSessionParams{
+		ID:        utils.GenerateID("ses"),
+		UserID:    user.ID,
+		Token:     utils.GenerateID("tok"),
+		ExpiresAt: expiresAt,
 	})
+	if err != nil {
+		slog.Error("auth.verify: failed to create session", "user_id", user.ID, "err", err)
+		return a.renderVerifyLinkError(c, http.StatusInternalServerError)
+	}
+	utils.SetSessionCookie(c, session.Token)
 
 	// If invite, add viewer access
 	if magicLink.Action == "invite" {
@@ -479,15 +485,36 @@ func (a *Auth) VerifyMagicLink(c echo.Context) error {
 
 // Logout clears the session
 func (a *Auth) Logout(c echo.Context) error {
-	c.SetCookie(&http.Cookie{
-		Name:     "session",
-		Value:    "",
-		Path:     "/",
-		MaxAge:   -1,
-		HttpOnly: true,
-	})
+	type logoutSignals struct {
+		TabID string `json:"tab_id"`
+	}
 
-	err := utils.SSEHub.Redirect(c, "/")
+	signals := logoutSignals{}
+	if err := datastar.ReadSignals(c.Request(), &signals); err != nil {
+		return c.NoContent(http.StatusBadRequest)
+	}
+	if !utils.SetTabID(c, signals.TabID) {
+		return c.NoContent(http.StatusBadRequest)
+	}
+
+	// Delete session from DB
+	cookie, err := c.Cookie(utils.SessionCookieName)
+	if err == nil {
+		session, err := db.Qry.GetUserSessionByToken(c.Request().Context(), cookie.Value)
+		if err == nil {
+			userID := middleware.GetUserID(c)
+			if userID != "" {
+				_ = db.Qry.DeleteUserSession(c.Request().Context(), db.DeleteUserSessionParams{
+					ID:     session.ID,
+					UserID: userID,
+				})
+			}
+		}
+	}
+
+	utils.ClearSessionCookie(c)
+
+	err = utils.SSEHub.Redirect(c, "/")
 	if err != nil {
 		return c.Redirect(http.StatusFound, "/")
 	}

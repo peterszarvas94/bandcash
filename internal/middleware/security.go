@@ -62,21 +62,12 @@ func CSRFToken(next echo.HandlerFunc) echo.HandlerFunc {
 		}
 
 		if token == "" {
-			env := utils.Env()
 			token, err = utils.GenerateCSRFToken()
 			if err != nil {
 				return c.NoContent(http.StatusInternalServerError)
 			}
 
-			c.SetCookie(&http.Cookie{
-				Name:     utils.CSRFCookieName,
-				Value:    token,
-				Path:     "/",
-				MaxAge:   86400 * 30,
-				HttpOnly: true,
-				Secure:   env.AppEnv == "production",
-				SameSite: http.SameSiteLaxMode,
-			})
+			utils.SetCSRFCookie(c, token)
 		}
 
 		ctx := utils.ContextWithCSRFToken(c.Request().Context(), token)

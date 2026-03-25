@@ -17,13 +17,18 @@ import (
 )
 
 type settingsSignals struct {
+	TabID    string `json:"tab_id"`
 	FormData struct {
 		Lang string `json:"lang"`
 	} `json:"formData"`
 }
 
+type settingsTabSignals struct {
+	TabID string `json:"tab_id"`
+}
+
 func (s *Settings) Index(c echo.Context) error {
-	utils.EnsureClientID(c)
+	utils.EnsureTabID(c)
 	data := s.Data(c.Request().Context())
 	userID := middleware.GetUserID(c)
 	if user, err := db.Qry.GetUserByID(c.Request().Context(), userID); err == nil {
@@ -34,7 +39,7 @@ func (s *Settings) Index(c echo.Context) error {
 }
 
 func (s *Settings) LanguagePage(c echo.Context) error {
-	utils.EnsureClientID(c)
+	utils.EnsureTabID(c)
 	data := s.Data(c.Request().Context())
 	data.Title = ctxi18n.T(c.Request().Context(), "settings.language")
 	data.Breadcrumbs = []utils.Crumb{{Label: ctxi18n.T(c.Request().Context(), "settings.language")}}
@@ -49,6 +54,9 @@ func (s *Settings) LanguagePage(c echo.Context) error {
 func (s *Settings) UpdateLanguage(c echo.Context) error {
 	signals := settingsSignals{}
 	if err := datastar.ReadSignals(c.Request(), &signals); err != nil {
+		return c.NoContent(http.StatusBadRequest)
+	}
+	if !utils.SetTabID(c, signals.TabID) {
 		return c.NoContent(http.StatusBadRequest)
 	}
 
@@ -93,4 +101,97 @@ func (s *Settings) UpdateDetailsState(c echo.Context) error {
 	slog.Debug("settings.details_state: updated", "user_id", userID, "key", key, "open", open)
 
 	return c.NoContent(http.StatusNoContent)
+}
+
+func (s *Settings) SessionsPage(c echo.Context) error {
+	utils.EnsureTabID(c)
+	userID := middleware.GetUserID(c)
+
+	sessions, err := db.Qry.ListUserSessions(c.Request().Context(), userID)
+	if err != nil {
+		slog.Error("settings.sessions: failed to list sessions", "user_id", userID, "err", err)
+		sessions = []db.UserSession{}
+	}
+
+	data := SessionsData{
+		Title:            ctxi18n.T(c.Request().Context(), "settings.sessions"),
+		Breadcrumbs:      []utils.Crumb{{Label: ctxi18n.T(c.Request().Context(), "settings.sessions")}},
+		CurrentSessionID: "",
+		Sessions:         sessions,
+	}
+
+	if cookie, err := c.Cookie(utils.SessionCookieName); err == nil {
+		if session, err := db.Qry.GetUserSessionByToken(c.Request().Context(), cookie.Value); err == nil {
+			data.CurrentSessionID = session.ID
+		}
+	}
+
+	if user, err := db.Qry.GetUserByID(c.Request().Context(), userID); err == nil {
+		data.UserEmail = user.Email
+	}
+
+	return utils.RenderPage(c, SessionsPage(data))
+}
+
+func (s *Settings) LogoutSession(c echo.Context) error {
+	signals := settingsTabSignals{}
+	if err := datastar.ReadSignals(c.Request(), &signals); err != nil {
+		return c.NoContent(http.StatusBadRequest)
+	}
+	if !utils.SetTabID(c, signals.TabID) {
+		return c.NoContent(http.StatusBadRequest)
+	}
+
+	sessionID := c.Param("id")
+	if !utils.IsValidID(sessionID, "ses") {
+		return c.NoContent(http.StatusBadRequest)
+	}
+
+	userID := middleware.GetUserID(c)
+	err := db.Qry.DeleteUserSession(c.Request().Context(), db.DeleteUserSessionParams{
+		ID:     sessionID,
+		UserID: userID,
+	})
+	if err != nil {
+		slog.Error("settings.sessions: failed to delete session", "session_id", sessionID, "user_id", userID, "err", err)
+		return c.NoContent(http.StatusInternalServerError)
+	}
+
+	utils.Notify(c, "success", ctxi18n.T(c.Request().Context(), "settings.notifications.session_logged_out"))
+	return c.NoContent(http.StatusOK)
+}
+
+func (s *Settings) LogoutAllOtherSessions(c echo.Context) error {
+	signals := settingsTabSignals{}
+	if err := datastar.ReadSignals(c.Request(), &signals); err != nil {
+		return c.NoContent(http.StatusBadRequest)
+	}
+	if !utils.SetTabID(c, signals.TabID) {
+		return c.NoContent(http.StatusBadRequest)
+	}
+
+	userID := middleware.GetUserID(c)
+
+	// Get current session from cookie
+	cookie, err := c.Cookie(utils.SessionCookieName)
+	if err != nil {
+		return c.NoContent(http.StatusBadRequest)
+	}
+
+	currentSession, err := db.Qry.GetUserSessionByToken(c.Request().Context(), cookie.Value)
+	if err != nil {
+		return c.NoContent(http.StatusBadRequest)
+	}
+
+	err = db.Qry.DeleteOtherUserSessions(c.Request().Context(), db.DeleteOtherUserSessionsParams{
+		UserID: userID,
+		ID:     currentSession.ID,
+	})
+	if err != nil {
+		slog.Error("settings.sessions: failed to delete other sessions", "user_id", userID, "err", err)
+		return c.NoContent(http.StatusInternalServerError)
+	}
+
+	utils.Notify(c, "success", ctxi18n.T(c.Request().Context(), "settings.notifications.other_sessions_logged_out"))
+	return c.NoContent(http.StatusOK)
 }

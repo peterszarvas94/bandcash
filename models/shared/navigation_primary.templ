@@ -15,6 +15,10 @@ func isAccessActive(active string) bool {
 	return active == "access"
 }
 
+func isLegalItemActive(active string, item string) bool {
+	return active == item
+}
+
 templ AppPrimaryNav(active string, userEmail string) {
 	<nav class="app-nav" aria-label="Primary">
 		<div class="app-nav-primary">
@@ -60,6 +64,7 @@ templ AppPrimaryNav(active string, userEmail string) {
 				}
 			}
 		</div>
+		@LegalNavLinks(active)
 	</nav>
 }
 
@@ -91,6 +96,7 @@ templ PublicPrimaryNav(active string) {
 				}
 			}
 		</div>
+		@LegalNavLinks(active)
 	</nav>
 }
 
@@ -113,6 +119,7 @@ templ DevPrimaryNav(active string) {
 				</a>
 			}
 		</div>
+		@LegalNavLinks(active)
 	</nav>
 }
 
@@ -186,5 +193,27 @@ templ GroupPrimaryNav(groupID string, active string, userEmail string) {
 				<span>{ ctxi18n.T(ctx, "groups.access") }</span>
 			</a>
 		</div>
+		@LegalNavLinks(active)
 	</nav>
+}
+
+templ LegalNavLinks(active string) {
+	<div class="app-nav-secondary app-nav-footer">
+		<a class={ "btn app-nav-link", templ.KV("btn-active", isLegalItemActive(active, "legal-pricing")) } href="/pricing">
+			@icons.ReceiptEuro(templ.Attributes{"class": "icon"})
+			<span>Pricing</span>
+		</a>
+		<a class={ "btn app-nav-link", templ.KV("btn-active", isLegalItemActive(active, "legal-terms")) } href="/terms-and-conditions">
+			@icons.FileText(templ.Attributes{"class": "icon"})
+			<span>Terms and Conditions</span>
+		</a>
+		<a class={ "btn app-nav-link", templ.KV("btn-active", isLegalItemActive(active, "legal-privacy")) } href="/privacy-policy">
+			@icons.Shield(templ.Attributes{"class": "icon"})
+			<span>Privacy Policy</span>
+		</a>
+		<a class={ "btn app-nav-link", templ.KV("btn-active", isLegalItemActive(active, "legal-refund")) } href="/refund-policy">
+			@icons.RotateCcw(templ.Attributes{"class": "icon"})
+			<span>Refund Policy</span>
+		</a>
+	</div>
 }

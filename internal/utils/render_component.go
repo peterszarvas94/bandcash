@@ -10,9 +10,9 @@ import (
 
 func renderContext(c echo.Context) context.Context {
 	ctx := c.Request().Context()
-	clientID := EnsureClientID(c)
+	tabID := EnsureTabID(c)
 	includeActive := c.Request().Method != echo.GET
-	items := Notifications.DrainForRender(clientID, includeActive)
+	items := Notifications.DrainForRender(tabID, includeActive)
 	return WithNotifications(ctx, items)
 }
 

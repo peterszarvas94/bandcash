@@ -25,12 +25,14 @@ type expenseParams struct {
 }
 
 type expenseTableParams struct {
+	TabID      string           `json:"tab_id"`
 	FormData   expenseParams    `json:"formData"`
 	TableQuery utils.TableQuery `json:"tableQuery"`
 	Mode       string           `json:"mode"`
 }
 
 type modeParams struct {
+	TabID      string           `json:"tab_id"`
 	Mode       string           `json:"mode"`
 	TableQuery utils.TableQuery `json:"tableQuery"`
 }
@@ -93,7 +95,7 @@ func paidAtArg(isPaid bool, paidAt string) sql.NullString {
 }
 
 func (e *Expenses) Index(c echo.Context) error {
-	utils.EnsureClientID(c)
+	utils.EnsureTabID(c)
 	groupID := middleware.GetGroupID(c)
 	userEmail := getUserEmail(c)
 	query := utils.ParseTableQuery(c, e)
@@ -110,7 +112,7 @@ func (e *Expenses) Index(c echo.Context) error {
 }
 
 func (e *Expenses) Show(c echo.Context) error {
-	utils.EnsureClientID(c)
+	utils.EnsureTabID(c)
 	groupID := middleware.GetGroupID(c)
 	userEmail := getUserEmail(c)
 
@@ -139,6 +141,9 @@ func (e *Expenses) Create(c echo.Context) error {
 	err := datastar.ReadSignals(c.Request(), &signals)
 	if err != nil {
 		slog.Info("expense.create.table: failed to read signals", "err", err)
+		return c.NoContent(http.StatusBadRequest)
+	}
+	if !utils.SetTabID(c, signals.TabID) {
 		return c.NoContent(http.StatusBadRequest)
 	}
 	signals.FormData.Title = strings.TrimSpace(signals.FormData.Title)
@@ -211,6 +216,9 @@ func (e *Expenses) Update(c echo.Context) error {
 	err := datastar.ReadSignals(c.Request(), &signals)
 	if err != nil {
 		slog.Info("expense.update: failed to read signals", "err", err)
+		return c.NoContent(http.StatusBadRequest)
+	}
+	if !utils.SetTabID(c, signals.TabID) {
 		return c.NoContent(http.StatusBadRequest)
 	}
 	signals.FormData.Title = strings.TrimSpace(signals.FormData.Title)
@@ -315,6 +323,9 @@ func (e *Expenses) Destroy(c echo.Context) error {
 		slog.Info("expense.destroy: failed to read signals", "err", err)
 		return c.NoContent(http.StatusBadRequest)
 	}
+	if !utils.SetTabID(c, signals.TabID) {
+		return c.NoContent(http.StatusBadRequest)
+	}
 
 	err = db.Qry.DeleteExpense(c.Request().Context(), db.DeleteExpenseParams{
 		ID:      id,
@@ -374,6 +385,9 @@ func (e *Expenses) TogglePaid(c echo.Context) error {
 	err := datastar.ReadSignals(c.Request(), &signals)
 	if err != nil {
 		slog.Info("expense.togglePaid: failed to read signals", "err", err)
+		return c.NoContent(http.StatusBadRequest)
+	}
+	if !utils.SetTabID(c, signals.TabID) {
 		return c.NoContent(http.StatusBadRequest)
 	}
 
