@@ -108,4 +108,19 @@ else
 fi
 
 # Run kamal deploy
-exec env -u GEM_HOME -u GEM_PATH $(mise which kamal) deploy
+KAMAL_BIN=$(mise which kamal)
+env -u GEM_HOME -u GEM_PATH "$KAMAL_BIN" deploy
+
+# Boot BetterStack accessory after deployment
+echo "Starting BetterStack logging accessory..."
+if env -u GEM_HOME -u GEM_PATH "$KAMAL_BIN" accessory details better-stack >/dev/null 2>&1; then
+  env -u GEM_HOME -u GEM_PATH "$KAMAL_BIN" accessory reboot better-stack
+else
+  env -u GEM_HOME -u GEM_PATH "$KAMAL_BIN" accessory boot better-stack
+fi
+
+# Cleanup old Docker build cache
+echo "Pruning Docker build cache..."
+ssh peti@bandcash "docker buildx prune -af --filter 'until=24h'" || true
+
+echo "Production deployment complete!"
