@@ -19,7 +19,7 @@ func SetSessionCookie(c echo.Context, token string) {
 		Path:     "/",
 		MaxAge:   86400 * 30,
 		HttpOnly: true,
-		Secure:   env.AppEnv == "production",
+		Secure:   env.AppEnv == "production" || env.AppEnv == "staging",
 		SameSite: http.SameSiteLaxMode,
 	})
 }
@@ -44,7 +44,7 @@ func SetCSRFCookie(c echo.Context, token string) {
 		Path:     "/",
 		MaxAge:   86400 * 30,
 		HttpOnly: true,
-		Secure:   env.AppEnv == "production",
+		Secure:   env.AppEnv == "production" || env.AppEnv == "staging",
 		SameSite: http.SameSiteLaxMode,
 	})
 }

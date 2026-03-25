@@ -35,7 +35,7 @@ var (
 
 type envVars struct {
 	// AppEnv toggles environment-specific behavior and required fields.
-	AppEnv string `env:"APP_ENV" envDefault:"development" validate:"required,oneof=development production"`
+	AppEnv string `env:"APP_ENV" envDefault:"development" validate:"required,oneof=development staging production"`
 	// Host is the interface the HTTP server binds to.
 	Host string `env:"HOST" envDefault:"0.0.0.0"`
 	// Port is the HTTP port the app listens on.
@@ -51,21 +51,21 @@ type envVars struct {
 	// DBPath is the SQLite database file path.
 	DBPath string `env:"DB_PATH" envDefault:"sqlite.db" validate:"required"`
 	// URL is the public base URL used for links and callbacks.
-	URL string `env:"URL" envDefault:"http://bandcash.localhost:9080" validate:"required_if=AppEnv production"`
+	URL string `env:"URL" envDefault:"http://bandcash.localhost:9080" validate:"required_if=AppEnv production,required_if=AppEnv staging"`
 	// SuperadminEmail is the bootstrap superadmin account email.
 	SuperadminEmail string `env:"SUPERADMIN_EMAIL" validate:"required,email"`
 	// DisableRateLimit disables request rate limiting (useful for local dev).
 	DisableRateLimit bool `env:"DISABLE_RATE_LIMIT" envDefault:"true"`
 	// SMTPHost is the SMTP server host for outgoing email.
-	SMTPHost string `env:"SMTP_HOST" envDefault:"localhost" validate:"required_if=AppEnv production"`
+	SMTPHost string `env:"SMTP_HOST" envDefault:"localhost" validate:"required_if=AppEnv production,required_if=AppEnv staging"`
 	// SMTPPort is the SMTP server port for outgoing email.
-	SMTPPort int `env:"SMTP_PORT" envDefault:"1025" validate:"required_if=AppEnv production,omitempty,gt=0"`
+	SMTPPort int `env:"SMTP_PORT" envDefault:"1025" validate:"required_if=AppEnv production,required_if=AppEnv staging,omitempty,gt=0"`
 	// SMTPUser is the SMTP username used for authentication.
-	SMTPUser string `env:"SMTP_USERNAME" validate:"required_if=AppEnv production"`
+	SMTPUser string `env:"SMTP_USERNAME" validate:"required_if=AppEnv production,required_if=AppEnv staging"`
 	// SMTPPass is the SMTP password used for authentication.
-	SMTPPass string `env:"SMTP_PASSWORD" validate:"required_if=AppEnv production"`
+	SMTPPass string `env:"SMTP_PASSWORD" validate:"required_if=AppEnv production,required_if=AppEnv staging"`
 	// EmailFrom is the default From header for app emails.
-	EmailFrom string `env:"EMAIL_FROM" envDefault:"BandCash <noreply@bandcash.localhost>" validate:"required_if=AppEnv production"`
+	EmailFrom string `env:"EMAIL_FROM" envDefault:"BandCash <noreply@bandcash.localhost>" validate:"required_if=AppEnv production,required_if=AppEnv staging"`
 }
 
 func Env() *EnvConfig {
