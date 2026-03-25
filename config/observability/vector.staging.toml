@@ -15,8 +15,7 @@ if err == null && is_object(parsed) {
   . = {"message": string!(.message)}
 }
 
-.app = "bandcash-staging"
-.environment = "staging"
+.app = "bandcash_staging"
 '''
 
 [sinks.better_stack_staging]
