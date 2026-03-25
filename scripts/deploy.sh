@@ -28,7 +28,7 @@ case "$ENV" in
   production)
     REQUIRED_BRANCH="master"
     SERVER_SSH="bandcash"
-    CONFIG_FLAG="--destination production"
+    CONFIG_FLAG=""
     ;;
   -h|--help)
     usage
