@@ -49,7 +49,7 @@ func main() {
 
 	appEnv := strings.TrimSpace(strings.ToLower(os.Getenv("APP_ENV")))
 	assetSpecs := append([]assetSpec{}, coreAssetSpecs...)
-	if appEnv != "production" {
+	if appEnv == "development" {
 		assetSpecs = append(assetSpecs, devOnlyAssetSpecs...)
 	}
 
