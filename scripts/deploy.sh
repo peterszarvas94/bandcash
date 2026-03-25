@@ -6,6 +6,14 @@ usage() {
   echo "Run without bump type to be prompted (press Enter to skip tag creation)"
 }
 
+# Check if we're on the master branch
+CURRENT_BRANCH=$(git rev-parse --abbrev-ref HEAD)
+if [ "$CURRENT_BRANCH" != "master" ]; then
+  echo "Error: Production deployment must be from 'master' branch"
+  echo "Current branch: $CURRENT_BRANCH"
+  exit 1
+fi
+
 # Parse arguments
 BUMP_TYPE=""
 SKIP_TAG=false

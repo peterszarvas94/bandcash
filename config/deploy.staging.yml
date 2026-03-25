@@ -1,0 +1,66 @@
+service: bandcash-staging
+image: peterszarvashu/bandcash-staging
+
+servers:
+  - bandcash_staging
+
+proxy:
+  host: staging.bandcash.app
+  app_port: 2222
+  ssl: true
+  healthcheck:
+    path: /health
+    interval: 3
+    timeout: 5
+
+registry:
+  username:
+    - KAMAL_REGISTRY_USERNAME
+  password:
+    - KAMAL_REGISTRY_PASSWORD
+
+builder:
+  arch: amd64
+  remote: ssh://peti@bandcash_staging
+  local: false
+
+ssh:
+  user: peti
+
+volumes:
+  - bandcash_staging_data:/storage
+
+env:
+  clear:
+    APP_ENV: staging
+    PORT: 2222
+    URL: https://staging.bandcash.app
+    DB_PATH: /storage/sqlite.db
+    LOG_LEVEL: debug
+    LOG_FOLDER: /storage/logs
+    LOG_PREFIX: bandcash-staging
+    DISABLE_RATE_LIMIT: true
+  secret:
+    - SUPERADMIN_EMAIL
+    - SMTP_HOST
+    - SMTP_PORT
+    - EMAIL_FROM
+    - SMTP_USERNAME
+    - SMTP_PASSWORD
+
+accessories:
+  better-stack:
+    service: better-stack-staging
+    image: timberio/vector:0.42.0-debian
+    host: bandcash_staging
+    cmd: "--config /etc/vector/vector.toml"
+    files:
+      - config/observability/vector.staging.toml:/etc/vector/vector.toml:ro
+    directories:
+      - better-stack-staging-data:/var/lib/vector
+    volumes:
+      - bandcash_staging_data:/storage:ro
+    env:
+      secret:
+        - BETTER_STACK_URI
+        - BETTER_STACK_SOURCE_TOKEN

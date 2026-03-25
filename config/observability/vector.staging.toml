@@ -1,0 +1,30 @@
+[sources.bandcash_staging_json_logs]
+type = "file"
+include = ["/storage/logs/*.log"]
+ignore_older_secs = 86400
+read_from = "end"
+
+[transforms.parse_bandcash_staging_json]
+type = "remap"
+inputs = ["bandcash_staging_json_logs"]
+source = '''
+parsed, err = parse_json(string!(.message))
+if err == null && is_object(parsed) {
+  . = parsed
+} else {
+  . = {"message": string!(.message)}
+}
+
+.app = "bandcash-staging"
+.environment = "staging"
+'''
+
+[sinks.better_stack_staging]
+type = "http"
+inputs = ["parse_bandcash_staging_json"]
+uri = "${BETTER_STACK_URI}"
+method = "post"
+compression = "gzip"
+auth.strategy = "bearer"
+auth.token = "${BETTER_STACK_SOURCE_TOKEN}"
+encoding.codec = "json"

@@ -16,3 +16,7 @@ bandcash.app/data: email input + access/delete select => confirm email => send d
 # Description
 
 A SaaS application for music bands to track income, expenses, and split payments between members.
+
+# Where to update
+
+https://app.termly.io/dashboard/

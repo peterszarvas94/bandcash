@@ -32,8 +32,12 @@ seed = "SUPERADMIN_EMAIL=admin@bandcash.localhost go run ./cmd/seed/main.go"
 mailpit = "mailpit --listen 0.0.0.0:8025 --smtp 0.0.0.0:1025"
 check-versions = "go run ./cmd/checkversions"
 kamal = "env -u GEM_HOME -u GEM_PATH $(mise which kamal)"
+setup = "env -u GEM_HOME -u GEM_PATH $(mise which kamal) setup"
+setup-staging = "env -u GEM_HOME -u GEM_PATH $(mise which kamal) setup --config-file config/deploy.staging.yml"
 deploy-check = "env -u GEM_HOME -u GEM_PATH $(mise which kamal) config"
 deploy = "./scripts/deploy.sh"
+deploy-staging-check = "env -u GEM_HOME -u GEM_PATH $(mise which kamal) config --config-file config/deploy.staging.yml"
+deploy-staging = "./scripts/deploy-staging.sh"
 
 [tasks.build]
 depends = ["assets"]

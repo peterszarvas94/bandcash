@@ -36,6 +36,38 @@ ssh -p "$SSH_PORT" root@"$HOST" \
   'bash -s' <<'EOF'
 set -euo pipefail
 
+echo "[Preflight] Checking SSH prerequisites..."
+
+# Verify SSH service is running
+if ! systemctl is-active --quiet ssh && ! systemctl is-active --quiet sshd; then
+  echo "ERROR: SSH service is not running" >&2
+  exit 1
+fi
+
+# Check for root's authorized_keys before making any changes
+if [ ! -f /root/.ssh/authorized_keys ]; then
+  echo "ERROR: /root/.ssh/authorized_keys does not exist" >&2
+  echo "Cannot copy SSH keys to new admin user. Aborting." >&2
+  exit 1
+fi
+
+# Ensure /run/sshd exists (required for SSH privilege separation)
+mkdir -p /run/sshd
+chmod 755 /run/sshd
+
+# Detect SSH service name
+if systemctl list-units --type=service | grep -q 'sshd.service'; then
+  SSH_SERVICE="sshd"
+elif systemctl list-units --type=service | grep -q 'ssh.service'; then
+  SSH_SERVICE="ssh"
+else
+  echo "ERROR: Cannot detect SSH service name (tried 'ssh' and 'sshd')" >&2
+  exit 1
+fi
+
+echo "[Preflight] SSH service detected: $SSH_SERVICE"
+echo "[Preflight] All checks passed, proceeding with bootstrap..."
+
 export DEBIAN_FRONTEND=noninteractive
 apt-get update
 apt-get -y upgrade
@@ -64,14 +96,11 @@ touch "/home/$ADMIN_USER/.ssh/authorized_keys"
 chown "$ADMIN_USER:$ADMIN_USER" "/home/$ADMIN_USER/.ssh/authorized_keys"
 chmod 600 "/home/$ADMIN_USER/.ssh/authorized_keys"
 
-if [ -f /root/.ssh/authorized_keys ]; then
-  cat /root/.ssh/authorized_keys >> "/home/$ADMIN_USER/.ssh/authorized_keys"
-  sort -u "/home/$ADMIN_USER/.ssh/authorized_keys" -o "/home/$ADMIN_USER/.ssh/authorized_keys"
-else
-  echo "Missing /root/.ssh/authorized_keys on target host" >&2
-  exit 1
-fi
+# Copy root's authorized_keys (already verified it exists in preflight)
+cat /root/.ssh/authorized_keys >> "/home/$ADMIN_USER/.ssh/authorized_keys"
+sort -u "/home/$ADMIN_USER/.ssh/authorized_keys" -o "/home/$ADMIN_USER/.ssh/authorized_keys"
 
+echo "[SSH] Hardening SSH configuration..."
 install -d -m 755 /etc/ssh/sshd_config.d
 cat >/etc/ssh/sshd_config.d/99-hardening.conf <<SSHCONF
 PermitRootLogin no
@@ -82,8 +111,21 @@ ChallengeResponseAuthentication no
 UsePAM yes
 SSHCONF
 
-sshd -t
-systemctl reload ssh
+# Ensure /run/sshd exists before testing config
+mkdir -p /run/sshd
+chmod 755 /run/sshd
+
+# Test SSH configuration
+echo "[SSH] Testing SSH configuration..."
+if ! sshd -t 2>/dev/null; then
+  echo "ERROR: SSH configuration test failed" >&2
+  sshd -t
+  exit 1
+fi
+
+# Reload SSH service (using detected service name)
+echo "[SSH] Reloading SSH service..."
+systemctl reload "$SSH_SERVICE"
 
 ufw --force reset
 ufw default deny incoming
@@ -94,20 +136,29 @@ ufw allow 443/tcp
 ufw --force enable
 
 systemctl enable --now fail2ban
+
+echo "[Bootstrap] Server bootstrap complete. Rebooting in 5 seconds..."
+sleep 5
+reboot
 EOF
 
-echo "[2/4] Verifying SSH access as '$ADMIN_USER'..."
+echo "[2/4] Server is rebooting to apply all changes..."
+echo "Waiting 30 seconds for server to restart..."
+sleep 30
+
+echo "[3/4] Verifying SSH access as '$ADMIN_USER'..."
 if ! ssh -o BatchMode=yes -o ConnectTimeout=10 -p "$SSH_PORT" "$ADMIN_USER@$HOST" "whoami" >/dev/null 2>&1; then
   echo "Failed to verify SSH login for $ADMIN_USER. Check key/agent and try: ssh -p $SSH_PORT $ADMIN_USER@$HOST" >&2
   exit 1
 fi
 
-echo "[3/4] Verifying root SSH is blocked..."
+echo "[4/4] Verifying root SSH is blocked..."
 if ssh -o BatchMode=yes -o ConnectTimeout=8 -p "$SSH_PORT" root@"$HOST" "whoami" >/dev/null 2>&1; then
   echo "WARNING: root SSH still appears enabled. Check /etc/ssh/sshd_config.d/99-hardening.conf" >&2
 else
   echo "Root SSH is blocked (expected)."
 fi
 
-echo "[4/4] Done."
+echo "[5/5] Done."
+echo "Bootstrap complete! Server is secured and ready."
 echo "You can now use: ssh -p $SSH_PORT $ADMIN_USER@$HOST"
