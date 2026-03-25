@@ -22,17 +22,13 @@ ENV="$1"
 case "$ENV" in
   staging)
     REQUIRED_BRANCH="development"
-    CONFIG_FILE="config/deploy.staging.yml"
     SERVER_SSH="bandcash_staging"
-    DESTINATION="staging"
-    CONFIG_FLAG="--config-file $CONFIG_FILE --destination $DESTINATION"
+    CONFIG_FLAG="--destination staging"
     ;;
   production)
     REQUIRED_BRANCH="master"
-    CONFIG_FILE=""
     SERVER_SSH="bandcash"
-    DESTINATION="production"
-    CONFIG_FLAG="--destination $DESTINATION"
+    CONFIG_FLAG="--destination production"
     ;;
   -h|--help)
     usage
