@@ -18,6 +18,7 @@ templ SettingsIndex(data SettingsData) {
 		<body>
 			<div data-signals={ templ.JSONString(map[string]any{"tab_id": tabID, "csrf": utils.CSRFTokenFromContext(ctx), "formData": map[string]any{"lang": data.CurrentLang}}) } data-init="@get('/sse')"></div>
 			@shared.Notifications()
+			@shared.SureDialog()
 			@shared.AppShellMainOnly("settings-index", data.Breadcrumbs, data.UserEmail, shared.AppPrimaryNav("settings", data.UserEmail), SettingsMain(data))
 		</body>
 	</html>
@@ -34,5 +35,34 @@ templ AccountContent(data SettingsData) {
 	<div class="row row-wrap">
 		{ ctxi18n.T(ctx, "nav.logged_in_as") } <strong>{ data.UserEmail }</strong>
 	</div>
-	@shared.LoadingActionButtonWithSignal(shared.LoadingActionButtonWithSignalProps{ClassName: "btn", OnClick: "@post('/auth/logout')", DisabledExpr: "$_logoutFetching", Label: ctxi18n.T(ctx, "auth.logout"), IconName: icons.IconLogOut, LoadingSignal: "_logoutFetching"})
+	@shared.SureActionButton(shared.SureActionButtonProps{
+		ClassName:    "btn",
+		DisabledExpr: "false",
+		Label:        ctxi18n.T(ctx, "auth.logout"),
+		IconName:     icons.IconLogOut,
+		Dialog: shared.SureDialogProps{
+			Title:       ctxi18n.T(ctx, "auth.logout"),
+			Message:     ctxi18n.T(ctx, "confirm.destructive_message"),
+			SubmitLabel: ctxi18n.T(ctx, "auth.logout"),
+			CancelLabel: ctxi18n.T(ctx, "actions.cancel"),
+			Method:      "delete",
+			URL:         "/auth/session",
+			TriggerID:   "account-logout",
+		},
+	})
+	@shared.SureActionButton(shared.SureActionButtonProps{
+		ClassName:    "btn btn-danger",
+		DisabledExpr: "false",
+		Label:        ctxi18n.T(ctx, "settings.logout_everywhere"),
+		IconName:     icons.IconLogOut,
+		Dialog: shared.SureDialogProps{
+			Title:       ctxi18n.T(ctx, "settings.logout_everywhere"),
+			Message:     ctxi18n.T(ctx, "confirm.destructive_message"),
+			SubmitLabel: ctxi18n.T(ctx, "settings.logout_everywhere"),
+			CancelLabel: ctxi18n.T(ctx, "actions.cancel"),
+			Method:      "delete",
+			URL:         "/account/sessions",
+			TriggerID:   "account-logout-everywhere",
+		},
+	})
 }

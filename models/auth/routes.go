@@ -14,7 +14,7 @@ func RegisterRoutes(e *echo.Echo) *Auth {
 	e.POST("/auth/login", auth.LoginRequest, middleware.AuthBodyLimit, middleware.AuthRateLimit)
 	e.GET("/auth/login-sent", auth.LoginSentPage)
 	e.GET("/auth/verify", auth.VerifyMagicLink)
-	e.POST("/auth/logout", auth.Logout)
+	e.DELETE("/auth/session", auth.Logout)
 
 	return auth
 }

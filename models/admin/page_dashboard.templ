@@ -58,6 +58,8 @@ templ DashboardMain(data DashboardData) {
 			@UsersTableSection(data)
 		} else if data.Tab == "groups" {
 			@GroupsTableSection(data)
+		} else if data.Tab == "sessions" {
+			@SessionsTableSection(data)
 		}
 	</div>
 }
@@ -68,6 +70,7 @@ templ AdminTabs(data DashboardData) {
 		<a href={ buildTabURL("flags") } class={ tabClass(data.Tab, "flags") } role="tab" aria-selected={ tabAriaSelected(data.Tab, "flags") }>{ ctxi18n.T(ctx, "admin.tab.flags") }</a>
 		<a href={ buildTabURL("users") } class={ tabClass(data.Tab, "users") } role="tab" aria-selected={ tabAriaSelected(data.Tab, "users") }>{ ctxi18n.T(ctx, "admin.tab.users") }</a>
 		<a href={ buildTabURL("groups") } class={ tabClass(data.Tab, "groups") } role="tab" aria-selected={ tabAriaSelected(data.Tab, "groups") }>{ ctxi18n.T(ctx, "admin.tab.groups") }</a>
+		<a href={ buildTabURL("sessions") } class={ tabClass(data.Tab, "sessions") } role="tab" aria-selected={ tabAriaSelected(data.Tab, "sessions") }>{ ctxi18n.T(ctx, "admin.tab.sessions") }</a>
 	</div>
 }
 
@@ -82,4 +85,8 @@ func adminGroupsSortURL(data DashboardData, column string) string {
 
 func adminPageSizeURL(query utils.TableQuery, tab string, pageSize int) string {
 	return utils.BuildTablePageSizeURL(fmt.Sprintf("/admin/%s", tab), query, pageSize)
+}
+
+func adminSessionsSortURL(data DashboardData, column string) string {
+	return utils.BuildTableSortURL("/admin/sessions", data.SessionQuery, column)
 }

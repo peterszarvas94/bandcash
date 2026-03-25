@@ -43,6 +43,10 @@ func (a *Admin) GroupsPage(c echo.Context) error {
 	return a.renderDashboard(c, "groups")
 }
 
+func (a *Admin) SessionsPage(c echo.Context) error {
+	return a.renderDashboard(c, "sessions")
+}
+
 func (a *Admin) Dashboard(c echo.Context) error {
 	return c.Redirect(http.StatusFound, "/admin/overview")
 }
@@ -56,7 +60,7 @@ func (a *Admin) renderDashboard(c echo.Context, tab string) error {
 		return c.Redirect(http.StatusFound, "/auth/login")
 	}
 
-	if tab != "flags" && tab != "users" && tab != "groups" {
+	if tab != "flags" && tab != "users" && tab != "groups" && tab != "sessions" {
 		tab = "overview"
 	}
 
@@ -107,6 +111,7 @@ func (a *Admin) renderDashboard(c echo.Context, tab string) error {
 		SignupEnabled: signupEnabled,
 		UsersTable:    utils.AdminUsersTableLayout(),
 		GroupsTable:   utils.AdminGroupsTableLayout(),
+		SessionsTable: utils.AdminSessionsTableLayout(),
 	}
 
 	// Load users if on users tab
@@ -271,6 +276,84 @@ func (a *Admin) renderDashboard(c echo.Context, tab string) error {
 		data.GroupQuery = query
 	}
 
+	if tab == "sessions" {
+		query := parseAdminSessionsQuery(c)
+		totalItems, err := db.Qry.CountSessionsFiltered(c.Request().Context(), query.Search)
+		if err != nil {
+			slog.Error("admin.dashboard: failed to count sessions", "err", err)
+			return c.NoContent(http.StatusInternalServerError)
+		}
+
+		query = utils.ClampPage(query, totalItems)
+
+		var sessions []AdminSessionRow
+		switch query.Sort {
+		case "email":
+			if query.Dir == "desc" {
+				rows, err := db.Qry.ListSessionsByEmailDescFiltered(c.Request().Context(), db.ListSessionsByEmailDescFilteredParams{
+					Search: query.Search,
+					Offset: query.Offset(),
+					Limit:  int64(query.PageSize),
+				})
+				if err != nil {
+					slog.Error("admin.dashboard: failed to list sessions", "err", err)
+					return c.NoContent(http.StatusInternalServerError)
+				}
+				sessions = mapSessionRowsFromEmailDesc(rows)
+			} else {
+				rows, err := db.Qry.ListSessionsByEmailAscFiltered(c.Request().Context(), db.ListSessionsByEmailAscFilteredParams{
+					Search: query.Search,
+					Offset: query.Offset(),
+					Limit:  int64(query.PageSize),
+				})
+				if err != nil {
+					slog.Error("admin.dashboard: failed to list sessions", "err", err)
+					return c.NoContent(http.StatusInternalServerError)
+				}
+				sessions = mapSessionRowsFromEmailAsc(rows)
+			}
+		case "createdAt":
+			if query.Dir == "asc" {
+				rows, err := db.Qry.ListSessionsByCreatedAscFiltered(c.Request().Context(), db.ListSessionsByCreatedAscFilteredParams{
+					Search: query.Search,
+					Offset: query.Offset(),
+					Limit:  int64(query.PageSize),
+				})
+				if err != nil {
+					slog.Error("admin.dashboard: failed to list sessions", "err", err)
+					return c.NoContent(http.StatusInternalServerError)
+				}
+				sessions = mapSessionRowsFromCreatedAsc(rows)
+			} else {
+				rows, err := db.Qry.ListSessionsByCreatedDescFiltered(c.Request().Context(), db.ListSessionsByCreatedDescFilteredParams{
+					Search: query.Search,
+					Offset: query.Offset(),
+					Limit:  int64(query.PageSize),
+				})
+				if err != nil {
+					slog.Error("admin.dashboard: failed to list sessions", "err", err)
+					return c.NoContent(http.StatusInternalServerError)
+				}
+				sessions = mapSessionRowsFromCreatedDesc(rows)
+			}
+		default:
+			rows, err := db.Qry.ListSessionsByCreatedDescFiltered(c.Request().Context(), db.ListSessionsByCreatedDescFilteredParams{
+				Search: query.Search,
+				Offset: query.Offset(),
+				Limit:  int64(query.PageSize),
+			})
+			if err != nil {
+				slog.Error("admin.dashboard: failed to list sessions", "err", err)
+				return c.NoContent(http.StatusInternalServerError)
+			}
+			sessions = mapSessionRowsFromCreatedDesc(rows)
+		}
+
+		data.Sessions = sessions
+		data.SessionPager = utils.BuildTablePagination(totalItems, query)
+		data.SessionQuery = query
+	}
+
 	return utils.RenderPage(c, DashboardPage(data))
 }
 
@@ -282,9 +365,67 @@ func adminTabLabel(ctx context.Context, tab string) string {
 		return ctxi18n.T(ctx, "admin.tab.users")
 	case "groups":
 		return ctxi18n.T(ctx, "admin.tab.groups")
+	case "sessions":
+		return ctxi18n.T(ctx, "admin.tab.sessions")
 	default:
 		return ctxi18n.T(ctx, "admin.tab.overview")
 	}
+}
+
+func mapSessionRowsFromCreatedDesc(rows []db.ListSessionsByCreatedDescFilteredRow) []AdminSessionRow {
+	sessions := make([]AdminSessionRow, 0, len(rows))
+	for _, row := range rows {
+		sessions = append(sessions, AdminSessionRow{
+			ID:        row.ID,
+			UserID:    row.UserID,
+			UserEmail: row.UserEmail,
+			CreatedAt: row.CreatedAt,
+			ExpiresAt: row.ExpiresAt,
+		})
+	}
+	return sessions
+}
+
+func mapSessionRowsFromCreatedAsc(rows []db.ListSessionsByCreatedAscFilteredRow) []AdminSessionRow {
+	sessions := make([]AdminSessionRow, 0, len(rows))
+	for _, row := range rows {
+		sessions = append(sessions, AdminSessionRow{
+			ID:        row.ID,
+			UserID:    row.UserID,
+			UserEmail: row.UserEmail,
+			CreatedAt: row.CreatedAt,
+			ExpiresAt: row.ExpiresAt,
+		})
+	}
+	return sessions
+}
+
+func mapSessionRowsFromEmailAsc(rows []db.ListSessionsByEmailAscFilteredRow) []AdminSessionRow {
+	sessions := make([]AdminSessionRow, 0, len(rows))
+	for _, row := range rows {
+		sessions = append(sessions, AdminSessionRow{
+			ID:        row.ID,
+			UserID:    row.UserID,
+			UserEmail: row.UserEmail,
+			CreatedAt: row.CreatedAt,
+			ExpiresAt: row.ExpiresAt,
+		})
+	}
+	return sessions
+}
+
+func mapSessionRowsFromEmailDesc(rows []db.ListSessionsByEmailDescFilteredRow) []AdminSessionRow {
+	sessions := make([]AdminSessionRow, 0, len(rows))
+	for _, row := range rows {
+		sessions = append(sessions, AdminSessionRow{
+			ID:        row.ID,
+			UserID:    row.UserID,
+			UserEmail: row.UserEmail,
+			CreatedAt: row.CreatedAt,
+			ExpiresAt: row.ExpiresAt,
+		})
+	}
+	return sessions
 }
 
 func mapEmailDescUserRows(rows []db.ListUsersByEmailDescFilteredRow) []RecentUserRow {
@@ -351,6 +492,17 @@ func parseAdminUsersQuery(c echo.Context) utils.TableQuery {
 }
 
 func parseAdminGroupsQuery(c echo.Context) utils.TableQuery {
+	return utils.TableQuery{
+		Page:     parseIntParam(c, "page", 1),
+		PageSize: parseIntParam(c, "pageSize", 50),
+		Search:   strings.TrimSpace(c.QueryParam("q")),
+		Sort:     c.QueryParam("sort"),
+		Dir:      c.QueryParam("dir"),
+		SortSet:  c.QueryParam("sort") != "",
+	}
+}
+
+func parseAdminSessionsQuery(c echo.Context) utils.TableQuery {
 	return utils.TableQuery{
 		Page:     parseIntParam(c, "page", 1),
 		PageSize: parseIntParam(c, "pageSize", 50),
@@ -465,6 +617,181 @@ func (a *Admin) setUserBanState(c echo.Context, banned bool) error {
 	}
 
 	return a.patchRecentUsers(c)
+}
+
+func (a *Admin) LogoutSession(c echo.Context) error {
+	signals := adminTabSignals{}
+	if err := datastar.ReadSignals(c.Request(), &signals); err != nil {
+		return c.NoContent(http.StatusBadRequest)
+	}
+	if !utils.SetTabID(c, signals.TabID) {
+		return c.NoContent(http.StatusBadRequest)
+	}
+
+	userID := c.Param("id")
+	if !utils.IsValidID(userID, "usr") {
+		return c.NoContent(http.StatusBadRequest)
+	}
+
+	sessionID := c.Param("sessionid")
+	if !utils.IsValidID(sessionID, "ses") {
+		return c.NoContent(http.StatusBadRequest)
+	}
+
+	if err := db.Qry.DeleteUserSession(c.Request().Context(), db.DeleteUserSessionParams{ID: sessionID, UserID: userID}); err != nil {
+		slog.Error("admin.sessions.logout: failed to delete session", "session_id", sessionID, "err", err)
+		utils.Notify(c, "error", ctxi18n.T(c.Request().Context(), "admin.sessions.logout_failed"))
+		return c.NoContent(http.StatusInternalServerError)
+	}
+
+	utils.Notify(c, "success", ctxi18n.T(c.Request().Context(), "admin.sessions.logged_out"))
+	return a.patchRecentSessions(c)
+}
+
+func (a *Admin) LogoutAllUserSessions(c echo.Context) error {
+	signals := adminTabSignals{}
+	if err := datastar.ReadSignals(c.Request(), &signals); err != nil {
+		return c.NoContent(http.StatusBadRequest)
+	}
+	if !utils.SetTabID(c, signals.TabID) {
+		return c.NoContent(http.StatusBadRequest)
+	}
+
+	userID := c.Param("id")
+	if !utils.IsValidID(userID, "usr") {
+		return c.NoContent(http.StatusBadRequest)
+	}
+
+	if err := db.Qry.DeleteAllUserSessions(c.Request().Context(), userID); err != nil {
+		slog.Error("admin.sessions.logout_all: failed to delete sessions", "user_id", userID, "err", err)
+		utils.Notify(c, "error", ctxi18n.T(c.Request().Context(), "admin.sessions.logout_all_failed"))
+		return c.NoContent(http.StatusInternalServerError)
+	}
+
+	utils.Notify(c, "success", ctxi18n.T(c.Request().Context(), "admin.sessions.logged_out_all"))
+	return a.patchRecentSessions(c)
+}
+
+func (a *Admin) patchRecentSessions(c echo.Context) error {
+	notificationsHTML, err := utils.RenderHTMLForRequest(c, shared.Notifications())
+	if err == nil {
+		_ = utils.SSEHub.PatchHTML(c, notificationsHTML)
+	}
+
+	userID := middleware.GetUserID(c)
+	user, err := db.Qry.GetUserByID(c.Request().Context(), userID)
+	if err != nil {
+		return c.Redirect(http.StatusFound, "/auth/login")
+	}
+
+	usersCount, err := db.Qry.CountUsers(c.Request().Context())
+	if err != nil {
+		slog.Error("admin.sessions.patch: failed to count users", "err", err)
+		return c.NoContent(http.StatusInternalServerError)
+	}
+
+	groupsCount, err := db.Qry.CountGroups(c.Request().Context())
+	if err != nil {
+		slog.Error("admin.sessions.patch: failed to count groups", "err", err)
+		return c.NoContent(http.StatusInternalServerError)
+	}
+
+	eventsCount, err := db.Qry.CountEvents(c.Request().Context())
+	if err != nil {
+		slog.Error("admin.sessions.patch: failed to count events", "err", err)
+		return c.NoContent(http.StatusInternalServerError)
+	}
+
+	membersCount, err := db.Qry.CountMembers(c.Request().Context())
+	if err != nil {
+		slog.Error("admin.sessions.patch: failed to count members", "err", err)
+		return c.NoContent(http.StatusInternalServerError)
+	}
+
+	signupEnabled, err := utils.IsSignupEnabled(c.Request().Context())
+	if err != nil {
+		slog.Error("admin.sessions.patch: failed to read enable_signup flag", "err", err)
+		return c.NoContent(http.StatusInternalServerError)
+	}
+
+	query := parseAdminSessionsQuery(c)
+	totalItems, err := db.Qry.CountSessionsFiltered(c.Request().Context(), query.Search)
+	if err != nil {
+		slog.Error("admin.sessions.patch: failed to count sessions", "err", err)
+		return c.NoContent(http.StatusInternalServerError)
+	}
+
+	query = utils.ClampPage(query, totalItems)
+
+	var sessions []AdminSessionRow
+	switch query.Sort {
+	case "email":
+		if query.Dir == "desc" {
+			rows, err := db.Qry.ListSessionsByEmailDescFiltered(c.Request().Context(), db.ListSessionsByEmailDescFilteredParams{Search: query.Search, Offset: query.Offset(), Limit: int64(query.PageSize)})
+			if err != nil {
+				slog.Error("admin.sessions.patch: failed to list sessions", "err", err)
+				return c.NoContent(http.StatusInternalServerError)
+			}
+			sessions = mapSessionRowsFromEmailDesc(rows)
+		} else {
+			rows, err := db.Qry.ListSessionsByEmailAscFiltered(c.Request().Context(), db.ListSessionsByEmailAscFilteredParams{Search: query.Search, Offset: query.Offset(), Limit: int64(query.PageSize)})
+			if err != nil {
+				slog.Error("admin.sessions.patch: failed to list sessions", "err", err)
+				return c.NoContent(http.StatusInternalServerError)
+			}
+			sessions = mapSessionRowsFromEmailAsc(rows)
+		}
+	case "createdAt":
+		if query.Dir == "asc" {
+			rows, err := db.Qry.ListSessionsByCreatedAscFiltered(c.Request().Context(), db.ListSessionsByCreatedAscFilteredParams{Search: query.Search, Offset: query.Offset(), Limit: int64(query.PageSize)})
+			if err != nil {
+				slog.Error("admin.sessions.patch: failed to list sessions", "err", err)
+				return c.NoContent(http.StatusInternalServerError)
+			}
+			sessions = mapSessionRowsFromCreatedAsc(rows)
+		} else {
+			rows, err := db.Qry.ListSessionsByCreatedDescFiltered(c.Request().Context(), db.ListSessionsByCreatedDescFilteredParams{Search: query.Search, Offset: query.Offset(), Limit: int64(query.PageSize)})
+			if err != nil {
+				slog.Error("admin.sessions.patch: failed to list sessions", "err", err)
+				return c.NoContent(http.StatusInternalServerError)
+			}
+			sessions = mapSessionRowsFromCreatedDesc(rows)
+		}
+	default:
+		rows, err := db.Qry.ListSessionsByCreatedDescFiltered(c.Request().Context(), db.ListSessionsByCreatedDescFilteredParams{Search: query.Search, Offset: query.Offset(), Limit: int64(query.PageSize)})
+		if err != nil {
+			slog.Error("admin.sessions.patch: failed to list sessions", "err", err)
+			return c.NoContent(http.StatusInternalServerError)
+		}
+		sessions = mapSessionRowsFromCreatedDesc(rows)
+	}
+
+	data := DashboardData{
+		Title:         ctxi18n.T(c.Request().Context(), "admin.title"),
+		Breadcrumbs:   []utils.Crumb{{Label: ctxi18n.T(c.Request().Context(), "admin.dashboard")}},
+		UserEmail:     user.Email,
+		Tab:           "sessions",
+		UsersCount:    usersCount,
+		GroupsCount:   groupsCount,
+		EventsCount:   eventsCount,
+		MembersCount:  membersCount,
+		SignupEnabled: signupEnabled,
+		Sessions:      sessions,
+		SessionQuery:  query,
+		SessionPager:  utils.BuildTablePagination(totalItems, query),
+		UsersTable:    utils.AdminUsersTableLayout(),
+		GroupsTable:   utils.AdminGroupsTableLayout(),
+		SessionsTable: utils.AdminSessionsTableLayout(),
+	}
+
+	html, err := utils.RenderHTMLForRequest(c, DashboardPage(data))
+	if err != nil {
+		slog.Error("admin.sessions.patch: failed to render page", "err", err)
+		return c.NoContent(http.StatusInternalServerError)
+	}
+
+	utils.SSEHub.PatchHTML(c, html)
+	return c.NoContent(http.StatusOK)
 }
 
 func (a *Admin) patchRecentUsers(c echo.Context) error {

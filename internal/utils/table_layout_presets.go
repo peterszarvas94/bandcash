@@ -103,3 +103,12 @@ func AdminGroupsTableLayout() TableLayout {
 		{Key: "created_at", WidthCh: 18},
 	}, 0)
 }
+
+func AdminSessionsTableLayout() TableLayout {
+	return NewTableLayout([]TableColumn{
+		{Key: "user_email", WidthCh: 34},
+		{Key: "session_id", WidthCh: 24},
+		{Key: "created_at", WidthCh: 18},
+		{Key: "expires_at", WidthCh: 18},
+	}, 2)
+}

@@ -731,3 +731,74 @@ WHERE user_id = ? AND id != ?;
 -- name: DeleteExpiredUserSessions :exec
 DELETE FROM user_sessions
 WHERE expires_at < CURRENT_TIMESTAMP;
+
+-- name: DeleteAllUserSessions :exec
+DELETE FROM user_sessions
+WHERE user_id = ?;
+
+-- name: DeleteUserSessionByID :exec
+DELETE FROM user_sessions
+WHERE id = ?;
+
+-- name: CountSessionsFiltered :one
+SELECT COUNT(*)
+FROM user_sessions us
+JOIN users u ON u.id = us.user_id
+WHERE us.expires_at > CURRENT_TIMESTAMP
+  AND (
+    sqlc.arg(search) = ''
+    OR u.email LIKE '%' || sqlc.arg(search) || '%'
+    OR us.id LIKE '%' || sqlc.arg(search) || '%'
+  );
+
+-- name: ListSessionsByCreatedDescFiltered :many
+SELECT us.id, us.user_id, u.email AS user_email, us.created_at, us.expires_at
+FROM user_sessions us
+JOIN users u ON u.id = us.user_id
+WHERE us.expires_at > CURRENT_TIMESTAMP
+  AND (
+    sqlc.arg(search) = ''
+    OR u.email LIKE '%' || sqlc.arg(search) || '%'
+    OR us.id LIKE '%' || sqlc.arg(search) || '%'
+  )
+ORDER BY us.created_at DESC, u.email COLLATE NOCASE ASC
+LIMIT sqlc.arg(limit) OFFSET sqlc.arg(offset);
+
+-- name: ListSessionsByCreatedAscFiltered :many
+SELECT us.id, us.user_id, u.email AS user_email, us.created_at, us.expires_at
+FROM user_sessions us
+JOIN users u ON u.id = us.user_id
+WHERE us.expires_at > CURRENT_TIMESTAMP
+  AND (
+    sqlc.arg(search) = ''
+    OR u.email LIKE '%' || sqlc.arg(search) || '%'
+    OR us.id LIKE '%' || sqlc.arg(search) || '%'
+  )
+ORDER BY us.created_at ASC, u.email COLLATE NOCASE ASC
+LIMIT sqlc.arg(limit) OFFSET sqlc.arg(offset);
+
+-- name: ListSessionsByEmailAscFiltered :many
+SELECT us.id, us.user_id, u.email AS user_email, us.created_at, us.expires_at
+FROM user_sessions us
+JOIN users u ON u.id = us.user_id
+WHERE us.expires_at > CURRENT_TIMESTAMP
+  AND (
+    sqlc.arg(search) = ''
+    OR u.email LIKE '%' || sqlc.arg(search) || '%'
+    OR us.id LIKE '%' || sqlc.arg(search) || '%'
+  )
+ORDER BY u.email COLLATE NOCASE ASC, us.created_at DESC
+LIMIT sqlc.arg(limit) OFFSET sqlc.arg(offset);
+
+-- name: ListSessionsByEmailDescFiltered :many
+SELECT us.id, us.user_id, u.email AS user_email, us.created_at, us.expires_at
+FROM user_sessions us
+JOIN users u ON u.id = us.user_id
+WHERE us.expires_at > CURRENT_TIMESTAMP
+  AND (
+    sqlc.arg(search) = ''
+    OR u.email LIKE '%' || sqlc.arg(search) || '%'
+    OR us.id LIKE '%' || sqlc.arg(search) || '%'
+  )
+ORDER BY u.email COLLATE NOCASE DESC, us.created_at DESC
+LIMIT sqlc.arg(limit) OFFSET sqlc.arg(offset);

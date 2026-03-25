@@ -34,14 +34,14 @@ templ AppPrimaryNav(active string, userEmail string) {
 				</a>
 			}
 			if active == "settings" {
-				<a class="btn app-nav-link btn-active" href="/settings">
-					@icons.Settings(templ.Attributes{"class": "icon"})
-					<span>{ ctxi18n.T(ctx, "settings.title") }</span>
+				<a class="btn app-nav-link btn-active" href="/account">
+					@icons.CircleUserRound(templ.Attributes{"class": "icon"})
+					<span>{ ctxi18n.T(ctx, "settings.account") }</span>
 				</a>
 			} else {
-				<a class="btn app-nav-link" href="/settings">
-					@icons.Settings(templ.Attributes{"class": "icon"})
-					<span>{ ctxi18n.T(ctx, "settings.title") }</span>
+				<a class="btn app-nav-link" href="/account">
+					@icons.CircleUserRound(templ.Attributes{"class": "icon"})
+					<span>{ ctxi18n.T(ctx, "settings.account") }</span>
 				</a>
 			}
 			if utils.Env().SuperadminEmail != "" && userEmail != "" && userEmail == utils.Env().SuperadminEmail {
@@ -131,14 +131,14 @@ templ GroupPrimaryNav(groupID string, active string, userEmail string) {
 				<span>{ ctxi18n.T(ctx, "nav.dashboard") }</span>
 			</a>
 			if active == "settings" {
-				<a class="btn app-nav-link btn-active" href="/settings">
-					@icons.Settings(templ.Attributes{"class": "icon"})
-					<span>{ ctxi18n.T(ctx, "settings.title") }</span>
+				<a class="btn app-nav-link btn-active" href="/account">
+					@icons.CircleUserRound(templ.Attributes{"class": "icon"})
+					<span>{ ctxi18n.T(ctx, "settings.account") }</span>
 				</a>
 			} else {
-				<a class="btn app-nav-link" href="/settings">
-					@icons.Settings(templ.Attributes{"class": "icon"})
-					<span>{ ctxi18n.T(ctx, "settings.title") }</span>
+				<a class="btn app-nav-link" href="/account">
+					@icons.CircleUserRound(templ.Attributes{"class": "icon"})
+					<span>{ ctxi18n.T(ctx, "settings.account") }</span>
 				</a>
 			}
 			if utils.Env().SuperadminEmail != "" && userEmail != "" && userEmail == utils.Env().SuperadminEmail {

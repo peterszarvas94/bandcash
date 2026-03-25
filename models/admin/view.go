@@ -2,6 +2,7 @@ package admin
 
 import (
 	"database/sql"
+	"time"
 
 	"bandcash/internal/db"
 	"bandcash/internal/utils"
@@ -37,6 +38,20 @@ type DashboardData struct {
 	GroupPager utils.TablePagination
 	GroupQuery utils.TableQuery
 
-	UsersTable  utils.TableLayout
-	GroupsTable utils.TableLayout
+	// Sessions tab data
+	Sessions     []AdminSessionRow
+	SessionPager utils.TablePagination
+	SessionQuery utils.TableQuery
+
+	UsersTable    utils.TableLayout
+	GroupsTable   utils.TableLayout
+	SessionsTable utils.TableLayout
+}
+
+type AdminSessionRow struct {
+	ID        string
+	UserID    string
+	UserEmail string
+	CreatedAt sql.NullTime
+	ExpiresAt time.Time
 }

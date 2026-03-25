@@ -121,9 +121,9 @@ func SessionsMain(data SessionsData) templ.Component {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var5 string
-		templ_7745c5c3_Var5, templ_7745c5c3_Err = templ.JoinStringErrs(ctxi18n.T(ctx, "settings.sessions"))
+		templ_7745c5c3_Var5, templ_7745c5c3_Err = templ.JoinStringErrs(ctxi18n.T(ctx, "settings.account"))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/settings/page_sessions.templ`, Line: 30, Col: 44}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/settings/page_sessions.templ`, Line: 30, Col: 43}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var5))
 		if templ_7745c5c3_Err != nil {
@@ -136,9 +136,9 @@ func SessionsMain(data SessionsData) templ.Component {
 		if len(data.Sessions) > 1 {
 			templ_7745c5c3_Err = shared.LoadingActionButton(shared.LoadingActionButtonProps{
 				ClassName:    "btn btn-danger",
-				OnClick:      "@post('/settings/sessions/logout-all-others')",
+				OnClick:      "@delete('/account/sessions')",
 				DisabledExpr: "$_fetching",
-				Label:        ctxi18n.T(ctx, "settings.logout_all_others"),
+				Label:        ctxi18n.T(ctx, "settings.logout_everywhere"),
 				IconName:     icons.IconLogOut,
 			}).Render(ctx, templ_7745c5c3_Buffer)
 			if templ_7745c5c3_Err != nil {
@@ -258,7 +258,7 @@ func SessionsMain(data SessionsData) templ.Component {
 				if session.ID != data.CurrentSessionID {
 					templ_7745c5c3_Err = shared.LoadingActionButton(shared.LoadingActionButtonProps{
 						ClassName:    "btn btn-sm btn-danger",
-						OnClick:      fmt.Sprintf("@post('/settings/sessions/%s/logout')", session.ID),
+						OnClick:      fmt.Sprintf("@delete('/account/sessions/%s')", session.ID),
 						DisabledExpr: "$_fetching",
 						Label:        ctxi18n.T(ctx, "auth.logout"),
 						IconName:     icons.IconLogOut,

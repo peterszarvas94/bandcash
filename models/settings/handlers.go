@@ -14,6 +14,7 @@ import (
 	appi18n "bandcash/internal/i18n"
 	"bandcash/internal/middleware"
 	"bandcash/internal/utils"
+	shared "bandcash/models/shared"
 )
 
 type settingsSignals struct {
@@ -36,6 +37,10 @@ func (s *Settings) Index(c echo.Context) error {
 		data.CurrentLang = appi18n.NormalizeLocale(user.PreferredLang)
 	}
 	return utils.RenderPage(c, SettingsIndex(data))
+}
+
+func (s *Settings) LegacySettingsRedirect(c echo.Context) error {
+	return c.Redirect(http.StatusFound, "/account")
 }
 
 func (s *Settings) LanguagePage(c echo.Context) error {
@@ -114,8 +119,8 @@ func (s *Settings) SessionsPage(c echo.Context) error {
 	}
 
 	data := SessionsData{
-		Title:            ctxi18n.T(c.Request().Context(), "settings.sessions"),
-		Breadcrumbs:      []utils.Crumb{{Label: ctxi18n.T(c.Request().Context(), "settings.sessions")}},
+		Title:            ctxi18n.T(c.Request().Context(), "settings.account"),
+		Breadcrumbs:      []utils.Crumb{{Label: ctxi18n.T(c.Request().Context(), "settings.account")}},
 		CurrentSessionID: "",
 		Sessions:         sessions,
 	}
@@ -172,26 +177,19 @@ func (s *Settings) LogoutAllOtherSessions(c echo.Context) error {
 
 	userID := middleware.GetUserID(c)
 
-	// Get current session from cookie
-	cookie, err := c.Cookie(utils.SessionCookieName)
-	if err != nil {
-		return c.NoContent(http.StatusBadRequest)
-	}
-
-	currentSession, err := db.Qry.GetUserSessionByToken(c.Request().Context(), cookie.Value)
-	if err != nil {
-		return c.NoContent(http.StatusBadRequest)
-	}
-
-	err = db.Qry.DeleteOtherUserSessions(c.Request().Context(), db.DeleteOtherUserSessionsParams{
-		UserID: userID,
-		ID:     currentSession.ID,
-	})
-	if err != nil {
-		slog.Error("settings.sessions: failed to delete other sessions", "user_id", userID, "err", err)
+	if err := db.Qry.DeleteAllUserSessions(c.Request().Context(), userID); err != nil {
+		slog.Error("settings.sessions: failed to delete all sessions", "user_id", userID, "err", err)
+		utils.Notify(c, "error", ctxi18n.T(c.Request().Context(), "settings.notifications.logout_everywhere_failed"))
+		if notificationsHTML, renderErr := utils.RenderHTMLForRequest(c, shared.Notifications()); renderErr == nil {
+			_ = utils.SSEHub.PatchHTML(c, notificationsHTML)
+		}
 		return c.NoContent(http.StatusInternalServerError)
 	}
 
-	utils.Notify(c, "success", ctxi18n.T(c.Request().Context(), "settings.notifications.other_sessions_logged_out"))
+	utils.ClearSessionCookie(c)
+	if err := utils.SSEHub.Redirect(c, "/"); err != nil {
+		return c.Redirect(http.StatusFound, "/")
+	}
+
 	return c.NoContent(http.StatusOK)
 }

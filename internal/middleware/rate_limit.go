@@ -43,7 +43,7 @@ func AuthRateLimit(next echo.HandlerFunc) echo.HandlerFunc {
 
 	store := echoMiddleware.NewRateLimiterMemoryStoreWithConfig(echoMiddleware.RateLimiterMemoryStoreConfig{
 		Rate:      rate.Limit(5.0 / 60.0),
-		Burst:     3,
+		Burst:     1,
 		ExpiresIn: 10 * time.Minute,
 	})
 

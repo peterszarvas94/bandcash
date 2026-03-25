@@ -142,12 +142,21 @@ en:
     page_title: "Bandcash - Settings"
     language: "Language"
     account: "Account"
+    sessions: "Sessions"
+    current_session: "Current session"
+    session_from: "Session from"
+    no_sessions: "No active sessions"
+    expires: "Expires"
+    logout_everywhere: "Log out everywhere"
     notifications:
       language_saved: "Language saved."
+      session_logged_out: "Session logged out."
+      other_sessions_logged_out: "Logged out from all other sessions."
+      logout_everywhere_failed: "Logout failed. Please try again."
   language:
     en: "English"
     hu: "Hungarian"
-  table:
+    table:
     empty: "no items"
     all: "All"
     total: "Total"
@@ -169,6 +178,7 @@ en:
     search_placeholder_access: "Search access"
     search_placeholder_admin_users: "Search email"
     search_placeholder_admin_groups: "Search group name"
+    search_placeholder_admin_sessions: "Search email or session ID"
     page: "Page"
     first: "First"
     prev: "Previous"
@@ -396,3 +406,11 @@ en:
       flags: "Flags"
       users: "Users"
       groups: "Groups"
+      sessions: "Sessions"
+    sessions:
+      session_id: "Session ID"
+      logout_all_user: "Log out all user sessions"
+      logged_out: "Session logged out."
+      logged_out_all: "All sessions for the user logged out."
+      logout_failed: "Could not log out session."
+      logout_all_failed: "Could not log out all sessions for user."

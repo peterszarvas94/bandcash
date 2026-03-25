@@ -14,10 +14,13 @@ func RegisterRoutes(e *echo.Echo) *Admin {
 	g.GET("/flags", a.FlagsPage)
 	g.GET("/users", a.UsersPage)
 	g.GET("/groups", a.GroupsPage)
+	g.GET("/sessions", a.SessionsPage)
 	g.GET("", a.Dashboard)
 	g.POST("/flags/signup", a.UpdateSignupFlag)
 	g.POST("/users/:userId/ban", a.BanUser)
 	g.POST("/users/:userId/unban", a.UnbanUser)
+	g.DELETE("/users/:id/sessions/:sessionid", a.LogoutSession)
+	g.DELETE("/users/:id/sessions/", a.LogoutAllUserSessions)
 
 	return a
 }

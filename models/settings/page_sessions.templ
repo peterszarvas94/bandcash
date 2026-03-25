@@ -27,13 +27,13 @@ templ SessionsPage(data SessionsData) {
 templ SessionsMain(data SessionsData) {
 	<section class="pb">
 		<header class="row items-center justify-between pb">
-			<h1>{ ctxi18n.T(ctx, "settings.sessions") }</h1>
+			<h1>{ ctxi18n.T(ctx, "settings.account") }</h1>
 			if len(data.Sessions) > 1 {
 				@shared.LoadingActionButton(shared.LoadingActionButtonProps{
 					ClassName:    "btn btn-danger",
-					OnClick:      "@post('/settings/sessions/logout-all-others')",
+					OnClick:      "@delete('/account/sessions')",
 					DisabledExpr: "$_fetching",
-					Label:        ctxi18n.T(ctx, "settings.logout_all_others"),
+					Label:        ctxi18n.T(ctx, "settings.logout_everywhere"),
 					IconName:      icons.IconLogOut,
 				})
 			}
@@ -62,7 +62,7 @@ templ SessionsMain(data SessionsData) {
 						if session.ID != data.CurrentSessionID {
 							@shared.LoadingActionButton(shared.LoadingActionButtonProps{
 								ClassName:    "btn btn-sm btn-danger",
-								OnClick:      fmt.Sprintf("@post('/settings/sessions/%s/logout')", session.ID),
+								OnClick:      fmt.Sprintf("@delete('/account/sessions/%s')", session.ID),
 								DisabledExpr: "$_fetching",
 								Label:        ctxi18n.T(ctx, "auth.logout"),
 								IconName:      icons.IconLogOut,

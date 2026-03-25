@@ -154,6 +154,71 @@ templ GroupsTableSection(data DashboardData) {
 	</div>
 }
 
+templ SessionsTableSection(data DashboardData) {
+	<div class="table-section">
+		@shared.TableSearchForm("/admin/sessions", data.SessionQuery, "table.search_placeholder_admin_sessions")
+		@adminTablePagination(data.SessionPager, data.SessionQuery, "sessions")
+		@shared.TableOpenFixed(data.SessionsTable, "table-sticky-actions") {
+			<thead>
+				<tr>
+					@shared.THCol(data.SessionsTable.Col("user_email")) {
+						@shared.TableSortHeader(ctxi18n.T(ctx, "auth.email"), "email", data.SessionQuery, adminSessionsSortURL(data, "email"))
+					}
+					@shared.THCol(data.SessionsTable.Col("session_id")) {
+						{ ctxi18n.T(ctx, "admin.sessions.session_id") }
+					}
+					@shared.THCol(data.SessionsTable.Col("created_at")) {
+						@shared.TableSortHeader(ctxi18n.T(ctx, "groups.created"), "createdAt", data.SessionQuery, adminSessionsSortURL(data, "createdAt"))
+					}
+					@shared.THCol(data.SessionsTable.Col("expires_at")) {
+						{ ctxi18n.T(ctx, "settings.expires") }
+					}
+					@shared.THActions(data.SessionsTable.ActionsWidthRem)
+				</tr>
+			</thead>
+			<tbody>
+				for _, session := range data.Sessions {
+					<tr>
+						<td>{ session.UserEmail }</td>
+						<td>{ session.ID }</td>
+						<td>
+							if session.CreatedAt.Valid {
+								{ utils.FormatTimeLocalized(ctx, session.CreatedAt.Time) }
+							} else {
+								{ "-" }
+							}
+						</td>
+						<td>{ utils.FormatTimeLocalized(ctx, session.ExpiresAt) }</td>
+						<td data-actions-col>
+							@shared.LoadingIconActionButton(shared.LoadingIconActionButtonProps{
+								ClassName:    "btn btn-sm btn-danger btn-icon",
+								OnClick:      fmt.Sprintf("@delete('/admin/users/%s/sessions/%s')", session.UserID, session.ID),
+								DisabledExpr: "$_fetching",
+								AriaLabel:    ctxi18n.T(ctx, "auth.logout"),
+								Title:        ctxi18n.T(ctx, "auth.logout"),
+								IconName:     icons.IconLogOut,
+							})
+							@shared.LoadingIconActionButton(shared.LoadingIconActionButtonProps{
+								ClassName:    "btn btn-sm btn-icon",
+								OnClick:      fmt.Sprintf("@delete('/admin/users/%s/sessions/')", session.UserID),
+								DisabledExpr: "$_fetching",
+								AriaLabel:    ctxi18n.T(ctx, "admin.sessions.logout_all_user"),
+								Title:        ctxi18n.T(ctx, "admin.sessions.logout_all_user"),
+								IconName:     icons.IconUsers,
+							})
+						</td>
+					</tr>
+				}
+				if len(data.Sessions) == 0 {
+					<tr>
+						<td colspan="5">{ ctxi18n.T(ctx, "table.empty") }</td>
+					</tr>
+				}
+			</tbody>
+		}
+	</div>
+}
+
 templ adminTablePagination(pager utils.TablePagination, query utils.TableQuery, tab string) {
 	@shared.TablePaginationRow(fmt.Sprintf("/admin/%s", tab), query, pager)
 }

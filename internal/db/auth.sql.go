@@ -106,6 +106,25 @@ func (q *Queries) CountGroupReadersFiltered(ctx context.Context, arg CountGroupR
 	return count, err
 }
 
+const countSessionsFiltered = `-- name: CountSessionsFiltered :one
+SELECT COUNT(*)
+FROM user_sessions us
+JOIN users u ON u.id = us.user_id
+WHERE us.expires_at > CURRENT_TIMESTAMP
+  AND (
+    ?1 = ''
+    OR u.email LIKE '%' || ?1 || '%'
+    OR us.id LIKE '%' || ?1 || '%'
+  )
+`
+
+func (q *Queries) CountSessionsFiltered(ctx context.Context, search interface{}) (int64, error) {
+	row := q.db.QueryRowContext(ctx, countSessionsFiltered, search)
+	var count int64
+	err := row.Scan(&count)
+	return count, err
+}
+
 const countUserGroupsFiltered = `-- name: CountUserGroupsFiltered :one
 SELECT COUNT(*) FROM (
   SELECT g.id FROM groups g
@@ -361,6 +380,16 @@ func (q *Queries) CreateUserSession(ctx context.Context, arg CreateUserSessionPa
 	return i, err
 }
 
+const deleteAllUserSessions = `-- name: DeleteAllUserSessions :exec
+DELETE FROM user_sessions
+WHERE user_id = ?
+`
+
+func (q *Queries) DeleteAllUserSessions(ctx context.Context, userID string) error {
+	_, err := q.db.ExecContext(ctx, deleteAllUserSessions, userID)
+	return err
+}
+
 const deleteExpiredMagicLinks = `-- name: DeleteExpiredMagicLinks :exec
 DELETE FROM magic_links
 WHERE action != 'invite'
@@ -438,6 +467,16 @@ type DeleteUserSessionParams struct {
 
 func (q *Queries) DeleteUserSession(ctx context.Context, arg DeleteUserSessionParams) error {
 	_, err := q.db.ExecContext(ctx, deleteUserSession, arg.ID, arg.UserID)
+	return err
+}
+
+const deleteUserSessionByID = `-- name: DeleteUserSessionByID :exec
+DELETE FROM user_sessions
+WHERE id = ?
+`
+
+func (q *Queries) DeleteUserSessionByID(ctx context.Context, id string) error {
+	_, err := q.db.ExecContext(ctx, deleteUserSessionByID, id)
 	return err
 }
 
@@ -1257,6 +1296,234 @@ func (q *Queries) ListGroupsByReader(ctx context.Context, arg ListGroupsByReader
 			&i.Name,
 			&i.AdminUserID,
 			&i.CreatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const listSessionsByCreatedAscFiltered = `-- name: ListSessionsByCreatedAscFiltered :many
+SELECT us.id, us.user_id, u.email AS user_email, us.created_at, us.expires_at
+FROM user_sessions us
+JOIN users u ON u.id = us.user_id
+WHERE us.expires_at > CURRENT_TIMESTAMP
+  AND (
+    ?1 = ''
+    OR u.email LIKE '%' || ?1 || '%'
+    OR us.id LIKE '%' || ?1 || '%'
+  )
+ORDER BY us.created_at ASC, u.email COLLATE NOCASE ASC
+LIMIT ?3 OFFSET ?2
+`
+
+type ListSessionsByCreatedAscFilteredParams struct {
+	Search interface{} `json:"search"`
+	Offset int64       `json:"offset"`
+	Limit  int64       `json:"limit"`
+}
+
+type ListSessionsByCreatedAscFilteredRow struct {
+	ID        string       `json:"id"`
+	UserID    string       `json:"user_id"`
+	UserEmail string       `json:"user_email"`
+	CreatedAt sql.NullTime `json:"created_at"`
+	ExpiresAt time.Time    `json:"expires_at"`
+}
+
+func (q *Queries) ListSessionsByCreatedAscFiltered(ctx context.Context, arg ListSessionsByCreatedAscFilteredParams) ([]ListSessionsByCreatedAscFilteredRow, error) {
+	rows, err := q.db.QueryContext(ctx, listSessionsByCreatedAscFiltered, arg.Search, arg.Offset, arg.Limit)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []ListSessionsByCreatedAscFilteredRow{}
+	for rows.Next() {
+		var i ListSessionsByCreatedAscFilteredRow
+		if err := rows.Scan(
+			&i.ID,
+			&i.UserID,
+			&i.UserEmail,
+			&i.CreatedAt,
+			&i.ExpiresAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const listSessionsByCreatedDescFiltered = `-- name: ListSessionsByCreatedDescFiltered :many
+SELECT us.id, us.user_id, u.email AS user_email, us.created_at, us.expires_at
+FROM user_sessions us
+JOIN users u ON u.id = us.user_id
+WHERE us.expires_at > CURRENT_TIMESTAMP
+  AND (
+    ?1 = ''
+    OR u.email LIKE '%' || ?1 || '%'
+    OR us.id LIKE '%' || ?1 || '%'
+  )
+ORDER BY us.created_at DESC, u.email COLLATE NOCASE ASC
+LIMIT ?3 OFFSET ?2
+`
+
+type ListSessionsByCreatedDescFilteredParams struct {
+	Search interface{} `json:"search"`
+	Offset int64       `json:"offset"`
+	Limit  int64       `json:"limit"`
+}
+
+type ListSessionsByCreatedDescFilteredRow struct {
+	ID        string       `json:"id"`
+	UserID    string       `json:"user_id"`
+	UserEmail string       `json:"user_email"`
+	CreatedAt sql.NullTime `json:"created_at"`
+	ExpiresAt time.Time    `json:"expires_at"`
+}
+
+func (q *Queries) ListSessionsByCreatedDescFiltered(ctx context.Context, arg ListSessionsByCreatedDescFilteredParams) ([]ListSessionsByCreatedDescFilteredRow, error) {
+	rows, err := q.db.QueryContext(ctx, listSessionsByCreatedDescFiltered, arg.Search, arg.Offset, arg.Limit)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []ListSessionsByCreatedDescFilteredRow{}
+	for rows.Next() {
+		var i ListSessionsByCreatedDescFilteredRow
+		if err := rows.Scan(
+			&i.ID,
+			&i.UserID,
+			&i.UserEmail,
+			&i.CreatedAt,
+			&i.ExpiresAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const listSessionsByEmailAscFiltered = `-- name: ListSessionsByEmailAscFiltered :many
+SELECT us.id, us.user_id, u.email AS user_email, us.created_at, us.expires_at
+FROM user_sessions us
+JOIN users u ON u.id = us.user_id
+WHERE us.expires_at > CURRENT_TIMESTAMP
+  AND (
+    ?1 = ''
+    OR u.email LIKE '%' || ?1 || '%'
+    OR us.id LIKE '%' || ?1 || '%'
+  )
+ORDER BY u.email COLLATE NOCASE ASC, us.created_at DESC
+LIMIT ?3 OFFSET ?2
+`
+
+type ListSessionsByEmailAscFilteredParams struct {
+	Search interface{} `json:"search"`
+	Offset int64       `json:"offset"`
+	Limit  int64       `json:"limit"`
+}
+
+type ListSessionsByEmailAscFilteredRow struct {
+	ID        string       `json:"id"`
+	UserID    string       `json:"user_id"`
+	UserEmail string       `json:"user_email"`
+	CreatedAt sql.NullTime `json:"created_at"`
+	ExpiresAt time.Time    `json:"expires_at"`
+}
+
+func (q *Queries) ListSessionsByEmailAscFiltered(ctx context.Context, arg ListSessionsByEmailAscFilteredParams) ([]ListSessionsByEmailAscFilteredRow, error) {
+	rows, err := q.db.QueryContext(ctx, listSessionsByEmailAscFiltered, arg.Search, arg.Offset, arg.Limit)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []ListSessionsByEmailAscFilteredRow{}
+	for rows.Next() {
+		var i ListSessionsByEmailAscFilteredRow
+		if err := rows.Scan(
+			&i.ID,
+			&i.UserID,
+			&i.UserEmail,
+			&i.CreatedAt,
+			&i.ExpiresAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const listSessionsByEmailDescFiltered = `-- name: ListSessionsByEmailDescFiltered :many
+SELECT us.id, us.user_id, u.email AS user_email, us.created_at, us.expires_at
+FROM user_sessions us
+JOIN users u ON u.id = us.user_id
+WHERE us.expires_at > CURRENT_TIMESTAMP
+  AND (
+    ?1 = ''
+    OR u.email LIKE '%' || ?1 || '%'
+    OR us.id LIKE '%' || ?1 || '%'
+  )
+ORDER BY u.email COLLATE NOCASE DESC, us.created_at DESC
+LIMIT ?3 OFFSET ?2
+`
+
+type ListSessionsByEmailDescFilteredParams struct {
+	Search interface{} `json:"search"`
+	Offset int64       `json:"offset"`
+	Limit  int64       `json:"limit"`
+}
+
+type ListSessionsByEmailDescFilteredRow struct {
+	ID        string       `json:"id"`
+	UserID    string       `json:"user_id"`
+	UserEmail string       `json:"user_email"`
+	CreatedAt sql.NullTime `json:"created_at"`
+	ExpiresAt time.Time    `json:"expires_at"`
+}
+
+func (q *Queries) ListSessionsByEmailDescFiltered(ctx context.Context, arg ListSessionsByEmailDescFilteredParams) ([]ListSessionsByEmailDescFilteredRow, error) {
+	rows, err := q.db.QueryContext(ctx, listSessionsByEmailDescFiltered, arg.Search, arg.Offset, arg.Limit)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []ListSessionsByEmailDescFilteredRow{}
+	for rows.Next() {
+		var i ListSessionsByEmailDescFilteredRow
+		if err := rows.Scan(
+			&i.ID,
+			&i.UserID,
+			&i.UserEmail,
+			&i.CreatedAt,
+			&i.ExpiresAt,
 		); err != nil {
 			return nil, err
 		}
