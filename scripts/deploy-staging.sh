@@ -11,9 +11,17 @@ fi
 
 echo "Deploying to staging from development branch..."
 
-# Run kamal deploy with staging config
+# Run kamal deploy with staging config (skip hooks to avoid lock conflict)
 KAMAL_BIN=$(mise which kamal)
-env -u GEM_HOME -u GEM_PATH "$KAMAL_BIN" deploy --config-file config/deploy.staging.yml
+env -u GEM_HOME -u GEM_PATH "$KAMAL_BIN" deploy --config-file config/deploy.staging.yml --skip-hooks
+
+# Boot BetterStack accessory after deployment
+echo "Starting BetterStack logging accessory..."
+if env -u GEM_HOME -u GEM_PATH "$KAMAL_BIN" accessory details better-stack --config-file config/deploy.staging.yml >/dev/null 2>&1; then
+  env -u GEM_HOME -u GEM_PATH "$KAMAL_BIN" accessory reboot better-stack --config-file config/deploy.staging.yml
+else
+  env -u GEM_HOME -u GEM_PATH "$KAMAL_BIN" accessory boot better-stack --config-file config/deploy.staging.yml
+fi
 
 # After successful deployment, run seed command on staging server
 echo "Seeding staging database..."

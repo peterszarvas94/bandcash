@@ -12,3 +12,4 @@ for accessory in better-stack; do
 done
 
 ssh peti@bandcash "docker buildx prune -af --filter 'until=24h'" || true
+
