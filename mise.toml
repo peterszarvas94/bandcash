@@ -36,9 +36,9 @@ tag = "./scripts/tag.sh"
 setup = "env -u GEM_HOME -u GEM_PATH $(mise which kamal) setup"
 setup-staging = "env -u GEM_HOME -u GEM_PATH $(mise which kamal) setup --config-file config/deploy.staging.yml"
 deploy-check = "env -u GEM_HOME -u GEM_PATH $(mise which kamal) config"
-deploy = "./scripts/deploy.sh"
+deploy = "./scripts/deploy.sh production"
 deploy-staging-check = "env -u GEM_HOME -u GEM_PATH $(mise which kamal) config --config-file config/deploy.staging.yml"
-deploy-staging = "./scripts/deploy-staging.sh"
+deploy-staging = "./scripts/deploy.sh staging"
 
 [tasks.build]
 depends = ["assets"]
