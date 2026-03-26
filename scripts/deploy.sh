@@ -63,8 +63,18 @@ else
   env -u GEM_HOME -u GEM_PATH "$KAMAL_BIN" accessory boot better-stack $CONFIG_FLAG
 fi
 
-# Cleanup old Docker build cache
-echo "Pruning Docker build cache..."
-ssh peti@"$SERVER_SSH" "docker buildx prune -af --filter 'until=24h'" || true
+# Cleanup Docker BuildKit cache after deployment
+ssh peti@"$SERVER_SSH" "
+BUILDKIT_CONTAINER=buildx_buildkit_kamal-remote-ssh---peti-${SERVER_SSH}0
+
+if ! docker exec \"\${BUILDKIT_CONTAINER}\" true >/dev/null 2>&1; then
+  exit 0
+fi
+
+BEFORE_MB=\$(docker exec \"\${BUILDKIT_CONTAINER}\" sh -lc 'du -sm /var/lib/buildkit | cut -f1')
+docker exec \"\${BUILDKIT_CONTAINER}\" buildctl prune --all --keep-storage 6144 >/dev/null
+AFTER_MB=\$(docker exec \"\${BUILDKIT_CONTAINER}\" sh -lc 'du -sm /var/lib/buildkit | cut -f1')
+echo \"BuildKit cache: \${BEFORE_MB}MB -> \${AFTER_MB}MB (freed \$((BEFORE_MB - AFTER_MB))MB)\"
+" || true
 
 echo "$ENV deployment complete!"
