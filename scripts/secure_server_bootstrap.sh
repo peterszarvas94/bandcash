@@ -9,6 +9,8 @@ set -euo pipefail
 HOST="${HOST:-}"
 SSH_PORT="${SSH_PORT:-22}"
 ADMIN_USER="${ADMIN_USER:-}"
+SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" >/dev/null 2>&1 && pwd)"
+MACHINE_REPORT_SCRIPT_PATH="$SCRIPT_DIR/machine_report.sh"
 
 if [ -z "$HOST" ]; then
   read -r -p "Server host (IP or DNS): " HOST
@@ -28,11 +30,19 @@ if [ -z "$ADMIN_USER" ]; then
   exit 1
 fi
 
+if [ ! -f "$MACHINE_REPORT_SCRIPT_PATH" ]; then
+  echo "Machine report script not found at: $MACHINE_REPORT_SCRIPT_PATH" >&2
+  exit 1
+fi
+
+MACHINE_REPORT_SCRIPT_B64="$(base64 -w 0 "$MACHINE_REPORT_SCRIPT_PATH")"
+
 echo "[1/4] Connecting as root on $HOST:$SSH_PORT (you may be asked for root password)..."
 
 ssh -p "$SSH_PORT" root@"$HOST" \
   ADMIN_USER="$ADMIN_USER" \
   SSH_PORT="$SSH_PORT" \
+  MACHINE_REPORT_SCRIPT_B64="$MACHINE_REPORT_SCRIPT_B64" \
   'bash -s' <<'EOF'
 set -euo pipefail
 
@@ -99,6 +109,32 @@ chmod 600 "/home/$ADMIN_USER/.ssh/authorized_keys"
 # Copy root's authorized_keys (already verified it exists in preflight)
 cat /root/.ssh/authorized_keys >> "/home/$ADMIN_USER/.ssh/authorized_keys"
 sort -u "/home/$ADMIN_USER/.ssh/authorized_keys" -o "/home/$ADMIN_USER/.ssh/authorized_keys"
+
+echo "[Machine Report] Installing login machine report..."
+MACHINE_REPORT_TMP="$(mktemp /tmp/machine_report.XXXXXX.sh)"
+printf '%s' "$MACHINE_REPORT_SCRIPT_B64" | base64 -d >"$MACHINE_REPORT_TMP"
+
+# Fix invalid zfs detection check in upstream script.
+sed -i 's/if \[ "$(command -v zfs)" \] && \[ "$(grep -q "zfs" \/proc\/mounts)" \]; then/if command -v zfs >\/dev\/null 2>\&1 \&\& grep -q "zfs" \/proc\/mounts; then/' "$MACHINE_REPORT_TMP"
+
+install -m 0755 "$MACHINE_REPORT_TMP" /usr/local/bin/machine_report.sh
+install -m 0755 "$MACHINE_REPORT_TMP" "/home/$ADMIN_USER/.machine_report.sh"
+chown "$ADMIN_USER:$ADMIN_USER" "/home/$ADMIN_USER/.machine_report.sh"
+rm -f "$MACHINE_REPORT_TMP"
+
+BASHRC="/home/$ADMIN_USER/.bashrc"
+touch "$BASHRC"
+chown "$ADMIN_USER:$ADMIN_USER" "$BASHRC"
+
+if ! grep -q "machine_report.sh" "$BASHRC"; then
+  cat >>"$BASHRC" <<'BASHRC_SNIPPET'
+
+# Machine report on interactive shell startup
+if [[ $- == *i* ]] && [ -x "$HOME/.machine_report.sh" ]; then
+  "$HOME/.machine_report.sh"
+fi
+BASHRC_SNIPPET
+fi
 
 echo "[SSH] Hardening SSH configuration..."
 install -d -m 755 /etc/ssh/sshd_config.d
