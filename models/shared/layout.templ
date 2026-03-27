@@ -9,7 +9,7 @@ import (
 templ Header(crumbs []utils.Crumb, nav templ.Component) {
 	<header>
 		<div class="header_inner">
-			@BreadcrumbTrail(crumbs)
+			@Breadcrumbs(crumbs)
 			@nav
 		</div>
 	</header>

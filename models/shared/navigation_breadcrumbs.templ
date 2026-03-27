@@ -9,13 +9,7 @@ import (
 	icons "bandcash/models/shared/icons"
 )
 
-templ Breadcrumbs(crumbs []utils.Crumb, userEmail string) {
-	<header class="topbar pb">
-		@BreadcrumbTrail(crumbs)
-	</header>
-}
-
-templ BreadcrumbTrail(crumbs []utils.Crumb) {
+templ Breadcrumbs(crumbs []utils.Crumb) {
 	<nav class="breadcrumbs hide-mobile" aria-label={ ctxi18n.T(ctx, "nav.breadcrumb") }>
 		<a href="/">
 			@icons.BadgeEuro(templ.Attributes{"class": "icon"})

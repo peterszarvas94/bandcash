@@ -752,16 +752,27 @@
     }
   }
 
-  .single-col {
-    max-width: 42rem;
-    margin: 0 auto;
-    padding-top: var(--page-padding-top);
-    padding-right: var(--page-padding-inline);
-    padding-bottom: var(--page-padding-bottom);
-    padding-left: var(--page-padding-inline);
+  .home {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    min-height: 100vh;
+
+    .home_inner {
+      padding: var(--space);
+      width: 100%;
+      max-width: var(--content-width);
+      display: flex;
+      flex-direction: column;
+      flex: 1 0 auto;
+    }
   }
 
   .error-page {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
     min-height: 100vh;
     align-content: center;
 
@@ -1107,12 +1118,12 @@
     }
   }
 
-  .topbar,
   section.details {
     display: flex;
     align-items: center;
     gap: var(--space);
     flex-wrap: wrap;
+    padding-bottom: calc(var(--space) * 2);
 
     > .actions {
       margin-left: auto;
@@ -1163,9 +1174,6 @@
             gap: calc(var(--space) * 0.5);
           }
         }
-
-        nav.nav {
-        }
       }
     }
 
@@ -1186,24 +1194,24 @@
         min-height: calc(100lvh - 8rem);
         flex: 1 0 auto;
       }
+    }
+  }
 
-      footer {
-        border-top: var(--border) solid var(--border-color);
-        width: 100%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
+  footer {
+    border-top: var(--border) solid var(--border-color);
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 
-        nav {
-          padding: var(--space);
-          width: 100%;
-          max-width: var(--content-width);
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          gap: calc(var(--space) * 3);
-        }
-      }
+    nav {
+      padding: var(--space);
+      width: 100%;
+      max-width: var(--content-width);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: calc(var(--space) * 3);
     }
   }
 

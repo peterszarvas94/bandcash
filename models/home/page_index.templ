@@ -5,93 +5,89 @@ import (
 
 	appi18n "bandcash/internal/i18n"
 	"bandcash/internal/utils"
-	icons "bandcash/models/shared/icons"
 	shared "bandcash/models/shared"
+	icons "bandcash/models/shared/icons"
 )
 
 templ HomeIndex(data HomeData) {
 	{{ tabID := utils.GenerateID("tab") }}
+	{{ userEmail := data.UserEmail }}
 	<!DOCTYPE html>
 	<html lang={ appi18n.LocaleCode(ctx) }>
 		@shared.Head(data.Title)
 		<body>
 			<div data-signals={ templ.JSONString(map[string]any{"tab_id": tabID, "csrf": utils.CSRFTokenFromContext(ctx), "authError": "", "authServerError": "", "authState": "form", "submittedEmail": "", "submittedEmailMasked": "", "resendRemaining": 0, "formData": map[string]any{"email": ""}}) } data-init="@get('/sse')"></div>
 			@shared.Notifications()
-			<main id="app" class="single-col grid">
-				<figure class="home-hero">
-					<img src="/static/img/bandcash.png" alt="Bandcash app preview"/>
-					<figcaption>
-						<h1>{ data.Title }</h1>
-					</figcaption>
-				</figure>
-				<form class="form" method="get" action="/">
-					<div class="field">
-						<label for="home-lang">{ ctxi18n.T(ctx, "account.language") }</label>
-						<div class="row row-wrap items-center">
-							<select id="home-lang" name="lang" class="input w-fit" onchange="this.form.submit()">
-								<option value="en" selected?={ data.CurrentLang == "en" }>{ ctxi18n.T(ctx, "language.en") }</option>
-								<option value="hu" selected?={ data.CurrentLang == "hu" }>{ ctxi18n.T(ctx, "language.hu") }</option>
-							</select>
+			<main id="app" class="home">
+				<div class="home_inner">
+					<figure class="home-hero">
+						<img src="/static/img/bandcash.png" alt="Bandcash app preview"/>
+						<figcaption>
+							<h1>{ data.Title }</h1>
+						</figcaption>
+					</figure>
+					<form class="form" method="get" action="/">
+						<div class="field">
+							<label for="home-lang">{ ctxi18n.T(ctx, "account.language") }</label>
+							<div class="row row-wrap items-center">
+								<select id="home-lang" name="lang" class="input w-fit" onchange="this.form.submit()">
+									<option value="en" selected?={ data.CurrentLang == "en" }>{ ctxi18n.T(ctx, "language.en") }</option>
+									<option value="hu" selected?={ data.CurrentLang == "hu" }>{ ctxi18n.T(ctx, "language.hu") }</option>
+								</select>
+							</div>
 						</div>
-					</div>
-				</form>
-				if data.IsAuthenticated {
-					<div class="form">
-						<p>{ ctxi18n.T(ctx, "home.logged_in") }</p>
-						<div class="row row-wrap">
-							<a class="btn btn-primary" href="/groups">{ ctxi18n.T(ctx, "home.go_to_groups") }</a>
-						</div>
-					</div>
-				} else {
-					<div data-show="$authState === 'form'">
-						<form class="form" data-on:submit="@post('/auth/login')" data-indicator:_fetching>
-							<div class="field">
-								<label for="home-auth-email" class="row">{ ctxi18n.T(ctx, "auth.email") } <span class="color-error">*</span></label>
+					</form>
+					if data.IsAuthenticated {
+						<div class="form">
+							<p>{ ctxi18n.T(ctx, "home.logged_in") }</p>
 							<div class="row row-wrap">
-								<input id="home-auth-email" type="email" class="input" data-bind="formData.email" placeholder={ ctxi18n.T(ctx, "auth.email_placeholder") }/>
-							@shared.LoadingSubmitButton(shared.LoadingSubmitButtonProps{
-								ClassName: "btn btn-primary",
-								Label:     ctxi18n.T(ctx, "auth.send_link"),
-								IconName:  icons.IconSend,
-							})
+								<a class="btn btn-primary" href="/groups">{ ctxi18n.T(ctx, "home.go_to_groups") }</a>
+								<a class="btn" href="/account">{ ctxi18n.T(ctx, "account.account") }</a>
 							</div>
-								<div data-show="$authError !== ''" class="color-error" data-text="$authError"></div>
-								<div data-show="$authServerError !== ''" class="color-error" data-text="$authServerError"></div>
-							</div>
-						</form>
-					</div>
-					<div data-show="$authState === 'sent'" style="display: none" class="form">
-						<div data-show="$authState === 'sent'" data-on-interval__duration.1s="$resendRemaining = Math.max(0, $resendRemaining - 1)" style="display: none"></div>
-						<p>{ ctxi18n.T(ctx, "auth.check_email_safe") }</p>
-						<p><strong>{ ctxi18n.T(ctx, "auth.masked_email") }:</strong> <span data-text="$submittedEmailMasked"></span></p>
-						<div class="row row-wrap">
-							@shared.LoadingActionButton(shared.LoadingActionButtonProps{
-								ClassName:     "btn",
-								OnClick:       "@post('/auth/login')",
-								DisabledExpr:  "$_fetching || $resendRemaining > 0",
-								Label:         ctxi18n.T(ctx, "auth.resend_email"),
-								IconName:      icons.IconSend,
-							})
-							<span data-show="$resendRemaining > 0" data-text="'(' + $resendRemaining + 's)'"></span>
-							@shared.LoadingActionButton(shared.LoadingActionButtonProps{
-								ClassName:     "btn",
-								OnClick:       "$authState = 'form'; $authError = ''; $authServerError = ''; $formData.email = $submittedEmail",
-								DisabledExpr:  "$_fetching",
-								Label:         ctxi18n.T(ctx, "auth.use_different_email"),
-								IconName:      icons.IconPencil,
-							})
 						</div>
-					</div>
-				}
-				<div class="row row-wrap text-sm pt">
-					<a class="link" href="/pricing">Pricing</a>
-					<a class="link" href="/terms-and-conditions">Terms and Conditions</a>
-					<a class="link" href="/privacy-policy">Privacy Policy</a>
-					<a class="link" href="/refund-policy">Refund Policy</a>
-					if utils.Env().AppEnv == "development" {
-						<a class="link" href="/dev">Dev</a>
+					} else {
+						<div data-show="$authState === 'form'">
+							<form class="form" data-on:submit="@post('/auth/login')" data-indicator:_fetching>
+								<div class="field">
+									<label for="home-auth-email" class="row">{ ctxi18n.T(ctx, "auth.email") } <span class="color-error">*</span></label>
+									<div class="row row-wrap">
+										<input id="home-auth-email" type="email" class="input" data-bind="formData.email" placeholder={ ctxi18n.T(ctx, "auth.email_placeholder") }/>
+										@shared.LoadingSubmitButton(shared.LoadingSubmitButtonProps{
+											ClassName: "btn btn-primary",
+											Label:     ctxi18n.T(ctx, "auth.send_link"),
+											IconName:  icons.IconSend,
+										})
+									</div>
+									<div data-show="$authError !== ''" class="color-error" data-text="$authError"></div>
+									<div data-show="$authServerError !== ''" class="color-error" data-text="$authServerError"></div>
+								</div>
+							</form>
+						</div>
+						<div data-show="$authState === 'sent'" style="display: none" class="form">
+							<div data-show="$authState === 'sent'" data-on-interval__duration.1s="$resendRemaining = Math.max(0, $resendRemaining - 1)" style="display: none"></div>
+							<p>{ ctxi18n.T(ctx, "auth.check_email_safe") }</p>
+							<p><strong>{ ctxi18n.T(ctx, "auth.masked_email") }:</strong> <span data-text="$submittedEmailMasked"></span></p>
+							<div class="row row-wrap">
+								@shared.LoadingActionButton(shared.LoadingActionButtonProps{
+									ClassName:    "btn",
+									OnClick:      "@post('/auth/login')",
+									DisabledExpr: "$_fetching || $resendRemaining > 0",
+									Label:        ctxi18n.T(ctx, "auth.resend_email"),
+									IconName:     icons.IconSend,
+								})
+								<span data-show="$resendRemaining > 0" data-text="'(' + $resendRemaining + 's)'"></span>
+								@shared.LoadingActionButton(shared.LoadingActionButtonProps{
+									ClassName:    "btn",
+									OnClick:      "$authState = 'form'; $authError = ''; $authServerError = ''; $formData.email = $submittedEmail",
+									DisabledExpr: "$_fetching",
+									Label:        ctxi18n.T(ctx, "auth.use_different_email"),
+									IconName:     icons.IconPencil,
+								})
+							</div>
+						</div>
 					}
 				</div>
+				@shared.Footer(userEmail)
 			</main>
 		</body>
 	</html>

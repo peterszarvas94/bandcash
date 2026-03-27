@@ -20,7 +20,7 @@ templ ErrorPage(data ErrorPageData) {
 	<html lang={ appi18n.LocaleCode(ctx) }>
 		@Head(data.Title)
 		<body>
-			<main id="app" class="single-col grid error-page">
+			<main id="app" class="error-page">
 				<section class="error-card">
 					<div class="error-icon">
 						@icons.Icon(data.IconName, templ.Attributes{"class": "icon"})
