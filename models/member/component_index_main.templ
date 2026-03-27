@@ -10,24 +10,18 @@ import (
 )
 
 templ MemberIndexMain(data MembersData) {
-	{{
-		addExpr := "$formState = 'add'; $editingId = 0; $formData = {name: '', description: ''}; $errors = {name: '', description: ''}"
-	}}
 	<h1>{ data.GroupName }</h1>
 	if data.IsAdmin {
 		<div class="detail-actions">
-			@shared.ActionButton(shared.ActionButtonProps{
-				ClassName:    "btn btn-accent",
-				OnClick:      addExpr,
-				DisabledExpr: "$formState !== '' || $_fetching",
-				Label:        ctxi18n.T(ctx, "members.add"),
-				IconName:     icons.IconPlus,
-			})
+			<a href={ fmt.Sprintf("/groups/%s/members/new", data.GroupID) } class="btn btn-accent">
+				@icons.Plus(templ.Attributes{"class": "icon"})
+				{ ctxi18n.T(ctx, "members.add") }
+			</a>
 		</div>
 	}
 	@shared.TableSearchForm(fmt.Sprintf("/groups/%s/members", data.GroupID), data.Query, "table.search_placeholder_members")
 	@shared.TablePaginationRow(fmt.Sprintf("/groups/%s/members", data.GroupID), data.Query, data.Pager)
-	@shared.TableOpenFixed(data.MembersTable, "table-sticky-actions") {
+	@shared.TableOpenFixed(data.MembersTable, "") {
 		<thead>
 			<tr>
 				@shared.THCol(data.MembersTable.Col("name")) {
@@ -36,59 +30,18 @@ templ MemberIndexMain(data MembersData) {
 				@shared.THCol(data.MembersTable.Col("description")) {
 					@shared.TableSortHeader(ctxi18n.T(ctx, "fields.description"), "description", data.Query, utils.BuildTableSortURL(fmt.Sprintf("/groups/%s/members", data.GroupID), data.Query, "description"))
 				}
-				if data.IsAdmin {
-					@shared.THActions(data.MembersTable.ActionsWidthRem) {
-					}
-				}
 			</tr>
 		</thead>
 		<tbody>
 			for _, member := range data.Members {
-				{{
-					editExpr := fmt.Sprintf("$formState = 'edit'; $editingId = %q; $formData = {name: %s, description: %s}", member.ID, utils.JSONString(member.Name), utils.JSONString(member.Description))
-					deleteExpr := fmt.Sprintf(
-						"$sure = {title: %s, message: %s, submitLabel: %s, cancelLabel: %s, method: 'delete', url: '/groups/%s/members/%s', triggerID: %s, open: true, fetching: false}",
-						utils.JSONString(ctxi18n.T(ctx, "members.delete_confirm")),
-						utils.JSONString(ctxi18n.T(ctx, "confirm.destructive_message")),
-						utils.JSONString(ctxi18n.T(ctx, "actions.delete")),
-						utils.JSONString(ctxi18n.T(ctx, "actions.cancel")),
-						data.GroupID,
-						member.ID,
-						utils.JSONString("member-delete-"+member.ID),
-					)
-				}}
 				<tr>
 					<td><a class="link" href={ fmt.Sprintf("/groups/%s/members/%s", data.GroupID, member.ID) }>{ member.Name }</a></td>
 					<td><span class="cell-ellipsis">{ member.Description }</span></td>
-					if data.IsAdmin {
-						<td data-actions-col>
-							@shared.IconActionButton(shared.IconActionButtonProps{
-								ClassName:     "btn btn-ghost btn-sm btn-icon",
-								OnClick:       editExpr,
-								DisabledExpr:  "$formState !== '' || $_fetching",
-								AriaLabel:     ctxi18n.T(ctx, "actions.edit"),
-								Title:         ctxi18n.T(ctx, "actions.edit"),
-								IconName:      icons.IconPencil,
-							})
-							@shared.IconActionButton(shared.IconActionButtonProps{
-								ClassName:     "btn btn-ghost btn-sm btn-danger btn-icon",
-								OnClick:       deleteExpr,
-								DisabledExpr:  "$formState !== '' || $_fetching",
-								AriaLabel:     ctxi18n.T(ctx, "actions.delete"),
-								Title:         ctxi18n.T(ctx, "actions.delete"),
-								IconName:      icons.IconTrash2,
-							})
-						</td>
-					}
 				</tr>
 			}
 			if len(data.Members) == 0 {
 				<tr>
-					if data.IsAdmin {
-						<td colspan="3">{ ctxi18n.T(ctx, "table.empty") }</td>
-					} else {
-						<td colspan="2">{ ctxi18n.T(ctx, "table.empty") }</td>
-					}
+					<td colspan="2">{ ctxi18n.T(ctx, "table.empty") }</td>
 				</tr>
 			}
 		</tbody>

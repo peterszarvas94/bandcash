@@ -1,0 +1,84 @@
+package expense
+
+import (
+	appi18n "bandcash/internal/i18n"
+	"bandcash/internal/utils"
+	shared "bandcash/models/shared"
+	icons "bandcash/models/shared/icons"
+	ctxi18n "github.com/invopop/ctxi18n/i18n"
+	"fmt"
+)
+
+templ ExpenseEditPage(data EditExpensePageData) {
+	{{ tabID := utils.GenerateID("tab") }}
+	<!DOCTYPE html>
+	<html lang={ appi18n.LocaleCode(ctx) }>
+		@shared.Head(data.Title)
+		<body>
+			<div data-signals={ templ.JSONString(map[string]any{
+				"tab_id": tabID,
+				"csrf":   utils.CSRFTokenFromContext(ctx),
+				"formData": map[string]any{
+					"title":       data.Expense.Title,
+					"description": data.Expense.Description,
+					"amount":      data.Expense.Amount,
+					"date":        data.Expense.Date,
+					"paid":        data.Expense.Paid == 1,
+					"paidAt": func() string {
+						if !data.Expense.PaidAt.Valid {
+							return ""
+						}
+						return utils.FormatDateInput(data.Expense.PaidAt.String)
+					}(),
+				},
+				"errors": map[string]any{"title": "", "description": "", "amount": "", "date": ""},
+			}) } data-init="@get('/sse')"></div>
+			@shared.Notifications()
+			@shared.AppShellMainOnly("expense-edit", data.Breadcrumbs, data.UserEmail, shared.GroupPrimaryNav(data.GroupID, "expenses", data.UserEmail), ExpenseEditForm(data))
+		</body>
+	</html>
+}
+
+templ ExpenseEditForm(data EditExpensePageData) {
+	<form class="form" data-on:submit={ fmt.Sprintf("@put('/groups/%s/expenses/%s')", data.GroupID, data.Expense.ID) } data-indicator:_fetching>
+		<div class="field">
+			<label for="expense-edit-title" class="row">{ ctxi18n.T(ctx, "fields.title") } <span class="color-error">*</span></label>
+			<input id="expense-edit-title" type="text" data-bind="formData.title" class="input"/>
+			<div data-show="$errors && $errors.title" class="color-error" data-text="$errors.title"></div>
+		</div>
+		<div class="field">
+			<label for="expense-edit-description">{ ctxi18n.T(ctx, "fields.description") }</label>
+			<textarea id="expense-edit-description" data-bind="formData.description" rows="3" class="input">{ data.Expense.Description }</textarea>
+			<div data-show="$errors && $errors.description" class="color-error" data-text="$errors.description"></div>
+		</div>
+		<div class="field">
+			<label for="expense-edit-amount" class="row">{ ctxi18n.T(ctx, "fields.expense") } <span class="color-error">*</span></label>
+			<input id="expense-edit-amount" type="number" data-bind="formData.amount" step="1" min="1" class="input"/>
+			<div data-show="$errors && $errors.amount" class="color-error" data-text="$errors.amount"></div>
+		</div>
+		<div class="field">
+			<label for="expense-edit-date" class="row">{ ctxi18n.T(ctx, "fields.date") } <span class="color-error">*</span></label>
+			<input id="expense-edit-date" type="date" data-bind="formData.date" class="input"/>
+			<div data-show="$errors && $errors.date" class="color-error" data-text="$errors.date"></div>
+		</div>
+		<div class="field">
+			<label for="expense-edit-paid" class="row">{ ctxi18n.T(ctx, "table.paid") }</label>
+			@shared.Toggle(shared.ToggleProps{
+				Bind:         "formData.paid",
+				DisabledExpr: "$_fetching",
+				Off:          ctxi18n.T(ctx, "table.unpaid"),
+				On:           ctxi18n.T(ctx, "table.paid"),
+				OnClass:      "btn-success",
+			})
+		</div>
+		<div class="field" data-show="$formData.paid" style="display: none">
+			<label for="expense-edit-paid-at" class="row">{ ctxi18n.T(ctx, "fields.paid_at") }</label>
+			<input id="expense-edit-paid-at" type="date" data-bind="formData.paidAt" class="input"/>
+		</div>
+		@shared.LoadingSubmitButton(shared.LoadingSubmitButtonProps{
+			ClassName: "btn btn-primary",
+			Label:     ctxi18n.T(ctx, "expenses.update"),
+			IconName:  icons.IconSave,
+		})
+	</form>
+}

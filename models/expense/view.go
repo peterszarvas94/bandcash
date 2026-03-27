@@ -33,3 +33,18 @@ type ExpenseData struct {
 	IsAdmin     bool
 	UserEmail   string
 }
+
+type NewExpensePageData struct {
+	Title       string
+	Breadcrumbs []utils.Crumb
+	UserEmail   string
+	GroupID     string
+}
+
+type EditExpensePageData struct {
+	Title       string
+	Breadcrumbs []utils.Crumb
+	UserEmail   string
+	GroupID     string
+	Expense     *db.Expense
+}

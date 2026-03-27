@@ -51,3 +51,18 @@ type MembersData struct {
 	UserEmail    string
 	MembersTable utils.TableLayout
 }
+
+type NewMemberPageData struct {
+	Title       string
+	Breadcrumbs []utils.Crumb
+	UserEmail   string
+	GroupID     string
+}
+
+type EditMemberPageData struct {
+	Title       string
+	Breadcrumbs []utils.Crumb
+	UserEmail   string
+	GroupID     string
+	Member      *db.Member
+}

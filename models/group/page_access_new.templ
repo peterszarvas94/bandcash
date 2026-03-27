@@ -1,0 +1,53 @@
+package group
+
+import (
+	"fmt"
+
+	ctxi18n "github.com/invopop/ctxi18n/i18n"
+
+	appi18n "bandcash/internal/i18n"
+	"bandcash/internal/utils"
+	shared "bandcash/models/shared"
+	icons "bandcash/models/shared/icons"
+)
+
+templ GroupAccessNewPage(data AccessNewPageData) {
+	{{ tabID := utils.GenerateID("tab") }}
+	<!DOCTYPE html>
+	<html lang={ appi18n.LocaleCode(ctx) }>
+		@shared.Head(data.Title)
+		<body>
+			<div data-signals={ templ.JSONString(map[string]any{
+				"tab_id": tabID,
+				"csrf":   utils.CSRFTokenFromContext(ctx),
+				"formData": map[string]any{
+					"email": "",
+					"role":  "viewer",
+				},
+			}) } data-init="@get('/sse')"></div>
+			@shared.Notifications()
+			@shared.AppShellMainOnly("group-access-new", data.Breadcrumbs, data.UserEmail, shared.GroupPrimaryNav(data.GroupID, "access", data.UserEmail), GroupAccessNewForm(data))
+		</body>
+	</html>
+}
+
+templ GroupAccessNewForm(data AccessNewPageData) {
+	<form class="form" data-on:submit={ fmt.Sprintf("@post('/groups/%s/access')", data.GroupID) } data-indicator:_fetching>
+		<div class="field">
+			<label for="group-access-new-email" class="row">{ ctxi18n.T(ctx, "auth.email") } <span class="color-error">*</span></label>
+			<input id="group-access-new-email" type="email" data-bind="formData.email" placeholder={ ctxi18n.T(ctx, "groups.viewer_email_placeholder") } class="input"/>
+		</div>
+		<div class="field">
+			<label for="group-access-new-role" class="row">{ ctxi18n.T(ctx, "fields.role") } <span class="color-error">*</span></label>
+			<select id="group-access-new-role" data-bind="formData.role" class="input">
+				<option value="viewer">{ ctxi18n.T(ctx, "groups.role_viewer") }</option>
+				<option value="admin">{ ctxi18n.T(ctx, "groups.role_admin") }</option>
+			</select>
+		</div>
+		@shared.LoadingSubmitButton(shared.LoadingSubmitButtonProps{
+			ClassName: "btn btn-primary",
+			Label:     ctxi18n.T(ctx, "groups.invite_access"),
+			IconName:  icons.IconSave,
+		})
+	</form>
+}

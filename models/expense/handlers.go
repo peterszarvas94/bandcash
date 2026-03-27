@@ -94,6 +94,57 @@ func paidAtArg(isPaid bool, paidAt string) sql.NullString {
 	return sql.NullString{String: normalized, Valid: true}
 }
 
+func (e *Expenses) NewExpensePage(c echo.Context) error {
+	utils.EnsureTabID(c)
+	groupID := middleware.GetGroupID(c)
+	userEmail := getUserEmail(c)
+
+	data := NewExpensePageData{
+		Title: ctxi18n.T(c.Request().Context(), "expenses.page_title"),
+		Breadcrumbs: []utils.Crumb{
+			{Label: ctxi18n.T(c.Request().Context(), "expenses.title"), Href: "/groups/" + groupID + "/expenses"},
+			{Label: ctxi18n.T(c.Request().Context(), "expenses.add")},
+		},
+		UserEmail: userEmail,
+		GroupID:   groupID,
+	}
+	return utils.RenderPage(c, ExpenseNewPage(data))
+}
+
+func (e *Expenses) EditExpensePage(c echo.Context) error {
+	utils.EnsureTabID(c)
+	groupID := middleware.GetGroupID(c)
+	userEmail := getUserEmail(c)
+
+	id := c.Param("id")
+	if !utils.IsValidID(id, utils.PrefixExpense) {
+		slog.Info("expense.edit_page: invalid id")
+		return c.NoContent(http.StatusBadRequest)
+	}
+
+	expense, err := db.Qry.GetExpense(c.Request().Context(), db.GetExpenseParams{
+		ID:      id,
+		GroupID: groupID,
+	})
+	if err != nil {
+		slog.Error("expense.edit_page: failed to get expense", "err", err)
+		return c.NoContent(http.StatusInternalServerError)
+	}
+
+	data := EditExpensePageData{
+		Title: ctxi18n.T(c.Request().Context(), "expenses.page_title"),
+		Breadcrumbs: []utils.Crumb{
+			{Label: ctxi18n.T(c.Request().Context(), "expenses.title"), Href: "/groups/" + groupID + "/expenses"},
+			{Label: expense.Title, Href: "/groups/" + groupID + "/expenses/" + id},
+			{Label: ctxi18n.T(c.Request().Context(), "expenses.edit")},
+		},
+		UserEmail: userEmail,
+		GroupID:   groupID,
+		Expense:   &expense,
+	}
+	return utils.RenderPage(c, ExpenseEditPage(data))
+}
+
 func (e *Expenses) Index(c echo.Context) error {
 	utils.EnsureTabID(c)
 	groupID := middleware.GetGroupID(c)
@@ -135,7 +186,6 @@ func (e *Expenses) Show(c echo.Context) error {
 
 func (e *Expenses) Create(c echo.Context) error {
 	groupID := middleware.GetGroupID(c)
-	userEmail := getUserEmail(c)
 
 	var signals expenseTableParams
 	err := datastar.ReadSignals(c.Request(), &signals)
@@ -178,33 +228,19 @@ func (e *Expenses) Create(c echo.Context) error {
 	}
 
 	utils.Notify(c, "success", ctxi18n.T(c.Request().Context(), "expenses.notifications.created"))
-	utils.SSEHub.PatchSignals(c, defaultExpenseSignals)
 
 	// Clear cache to ensure fresh data on next load
 	utils.InvalidateGroupCaches(groupID)
 
-	query := utils.NormalizeTableQuery(utils.TableQuery{}, e.TableQuerySpec())
-	data, err := e.GetIndexData(c.Request().Context(), groupID, query)
+	err = utils.SSEHub.Redirect(c, "/groups/"+groupID+"/expenses")
 	if err != nil {
-		slog.Error("expense.create.table: failed to get data", "err", err)
-		return c.NoContent(http.StatusInternalServerError)
+		slog.Warn("expense.create: failed to redirect", "err", err)
 	}
-	applyExpenseTableByRole(&data, middleware.IsAdmin(c))
-	data.UserEmail = userEmail
-
-	html, err := utils.RenderHTMLForRequest(c, ExpenseIndex(data))
-	if err != nil {
-		slog.Error("expense.create.table: failed to render", "err", err)
-		return c.NoContent(http.StatusInternalServerError)
-	}
-	utils.SSEHub.PatchHTML(c, html)
-
 	return c.NoContent(http.StatusOK)
 }
 
 func (e *Expenses) Update(c echo.Context) error {
 	groupID := middleware.GetGroupID(c)
-	userEmail := getUserEmail(c)
 
 	id := c.Param("id")
 	if !utils.IsValidID(id, utils.PrefixExpense) {
@@ -254,56 +290,13 @@ func (e *Expenses) Update(c echo.Context) error {
 
 	utils.Notify(c, "success", ctxi18n.T(c.Request().Context(), "expenses.notifications.updated"))
 
-	if signals.Mode == "single" {
-		utils.SSEHub.PatchSignals(c, map[string]any{
-			"formState": "",
-			"formData": map[string]any{
-				"title":       signals.FormData.Title,
-				"description": signals.FormData.Description,
-				"amount":      signals.FormData.Amount,
-				"date":        signals.FormData.Date,
-				"paid":        signals.FormData.Paid,
-				"paidAt":      signals.FormData.PaidAt,
-			},
-			"errors": map[string]any{"title": "", "description": "", "amount": "", "date": ""},
-		})
-		data, err := e.GetShowData(c.Request().Context(), groupID, id)
-		if err != nil {
-			slog.Error("expense.update: failed to get data", "err", err)
-			return c.NoContent(http.StatusInternalServerError)
-		}
-		data.IsAdmin = middleware.IsAdmin(c)
-		data.UserEmail = userEmail
-		html, err := utils.RenderHTMLForRequest(c, ExpenseShow(data))
-		if err != nil {
-			slog.Error("expense.update: failed to render", "err", err)
-			return c.NoContent(http.StatusInternalServerError)
-		}
-		utils.SSEHub.PatchHTML(c, html)
-		return c.NoContent(http.StatusOK)
-	}
-
-	utils.SSEHub.PatchSignals(c, defaultExpenseSignals)
-
 	// Clear cache to ensure fresh data on next load
 	utils.InvalidateGroupCaches(groupID)
 
-	query := utils.NormalizeTableQuery(signals.TableQuery, e.TableQuerySpec())
-	data, err := e.GetIndexData(c.Request().Context(), groupID, query)
+	err = utils.SSEHub.Redirect(c, "/groups/"+groupID+"/expenses/"+id)
 	if err != nil {
-		slog.Error("expense.update: failed to get data", "err", err)
-		return c.NoContent(http.StatusInternalServerError)
+		slog.Warn("expense.update: failed to redirect", "err", err)
 	}
-	applyExpenseTableByRole(&data, middleware.IsAdmin(c))
-	data.UserEmail = userEmail
-
-	html, err := utils.RenderHTMLForRequest(c, ExpenseIndex(data))
-	if err != nil {
-		slog.Error("expense.update: failed to render", "err", err)
-		return c.NoContent(http.StatusInternalServerError)
-	}
-	utils.SSEHub.PatchHTML(c, html)
-
 	return c.NoContent(http.StatusOK)
 }
 

@@ -17,6 +17,8 @@ func RegisterRoutes(e *echo.Echo) *Members {
 
 	// Admin only routes
 	admin := g.Group("", middleware.RequireAdmin)
+	admin.GET("/members/new", members.NewMemberPage)
+	admin.GET("/members/:id/edit", members.EditMemberPage)
 	admin.POST("/members", members.Create)
 	admin.PUT("/members/:id", members.Update)
 	admin.PUT("/members/:id/events/:eventId/toggle-paid", members.ToggleParticipantPaid)

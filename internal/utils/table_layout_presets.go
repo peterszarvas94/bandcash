@@ -8,7 +8,7 @@ func EventsIndexTableLayout() TableLayout {
 		{Key: "amount", WidthCh: 12},
 		{Key: "paid", WidthCh: 14},
 		{Key: "paid_at", WidthCh: 14},
-	}, 4)
+	}, 0)
 }
 
 func EventParticipantsTableLayout() TableLayout {
@@ -30,21 +30,21 @@ func ExpensesIndexTableLayout() TableLayout {
 		{Key: "amount", WidthCh: 12},
 		{Key: "paid", WidthCh: 14},
 		{Key: "paid_at", WidthCh: 14},
-	}, 4)
+	}, 0)
 }
 
 func GroupsIndexTableLayout() TableLayout {
 	return NewTableLayout([]TableColumn{
 		{Key: "name", WidthCh: 24},
 		{Key: "role", WidthCh: 10},
-	}, 4)
+	}, 0)
 }
 
 func MembersIndexTableLayout() TableLayout {
 	return NewTableLayout([]TableColumn{
 		{Key: "name", WidthCh: 20},
 		{Key: "description", WidthCh: 32},
-	}, 4)
+	}, 0)
 }
 
 func MemberEventsTableLayout() TableLayout {
@@ -84,7 +84,7 @@ func GroupAccessTableLayout() TableLayout {
 		{Key: "email", WidthCh: 30},
 		{Key: "role", WidthCh: 10},
 		{Key: "status", WidthCh: 10},
-	}, 2)
+	}, 0)
 }
 
 func AdminUsersTableLayout() TableLayout {

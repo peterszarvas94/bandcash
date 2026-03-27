@@ -42,6 +42,21 @@ type ParticipantWizardRow struct {
 	PaidAt     string
 }
 
+type NewEventPageData struct {
+	Title       string
+	Breadcrumbs []utils.Crumb
+	UserEmail   string
+	GroupID     string
+}
+
+type EditEventPageData struct {
+	Title       string
+	Breadcrumbs []utils.Crumb
+	UserEmail   string
+	GroupID     string
+	Event       *db.Event
+}
+
 type EventsData struct {
 	Title                  string
 	GroupName              string

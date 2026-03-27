@@ -63,6 +63,57 @@ func applyMemberShowTableByRole(data *MemberData, isAdmin bool) {
 	}
 }
 
+func (p *Members) NewMemberPage(c echo.Context) error {
+	utils.EnsureTabID(c)
+	groupID := middleware.GetGroupID(c)
+	userEmail := getUserEmail(c)
+
+	data := NewMemberPageData{
+		Title: ctxi18n.T(c.Request().Context(), "members.page_title"),
+		Breadcrumbs: []utils.Crumb{
+			{Label: ctxi18n.T(c.Request().Context(), "members.title"), Href: "/groups/" + groupID + "/members"},
+			{Label: ctxi18n.T(c.Request().Context(), "members.add")},
+		},
+		UserEmail: userEmail,
+		GroupID:   groupID,
+	}
+	return utils.RenderPage(c, MemberNewPage(data))
+}
+
+func (p *Members) EditMemberPage(c echo.Context) error {
+	utils.EnsureTabID(c)
+	groupID := middleware.GetGroupID(c)
+	userEmail := getUserEmail(c)
+
+	id := c.Param("id")
+	if !utils.IsValidID(id, utils.PrefixMember) {
+		slog.Info("member.edit_page: invalid id")
+		return c.NoContent(http.StatusBadRequest)
+	}
+
+	member, err := db.Qry.GetMember(c.Request().Context(), db.GetMemberParams{
+		ID:      id,
+		GroupID: groupID,
+	})
+	if err != nil {
+		slog.Error("member.edit_page: failed to get member", "err", err)
+		return c.NoContent(http.StatusInternalServerError)
+	}
+
+	data := EditMemberPageData{
+		Title: ctxi18n.T(c.Request().Context(), "members.page_title"),
+		Breadcrumbs: []utils.Crumb{
+			{Label: ctxi18n.T(c.Request().Context(), "members.title"), Href: "/groups/" + groupID + "/members"},
+			{Label: member.Name, Href: "/groups/" + groupID + "/members/" + id},
+			{Label: ctxi18n.T(c.Request().Context(), "members.edit")},
+		},
+		UserEmail: userEmail,
+		GroupID:   groupID,
+		Member:    &member,
+	}
+	return utils.RenderPage(c, MemberEditPage(data))
+}
+
 func (p *Members) Index(c echo.Context) error {
 	utils.EnsureTabID(c)
 	groupID := middleware.GetGroupID(c)
@@ -114,7 +165,6 @@ func (p *Members) Show(c echo.Context) error {
 
 func (p *Members) Create(c echo.Context) error {
 	groupID := middleware.GetGroupID(c)
-	userEmail := getUserEmail(c)
 
 	var signals memberTableParams
 	err := datastar.ReadSignals(c.Request(), &signals)
@@ -149,29 +199,15 @@ func (p *Members) Create(c echo.Context) error {
 	slog.Debug("member.create.table", "id", member.ID, "name", member.Name)
 	utils.Notify(c, "success", ctxi18n.T(c.Request().Context(), "members.notifications.created"))
 
-	utils.SSEHub.PatchSignals(c, defaultMemberSignals)
-	query := utils.NormalizeTableQuery(utils.TableQuery{}, p.TableQuerySpec())
-	data, err := p.GetIndexData(c.Request().Context(), groupID, query)
+	err = utils.SSEHub.Redirect(c, "/groups/"+groupID+"/members")
 	if err != nil {
-		slog.Error("member.create.table: failed to get data", "err", err)
-		return c.NoContent(http.StatusInternalServerError)
+		slog.Warn("member.create: failed to redirect", "err", err)
 	}
-	data.IsAdmin = middleware.IsAdmin(c)
-	data.UserEmail = userEmail
-	html, err := utils.RenderHTMLForRequest(c, MemberIndex(data))
-	if err != nil {
-		slog.Error("member.create.table: failed to render", "err", err)
-		return c.NoContent(http.StatusInternalServerError)
-	}
-
-	utils.SSEHub.PatchHTML(c, html)
-
 	return c.NoContent(http.StatusOK)
 }
 
 func (p *Members) Update(c echo.Context) error {
 	groupID := middleware.GetGroupID(c)
-	userEmail := getUserEmail(c)
 
 	id := c.Param("id")
 	if !utils.IsValidID(id, utils.PrefixMember) {
@@ -212,52 +248,10 @@ func (p *Members) Update(c echo.Context) error {
 	slog.Debug("member.update", "id", id)
 	utils.Notify(c, "success", ctxi18n.T(c.Request().Context(), "members.notifications.updated"))
 
-	if signals.Mode == "single" {
-		utils.SSEHub.PatchSignals(c, map[string]any{
-			"formState": "",
-			"formData": map[string]any{
-				"name":        signals.FormData.Name,
-				"description": signals.FormData.Description,
-			},
-			"errors": map[string]any{"name": "", "description": ""},
-		})
-
-		query := utils.NormalizeTableQuery(signals.TableQuery, p.MemberEventsTableQuerySpec())
-		data, err := p.GetShowData(c.Request().Context(), groupID, id, query)
-		if err != nil {
-			slog.Error("member.update: failed to get show data", "err", err)
-			return c.NoContent(http.StatusInternalServerError)
-		}
-		applyMemberShowTableByRole(&data, middleware.IsAdmin(c))
-		data.UserEmail = userEmail
-
-		html, err := utils.RenderHTMLForRequest(c, MemberShow(data))
-		if err != nil {
-			slog.Error("member.update: failed to render show page", "err", err)
-			return c.NoContent(http.StatusInternalServerError)
-		}
-
-		utils.SSEHub.PatchHTML(c, html)
-		return c.NoContent(http.StatusOK)
-	}
-
-	utils.SSEHub.PatchSignals(c, defaultMemberSignals)
-	query := utils.NormalizeTableQuery(signals.TableQuery, p.TableQuerySpec())
-	data, err := p.GetIndexData(c.Request().Context(), groupID, query)
+	err = utils.SSEHub.Redirect(c, "/groups/"+groupID+"/members/"+id)
 	if err != nil {
-		slog.Error("member.update: failed to get data", "err", err)
-		return c.NoContent(http.StatusInternalServerError)
+		slog.Warn("member.update: failed to redirect", "err", err)
 	}
-	data.IsAdmin = middleware.IsAdmin(c)
-	data.UserEmail = userEmail
-	html, err := utils.RenderHTMLForRequest(c, MemberIndex(data))
-	if err != nil {
-		slog.Error("member.update: failed to render", "err", err)
-		return c.NoContent(http.StatusInternalServerError)
-	}
-
-	utils.SSEHub.PatchHTML(c, html)
-
 	return c.NoContent(http.StatusOK)
 }
 

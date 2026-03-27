@@ -74,19 +74,13 @@ templ EventTotalsContent(data EventsData) {
 }
 
 templ EventIndexMain(data EventsData) {
-	{{
-		addExpr := "$formState = 'add'; $editingId = 0; $formData = {title: '', time: (() => { const d = new Date(); d.setMinutes(d.getMinutes() - d.getTimezoneOffset()); return d.toISOString().slice(0, 16) })(), place: '', description: '', amount: 0, paid: false, paidAt: ''}; $errors = {title: '', time: '', place: '', description: '', amount: ''}"
-	}}
 	<h1>{ data.GroupName }</h1>
 	if data.IsAdmin {
 		<div class="detail-actions">
-			@shared.ActionButton(shared.ActionButtonProps{
-				ClassName:    "btn btn-accent",
-				OnClick:      addExpr,
-				DisabledExpr: "$formState !== '' || $_fetching",
-				Label:        ctxi18n.T(ctx, "events.add"),
-				IconName:     icons.IconPlus,
-			})
+			<a href={ fmt.Sprintf("/groups/%s/events/new", data.GroupID) } class="btn btn-accent">
+				@icons.Icon(icons.IconPlus, templ.Attributes{"class": "icon"})
+				{ ctxi18n.T(ctx, "events.add") }
+			</a>
 		</div>
 	}
 	@EventTotalsContent(data)
@@ -143,7 +137,7 @@ templ EventIndexMain(data EventsData) {
 			}
 	</div>
 	@shared.TablePaginationRow(fmt.Sprintf("/groups/%s/events", data.GroupID), data.Query, data.Pager)
-	@shared.TableOpenFixed(data.EventsTable, "table-sticky-actions") {
+	@shared.TableOpenFixed(data.EventsTable, "") {
 		<thead>
 			<tr>
 				@shared.THCol(data.EventsTable.Col("title")) {
@@ -164,31 +158,11 @@ templ EventIndexMain(data EventsData) {
 				@shared.THCol(data.EventsTable.Col("paid_at")) {
 					@shared.TableSortHeader(ctxi18n.T(ctx, "fields.paid_at"), "paid_at", data.Query, utils.BuildTableSortURL(fmt.Sprintf("/groups/%s/events", data.GroupID), data.Query, "paid_at"))
 				}
-		if data.IsAdmin {
-			@shared.THActions(data.EventsTable.ActionsWidthRem) {
-			}
-		}
 			</tr>
 		</thead>
 		<tbody>
 			for _, event := range data.Events {
 				{{
-					editExpr := fmt.Sprintf("$formState = 'edit'; $editingId = %q; $formData = {title: %s, time: %s, place: %s, description: %s, amount: %d, paid: %t, paidAt: %s}", event.ID, utils.JSONString(event.Title), utils.JSONString(event.Time), utils.JSONString(event.Place), utils.JSONString(event.Description), event.Amount, event.Paid == 1, utils.JSONString(func() string {
-						if !event.PaidAt.Valid {
-							return ""
-						}
-						return utils.FormatDateInput(event.PaidAt.String)
-					}()))
-					deleteExpr := fmt.Sprintf(
-						"$sure = {title: %s, message: %s, submitLabel: %s, cancelLabel: %s, method: 'delete', url: '/groups/%s/events/%s', triggerID: %s, open: true, fetching: false}",
-						utils.JSONString(ctxi18n.T(ctx, "events.delete_confirm")),
-						utils.JSONString(ctxi18n.T(ctx, "confirm.destructive_message")),
-						utils.JSONString(ctxi18n.T(ctx, "actions.delete")),
-						utils.JSONString(ctxi18n.T(ctx, "actions.cancel")),
-						data.GroupID,
-						event.ID,
-						utils.JSONString("event-delete-"+event.ID),
-					)
 					togglePaidExpr := fmt.Sprintf("@put('/groups/%s/events/%s/toggle-paid', {mode: 'list', tableQuery: $tableQuery})", data.GroupID, event.ID)
 					paidLabel := ctxi18n.T(ctx, "table.unpaid")
 					if event.Paid == 1 {
@@ -209,7 +183,7 @@ templ EventIndexMain(data EventsData) {
 							@shared.Toggle(shared.ToggleProps{
 								IsOn:         event.Paid == 1,
 								OnClick:      togglePaidExpr,
-								DisabledExpr: "$formState !== '' || $_fetching",
+								DisabledExpr: "$_fetching",
 								Off:          ctxi18n.T(ctx, "table.unpaid"),
 								On:           ctxi18n.T(ctx, "table.paid"),
 								ClassName:    "btn btn-xs",
@@ -221,35 +195,11 @@ templ EventIndexMain(data EventsData) {
 						}
 					</td>
 					<td>{ paidAtLabel }</td>
-				if data.IsAdmin {
-					<td data-actions-col>
-						@shared.IconActionButton(shared.IconActionButtonProps{
-							ClassName:     "btn btn-ghost btn-sm btn-icon",
-							OnClick:       editExpr,
-							DisabledExpr:  "$formState !== '' || $_fetching",
-							AriaLabel:     ctxi18n.T(ctx, "actions.edit"),
-							Title:         ctxi18n.T(ctx, "actions.edit"),
-							IconName:      icons.IconPencil,
-						})
-						@shared.IconActionButton(shared.IconActionButtonProps{
-							ClassName:     "btn btn-ghost btn-sm btn-danger btn-icon",
-							OnClick:       deleteExpr,
-							DisabledExpr:  "$formState !== '' || $_fetching",
-							AriaLabel:     ctxi18n.T(ctx, "actions.delete"),
-							Title:         ctxi18n.T(ctx, "actions.delete"),
-							IconName:      icons.IconTrash2,
-						})
-					</td>
-				}
 				</tr>
 			}
 			if len(data.Events) == 0 {
 				<tr>
-					if data.IsAdmin {
-						<td colspan="7">{ ctxi18n.T(ctx, "table.empty") }</td>
-					} else {
-						<td colspan="6">{ ctxi18n.T(ctx, "table.empty") }</td>
-					}
+					<td colspan="6">{ ctxi18n.T(ctx, "table.empty") }</td>
 				</tr>
 			}
 		</tbody>

@@ -57,19 +57,13 @@ templ ExpenseTotalsContent(data ExpensesData) {
 }
 
 templ ExpenseIndexMain(data ExpensesData) {
-	{{
-		addExpr := "$formState = 'add'; $editingId = 0; $formData = {title: '', description: '', amount: 0, date: (() => { const d = new Date(); d.setMinutes(d.getMinutes() - d.getTimezoneOffset()); return d.toISOString().slice(0, 10) })(), paid: false, paidAt: ''}; $errors = {title: '', description: '', amount: '', date: ''}"
-	}}
 	<h1>{ data.GroupName }</h1>
 	if data.IsAdmin {
 		<div class="detail-actions">
-			@shared.ActionButton(shared.ActionButtonProps{
-				ClassName:    "btn btn-accent",
-				OnClick:      addExpr,
-				DisabledExpr: "$formState !== '' || $_fetching",
-				Label:        ctxi18n.T(ctx, "expenses.add"),
-				IconName:     icons.IconPlus,
-			})
+			<a href={ fmt.Sprintf("/groups/%s/expenses/new", data.GroupID) } class="btn btn-accent">
+				@icons.Plus(templ.Attributes{"class": "icon"})
+				{ ctxi18n.T(ctx, "expenses.add") }
+			</a>
 		</div>
 	}
 	@ExpenseTotalsContent(data)
@@ -126,7 +120,7 @@ templ ExpenseIndexMain(data ExpensesData) {
 			}
 	</div>
 	@shared.TablePaginationRow(fmt.Sprintf("/groups/%s/expenses", data.GroupID), data.Query, data.Pager)
-	@shared.TableOpenFixed(data.ExpensesTable, "table-sticky-actions") {
+	@shared.TableOpenFixed(data.ExpensesTable, "") {
 		<thead>
 			<tr>
 				@shared.THCol(data.ExpensesTable.Col("title")) {
@@ -141,34 +135,14 @@ templ ExpenseIndexMain(data ExpensesData) {
 				@shared.THCol(data.ExpensesTable.Col("paid")) {
 					@shared.TableSortHeader(ctxi18n.T(ctx, "table.paid"), "paid", data.Query, utils.BuildTableSortURL(fmt.Sprintf("/groups/%s/expenses", data.GroupID), data.Query, "paid"))
 				}
-				@shared.THCol(data.ExpensesTable.Col("paid_at")) {
-					@shared.TableSortHeader(ctxi18n.T(ctx, "fields.paid_at"), "paid_at", data.Query, utils.BuildTableSortURL(fmt.Sprintf("/groups/%s/expenses", data.GroupID), data.Query, "paid_at"))
-				}
-		if data.IsAdmin {
-			@shared.THActions(data.ExpensesTable.ActionsWidthRem) {
+			@shared.THCol(data.ExpensesTable.Col("paid_at")) {
+				@shared.TableSortHeader(ctxi18n.T(ctx, "fields.paid_at"), "paid_at", data.Query, utils.BuildTableSortURL(fmt.Sprintf("/groups/%s/expenses", data.GroupID), data.Query, "paid_at"))
 			}
-		}
-			</tr>
-		</thead>
+		</tr>
+	</thead>
 		<tbody>
 			for _, expense := range data.Expenses {
 				{{
-					editExpr := fmt.Sprintf("$formState = 'edit'; $editingId = %q; $formData = {title: %s, description: %s, amount: %d, date: %s, paid: %t, paidAt: %s}", expense.ID, utils.JSONString(expense.Title), utils.JSONString(expense.Description), expense.Amount, utils.JSONString(expense.Date), expense.Paid == 1, utils.JSONString(func() string {
-						if !expense.PaidAt.Valid {
-							return ""
-						}
-						return utils.FormatDateInput(expense.PaidAt.String)
-					}()))
-					deleteExpr := fmt.Sprintf(
-						"$sure = {title: %s, message: %s, submitLabel: %s, cancelLabel: %s, method: 'delete', url: '/groups/%s/expenses/%s', triggerID: %s, open: true, fetching: false}",
-						utils.JSONString(ctxi18n.T(ctx, "expenses.delete_confirm")),
-						utils.JSONString(ctxi18n.T(ctx, "confirm.destructive_message")),
-						utils.JSONString(ctxi18n.T(ctx, "actions.delete")),
-						utils.JSONString(ctxi18n.T(ctx, "actions.cancel")),
-						data.GroupID,
-						expense.ID,
-						utils.JSONString("expense-delete-"+expense.ID),
-					)
 					togglePaidExpr := fmt.Sprintf("@put('/groups/%s/expenses/%s/toggle-paid', {mode: 'list', tableQuery: $tableQuery})", data.GroupID, expense.ID)
 					paidLabel := ctxi18n.T(ctx, "table.unpaid")
 					if expense.Paid == 1 {
@@ -188,7 +162,7 @@ templ ExpenseIndexMain(data ExpensesData) {
 							@shared.Toggle(shared.ToggleProps{
 								IsOn:         expense.Paid == 1,
 								OnClick:      togglePaidExpr,
-								DisabledExpr: "$formState !== '' || $_fetching",
+								DisabledExpr: "$_fetching",
 								Off:          ctxi18n.T(ctx, "table.unpaid"),
 								On:           ctxi18n.T(ctx, "table.paid"),
 								ClassName:    "btn btn-xs",
@@ -200,35 +174,11 @@ templ ExpenseIndexMain(data ExpensesData) {
 						}
 					</td>
 					<td>{ paidAtLabel }</td>
-				if data.IsAdmin {
-					<td data-actions-col>
-						@shared.IconActionButton(shared.IconActionButtonProps{
-							ClassName:     "btn btn-ghost btn-sm btn-icon",
-							OnClick:       editExpr,
-							DisabledExpr:  "$formState !== '' || $_fetching",
-							AriaLabel:     ctxi18n.T(ctx, "actions.edit"),
-							Title:         ctxi18n.T(ctx, "actions.edit"),
-							IconName:      icons.IconPencil,
-						})
-						@shared.IconActionButton(shared.IconActionButtonProps{
-							ClassName:     "btn btn-ghost btn-sm btn-danger btn-icon",
-							OnClick:       deleteExpr,
-							DisabledExpr:  "$formState !== '' || $_fetching",
-							AriaLabel:     ctxi18n.T(ctx, "actions.delete"),
-							Title:         ctxi18n.T(ctx, "actions.delete"),
-							IconName:      icons.IconTrash2,
-						})
-					</td>
-				}
 				</tr>
 			}
 			if len(data.Expenses) == 0 {
 				<tr>
-					if data.IsAdmin {
-						<td colspan="6">{ ctxi18n.T(ctx, "table.empty") }</td>
-					} else {
-						<td colspan="5">{ ctxi18n.T(ctx, "table.empty") }</td>
-					}
+					<td colspan="5">{ ctxi18n.T(ctx, "table.empty") }</td>
 				</tr>
 			}
 		</tbody>

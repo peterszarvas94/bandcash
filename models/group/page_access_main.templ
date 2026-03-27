@@ -14,18 +14,15 @@ templ GroupAccessMain(data AccessPageData) {
 	<h1>{ data.Group.Name }</h1>
 	if data.IsAdmin {
 		<div class="detail-actions">
-			@shared.ActionButton(shared.ActionButtonProps{
-				ClassName:    "btn btn-accent",
-				OnClick:      "$formState = 'add'; $formData = {email: '', role: 'viewer'}",
-				DisabledExpr: "$formState !== '' || $_fetching",
-				Label:        ctxi18n.T(ctx, "groups.invite_access"),
-				IconName:     icons.IconPlus,
-			})
+			<a href={ fmt.Sprintf("/groups/%s/access/new", data.GroupID) } class="btn btn-accent">
+				@icons.Plus(templ.Attributes{"class": "icon"})
+				{ ctxi18n.T(ctx, "groups.invite_access") }
+			</a>
 		</div>
 	}
 	@shared.TableSearchForm(accessTablePath(data.GroupID), data.Query, "table.search_placeholder_access")
 	@shared.TablePaginationRow(accessTablePath(data.GroupID), data.Query, data.Pager)
-	@shared.TableOpenFixed(data.AccessTable, "table-sticky-actions") {
+	@shared.TableOpenFixed(data.AccessTable, "") {
 		<thead>
 			<tr>
 				@shared.THCol(data.AccessTable.Col("email")) {
@@ -37,16 +34,15 @@ templ GroupAccessMain(data AccessPageData) {
 				@shared.THCol(data.AccessTable.Col("status")) {
 					@shared.TableSortHeader(ctxi18n.T(ctx, "fields.status"), "status", data.Query, utils.BuildTableSortURL(accessTablePath(data.GroupID), data.Query, "status"))
 				}
-			if data.IsAdmin {
-				@shared.THActions(data.AccessTable.ActionsWidthRem) {
-				}
-			}
 			</tr>
 		</thead>
 		<tbody>
 			for _, row := range data.AccessRows {
 				{{
-					inviteDeleteExpr := fmt.Sprintf("@delete('/groups/%s/access/invites/%s')", data.Group.ID, row.InviteID)
+					rowPath := fmt.Sprintf("/groups/%s/access/users/%s", data.Group.ID, row.UserID)
+					if row.Kind == "invite" {
+						rowPath = fmt.Sprintf("/groups/%s/access/invites/%s", data.Group.ID, row.InviteID)
+					}
 					makeAdminExpr := fmt.Sprintf("@put('/groups/%s/access/users/%s/admin')", data.Group.ID, row.UserID)
 					makeViewerExpr := fmt.Sprintf("@put('/groups/%s/access/users/%s/viewer')", data.Group.ID, row.UserID)
 					roleToggleExpr := makeAdminExpr
@@ -54,26 +50,16 @@ templ GroupAccessMain(data AccessPageData) {
 					if row.Role == "admin" {
 						roleToggleExpr = makeViewerExpr
 					}
-					removeUserExpr := fmt.Sprintf(
-						"$sure = {title: %s, message: %s, submitLabel: %s, cancelLabel: %s, method: 'delete', url: '/groups/%s/access/users/%s', triggerID: %s, open: true, fetching: false}",
-						utils.JSONString(ctxi18n.T(ctx, "groups.remove_viewer_confirm")),
-						utils.JSONString(ctxi18n.T(ctx, "confirm.destructive_message")),
-						utils.JSONString(ctxi18n.T(ctx, "actions.delete")),
-						utils.JSONString(ctxi18n.T(ctx, "actions.cancel")),
-						data.Group.ID,
-						row.UserID,
-						utils.JSONString("access-remove-"+row.UserID),
-					)
 				}}
 				<tr>
-					<td>{ row.Email }</td>
+					<td><a class="link" href={ rowPath }>{ row.Email }</a></td>
 					<td>
 						if data.IsAdmin {
 							@shared.Toggle(shared.ToggleProps{
 								IsOn:         row.Role == "admin",
 								Disabled:     roleToggleDisabled,
 								OnClick:      roleToggleExpr,
-								DisabledExpr: "$_fetching",
+								DisabledExpr: "false",
 								Off:          ctxi18n.T(ctx, "groups.role_viewer"),
 								On:           ctxi18n.T(ctx, "groups.role_admin"),
 								ClassName:    "btn btn-xs",
@@ -95,37 +81,10 @@ templ GroupAccessMain(data AccessPageData) {
 							<span class="badge badge-primary">{ ctxi18n.T(ctx, "groups.active") }</span>
 						}
 					</td>
-					if data.IsAdmin {
-						<td data-actions-col>
-							if row.Kind == "invite" {
-								@shared.IconActionButton(shared.IconActionButtonProps{
-									ClassName:     "btn btn-ghost btn-sm btn-danger btn-icon",
-									OnClick:       inviteDeleteExpr,
-									DisabledExpr:  "$_fetching",
-									AriaLabel:     ctxi18n.T(ctx, "actions.delete"),
-									Title:         ctxi18n.T(ctx, "actions.delete"),
-								IconName:      icons.IconTrash2,
-							})
-							} else {
-								@shared.IconActionButton(shared.IconActionButtonProps{
-									ClassName:     "btn btn-ghost btn-sm btn-danger btn-icon",
-									OnClick:       removeUserExpr,
-									DisabledExpr:  "$_fetching",
-									AriaLabel:     ctxi18n.T(ctx, "actions.delete"),
-									Title:         ctxi18n.T(ctx, "actions.delete"),
-									IconName:      icons.IconTrash2,
-								})
-							}
-						</td>
-					}
 				</tr>
 			}
 			if len(data.AccessRows) == 0 {
-				if data.IsAdmin {
-					<tr><td colspan="4">{ ctxi18n.T(ctx, "table.empty") }</td></tr>
-				} else {
-					<tr><td colspan="3">{ ctxi18n.T(ctx, "table.empty") }</td></tr>
-				}
+				<tr><td colspan="3">{ ctxi18n.T(ctx, "table.empty") }</td></tr>
 			}
 		</tbody>
 	}

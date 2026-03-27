@@ -1,8 +1,6 @@
 package group
 
 import (
-	"fmt"
-
 	ctxi18n "github.com/invopop/ctxi18n/i18n"
 
 	"bandcash/internal/utils"
@@ -13,17 +11,14 @@ import (
 templ GroupsMain(data GroupsPageData) {
 	<h1>{ ctxi18n.T(ctx, "groups.title") }</h1>
 	<div class="detail-actions">
-		@shared.ActionButton(shared.ActionButtonProps{
-			ClassName:    "btn btn-accent",
-			OnClick:      "$formState = 'add'; $formData = {name: ''}; $selectedGroupId = ''",
-			DisabledExpr: "$formState !== '' || $_fetching",
-			Label:        ctxi18n.T(ctx, "groups.create"),
-			IconName:     icons.IconPlus,
-		})
+		<a href="/groups/new" class="btn btn-accent">
+			@icons.Plus(templ.Attributes{"class": "icon"})
+			{ ctxi18n.T(ctx, "groups.create") }
+		</a>
 	</div>
 	@shared.TableSearchForm("/dashboard", data.Query, "table.search_placeholder")
 	@shared.TablePaginationRow("/dashboard", data.Query, data.Pagination)
-	@shared.TableOpenFixed(data.GroupsTable, "table-sticky-actions") {
+	@shared.TableOpenFixed(data.GroupsTable, "") {
 		<thead>
 			<tr>
 				@shared.THCol(data.GroupsTable.Col("name")) {
@@ -32,36 +27,13 @@ templ GroupsMain(data GroupsPageData) {
 				@shared.THCol(data.GroupsTable.Col("role")) {
 					{ ctxi18n.T(ctx, "fields.role") }
 				}
-				@shared.THActions(data.GroupsTable.ActionsWidthRem) {
-				}
 			</tr>
 		</thead>
 		<tbody>
 			if len(data.AllGroups) == 0 {
-				<tr><td colspan="3">{ ctxi18n.T(ctx, "table.empty") }</td></tr>
+				<tr><td colspan="2">{ ctxi18n.T(ctx, "table.empty") }</td></tr>
 			} else {
 				for _, group := range data.AllGroups {
-					{{
-						editExpr := fmt.Sprintf("$formState = 'edit'; $selectedGroupId = '%s'; $formData = {name: %s}; $errors = {name: ''}", group.Group.ID, utils.JSONString(group.Group.Name))
-						deleteExpr := fmt.Sprintf(
-							"$sure = {title: %s, message: %s, submitLabel: %s, cancelLabel: %s, method: 'delete', url: '/groups/%s', triggerID: %s, open: true, fetching: false}",
-							utils.JSONString(ctxi18n.T(ctx, "groups.delete_confirm")),
-							utils.JSONString(ctxi18n.T(ctx, "confirm.destructive_message")),
-							utils.JSONString(ctxi18n.T(ctx, "groups.delete")),
-							utils.JSONString(ctxi18n.T(ctx, "actions.cancel")),
-							group.Group.ID,
-							utils.JSONString("group-delete-"+group.Group.ID),
-						)
-						leaveExpr := fmt.Sprintf(
-							"$sure = {title: %s, message: %s, submitLabel: %s, cancelLabel: %s, method: 'post', url: '/groups/%s/leave', triggerID: %s, open: true, fetching: false}",
-							utils.JSONString(ctxi18n.T(ctx, "groups.leave_confirm")),
-							utils.JSONString(ctxi18n.T(ctx, "confirm.leave_message")),
-							utils.JSONString(ctxi18n.T(ctx, "groups.leave")),
-							utils.JSONString(ctxi18n.T(ctx, "actions.cancel")),
-							group.Group.ID,
-							utils.JSONString("group-leave-"+group.Group.ID),
-						)
-					}}
 					<tr>
 						<td>
 							<a class="link" href={ "/groups/" + group.Group.ID + "/events" }>{ group.Group.Name }</a>
@@ -71,35 +43,6 @@ templ GroupsMain(data GroupsPageData) {
 								<span class="badge badge-primary">{ ctxi18n.T(ctx, "groups.role_admin") }</span>
 							} else {
 								<span class="badge">{ ctxi18n.T(ctx, "groups.role_viewer") }</span>
-							}
-						</td>
-						<td data-actions-col>
-							if group.Role == "admin" {
-								@shared.IconActionButton(shared.IconActionButtonProps{
-									ClassName:     "btn btn-ghost btn-sm btn-icon",
-									OnClick:       editExpr,
-									DisabledExpr:  "$formState !== '' || $_fetching",
-									AriaLabel:     ctxi18n.T(ctx, "actions.edit"),
-									Title:         ctxi18n.T(ctx, "actions.edit"),
-									IconName:      icons.IconPencil,
-								})
-								@shared.IconActionButton(shared.IconActionButtonProps{
-									ClassName:     "btn btn-ghost btn-sm btn-danger btn-icon",
-									OnClick:       deleteExpr,
-									DisabledExpr:  "$formState !== '' || $_fetching",
-									AriaLabel:     ctxi18n.T(ctx, "actions.delete"),
-									Title:         ctxi18n.T(ctx, "actions.delete"),
-									IconName:      icons.IconTrash2,
-								})
-							} else {
-								@shared.IconActionButton(shared.IconActionButtonProps{
-									ClassName:     "btn btn-ghost btn-sm btn-icon",
-									OnClick:       leaveExpr,
-									DisabledExpr:  "$formState !== '' || $_fetching",
-									AriaLabel:     ctxi18n.T(ctx, "groups.leave"),
-									Title:         ctxi18n.T(ctx, "groups.leave"),
-									IconName:      icons.IconSquareArrowRightExit,
-								})
 							}
 						</td>
 					</tr>

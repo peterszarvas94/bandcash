@@ -1,0 +1,51 @@
+package member
+
+import (
+	appi18n "bandcash/internal/i18n"
+	"bandcash/internal/utils"
+	shared "bandcash/models/shared"
+	icons "bandcash/models/shared/icons"
+	ctxi18n "github.com/invopop/ctxi18n/i18n"
+	"fmt"
+)
+
+templ MemberNewPage(data NewMemberPageData) {
+	{{ tabID := utils.GenerateID("tab") }}
+	<!DOCTYPE html>
+	<html lang={ appi18n.LocaleCode(ctx) }>
+		@shared.Head(data.Title)
+		<body>
+			<div data-signals={ templ.JSONString(map[string]any{
+				"tab_id": tabID,
+				"csrf":   utils.CSRFTokenFromContext(ctx),
+				"formData": map[string]any{
+					"name":        "",
+					"description": "",
+				},
+				"errors": map[string]any{"name": "", "description": ""},
+			}) } data-init="@get('/sse')"></div>
+			@shared.Notifications()
+			@shared.AppShellMainOnly("member-new", data.Breadcrumbs, data.UserEmail, shared.GroupPrimaryNav(data.GroupID, "members", data.UserEmail), MemberNewForm(data))
+		</body>
+	</html>
+}
+
+templ MemberNewForm(data NewMemberPageData) {
+	<form class="form" data-on:submit={ fmt.Sprintf("@post('/groups/%s/members')", data.GroupID) } data-indicator:_fetching>
+		<div class="field">
+			<label for="member-new-name" class="row">{ ctxi18n.T(ctx, "fields.name") } <span class="color-error">*</span></label>
+			<input id="member-new-name" type="text" data-bind="formData.name" class="input"/>
+			<div data-show="$errors && $errors.name" class="color-error" data-text="$errors.name"></div>
+		</div>
+		<div class="field">
+			<label for="member-new-description">{ ctxi18n.T(ctx, "fields.description") }</label>
+			<textarea id="member-new-description" data-bind="formData.description" rows="3" class="input"></textarea>
+			<div data-show="$errors && $errors.description" class="color-error" data-text="$errors.description"></div>
+		</div>
+		@shared.LoadingSubmitButton(shared.LoadingSubmitButtonProps{
+			ClassName: "btn btn-primary",
+			Label:     ctxi18n.T(ctx, "members.create"),
+			IconName:  icons.IconSave,
+		})
+	</form>
+}

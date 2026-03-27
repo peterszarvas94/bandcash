@@ -410,9 +410,59 @@ func (e *Events) Show(c echo.Context) error {
 	return utils.RenderPage(c, EventShow(data))
 }
 
-func (e *Events) Create(c echo.Context) error {
+func (e *Events) NewEventPage(c echo.Context) error {
+	utils.EnsureTabID(c)
 	groupID := middleware.GetGroupID(c)
 	userEmail := getUserEmail(c)
+
+	data := NewEventPageData{
+		Title: ctxi18n.T(c.Request().Context(), "events.page_title"),
+		Breadcrumbs: []utils.Crumb{
+			{Label: ctxi18n.T(c.Request().Context(), "events.title"), Href: "/groups/" + groupID + "/events"},
+			{Label: ctxi18n.T(c.Request().Context(), "events.add")},
+		},
+		UserEmail: userEmail,
+		GroupID:   groupID,
+	}
+	return utils.RenderPage(c, EventNewPage(data))
+}
+
+func (e *Events) EditEventPage(c echo.Context) error {
+	utils.EnsureTabID(c)
+	groupID := middleware.GetGroupID(c)
+	userEmail := getUserEmail(c)
+
+	id := c.Param("id")
+	if !utils.IsValidID(id, utils.PrefixEvent) {
+		slog.Info("event.edit_page: invalid id")
+		return c.NoContent(http.StatusBadRequest)
+	}
+
+	event, err := db.Qry.GetEvent(c.Request().Context(), db.GetEventParams{
+		ID:      id,
+		GroupID: groupID,
+	})
+	if err != nil {
+		slog.Error("event.edit_page: failed to get event", "err", err)
+		return c.NoContent(http.StatusInternalServerError)
+	}
+
+	data := EditEventPageData{
+		Title: ctxi18n.T(c.Request().Context(), "events.page_title"),
+		Breadcrumbs: []utils.Crumb{
+			{Label: ctxi18n.T(c.Request().Context(), "events.title"), Href: "/groups/" + groupID + "/events"},
+			{Label: event.Title, Href: "/groups/" + groupID + "/events/" + id},
+			{Label: ctxi18n.T(c.Request().Context(), "events.edit")},
+		},
+		UserEmail: userEmail,
+		GroupID:   groupID,
+		Event:     &event,
+	}
+	return utils.RenderPage(c, EventEditPage(data))
+}
+
+func (e *Events) Create(c echo.Context) error {
+	groupID := middleware.GetGroupID(c)
 
 	var signals eventInlineParams
 	err := datastar.ReadSignals(c.Request(), &signals)
@@ -460,37 +510,22 @@ func (e *Events) Create(c echo.Context) error {
 		return c.NoContent(http.StatusInternalServerError)
 	}
 
-	slog.Debug("event.create.table", "id", event.ID, "title", event.Title)
+	slog.Debug("event.create: created", "id", event.ID, "title", event.Title)
 	utils.Notify(c, "success", ctxi18n.T(c.Request().Context(), "events.notifications.created"))
-
-	utils.SSEHub.PatchSignals(c, defaultEventSignals)
 
 	// Clear cache to ensure fresh data on next load
 	utils.InvalidateGroupCaches(groupID)
 
-	query := utils.NormalizeTableQuery(utils.TableQuery{}, e.TableQuerySpec())
-	data, err := e.GetIndexData(c.Request().Context(), groupID, query)
+	err = utils.SSEHub.Redirect(c, "/groups/"+groupID+"/events")
 	if err != nil {
-		slog.Error("event.create.table: failed to get data", "err", err)
-		return c.NoContent(http.StatusInternalServerError)
+		slog.Warn("event.create: failed to redirect", "err", err)
 	}
-	applyEventIndexTableByRole(&data, middleware.IsAdmin(c))
-	data.UserEmail = userEmail
-
-	html, err := utils.RenderHTMLForRequest(c, EventIndex(data))
-	if err != nil {
-		slog.Error("event.create.table: failed to render", "err", err)
-		return c.NoContent(http.StatusInternalServerError)
-	}
-
-	utils.SSEHub.PatchHTML(c, html)
 
 	return c.NoContent(http.StatusOK)
 }
 
 func (e *Events) Update(c echo.Context) error {
 	groupID := middleware.GetGroupID(c)
-	userEmail := getUserEmail(c)
 
 	id := c.Param("id")
 	if !utils.IsValidID(id, utils.PrefixEvent) {
@@ -554,57 +589,13 @@ func (e *Events) Update(c echo.Context) error {
 	slog.Debug("event.update", "id", id)
 	utils.Notify(c, "success", ctxi18n.T(c.Request().Context(), "events.notifications.updated"))
 
-	if signals.Mode == "single" {
-		utils.SSEHub.PatchSignals(c, map[string]any{
-			"eventFormState": "",
-			"eventFormData": map[string]any{
-				"title":       eventForm.Title,
-				"time":        eventForm.Time,
-				"place":       eventForm.Place,
-				"description": eventForm.Description,
-				"amount":      eventForm.Amount,
-				"paid":        eventForm.Paid,
-				"paidAt":      eventForm.PaidAt,
-			},
-			"errors": map[string]any{"title": "", "time": "", "place": "", "description": "", "amount": ""},
-		})
-		query := utils.NormalizeTableQuery(signals.TableQuery, e.ParticipantTableQuerySpec())
-		data, err := e.GetShowData(c.Request().Context(), groupID, id, query)
-		if err != nil {
-			slog.Error("event.update: failed to get data", "err", err)
-			return c.NoContent(http.StatusInternalServerError)
-		}
-		applyEventShowTableByRole(&data, middleware.IsAdmin(c))
-		data.UserEmail = userEmail
-		html, err := utils.RenderHTMLForRequest(c, EventShow(data))
-		if err != nil {
-			slog.Error("event.update: failed to render", "err", err)
-			return c.NoContent(http.StatusInternalServerError)
-		}
-		utils.SSEHub.PatchHTML(c, html)
-		return c.NoContent(http.StatusOK)
-	}
-
-	utils.SSEHub.PatchSignals(c, defaultEventSignals)
-
 	// Clear cache to ensure fresh data on next load
 	utils.InvalidateGroupCaches(groupID)
 
-	query := utils.NormalizeTableQuery(signals.TableQuery, e.TableQuerySpec())
-	data, err := e.GetIndexData(c.Request().Context(), groupID, query)
+	err = utils.SSEHub.Redirect(c, "/groups/"+groupID+"/events/"+id)
 	if err != nil {
-		slog.Error("event.update: failed to get data", "err", err)
-		return c.NoContent(http.StatusInternalServerError)
+		slog.Warn("event.update: failed to redirect", "err", err)
 	}
-	applyEventIndexTableByRole(&data, middleware.IsAdmin(c))
-	data.UserEmail = userEmail
-	html, err := utils.RenderHTMLForRequest(c, EventIndex(data))
-	if err != nil {
-		slog.Error("event.update: failed to render", "err", err)
-		return c.NoContent(http.StatusInternalServerError)
-	}
-
-	utils.SSEHub.PatchHTML(c, html)
 
 	return c.NoContent(http.StatusOK)
 }

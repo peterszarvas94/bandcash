@@ -13,6 +13,14 @@ type NewGroupPageData struct {
 	UserEmail   string
 }
 
+type EditGroupPageData struct {
+	Title       string
+	Breadcrumbs []utils.Crumb
+	UserEmail   string
+	GroupID     string
+	Group       db.Group
+}
+
 type GroupWithRole struct {
 	Group       db.Group
 	Role        string
@@ -50,6 +58,35 @@ type AccessPageData struct {
 	Pager         utils.TablePagination
 	GroupID       string
 	AccessTable   utils.TableLayout
+}
+
+type AccessNewPageData struct {
+	Title       string
+	Breadcrumbs []utils.Crumb
+	UserEmail   string
+	GroupID     string
+	Group       db.Group
+}
+
+type AccessUserPageData struct {
+	Title         string
+	Breadcrumbs   []utils.Crumb
+	UserEmail     string
+	CurrentUserID string
+	GroupID       string
+	Group         db.Group
+	AccessRow     GroupAccessRow
+	IsAdmin       bool
+}
+
+type AccessInvitePageData struct {
+	Title       string
+	Breadcrumbs []utils.Crumb
+	UserEmail   string
+	GroupID     string
+	Group       db.Group
+	AccessRow   GroupAccessRow
+	IsAdmin     bool
 }
 
 type GroupAccessRow struct {

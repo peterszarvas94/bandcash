@@ -1,7 +1,6 @@
 package group
 
 import (
-	
 	appi18n "bandcash/internal/i18n"
 	"bandcash/internal/utils"
 	shared "bandcash/models/shared"
@@ -12,15 +11,19 @@ func accessTablePath(groupID string) string {
 }
 
 templ GroupAccessPage(data AccessPageData) {
-	{{ tabID := utils.GenerateID("tab") }}
+	{{
+		tabID := utils.TabIDFromContext(ctx)
+		if tabID == "" {
+			tabID = utils.GenerateID("tab")
+		}
+	}}
 	<!DOCTYPE html>
 	<html lang={ appi18n.LocaleCode(ctx) }>
 		@shared.Head(data.Title)
 		<body>
-			<div data-signals={ templ.JSONString(map[string]any{"tab_id": tabID, "csrf": utils.CSRFTokenFromContext(ctx), "formState": "", "eventFormState": "", "formData": map[string]any{"email": "", "role": "viewer"}, "tableQuery": utils.TableQuerySignals(data.Query)}) } data-init="@get('/sse')"></div>
+			<div data-signals={ templ.JSONString(map[string]any{"tab_id": tabID, "csrf": utils.CSRFTokenFromContext(ctx), "mode": "table", "tableQuery": utils.TableQuerySignals(data.Query)}) } data-init="@get('/sse')"></div>
 			@shared.Notifications()
-			@shared.SureDialog()
-			@shared.AppShell("group-access", data.Breadcrumbs, data.UserEmail, shared.GroupPrimaryNav(data.Group.ID, "access", data.UserEmail), GroupAccessMain(data), GroupAccessSidebar(data))
+			@shared.AppShellMainOnly("group-access", data.Breadcrumbs, data.UserEmail, shared.GroupPrimaryNav(data.Group.ID, "access", data.UserEmail), GroupAccessMain(data))
 		</body>
 	</html>
 }
