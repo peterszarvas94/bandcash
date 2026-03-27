@@ -83,7 +83,7 @@ func RequireGroup(next echo.HandlerFunc) echo.HandlerFunc {
 		group, err := db.Qry.GetGroupByID(c.Request().Context(), groupID)
 		if err != nil {
 			utils.Notify(c, "error", ctxi18n.T(c.Request().Context(), "groups.errors.access_denied"))
-			return c.Redirect(http.StatusFound, "/dashboard")
+			return c.Redirect(http.StatusFound, "/groups")
 		}
 
 		if isSuperadmin {
@@ -117,7 +117,7 @@ func RequireGroup(next echo.HandlerFunc) echo.HandlerFunc {
 		})
 		if err != nil || readerCount == 0 {
 			utils.Notify(c, "error", ctxi18n.T(c.Request().Context(), "groups.errors.access_denied"))
-			return c.Redirect(http.StatusFound, "/dashboard")
+			return c.Redirect(http.StatusFound, "/groups")
 		}
 
 		c.Set(string(GroupIDKey), groupID)

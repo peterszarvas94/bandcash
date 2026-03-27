@@ -212,9 +212,9 @@ func LanguageSelect(id string, currentLang string, loadingSignal string) templ.C
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var10 string
-		templ_7745c5c3_Var10, templ_7745c5c3_Err = templ.JoinStringErrs(ctxi18n.T(ctx, "settings.language"))
+		templ_7745c5c3_Var10, templ_7745c5c3_Err = templ.JoinStringErrs(ctxi18n.T(ctx, "account.language"))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/shared/navigation_breadcrumbs.templ`, Line: 37, Col: 57}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/shared/navigation_breadcrumbs.templ`, Line: 37, Col: 56}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var10))
 		if templ_7745c5c3_Err != nil {

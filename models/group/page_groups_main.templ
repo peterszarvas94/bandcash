@@ -9,20 +9,22 @@ import (
 )
 
 templ GroupsMain(data GroupsPageData) {
-	<h1>{ ctxi18n.T(ctx, "groups.title") }</h1>
-	<div class="detail-actions">
-		<a href="/groups/new" class="btn btn-accent">
-			@icons.Plus(templ.Attributes{"class": "icon"})
-			{ ctxi18n.T(ctx, "groups.create") }
-		</a>
-	</div>
-	@shared.TableSearchForm("/dashboard", data.Query, "table.search_placeholder")
-	@shared.TablePaginationRow("/dashboard", data.Query, data.Pagination)
+	<section class="details">
+		<h1>{ ctxi18n.T(ctx, "groups.title") }</h1>
+		<div class="actions">
+			<a href="/groups/new" class="btn btn-accent">
+				@icons.Plus(templ.Attributes{"class": "icon"})
+				{ ctxi18n.T(ctx, "groups.create") }
+			</a>
+		</div>
+	</section>
+	@shared.TableSearchForm("/groups", data.Query, "table.search_placeholder")
+	@shared.TablePaginationRow("/groups", data.Query, data.Pagination)
 	@shared.TableOpenFixed(data.GroupsTable, "") {
 		<thead>
 			<tr>
 				@shared.THCol(data.GroupsTable.Col("name")) {
-					@shared.TableSortHeader(ctxi18n.T(ctx, "fields.name"), "name", data.Query, utils.BuildTableSortURL("/dashboard", data.Query, "name"))
+					@shared.TableSortHeader(ctxi18n.T(ctx, "fields.name"), "name", data.Query, utils.BuildTableSortURL("/groups", data.Query, "name"))
 				}
 				@shared.THCol(data.GroupsTable.Col("role")) {
 					{ ctxi18n.T(ctx, "fields.role") }

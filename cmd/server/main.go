@@ -18,6 +18,7 @@ import (
 	"bandcash/internal/i18n"
 	"bandcash/internal/middleware"
 	"bandcash/internal/utils"
+	"bandcash/models/account"
 	"bandcash/models/admin"
 	"bandcash/models/auth"
 	"bandcash/models/dev"
@@ -27,7 +28,6 @@ import (
 	"bandcash/models/health"
 	"bandcash/models/home"
 	"bandcash/models/member"
-	"bandcash/models/settings"
 	"bandcash/models/sse"
 	"bandcash/models/static"
 )
@@ -65,7 +65,7 @@ func main() {
 	event.RegisterRoutes(e)
 	expense.RegisterRoutes(e)
 	member.RegisterRoutes(e)
-	settings.RegisterRoutes(e)
+	account.RegisterRoutes(e)
 	sse.RegisterRoutes(e)
 	dev.RegisterRoutes(e)
 

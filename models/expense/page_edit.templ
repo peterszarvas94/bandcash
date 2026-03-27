@@ -34,12 +34,14 @@ templ ExpenseEditPage(data EditExpensePageData) {
 				"errors": map[string]any{"title": "", "description": "", "amount": "", "date": ""},
 			}) } data-init="@get('/sse')"></div>
 			@shared.Notifications()
-			@shared.GroupLayout("expense-edit", data.Breadcrumbs, data.UserEmail, shared.GroupPrimaryNav(data.GroupID, "expenses", data.UserEmail), ExpenseEditForm(data))
+			@shared.GroupLayout("expense-edit", data.Breadcrumbs, data.UserEmail, shared.AppPrimaryNav("groups", data.UserEmail != ""), ExpenseEditForm(data))
 		</body>
 	</html>
 }
 
 templ ExpenseEditForm(data EditExpensePageData) {
+	@shared.GroupTabs(data.GroupID, "expenses")
+	<h1>{ ctxi18n.T(ctx, "expenses.edit") }</h1>
 	<form class="form" data-on:submit={ fmt.Sprintf("@put('/groups/%s/expenses/%s')", data.GroupID, data.Expense.ID) } data-indicator:_fetching>
 		<div class="field">
 			<label for="expense-edit-title" class="row">{ ctxi18n.T(ctx, "fields.title") } <span class="color-error">*</span></label>

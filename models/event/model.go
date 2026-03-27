@@ -252,7 +252,7 @@ func (e *Events) GetShowData(ctx context.Context, groupID, eventID string, query
 		EditorMode:        "read",
 		GroupID:           groupID,
 		Breadcrumbs: []utils.Crumb{
-			{Label: ctxi18n.T(ctx, "groups.title"), Href: "/dashboard"},
+			{Label: ctxi18n.T(ctx, "groups.title"), Href: "/groups"},
 			{Label: group.Name, Href: "/groups/" + groupID + "/events"},
 			{Label: ctxi18n.T(ctx, "events.title"), Href: "/groups/" + groupID + "/events"},
 			{Label: event.Title},
@@ -486,7 +486,7 @@ func (e *Events) buildEventsData(ctx context.Context, groupID string, group db.G
 		FilteredExpensesPaid:   totals.ExpensePaid,
 		FilteredExpensesUnpaid: totals.ExpenseUnpaid,
 		Breadcrumbs: []utils.Crumb{
-			{Label: ctxi18n.T(ctx, "groups.title"), Href: "/dashboard"},
+			{Label: ctxi18n.T(ctx, "groups.title"), Href: "/groups"},
 			{Label: group.Name, Href: "/groups/" + groupID + "/events"},
 			{Label: ctxi18n.T(ctx, "events.title")},
 		},

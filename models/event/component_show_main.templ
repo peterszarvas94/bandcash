@@ -17,11 +17,16 @@ templ EventShowMain(data EventData) {
 		cancelParticipantsEditExpr := fmt.Sprintf("@delete('/groups/%s/events/%s/participants/draft')", data.GroupID, data.Event.ID)
 		togglePaidExpr := fmt.Sprintf("@put('/groups/%s/events/%s/toggle-paid', {mode: 'single'})", data.GroupID, data.Event.ID)
 	}}
-	<h1>{ data.Event.Title }</h1>
-	<div data-show="$participantEditorMode === 'read'">
+	@shared.GroupTabs(data.GroupID, "events")
+	<section class="details">
+		<h1>{ data.Event.Title }</h1>
 		if data.IsAdmin {
-			@shared.DetailsActions(ReadModeActions(data))
+			<div class="actions" data-show="$participantEditorMode === 'read'">
+				@ReadModeActions(data)
+			</div>
 		}
+	</section>
+	<div data-show="$participantEditorMode === 'read'">
 		@shared.DetailsCardWithClass(fmt.Sprintf("event_%s_overview", data.Event.ID), []shared.DetailsRow{
 			{Label: ctxi18n.T(ctx, "nav.overview"), LabelClass: "section-title", Value: ""},
 			{Label: ctxi18n.T(ctx, "fields.title"), Value: data.Event.Title},

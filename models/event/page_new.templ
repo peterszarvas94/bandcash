@@ -30,12 +30,14 @@ templ EventNewPage(data NewEventPageData) {
 				"errors": map[string]any{"title": "", "time": "", "place": "", "description": "", "amount": ""},
 			}) } data-init="@get('/sse')"></div>
 			@shared.Notifications()
-			@shared.GroupLayout("event-new", data.Breadcrumbs, data.UserEmail, shared.GroupPrimaryNav(data.GroupID, "events", data.UserEmail), EventNewForm(data))
+			@shared.GroupLayout("event-new", data.Breadcrumbs, data.UserEmail, shared.AppPrimaryNav("groups", data.UserEmail != ""), EventNewForm(data))
 		</body>
 	</html>
 }
 
 templ EventNewForm(data NewEventPageData) {
+	@shared.GroupTabs(data.GroupID, "events")
+	<h1>{ ctxi18n.T(ctx, "events.add") }</h1>
 	<form class="form" data-on:submit={ fmt.Sprintf("@post('/groups/%s/events')", data.GroupID) } data-indicator:_fetching>
 		<div class="field">
 			<label for="event-new-title" class="row">{ ctxi18n.T(ctx, "fields.title") } <span class="color-error">*</span></label>

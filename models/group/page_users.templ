@@ -10,7 +10,7 @@ func usersTablePath(groupID string) string {
 	return "/groups/" + groupID + "/users"
 }
 
-templ GroupAccessPage(data AccessPageData) {
+templ GroupUsersPage(data UsersPageData) {
 	{{
 		tabID := utils.TabIDFromContext(ctx)
 		if tabID == "" {
@@ -23,7 +23,7 @@ templ GroupAccessPage(data AccessPageData) {
 		<body>
 			<div data-signals={ templ.JSONString(map[string]any{"tab_id": tabID, "csrf": utils.CSRFTokenFromContext(ctx), "mode": "table", "tableQuery": utils.TableQuerySignals(data.Query)}) } data-init="@get('/sse')"></div>
 			@shared.Notifications()
-			@shared.GroupLayout("group-users", data.Breadcrumbs, data.UserEmail, shared.GroupPrimaryNav(data.Group.ID, "access", data.UserEmail), GroupAccessMain(data))
+			@shared.GroupLayout("group-users", data.Breadcrumbs, data.UserEmail, shared.AppPrimaryNav("groups", data.UserEmail != ""), GroupUsersMain(data))
 		</body>
 	</html>
 }

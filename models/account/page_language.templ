@@ -1,4 +1,4 @@
-package settings
+package account
 
 import (
 	ctxi18n "github.com/invopop/ctxi18n/i18n"
@@ -9,7 +9,7 @@ import (
 	icons "bandcash/models/shared/icons"
 )
 
-templ LanguagePage(data SettingsData) {
+templ LanguagePage(data AccountData) {
 	{{ tabID := utils.GenerateID("tab") }}
 	<!DOCTYPE html>
 	<html lang={ appi18n.LocaleCode(ctx) }>
@@ -20,13 +20,13 @@ templ LanguagePage(data SettingsData) {
 				data-init="@get('/sse')"
 			></div>
 			@shared.Notifications()
-			@shared.GroupLayout("public-language", data.Breadcrumbs, data.UserEmail, shared.PublicPrimaryNav("language"), LanguageMain(data))
+			@shared.GroupLayout("public-language", data.Breadcrumbs, data.UserEmail, shared.AppPrimaryNav("account", data.UserEmail != ""), LanguageMain(data))
 		</body>
 	</html>
 }
 
-templ LanguageMain(data SettingsData) {
-	<h1>{ ctxi18n.T(ctx, "settings.language") }</h1>
+templ LanguageMain(data AccountData) {
+	<h1>{ ctxi18n.T(ctx, "account.language") }</h1>
 	if data.UserEmail != "" {
 		<div class="row pb row-wrap">
 			<span>{ ctxi18n.T(ctx, "nav.logged_in_as") } { data.UserEmail }</span>

@@ -1,4 +1,4 @@
-package settings
+package account
 
 import (
 	"log/slog"
@@ -17,18 +17,18 @@ import (
 	shared "bandcash/models/shared"
 )
 
-type settingsSignals struct {
+type accountSignals struct {
 	TabID    string `json:"tab_id"`
 	FormData struct {
 		Lang string `json:"lang"`
 	} `json:"formData"`
 }
 
-type settingsTabSignals struct {
+type accountTabSignals struct {
 	TabID string `json:"tab_id"`
 }
 
-func (s *Settings) Index(c echo.Context) error {
+func (s *Account) Index(c echo.Context) error {
 	utils.EnsureTabID(c)
 	data := s.Data(c.Request().Context())
 	userID := middleware.GetUserID(c)
@@ -36,18 +36,14 @@ func (s *Settings) Index(c echo.Context) error {
 		data.UserEmail = user.Email
 		data.CurrentLang = appi18n.NormalizeLocale(user.PreferredLang)
 	}
-	return utils.RenderPage(c, SettingsIndex(data))
+	return utils.RenderPage(c, AccountIndex(data))
 }
 
-func (s *Settings) LegacySettingsRedirect(c echo.Context) error {
-	return c.Redirect(http.StatusFound, "/account")
-}
-
-func (s *Settings) LanguagePage(c echo.Context) error {
+func (s *Account) LanguagePage(c echo.Context) error {
 	utils.EnsureTabID(c)
 	data := s.Data(c.Request().Context())
-	data.Title = ctxi18n.T(c.Request().Context(), "settings.language")
-	data.Breadcrumbs = []utils.Crumb{{Label: ctxi18n.T(c.Request().Context(), "settings.language")}}
+	data.Title = ctxi18n.T(c.Request().Context(), "account.language")
+	data.Breadcrumbs = []utils.Crumb{{Label: ctxi18n.T(c.Request().Context(), "account.language")}}
 	userID := middleware.GetUserID(c)
 	if user, err := db.Qry.GetUserByID(c.Request().Context(), userID); err == nil {
 		data.UserEmail = user.Email
@@ -56,8 +52,8 @@ func (s *Settings) LanguagePage(c echo.Context) error {
 	return utils.RenderPage(c, LanguagePage(data))
 }
 
-func (s *Settings) UpdateLanguage(c echo.Context) error {
-	signals := settingsSignals{}
+func (s *Account) UpdateLanguage(c echo.Context) error {
+	signals := accountSignals{}
 	if err := datastar.ReadSignals(c.Request(), &signals); err != nil {
 		return c.NoContent(http.StatusBadRequest)
 	}
@@ -73,7 +69,7 @@ func (s *Settings) UpdateLanguage(c echo.Context) error {
 	if err != nil {
 		notifyCtx = c.Request().Context()
 	}
-	utils.Notify(c, "success", ctxi18n.T(notifyCtx, "settings.notifications.language_saved"))
+	utils.Notify(c, "success", ctxi18n.T(notifyCtx, "account.notifications.language_saved"))
 	err = utils.SSEHub.ExecuteScript(c, "window.location.reload()")
 	if err != nil {
 		return c.NoContent(http.StatusInternalServerError)
@@ -81,7 +77,7 @@ func (s *Settings) UpdateLanguage(c echo.Context) error {
 	return c.NoContent(http.StatusOK)
 }
 
-func (s *Settings) UpdateDetailsState(c echo.Context) error {
+func (s *Account) UpdateDetailsState(c echo.Context) error {
 	key := strings.TrimSpace(c.QueryParam("key"))
 	if key == "" {
 		return c.NoContent(http.StatusBadRequest)
@@ -100,27 +96,27 @@ func (s *Settings) UpdateDetailsState(c echo.Context) error {
 		}(),
 	})
 	if err != nil {
-		slog.Error("settings.details_state: failed to upsert", "user_id", userID, "key", key, "err", err)
+		slog.Error("account.details_state: failed to upsert", "user_id", userID, "key", key, "err", err)
 		return c.NoContent(http.StatusInternalServerError)
 	}
-	slog.Debug("settings.details_state: updated", "user_id", userID, "key", key, "open", open)
+	slog.Debug("account.details_state: updated", "user_id", userID, "key", key, "open", open)
 
 	return c.NoContent(http.StatusNoContent)
 }
 
-func (s *Settings) SessionsPage(c echo.Context) error {
+func (s *Account) SessionsPage(c echo.Context) error {
 	utils.EnsureTabID(c)
 	userID := middleware.GetUserID(c)
 
 	sessions, err := db.Qry.ListUserSessions(c.Request().Context(), userID)
 	if err != nil {
-		slog.Error("settings.sessions: failed to list sessions", "user_id", userID, "err", err)
+		slog.Error("account.sessions: failed to list sessions", "user_id", userID, "err", err)
 		sessions = []db.UserSession{}
 	}
 
 	data := SessionsData{
-		Title:            ctxi18n.T(c.Request().Context(), "settings.account"),
-		Breadcrumbs:      []utils.Crumb{{Label: ctxi18n.T(c.Request().Context(), "settings.account")}},
+		Title:            ctxi18n.T(c.Request().Context(), "account.account"),
+		Breadcrumbs:      []utils.Crumb{{Label: ctxi18n.T(c.Request().Context(), "account.account")}},
 		CurrentSessionID: "",
 		Sessions:         sessions,
 	}
@@ -138,8 +134,8 @@ func (s *Settings) SessionsPage(c echo.Context) error {
 	return utils.RenderPage(c, SessionsPage(data))
 }
 
-func (s *Settings) LogoutSession(c echo.Context) error {
-	signals := settingsTabSignals{}
+func (s *Account) LogoutSession(c echo.Context) error {
+	signals := accountTabSignals{}
 	if err := datastar.ReadSignals(c.Request(), &signals); err != nil {
 		return c.NoContent(http.StatusBadRequest)
 	}
@@ -158,16 +154,16 @@ func (s *Settings) LogoutSession(c echo.Context) error {
 		UserID: userID,
 	})
 	if err != nil {
-		slog.Error("settings.sessions: failed to delete session", "session_id", sessionID, "user_id", userID, "err", err)
+		slog.Error("account.sessions: failed to delete session", "session_id", sessionID, "user_id", userID, "err", err)
 		return c.NoContent(http.StatusInternalServerError)
 	}
 
-	utils.Notify(c, "success", ctxi18n.T(c.Request().Context(), "settings.notifications.session_logged_out"))
+	utils.Notify(c, "success", ctxi18n.T(c.Request().Context(), "account.notifications.session_logged_out"))
 	return c.NoContent(http.StatusOK)
 }
 
-func (s *Settings) LogoutAllOtherSessions(c echo.Context) error {
-	signals := settingsTabSignals{}
+func (s *Account) LogoutAllOtherSessions(c echo.Context) error {
+	signals := accountTabSignals{}
 	if err := datastar.ReadSignals(c.Request(), &signals); err != nil {
 		return c.NoContent(http.StatusBadRequest)
 	}
@@ -178,8 +174,8 @@ func (s *Settings) LogoutAllOtherSessions(c echo.Context) error {
 	userID := middleware.GetUserID(c)
 
 	if err := db.Qry.DeleteAllUserSessions(c.Request().Context(), userID); err != nil {
-		slog.Error("settings.sessions: failed to delete all sessions", "user_id", userID, "err", err)
-		utils.Notify(c, "error", ctxi18n.T(c.Request().Context(), "settings.notifications.logout_everywhere_failed"))
+		slog.Error("account.sessions: failed to delete all sessions", "user_id", userID, "err", err)
+		utils.Notify(c, "error", ctxi18n.T(c.Request().Context(), "account.notifications.logout_everywhere_failed"))
 		if notificationsHTML, renderErr := utils.RenderHTMLForRequest(c, shared.Notifications()); renderErr == nil {
 			_ = utils.SSEHub.PatchHTML(c, notificationsHTML)
 		}

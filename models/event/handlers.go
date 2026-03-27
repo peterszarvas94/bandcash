@@ -415,9 +415,17 @@ func (e *Events) NewEventPage(c echo.Context) error {
 	groupID := middleware.GetGroupID(c)
 	userEmail := getUserEmail(c)
 
+	group, err := db.Qry.GetGroupByID(c.Request().Context(), groupID)
+	if err != nil {
+		slog.Error("event.new_page: failed to get group", "group_id", groupID, "err", err)
+		return c.NoContent(http.StatusInternalServerError)
+	}
+
 	data := NewEventPageData{
 		Title: ctxi18n.T(c.Request().Context(), "events.page_title"),
 		Breadcrumbs: []utils.Crumb{
+			{Label: ctxi18n.T(c.Request().Context(), "groups.title"), Href: "/groups"},
+			{Label: group.Name, Href: "/groups/" + groupID + "/events"},
 			{Label: ctxi18n.T(c.Request().Context(), "events.title"), Href: "/groups/" + groupID + "/events"},
 			{Label: ctxi18n.T(c.Request().Context(), "events.add")},
 		},
@@ -438,6 +446,12 @@ func (e *Events) EditEventPage(c echo.Context) error {
 		return c.NoContent(http.StatusBadRequest)
 	}
 
+	group, err := db.Qry.GetGroupByID(c.Request().Context(), groupID)
+	if err != nil {
+		slog.Error("event.edit_page: failed to get group", "group_id", groupID, "err", err)
+		return c.NoContent(http.StatusInternalServerError)
+	}
+
 	event, err := db.Qry.GetEvent(c.Request().Context(), db.GetEventParams{
 		ID:      id,
 		GroupID: groupID,
@@ -450,6 +464,8 @@ func (e *Events) EditEventPage(c echo.Context) error {
 	data := EditEventPageData{
 		Title: ctxi18n.T(c.Request().Context(), "events.page_title"),
 		Breadcrumbs: []utils.Crumb{
+			{Label: ctxi18n.T(c.Request().Context(), "groups.title"), Href: "/groups"},
+			{Label: group.Name, Href: "/groups/" + groupID + "/events"},
 			{Label: ctxi18n.T(c.Request().Context(), "events.title"), Href: "/groups/" + groupID + "/events"},
 			{Label: event.Title, Href: "/groups/" + groupID + "/events/" + id},
 			{Label: ctxi18n.T(c.Request().Context(), "events.edit")},

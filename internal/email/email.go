@@ -81,7 +81,7 @@ func groupLink(baseURL, groupID string) string {
 }
 
 func dashboardLink(baseURL string) string {
-	return fmt.Sprintf("%s/dashboard", baseURL)
+	return fmt.Sprintf("%s/groups", baseURL)
 }
 
 func joinBilingualText(huText, enText string) string {

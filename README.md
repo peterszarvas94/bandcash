@@ -84,7 +84,7 @@ mise run kamal app details
 │   ├── event/
 │   ├── member/
 │   ├── expense/
-│   ├── settings/
+│   ├── account/
 │   └── shared/                # shared templ components
 ├── static/                    # CSS and JS assets
 ├── mise.toml                  # tools and task runner

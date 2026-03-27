@@ -35,12 +35,14 @@ templ EventEditPage(data EditEventPageData) {
 				"errors": map[string]any{"title": "", "time": "", "place": "", "description": "", "amount": ""},
 			}) } data-init="@get('/sse')"></div>
 			@shared.Notifications()
-			@shared.GroupLayout("event-edit", data.Breadcrumbs, data.UserEmail, shared.GroupPrimaryNav(data.GroupID, "events", data.UserEmail), EventEditForm(data))
+			@shared.GroupLayout("event-edit", data.Breadcrumbs, data.UserEmail, shared.AppPrimaryNav("groups", data.UserEmail != ""), EventEditForm(data))
 		</body>
 	</html>
 }
 
 templ EventEditForm(data EditEventPageData) {
+	@shared.GroupTabs(data.GroupID, "events")
+	<h1>{ ctxi18n.T(ctx, "events.edit") }</h1>
 	<form class="form" data-on:submit={ fmt.Sprintf("@put('/groups/%s/events/%s')", data.GroupID, data.Event.ID) } data-indicator:_fetching>
 		<div class="field">
 			<label for="event-edit-title" class="row">{ ctxi18n.T(ctx, "fields.title") } <span class="color-error">*</span></label>

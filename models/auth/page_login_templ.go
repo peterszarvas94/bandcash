@@ -81,7 +81,7 @@ func LoginPage(data AuthPageData) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = shared.GroupLayout("auth-login", data.Breadcrumbs, data.UserEmail, shared.PublicPrimaryNav("login"), LoginMain()).Render(ctx, templ_7745c5c3_Buffer)
+		templ_7745c5c3_Err = shared.GroupLayout("auth-login", data.Breadcrumbs, data.UserEmail, shared.AppPrimaryNav("", data.UserEmail != ""), LoginMain()).Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

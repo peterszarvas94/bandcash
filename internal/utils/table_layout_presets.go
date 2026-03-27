@@ -79,7 +79,7 @@ func ViewersTableLayout() TableLayout {
 	}, 2)
 }
 
-func GroupAccessTableLayout() TableLayout {
+func GroupUsersTableLayout() TableLayout {
 	return NewTableLayout([]TableColumn{
 		{Key: "email", WidthCh: 30},
 		{Key: "role", WidthCh: 10},

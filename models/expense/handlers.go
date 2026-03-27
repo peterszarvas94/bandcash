@@ -99,9 +99,17 @@ func (e *Expenses) NewExpensePage(c echo.Context) error {
 	groupID := middleware.GetGroupID(c)
 	userEmail := getUserEmail(c)
 
+	group, err := db.Qry.GetGroupByID(c.Request().Context(), groupID)
+	if err != nil {
+		slog.Error("expense.new_page: failed to get group", "group_id", groupID, "err", err)
+		return c.NoContent(http.StatusInternalServerError)
+	}
+
 	data := NewExpensePageData{
 		Title: ctxi18n.T(c.Request().Context(), "expenses.page_title"),
 		Breadcrumbs: []utils.Crumb{
+			{Label: ctxi18n.T(c.Request().Context(), "groups.title"), Href: "/groups"},
+			{Label: group.Name, Href: "/groups/" + groupID + "/events"},
 			{Label: ctxi18n.T(c.Request().Context(), "expenses.title"), Href: "/groups/" + groupID + "/expenses"},
 			{Label: ctxi18n.T(c.Request().Context(), "expenses.add")},
 		},
@@ -122,6 +130,12 @@ func (e *Expenses) EditExpensePage(c echo.Context) error {
 		return c.NoContent(http.StatusBadRequest)
 	}
 
+	group, err := db.Qry.GetGroupByID(c.Request().Context(), groupID)
+	if err != nil {
+		slog.Error("expense.edit_page: failed to get group", "group_id", groupID, "err", err)
+		return c.NoContent(http.StatusInternalServerError)
+	}
+
 	expense, err := db.Qry.GetExpense(c.Request().Context(), db.GetExpenseParams{
 		ID:      id,
 		GroupID: groupID,
@@ -134,6 +148,8 @@ func (e *Expenses) EditExpensePage(c echo.Context) error {
 	data := EditExpensePageData{
 		Title: ctxi18n.T(c.Request().Context(), "expenses.page_title"),
 		Breadcrumbs: []utils.Crumb{
+			{Label: ctxi18n.T(c.Request().Context(), "groups.title"), Href: "/groups"},
+			{Label: group.Name, Href: "/groups/" + groupID + "/events"},
 			{Label: ctxi18n.T(c.Request().Context(), "expenses.title"), Href: "/groups/" + groupID + "/expenses"},
 			{Label: expense.Title, Href: "/groups/" + groupID + "/expenses/" + id},
 			{Label: ctxi18n.T(c.Request().Context(), "expenses.edit")},

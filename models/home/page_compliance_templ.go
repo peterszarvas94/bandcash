@@ -101,7 +101,7 @@ func HomePricing(data HomeData) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = shared.GroupLayout("home-pricing", data.Breadcrumbs, "", shared.PublicPrimaryNav("legal-pricing"), HomePricingMain()).Render(ctx, templ_7745c5c3_Buffer)
+		templ_7745c5c3_Err = shared.GroupLayout("home-pricing", data.Breadcrumbs, "", shared.AppPrimaryNav("", data.IsAuthenticated), HomePricingMain()).Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -200,7 +200,7 @@ func HomeTermsAndConditions(data HomeData) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = shared.GroupLayout("home-terms", data.Breadcrumbs, "", shared.PublicPrimaryNav("legal-terms"), HomeTermsAndConditionsMain()).Render(ctx, templ_7745c5c3_Buffer)
+		templ_7745c5c3_Err = shared.GroupLayout("home-terms", data.Breadcrumbs, "", shared.AppPrimaryNav("", data.IsAuthenticated), HomeTermsAndConditionsMain()).Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -299,7 +299,7 @@ func HomePrivacyPolicy(data HomeData) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = shared.GroupLayout("home-privacy", data.Breadcrumbs, "", shared.PublicPrimaryNav("legal-privacy"), HomePrivacyPolicyMain()).Render(ctx, templ_7745c5c3_Buffer)
+		templ_7745c5c3_Err = shared.GroupLayout("home-privacy", data.Breadcrumbs, "", shared.AppPrimaryNav("", data.IsAuthenticated), HomePrivacyPolicyMain()).Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -398,7 +398,7 @@ func HomeRefundPolicy(data HomeData) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = shared.GroupLayout("home-refund", data.Breadcrumbs, "", shared.PublicPrimaryNav("legal-refund"), HomeRefundPolicyMain()).Render(ctx, templ_7745c5c3_Buffer)
+		templ_7745c5c3_Err = shared.GroupLayout("home-refund", data.Breadcrumbs, "", shared.AppPrimaryNav("", data.IsAuthenticated), HomeRefundPolicyMain()).Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

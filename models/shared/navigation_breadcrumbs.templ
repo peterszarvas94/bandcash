@@ -34,7 +34,7 @@ templ BreadcrumbTrail(crumbs []utils.Crumb) {
 
 templ LanguageSelect(id string, currentLang string, loadingSignal string) {
 	<div class="field">
-		<label for={ id }>{ ctxi18n.T(ctx, "settings.language") }</label>
+		<label for={ id }>{ ctxi18n.T(ctx, "account.language") }</label>
 		<div class="row row-wrap items-center">
 			<select id={ id } data-bind="formData.lang" class="input w-fit">
 				<option value="en" selected?={ currentLang == "en" }>{ ctxi18n.T(ctx, "language.en") }</option>

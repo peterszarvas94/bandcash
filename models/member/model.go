@@ -397,7 +397,7 @@ func (p *Members) GetShowData(ctx context.Context, groupID, memberID string, que
 		TotalPaid:    totals.TotalPaid,
 		TotalUnpaid:  totals.TotalUnpaid,
 		Breadcrumbs: []utils.Crumb{
-			{Label: ctxi18n.T(ctx, "groups.title"), Href: "/dashboard"},
+			{Label: ctxi18n.T(ctx, "groups.title"), Href: "/groups"},
 			{Label: group.Name, Href: "/groups/" + groupID + "/events"},
 			{Label: ctxi18n.T(ctx, "members.title"), Href: "/groups/" + groupID + "/members"},
 			{Label: member.Name},
@@ -461,7 +461,7 @@ func (p *Members) GetIndexData(ctx context.Context, groupID string, query utils.
 		Pager:     utils.BuildTablePagination(totalItems, query),
 		GroupID:   groupID,
 		Breadcrumbs: []utils.Crumb{
-			{Label: ctxi18n.T(ctx, "groups.title"), Href: "/dashboard"},
+			{Label: ctxi18n.T(ctx, "groups.title"), Href: "/groups"},
 			{Label: group.Name, Href: "/groups/" + groupID + "/events"},
 			{Label: ctxi18n.T(ctx, "members.title")},
 		},

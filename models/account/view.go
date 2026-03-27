@@ -1,11 +1,11 @@
-package settings
+package account
 
 import (
 	"bandcash/internal/db"
 	"bandcash/internal/utils"
 )
 
-type SettingsData struct {
+type AccountData struct {
 	Title       string
 	Breadcrumbs []utils.Crumb
 	CurrentLang string

@@ -19,7 +19,7 @@ import (
 	icons "bandcash/models/shared/icons"
 )
 
-func GroupAccessUserPage(data AccessUserPageData) templ.Component {
+func GroupUserPage(data UserPageData) templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
 		if templ_7745c5c3_CtxErr := ctx.Err(); templ_7745c5c3_CtxErr != nil {
@@ -48,7 +48,7 @@ func GroupAccessUserPage(data AccessUserPageData) templ.Component {
 		var templ_7745c5c3_Var2 string
 		templ_7745c5c3_Var2, templ_7745c5c3_Err = templ.JoinStringErrs(appi18n.LocaleCode(ctx))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/group/page_access_show.templ`, Line: 17, Col: 37}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/group/page_user_show.templ`, Line: 17, Col: 37}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var2))
 		if templ_7745c5c3_Err != nil {
@@ -69,7 +69,7 @@ func GroupAccessUserPage(data AccessUserPageData) templ.Component {
 		var templ_7745c5c3_Var3 string
 		templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.JoinStringErrs(templ.JSONString(map[string]any{"tab_id": tabID, "csrf": utils.CSRFTokenFromContext(ctx)}))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/group/page_access_show.templ`, Line: 20, Col: 113}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/group/page_user_show.templ`, Line: 20, Col: 113}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var3))
 		if templ_7745c5c3_Err != nil {
@@ -87,7 +87,7 @@ func GroupAccessUserPage(data AccessUserPageData) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = shared.GroupLayout("group-access-user", data.Breadcrumbs, data.UserEmail, shared.GroupPrimaryNav(data.GroupID, "access", data.UserEmail), GroupAccessUserMain(data)).Render(ctx, templ_7745c5c3_Buffer)
+		templ_7745c5c3_Err = shared.GroupLayout("group-user", data.Breadcrumbs, data.UserEmail, shared.AppPrimaryNav("groups", data.UserEmail != ""), GroupUserMain(data)).Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -99,7 +99,7 @@ func GroupAccessUserPage(data AccessUserPageData) templ.Component {
 	})
 }
 
-func GroupAccessUserMain(data AccessUserPageData) templ.Component {
+func GroupUserMain(data UserPageData) templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
 		if templ_7745c5c3_CtxErr := ctx.Err(); templ_7745c5c3_CtxErr != nil {
@@ -120,14 +120,18 @@ func GroupAccessUserMain(data AccessUserPageData) templ.Component {
 			templ_7745c5c3_Var4 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 6, "<h1>")
+		templ_7745c5c3_Err = shared.GroupTabs(data.GroupID, "users").Render(ctx, templ_7745c5c3_Buffer)
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 6, "<section class=\"details\"><h1>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var5 string
-		templ_7745c5c3_Var5, templ_7745c5c3_Err = templ.JoinStringErrs(data.AccessRow.Email)
+		templ_7745c5c3_Var5, templ_7745c5c3_Err = templ.JoinStringErrs(data.UserRow.Email)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/group/page_access_show.templ`, Line: 29, Col: 27}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/group/page_user_show.templ`, Line: 31, Col: 26}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var5))
 		if templ_7745c5c3_Err != nil {
@@ -138,30 +142,37 @@ func GroupAccessUserMain(data AccessUserPageData) templ.Component {
 			return templ_7745c5c3_Err
 		}
 		if data.IsAdmin {
-			templ_7745c5c3_Err = shared.DetailsActions(GroupAccessUserDetailsActions(data)).Render(ctx, templ_7745c5c3_Buffer)
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 8, "<div class=\"actions\">")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			templ_7745c5c3_Err = GroupUserDetailsActions(data).Render(ctx, templ_7745c5c3_Buffer)
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 9, "</div>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 8, "<div class=\"pb\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 10, "</section><div class=\"pb\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = shared.DetailsCard(fmt.Sprintf("group_access_user_%s", data.AccessRow.UserID), []shared.DetailsRow{
-			{Label: ctxi18n.T(ctx, "auth.email"), Value: data.AccessRow.Email},
+		templ_7745c5c3_Err = shared.DetailsCard(fmt.Sprintf("group_user_%s", data.UserRow.UserID), []shared.DetailsRow{
 			{Label: ctxi18n.T(ctx, "fields.role"), Value: func() string {
-				if data.AccessRow.Role == "admin" {
+				if data.UserRow.Role == "admin" {
 					return ctxi18n.T(ctx, "groups.role_admin")
 				}
 				return ctxi18n.T(ctx, "groups.role_viewer")
 			}()},
 			{Label: ctxi18n.T(ctx, "fields.status"), Value: ctxi18n.T(ctx, "groups.active")},
-			{Label: ctxi18n.T(ctx, "groups.created"), Value: utils.FormatTimeLocalized(ctx, data.AccessRow.CreatedAt)},
+			{Label: ctxi18n.T(ctx, "groups.created"), Value: utils.FormatTimeLocalized(ctx, data.UserRow.CreatedAt)},
 		}).Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 9, "</div>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 11, "</div>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -169,7 +180,7 @@ func GroupAccessUserMain(data AccessUserPageData) templ.Component {
 	})
 }
 
-func GroupAccessUserDetailsActions(data AccessUserPageData) templ.Component {
+func GroupUserDetailsActions(data UserPageData) templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
 		if templ_7745c5c3_CtxErr := ctx.Err(); templ_7745c5c3_CtxErr != nil {
@@ -190,20 +201,20 @@ func GroupAccessUserDetailsActions(data AccessUserPageData) templ.Component {
 			templ_7745c5c3_Var6 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 10, "<a class=\"btn btn-accent\" href=\"")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 12, "<a class=\"btn btn-accent\" href=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var7 templ.SafeURL
-		templ_7745c5c3_Var7, templ_7745c5c3_Err = templ.JoinURLErrs(fmt.Sprintf("/groups/%s/users/%s/edit", data.GroupID, data.AccessRow.UserID))
+		templ_7745c5c3_Var7, templ_7745c5c3_Err = templ.JoinURLErrs(fmt.Sprintf("/groups/%s/users/%s/edit", data.GroupID, data.UserRow.UserID))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/group/page_access_show.templ`, Line: 49, Col: 110}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/group/page_user_show.templ`, Line: 53, Col: 108}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var7))
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 11, "\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 13, "\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -214,13 +225,13 @@ func GroupAccessUserDetailsActions(data AccessUserPageData) templ.Component {
 		var templ_7745c5c3_Var8 string
 		templ_7745c5c3_Var8, templ_7745c5c3_Err = templ.JoinStringErrs(ctxi18n.T(ctx, "actions.edit"))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/group/page_access_show.templ`, Line: 51, Col: 34}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/group/page_user_show.templ`, Line: 55, Col: 34}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var8))
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 12, "</a>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 14, "</a>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -235,8 +246,8 @@ func GroupAccessUserDetailsActions(data AccessUserPageData) templ.Component {
 				SubmitLabel: ctxi18n.T(ctx, "actions.delete"),
 				CancelLabel: ctxi18n.T(ctx, "actions.cancel"),
 				Method:      "delete",
-				URL:         fmt.Sprintf("/groups/%s/users/%s", data.GroupID, data.AccessRow.UserID),
-				TriggerID:   "group-access-user-delete",
+				URL:         fmt.Sprintf("/groups/%s/users/%s", data.GroupID, data.UserRow.UserID),
+				TriggerID:   "group-user-delete",
 			},
 		}).Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
@@ -246,7 +257,7 @@ func GroupAccessUserDetailsActions(data AccessUserPageData) templ.Component {
 	})
 }
 
-func GroupAccessInvitePage(data AccessInvitePageData) templ.Component {
+func GroupUserInvitePage(data UserInvitePageData) templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
 		if templ_7745c5c3_CtxErr := ctx.Err(); templ_7745c5c3_CtxErr != nil {
@@ -268,20 +279,20 @@ func GroupAccessInvitePage(data AccessInvitePageData) templ.Component {
 		}
 		ctx = templ.ClearChildren(ctx)
 		tabID := utils.GenerateID("tab")
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 13, "<!doctype html><html lang=\"")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 15, "<!doctype html><html lang=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var10 string
 		templ_7745c5c3_Var10, templ_7745c5c3_Err = templ.JoinStringErrs(appi18n.LocaleCode(ctx))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/group/page_access_show.templ`, Line: 73, Col: 37}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/group/page_user_show.templ`, Line: 77, Col: 37}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var10))
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 14, "\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 16, "\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -289,20 +300,20 @@ func GroupAccessInvitePage(data AccessInvitePageData) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 15, "<body><div data-signals=\"")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 17, "<body><div data-signals=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var11 string
 		templ_7745c5c3_Var11, templ_7745c5c3_Err = templ.JoinStringErrs(templ.JSONString(map[string]any{"tab_id": tabID, "csrf": utils.CSRFTokenFromContext(ctx)}))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/group/page_access_show.templ`, Line: 76, Col: 113}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/group/page_user_show.templ`, Line: 80, Col: 113}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var11))
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 16, "\" data-init=\"@get('/sse')\"></div>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 18, "\" data-init=\"@get('/sse')\"></div>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -314,11 +325,11 @@ func GroupAccessInvitePage(data AccessInvitePageData) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = shared.GroupLayout("group-access-invite", data.Breadcrumbs, data.UserEmail, shared.GroupPrimaryNav(data.GroupID, "access", data.UserEmail), GroupAccessInviteMain(data)).Render(ctx, templ_7745c5c3_Buffer)
+		templ_7745c5c3_Err = shared.GroupLayout("group-user-invite", data.Breadcrumbs, data.UserEmail, shared.AppPrimaryNav("groups", data.UserEmail != ""), GroupUserInviteMain(data)).Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 17, "</body></html>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 19, "</body></html>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -326,7 +337,7 @@ func GroupAccessInvitePage(data AccessInvitePageData) templ.Component {
 	})
 }
 
-func GroupAccessInviteMain(data AccessInvitePageData) templ.Component {
+func GroupUserInviteMain(data UserInvitePageData) templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
 		if templ_7745c5c3_CtxErr := ctx.Err(); templ_7745c5c3_CtxErr != nil {
@@ -347,48 +358,59 @@ func GroupAccessInviteMain(data AccessInvitePageData) templ.Component {
 			templ_7745c5c3_Var12 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 18, "<h1>")
+		templ_7745c5c3_Err = shared.GroupTabs(data.GroupID, "users").Render(ctx, templ_7745c5c3_Buffer)
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 20, "<section class=\"details\"><h1>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var13 string
-		templ_7745c5c3_Var13, templ_7745c5c3_Err = templ.JoinStringErrs(data.AccessRow.Email)
+		templ_7745c5c3_Var13, templ_7745c5c3_Err = templ.JoinStringErrs(data.UserRow.Email)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/group/page_access_show.templ`, Line: 85, Col: 27}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/group/page_user_show.templ`, Line: 91, Col: 26}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var13))
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 19, "</h1>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 21, "</h1>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		if data.IsAdmin {
-			templ_7745c5c3_Err = shared.DetailsActions(GroupAccessInviteDetailsActions(data)).Render(ctx, templ_7745c5c3_Buffer)
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 22, "<div class=\"actions\">")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			templ_7745c5c3_Err = GroupUserInviteDetailsActions(data).Render(ctx, templ_7745c5c3_Buffer)
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 23, "</div>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 20, "<div class=\"pb\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 24, "</section><div class=\"pb\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = shared.DetailsCard(fmt.Sprintf("group_access_invite_%s", data.AccessRow.InviteID), []shared.DetailsRow{
-			{Label: ctxi18n.T(ctx, "auth.email"), Value: data.AccessRow.Email},
+		templ_7745c5c3_Err = shared.DetailsCard(fmt.Sprintf("group_user_invite_%s", data.UserRow.InviteID), []shared.DetailsRow{
 			{Label: ctxi18n.T(ctx, "fields.role"), Value: func() string {
-				if data.AccessRow.Role == "admin" {
+				if data.UserRow.Role == "admin" {
 					return ctxi18n.T(ctx, "groups.role_admin")
 				}
 				return ctxi18n.T(ctx, "groups.role_viewer")
 			}()},
 			{Label: ctxi18n.T(ctx, "fields.status"), Value: ctxi18n.T(ctx, "groups.pending")},
-			{Label: ctxi18n.T(ctx, "groups.created"), Value: utils.FormatTimeLocalized(ctx, data.AccessRow.CreatedAt)},
+			{Label: ctxi18n.T(ctx, "groups.created"), Value: utils.FormatTimeLocalized(ctx, data.UserRow.CreatedAt)},
 		}).Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 21, "</div>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 25, "</div>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -396,7 +418,7 @@ func GroupAccessInviteMain(data AccessInvitePageData) templ.Component {
 	})
 }
 
-func GroupAccessInviteDetailsActions(data AccessInvitePageData) templ.Component {
+func GroupUserInviteDetailsActions(data UserInvitePageData) templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
 		if templ_7745c5c3_CtxErr := ctx.Err(); templ_7745c5c3_CtxErr != nil {
@@ -428,8 +450,8 @@ func GroupAccessInviteDetailsActions(data AccessInvitePageData) templ.Component 
 				SubmitLabel: ctxi18n.T(ctx, "actions.delete"),
 				CancelLabel: ctxi18n.T(ctx, "actions.cancel"),
 				Method:      "delete",
-				URL:         fmt.Sprintf("/groups/%s/users/%s", data.GroupID, data.AccessRow.InviteID),
-				TriggerID:   "group-access-invite-delete",
+				URL:         fmt.Sprintf("/groups/%s/users/%s", data.GroupID, data.UserRow.InviteID),
+				TriggerID:   "group-user-invite-delete",
 			},
 		}).Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {

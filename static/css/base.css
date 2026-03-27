@@ -25,7 +25,6 @@
 
     --content-width: 70rem;
     --nav-width: 14rem;
-    --sidebar-width: 22rem;
     --details-width: 40rem;
     --mobile-drawer-width: min(20rem, calc(100vw - 3rem));
     --page-padding-inline: var(--space);

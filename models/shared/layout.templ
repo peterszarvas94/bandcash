@@ -34,22 +34,11 @@ templ GroupLayout(id string, crumbs []utils.Crumb, userEmail string, nav templ.C
 }
 
 templ GroupTabs(groupID string, activeTab string) {
-	<nav class="tabs" role="tablist" aria-label={ ctxi18n.T(ctx, "groups.actions") }>
-		if activeTab == "events" {
-			<a class="btn btn-active" href={ "/groups/" + groupID + "/events" } role="tab" aria-selected="true">{ ctxi18n.T(ctx, "events.title") }</a>
-		} else {
-			<a class="btn" href={ "/groups/" + groupID + "/events" } role="tab" aria-selected="false">{ ctxi18n.T(ctx, "events.title") }</a>
-		}
-		if activeTab == "members" {
-			<a class="btn btn-active" href={ "/groups/" + groupID + "/members" } role="tab" aria-selected="true">{ ctxi18n.T(ctx, "members.title") }</a>
-		} else {
-			<a class="btn" href={ "/groups/" + groupID + "/members" } role="tab" aria-selected="false">{ ctxi18n.T(ctx, "members.title") }</a>
-		}
-		if activeTab == "viewers" {
-			<a class="btn btn-active" href={ "/groups/" + groupID + "/users" } role="tab" aria-selected="true">{ ctxi18n.T(ctx, "groups.access") }</a>
-		} else {
-			<a class="btn" href={ "/groups/" + groupID + "/users" } role="tab" aria-selected="false">{ ctxi18n.T(ctx, "groups.access") }</a>
-		}
+	<nav class="secondary" aria-label={ ctxi18n.T(ctx, "groups.actions") }>
+		<a class={ "link nav-link", templ.KV("is-active", activeTab == "events") } href={ "/groups/" + groupID + "/events" }>{ ctxi18n.T(ctx, "events.title") }</a>
+		<a class={ "link nav-link", templ.KV("is-active", activeTab == "expenses") } href={ "/groups/" + groupID + "/expenses" }>{ ctxi18n.T(ctx, "expenses.title") }</a>
+		<a class={ "link nav-link", templ.KV("is-active", activeTab == "members") } href={ "/groups/" + groupID + "/members" }>{ ctxi18n.T(ctx, "members.title") }</a>
+		<a class={ "link nav-link", templ.KV("is-active", activeTab == "users") } href={ "/groups/" + groupID + "/users" }>{ ctxi18n.T(ctx, "groups.users") }</a>
 	</nav>
 }
 

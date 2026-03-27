@@ -1,4 +1,4 @@
-package settings
+package account
 
 import (
 	"fmt"
@@ -19,7 +19,7 @@ templ SessionsPage(data SessionsData) {
 		<body>
 			<div data-signals={ templ.JSONString(map[string]any{"tab_id": tabID, "csrf": utils.CSRFTokenFromContext(ctx)}) } data-init="@get('/sse')"></div>
 			@shared.Notifications()
-			@shared.GroupLayout("settings-sessions", data.Breadcrumbs, data.UserEmail, shared.AppPrimaryNav("settings", data.UserEmail), SessionsMain(data))
+			@shared.GroupLayout("account-sessions", data.Breadcrumbs, data.UserEmail, shared.AppPrimaryNav("account", data.UserEmail != ""), SessionsMain(data))
 		</body>
 	</html>
 }
@@ -27,20 +27,20 @@ templ SessionsPage(data SessionsData) {
 templ SessionsMain(data SessionsData) {
 	<section class="pb">
 		<header class="row items-center justify-between pb">
-			<h1>{ ctxi18n.T(ctx, "settings.account") }</h1>
+			<h1>{ ctxi18n.T(ctx, "account.account") }</h1>
 			if len(data.Sessions) > 1 {
 				@shared.LoadingActionButton(shared.LoadingActionButtonProps{
 					ClassName:    "btn btn-danger",
 					OnClick:      "@delete('/account/sessions')",
 					DisabledExpr: "$_fetching",
-					Label:        ctxi18n.T(ctx, "settings.logout_everywhere"),
+					Label:        ctxi18n.T(ctx, "account.logout_everywhere"),
 					IconName:      icons.IconLogOut,
 				})
 			}
 		</header>
 		
 		if len(data.Sessions) == 0 {
-			<p>{ ctxi18n.T(ctx, "settings.no_sessions") }</p>
+			<p>{ ctxi18n.T(ctx, "account.no_sessions") }</p>
 		} else {
 			<ul class="stack">
 				for _, session := range data.Sessions {
@@ -48,15 +48,15 @@ templ SessionsMain(data SessionsData) {
 						<div>
 							<p class="font-medium">
 							if session.ID == data.CurrentSessionID {
-								{ ctxi18n.T(ctx, "settings.current_session") }
+								{ ctxi18n.T(ctx, "account.current_session") }
 							} else if session.CreatedAt.Valid {
-									{ ctxi18n.T(ctx, "settings.session_from") } { session.CreatedAt.Time.Format("2006-01-02 15:04") }
+									{ ctxi18n.T(ctx, "account.session_from") } { session.CreatedAt.Time.Format("2006-01-02 15:04") }
 								} else {
-									{ ctxi18n.T(ctx, "settings.session_from") } -
+									{ ctxi18n.T(ctx, "account.session_from") } -
 								}
 							</p>
 							<p class="text-sm color-muted">
-								{ ctxi18n.T(ctx, "settings.expires") }: { session.ExpiresAt.Format("2006-01-02") }
+								{ ctxi18n.T(ctx, "account.expires") }: { session.ExpiresAt.Format("2006-01-02") }
 							</p>
 						</div>
 						if session.ID != data.CurrentSessionID {

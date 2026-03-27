@@ -103,21 +103,6 @@ type SureActionButtonProps struct {
 	Dialog       SureDialogProps
 }
 
-type SidebarLoadingSubmitButtonProps struct {
-	ClassName string
-	Label     string
-	IconName  icons.IconName
-	ActionID  string
-}
-
-type SidebarLoadingActionButtonProps struct {
-	ClassName string
-	OnClick   string
-	Label     string
-	IconName  icons.IconName
-	ActionID  string
-}
-
 type LoadingIconActionButtonProps struct {
 	ClassName    string
 	OnClick      string
@@ -445,41 +430,6 @@ templ SureActionButton(props SureActionButtonProps) {
 			@icons.Icon(props.IconName, templ.Attributes{"class": "icon"})
 		</span>
 		<span data-show={ showSpinnerExpr } style="display: none">
-			@icons.LoaderCircle(templ.Attributes{"class": "icon icon-spin"})
-		</span>
-		<span>{ props.Label }</span>
-	</button>
-}
-
-templ SidebarLoadingSubmitButton(props SidebarLoadingSubmitButtonProps) {
-	<button
-		type="submit"
-		class={ props.ClassName }
-		data-attr:disabled="$_fetching"
-		data-on:click={ fmt.Sprintf("$sidebarLoadingAction = %q", props.ActionID) }
-	>
-		<span data-show={ fmt.Sprintf("!($_fetching && $sidebarLoadingAction === %q)", props.ActionID) }>
-			@icons.Icon(props.IconName, templ.Attributes{"class": "icon"})
-		</span>
-		<span data-show={ fmt.Sprintf("$_fetching && $sidebarLoadingAction === %q", props.ActionID) } style="display: none">
-			@icons.LoaderCircle(templ.Attributes{"class": "icon icon-spin"})
-		</span>
-		<span>{ props.Label }</span>
-	</button>
-}
-
-templ SidebarLoadingActionButton(props SidebarLoadingActionButtonProps) {
-	<button
-		class={ props.ClassName }
-		type="submit"
-		data-indicator:_fetching
-		data-attr:disabled="$_fetching"
-		data-on:click={ fmt.Sprintf("$sidebarLoadingAction = %q", props.ActionID) }
-	>
-		<span data-show={ fmt.Sprintf("!($_fetching && $sidebarLoadingAction === %q)", props.ActionID) }>
-			@icons.Icon(props.IconName, templ.Attributes{"class": "icon"})
-		</span>
-		<span data-show={ fmt.Sprintf("$_fetching && $sidebarLoadingAction === %q", props.ActionID) } style="display: none">
 			@icons.LoaderCircle(templ.Attributes{"class": "icon icon-spin"})
 		</span>
 		<span>{ props.Label }</span>

@@ -22,12 +22,11 @@ templ HomeIndex(data HomeData) {
 					<img src="/static/img/bandcash.png" alt="Bandcash app preview"/>
 					<figcaption>
 						<h1>{ data.Title }</h1>
-						<p>{ ctxi18n.T(ctx, "home.tagline") }</p>
 					</figcaption>
 				</figure>
 				<form class="form" method="get" action="/">
 					<div class="field">
-						<label for="home-lang">{ ctxi18n.T(ctx, "settings.language") }</label>
+						<label for="home-lang">{ ctxi18n.T(ctx, "account.language") }</label>
 						<div class="row row-wrap items-center">
 							<select id="home-lang" name="lang" class="input w-fit" onchange="this.form.submit()">
 								<option value="en" selected?={ data.CurrentLang == "en" }>{ ctxi18n.T(ctx, "language.en") }</option>
@@ -38,9 +37,9 @@ templ HomeIndex(data HomeData) {
 				</form>
 				if data.IsAuthenticated {
 					<div class="form">
-						<p>You are already logged in.</p>
+						<p>{ ctxi18n.T(ctx, "home.logged_in") }</p>
 						<div class="row row-wrap">
-							<a class="btn btn-primary" href="/dashboard">Go to { ctxi18n.T(ctx, "nav.dashboard") }</a>
+							<a class="btn btn-primary" href="/groups">{ ctxi18n.T(ctx, "home.go_to_groups") }</a>
 						</div>
 					</div>
 				} else {

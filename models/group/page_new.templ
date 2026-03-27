@@ -18,21 +18,22 @@ templ GroupNewPage(data NewGroupPageData) {
 		<body>
 			<div data-signals={templ.JSONString(map[string]any{"tab_id": tabID, "csrf": utils.CSRFTokenFromContext(ctx), "formData": map[string]any{"name": ""}})} data-init="@get('/sse')"></div>
 			@shared.Notifications()
-			<main id="app" class="single-col">
-				@shared.Breadcrumbs(data.Breadcrumbs, data.UserEmail)
-				<p>{ ctxi18n.T(ctx, "groups.new_desc") }</p>
-				<form class="form" data-on:submit="@post('/groups')" data-indicator:_fetching>
-					<div class="field">
-						<label for="group-new-name" class="row">{ ctxi18n.T(ctx, "groups.name") } <span class="color-error">*</span></label>
-						<input id="group-new-name" type="text" data-bind="formData.name" placeholder={ ctxi18n.T(ctx, "groups.name_placeholder") } class="input"/>
-					</div>
-				@shared.LoadingSubmitButton(shared.LoadingSubmitButtonProps{
-					ClassName: "btn btn-primary",
-					Label:     ctxi18n.T(ctx, "groups.create"),
-					IconName:  icons.IconSave,
-				})
-				</form>
-			</main>
+			@shared.GroupLayout("group-new", data.Breadcrumbs, data.UserEmail, shared.AppPrimaryNav("groups", data.UserEmail != ""), GroupNewMain())
 		</body>
 	</html>
+}
+
+templ GroupNewMain() {
+	<h1>{ ctxi18n.T(ctx, "groups.new") }</h1>
+	<form class="form" data-on:submit="@post('/groups')" data-indicator:_fetching>
+		<div class="field">
+			<label for="group-new-name" class="row">{ ctxi18n.T(ctx, "groups.name") } <span class="color-error">*</span></label>
+			<input id="group-new-name" type="text" data-bind="formData.name" placeholder={ ctxi18n.T(ctx, "groups.name_placeholder") } class="input"/>
+		</div>
+	@shared.LoadingSubmitButton(shared.LoadingSubmitButtonProps{
+		ClassName: "btn btn-primary",
+		Label:     ctxi18n.T(ctx, "groups.create"),
+		IconName:  icons.IconSave,
+	})
+	</form>
 }

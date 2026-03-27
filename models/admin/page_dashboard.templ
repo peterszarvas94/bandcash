@@ -36,12 +36,13 @@ templ DashboardPage(data DashboardData) {
 		<body>
 			<div data-signals={ templ.JSONString(map[string]any{"tab_id": tabID, "csrf": utils.CSRFTokenFromContext(ctx)}) } data-init="@get('/sse')"></div>
 			@shared.Notifications()
-			@shared.GroupLayout("admin-dashboard", data.Breadcrumbs, data.UserEmail, shared.AppPrimaryNav("admin", data.UserEmail), DashboardMain(data))
+			@shared.GroupLayout("admin-dashboard", data.Breadcrumbs, data.UserEmail, shared.AppPrimaryNav("", data.UserEmail != ""), DashboardMain(data))
 		</body>
 	</html>
 }
 
 templ DashboardMain(data DashboardData) {
+	<h1>{ ctxi18n.T(ctx, "admin.dashboard") }</h1>
 	<div class="hide-tablet pb">
 		@AdminTabs(data)
 	</div>

@@ -46,21 +46,21 @@ type GroupSummary struct {
 	AdminEmail  string
 }
 
-type AccessPageData struct {
+type UsersPageData struct {
 	Title         string
 	Breadcrumbs   []utils.Crumb
 	UserEmail     string
 	CurrentUserID string
 	Group         db.Group
-	AccessRows    []GroupAccessRow
+	UserRows      []GroupUserRow
 	IsAdmin       bool
 	Query         utils.TableQuery
 	Pager         utils.TablePagination
 	GroupID       string
-	AccessTable   utils.TableLayout
+	UsersTable    utils.TableLayout
 }
 
-type AccessNewPageData struct {
+type UsersNewPageData struct {
 	Title       string
 	Breadcrumbs []utils.Crumb
 	UserEmail   string
@@ -68,37 +68,37 @@ type AccessNewPageData struct {
 	Group       db.Group
 }
 
-type AccessUserPageData struct {
+type UserPageData struct {
 	Title         string
 	Breadcrumbs   []utils.Crumb
 	UserEmail     string
 	CurrentUserID string
 	GroupID       string
 	Group         db.Group
-	AccessRow     GroupAccessRow
+	UserRow       GroupUserRow
 	IsAdmin       bool
 }
 
-type AccessUserEditPageData struct {
+type UserEditPageData struct {
 	Title       string
 	Breadcrumbs []utils.Crumb
 	UserEmail   string
 	GroupID     string
 	Group       db.Group
-	AccessRow   GroupAccessRow
+	UserRow     GroupUserRow
 }
 
-type AccessInvitePageData struct {
+type UserInvitePageData struct {
 	Title       string
 	Breadcrumbs []utils.Crumb
 	UserEmail   string
 	GroupID     string
 	Group       db.Group
-	AccessRow   GroupAccessRow
+	UserRow     GroupUserRow
 	IsAdmin     bool
 }
 
-type GroupAccessRow struct {
+type GroupUserRow struct {
 	Kind      string
 	Status    string
 	Role      string

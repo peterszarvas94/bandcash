@@ -11,7 +11,7 @@ import (
 	icons "bandcash/models/shared/icons"
 )
 
-templ GroupAccessUserEditPage(data AccessUserEditPageData) {
+templ GroupUserEditPage(data UserEditPageData) {
 	{{ tabID := utils.GenerateID("tab") }}
 	<!DOCTYPE html>
 	<html lang={ appi18n.LocaleCode(ctx) }>
@@ -21,20 +21,22 @@ templ GroupAccessUserEditPage(data AccessUserEditPageData) {
 				"tab_id": tabID,
 				"csrf":   utils.CSRFTokenFromContext(ctx),
 				"formData": map[string]any{
-					"role": data.AccessRow.Role,
+					"role": data.UserRow.Role,
 				},
 			}) } data-init="@get('/sse')"></div>
 			@shared.Notifications()
-			@shared.GroupLayout("group-access-user-edit", data.Breadcrumbs, data.UserEmail, shared.GroupPrimaryNav(data.GroupID, "access", data.UserEmail), GroupAccessUserEditForm(data))
+			@shared.GroupLayout("group-user-edit", data.Breadcrumbs, data.UserEmail, shared.AppPrimaryNav("groups", data.UserEmail != ""), GroupUserEditForm(data))
 		</body>
 	</html>
 }
 
-templ GroupAccessUserEditForm(data AccessUserEditPageData) {
-	<form class="form" data-on:submit={ fmt.Sprintf("($formData.role === 'admin' ? @put('/groups/%s/users/%s/admin') : @put('/groups/%s/users/%s/viewer'))", data.GroupID, data.AccessRow.UserID, data.GroupID, data.AccessRow.UserID) } data-indicator:_fetching>
+templ GroupUserEditForm(data UserEditPageData) {
+	@shared.GroupTabs(data.GroupID, "users")
+	<h1>{ ctxi18n.T(ctx, "actions.edit") }</h1>
+	<form class="form" data-on:submit={ fmt.Sprintf("($formData.role === 'admin' ? @put('/groups/%s/users/%s/admin') : @put('/groups/%s/users/%s/viewer'))", data.GroupID, data.UserRow.UserID, data.GroupID, data.UserRow.UserID) } data-indicator:_fetching>
 		<div class="field">
 			<label for="group-user-edit-email">{ ctxi18n.T(ctx, "auth.email") }</label>
-			<input id="group-user-edit-email" class="input" type="text" value={ data.AccessRow.Email } disabled/>
+			<input id="group-user-edit-email" class="input" type="text" value={ data.UserRow.Email } disabled/>
 		</div>
 		<div class="field">
 			<label for="group-user-edit-role" class="row">{ ctxi18n.T(ctx, "fields.role") } <span class="color-error">*</span></label>

@@ -1,4 +1,4 @@
-package settings
+package account
 
 import (
 	
@@ -10,7 +10,7 @@ import (
 	icons "bandcash/models/shared/icons"
 )
 
-templ SettingsIndex(data SettingsData) {
+templ AccountIndex(data AccountData) {
 	{{ tabID := utils.GenerateID("tab") }}
 	<!DOCTYPE html>
 	<html lang={ appi18n.LocaleCode(ctx) }>
@@ -19,19 +19,20 @@ templ SettingsIndex(data SettingsData) {
 			<div data-signals={ templ.JSONString(map[string]any{"tab_id": tabID, "csrf": utils.CSRFTokenFromContext(ctx), "formData": map[string]any{"lang": data.CurrentLang}}) } data-init="@get('/sse')"></div>
 			@shared.Notifications()
 			@shared.SureDialog()
-			@shared.GroupLayout("settings-index", data.Breadcrumbs, data.UserEmail, shared.AppPrimaryNav("settings", data.UserEmail), SettingsMain(data))
+			@shared.GroupLayout("account-index", data.Breadcrumbs, data.UserEmail, shared.AppPrimaryNav("account", data.UserEmail != ""), AccountMain(data))
 		</body>
 	</html>
 }
 
-templ SettingsMain(data SettingsData) {
-	@shared.Section(ctxi18n.T(ctx, "settings.language"), LanguageForm(data.CurrentLang))
+templ AccountMain(data AccountData) {
+	<h1>{ ctxi18n.T(ctx, "account.account") }</h1>
+	@shared.Section(ctxi18n.T(ctx, "account.language"), LanguageForm(data.CurrentLang))
 	if data.UserEmail != "" {
-		@shared.Section(ctxi18n.T(ctx, "settings.account"), AccountContent(data))
+		@shared.Section(ctxi18n.T(ctx, "account.account"), AccountContent(data))
 	}
 }
 
-templ AccountContent(data SettingsData) {
+templ AccountContent(data AccountData) {
 	<div class="row row-wrap">
 		{ ctxi18n.T(ctx, "nav.logged_in_as") } <strong>{ data.UserEmail }</strong>
 	</div>
@@ -53,12 +54,12 @@ templ AccountContent(data SettingsData) {
 	@shared.SureActionButton(shared.SureActionButtonProps{
 		ClassName:    "btn btn-danger",
 		DisabledExpr: "false",
-		Label:        ctxi18n.T(ctx, "settings.logout_everywhere"),
+		Label:        ctxi18n.T(ctx, "account.logout_everywhere"),
 		IconName:     icons.IconLogOut,
 		Dialog: shared.SureDialogProps{
-			Title:       ctxi18n.T(ctx, "settings.logout_everywhere"),
+			Title:       ctxi18n.T(ctx, "account.logout_everywhere"),
 			Message:     ctxi18n.T(ctx, "confirm.destructive_message"),
-			SubmitLabel: ctxi18n.T(ctx, "settings.logout_everywhere"),
+			SubmitLabel: ctxi18n.T(ctx, "account.logout_everywhere"),
 			CancelLabel: ctxi18n.T(ctx, "actions.cancel"),
 			Method:      "delete",
 			URL:         "/account/sessions",

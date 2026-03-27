@@ -16,7 +16,7 @@ templ MemberIndex(data MembersData) {
 			<div data-signals={templ.JSONString(memberIndexSignals(tabID, utils.CSRFTokenFromContext(ctx), utils.TableQuerySignals(data.Query)))} data-init="@get('/sse')"></div>
 			@shared.Notifications()
 			@shared.SureDialog()
-			@shared.GroupLayout("member-index", data.Breadcrumbs, data.UserEmail, shared.GroupPrimaryNav(data.GroupID, "members", data.UserEmail), MemberIndexMain(data))
+			@shared.GroupLayout("member-index", data.Breadcrumbs, data.UserEmail, shared.AppPrimaryNav("groups", data.UserEmail != ""), MemberIndexMain(data))
 		</body>
 	</html>
 }

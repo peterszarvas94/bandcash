@@ -46,12 +46,6 @@ templ DetailsSection(stateKey string, rows []DetailsRow) {
 	</div>
 }
 
-templ DetailsActions(actions templ.Component) {
-	<div class="detail-actions">
-		@actions
-	</div>
-}
-
 templ Details(summary string, content templ.Component) {
 	{{ _ = summary }}
 	<div class="pb">

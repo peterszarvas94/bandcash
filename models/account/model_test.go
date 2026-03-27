@@ -1,4 +1,4 @@
-package settings
+package account
 
 import (
 	"testing"
@@ -6,7 +6,7 @@ import (
 	appi18n "bandcash/internal/i18n"
 )
 
-func TestSettingsDataDefaultsAndBreadcrumb(t *testing.T) {
+func TestAccountDataDefaultsAndBreadcrumb(t *testing.T) {
 	s := New()
 	data := s.Data(t.Context())
 	if data.CurrentLang != appi18n.DefaultLocale {

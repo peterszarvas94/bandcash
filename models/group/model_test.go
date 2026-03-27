@@ -13,13 +13,13 @@ func TestGroupTableSpecs(t *testing.T) {
 		t.Fatalf("expected name to be allowlisted in group model spec")
 	}
 
-	accessSpec := (&AccessModel{}).TableQuerySpec()
-	if accessSpec.DefaultSort != "createdAt" || accessSpec.DefaultDir != "desc" {
-		t.Fatalf("unexpected access model defaults: %+v", accessSpec)
+	usersSpec := (&UsersModel{}).TableQuerySpec()
+	if usersSpec.DefaultSort != "createdAt" || usersSpec.DefaultDir != "desc" {
+		t.Fatalf("unexpected users model defaults: %+v", usersSpec)
 	}
 	for _, key := range []string{"email", "role", "status", "createdAt"} {
-		if _, ok := accessSpec.AllowedSorts[key]; !ok {
-			t.Fatalf("expected %q in access allowlisted sorts", key)
+		if _, ok := usersSpec.AllowedSorts[key]; !ok {
+			t.Fatalf("expected %q in users allowlisted sorts", key)
 		}
 	}
 }

@@ -63,59 +63,72 @@ func DevEmailPreviewPage(data EmailPreviewData) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "<body><style>\n\t\t\t\t.dev-mail-wrap { max-width: 980px; margin: 24px auto; padding: 0 12px; }\n\t\t\t\t.dev-mail-client { border: 1px solid #d5d8de; border-radius: 10px; overflow: hidden; background: #ffffff; color: #111827; }\n\t\t\t\t.dev-mail-head { padding: 12px 14px; border-bottom: 1px solid #e6e6e6; background: #f7f8fa; }\n\t\t\t\t.dev-mail-meta { padding: 12px 14px; border-bottom: 1px solid #e6e6e6; font-size: 14px; line-height: 1.5; background: #ffffff; }\n\n\t\t\t\t@media (prefers-color-scheme: dark) {\n\t\t\t\t\t.dev-mail-client { border-color: #3f4654; background: #161a22; color: #e5e7eb; }\n\t\t\t\t\t.dev-mail-head { border-bottom-color: #343b49; background: #202634; }\n\t\t\t\t\t.dev-mail-meta { border-bottom-color: #343b49; background: #161a22; }\n\t\t\t\t}\n\t\t\t</style><div class=\"dev-mail-wrap\"><div class=\"dev-mail-client\"><div class=\"dev-mail-head\"><strong>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "<body><style>\n\t\t\t\t.dev-mail-wrap { max-width: 980px; margin: 24px auto; padding: 0 12px; }\n\t\t\t\t.dev-mail-client { border: 1px solid #d5d8de; border-radius: 10px; overflow: hidden; background: #ffffff; color: #111827; }\n\t\t\t\t.dev-mail-head { padding: 12px 14px; border-bottom: 1px solid #e6e6e6; background: #f7f8fa; }\n\t\t\t\t.dev-mail-meta { padding: 12px 14px; border-bottom: 1px solid #e6e6e6; font-size: 14px; line-height: 1.5; background: #ffffff; }\n\n\t\t\t\t@media (prefers-color-scheme: dark) {\n\t\t\t\t\t.dev-mail-client { border-color: #3f4654; background: #161a22; color: #e5e7eb; }\n\t\t\t\t\t.dev-mail-head { border-bottom-color: #343b49; background: #202634; }\n\t\t\t\t\t.dev-mail-meta { border-bottom-color: #343b49; background: #161a22; }\n\t\t\t\t}\n\t\t\t</style><div class=\"dev-mail-wrap\"><h1>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var3 string
 		templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.JoinStringErrs(data.Title)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/dev/page_email_preview.templ`, Line: 36, Col: 26}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/dev/page_email_preview.templ`, Line: 34, Col: 20}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var3))
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, "</strong></div><div class=\"dev-mail-meta\"><div><strong>From:</strong> ")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, "</h1><div class=\"dev-mail-client\"><div class=\"dev-mail-head\"><strong>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var4 string
-		templ_7745c5c3_Var4, templ_7745c5c3_Err = templ.JoinStringErrs(data.From)
+		templ_7745c5c3_Var4, templ_7745c5c3_Err = templ.JoinStringErrs(data.Title)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/dev/page_email_preview.templ`, Line: 39, Col: 45}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/dev/page_email_preview.templ`, Line: 37, Col: 26}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var4))
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 5, "</div><div><strong>To:</strong> ")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 5, "</strong></div><div class=\"dev-mail-meta\"><div><strong>From:</strong> ")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var5 string
-		templ_7745c5c3_Var5, templ_7745c5c3_Err = templ.JoinStringErrs(data.To)
+		templ_7745c5c3_Var5, templ_7745c5c3_Err = templ.JoinStringErrs(data.From)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/dev/page_email_preview.templ`, Line: 40, Col: 41}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/dev/page_email_preview.templ`, Line: 40, Col: 45}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var5))
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 6, "</div><div><strong>Subject:</strong> ")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 6, "</div><div><strong>To:</strong> ")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var6 string
-		templ_7745c5c3_Var6, templ_7745c5c3_Err = templ.JoinStringErrs(data.Subject)
+		templ_7745c5c3_Var6, templ_7745c5c3_Err = templ.JoinStringErrs(data.To)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/dev/page_email_preview.templ`, Line: 41, Col: 51}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/dev/page_email_preview.templ`, Line: 41, Col: 41}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var6))
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 7, "</div></div>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 7, "</div><div><strong>Subject:</strong> ")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		var templ_7745c5c3_Var7 string
+		templ_7745c5c3_Var7, templ_7745c5c3_Err = templ.JoinStringErrs(data.Subject)
+		if templ_7745c5c3_Err != nil {
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/dev/page_email_preview.templ`, Line: 42, Col: 51}
+		}
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var7))
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 8, "</div></div>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -123,7 +136,7 @@ func DevEmailPreviewPage(data EmailPreviewData) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 8, "</div></div></body></html>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 9, "</div></div></body></html>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

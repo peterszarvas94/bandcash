@@ -74,67 +74,70 @@ templ EventTotalsContent(data EventsData) {
 }
 
 templ EventIndexMain(data EventsData) {
-	<h1>{ data.GroupName }</h1>
-	if data.IsAdmin {
-		<div class="detail-actions">
-			<a href={ fmt.Sprintf("/groups/%s/events/new", data.GroupID) } class="btn btn-accent">
-				@icons.Icon(icons.IconPlus, templ.Attributes{"class": "icon"})
-				{ ctxi18n.T(ctx, "events.add") }
-			</a>
-		</div>
-	}
+	@shared.GroupTabs(data.GroupID, "events")
+	<section class="details">
+		<h1>{ ctxi18n.T(ctx, "events.title") }</h1>
+		if data.IsAdmin {
+			<div class="actions">
+				<a href={ fmt.Sprintf("/groups/%s/events/new", data.GroupID) } class="btn btn-accent">
+					@icons.Icon(icons.IconPlus, templ.Attributes{"class": "icon"})
+					{ ctxi18n.T(ctx, "events.add") }
+				</a>
+			</div>
+		}
+	</section>
 	@EventTotalsContent(data)
 	@shared.TableSearchFormWithClass(fmt.Sprintf("/groups/%s/events", data.GroupID), data.Query, "table.search_placeholder_events", "pt")
 	<div class="row row-wrap justify-between pb" role="radiogroup" aria-label={ ctxi18n.T(ctx, "table.date_filters") }>
-			<div class="row row-tight">
+		<div class="row row-tight">
+			@shared.RadioLink(shared.RadioLinkProps{
+				Href:       utils.BuildTableDateClearURL(fmt.Sprintf("/groups/%s/events", data.GroupID), data.Query),
+				Label:      ctxi18n.T(ctx, "table.all"),
+				IsSelected: utils.DateFilterAllActive(data.Query),
+				NoIcon:     true,
+				ClassName:  "btn btn-xs",
+			})
+			for _, year := range data.RecentYears {
 				@shared.RadioLink(shared.RadioLinkProps{
-					Href:       utils.BuildTableDateClearURL(fmt.Sprintf("/groups/%s/events", data.GroupID), data.Query),
-					Label:      ctxi18n.T(ctx, "table.all"),
-					IsSelected: utils.DateFilterAllActive(data.Query),
+					Href:       utils.BuildTableDateYearURL(fmt.Sprintf("/groups/%s/events", data.GroupID), data.Query, fmt.Sprintf("%d", year)),
+					Label:      fmt.Sprintf("%d", year),
+					IsSelected: utils.DateFilterYearActive(data.Query, fmt.Sprintf("%d", year)),
 					NoIcon:     true,
 					ClassName:  "btn btn-xs",
 				})
-				for _, year := range data.RecentYears {
-					@shared.RadioLink(shared.RadioLinkProps{
-						Href:       utils.BuildTableDateYearURL(fmt.Sprintf("/groups/%s/events", data.GroupID), data.Query, fmt.Sprintf("%d", year)),
-						Label:      fmt.Sprintf("%d", year),
-						IsSelected: utils.DateFilterYearActive(data.Query, fmt.Sprintf("%d", year)),
-						NoIcon:     true,
-						ClassName:  "btn btn-xs",
-					})
-				}
-				@shared.RadioLink(shared.RadioLinkProps{
-					Href:       utils.BuildTableDateCustomURL(fmt.Sprintf("/groups/%s/events", data.GroupID), data.Query),
-					Label:      ctxi18n.T(ctx, "table.custom"),
-					IsSelected: utils.DateFilterCustomActive(data.Query),
-					NoIcon:     true,
-					ClassName:  "btn btn-xs",
-				})
-			</div>
-			if utils.DateFilterCustomActive(data.Query) {
-				<form class="row row-tight" method="get" action={ fmt.Sprintf("/groups/%s/events", data.GroupID) }>
-					if data.Query.Search != "" {
-						<input type="hidden" name="q" value={ data.Query.Search }/>
-					}
-					if data.Query.SortSet {
-						<input type="hidden" name="sort" value={ data.Query.Sort }/>
-						<input type="hidden" name="dir" value={ data.Query.Dir }/>
-					}
-					if data.Query.PageSize != utils.DefaultTablePageSize {
-						<input type="hidden" name="pageSize" value={ fmt.Sprintf("%d", data.Query.PageSize) }/>
-					}
-					if data.Query.Summary != utils.SummaryModeAll {
-						<input type="hidden" name="summary" value={ data.Query.Summary }/>
-					}
-					<input type="hidden" name="dateMode" value="custom"/>
-					<input type="date" class="input input-xs" name="from" value={ data.Query.From }/>
-					<span class="text-sm pr pl">-</span>
-					<input type="date" class="input input-xs" name="to" value={ data.Query.To }/>
-					<button class="btn btn-xs btn-icon" type="submit" aria-label={ ctxi18n.T(ctx, "table.apply") } title={ ctxi18n.T(ctx, "table.apply") }>
-						@icons.CalendarSearch(templ.Attributes{"class": "icon"})
-					</button>
-				</form>
 			}
+			@shared.RadioLink(shared.RadioLinkProps{
+				Href:       utils.BuildTableDateCustomURL(fmt.Sprintf("/groups/%s/events", data.GroupID), data.Query),
+				Label:      ctxi18n.T(ctx, "table.custom"),
+				IsSelected: utils.DateFilterCustomActive(data.Query),
+				NoIcon:     true,
+				ClassName:  "btn btn-xs",
+			})
+		</div>
+		if utils.DateFilterCustomActive(data.Query) {
+			<form class="row row-tight" method="get" action={ fmt.Sprintf("/groups/%s/events", data.GroupID) }>
+				if data.Query.Search != "" {
+					<input type="hidden" name="q" value={ data.Query.Search }/>
+				}
+				if data.Query.SortSet {
+					<input type="hidden" name="sort" value={ data.Query.Sort }/>
+					<input type="hidden" name="dir" value={ data.Query.Dir }/>
+				}
+				if data.Query.PageSize != utils.DefaultTablePageSize {
+					<input type="hidden" name="pageSize" value={ fmt.Sprintf("%d", data.Query.PageSize) }/>
+				}
+				if data.Query.Summary != utils.SummaryModeAll {
+					<input type="hidden" name="summary" value={ data.Query.Summary }/>
+				}
+				<input type="hidden" name="dateMode" value="custom"/>
+				<input type="date" class="input input-xs" name="from" value={ data.Query.From }/>
+				<span class="text-sm pr pl">-</span>
+				<input type="date" class="input input-xs" name="to" value={ data.Query.To }/>
+				<button class="btn btn-xs btn-icon" type="submit" aria-label={ ctxi18n.T(ctx, "table.apply") } title={ ctxi18n.T(ctx, "table.apply") }>
+					@icons.CalendarSearch(templ.Attributes{"class": "icon"})
+				</button>
+			</form>
+		}
 	</div>
 	@shared.TablePaginationRow(fmt.Sprintf("/groups/%s/events", data.GroupID), data.Query, data.Pager)
 	@shared.TableOpenFixed(data.EventsTable, "") {

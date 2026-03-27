@@ -345,8 +345,8 @@ func (a *Auth) VerifyMagicLink(c echo.Context) error {
 		return c.Redirect(http.StatusFound, "/groups/"+groupID+"/events")
 	}
 
-	// Redirect to group dashboard
-	return c.Redirect(http.StatusFound, "/dashboard")
+	// Redirect to groups page
+	return c.Redirect(http.StatusFound, "/groups")
 }
 
 // Logout clears the session
@@ -428,5 +428,5 @@ func (a *Auth) Dashboard(c echo.Context) error {
 		return c.Redirect(http.StatusFound, "/groups/"+filteredReaders[0].ID+"/events")
 	}
 
-	return c.Redirect(http.StatusFound, "/dashboard")
+	return c.Redirect(http.StatusFound, "/groups")
 }

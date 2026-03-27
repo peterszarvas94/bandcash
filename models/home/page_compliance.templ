@@ -22,7 +22,7 @@ templ HomePricing(data HomeData) {
 		@shared.Head(data.Title)
 		<body>
 			@shared.Notifications()
-			@shared.GroupLayout("home-pricing", data.Breadcrumbs, "", shared.PublicPrimaryNav("legal-pricing"), HomePricingMain())
+			@shared.GroupLayout("home-pricing", data.Breadcrumbs, "", shared.AppPrimaryNav("", data.IsAuthenticated), HomePricingMain())
 		</body>
 	</html>
 }
@@ -87,7 +87,7 @@ templ HomeTermsAndConditions(data HomeData) {
 		@shared.Head(data.Title)
 		<body>
 			@shared.Notifications()
-			@shared.GroupLayout("home-terms", data.Breadcrumbs, "", shared.PublicPrimaryNav("legal-terms"), HomeTermsAndConditionsMain())
+			@shared.GroupLayout("home-terms", data.Breadcrumbs, "", shared.AppPrimaryNav("", data.IsAuthenticated), HomeTermsAndConditionsMain())
 		</body>
 	</html>
 }
@@ -164,7 +164,7 @@ templ HomePrivacyPolicy(data HomeData) {
 		@shared.Head(data.Title)
 		<body>
 			@shared.Notifications()
-			@shared.GroupLayout("home-privacy", data.Breadcrumbs, "", shared.PublicPrimaryNav("legal-privacy"), HomePrivacyPolicyMain())
+			@shared.GroupLayout("home-privacy", data.Breadcrumbs, "", shared.AppPrimaryNav("", data.IsAuthenticated), HomePrivacyPolicyMain())
 		</body>
 	</html>
 }
@@ -230,7 +230,7 @@ templ HomeRefundPolicy(data HomeData) {
 		@shared.Head(data.Title)
 		<body>
 			@shared.Notifications()
-			@shared.GroupLayout("home-refund", data.Breadcrumbs, "", shared.PublicPrimaryNav("legal-refund"), HomeRefundPolicyMain())
+			@shared.GroupLayout("home-refund", data.Breadcrumbs, "", shared.AppPrimaryNav("", data.IsAuthenticated), HomeRefundPolicyMain())
 		</body>
 	</html>
 }
