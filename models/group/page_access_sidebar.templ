@@ -29,12 +29,12 @@ templ GroupAccessSidebar(data AccessPageData) {
 						</select>
 					</div>
 					<div class="row row-wrap">
-						@shared.SidebarLoadingSubmitButton(shared.SidebarLoadingSubmitButtonProps{
-							ClassName: "btn",
-							Label:     ctxi18n.T(ctx, "groups.invite_access"),
-							IconName:  icons.IconSave,
-							ActionID:  "viewer-add",
-						})
+					@shared.SidebarLoadingSubmitButton(shared.SidebarLoadingSubmitButtonProps{
+						ClassName: "btn btn-primary",
+						Label:     ctxi18n.T(ctx, "groups.invite_access"),
+						IconName:  icons.IconSave,
+						ActionID:  "viewer-add",
+					})
 						@shared.ActionButton(shared.ActionButtonProps{
 							ClassName:     "btn",
 							OnClick:       "$formState = ''; $formData = {email: '', role: 'viewer'}",

@@ -140,7 +140,7 @@ func GroupAccessSidebar(data AccessPageData) templ.Component {
 				return templ_7745c5c3_Err
 			}
 			templ_7745c5c3_Err = shared.SidebarLoadingSubmitButton(shared.SidebarLoadingSubmitButtonProps{
-				ClassName: "btn",
+				ClassName: "btn btn-primary",
 				Label:     ctxi18n.T(ctx, "groups.invite_access"),
 				IconName:  icons.IconSave,
 				ActionID:  "viewer-add",

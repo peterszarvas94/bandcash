@@ -112,7 +112,7 @@ func MemberIndexSidebar(data MembersData) templ.Component {
 				return templ_7745c5c3_Err
 			}
 			templ_7745c5c3_Err = shared.SidebarLoadingActionButton(shared.SidebarLoadingActionButtonProps{
-				ClassName: "btn",
+				ClassName: "btn btn-primary",
 				OnClick:   createExpr,
 				Label:     ctxi18n.T(ctx, "members.create"),
 				IconName:  icons.IconSave,
@@ -126,7 +126,7 @@ func MemberIndexSidebar(data MembersData) templ.Component {
 				return templ_7745c5c3_Err
 			}
 			templ_7745c5c3_Err = shared.SidebarLoadingActionButton(shared.SidebarLoadingActionButtonProps{
-				ClassName: "btn",
+				ClassName: "btn btn-primary",
 				OnClick:   updateExpr,
 				Label:     ctxi18n.T(ctx, "members.update"),
 				IconName:  icons.IconSave,

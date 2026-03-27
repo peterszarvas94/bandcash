@@ -15,7 +15,8 @@
     --color-bg: light-dark(#fcfcfb, #151618);
     --color-text: light-dark(#1f2328, #e6e8eb);
     --color-border: light-dark(#d7d9dc, #3a3d42);
-    --color-primary: light-dark(#2b4a6b, #8fb9e9);
+    --color-primary: light-dark(#1a65b8, #5ba3e8);
+    --color-accent: light-dark(#c46a00, #e8943a);
     --color-success: light-dark(#2f7a50, #6abf8d);
     --color-danger: light-dark(#b44a3f, #e5877d);
     --color-info: light-dark(#2f6ea6, #8fb9e9);
@@ -139,6 +140,22 @@
     --btn-warning-focus: color-mix(
       in srgb,
       var(--color-warning) 70%,
+      var(--page-bg) 30%
+    );
+
+    --btn-accent-border: color-mix(
+      in srgb,
+      var(--page-bg) 40%,
+      var(--color-accent) 60%
+    );
+    --btn-accent-hover-bg: color-mix(
+      in srgb,
+      var(--page-bg) 84%,
+      var(--color-accent) 16%
+    );
+    --btn-accent-focus: color-mix(
+      in srgb,
+      var(--color-accent) 70%,
       var(--page-bg) 30%
     );
 

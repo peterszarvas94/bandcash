@@ -11,6 +11,16 @@ import (
 )
 
 templ GroupsMain(data GroupsPageData) {
+	<h1>{ ctxi18n.T(ctx, "groups.title") }</h1>
+	<div class="detail-actions">
+		@shared.ActionButton(shared.ActionButtonProps{
+			ClassName:    "btn btn-accent",
+			OnClick:      "$formState = 'add'; $formData = {name: ''}; $selectedGroupId = ''",
+			DisabledExpr: "$formState !== '' || $_fetching",
+			Label:        ctxi18n.T(ctx, "groups.create"),
+			IconName:     icons.IconPlus,
+		})
+	</div>
 	@shared.TableSearchForm("/dashboard", data.Query, "table.search_placeholder")
 	@shared.TablePaginationRow("/dashboard", data.Query, data.Pagination)
 	@shared.TableOpenFixed(data.GroupsTable, "table-sticky-actions") {
@@ -23,14 +33,6 @@ templ GroupsMain(data GroupsPageData) {
 					{ ctxi18n.T(ctx, "fields.role") }
 				}
 				@shared.THActions(data.GroupsTable.ActionsWidthRem) {
-					@shared.IconActionButton(shared.IconActionButtonProps{
-						ClassName:     "btn btn-ghost btn-sm btn-icon",
-						OnClick:       "$formState = 'add'; $formData = {name: ''}; $selectedGroupId = ''",
-						DisabledExpr:  "$formState !== '' || $_fetching",
-						AriaLabel:     ctxi18n.T(ctx, "groups.create"),
-						Title:         ctxi18n.T(ctx, "groups.create"),
-						IconName:      icons.IconPlus,
-					})
 				}
 			</tr>
 		</thead>

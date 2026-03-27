@@ -191,7 +191,7 @@ func EventIndexSidebar(data EventsData) templ.Component {
 				return templ_7745c5c3_Err
 			}
 			templ_7745c5c3_Err = shared.SidebarLoadingActionButton(shared.SidebarLoadingActionButtonProps{
-				ClassName: "btn",
+				ClassName: "btn btn-primary",
 				OnClick:   createExpr,
 				Label:     ctxi18n.T(ctx, "events.create"),
 				IconName:  icons.IconSave,
@@ -205,7 +205,7 @@ func EventIndexSidebar(data EventsData) templ.Component {
 				return templ_7745c5c3_Err
 			}
 			templ_7745c5c3_Err = shared.SidebarLoadingActionButton(shared.SidebarLoadingActionButtonProps{
-				ClassName: "btn",
+				ClassName: "btn btn-primary",
 				OnClick:   updateExpr,
 				Label:     ctxi18n.T(ctx, "events.update"),
 				IconName:  icons.IconSave,

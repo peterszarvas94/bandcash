@@ -7,6 +7,7 @@ import (
 
 type ExpensesData struct {
 	Title              string
+	GroupName          string
 	Expenses           []db.Expense
 	RecentYears        []int
 	Query              utils.TableQuery

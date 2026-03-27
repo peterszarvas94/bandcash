@@ -41,6 +41,7 @@ type MemberData struct {
 
 type MembersData struct {
 	Title        string
+	GroupName    string
 	Members      []db.Member
 	Query        utils.TableQuery
 	Pager        utils.TablePagination

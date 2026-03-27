@@ -60,6 +60,18 @@ templ ExpenseIndexMain(data ExpensesData) {
 	{{
 		addExpr := "$formState = 'add'; $editingId = 0; $formData = {title: '', description: '', amount: 0, date: (() => { const d = new Date(); d.setMinutes(d.getMinutes() - d.getTimezoneOffset()); return d.toISOString().slice(0, 10) })(), paid: false, paidAt: ''}; $errors = {title: '', description: '', amount: '', date: ''}"
 	}}
+	<h1>{ data.GroupName }</h1>
+	if data.IsAdmin {
+		<div class="detail-actions">
+			@shared.ActionButton(shared.ActionButtonProps{
+				ClassName:    "btn btn-accent",
+				OnClick:      addExpr,
+				DisabledExpr: "$formState !== '' || $_fetching",
+				Label:        ctxi18n.T(ctx, "expenses.add"),
+				IconName:     icons.IconPlus,
+			})
+		</div>
+	}
 	@ExpenseTotalsContent(data)
 	@shared.TableSearchFormWithClass(fmt.Sprintf("/groups/%s/expenses", data.GroupID), data.Query, "table.search_placeholder_expenses", "pt")
 	<div class="row row-wrap justify-between pb" role="radiogroup" aria-label={ ctxi18n.T(ctx, "table.date_filters") }>
@@ -132,18 +144,10 @@ templ ExpenseIndexMain(data ExpensesData) {
 				@shared.THCol(data.ExpensesTable.Col("paid_at")) {
 					@shared.TableSortHeader(ctxi18n.T(ctx, "fields.paid_at"), "paid_at", data.Query, utils.BuildTableSortURL(fmt.Sprintf("/groups/%s/expenses", data.GroupID), data.Query, "paid_at"))
 				}
-			if data.IsAdmin {
-				@shared.THActions(data.ExpensesTable.ActionsWidthRem) {
-					@shared.IconActionButton(shared.IconActionButtonProps{
-						ClassName:     "btn btn-ghost btn-sm btn-icon",
-						OnClick:       addExpr,
-						DisabledExpr:  "$formState !== '' || $_fetching",
-						AriaLabel:     ctxi18n.T(ctx, "expenses.add"),
-						Title:         ctxi18n.T(ctx, "expenses.add"),
-						IconName:      icons.IconPlus,
-					})
-				}
+		if data.IsAdmin {
+			@shared.THActions(data.ExpensesTable.ActionsWidthRem) {
 			}
+		}
 			</tr>
 		</thead>
 		<tbody>

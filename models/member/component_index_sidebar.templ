@@ -32,24 +32,24 @@ templ MemberIndexSidebar(data MembersData) {
 					<div data-show="$errors && $errors.description" class="color-error" data-text="$errors.description"></div>
 				</div>
 				<div class="row row-wrap">
-					<span data-show="$formState === 'add'">
-						@shared.SidebarLoadingActionButton(shared.SidebarLoadingActionButtonProps{
-							ClassName: "btn",
-							OnClick:   createExpr,
-							Label:     ctxi18n.T(ctx, "members.create"),
-							IconName:  icons.IconSave,
-							ActionID:  "member-create",
-						})
-					</span>
-					<span data-show="$formState === 'edit'">
-						@shared.SidebarLoadingActionButton(shared.SidebarLoadingActionButtonProps{
-							ClassName: "btn",
-							OnClick:   updateExpr,
-							Label:     ctxi18n.T(ctx, "members.update"),
-							IconName:  icons.IconSave,
-							ActionID:  "member-update",
-						})
-					</span>
+				<span data-show="$formState === 'add'">
+					@shared.SidebarLoadingActionButton(shared.SidebarLoadingActionButtonProps{
+						ClassName: "btn btn-primary",
+						OnClick:   createExpr,
+						Label:     ctxi18n.T(ctx, "members.create"),
+						IconName:  icons.IconSave,
+						ActionID:  "member-create",
+					})
+				</span>
+				<span data-show="$formState === 'edit'">
+					@shared.SidebarLoadingActionButton(shared.SidebarLoadingActionButtonProps{
+						ClassName: "btn btn-primary",
+						OnClick:   updateExpr,
+						Label:     ctxi18n.T(ctx, "members.update"),
+						IconName:  icons.IconSave,
+						ActionID:  "member-update",
+					})
+				</span>
 					@shared.ActionButton(shared.ActionButtonProps{
 						ClassName:     "btn",
 						OnClick:       cancelExpr,

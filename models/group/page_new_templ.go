@@ -133,7 +133,7 @@ func GroupNewPage(data NewGroupPageData) templ.Component {
 			return templ_7745c5c3_Err
 		}
 		templ_7745c5c3_Err = shared.LoadingSubmitButton(shared.LoadingSubmitButtonProps{
-			ClassName: "btn",
+			ClassName: "btn btn-primary",
 			Label:     ctxi18n.T(ctx, "groups.create"),
 			IconName:  icons.IconSave,
 		}).Render(ctx, templ_7745c5c3_Buffer)

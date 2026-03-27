@@ -17,6 +17,7 @@ templ EventShowMain(data EventData) {
 		cancelParticipantsEditExpr := fmt.Sprintf("@delete('/groups/%s/events/%s/participants/draft')", data.GroupID, data.Event.ID)
 		togglePaidExpr := fmt.Sprintf("@put('/groups/%s/events/%s/toggle-paid', {mode: 'single'})", data.GroupID, data.Event.ID)
 	}}
+	<h1>{ data.Event.Title }</h1>
 	<div data-show="$participantEditorMode === 'read'">
 		if data.IsAdmin {
 			@shared.DetailsActions(ReadModeActions(data))
@@ -346,11 +347,11 @@ templ EventShowMain(data EventData) {
 					</table>
 				</div>
 				<div class="row row-wrap">
-					@shared.LoadingSubmitButton(shared.LoadingSubmitButtonProps{
-						ClassName: "btn",
-						Label:     ctxi18n.T(ctx, "participants.save_all"),
-						IconName:  icons.IconSave,
-					})
+				@shared.LoadingSubmitButton(shared.LoadingSubmitButtonProps{
+					ClassName: "btn btn-primary",
+					Label:     ctxi18n.T(ctx, "participants.save_all"),
+					IconName:  icons.IconSave,
+				})
 					@shared.ActionButton(shared.ActionButtonProps{
 						ClassName:    "btn",
 						OnClick:      cancelParticipantsEditExpr,
@@ -378,13 +379,13 @@ templ ReadModeActions(data EventData) {
 				data.Event.ID,
 			)
 		}}
-		@shared.ActionButton(shared.ActionButtonProps{
-			ClassName:    "btn",
-			OnClick:      editParticipantsExpr,
-			DisabledExpr: "$_fetching",
-			Label:        ctxi18n.T(ctx, "actions.edit"),
-			IconName:     icons.IconPencil,
-		})
+	@shared.ActionButton(shared.ActionButtonProps{
+		ClassName:    "btn btn-accent",
+		OnClick:      editParticipantsExpr,
+		DisabledExpr: "$_fetching",
+		Label:        ctxi18n.T(ctx, "actions.edit"),
+		IconName:     icons.IconPencil,
+	})
 		@shared.ActionButton(shared.ActionButtonProps{
 			ClassName:    "btn btn-danger",
 			OnClick:      deleteEventExpr,

@@ -11,6 +11,18 @@ import (
 )
 
 templ GroupAccessMain(data AccessPageData) {
+	<h1>{ data.Group.Name }</h1>
+	if data.IsAdmin {
+		<div class="detail-actions">
+			@shared.ActionButton(shared.ActionButtonProps{
+				ClassName:    "btn btn-accent",
+				OnClick:      "$formState = 'add'; $formData = {email: '', role: 'viewer'}",
+				DisabledExpr: "$formState !== '' || $_fetching",
+				Label:        ctxi18n.T(ctx, "groups.invite_access"),
+				IconName:     icons.IconPlus,
+			})
+		</div>
+	}
 	@shared.TableSearchForm(accessTablePath(data.GroupID), data.Query, "table.search_placeholder_access")
 	@shared.TablePaginationRow(accessTablePath(data.GroupID), data.Query, data.Pager)
 	@shared.TableOpenFixed(data.AccessTable, "table-sticky-actions") {
@@ -27,14 +39,6 @@ templ GroupAccessMain(data AccessPageData) {
 				}
 			if data.IsAdmin {
 				@shared.THActions(data.AccessTable.ActionsWidthRem) {
-					@shared.IconActionButton(shared.IconActionButtonProps{
-						ClassName:     "btn btn-ghost btn-sm btn-icon",
-						OnClick:       "$formState = 'add'; $formData = {email: '', role: 'viewer'}",
-						DisabledExpr:  "$formState !== '' || $_fetching",
-						AriaLabel:     ctxi18n.T(ctx, "groups.invite_access"),
-						Title:         ctxi18n.T(ctx, "groups.invite_access"),
-						IconName:      icons.IconPlus,
-					})
 				}
 			}
 			</tr>

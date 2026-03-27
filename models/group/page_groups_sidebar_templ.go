@@ -93,7 +93,7 @@ func GroupsSidebar(data GroupsPageData) templ.Component {
 			return templ_7745c5c3_Err
 		}
 		templ_7745c5c3_Err = shared.SidebarLoadingSubmitButton(shared.SidebarLoadingSubmitButtonProps{
-			ClassName: "btn",
+			ClassName: "btn btn-primary",
 			Label:     ctxi18n.T(ctx, "groups.create"),
 			IconName:  icons.IconSave,
 			ActionID:  "group-create",
@@ -155,7 +155,7 @@ func GroupsSidebar(data GroupsPageData) templ.Component {
 			return templ_7745c5c3_Err
 		}
 		templ_7745c5c3_Err = shared.SidebarLoadingSubmitButton(shared.SidebarLoadingSubmitButtonProps{
-			ClassName: "btn",
+			ClassName: "btn btn-primary",
 			Label:     ctxi18n.T(ctx, "groups.update"),
 			IconName:  icons.IconSave,
 			ActionID:  "group-update",

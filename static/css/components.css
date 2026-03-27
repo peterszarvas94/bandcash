@@ -437,6 +437,69 @@
       }
     }
 
+    &.btn-primary {
+      --btn-tone-color: #fff;
+      --btn-tone-bg: var(--color-primary);
+      --btn-tone-border: var(--btn-primary-border);
+      --btn-tone-hover-bg: var(--btn-primary-hover-bg);
+      --btn-tone-active-bg: color-mix(
+        in srgb,
+        var(--color-primary) 82%,
+        var(--text-color) 18%
+      );
+      --btn-tone-disabled-color: #fff;
+      --btn-tone-disabled-bg: color-mix(
+        in srgb,
+        var(--color-primary) 60%,
+        var(--page-bg) 40%
+      );
+      --btn-tone-disabled-border: transparent;
+
+      &:focus-visible {
+        outline-color: var(--btn-primary-focus);
+      }
+    }
+
+    &.btn-accent {
+      --btn-tone-color: color-mix(
+        in srgb,
+        var(--color-accent) 88%,
+        var(--text-color) 12%
+      );
+      --btn-tone-bg: color-mix(
+        in srgb,
+        var(--page-bg) 86%,
+        var(--color-accent) 14%
+      );
+      --btn-tone-hover-bg: var(--btn-accent-hover-bg);
+      --btn-tone-hover-border: var(--btn-accent-border);
+      --btn-tone-active-bg: color-mix(
+        in srgb,
+        var(--page-bg) 78%,
+        var(--color-accent) 22%
+      );
+      --btn-tone-active-border: color-mix(
+        in srgb,
+        var(--page-bg) 52%,
+        var(--color-accent) 48%
+      );
+      --btn-tone-disabled-color: color-mix(
+        in srgb,
+        var(--color-accent) 60%,
+        var(--text-color) 40%
+      );
+      --btn-tone-disabled-bg: color-mix(
+        in srgb,
+        var(--page-bg) 90%,
+        var(--color-accent) 10%
+      );
+      --btn-tone-disabled-border: transparent;
+
+      &:focus-visible {
+        outline-color: var(--btn-accent-focus);
+      }
+    }
+
     &.btn-inactive {
       opacity: 1;
       color: var(--muted-text-color);
@@ -1237,6 +1300,25 @@
 
       &:hover {
         text-decoration: none;
+      }
+
+      &.btn-active {
+        --btn-tone-color: var(--color-accent);
+        --btn-tone-bg: color-mix(
+          in srgb,
+          var(--page-bg) 88%,
+          var(--color-accent) 12%
+        );
+        --btn-tone-border: color-mix(
+          in srgb,
+          var(--page-bg) 60%,
+          var(--color-accent) 40%
+        );
+        --btn-tone-hover-bg: color-mix(
+          in srgb,
+          var(--page-bg) 83%,
+          var(--color-accent) 17%
+        );
       }
     }
   }

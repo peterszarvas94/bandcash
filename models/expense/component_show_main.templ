@@ -21,6 +21,7 @@ templ ExpenseShowMain(data ExpenseData) {
 			return utils.FormatDateInput(data.Expense.PaidAt.String)
 		}()) + "}; $errors = {title: '', description: '', amount: '', date: ''}"
 	}}
+	<h1>{ data.Expense.Title }</h1>
 	<div data-show="$formState !== 'edit'">
 		if data.IsAdmin {
 			@shared.DetailsActions(ExpenseShowDetailsActions(data))
@@ -86,11 +87,11 @@ templ ExpenseShowMain(data ExpenseData) {
 					<input id="expense-show-paid-at" type="date" data-bind="formData.paidAt" class="input w-details"/>
 				</div>
 				<div class="row row-wrap">
-					@shared.LoadingSubmitButton(shared.LoadingSubmitButtonProps{
-						ClassName: "btn",
-						Label:     ctxi18n.T(ctx, "expenses.update"),
-						IconName:  icons.IconSave,
-					})
+			@shared.LoadingSubmitButton(shared.LoadingSubmitButtonProps{
+					ClassName: "btn btn-primary",
+					Label:     ctxi18n.T(ctx, "expenses.update"),
+					IconName:  icons.IconSave,
+				})
 					@shared.ActionButton(shared.ActionButtonProps{
 						ClassName:     "btn",
 						OnClick:       cancelExpr,
@@ -106,13 +107,13 @@ templ ExpenseShowMain(data ExpenseData) {
 
 templ ExpenseShowDetailsActions(data ExpenseData) {
 	if data.IsAdmin {
-		@shared.ActionButton(shared.ActionButtonProps{
-			ClassName:    "btn",
-			OnClick:      "$formState = 'edit'; $errors = {title: '', description: '', amount: '', date: ''}",
-			DisabledExpr: "$formState !== '' || $_fetching",
-			Label:        ctxi18n.T(ctx, "actions.edit"),
-			IconName:     icons.IconPencil,
-		})
+	@shared.ActionButton(shared.ActionButtonProps{
+		ClassName:    "btn btn-accent",
+		OnClick:      "$formState = 'edit'; $errors = {title: '', description: '', amount: '', date: ''}",
+		DisabledExpr: "$formState !== '' || $_fetching",
+		Label:        ctxi18n.T(ctx, "actions.edit"),
+		IconName:     icons.IconPencil,
+	})
 		@shared.SureActionButton(shared.SureActionButtonProps{
 			ClassName:    "btn btn-danger",
 			DisabledExpr: "$formState !== '' || $_fetching",

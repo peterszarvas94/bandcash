@@ -30,6 +30,7 @@ templ GroupMain(data GroupPageData) {
 }
 
 templ GroupDetailsContent(data GroupPageData) {
+	<h1>{ data.Group.Name }</h1>
 	if data.IsAdmin {
 		@shared.DetailsActions(GroupDetailsActions(data))
 	}
@@ -103,13 +104,13 @@ templ GroupDetailsContent(data GroupPageData) {
 
 templ GroupDetailsActions(data GroupPageData) {
 	if data.IsAdmin {
-		@shared.ActionButton(shared.ActionButtonProps{
-			ClassName:    "btn",
-			OnClick:      "$formState = 'edit'; $errors = {name: ''}",
-			DisabledExpr: "$formState !== '' || $_fetching",
-			Label:        ctxi18n.T(ctx, "actions.edit"),
-			IconName:     icons.IconPencil,
-		})
+	@shared.ActionButton(shared.ActionButtonProps{
+		ClassName:    "btn btn-accent",
+		OnClick:      "$formState = 'edit'; $errors = {name: ''}",
+		DisabledExpr: "$formState !== '' || $_fetching",
+		Label:        ctxi18n.T(ctx, "actions.edit"),
+		IconName:     icons.IconPencil,
+	})
 		@shared.SureActionButton(shared.SureActionButtonProps{
 			ClassName:    "btn btn-danger",
 			DisabledExpr: "$formState !== '' || $_fetching",
@@ -143,12 +144,12 @@ templ GroupSidebar(data GroupPageData) {
 						<div data-show="$errors && $errors.name" class="color-error" data-text="$errors.name"></div>
 					</div>
 					<div class="grid">
-						@shared.SidebarLoadingSubmitButton(shared.SidebarLoadingSubmitButtonProps{
-							ClassName: "btn",
-							Label:     ctxi18n.T(ctx, "groups.update"),
-							IconName:  icons.IconSave,
-							ActionID:  "group-update",
-						})
+					@shared.SidebarLoadingSubmitButton(shared.SidebarLoadingSubmitButtonProps{
+						ClassName: "btn btn-primary",
+						Label:     ctxi18n.T(ctx, "groups.update"),
+						IconName:  icons.IconSave,
+						ActionID:  "group-update",
+					})
 						@shared.ActionButton(shared.ActionButtonProps{
 							ClassName:    "btn",
 							OnClick:      cancelExpr,

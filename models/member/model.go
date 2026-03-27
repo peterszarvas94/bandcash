@@ -454,11 +454,12 @@ func (p *Members) GetIndexData(ctx context.Context, groupID string, query utils.
 		return MembersData{}, err
 	}
 	return MembersData{
-		Title:   ctxi18n.T(ctx, "members.page_title"),
-		Members: members,
-		Query:   query,
-		Pager:   utils.BuildTablePagination(totalItems, query),
-		GroupID: groupID,
+		Title:     ctxi18n.T(ctx, "members.page_title"),
+		GroupName: group.Name,
+		Members:   members,
+		Query:     query,
+		Pager:     utils.BuildTablePagination(totalItems, query),
+		GroupID:   groupID,
 		Breadcrumbs: []utils.Crumb{
 			{Label: ctxi18n.T(ctx, "groups.title"), Href: "/dashboard"},
 			{Label: group.Name, Href: "/groups/" + groupID + "/events"},

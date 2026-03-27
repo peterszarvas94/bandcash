@@ -13,6 +13,18 @@ templ MemberIndexMain(data MembersData) {
 	{{
 		addExpr := "$formState = 'add'; $editingId = 0; $formData = {name: '', description: ''}; $errors = {name: '', description: ''}"
 	}}
+	<h1>{ data.GroupName }</h1>
+	if data.IsAdmin {
+		<div class="detail-actions">
+			@shared.ActionButton(shared.ActionButtonProps{
+				ClassName:    "btn btn-accent",
+				OnClick:      addExpr,
+				DisabledExpr: "$formState !== '' || $_fetching",
+				Label:        ctxi18n.T(ctx, "members.add"),
+				IconName:     icons.IconPlus,
+			})
+		</div>
+	}
 	@shared.TableSearchForm(fmt.Sprintf("/groups/%s/members", data.GroupID), data.Query, "table.search_placeholder_members")
 	@shared.TablePaginationRow(fmt.Sprintf("/groups/%s/members", data.GroupID), data.Query, data.Pager)
 	@shared.TableOpenFixed(data.MembersTable, "table-sticky-actions") {
@@ -26,14 +38,6 @@ templ MemberIndexMain(data MembersData) {
 				}
 				if data.IsAdmin {
 					@shared.THActions(data.MembersTable.ActionsWidthRem) {
-						@shared.IconActionButton(shared.IconActionButtonProps{
-							ClassName:     "btn btn-ghost btn-sm btn-icon",
-							OnClick:       addExpr,
-							DisabledExpr:  "$formState !== '' || $_fetching",
-							AriaLabel:     ctxi18n.T(ctx, "members.add"),
-							Title:         ctxi18n.T(ctx, "members.add"),
-							IconName:      icons.IconPlus,
-						})
 					}
 				}
 			</tr>

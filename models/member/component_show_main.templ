@@ -14,6 +14,7 @@ templ MemberShowMain(data MemberData) {
 		updateExpr := fmt.Sprintf("@put('/groups/%s/members/%s')", data.GroupID, data.Member.ID)
 		cancelExpr := "$formState = ''; $formData = {name: " + utils.JSONString(data.Member.Name) + ", description: " + utils.JSONString(data.Member.Description) + "}; $errors = {name: '', description: ''}"
 	}}
+	<h1>{ data.Member.Name }</h1>
 	<div data-show="$formState !== 'edit'">
 		if data.IsAdmin {
 			@shared.DetailsActions(MemberShowDetailsActions(data))
@@ -208,11 +209,11 @@ templ MemberShowMain(data MemberData) {
 					<div data-show="$errors && $errors.description" class="color-error" data-text="$errors.description"></div>
 				</div>
 				<div class="row row-wrap">
-					@shared.LoadingSubmitButton(shared.LoadingSubmitButtonProps{
-						ClassName: "btn",
-						Label:     ctxi18n.T(ctx, "members.update"),
-						IconName:  icons.IconSave,
-					})
+				@shared.LoadingSubmitButton(shared.LoadingSubmitButtonProps{
+					ClassName: "btn btn-primary",
+					Label:     ctxi18n.T(ctx, "members.update"),
+					IconName:  icons.IconSave,
+				})
 					@shared.ActionButton(shared.ActionButtonProps{
 						ClassName:     "btn",
 						OnClick:       cancelExpr,
@@ -228,13 +229,13 @@ templ MemberShowMain(data MemberData) {
 
 templ MemberShowDetailsActions(data MemberData) {
 	if data.IsAdmin {
-		@shared.ActionButton(shared.ActionButtonProps{
-			ClassName:    "btn",
-			OnClick:      "$formState = 'edit'; $errors = {name: '', description: ''}",
-			DisabledExpr: "$formState !== '' || $_fetching",
-			Label:        ctxi18n.T(ctx, "actions.edit"),
-			IconName:     icons.IconPencil,
-		})
+	@shared.ActionButton(shared.ActionButtonProps{
+		ClassName:    "btn btn-accent",
+		OnClick:      "$formState = 'edit'; $errors = {name: '', description: ''}",
+		DisabledExpr: "$formState !== '' || $_fetching",
+		Label:        ctxi18n.T(ctx, "actions.edit"),
+		IconName:     icons.IconPencil,
+	})
 		@shared.SureActionButton(shared.SureActionButtonProps{
 			ClassName:    "btn btn-danger",
 			DisabledExpr: "$formState !== '' || $_fetching",

@@ -32,11 +32,11 @@ templ LoginMain() {
 				<div data-show="$authError !== ''" class="color-error" data-text="$authError"></div>
 				<div data-show="$authServerError !== ''" class="color-error" data-text="$authServerError"></div>
 			</div>
-			@shared.LoadingSubmitButton(shared.LoadingSubmitButtonProps{
-				ClassName: "btn",
-				Label:     ctxi18n.T(ctx, "auth.send_link"),
-				IconName:  icons.IconSend,
-			})
+		@shared.LoadingSubmitButton(shared.LoadingSubmitButtonProps{
+			ClassName: "btn btn-primary",
+			Label:     ctxi18n.T(ctx, "auth.send_link"),
+			IconName:  icons.IconSend,
+		})
 		</form>
 	</div>
 	<div data-show="$authState === 'sent'" style="display: none" class="form">

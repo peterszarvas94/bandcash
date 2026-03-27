@@ -177,6 +177,7 @@ func (e *Expenses) buildExpensesData(ctx context.Context, groupID string, group 
 
 	return ExpensesData{
 		Title:              ctxi18n.T(ctx, "expenses.page_title"),
+		GroupName:          group.Name,
 		Expenses:           paginatedExpenses,
 		RecentYears:        utils.RecentYears(3),
 		Query:              query,
