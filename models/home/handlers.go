@@ -1,12 +1,9 @@
 package home
 
 import (
-	"net/url"
-
 	"github.com/labstack/echo/v4"
 
 	"bandcash/internal/db"
-	appi18n "bandcash/internal/i18n"
 	"bandcash/internal/utils"
 )
 
@@ -14,19 +11,19 @@ import (
 func (h *Home) Index(c echo.Context) error {
 	utils.EnsureTabID(c)
 
-	// Check if user has a valid session
+	isAuthenticated := false
+
+	// Check if user has a valid session.
 	if cookie, err := c.Cookie(utils.SessionCookieName); err == nil && cookie.Value != "" {
 		if session, err := db.Qry.GetUserSessionByToken(c.Request().Context(), cookie.Value); err == nil {
-			// Valid session exists, redirect to dashboard
-			_ = session.UserID // Just to verify session is valid
-			if c.QueryParam("lang") != "" {
-				return c.Redirect(302, "/dashboard?lang="+url.QueryEscape(appi18n.NormalizeLocale(c.QueryParam("lang"))))
-			}
-			return c.Redirect(302, "/dashboard")
+			// Valid session exists.
+			_ = session.UserID
+			isAuthenticated = true
 		}
 	}
 
 	data := h.Data(c.Request().Context())
+	data.IsAuthenticated = isAuthenticated
 	return utils.RenderPage(c, HomeIndex(data))
 }
 

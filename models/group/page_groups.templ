@@ -22,7 +22,7 @@ templ GroupsPage(data GroupsPageData) {
 				data-init="@get('/sse')"
 			></div>
 			@shared.Notifications()
-			@shared.AppShellMainOnly("group-dashboard", data.Breadcrumbs, data.UserEmail, shared.AppPrimaryNav("dashboard", data.UserEmail), GroupsMain(data))
+			@shared.GroupLayout("group-dashboard", data.Breadcrumbs, data.UserEmail, shared.AppPrimaryNav("dashboard", data.UserEmail), GroupsMain(data))
 		</body>
 	</html>
 }

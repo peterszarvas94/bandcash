@@ -19,7 +19,7 @@ templ SessionsPage(data SessionsData) {
 		<body>
 			<div data-signals={ templ.JSONString(map[string]any{"tab_id": tabID, "csrf": utils.CSRFTokenFromContext(ctx)}) } data-init="@get('/sse')"></div>
 			@shared.Notifications()
-			@shared.AppShellMainOnly("settings-sessions", data.Breadcrumbs, data.UserEmail, shared.AppPrimaryNav("settings", data.UserEmail), SessionsMain(data))
+			@shared.GroupLayout("settings-sessions", data.Breadcrumbs, data.UserEmail, shared.AppPrimaryNav("settings", data.UserEmail), SessionsMain(data))
 		</body>
 	</html>
 }

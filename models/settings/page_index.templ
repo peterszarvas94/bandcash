@@ -19,7 +19,7 @@ templ SettingsIndex(data SettingsData) {
 			<div data-signals={ templ.JSONString(map[string]any{"tab_id": tabID, "csrf": utils.CSRFTokenFromContext(ctx), "formData": map[string]any{"lang": data.CurrentLang}}) } data-init="@get('/sse')"></div>
 			@shared.Notifications()
 			@shared.SureDialog()
-			@shared.AppShellMainOnly("settings-index", data.Breadcrumbs, data.UserEmail, shared.AppPrimaryNav("settings", data.UserEmail), SettingsMain(data))
+			@shared.GroupLayout("settings-index", data.Breadcrumbs, data.UserEmail, shared.AppPrimaryNav("settings", data.UserEmail), SettingsMain(data))
 		</body>
 	</html>
 }

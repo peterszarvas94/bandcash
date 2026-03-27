@@ -29,7 +29,7 @@ templ ExpenseNewPage(data NewExpensePageData) {
 				"errors": map[string]any{"title": "", "description": "", "amount": "", "date": ""},
 			}) } data-init="@get('/sse')"></div>
 			@shared.Notifications()
-			@shared.AppShellMainOnly("expense-new", data.Breadcrumbs, data.UserEmail, shared.GroupPrimaryNav(data.GroupID, "expenses", data.UserEmail), ExpenseNewForm(data))
+			@shared.GroupLayout("expense-new", data.Breadcrumbs, data.UserEmail, shared.GroupPrimaryNav(data.GroupID, "expenses", data.UserEmail), ExpenseNewForm(data))
 		</body>
 	</html>
 }

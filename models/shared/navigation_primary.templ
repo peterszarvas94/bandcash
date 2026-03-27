@@ -4,7 +4,6 @@ import (
 	ctxi18n "github.com/invopop/ctxi18n/i18n"
 
 	"bandcash/internal/utils"
-	icons "bandcash/models/shared/icons"
 )
 
 func isAdminActive(active string) bool {
@@ -20,200 +19,81 @@ func isLegalItemActive(active string, item string) bool {
 }
 
 templ AppPrimaryNav(active string, userEmail string) {
-	<nav class="app-nav" aria-label="Primary">
-		<div class="app-nav-primary">
-			if active == "dashboard" {
-				<a class="btn app-nav-link btn-active" href="/dashboard">
-					@icons.LayoutDashboard(templ.Attributes{"class": "icon"})
-					<span>{ ctxi18n.T(ctx, "nav.dashboard") }</span>
-				</a>
-			} else {
-				<a class="btn app-nav-link" href="/dashboard">
-					@icons.LayoutDashboard(templ.Attributes{"class": "icon"})
-					<span>{ ctxi18n.T(ctx, "nav.dashboard") }</span>
-				</a>
-			}
-			if active == "settings" {
-				<a class="btn app-nav-link btn-active" href="/account">
-					@icons.CircleUserRound(templ.Attributes{"class": "icon"})
-					<span>{ ctxi18n.T(ctx, "settings.account") }</span>
-				</a>
-			} else {
-				<a class="btn app-nav-link" href="/account">
-					@icons.CircleUserRound(templ.Attributes{"class": "icon"})
-					<span>{ ctxi18n.T(ctx, "settings.account") }</span>
-				</a>
-			}
-			if utils.Env().SuperadminEmail != "" && userEmail != "" && userEmail == utils.Env().SuperadminEmail {
-				<a class={ "btn app-nav-link", templ.KV("btn-active", isAdminActive(active)) } href="/admin/overview">
-					@icons.Shield(templ.Attributes{"class": "icon"})
-					<span>{ ctxi18n.T(ctx, "nav.admin") }</span>
-				</a>
-			}
-			if utils.Env().AppEnv == "development" {
-				if active == "dev" {
-					<a class="btn app-nav-link btn-active" href="/dev">
-						@icons.Terminal(templ.Attributes{"class": "icon"})
-						<span>Dev</span>
-					</a>
-				} else {
-					<a class="btn app-nav-link" href="/dev">
-						@icons.Terminal(templ.Attributes{"class": "icon"})
-						<span>Dev</span>
-					</a>
-				}
-			}
-		</div>
-		@LegalNavLinks(active)
+	<nav class="nav" aria-label={ ctxi18n.T(ctx, "nav.primary") }>
+		<a class={ "link nav-link", templ.KV("is-active", active == "dashboard") } href="/dashboard">
+			{ ctxi18n.T(ctx, "nav.dashboard") }
+		</a>
+		<a class={ "link nav-link", templ.KV("is-active", active == "settings") } href="/account">
+			{ ctxi18n.T(ctx, "settings.account") }
+		</a>
 	</nav>
 }
 
 templ PublicPrimaryNav(active string) {
-	<nav class="app-nav" aria-label="Primary">
-		<div class="app-nav-primary">
-			if active == "home" {
-				<a class="btn app-nav-link btn-active" href="/">
-					@icons.Landmark(templ.Attributes{"class": "icon"})
-					<span>{ ctxi18n.T(ctx, "nav.home") }</span>
-				</a>
-			} else {
-				<a class="btn app-nav-link" href="/">
-					@icons.Landmark(templ.Attributes{"class": "icon"})
-					<span>{ ctxi18n.T(ctx, "nav.home") }</span>
-				</a>
-			}
-			if utils.Env().AppEnv == "development" {
-				if active == "dev" {
-					<a class="btn app-nav-link btn-active" href="/dev">
-						@icons.Terminal(templ.Attributes{"class": "icon"})
-						<span>Dev</span>
-					</a>
-				} else {
-					<a class="btn app-nav-link" href="/dev">
-						@icons.Terminal(templ.Attributes{"class": "icon"})
-						<span>Dev</span>
-					</a>
-				}
-			}
-		</div>
-		@LegalNavLinks(active)
+	<nav class="nav" aria-label={ ctxi18n.T(ctx, "nav.primary") }>
+		<a class={ "link nav-link", templ.KV("is-active", active == "home") } href="/">
+			{ ctxi18n.T(ctx, "nav.home") }
+		</a>
 	</nav>
 }
 
 templ DevPrimaryNav(active string) {
-	<nav class="app-nav" aria-label="Dev">
-		<div class="app-nav-primary">
-			<a class="btn app-nav-link" href="/">
-				@icons.Landmark(templ.Attributes{"class": "icon"})
-				<span>{ ctxi18n.T(ctx, "nav.home") }</span>
-			</a>
-			if active == "dev" {
-				<a class="btn app-nav-link btn-active" href="/dev">
-					@icons.Terminal(templ.Attributes{"class": "icon"})
-					<span>Dev</span>
-				</a>
-			} else {
-				<a class="btn app-nav-link" href="/dev">
-					@icons.Terminal(templ.Attributes{"class": "icon"})
-					<span>Dev</span>
-				</a>
-			}
-		</div>
-		@LegalNavLinks(active)
+	<nav class="nav" aria-label={ ctxi18n.T(ctx, "nav.dev") }>
+		<a class="link nav-link" href="/">
+			{ ctxi18n.T(ctx, "nav.home") }
+		</a>
+		<a class={ "link nav-link", templ.KV("is-active", active == "dev") } href="/dev">
+			Dev
+		</a>
 	</nav>
 }
 
 templ GroupPrimaryNav(groupID string, active string, userEmail string) {
-	<nav class="app-nav" aria-label={ ctxi18n.T(ctx, "groups.actions") }>
-		<div class="app-nav-primary">
-			<a class="btn app-nav-link" href="/dashboard">
-				@icons.LayoutDashboard(templ.Attributes{"class": "icon"})
-				<span>{ ctxi18n.T(ctx, "nav.dashboard") }</span>
-			</a>
-			if active == "settings" {
-				<a class="btn app-nav-link btn-active" href="/account">
-					@icons.CircleUserRound(templ.Attributes{"class": "icon"})
-					<span>{ ctxi18n.T(ctx, "settings.account") }</span>
-				</a>
-			} else {
-				<a class="btn app-nav-link" href="/account">
-					@icons.CircleUserRound(templ.Attributes{"class": "icon"})
-					<span>{ ctxi18n.T(ctx, "settings.account") }</span>
-				</a>
-			}
-			if utils.Env().SuperadminEmail != "" && userEmail != "" && userEmail == utils.Env().SuperadminEmail {
-				<a class={ "btn app-nav-link", templ.KV("btn-active", isAdminActive(active)) } href="/admin/overview">
-					@icons.Shield(templ.Attributes{"class": "icon"})
-					<span>{ ctxi18n.T(ctx, "nav.admin") }</span>
-				</a>
-			}
-			if utils.Env().AppEnv == "development" {
-				<a class="btn app-nav-link" href="/dev">
-					@icons.Terminal(templ.Attributes{"class": "icon"})
-					<span>Dev</span>
-				</a>
-			}
-		</div>
-		<div class="app-nav-secondary">
-			if active == "events" {
-				<a class="btn app-nav-link btn-active" href={ "/groups/" + groupID + "/events" }>
-					@icons.Calendar(templ.Attributes{"class": "icon"})
-					<span>{ ctxi18n.T(ctx, "events.title") }</span>
-				</a>
-			} else {
-				<a class="btn app-nav-link" href={ "/groups/" + groupID + "/events" }>
-					@icons.Calendar(templ.Attributes{"class": "icon"})
-					<span>{ ctxi18n.T(ctx, "events.title") }</span>
-				</a>
-			}
-			if active == "expenses" {
-				<a class="btn app-nav-link btn-active" href={ "/groups/" + groupID + "/expenses" }>
-					@icons.HandCoins(templ.Attributes{"class": "icon"})
-					<span>{ ctxi18n.T(ctx, "expenses.title") }</span>
-				</a>
-			} else {
-				<a class="btn app-nav-link" href={ "/groups/" + groupID + "/expenses" }>
-					@icons.HandCoins(templ.Attributes{"class": "icon"})
-					<span>{ ctxi18n.T(ctx, "expenses.title") }</span>
-				</a>
-			}
-			if active == "members" {
-				<a class="btn app-nav-link btn-active" href={ "/groups/" + groupID + "/members" }>
-					@icons.Users(templ.Attributes{"class": "icon"})
-					<span>{ ctxi18n.T(ctx, "members.title") }</span>
-				</a>
-			} else {
-				<a class="btn app-nav-link" href={ "/groups/" + groupID + "/members" }>
-					@icons.Users(templ.Attributes{"class": "icon"})
-					<span>{ ctxi18n.T(ctx, "members.title") }</span>
-				</a>
-			}
-			<a class={ "btn app-nav-link", templ.KV("btn-active", isAccessActive(active)) } href={ "/groups/" + groupID + "/users" }>
-				@icons.ShieldUser(templ.Attributes{"class": "icon"})
-				<span>{ ctxi18n.T(ctx, "groups.access") }</span>
-			</a>
-		</div>
-		@LegalNavLinks(active)
+	<nav class="nav" aria-label={ ctxi18n.T(ctx, "groups.actions") }>
+		<a class={ "link nav-link", templ.KV("is-active", active == "dashboard") } href="/dashboard">
+			{ ctxi18n.T(ctx, "nav.dashboard") }
+		</a>
+		<a class={ "link nav-link", templ.KV("is-active", active == "events") } href={ "/groups/" + groupID + "/events" }>
+			{ ctxi18n.T(ctx, "events.title") }
+		</a>
+		<a class={ "link nav-link", templ.KV("is-active", active == "expenses") } href={ "/groups/" + groupID + "/expenses" }>
+			{ ctxi18n.T(ctx, "expenses.title") }
+		</a>
+		<a class={ "link nav-link", templ.KV("is-active", active == "members") } href={ "/groups/" + groupID + "/members" }>
+			{ ctxi18n.T(ctx, "members.title") }
+		</a>
+		<a class={ "link nav-link", templ.KV("is-active", isAccessActive(active)) } href={ "/groups/" + groupID + "/users" }>
+			{ ctxi18n.T(ctx, "groups.access") }
+		</a>
+		<a class={ "link nav-link", templ.KV("is-active", active == "settings") } href="/account">
+			{ ctxi18n.T(ctx, "settings.account") }
+		</a>
 	</nav>
 }
 
-templ LegalNavLinks(active string) {
-	<div class="app-nav-secondary app-nav-footer">
-		<a class={ "btn app-nav-link", templ.KV("btn-active", isLegalItemActive(active, "legal-pricing")) } href="/pricing">
-			@icons.ReceiptEuro(templ.Attributes{"class": "icon"})
-			<span>Pricing</span>
+templ AppFooterNav(active string, userEmail string) {
+	<nav aria-label={ ctxi18n.T(ctx, "nav.footer") }>
+		if utils.Env().SuperadminEmail != "" && userEmail != "" && userEmail == utils.Env().SuperadminEmail {
+			<a class={ "link nav-link", templ.KV("is-active", isAdminActive(active)) } href="/admin/overview">
+				{ ctxi18n.T(ctx, "nav.admin") }
+			</a>
+		}
+		if utils.Env().AppEnv == "development" {
+			<a class={ "link nav-link", templ.KV("is-active", active == "dev") } href="/dev">
+				Dev
+			</a>
+		}
+		<a class={ "link nav-link", templ.KV("is-active", isLegalItemActive(active, "legal-pricing")) } href="/pricing">
+			Pricing
 		</a>
-		<a class={ "btn app-nav-link", templ.KV("btn-active", isLegalItemActive(active, "legal-terms")) } href="/terms-and-conditions">
-			@icons.FileText(templ.Attributes{"class": "icon"})
-			<span>Terms and Conditions</span>
+		<a class={ "link nav-link", templ.KV("is-active", isLegalItemActive(active, "legal-terms")) } href="/terms-and-conditions">
+			Terms and Conditions
 		</a>
-		<a class={ "btn app-nav-link", templ.KV("btn-active", isLegalItemActive(active, "legal-privacy")) } href="/privacy-policy">
-			@icons.Shield(templ.Attributes{"class": "icon"})
-			<span>Privacy Policy</span>
+		<a class={ "link nav-link", templ.KV("is-active", isLegalItemActive(active, "legal-privacy")) } href="/privacy-policy">
+			Privacy Policy
 		</a>
-		<a class={ "btn app-nav-link", templ.KV("btn-active", isLegalItemActive(active, "legal-refund")) } href="/refund-policy">
-			@icons.RotateCcw(templ.Attributes{"class": "icon"})
-			<span>Refund Policy</span>
+		<a class={ "link nav-link", templ.KV("is-active", isLegalItemActive(active, "legal-refund")) } href="/refund-policy">
+			Refund Policy
 		</a>
-	</div>
+	</nav>
 }

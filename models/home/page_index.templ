@@ -36,45 +36,54 @@ templ HomeIndex(data HomeData) {
 						</div>
 					</div>
 				</form>
-				<div data-show="$authState === 'form'">
-					<form class="form" data-on:submit="@post('/auth/login')" data-indicator:_fetching>
-						<div class="field">
-							<label for="home-auth-email" class="row">{ ctxi18n.T(ctx, "auth.email") } <span class="color-error">*</span></label>
+				if data.IsAuthenticated {
+					<div class="form">
+						<p>You are already logged in.</p>
 						<div class="row row-wrap">
-							<input id="home-auth-email" type="email" class="input" data-bind="formData.email" placeholder={ ctxi18n.T(ctx, "auth.email_placeholder") }/>
-						@shared.LoadingSubmitButton(shared.LoadingSubmitButtonProps{
-							ClassName: "btn btn-primary",
-							Label:     ctxi18n.T(ctx, "auth.send_link"),
-							IconName:  icons.IconSend,
-						})
+							<a class="btn btn-primary" href="/dashboard">Go to { ctxi18n.T(ctx, "nav.dashboard") }</a>
 						</div>
-							<div data-show="$authError !== ''" class="color-error" data-text="$authError"></div>
-							<div data-show="$authServerError !== ''" class="color-error" data-text="$authServerError"></div>
-						</div>
-					</form>
-				</div>
-				<div data-show="$authState === 'sent'" style="display: none" class="form">
-					<div data-show="$authState === 'sent'" data-on-interval__duration.1s="$resendRemaining = Math.max(0, $resendRemaining - 1)" style="display: none"></div>
-					<p>{ ctxi18n.T(ctx, "auth.check_email_safe") }</p>
-					<p><strong>{ ctxi18n.T(ctx, "auth.masked_email") }:</strong> <span data-text="$submittedEmailMasked"></span></p>
-					<div class="row row-wrap">
-						@shared.LoadingActionButton(shared.LoadingActionButtonProps{
-							ClassName:     "btn",
-							OnClick:       "@post('/auth/login')",
-							DisabledExpr:  "$_fetching || $resendRemaining > 0",
-							Label:         ctxi18n.T(ctx, "auth.resend_email"),
-							IconName:      icons.IconSend,
-						})
-						<span data-show="$resendRemaining > 0" data-text="'(' + $resendRemaining + 's)'"></span>
-						@shared.LoadingActionButton(shared.LoadingActionButtonProps{
-							ClassName:     "btn",
-							OnClick:       "$authState = 'form'; $authError = ''; $authServerError = ''; $formData.email = $submittedEmail",
-							DisabledExpr:  "$_fetching",
-							Label:         ctxi18n.T(ctx, "auth.use_different_email"),
-							IconName:      icons.IconPencil,
-						})
 					</div>
-				</div>
+				} else {
+					<div data-show="$authState === 'form'">
+						<form class="form" data-on:submit="@post('/auth/login')" data-indicator:_fetching>
+							<div class="field">
+								<label for="home-auth-email" class="row">{ ctxi18n.T(ctx, "auth.email") } <span class="color-error">*</span></label>
+							<div class="row row-wrap">
+								<input id="home-auth-email" type="email" class="input" data-bind="formData.email" placeholder={ ctxi18n.T(ctx, "auth.email_placeholder") }/>
+							@shared.LoadingSubmitButton(shared.LoadingSubmitButtonProps{
+								ClassName: "btn btn-primary",
+								Label:     ctxi18n.T(ctx, "auth.send_link"),
+								IconName:  icons.IconSend,
+							})
+							</div>
+								<div data-show="$authError !== ''" class="color-error" data-text="$authError"></div>
+								<div data-show="$authServerError !== ''" class="color-error" data-text="$authServerError"></div>
+							</div>
+						</form>
+					</div>
+					<div data-show="$authState === 'sent'" style="display: none" class="form">
+						<div data-show="$authState === 'sent'" data-on-interval__duration.1s="$resendRemaining = Math.max(0, $resendRemaining - 1)" style="display: none"></div>
+						<p>{ ctxi18n.T(ctx, "auth.check_email_safe") }</p>
+						<p><strong>{ ctxi18n.T(ctx, "auth.masked_email") }:</strong> <span data-text="$submittedEmailMasked"></span></p>
+						<div class="row row-wrap">
+							@shared.LoadingActionButton(shared.LoadingActionButtonProps{
+								ClassName:     "btn",
+								OnClick:       "@post('/auth/login')",
+								DisabledExpr:  "$_fetching || $resendRemaining > 0",
+								Label:         ctxi18n.T(ctx, "auth.resend_email"),
+								IconName:      icons.IconSend,
+							})
+							<span data-show="$resendRemaining > 0" data-text="'(' + $resendRemaining + 's)'"></span>
+							@shared.LoadingActionButton(shared.LoadingActionButtonProps{
+								ClassName:     "btn",
+								OnClick:       "$authState = 'form'; $authError = ''; $authServerError = ''; $formData.email = $submittedEmail",
+								DisabledExpr:  "$_fetching",
+								Label:         ctxi18n.T(ctx, "auth.use_different_email"),
+								IconName:      icons.IconPencil,
+							})
+						</div>
+					</div>
+				}
 				<div class="row row-wrap text-sm pt">
 					<a class="link" href="/pricing">Pricing</a>
 					<a class="link" href="/terms-and-conditions">Terms and Conditions</a>

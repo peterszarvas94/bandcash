@@ -20,7 +20,7 @@ templ GroupAccessUserPage(data AccessUserPageData) {
 			<div data-signals={ templ.JSONString(map[string]any{"tab_id": tabID, "csrf": utils.CSRFTokenFromContext(ctx)}) } data-init="@get('/sse')"></div>
 			@shared.Notifications()
 			@shared.SureDialog()
-			@shared.AppShellMainOnly("group-access-user", data.Breadcrumbs, data.UserEmail, shared.GroupPrimaryNav(data.GroupID, "access", data.UserEmail), GroupAccessUserMain(data))
+			@shared.GroupLayout("group-access-user", data.Breadcrumbs, data.UserEmail, shared.GroupPrimaryNav(data.GroupID, "access", data.UserEmail), GroupAccessUserMain(data))
 		</body>
 	</html>
 }
@@ -76,7 +76,7 @@ templ GroupAccessInvitePage(data AccessInvitePageData) {
 			<div data-signals={ templ.JSONString(map[string]any{"tab_id": tabID, "csrf": utils.CSRFTokenFromContext(ctx)}) } data-init="@get('/sse')"></div>
 			@shared.Notifications()
 			@shared.SureDialog()
-			@shared.AppShellMainOnly("group-access-invite", data.Breadcrumbs, data.UserEmail, shared.GroupPrimaryNav(data.GroupID, "access", data.UserEmail), GroupAccessInviteMain(data))
+			@shared.GroupLayout("group-access-invite", data.Breadcrumbs, data.UserEmail, shared.GroupPrimaryNav(data.GroupID, "access", data.UserEmail), GroupAccessInviteMain(data))
 		</body>
 	</html>
 }

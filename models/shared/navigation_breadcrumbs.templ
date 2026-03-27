@@ -16,7 +16,7 @@ templ Breadcrumbs(crumbs []utils.Crumb, userEmail string) {
 }
 
 templ BreadcrumbTrail(crumbs []utils.Crumb) {
-	<nav class="breadcrumbs hide-mobile" aria-label="Breadcrumb">
+	<nav class="breadcrumbs hide-mobile" aria-label={ ctxi18n.T(ctx, "nav.breadcrumb") }>
 		<a href="/">
 			@icons.BadgeEuro(templ.Attributes{"class": "icon"})
 			{ ctxi18n.T(ctx, "nav.home") }

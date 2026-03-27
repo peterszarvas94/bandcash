@@ -10,6 +10,7 @@
     --font-mono: ui-monospace, monospace;
 
     --border: 1px;
+    --header-height: 3rem;
 
     /* Basic palette */
     --color-bg: light-dark(#fcfcfb, #151618);
@@ -22,7 +23,7 @@
     --color-info: light-dark(#2f6ea6, #8fb9e9);
     --color-warning: light-dark(#9a7a2f, #d4b067);
 
-    --content-width: 90rem;
+    --content-width: 70rem;
     --nav-width: 14rem;
     --sidebar-width: 22rem;
     --details-width: 40rem;

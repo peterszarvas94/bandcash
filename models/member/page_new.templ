@@ -25,7 +25,7 @@ templ MemberNewPage(data NewMemberPageData) {
 				"errors": map[string]any{"name": "", "description": ""},
 			}) } data-init="@get('/sse')"></div>
 			@shared.Notifications()
-			@shared.AppShellMainOnly("member-new", data.Breadcrumbs, data.UserEmail, shared.GroupPrimaryNav(data.GroupID, "members", data.UserEmail), MemberNewForm(data))
+			@shared.GroupLayout("member-new", data.Breadcrumbs, data.UserEmail, shared.GroupPrimaryNav(data.GroupID, "members", data.UserEmail), MemberNewForm(data))
 		</body>
 	</html>
 }

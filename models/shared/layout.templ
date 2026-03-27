@@ -4,67 +4,32 @@ import (
 	ctxi18n "github.com/invopop/ctxi18n/i18n"
 
 	"bandcash/internal/utils"
-	icons "bandcash/models/shared/icons"
 )
 
-templ AppShell(id string, crumbs []utils.Crumb, userEmail string, nav templ.Component, main templ.Component, sidebar templ.Component) {
-	<div id={ id } class="app-shell">
-		<input id={ id + "-nav-toggle" } class="shell-toggle" type="checkbox" aria-label={ ctxi18n.T(ctx, "nav.menu") }/>
-		<input id={ id + "-panel-toggle" } class="shell-toggle" type="checkbox" aria-label={ ctxi18n.T(ctx, "nav.actions") }/>
-		<header class="app-shell-top">
-			<div class="app-shell-mobile-toggles">
-				<label for={ id + "-nav-toggle" } class="btn">
-					@icons.Menu(templ.Attributes{"class": "icon"})
-					<span>{ ctxi18n.T(ctx, "nav.menu") }</span>
-				</label>
-			</div>
+templ Header(crumbs []utils.Crumb, nav templ.Component) {
+	<header>
+		<div class="header_inner">
 			@BreadcrumbTrail(crumbs)
-		</header>
-		<aside class="app-shell-nav">
-			<div class="show-drawer pb">
-				<label for={ id + "-nav-toggle" } class="btn app-nav-link">
-					@icons.X(templ.Attributes{"class": "icon"})
-					<span>{ ctxi18n.T(ctx, "nav.close") }</span>
-				</label>
-			</div>
 			@nav
-		</aside>
-		<main id="app" class="app-shell-main">
-			@main
-		</main>
-		<aside class="app-shell-panel">
-			@sidebar
-		</aside>
-		<label for={ id + "-nav-toggle" } class="app-shell-backdrop app-shell-backdrop-nav"></label>
-		<label for={ id + "-panel-toggle" } class="app-shell-backdrop app-shell-backdrop-panel"></label>
-	</div>
+		</div>
+	</header>
 }
 
-templ AppShellMainOnly(id string, crumbs []utils.Crumb, userEmail string, nav templ.Component, main templ.Component) {
-	<div id={ id } class="app-shell-main-only">
-		<input id={ id + "-nav-toggle" } class="shell-toggle" type="checkbox" aria-label={ ctxi18n.T(ctx, "nav.menu") }/>
-		<header class="app-shell-top">
-			<div class="app-shell-mobile-toggles">
-				<label for={ id + "-nav-toggle" } class="btn">
-					@icons.Menu(templ.Attributes{"class": "icon"})
-					<span>{ ctxi18n.T(ctx, "nav.menu") }</span>
-				</label>
-			</div>
-			@BreadcrumbTrail(crumbs)
-		</header>
-		<aside class="app-shell-nav">
-			<div class="show-drawer pb">
-				<label for={ id + "-nav-toggle" } class="btn app-nav-link">
-					@icons.X(templ.Attributes{"class": "icon"})
-					<span>{ ctxi18n.T(ctx, "nav.close") }</span>
-				</label>
-			</div>
-			@nav
-		</aside>
-		<main id="app" class="app-shell-main">
-			@main
-		</main>
-		<label for={ id + "-nav-toggle" } class="app-shell-backdrop app-shell-backdrop-nav"></label>
+templ Footer(userEmail string) {
+	<footer>
+		@AppFooterNav("", userEmail)
+	</footer>
+}
+
+templ GroupLayout(id string, crumbs []utils.Crumb, userEmail string, nav templ.Component, main templ.Component) {
+	<div id={ id } class="grouplayout">
+		@Header(crumbs, nav)
+		<div class="grouplayout_inner">
+			<main id="app">
+				@main
+			</main>
+			@Footer(userEmail)
+		</div>
 	</div>
 }
 
@@ -86,17 +51,6 @@ templ GroupTabs(groupID string, activeTab string) {
 			<a class="btn" href={ "/groups/" + groupID + "/users" } role="tab" aria-selected="false">{ ctxi18n.T(ctx, "groups.access") }</a>
 		}
 	</nav>
-}
-
-templ TwoCol(id string, main templ.Component, sidebar templ.Component) {
-	<div id={ id } class="two-col">
-		<main id="app">
-			@main
-		</main>
-		<aside class="grid content-start">
-			@sidebar
-		</aside>
-	</div>
 }
 
 templ Section(title string, children templ.Component) {

@@ -26,7 +26,6 @@ var coreAssetSpecs = []assetSpec{
 	{Logical: "css/style.css", Source: "static/css/style.css"},
 	{Logical: "js/vendor/datastar.js", Source: "static/js/vendor/datastar.js"},
 	{Logical: "js/notifications.js", Source: "static/js/notifications.js"},
-	{Logical: "js/drawer_focus.js", Source: "static/js/drawer_focus.js"},
 	{Logical: "js/main.js", Source: "static/js/main.js"},
 }
 

@@ -25,7 +25,7 @@ templ MemberEditPage(data EditMemberPageData) {
 				"errors": map[string]any{"name": "", "description": ""},
 			}) } data-init="@get('/sse')"></div>
 			@shared.Notifications()
-			@shared.AppShellMainOnly("member-edit", data.Breadcrumbs, data.UserEmail, shared.GroupPrimaryNav(data.GroupID, "members", data.UserEmail), MemberEditForm(data))
+			@shared.GroupLayout("member-edit", data.Breadcrumbs, data.UserEmail, shared.GroupPrimaryNav(data.GroupID, "members", data.UserEmail), MemberEditForm(data))
 		</body>
 	</html>
 }

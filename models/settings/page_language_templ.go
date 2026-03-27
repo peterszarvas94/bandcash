@@ -81,7 +81,7 @@ func LanguagePage(data SettingsData) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = shared.AppShellMainOnly("public-language", data.Breadcrumbs, data.UserEmail, shared.PublicPrimaryNav("language"), LanguageMain(data)).Render(ctx, templ_7745c5c3_Buffer)
+		templ_7745c5c3_Err = shared.GroupLayout("public-language", data.Breadcrumbs, data.UserEmail, shared.PublicPrimaryNav("language"), LanguageMain(data)).Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

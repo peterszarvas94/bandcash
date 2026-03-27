@@ -18,7 +18,7 @@ templ LoginPage(data AuthPageData) {
 		<body>
 			<div data-signals={templ.JSONString(map[string]any{"tab_id": tabID, "csrf": utils.CSRFTokenFromContext(ctx), "authError": "", "authServerError": "", "authState": "form", "submittedEmail": "", "submittedEmailMasked": "", "resendRemaining": 0, "formData": map[string]any{"email": ""}})} data-init="@get('/sse')"></div>
 			@shared.Notifications()
-			@shared.AppShellMainOnly("auth-login", data.Breadcrumbs, data.UserEmail, shared.PublicPrimaryNav("login"), LoginMain())
+			@shared.GroupLayout("auth-login", data.Breadcrumbs, data.UserEmail, shared.PublicPrimaryNav("login"), LoginMain())
 		</body>
 	</html>
 }

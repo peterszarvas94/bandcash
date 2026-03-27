@@ -20,7 +20,7 @@ templ LanguagePage(data SettingsData) {
 				data-init="@get('/sse')"
 			></div>
 			@shared.Notifications()
-			@shared.AppShellMainOnly("public-language", data.Breadcrumbs, data.UserEmail, shared.PublicPrimaryNav("language"), LanguageMain(data))
+			@shared.GroupLayout("public-language", data.Breadcrumbs, data.UserEmail, shared.PublicPrimaryNav("language"), LanguageMain(data))
 		</body>
 	</html>
 }

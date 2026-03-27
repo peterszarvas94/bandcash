@@ -1,7 +1,6 @@
 {
 	"imports": {
 		"datastar": "/static/js/vendor/datastar.js",
-		"bandcash/notifications": "/static/js/notifications.js",
-		"bandcash/drawer-focus": "/static/js/drawer_focus.js"
+		"bandcash/notifications": "/static/js/notifications.js"
 	}
 }

@@ -36,7 +36,7 @@ templ DashboardPage(data DashboardData) {
 		<body>
 			<div data-signals={ templ.JSONString(map[string]any{"tab_id": tabID, "csrf": utils.CSRFTokenFromContext(ctx)}) } data-init="@get('/sse')"></div>
 			@shared.Notifications()
-			@shared.AppShellMainOnly("admin-dashboard", data.Breadcrumbs, data.UserEmail, shared.AppPrimaryNav("admin", data.UserEmail), DashboardMain(data))
+			@shared.GroupLayout("admin-dashboard", data.Breadcrumbs, data.UserEmail, shared.AppPrimaryNav("admin", data.UserEmail), DashboardMain(data))
 		</body>
 	</html>
 }

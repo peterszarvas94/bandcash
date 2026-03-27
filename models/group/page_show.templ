@@ -20,7 +20,7 @@ templ GroupPage(data GroupPageData) {
 			<div data-signals={ templ.JSONString(map[string]any{"tab_id": tabID, "csrf": utils.CSRFTokenFromContext(ctx), "mode": "single", "formState": "", "eventFormState": "", "summaryMode": "all", "sidebarLoadingAction": "", "formData": map[string]any{"name": data.Group.Name}, "errors": map[string]any{"name": ""}}) } data-init="@get('/sse')"></div>
 			@shared.Notifications()
 			@shared.SureDialog()
-			@shared.AppShell("group-show", data.Breadcrumbs, data.UserEmail, shared.GroupPrimaryNav(data.Group.ID, "overview", data.UserEmail), GroupMain(data), GroupSidebar(data))
+			@shared.GroupLayout("group-show", data.Breadcrumbs, data.UserEmail, shared.GroupPrimaryNav(data.Group.ID, "overview", data.UserEmail), GroupMain(data))
 		</body>
 	</html>
 }

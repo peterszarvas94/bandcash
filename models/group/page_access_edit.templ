@@ -25,7 +25,7 @@ templ GroupAccessUserEditPage(data AccessUserEditPageData) {
 				},
 			}) } data-init="@get('/sse')"></div>
 			@shared.Notifications()
-			@shared.AppShellMainOnly("group-access-user-edit", data.Breadcrumbs, data.UserEmail, shared.GroupPrimaryNav(data.GroupID, "access", data.UserEmail), GroupAccessUserEditForm(data))
+			@shared.GroupLayout("group-access-user-edit", data.Breadcrumbs, data.UserEmail, shared.GroupPrimaryNav(data.GroupID, "access", data.UserEmail), GroupAccessUserEditForm(data))
 		</body>
 	</html>
 }

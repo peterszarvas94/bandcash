@@ -26,7 +26,7 @@ templ GroupAccessNewPage(data AccessNewPageData) {
 				},
 			}) } data-init="@get('/sse')"></div>
 			@shared.Notifications()
-			@shared.AppShellMainOnly("group-access-new", data.Breadcrumbs, data.UserEmail, shared.GroupPrimaryNav(data.GroupID, "access", data.UserEmail), GroupAccessNewForm(data))
+			@shared.GroupLayout("group-access-new", data.Breadcrumbs, data.UserEmail, shared.GroupPrimaryNav(data.GroupID, "access", data.UserEmail), GroupAccessNewForm(data))
 		</body>
 	</html>
 }

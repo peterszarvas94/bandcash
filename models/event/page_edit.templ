@@ -35,7 +35,7 @@ templ EventEditPage(data EditEventPageData) {
 				"errors": map[string]any{"title": "", "time": "", "place": "", "description": "", "amount": ""},
 			}) } data-init="@get('/sse')"></div>
 			@shared.Notifications()
-			@shared.AppShellMainOnly("event-edit", data.Breadcrumbs, data.UserEmail, shared.GroupPrimaryNav(data.GroupID, "events", data.UserEmail), EventEditForm(data))
+			@shared.GroupLayout("event-edit", data.Breadcrumbs, data.UserEmail, shared.GroupPrimaryNav(data.GroupID, "events", data.UserEmail), EventEditForm(data))
 		</body>
 	</html>
 }

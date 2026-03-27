@@ -34,7 +34,7 @@ templ ExpenseEditPage(data EditExpensePageData) {
 				"errors": map[string]any{"title": "", "description": "", "amount": "", "date": ""},
 			}) } data-init="@get('/sse')"></div>
 			@shared.Notifications()
-			@shared.AppShellMainOnly("expense-edit", data.Breadcrumbs, data.UserEmail, shared.GroupPrimaryNav(data.GroupID, "expenses", data.UserEmail), ExpenseEditForm(data))
+			@shared.GroupLayout("expense-edit", data.Breadcrumbs, data.UserEmail, shared.GroupPrimaryNav(data.GroupID, "expenses", data.UserEmail), ExpenseEditForm(data))
 		</body>
 	</html>
 }
