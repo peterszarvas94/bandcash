@@ -110,7 +110,7 @@ templ GroupDetailsContent(data GroupPageData) {
 templ GroupDetailsActions(data GroupPageData) {
 	if data.IsAdmin {
 	@shared.ActionButton(shared.ActionButtonProps{
-		ClassName:    "btn btn-accent",
+		ClassName:    "btn btn-primary",
 		OnClick:      "$formState = 'edit'; $errors = {name: ''}",
 		DisabledExpr: "$formState !== '' || $_fetching",
 		Label:        ctxi18n.T(ctx, "actions.edit"),

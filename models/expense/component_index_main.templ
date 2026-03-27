@@ -62,7 +62,7 @@ templ ExpenseIndexMain(data ExpensesData) {
 		<h1>{ ctxi18n.T(ctx, "expenses.title") }</h1>
 		if data.IsAdmin {
 			<div class="actions">
-				<a href={ fmt.Sprintf("/groups/%s/expenses/new", data.GroupID) } class="btn btn-accent">
+				<a href={ fmt.Sprintf("/groups/%s/expenses/new", data.GroupID) } class="btn btn-primary">
 					@icons.Plus(templ.Attributes{"class": "icon"})
 					{ ctxi18n.T(ctx, "expenses.add") }
 				</a>

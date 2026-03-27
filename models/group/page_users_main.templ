@@ -16,7 +16,7 @@ templ GroupUsersMain(data UsersPageData) {
 		<h1>{ ctxi18n.T(ctx, "groups.users") }</h1>
 		if data.IsAdmin {
 			<div class="actions">
-				<a href={ fmt.Sprintf("/groups/%s/users/new", data.GroupID) } class="btn btn-accent">
+				<a href={ fmt.Sprintf("/groups/%s/users/new", data.GroupID) } class="btn btn-primary">
 					@icons.Plus(templ.Attributes{"class": "icon"})
 					{ ctxi18n.T(ctx, "groups.invite_user") }
 				</a>

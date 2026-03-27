@@ -79,7 +79,7 @@ templ EventIndexMain(data EventsData) {
 		<h1>{ ctxi18n.T(ctx, "events.title") }</h1>
 		if data.IsAdmin {
 			<div class="actions">
-				<a href={ fmt.Sprintf("/groups/%s/events/new", data.GroupID) } class="btn btn-accent">
+				<a href={ fmt.Sprintf("/groups/%s/events/new", data.GroupID) } class="btn btn-primary">
 					@icons.Icon(icons.IconPlus, templ.Attributes{"class": "icon"})
 					{ ctxi18n.T(ctx, "events.add") }
 				</a>

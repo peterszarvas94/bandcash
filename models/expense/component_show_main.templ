@@ -112,7 +112,7 @@ templ ExpenseShowMain(data ExpenseData) {
 templ ExpenseShowDetailsActions(data ExpenseData) {
 	if data.IsAdmin {
 		@shared.ActionButton(shared.ActionButtonProps{
-			ClassName:    "btn btn-accent",
+			ClassName:    "btn btn-primary",
 			OnClick:      "$formState = 'edit'; $errors = {title: '', description: '', amount: '', date: ''}",
 			DisabledExpr: "$formState !== '' || $_fetching",
 			Label:        ctxi18n.T(ctx, "actions.edit"),

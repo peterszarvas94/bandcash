@@ -235,7 +235,7 @@ templ MemberShowMain(data MemberData) {
 templ MemberShowDetailsActions(data MemberData) {
 	if data.IsAdmin {
 	@shared.ActionButton(shared.ActionButtonProps{
-		ClassName:    "btn btn-accent",
+		ClassName:    "btn btn-primary",
 		OnClick:      "$formState = 'edit'; $errors = {name: '', description: ''}",
 		DisabledExpr: "$formState !== '' || $_fetching",
 		Label:        ctxi18n.T(ctx, "actions.edit"),

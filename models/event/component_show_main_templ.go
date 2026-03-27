@@ -1321,7 +1321,7 @@ func ReadModeActions(data EventData) templ.Component {
 				data.Event.ID,
 			)
 			templ_7745c5c3_Err = shared.ActionButton(shared.ActionButtonProps{
-				ClassName:    "btn btn-accent",
+				ClassName:    "btn btn-primary",
 				OnClick:      editParticipantsExpr,
 				DisabledExpr: "$_fetching",
 				Label:        ctxi18n.T(ctx, "actions.edit"),

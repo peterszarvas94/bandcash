@@ -9,11 +9,6 @@
 - use blue for primary color
 - find a good accent color (e.g. orange)
 
-## Sidebar menu
-
-- move to top of the page (more familiar navigation)
-- simplify design to not be so dominant
-
 ## Dashboard
 
 - make groups as cards
@@ -25,6 +20,11 @@
 - make name as title not as detail entry
 - move paid/unpaid/all radio into normal table filter, like search or date filters
 - replace sidebar forms with native popups (dialog)
+
+## UI
+
+- check admin pages
+- figure out tab styling (in both admin and group pages)
 
 # Features
 

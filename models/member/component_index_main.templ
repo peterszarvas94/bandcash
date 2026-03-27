@@ -15,7 +15,7 @@ templ MemberIndexMain(data MembersData) {
 		<h1>{ ctxi18n.T(ctx, "members.title") }</h1>
 		if data.IsAdmin {
 			<div class="actions">
-				<a href={ fmt.Sprintf("/groups/%s/members/new", data.GroupID) } class="btn btn-accent">
+				<a href={ fmt.Sprintf("/groups/%s/members/new", data.GroupID) } class="btn btn-primary">
 					@icons.Plus(templ.Attributes{"class": "icon"})
 					{ ctxi18n.T(ctx, "members.add") }
 				</a>

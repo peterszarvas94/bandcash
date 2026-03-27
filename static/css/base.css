@@ -60,18 +60,18 @@
 
     --btn-primary-bg: color-mix(
       in srgb,
-      var(--link-color) 88%,
-      var(--text-color) 12%
+      var(--link-color) 78%,
+      var(--page-bg) 22%
     );
     --btn-primary-border: color-mix(
       in srgb,
-      var(--link-color) 80%,
-      var(--text-color) 20%
+      var(--link-color) 70%,
+      var(--page-bg) 30%
     );
     --btn-primary-hover-bg: color-mix(
       in srgb,
-      var(--link-color) 78%,
-      var(--text-color) 22%
+      var(--link-color) 72%,
+      var(--page-bg) 28%
     );
     --btn-primary-focus: color-mix(
       in srgb,

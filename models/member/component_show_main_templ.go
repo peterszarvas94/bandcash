@@ -932,7 +932,7 @@ func MemberShowDetailsActions(data MemberData) templ.Component {
 		ctx = templ.ClearChildren(ctx)
 		if data.IsAdmin {
 			templ_7745c5c3_Err = shared.ActionButton(shared.ActionButtonProps{
-				ClassName:    "btn btn-accent",
+				ClassName:    "btn btn-primary",
 				OnClick:      "$formState = 'edit'; $errors = {name: '', description: ''}",
 				DisabledExpr: "$formState !== '' || $_fetching",
 				Label:        ctxi18n.T(ctx, "actions.edit"),

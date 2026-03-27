@@ -439,13 +439,13 @@
 
     &.btn-primary {
       --btn-tone-color: #fff;
-      --btn-tone-bg: var(--color-primary);
+      --btn-tone-bg: var(--btn-primary-bg);
       --btn-tone-border: var(--btn-primary-border);
       --btn-tone-hover-bg: var(--btn-primary-hover-bg);
       --btn-tone-active-bg: color-mix(
         in srgb,
-        var(--color-primary) 82%,
-        var(--text-color) 18%
+        var(--btn-primary-bg) 88%,
+        var(--page-bg) 12%
       );
       --btn-tone-disabled-color: #fff;
       --btn-tone-disabled-bg: color-mix(

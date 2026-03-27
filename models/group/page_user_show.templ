@@ -50,7 +50,7 @@ templ GroupUserMain(data UserPageData) {
 }
 
 templ GroupUserDetailsActions(data UserPageData) {
-	<a class="btn btn-accent" href={ fmt.Sprintf("/groups/%s/users/%s/edit", data.GroupID, data.UserRow.UserID) }>
+	<a class="btn btn-primary" href={ fmt.Sprintf("/groups/%s/users/%s/edit", data.GroupID, data.UserRow.UserID) }>
 		@icons.Pencil(templ.Attributes{"class": "icon"})
 		{ ctxi18n.T(ctx, "actions.edit") }
 	</a>
