@@ -19,7 +19,7 @@ import (
 	icons "bandcash/models/shared/icons"
 )
 
-func GroupAccessNewPage(data AccessNewPageData) templ.Component {
+func GroupAccessUserEditPage(data AccessUserEditPageData) templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
 		if templ_7745c5c3_CtxErr := ctx.Err(); templ_7745c5c3_CtxErr != nil {
@@ -48,7 +48,7 @@ func GroupAccessNewPage(data AccessNewPageData) templ.Component {
 		var templ_7745c5c3_Var2 string
 		templ_7745c5c3_Var2, templ_7745c5c3_Err = templ.JoinStringErrs(appi18n.LocaleCode(ctx))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/group/page_access_new.templ`, Line: 17, Col: 37}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/group/page_access_edit.templ`, Line: 17, Col: 37}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var2))
 		if templ_7745c5c3_Err != nil {
@@ -71,12 +71,11 @@ func GroupAccessNewPage(data AccessNewPageData) templ.Component {
 			"tab_id": tabID,
 			"csrf":   utils.CSRFTokenFromContext(ctx),
 			"formData": map[string]any{
-				"email": "",
-				"role":  "viewer",
+				"role": data.AccessRow.Role,
 			},
 		}))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/group/page_access_new.templ`, Line: 27, Col: 5}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/group/page_access_edit.templ`, Line: 26, Col: 5}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var3))
 		if templ_7745c5c3_Err != nil {
@@ -90,7 +89,7 @@ func GroupAccessNewPage(data AccessNewPageData) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = shared.AppShellMainOnly("group-access-new", data.Breadcrumbs, data.UserEmail, shared.GroupPrimaryNav(data.GroupID, "access", data.UserEmail), GroupAccessNewForm(data)).Render(ctx, templ_7745c5c3_Buffer)
+		templ_7745c5c3_Err = shared.AppShellMainOnly("group-access-user-edit", data.Breadcrumbs, data.UserEmail, shared.GroupPrimaryNav(data.GroupID, "access", data.UserEmail), GroupAccessUserEditForm(data)).Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -102,7 +101,7 @@ func GroupAccessNewPage(data AccessNewPageData) templ.Component {
 	})
 }
 
-func GroupAccessNewForm(data AccessNewPageData) templ.Component {
+func GroupAccessUserEditForm(data AccessUserEditPageData) templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
 		if templ_7745c5c3_CtxErr := ctx.Err(); templ_7745c5c3_CtxErr != nil {
@@ -128,61 +127,61 @@ func GroupAccessNewForm(data AccessNewPageData) templ.Component {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var5 string
-		templ_7745c5c3_Var5, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("@post('/groups/%s/users')", data.GroupID))
+		templ_7745c5c3_Var5, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("($formData.role === 'admin' ? @put('/groups/%s/users/%s/admin') : @put('/groups/%s/users/%s/viewer'))", data.GroupID, data.AccessRow.UserID, data.GroupID, data.AccessRow.UserID))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/group/page_access_new.templ`, Line: 35, Col: 91}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/group/page_access_edit.templ`, Line: 34, Col: 227}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var5))
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 7, "\" data-indicator:_fetching><div class=\"field\"><label for=\"group-access-new-email\" class=\"row\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 7, "\" data-indicator:_fetching><div class=\"field\"><label for=\"group-user-edit-email\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var6 string
 		templ_7745c5c3_Var6, templ_7745c5c3_Err = templ.JoinStringErrs(ctxi18n.T(ctx, "auth.email"))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/group/page_access_new.templ`, Line: 37, Col: 81}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/group/page_access_edit.templ`, Line: 36, Col: 68}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var6))
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 8, " <span class=\"color-error\">*</span></label> <input id=\"group-access-new-email\" type=\"email\" data-bind=\"formData.email\" placeholder=\"")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 8, "</label> <input id=\"group-user-edit-email\" class=\"input\" type=\"text\" value=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var7 string
-		templ_7745c5c3_Var7, templ_7745c5c3_Err = templ.JoinStringErrs(ctxi18n.T(ctx, "groups.viewer_email_placeholder"))
+		templ_7745c5c3_Var7, templ_7745c5c3_Err = templ.JoinStringErrs(data.AccessRow.Email)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/group/page_access_new.templ`, Line: 38, Col: 141}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/group/page_access_edit.templ`, Line: 37, Col: 91}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var7))
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 9, "\" class=\"input\"></div><div class=\"field\"><label for=\"group-access-new-role\" class=\"row\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 9, "\" disabled></div><div class=\"field\"><label for=\"group-user-edit-role\" class=\"row\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var8 string
 		templ_7745c5c3_Var8, templ_7745c5c3_Err = templ.JoinStringErrs(ctxi18n.T(ctx, "fields.role"))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/group/page_access_new.templ`, Line: 41, Col: 81}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/group/page_access_edit.templ`, Line: 40, Col: 80}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var8))
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 10, " <span class=\"color-error\">*</span></label> <select id=\"group-access-new-role\" data-bind=\"formData.role\" class=\"input\"><option value=\"viewer\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 10, " <span class=\"color-error\">*</span></label> <select id=\"group-user-edit-role\" data-bind=\"formData.role\" class=\"input\"><option value=\"viewer\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var9 string
 		templ_7745c5c3_Var9, templ_7745c5c3_Err = templ.JoinStringErrs(ctxi18n.T(ctx, "groups.role_viewer"))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/group/page_access_new.templ`, Line: 43, Col: 65}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/group/page_access_edit.templ`, Line: 42, Col: 65}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var9))
 		if templ_7745c5c3_Err != nil {
@@ -195,7 +194,7 @@ func GroupAccessNewForm(data AccessNewPageData) templ.Component {
 		var templ_7745c5c3_Var10 string
 		templ_7745c5c3_Var10, templ_7745c5c3_Err = templ.JoinStringErrs(ctxi18n.T(ctx, "groups.role_admin"))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/group/page_access_new.templ`, Line: 44, Col: 63}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/group/page_access_edit.templ`, Line: 43, Col: 63}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var10))
 		if templ_7745c5c3_Err != nil {
@@ -207,7 +206,7 @@ func GroupAccessNewForm(data AccessNewPageData) templ.Component {
 		}
 		templ_7745c5c3_Err = shared.LoadingSubmitButton(shared.LoadingSubmitButtonProps{
 			ClassName: "btn btn-primary",
-			Label:     ctxi18n.T(ctx, "groups.invite_access"),
+			Label:     ctxi18n.T(ctx, "groups.update"),
 			IconName:  icons.IconSave,
 		}).Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {

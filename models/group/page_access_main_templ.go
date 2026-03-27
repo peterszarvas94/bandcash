@@ -62,9 +62,9 @@ func GroupAccessMain(data AccessPageData) templ.Component {
 				return templ_7745c5c3_Err
 			}
 			var templ_7745c5c3_Var3 templ.SafeURL
-			templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.JoinURLErrs(fmt.Sprintf("/groups/%s/access/new", data.GroupID))
+			templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.JoinURLErrs(fmt.Sprintf("/groups/%s/users/new", data.GroupID))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/group/page_access_main.templ`, Line: 17, Col: 63}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/group/page_access_main.templ`, Line: 17, Col: 62}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var3))
 			if templ_7745c5c3_Err != nil {
@@ -92,11 +92,11 @@ func GroupAccessMain(data AccessPageData) templ.Component {
 				return templ_7745c5c3_Err
 			}
 		}
-		templ_7745c5c3_Err = shared.TableSearchForm(accessTablePath(data.GroupID), data.Query, "table.search_placeholder_access").Render(ctx, templ_7745c5c3_Buffer)
+		templ_7745c5c3_Err = shared.TableSearchForm(usersTablePath(data.GroupID), data.Query, "table.search_placeholder_access").Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = shared.TablePaginationRow(accessTablePath(data.GroupID), data.Query, data.Pager).Render(ctx, templ_7745c5c3_Buffer)
+		templ_7745c5c3_Err = shared.TablePaginationRow(usersTablePath(data.GroupID), data.Query, data.Pager).Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -128,7 +128,7 @@ func GroupAccessMain(data AccessPageData) templ.Component {
 					}()
 				}
 				ctx = templ.InitializeContext(ctx)
-				templ_7745c5c3_Err = shared.TableSortHeader(ctxi18n.T(ctx, "auth.email"), "email", data.Query, utils.BuildTableSortURL(accessTablePath(data.GroupID), data.Query, "email")).Render(ctx, templ_7745c5c3_Buffer)
+				templ_7745c5c3_Err = shared.TableSortHeader(ctxi18n.T(ctx, "auth.email"), "email", data.Query, utils.BuildTableSortURL(usersTablePath(data.GroupID), data.Query, "email")).Render(ctx, templ_7745c5c3_Buffer)
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
@@ -150,7 +150,7 @@ func GroupAccessMain(data AccessPageData) templ.Component {
 					}()
 				}
 				ctx = templ.InitializeContext(ctx)
-				templ_7745c5c3_Err = shared.TableSortHeader(ctxi18n.T(ctx, "fields.role"), "role", data.Query, utils.BuildTableSortURL(accessTablePath(data.GroupID), data.Query, "role")).Render(ctx, templ_7745c5c3_Buffer)
+				templ_7745c5c3_Err = shared.TableSortHeader(ctxi18n.T(ctx, "fields.role"), "role", data.Query, utils.BuildTableSortURL(usersTablePath(data.GroupID), data.Query, "role")).Render(ctx, templ_7745c5c3_Buffer)
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
@@ -172,7 +172,7 @@ func GroupAccessMain(data AccessPageData) templ.Component {
 					}()
 				}
 				ctx = templ.InitializeContext(ctx)
-				templ_7745c5c3_Err = shared.TableSortHeader(ctxi18n.T(ctx, "fields.status"), "status", data.Query, utils.BuildTableSortURL(accessTablePath(data.GroupID), data.Query, "status")).Render(ctx, templ_7745c5c3_Buffer)
+				templ_7745c5c3_Err = shared.TableSortHeader(ctxi18n.T(ctx, "fields.status"), "status", data.Query, utils.BuildTableSortURL(usersTablePath(data.GroupID), data.Query, "status")).Render(ctx, templ_7745c5c3_Buffer)
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
@@ -187,12 +187,12 @@ func GroupAccessMain(data AccessPageData) templ.Component {
 				return templ_7745c5c3_Err
 			}
 			for _, row := range data.AccessRows {
-				rowPath := fmt.Sprintf("/groups/%s/access/users/%s", data.Group.ID, row.UserID)
+				rowPath := fmt.Sprintf("/groups/%s/users/%s", data.Group.ID, row.UserID)
 				if row.Kind == "invite" {
-					rowPath = fmt.Sprintf("/groups/%s/access/invites/%s", data.Group.ID, row.InviteID)
+					rowPath = fmt.Sprintf("/groups/%s/users/%s", data.Group.ID, row.InviteID)
 				}
-				makeAdminExpr := fmt.Sprintf("@put('/groups/%s/access/users/%s/admin')", data.Group.ID, row.UserID)
-				makeViewerExpr := fmt.Sprintf("@put('/groups/%s/access/users/%s/viewer')", data.Group.ID, row.UserID)
+				makeAdminExpr := fmt.Sprintf("@put('/groups/%s/users/%s/admin', {mode: 'table', tableQuery: $tableQuery})", data.Group.ID, row.UserID)
+				makeViewerExpr := fmt.Sprintf("@put('/groups/%s/users/%s/viewer', {mode: 'table', tableQuery: $tableQuery})", data.Group.ID, row.UserID)
 				roleToggleExpr := makeAdminExpr
 				roleToggleDisabled := row.Status == "pending"
 				if row.Role == "admin" {

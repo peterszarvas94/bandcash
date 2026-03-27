@@ -188,8 +188,8 @@ templ GroupPrimaryNav(groupID string, active string, userEmail string) {
 					<span>{ ctxi18n.T(ctx, "members.title") }</span>
 				</a>
 			}
-			<a class={ "btn app-nav-link", templ.KV("btn-active", isAccessActive(active)) } href={ "/groups/" + groupID + "/access" }>
-				@icons.Lock(templ.Attributes{"class": "icon"})
+			<a class={ "btn app-nav-link", templ.KV("btn-active", isAccessActive(active)) } href={ "/groups/" + groupID + "/users" }>
+				@icons.ShieldUser(templ.Attributes{"class": "icon"})
 				<span>{ ctxi18n.T(ctx, "groups.access") }</span>
 			</a>
 		</div>

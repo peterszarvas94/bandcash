@@ -81,9 +81,9 @@ templ GroupTabs(groupID string, activeTab string) {
 			<a class="btn" href={ "/groups/" + groupID + "/members" } role="tab" aria-selected="false">{ ctxi18n.T(ctx, "members.title") }</a>
 		}
 		if activeTab == "viewers" {
-			<a class="btn btn-active" href={ "/groups/" + groupID + "/access/viewers" } role="tab" aria-selected="true">{ ctxi18n.T(ctx, "groups.access") }</a>
+			<a class="btn btn-active" href={ "/groups/" + groupID + "/users" } role="tab" aria-selected="true">{ ctxi18n.T(ctx, "groups.access") }</a>
 		} else {
-			<a class="btn" href={ "/groups/" + groupID + "/access/viewers" } role="tab" aria-selected="false">{ ctxi18n.T(ctx, "groups.access") }</a>
+			<a class="btn" href={ "/groups/" + groupID + "/users" } role="tab" aria-selected="false">{ ctxi18n.T(ctx, "groups.access") }</a>
 		}
 	</nav>
 }

@@ -14,25 +14,24 @@ func RegisterRoutes(e *echo.Echo) *Group {
 	e.GET("/groups/new", grp.NewGroupPage, middleware.RequireAuth, middleware.WithDetailState)
 	e.POST("/groups", grp.CreateGroup, middleware.RequireAuth, middleware.WithDetailState)
 
-	// Group access pages for any group member
+	// Group users pages for any group member
 	accessRoutes := e.Group("/groups/:groupId", middleware.RequireAuth, middleware.WithDetailState, middleware.RequireGroup)
 	accessRoutes.GET("", grp.GroupPage)
-	accessRoutes.GET("/access", grp.AccessPage)
-	accessRoutes.GET("/access/users/:userId", grp.AccessUserPage)
-	accessRoutes.GET("/access/invites/:inviteId", grp.AccessInvitePage)
+	accessRoutes.GET("/users", grp.AccessPage)
+	accessRoutes.GET("/users/:id", grp.AccessEntryPage)
 	accessRoutes.POST("/leave", grp.LeaveGroup)
 
-	// Access management (admin only)
+	// User management (admin only)
 	adminAccessRoutes := e.Group("/groups/:groupId", middleware.RequireAuth, middleware.WithDetailState, middleware.RequireGroup, middleware.RequireAdmin)
 	adminAccessRoutes.GET("/edit", grp.EditGroupPage)
-	adminAccessRoutes.GET("/access/new", grp.AccessNewPage)
+	adminAccessRoutes.GET("/users/new", grp.AccessNewPage)
+	adminAccessRoutes.GET("/users/:id/edit", grp.AccessEditPage)
 	adminAccessRoutes.PUT("", grp.UpdateGroup)
 	adminAccessRoutes.DELETE("", grp.DeleteGroup)
-	adminAccessRoutes.POST("/access", grp.AddViewer)
-	adminAccessRoutes.DELETE("/access/users/:userId", grp.RemoveViewer)
-	adminAccessRoutes.PUT("/access/users/:userId/admin", grp.PromoteViewerToAdmin)
-	adminAccessRoutes.PUT("/access/users/:userId/viewer", grp.DemoteAdminToViewer)
-	adminAccessRoutes.DELETE("/access/invites/:inviteId", grp.CancelInvite)
+	adminAccessRoutes.POST("/users", grp.AddViewer)
+	adminAccessRoutes.DELETE("/users/:id", grp.DeleteAccessEntry)
+	adminAccessRoutes.PUT("/users/:id/admin", grp.PromoteViewerToAdmin)
+	adminAccessRoutes.PUT("/users/:id/viewer", grp.DemoteAdminToViewer)
 
 	return grp
 }

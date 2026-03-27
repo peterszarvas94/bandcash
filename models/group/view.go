@@ -79,6 +79,15 @@ type AccessUserPageData struct {
 	IsAdmin       bool
 }
 
+type AccessUserEditPageData struct {
+	Title       string
+	Breadcrumbs []utils.Crumb
+	UserEmail   string
+	GroupID     string
+	Group       db.Group
+	AccessRow   GroupAccessRow
+}
+
 type AccessInvitePageData struct {
 	Title       string
 	Breadcrumbs []utils.Crumb

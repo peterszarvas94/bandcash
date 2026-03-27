@@ -46,6 +46,10 @@ templ GroupAccessUserMain(data AccessUserPageData) {
 }
 
 templ GroupAccessUserDetailsActions(data AccessUserPageData) {
+	<a class="btn btn-accent" href={ fmt.Sprintf("/groups/%s/users/%s/edit", data.GroupID, data.AccessRow.UserID) }>
+		@icons.Pencil(templ.Attributes{"class": "icon"})
+		{ ctxi18n.T(ctx, "actions.edit") }
+	</a>
 	@shared.SureActionButton(shared.SureActionButtonProps{
 		ClassName:    "btn btn-danger",
 		DisabledExpr: "$_fetching",
@@ -57,7 +61,7 @@ templ GroupAccessUserDetailsActions(data AccessUserPageData) {
 			SubmitLabel: ctxi18n.T(ctx, "actions.delete"),
 			CancelLabel: ctxi18n.T(ctx, "actions.cancel"),
 			Method:      "delete",
-			URL:         fmt.Sprintf("/groups/%s/access/users/%s", data.GroupID, data.AccessRow.UserID),
+			URL:         fmt.Sprintf("/groups/%s/users/%s", data.GroupID, data.AccessRow.UserID),
 			TriggerID:   "group-access-user-delete",
 		},
 	})
@@ -109,7 +113,7 @@ templ GroupAccessInviteDetailsActions(data AccessInvitePageData) {
 			SubmitLabel: ctxi18n.T(ctx, "actions.delete"),
 			CancelLabel: ctxi18n.T(ctx, "actions.cancel"),
 			Method:      "delete",
-			URL:         fmt.Sprintf("/groups/%s/access/invites/%s", data.GroupID, data.AccessRow.InviteID),
+			URL:         fmt.Sprintf("/groups/%s/users/%s", data.GroupID, data.AccessRow.InviteID),
 			TriggerID:   "group-access-invite-delete",
 		},
 	})

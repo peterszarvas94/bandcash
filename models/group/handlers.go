@@ -397,17 +397,29 @@ func (g *Group) DeleteGroup(c echo.Context) error {
 	return c.NoContent(http.StatusOK)
 }
 
-// AccessPage shows unified access table and invite form.
+// AccessPage shows unified users table and invite form.
 func (g *Group) AccessPage(c echo.Context) error {
 	utils.EnsureTabID(c)
 	groupID := middleware.GetGroupID(c)
 	data, err := g.accessPageData(c, groupID, c.QueryParams())
 	if err != nil {
 		slog.Error("group: failed to load access page", "group_id", groupID, "err", err)
-		return c.String(http.StatusInternalServerError, "Failed to load access")
+		return c.String(http.StatusInternalServerError, "Failed to load users")
 	}
 
 	return utils.RenderPage(c, GroupAccessPage(data))
+}
+
+// AccessEntryPage shows a user or invite row details based on ID prefix.
+func (g *Group) AccessEntryPage(c echo.Context) error {
+	id := c.Param("id")
+	if utils.IsValidID(id, "usr") {
+		return g.AccessUserPage(c)
+	}
+	if utils.IsValidID(id, "mag") {
+		return g.AccessInvitePage(c)
+	}
+	return c.NoContent(http.StatusBadRequest)
 }
 
 // AccessNewPage shows the form to invite a new viewer/admin.
@@ -427,7 +439,7 @@ func (g *Group) AccessNewPage(c echo.Context) error {
 		Breadcrumbs: []utils.Crumb{
 			{Label: ctxi18n.T(c.Request().Context(), "groups.title"), Href: "/dashboard"},
 			{Label: group.Name, Href: "/groups/" + groupID + "/events"},
-			{Label: ctxi18n.T(c.Request().Context(), "groups.access"), Href: "/groups/" + groupID + "/access"},
+			{Label: ctxi18n.T(c.Request().Context(), "groups.access"), Href: "/groups/" + groupID + "/users"},
 			{Label: ctxi18n.T(c.Request().Context(), "groups.invite_access")},
 		},
 		UserEmail: userEmail,
@@ -438,11 +450,66 @@ func (g *Group) AccessNewPage(c echo.Context) error {
 	return utils.RenderPage(c, GroupAccessNewPage(data))
 }
 
+// AccessEditPage shows user role edit page.
+func (g *Group) AccessEditPage(c echo.Context) error {
+	utils.EnsureTabID(c)
+	groupID := middleware.GetGroupID(c)
+	userID := c.Param("id")
+	if !utils.IsValidID(userID, "usr") {
+		return c.NoContent(http.StatusBadRequest)
+	}
+
+	ctx := c.Request().Context()
+	group, err := db.Qry.GetGroupByID(ctx, groupID)
+	if err != nil {
+		slog.Error("group.access_edit_page: failed to get group", "group_id", groupID, "err", err)
+		return c.NoContent(http.StatusInternalServerError)
+	}
+
+	isAdminRole := isAdminUser(ctx, groupID, userID)
+	if !isAdminRole {
+		readerCount, readerErr := db.Qry.IsGroupReader(ctx, db.IsGroupReaderParams{UserID: userID, GroupID: groupID})
+		if readerErr != nil || readerCount == 0 {
+			return c.NoContent(http.StatusNotFound)
+		}
+	}
+
+	user, err := db.Qry.GetUserByID(ctx, userID)
+	if err != nil {
+		return c.NoContent(http.StatusNotFound)
+	}
+
+	row := GroupAccessRow{Kind: "user", Status: "active", Email: user.Email, UserID: user.ID, Role: "viewer"}
+	if isAdminRole {
+		row.Role = "admin"
+	}
+
+	data := AccessUserEditPageData{
+		Title: ctxi18n.T(ctx, "groups.access_page_title"),
+		Breadcrumbs: []utils.Crumb{
+			{Label: ctxi18n.T(ctx, "groups.title"), Href: "/dashboard"},
+			{Label: group.Name, Href: "/groups/" + groupID + "/events"},
+			{Label: ctxi18n.T(ctx, "groups.access"), Href: "/groups/" + groupID + "/users"},
+			{Label: user.Email, Href: "/groups/" + groupID + "/users/" + user.ID},
+			{Label: ctxi18n.T(ctx, "actions.edit")},
+		},
+		UserEmail: getUserEmail(c),
+		GroupID:   groupID,
+		Group:     group,
+		AccessRow: row,
+	}
+
+	return utils.RenderPage(c, GroupAccessUserEditPage(data))
+}
+
 // AccessUserPage shows details for a user access row.
 func (g *Group) AccessUserPage(c echo.Context) error {
 	utils.EnsureTabID(c)
 	groupID := middleware.GetGroupID(c)
 	userID := c.Param("userId")
+	if userID == "" {
+		userID = c.Param("id")
+	}
 	if !utils.IsValidID(userID, "usr") {
 		return c.NoContent(http.StatusBadRequest)
 	}
@@ -491,7 +558,7 @@ func (g *Group) AccessUserPage(c echo.Context) error {
 		Breadcrumbs: []utils.Crumb{
 			{Label: ctxi18n.T(ctx, "groups.title"), Href: "/dashboard"},
 			{Label: group.Name, Href: "/groups/" + groupID + "/events"},
-			{Label: ctxi18n.T(ctx, "groups.access"), Href: "/groups/" + groupID + "/access"},
+			{Label: ctxi18n.T(ctx, "groups.access"), Href: "/groups/" + groupID + "/users"},
 			{Label: user.Email},
 		},
 		UserEmail:     getUserEmail(c),
@@ -510,6 +577,9 @@ func (g *Group) AccessInvitePage(c echo.Context) error {
 	utils.EnsureTabID(c)
 	groupID := middleware.GetGroupID(c)
 	inviteID := c.Param("inviteId")
+	if inviteID == "" {
+		inviteID = c.Param("id")
+	}
 	if !utils.IsValidID(inviteID, "mag") {
 		return c.NoContent(http.StatusBadRequest)
 	}
@@ -557,7 +627,7 @@ func (g *Group) AccessInvitePage(c echo.Context) error {
 		Breadcrumbs: []utils.Crumb{
 			{Label: ctxi18n.T(ctx, "groups.title"), Href: "/dashboard"},
 			{Label: group.Name, Href: "/groups/" + groupID + "/events"},
-			{Label: ctxi18n.T(ctx, "groups.access"), Href: "/groups/" + groupID + "/access"},
+			{Label: ctxi18n.T(ctx, "groups.access"), Href: "/groups/" + groupID + "/users"},
 			{Label: row.Email},
 		},
 		UserEmail: getUserEmail(c),
@@ -577,7 +647,7 @@ func (g *Group) redirectAccessPage(c echo.Context, groupID, messageKey, errorKey
 	if errorKey != "" {
 		utils.Notify(c, "error", ctxi18n.T(c.Request().Context(), errorKey))
 	}
-	err := utils.SSEHub.Redirect(c, "/groups/"+groupID+"/access")
+	err := utils.SSEHub.Redirect(c, "/groups/"+groupID+"/users")
 	if err != nil {
 		return c.NoContent(http.StatusInternalServerError)
 	}
@@ -722,7 +792,7 @@ func (g *Group) AddViewer(c echo.Context) error {
 	}
 
 	utils.Notify(c, "success", ctxi18n.T(c.Request().Context(), "groups.messages.invite_sent"))
-	err = utils.SSEHub.Redirect(c, "/groups/"+groupID+"/access")
+	err = utils.SSEHub.Redirect(c, "/groups/"+groupID+"/users")
 	if err != nil {
 		return c.NoContent(http.StatusInternalServerError)
 	}
@@ -742,6 +812,9 @@ func (g *Group) RemoveViewer(c echo.Context) error {
 
 	groupID := middleware.GetGroupID(c)
 	userID := c.Param("userId")
+	if userID == "" {
+		userID = c.Param("id")
+	}
 	if !utils.IsValidID(userID, "usr") {
 		return g.redirectAccessPage(c, groupID, "", "groups.errors.invalid_user", http.StatusBadRequest)
 	}
@@ -782,6 +855,9 @@ func (g *Group) PromoteViewerToAdmin(c echo.Context) error {
 
 	groupID := middleware.GetGroupID(c)
 	userID := c.Param("userId")
+	if userID == "" {
+		userID = c.Param("id")
+	}
 	ctx := c.Request().Context()
 	if !utils.IsValidID(userID, "usr") {
 		if signals.Mode == "table" {
@@ -844,7 +920,12 @@ func (g *Group) PromoteViewerToAdmin(c echo.Context) error {
 	if signals.Mode == "table" {
 		return g.patchAccessPageWithState(c, groupID, signals.TableQuery, "groups.messages.viewer_promoted", "")
 	}
-	return g.redirectAccessPage(c, groupID, "groups.messages.viewer_promoted", "", http.StatusOK)
+	utils.Notify(c, "success", ctxi18n.T(c.Request().Context(), "groups.messages.viewer_promoted"))
+	err = utils.SSEHub.Redirect(c, "/groups/"+groupID+"/users/"+userID)
+	if err != nil {
+		return c.NoContent(http.StatusInternalServerError)
+	}
+	return c.NoContent(http.StatusOK)
 }
 
 func (g *Group) DemoteAdminToViewer(c echo.Context) error {
@@ -858,6 +939,9 @@ func (g *Group) DemoteAdminToViewer(c echo.Context) error {
 
 	groupID := middleware.GetGroupID(c)
 	userID := c.Param("userId")
+	if userID == "" {
+		userID = c.Param("id")
+	}
 	ctx := c.Request().Context()
 	if !utils.IsValidID(userID, "usr") {
 		if signals.Mode == "table" {
@@ -896,7 +980,12 @@ func (g *Group) DemoteAdminToViewer(c echo.Context) error {
 	if signals.Mode == "table" {
 		return g.patchAccessPageWithState(c, groupID, signals.TableQuery, "groups.messages.admin_demoted", "")
 	}
-	return g.redirectAccessPage(c, groupID, "groups.messages.admin_demoted", "", http.StatusOK)
+	utils.Notify(c, "success", ctxi18n.T(c.Request().Context(), "groups.messages.admin_demoted"))
+	err = utils.SSEHub.Redirect(c, "/groups/"+groupID+"/users/"+userID)
+	if err != nil {
+		return c.NoContent(http.StatusInternalServerError)
+	}
+	return c.NoContent(http.StatusOK)
 }
 
 // CancelInvite removes a pending invitation from the group.
@@ -911,6 +1000,9 @@ func (g *Group) CancelInvite(c echo.Context) error {
 
 	groupID := middleware.GetGroupID(c)
 	inviteID := c.Param("inviteId")
+	if inviteID == "" {
+		inviteID = c.Param("id")
+	}
 	if !utils.IsValidID(inviteID, "mag") {
 		return g.redirectAccessPage(c, groupID, "", "groups.errors.invalid_invite", http.StatusBadRequest)
 	}
@@ -925,6 +1017,17 @@ func (g *Group) CancelInvite(c echo.Context) error {
 	}
 
 	return g.redirectAccessPage(c, groupID, "groups.messages.invite_cancelled", "", http.StatusOK)
+}
+
+func (g *Group) DeleteAccessEntry(c echo.Context) error {
+	id := c.Param("id")
+	if utils.IsValidID(id, "usr") {
+		return g.RemoveViewer(c)
+	}
+	if utils.IsValidID(id, "mag") {
+		return g.CancelInvite(c)
+	}
+	return c.NoContent(http.StatusBadRequest)
 }
 
 func (g *Group) accessPageData(c echo.Context, groupID string, values url.Values) (AccessPageData, error) {
@@ -951,7 +1054,7 @@ func (g *Group) accessPageData(c echo.Context, groupID string, values url.Values
 		Breadcrumbs: []utils.Crumb{
 			{Label: ctxi18n.T(ctx, "groups.title"), Href: "/dashboard"},
 			{Label: group.Name, Href: "/groups/" + group.ID + "/events"},
-			{Label: ctxi18n.T(ctx, "groups.access"), Href: "/groups/" + group.ID + "/access"},
+			{Label: ctxi18n.T(ctx, "groups.access"), Href: "/groups/" + group.ID + "/users"},
 		},
 		UserEmail:     getUserEmail(c),
 		CurrentUserID: middleware.GetUserID(c),

@@ -14,8 +14,8 @@ import (
 	shared "bandcash/models/shared"
 )
 
-func accessTablePath(groupID string) string {
-	return "/groups/" + groupID + "/access"
+func usersTablePath(groupID string) string {
+	return "/groups/" + groupID + "/users"
 }
 
 func GroupAccessPage(data AccessPageData) templ.Component {
@@ -85,7 +85,7 @@ func GroupAccessPage(data AccessPageData) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = shared.AppShellMainOnly("group-access", data.Breadcrumbs, data.UserEmail, shared.GroupPrimaryNav(data.Group.ID, "access", data.UserEmail), GroupAccessMain(data)).Render(ctx, templ_7745c5c3_Buffer)
+		templ_7745c5c3_Err = shared.AppShellMainOnly("group-users", data.Breadcrumbs, data.UserEmail, shared.GroupPrimaryNav(data.Group.ID, "access", data.UserEmail), GroupAccessMain(data)).Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

@@ -895,9 +895,9 @@ func GroupPrimaryNav(groupID string, active string, userEmail string) templ.Comp
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var36 templ.SafeURL
-		templ_7745c5c3_Var36, templ_7745c5c3_Err = templ.JoinURLErrs("/groups/" + groupID + "/access")
+		templ_7745c5c3_Var36, templ_7745c5c3_Err = templ.JoinURLErrs("/groups/" + groupID + "/users")
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/shared/navigation_primary.templ`, Line: 191, Col: 122}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/shared/navigation_primary.templ`, Line: 191, Col: 121}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var36))
 		if templ_7745c5c3_Err != nil {
@@ -907,7 +907,7 @@ func GroupPrimaryNav(groupID string, active string, userEmail string) templ.Comp
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = icons.Lock(templ.Attributes{"class": "icon"}).Render(ctx, templ_7745c5c3_Buffer)
+		templ_7745c5c3_Err = icons.ShieldUser(templ.Attributes{"class": "icon"}).Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
