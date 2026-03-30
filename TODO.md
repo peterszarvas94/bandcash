@@ -6,7 +6,6 @@
 
 ## Color
 
-- use blue for primary color
 - find a good accent color (e.g. orange)
 
 ## Dashboard
@@ -17,9 +16,7 @@
 ## General for all pages
 
 - improve details section
-- make name as title not as detail entry
 - move paid/unpaid/all radio into normal table filter, like search or date filters
-- replace sidebar forms with native popups (dialog)
 
 ## UI
 
