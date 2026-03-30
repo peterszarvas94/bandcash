@@ -20,6 +20,13 @@ templ ToggleVariantsContent() {
 			OnClass:      "btn-success",
 		})
 		@shared.Toggle(shared.ToggleProps{
+			Bind:         "toggleWarning",
+			DisabledExpr: "$_fetching",
+			Off:          "Toggle off",
+			On:           "Toggle on",
+			OnClass:      "btn-warning",
+		})
+		@shared.Toggle(shared.ToggleProps{
 			Bind:         "toggleDanger",
 			DisabledExpr: "$_fetching",
 			Off:          "Toggle off",
@@ -28,13 +35,7 @@ templ ToggleVariantsContent() {
 		})
 	</div>
 	<div class="row row-wrap">
-		@shared.Toggle(shared.ToggleProps{IsOn: true, Disabled: true, Off: "Toggle off", On: "Toggle on (disabled)"})
 		@shared.Toggle(shared.ToggleProps{IsOn: true, Disabled: true, Off: "Toggle off", On: "Toggle on (disabled)", OnClass: "btn-success"})
-		@shared.Toggle(shared.ToggleProps{IsOn: true, Disabled: true, Off: "Toggle off", On: "Toggle on (disabled)", OnClass: "btn-danger"})
-	</div>
-	<div class="row row-wrap">
-		@shared.Toggle(shared.ToggleProps{IsOn: false, Disabled: true, Off: "Toggle off (disabled)", On: "Toggle on"})
-		@shared.Toggle(shared.ToggleProps{IsOn: false, Disabled: true, Off: "Toggle off (disabled)", On: "Toggle on", OnClass: "btn-success"})
-		@shared.Toggle(shared.ToggleProps{IsOn: false, Disabled: true, Off: "Toggle off (disabled)", On: "Toggle on", OnClass: "btn-danger"})
+		@shared.Toggle(shared.ToggleProps{IsOn: false, Disabled: true, Off: "Toggle off (disabled)", On: "Toggle on", OnClass: "btn-warning"})
 	</div>
 }

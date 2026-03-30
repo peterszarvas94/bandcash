@@ -22,6 +22,14 @@ func TabIDFromContext(ctx context.Context) string {
 	return ""
 }
 
+// EnsureTabIDFromContext returns existing tab ID or creates a new one.
+func EnsureTabIDFromContext(ctx context.Context) string {
+	if tabID := TabIDFromContext(ctx); tabID != "" {
+		return tabID
+	}
+	return GenerateID("tab")
+}
+
 // SetTabID updates request context with a valid tab ID.
 func SetTabID(c echo.Context, tabID string) bool {
 	tabID = strings.TrimSpace(tabID)

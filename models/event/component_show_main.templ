@@ -41,11 +41,10 @@ templ EventShowMain(data EventData) {
 			{Label: ctxi18n.T(ctx, "fields.income"), Value: utils.FormatNumberLocalized(ctx, data.Event.Amount), Action: shared.Toggle(shared.ToggleProps{
 				IsOn:         data.Event.Paid == 1,
 				OnClick:      togglePaidExpr,
-				DisabledExpr: "$_fetching",
+				DisabledExpr: "false",
 				Off:          ctxi18n.T(ctx, "table.unpaid"),
 				On:           ctxi18n.T(ctx, "table.paid"),
 				ClassName:    "btn btn-xs",
-				OffClass:     "btn-inactive",
 				OnClass:      "btn-success",
 			})},
 			{Label: ctxi18n.T(ctx, "fields.paid_at"), Value: func() string {
@@ -167,11 +166,10 @@ templ EventShowMain(data EventData) {
 								@shared.Toggle(shared.ToggleProps{
 									IsOn:         participant.ParticipantPaid == 1,
 									OnClick:      togglePaidExpr,
-									DisabledExpr: "$_fetching",
+									DisabledExpr: "false",
 									Off:          ctxi18n.T(ctx, "table.unpaid"),
 									On:           ctxi18n.T(ctx, "table.paid"),
 									ClassName:    "btn btn-xs",
-									OffClass:     "btn-inactive",
 									OnClass:      "btn-success",
 								})
 							} else {

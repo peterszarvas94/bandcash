@@ -98,7 +98,7 @@ templ ExpenseIndexMain(data ExpensesData) {
 		<tbody>
 			for _, expense := range data.Expenses {
 				{{
-					togglePaidExpr := fmt.Sprintf("@put('/groups/%s/expenses/%s/toggle-paid', {mode: 'list', tableQuery: $tableQuery})", data.GroupID, expense.ID)
+					togglePaidExpr := fmt.Sprintf("@put('/groups/%s/expenses/%s/toggle-paid', {mode: 'table', tableQuery: $tableQuery})", data.GroupID, expense.ID)
 					paidLabel := ctxi18n.T(ctx, "table.unpaid")
 					if expense.Paid == 1 {
 						paidLabel = ctxi18n.T(ctx, "table.paid")
@@ -117,11 +117,10 @@ templ ExpenseIndexMain(data ExpensesData) {
 							@shared.Toggle(shared.ToggleProps{
 								IsOn:         expense.Paid == 1,
 								OnClick:      togglePaidExpr,
-								DisabledExpr: "$_fetching",
+								DisabledExpr: "false",
 								Off:          ctxi18n.T(ctx, "table.unpaid"),
 								On:           ctxi18n.T(ctx, "table.paid"),
 								ClassName:    "btn btn-xs",
-								OffClass:     "btn-inactive",
 								OnClass:      "btn-success",
 							})
 						} else {

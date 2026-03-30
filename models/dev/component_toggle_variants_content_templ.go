@@ -57,6 +57,16 @@ func ToggleVariantsContent() templ.Component {
 			return templ_7745c5c3_Err
 		}
 		templ_7745c5c3_Err = shared.Toggle(shared.ToggleProps{
+			Bind:         "toggleWarning",
+			DisabledExpr: "$_fetching",
+			Off:          "Toggle off",
+			On:           "Toggle on",
+			OnClass:      "btn-warning",
+		}).Render(ctx, templ_7745c5c3_Buffer)
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Err = shared.Toggle(shared.ToggleProps{
 			Bind:         "toggleDanger",
 			DisabledExpr: "$_fetching",
 			Off:          "Toggle off",
@@ -70,35 +80,15 @@ func ToggleVariantsContent() templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = shared.Toggle(shared.ToggleProps{IsOn: true, Disabled: true, Off: "Toggle off", On: "Toggle on (disabled)"}).Render(ctx, templ_7745c5c3_Buffer)
-		if templ_7745c5c3_Err != nil {
-			return templ_7745c5c3_Err
-		}
 		templ_7745c5c3_Err = shared.Toggle(shared.ToggleProps{IsOn: true, Disabled: true, Off: "Toggle off", On: "Toggle on (disabled)", OnClass: "btn-success"}).Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = shared.Toggle(shared.ToggleProps{IsOn: true, Disabled: true, Off: "Toggle off", On: "Toggle on (disabled)", OnClass: "btn-danger"}).Render(ctx, templ_7745c5c3_Buffer)
+		templ_7745c5c3_Err = shared.Toggle(shared.ToggleProps{IsOn: false, Disabled: true, Off: "Toggle off (disabled)", On: "Toggle on", OnClass: "btn-warning"}).Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "</div><div class=\"row row-wrap\">")
-		if templ_7745c5c3_Err != nil {
-			return templ_7745c5c3_Err
-		}
-		templ_7745c5c3_Err = shared.Toggle(shared.ToggleProps{IsOn: false, Disabled: true, Off: "Toggle off (disabled)", On: "Toggle on"}).Render(ctx, templ_7745c5c3_Buffer)
-		if templ_7745c5c3_Err != nil {
-			return templ_7745c5c3_Err
-		}
-		templ_7745c5c3_Err = shared.Toggle(shared.ToggleProps{IsOn: false, Disabled: true, Off: "Toggle off (disabled)", On: "Toggle on", OnClass: "btn-success"}).Render(ctx, templ_7745c5c3_Buffer)
-		if templ_7745c5c3_Err != nil {
-			return templ_7745c5c3_Err
-		}
-		templ_7745c5c3_Err = shared.Toggle(shared.ToggleProps{IsOn: false, Disabled: true, Off: "Toggle off (disabled)", On: "Toggle on", OnClass: "btn-danger"}).Render(ctx, templ_7745c5c3_Buffer)
-		if templ_7745c5c3_Err != nil {
-			return templ_7745c5c3_Err
-		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, "</div>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "</div>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

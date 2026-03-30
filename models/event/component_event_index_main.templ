@@ -101,7 +101,7 @@ templ EventIndexMain(data EventsData) {
 		<tbody>
 			for _, event := range data.Events {
 				{{
-					togglePaidExpr := fmt.Sprintf("@put('/groups/%s/events/%s/toggle-paid', {mode: 'list', tableQuery: $tableQuery})", data.GroupID, event.ID)
+					togglePaidExpr := fmt.Sprintf("@put('/groups/%s/events/%s/toggle-paid', {mode: 'table', tableQuery: $tableQuery})", data.GroupID, event.ID)
 					paidLabel := ctxi18n.T(ctx, "table.unpaid")
 					if event.Paid == 1 {
 						paidLabel = ctxi18n.T(ctx, "table.paid")
@@ -121,11 +121,10 @@ templ EventIndexMain(data EventsData) {
 							@shared.Toggle(shared.ToggleProps{
 								IsOn:         event.Paid == 1,
 								OnClick:      togglePaidExpr,
-								DisabledExpr: "$_fetching",
+								DisabledExpr: "false",
 								Off:          ctxi18n.T(ctx, "table.unpaid"),
 								On:           ctxi18n.T(ctx, "table.paid"),
 								ClassName:    "btn btn-xs",
-								OffClass:     "btn-inactive",
 								OnClass:      "btn-success",
 							})
 						} else {

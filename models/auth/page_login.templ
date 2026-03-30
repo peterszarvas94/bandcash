@@ -6,7 +6,7 @@ import (
 )
 
 templ LoginPage(data AuthPageData) {
-	{{ tabID := utils.GenerateID("tab") }}
+	{{ tabID := utils.EnsureTabIDFromContext(ctx) }}
 	@shared.HomeLayout(
 		"auth-login",
 		data.Title,

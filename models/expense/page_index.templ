@@ -7,7 +7,7 @@ import (
 )
 
 templ ExpenseIndex(data ExpensesData) {
-	{{ tabID := utils.GenerateID("tab") }}
+	{{ tabID := utils.EnsureTabIDFromContext(ctx) }}
 	<!doctype html>
 	<html lang={appi18n.LocaleCode(ctx)}>
 		@shared.Head(data.Title)

@@ -470,7 +470,7 @@ func ExpenseIndexMain(data ExpensesData) templ.Component {
 				return templ_7745c5c3_Err
 			}
 			for _, expense := range data.Expenses {
-				togglePaidExpr := fmt.Sprintf("@put('/groups/%s/expenses/%s/toggle-paid', {mode: 'list', tableQuery: $tableQuery})", data.GroupID, expense.ID)
+				togglePaidExpr := fmt.Sprintf("@put('/groups/%s/expenses/%s/toggle-paid', {mode: 'table', tableQuery: $tableQuery})", data.GroupID, expense.ID)
 				paidLabel := ctxi18n.T(ctx, "table.unpaid")
 				if expense.Paid == 1 {
 					paidLabel = ctxi18n.T(ctx, "table.paid")
@@ -539,11 +539,10 @@ func ExpenseIndexMain(data ExpensesData) templ.Component {
 					templ_7745c5c3_Err = shared.Toggle(shared.ToggleProps{
 						IsOn:         expense.Paid == 1,
 						OnClick:      togglePaidExpr,
-						DisabledExpr: "$_fetching",
+						DisabledExpr: "false",
 						Off:          ctxi18n.T(ctx, "table.unpaid"),
 						On:           ctxi18n.T(ctx, "table.paid"),
 						ClassName:    "btn btn-xs",
-						OffClass:     "btn-inactive",
 						OnClass:      "btn-success",
 					}).Render(ctx, templ_7745c5c3_Buffer)
 					if templ_7745c5c3_Err != nil {
@@ -553,7 +552,7 @@ func ExpenseIndexMain(data ExpensesData) templ.Component {
 					var templ_7745c5c3_Var26 string
 					templ_7745c5c3_Var26, templ_7745c5c3_Err = templ.JoinStringErrs(paidLabel)
 					if templ_7745c5c3_Err != nil {
-						return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/expense/component_expense_index_main.templ`, Line: 128, Col: 18}
+						return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/expense/component_expense_index_main.templ`, Line: 127, Col: 18}
 					}
 					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var26))
 					if templ_7745c5c3_Err != nil {
@@ -567,7 +566,7 @@ func ExpenseIndexMain(data ExpensesData) templ.Component {
 				var templ_7745c5c3_Var27 string
 				templ_7745c5c3_Var27, templ_7745c5c3_Err = templ.JoinStringErrs(paidAtLabel)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/expense/component_expense_index_main.templ`, Line: 131, Col: 22}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/expense/component_expense_index_main.templ`, Line: 130, Col: 22}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var27))
 				if templ_7745c5c3_Err != nil {
@@ -586,7 +585,7 @@ func ExpenseIndexMain(data ExpensesData) templ.Component {
 				var templ_7745c5c3_Var28 string
 				templ_7745c5c3_Var28, templ_7745c5c3_Err = templ.JoinStringErrs(ctxi18n.T(ctx, "table.empty"))
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/expense/component_expense_index_main.templ`, Line: 136, Col: 52}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/expense/component_expense_index_main.templ`, Line: 135, Col: 52}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var28))
 				if templ_7745c5c3_Err != nil {

@@ -177,11 +177,10 @@ templ MemberShowMain(data MemberData) {
 							@shared.Toggle(shared.ToggleProps{
 								IsOn:         event.ParticipantPaid == 1,
 								OnClick:      togglePaidExpr,
-								DisabledExpr: "$_fetching",
+								DisabledExpr: "false",
 								Off:          ctxi18n.T(ctx, "table.unpaid"),
 								On:           ctxi18n.T(ctx, "table.paid"),
 								ClassName:    "btn btn-xs",
-								OffClass:     "btn-inactive",
 								OnClass:      "btn-success",
 							})
 						} else {

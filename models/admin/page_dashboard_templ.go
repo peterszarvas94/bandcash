@@ -35,7 +35,7 @@ func DashboardPage(data DashboardData) templ.Component {
 			templ_7745c5c3_Var1 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		tabID := utils.GenerateID("tab")
+		tabID := utils.EnsureTabIDFromContext(ctx)
 		templ_7745c5c3_Err = shared.AdminLayout(
 			"admin-dashboard",
 			data.Title,

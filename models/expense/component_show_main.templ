@@ -37,11 +37,10 @@ templ ExpenseShowMain(data ExpenseData) {
 				{Label: ctxi18n.T(ctx, "fields.expense"), Value: utils.FormatNumberLocalizedWithSign(ctx, data.Expense.Amount, false), Action: shared.Toggle(shared.ToggleProps{
 					IsOn:         data.Expense.Paid == 1,
 					OnClick:      togglePaidExpr,
-					DisabledExpr: "$_fetching",
+					DisabledExpr: "false",
 					Off:          ctxi18n.T(ctx, "table.unpaid"),
 					On:           ctxi18n.T(ctx, "table.paid"),
 					ClassName:    "btn btn-xs",
-					OffClass:     "btn-inactive",
 					OnClass:      "btn-success",
 				})},
 				{Label: ctxi18n.T(ctx, "fields.paid_at"), Value: func() string {

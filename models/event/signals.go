@@ -15,6 +15,7 @@ func eventIndexSignals(tabID, csrfToken string, query utils.TableQuery) map[stri
 		"formData":        map[string]any{"title": "", "time": "", "place": "", "description": "", "amount": 0, "paid": false, "paidAt": ""},
 		"eventFormState":  "",
 		"summaryMode":     query.Summary,
+		"_fetching":       false,
 		"errors":          map[string]any{"title": "", "time": "", "place": "", "description": "", "amount": "", "memberId": "", "expense": ""},
 	}
 }
@@ -98,6 +99,7 @@ func eventShowSignals(tabID string, data EventData, csrfToken string) map[string
 		"editingId":    0,
 		"calcPercent":  0,
 		"summaryMode":  data.Query.Summary,
+		"_fetching":    false,
 		"noteExpanded": noteExpanded,
 		"formData": map[string]any{
 			"memberId":   "",

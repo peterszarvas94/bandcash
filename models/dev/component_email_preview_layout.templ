@@ -12,14 +12,14 @@ templ EmailPreviewLayout(title string, content templ.Component) {
 		<body>
 			<style>
 				.dev-mail-wrap { max-width: 980px; margin: 24px auto; padding: 0 12px; }
-				.dev-mail-client { border: 1px solid #d5d8de; border-radius: 10px; overflow: hidden; background: #ffffff; color: #111827; }
-				.dev-mail-head { padding: 12px 14px; border-bottom: 1px solid #e6e6e6; background: #f7f8fa; }
-				.dev-mail-meta { padding: 12px 14px; border-bottom: 1px solid #e6e6e6; font-size: 14px; line-height: 1.5; background: #ffffff; }
+				.dev-mail-client { border: 1px solid hsl(220 12% 85%); border-radius: 10px; overflow: hidden; background: hsl(0 0% 100%); color: hsl(221 39% 11%); }
+				.dev-mail-head { padding: 12px 14px; border-bottom: 1px solid hsl(0 0% 90%); background: hsl(220 23% 97%); }
+				.dev-mail-meta { padding: 12px 14px; border-bottom: 1px solid hsl(0 0% 90%); font-size: 14px; line-height: 1.5; background: hsl(0 0% 100%); }
 
 				@media (prefers-color-scheme: dark) {
-					.dev-mail-client { border-color: #3f4654; background: #161a22; color: #e5e7eb; }
-					.dev-mail-head { border-bottom-color: #343b49; background: #202634; }
-					.dev-mail-meta { border-bottom-color: #343b49; background: #161a22; }
+					.dev-mail-client { border-color: hsl(220 14% 29%); background: hsl(220 21% 11%); color: hsl(220 13% 91%); }
+					.dev-mail-head { border-bottom-color: hsl(220 17% 25%); background: hsl(222 24% 16%); }
+					.dev-mail-meta { border-bottom-color: hsl(220 17% 25%); background: hsl(220 21% 11%); }
 				}
 			</style>
 			<div class="dev-mail-wrap">

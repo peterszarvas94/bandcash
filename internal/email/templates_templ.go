@@ -31,7 +31,7 @@ func BilingualEmailHTML(huHTML, enHTML string) templ.Component {
 			templ_7745c5c3_Var1 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<div style=\"margin:0;padding-top:20px;font-family:system-ui,-apple-system,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif;font-size:12px;line-height:1.4;color:#1a1a1a;text-align:center;background:#f7f8fa;color-scheme:light;\">English follows below.</div>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<div style=\"margin:0;padding-top:20px;font-family:system-ui,-apple-system,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif;font-size:12px;line-height:1.4;color:hsl(0 0% 10%);text-align:center;background:hsl(220 23% 97%);color-scheme:light;\">English follows below.</div>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -880,7 +880,7 @@ func AccessRemovedHTML(groupName string, admins []string, link string) templ.Com
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 28, "</p><ul style=\"margin:0 0 16px;padding-left:18px;color:#1a1a1a;\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 28, "</p><ul style=\"margin:0 0 16px;padding-left:18px;color:hsl(0 0% 10%);\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -898,14 +898,14 @@ func AccessRemovedHTML(groupName string, admins []string, link string) templ.Com
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 30, "\" style=\"color:#1f3a5f;text-decoration:underline;\">")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 30, "\" style=\"color:hsl(215 51% 25%);text-decoration:underline;\">")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
 				var templ_7745c5c3_Var51 string
 				templ_7745c5c3_Var51, templ_7745c5c3_Err = templ.JoinStringErrs(admin)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/email/templates.templ`, Line: 154, Col: 106}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/email/templates.templ`, Line: 154, Col: 115}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var51))
 				if templ_7745c5c3_Err != nil {
@@ -959,14 +959,14 @@ func ActionEmailHTMLWithDetails(title, intro, cta, copyLink, expiry, ignore, lin
 			templ_7745c5c3_Var52 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 33, "<div style=\"margin:0;padding:24px;background:#f7f8fa;color:#1a1a1a;color-scheme:light;\"><div style=\"max-width:760px;margin:0 auto;border:1px solid #cccccc;background:#ffffff;border-radius:8px;overflow:hidden;font-family:system-ui,-apple-system,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif;color:#1a1a1a;line-height:1.6;\"><div style=\"padding:20px 20px 16px;border-bottom:1px solid #e6e6e6;background:#fdfdfd;\"><p style=\"margin:0 0 8px;font-size:12px;letter-spacing:0.08em;text-transform:uppercase;color:#1a1a1a;\">BandCash</p><h2 style=\"margin:0;font-size:22px;line-height:1.3;color:#1a1a1a;\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 33, "<div style=\"margin:0;padding:24px;background:hsl(220 23% 97%);color:hsl(0 0% 10%);color-scheme:light;\"><div style=\"max-width:760px;margin:0 auto;border:1px solid hsl(0 0% 80%);background:hsl(0 0% 100%);border-radius:8px;overflow:hidden;font-family:system-ui,-apple-system,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif;color:hsl(0 0% 10%);line-height:1.6;\"><div style=\"padding:20px 20px 16px;border-bottom:1px solid hsl(0 0% 90%);background:hsl(0 0% 99%);\"><p style=\"margin:0 0 8px;font-size:12px;letter-spacing:0.08em;text-transform:uppercase;color:hsl(0 0% 10%);\">BandCash</p><h2 style=\"margin:0;font-size:22px;line-height:1.3;color:hsl(0 0% 10%);\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var53 string
 		templ_7745c5c3_Var53, templ_7745c5c3_Err = templ.JoinStringErrs(title)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/email/templates.templ`, Line: 166, Col: 78}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/email/templates.templ`, Line: 166, Col: 84}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var53))
 		if templ_7745c5c3_Err != nil {
@@ -998,53 +998,53 @@ func ActionEmailHTMLWithDetails(title, intro, cta, copyLink, expiry, ignore, lin
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 36, "\" style=\"display:inline-block;background:#1f3a5f;color:#ffffff;text-decoration:none;padding:10px 16px;border-radius:6px;border:1px solid #1f3a5f;font-weight:600;\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 36, "\" style=\"display:inline-block;background:hsl(215 51% 25%);color:hsl(0 0% 100%);text-decoration:none;padding:10px 16px;border-radius:6px;border:1px solid hsl(215 51% 25%);font-weight:600;\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var56 string
 		templ_7745c5c3_Var56, templ_7745c5c3_Err = templ.JoinStringErrs(cta)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/email/templates.templ`, Line: 171, Col: 188}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/email/templates.templ`, Line: 171, Col: 213}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var56))
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 37, "</a></p><p style=\"margin:0 0 8px;color:#1a1a1a;\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 37, "</a></p><p style=\"margin:0 0 8px;color:hsl(0 0% 10%);\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var57 string
 		templ_7745c5c3_Var57, templ_7745c5c3_Err = templ.JoinStringErrs(copyLink)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/email/templates.templ`, Line: 173, Col: 55}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/email/templates.templ`, Line: 173, Col: 61}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var57))
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 38, "</p><p style=\"margin:0 0 16px;padding:10px 12px;border:1px solid #d5d8de;border-radius:6px;background:#f7f8fa;overflow-wrap:anywhere;word-break:break-word;\"><a href=\"")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 38, "</p><p style=\"margin:0 0 16px;padding:10px 12px;border:1px solid hsl(220 12% 85%);border-radius:6px;background:hsl(220 23% 97%);overflow-wrap:anywhere;word-break:break-word;\"><a href=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var58 templ.SafeURL
 		templ_7745c5c3_Var58, templ_7745c5c3_Err = templ.JoinURLErrs(link)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/email/templates.templ`, Line: 174, Col: 171}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/email/templates.templ`, Line: 174, Col: 189}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var58))
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 39, "\" style=\"color:#1f3a5f;text-decoration:underline;overflow-wrap:anywhere;word-break:break-word;\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 39, "\" style=\"color:hsl(215 51% 25%);text-decoration:underline;overflow-wrap:anywhere;word-break:break-word;\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var59 string
 		templ_7745c5c3_Var59, templ_7745c5c3_Err = templ.JoinStringErrs(link)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/email/templates.templ`, Line: 174, Col: 274}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/email/templates.templ`, Line: 174, Col: 301}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var59))
 		if templ_7745c5c3_Err != nil {
@@ -1059,7 +1059,7 @@ func ActionEmailHTMLWithDetails(title, intro, cta, copyLink, expiry, ignore, lin
 			return templ_7745c5c3_Err
 		}
 		if expiry != "" || ignore != "" {
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 41, "<p style=\"margin:0;color:#1a1a1a;\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 41, "<p style=\"margin:0;color:hsl(0 0% 10%);\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}

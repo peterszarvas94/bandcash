@@ -196,9 +196,6 @@ templ Toggle(props ToggleProps) {
 			onText = "Toggle"
 		}
 		offClass := props.OffClass
-		if offClass == "" {
-			offClass = "btn-inactive"
-		}
 		onClass := props.OnClass
 		if onClass == "" {
 			onClass = "btn-active"
@@ -230,16 +227,20 @@ templ Toggle(props ToggleProps) {
 		setTrueExpr := fmt.Sprintf("$%s = true", props.Bind)
 		setFalseExpr := fmt.Sprintf("$%s = false", props.Bind)
 	}}
+	{{
+		offButtonClass := strings.TrimSpace(baseClass + " " + offClass)
+		onButtonClass := strings.TrimSpace(baseClass + " " + onClass)
+	}}
 	if props.Bind != "" {
 		<input type="checkbox" data-bind={ props.Bind } style="display: none"/>
 		<span data-show={ falseExpr }>
-			<button class={ fmt.Sprintf("%s %s", baseClass, offClass) } type="button" disabled?={ props.Disabled } data-attr:disabled={ disabledExpr } data-on:click={ setTrueExpr }>
+			<button class={ offButtonClass } type="button" disabled?={ props.Disabled } data-attr:disabled={ disabledExpr } data-on:click={ setTrueExpr }>
 				@icons.Icon(offIcon, templ.Attributes{"class": "icon"})
 				{ offText }
 			</button>
 		</span>
 		<span data-show={ trueExpr } style="display: none">
-			<button class={ fmt.Sprintf("%s %s", baseClass, onClass) } type="button" disabled?={ props.Disabled } data-attr:disabled={ disabledExpr } data-on:click={ setFalseExpr }>
+			<button class={ onButtonClass } type="button" disabled?={ props.Disabled } data-attr:disabled={ disabledExpr } data-on:click={ setFalseExpr }>
 				@icons.Icon(onIcon, templ.Attributes{"class": "icon"})
 				{ onText }
 			</button>
@@ -247,24 +248,24 @@ templ Toggle(props ToggleProps) {
 	} else {
 		if props.IsOn {
 			if props.OnClick != "" {
-				<button class={ fmt.Sprintf("%s %s", baseClass, onClass) } type="button" disabled?={ props.Disabled } data-attr:disabled={ disabledExpr } data-on:click={ props.OnClick }>
+				<button class={ onButtonClass } type="button" disabled?={ props.Disabled } data-attr:disabled={ disabledExpr } data-on:click={ props.OnClick }>
 					@icons.Icon(onIcon, templ.Attributes{"class": "icon"})
 					{ onText }
 				</button>
 			} else {
-				<button class={ fmt.Sprintf("%s %s", baseClass, onClass) } type="button" disabled?={ props.Disabled } data-attr:disabled={ disabledExpr }>
+				<button class={ onButtonClass } type="button" disabled?={ props.Disabled } data-attr:disabled={ disabledExpr }>
 					@icons.Icon(onIcon, templ.Attributes{"class": "icon"})
 					{ onText }
 				</button>
 			}
 		} else {
 			if props.OnClick != "" {
-				<button class={ fmt.Sprintf("%s %s", baseClass, offClass) } type="button" disabled?={ props.Disabled } data-attr:disabled={ disabledExpr } data-on:click={ props.OnClick }>
+				<button class={ offButtonClass } type="button" disabled?={ props.Disabled } data-attr:disabled={ disabledExpr } data-on:click={ props.OnClick }>
 					@icons.Icon(offIcon, templ.Attributes{"class": "icon"})
 					{ offText }
 				</button>
 			} else {
-				<button class={ fmt.Sprintf("%s %s", baseClass, offClass) } type="button" disabled?={ props.Disabled } data-attr:disabled={ disabledExpr }>
+				<button class={ offButtonClass } type="button" disabled?={ props.Disabled } data-attr:disabled={ disabledExpr }>
 					@icons.Icon(offIcon, templ.Attributes{"class": "icon"})
 					{ offText }
 				</button>
@@ -290,9 +291,6 @@ templ RadioButton(props RadioButtonProps) {
 			activeClass = strings.TrimSpace(activeClass + " btn-active")
 		}
 		inactiveClass := props.InactiveClass
-		if inactiveClass == "" {
-			inactiveClass = "btn-inactive"
-		}
 		selectedClass := strings.TrimSpace(baseClass + " " + activeClass)
 		unselectedClass := strings.TrimSpace(baseClass + " " + inactiveClass)
 	}}
@@ -360,9 +358,6 @@ templ RadioLink(props RadioLinkProps) {
 			activeClass = strings.TrimSpace(activeClass + " btn-active")
 		}
 		inactiveClass := props.InactiveClass
-		if inactiveClass == "" {
-			inactiveClass = "btn-inactive"
-		}
 		className := strings.TrimSpace(baseClass + " " + inactiveClass)
 		if props.IsSelected {
 			className = strings.TrimSpace(baseClass + " " + activeClass)
