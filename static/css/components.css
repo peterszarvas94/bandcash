@@ -272,16 +272,16 @@
 
     &.btn-primary {
       color: hsl(0 0% 100%);
-      background: light-dark(hsl(212 74% 46%), hsl(209 78% 60%));
+      background: light-dark(hsl(212 74% 46%), hsl(209 70% 46%));
 
       &:not(:disabled):not([disabled]):hover {
-        background: light-dark(hsl(212 74% 42%), hsl(209 78% 65%));
-        border-color: light-dark(hsl(212 72% 39%), hsl(209 75% 52%));
+        background: light-dark(hsl(212 74% 42%), hsl(209 70% 42%));
+        border-color: light-dark(hsl(212 72% 39%), hsl(209 68% 38%));
       }
 
       &:not(:disabled):not([disabled]):active {
-        background: light-dark(hsl(212 74% 38%), hsl(209 78% 69%));
-        border-color: light-dark(hsl(212 70% 34%), hsl(209 74% 47%));
+        background: light-dark(hsl(212 74% 38%), hsl(209 70% 38%));
+        border-color: light-dark(hsl(212 70% 34%), hsl(209 66% 34%));
       }
 
       &:focus-visible {
@@ -289,7 +289,7 @@
       }
 
       &.btn-active {
-        border-color: light-dark(hsl(212 72% 39%), hsl(209 75% 52%));
+        border-color: light-dark(hsl(212 72% 39%), hsl(209 68% 38%));
       }
     }
 
@@ -647,7 +647,7 @@
             }
           }
 
-          > p {
+          > .subtitle {
             font-size: 3rem;
             text-align: center;
             max-width: 18ch;
@@ -657,6 +657,11 @@
               font-size: 2rem;
               max-width: 14ch;
             }
+          }
+
+          .notice {
+            text-align: center;
+            padding-bottom: calc(var(--space) * 2);
           }
         }
 

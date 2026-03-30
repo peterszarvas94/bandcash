@@ -10,9 +10,9 @@ templ HomeIndexMain(data HomeData) {
 		@shared.PageLanguagePicker("/", data.CurrentLang)
 		<div class="home-content">
 			<h1>{ data.Title }</h1>
-			<p>{ ctxi18n.T(ctx, "home.subtitle") }</p>
+			<p class="subtitle">{ ctxi18n.T(ctx, "home.subtitle") }</p>
 			if data.IsAuthenticated {
-				<p>{ ctxi18n.T(ctx, "home.logged_in") }</p>
+				<p class="notice">{ ctxi18n.T(ctx, "home.logged_in") }</p>
 				<div class="row row-wrap">
 					<a class="btn btn-primary" href="/groups">{ ctxi18n.T(ctx, "home.go_to_groups") }</a>
 					<a class="btn" href="/account">{ ctxi18n.T(ctx, "account.account") }</a>
