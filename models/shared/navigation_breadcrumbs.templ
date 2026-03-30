@@ -14,8 +14,8 @@ templ Breadcrumbs(crumbs []utils.Crumb) {
 		</a>
 		for i, crumb := range crumbs {
 			{{ isActive := i == len(crumbs)-1 }}
-			<span class="text-muted">/</span>
-			<a class={ "link", templ.KV("link-active", isActive) } href={ crumb.Href }>{ crumb.Label }</a>
+			<span class="text-muted hide-tablet">/</span>
+			<a class={ "link hide-tablet", templ.KV("link-active", isActive) } href={ crumb.Href }>{ crumb.Label }</a>
 		}
 	</nav>
 }

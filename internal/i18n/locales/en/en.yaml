@@ -64,7 +64,7 @@ en:
       subject: "You've been invited to %s on BandCash"
       text:
         greeting: "Hello!"
-        intro: "You've been invited to join \"%s\" on BandCash."
+        intro: 'You''ve been invited to join "%s" on BandCash.'
         accept: "Click the link below to accept the invitation:"
         expiry: "This link will expire in 1 hour."
         ignore: "If you didn't expect this invitation, you can safely ignore this email."
@@ -142,7 +142,7 @@ en:
         contact_admins: "Contact group admins:"
   home:
     join_for_free: "Join for free"
-    subtitle: "Track shared group money, events, expenses, and payouts in one place."
+    subtitle: "Track your band's finances in one place"
     pricing: "Pricing"
     logged_in: "You are already logged in."
     go_to_groups: "Go to Groups"

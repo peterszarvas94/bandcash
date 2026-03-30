@@ -10,6 +10,8 @@ templ LoginMain(currentLang string, langAction string) {
 	<section class="auth-page">
 		@shared.PageLanguagePicker(langAction, currentLang)
 		<div class="auth-link-page">
+			<h1>{ ctxi18n.T(ctx, "auth.sign_in") }</h1>
+			<p class="text-muted">{ ctxi18n.T(ctx, "auth.check_email_body") }</p>
 			<div data-show="$authState === 'form'">
 				<form class="form" data-on:submit="@post('/login')" data-indicator:_fetching>
 					<div class="field">

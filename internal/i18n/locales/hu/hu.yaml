@@ -64,7 +64,7 @@ hu:
       subject: "Meghívtak a(z) %s csoportba a BandCash-ben"
       text:
         greeting: "Szia!"
-        intro: "Meghívtak, hogy csatlakozz a(z) \"%s\" csoporthoz a BandCash-ben."
+        intro: 'Meghívtak, hogy csatlakozz a(z) "%s" csoporthoz a BandCash-ben.'
         accept: "Kattints az alábbi linkre a meghívás elfogadásához:"
         expiry: "Ez a link 1 órán belül lejár."
         ignore: "Ha nem te kérted ezt, nyugodtan figyelmen kívül hagyhatod ezt az emailt."
@@ -142,7 +142,7 @@ hu:
         contact_admins: "Ha ez váratlan, lépj kapcsolatba a csoport adminjaival:"
   home:
     join_for_free: "Csatlakozás ingyen"
-    subtitle: "Kövesd egy helyen a közös pénzeket, eseményeket, költségeket és elszámolásokat."
+    subtitle: "Kövesd a zenekarod pénzügyeit egy helyen"
     pricing: "Árazás"
     logged_in: "Már be vagy jelentkezve."
     go_to_groups: "Tovább a csoportokhoz"
