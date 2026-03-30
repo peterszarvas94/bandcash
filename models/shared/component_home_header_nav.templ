@@ -1,15 +1,11 @@
 package shared
 
-import (
-	ctxi18n "github.com/invopop/ctxi18n/i18n"
-)
+import ctxi18n "github.com/invopop/ctxi18n/i18n"
 
 templ HomeHeaderNav(isAuthenticated bool) {
-	<div class="row row-wrap items-center">
-		if isAuthenticated {
-			@AppPrimaryNav("", true)
-		} else {
-			<a class="btn btn-primary btn-xs" href="/login">{ ctxi18n.T(ctx, "auth.sign_in") }</a>
-		}
-	</div>
+	if isAuthenticated {
+		@AppPrimaryNav("", true)
+	} else {
+		<a class="btn btn-primary btn-xs" href="/login">{ ctxi18n.T(ctx, "auth.sign_in") }</a>
+	}
 }

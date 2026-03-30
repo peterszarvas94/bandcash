@@ -1115,7 +1115,7 @@
     display: flex;
     flex-wrap: wrap;
     align-items: center;
-    gap: calc(var(--space) * 0.75);
+    gap: calc(var(--space) * 3);
   }
 
   nav.tabs {
