@@ -139,6 +139,22 @@ func (h *DevNotifications) TestInfo(c echo.Context) error {
 	return c.NoContent(http.StatusOK)
 }
 
+func (h *DevNotifications) TestWarning(c echo.Context) error {
+	signals := devTabSignals{}
+	if err := datastar.ReadSignals(c.Request(), &signals); err != nil {
+		return c.NoContent(http.StatusBadRequest)
+	}
+	if !utils.SetTabID(c, signals.TabID) {
+		return c.NoContent(http.StatusBadRequest)
+	}
+
+	utils.Notify(c, "warning", "Warning notification test")
+	if err := h.patchNotifications(c); err != nil {
+		return c.NoContent(http.StatusInternalServerError)
+	}
+	return c.NoContent(http.StatusOK)
+}
+
 func (h *DevNotifications) TestBodyLimitGlobal(c echo.Context) error {
 	return c.NoContent(http.StatusOK)
 }

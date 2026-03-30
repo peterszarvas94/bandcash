@@ -1,3 +1,51 @@
+@font-face {
+  font-family: "Inter";
+  font-style: normal;
+  font-weight: 100 900;
+  font-display: swap;
+  src: url("/static/fonts/inter/inter-normal-latin-ext.woff2") format("woff2");
+  unicode-range:
+    U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304,
+    U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB,
+    U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+
+@font-face {
+  font-family: "Inter";
+  font-style: normal;
+  font-weight: 100 900;
+  font-display: swap;
+  src: url("/static/fonts/inter/inter-normal-latin.woff2") format("woff2");
+  unicode-range:
+    U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC,
+    U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212,
+    U+2215, U+FEFF, U+FFFD;
+}
+
+@font-face {
+  font-family: "Inter";
+  font-style: italic;
+  font-weight: 100 900;
+  font-display: swap;
+  src: url("/static/fonts/inter/inter-italic-latin-ext.woff2") format("woff2");
+  unicode-range:
+    U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304,
+    U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB,
+    U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+
+@font-face {
+  font-family: "Inter";
+  font-style: italic;
+  font-weight: 100 900;
+  font-display: swap;
+  src: url("/static/fonts/inter/inter-italic-latin.woff2") format("woff2");
+  unicode-range:
+    U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC,
+    U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212,
+    U+2215, U+FEFF, U+FFFD;
+}
+
 @layer base {
   * {
     box-sizing: border-box;
@@ -6,21 +54,21 @@
 
   :root {
     --space: 0.5rem;
-    --font-sans: system-ui, sans-serif;
+    --font-sans: "Inter", system-ui, sans-serif;
     --font-mono: ui-monospace, monospace;
+    --type-h1: 700 1.125rem/1.4 var(--font-sans);
+    --type-h2: 700 1rem/1.4 var(--font-sans);
+    --type-body: 400 1rem/1.4 var(--font-sans);
+    --type-body-sm: 400 0.875rem/1.4 var(--font-sans);
 
     --border: 1px;
     --header-height: 3rem;
 
     /* Basic palette */
-    --bg-dark: light-dark(hsl(0 0% 90%), hsl(0 0% 0%));
     --bg: light-dark(hsl(0 0% 95%), hsl(0 0% 5%));
-    --bg-light: light-dark(hsl(0 0% 100%), hsl(0 0% 10%));
     --text: light-dark(hsl(0 0% 5%), hsl(0 0% 95%));
-    --text-muted: light-dark(hsl(0 0% 30%), hsl(0 0% 70%));
+    --text-muted: light-dark(hsl(0 0% 40%), hsl(0 0% 70%));
 
-    --color-bg: var(--bg);
-    --color-text: var(--text);
     --color-border: light-dark(hsl(216 7% 85%), hsl(218 6% 24%));
     --color-primary: light-dark(hsl(212 75% 41%), hsl(209 75% 63%));
     --color-success: light-dark(hsl(146 44% 33%), hsl(145 40% 58%));
@@ -29,87 +77,10 @@
     --color-warning: light-dark(hsl(42 53% 39%), hsl(40 56% 62%));
 
     --content-width: 70rem;
-    --nav-width: 14rem;
     --details-width: 40rem;
-    --mobile-drawer-width: min(20rem, calc(100vw - 3rem));
     --page-padding-inline: var(--space);
-    --page-padding-top: var(--space);
-    --page-padding-bottom: var(--space);
-    --z-index-modal: 1100;
 
-    /* Semantic aliases used by existing styles */
-    --link-color: var(--color-primary);
-    --page-bg: var(--color-bg);
-    --text-color: var(--color-text);
-    --error-color: var(--color-danger);
-    --border-color: var(--color-border);
-
-    /* Derived UI colors */
-    --bg-table-header: light-dark(hsl(0 0% 95%), hsl(220 5% 12%));
-    --bg-table-odd: light-dark(hsl(0 0% 97%), hsl(220 6% 10%));
-    --bg-table-even: light-dark(hsl(0 0% 95%), hsl(220 5% 12%));
-
-    --bg-btn-default: light-dark(hsl(0 0% 95%), hsl(220 5% 12%));
-    --bg-btn-default-hover: light-dark(hsl(0 0% 89%), hsl(220 3% 18%));
-    --bg-btn-default-active: light-dark(hsl(0 0% 85%), hsl(220 2% 24%));
-    --border-btn-default-hover: light-dark(hsl(210 2% 76%), hsl(220 2% 32%));
-    --border-btn-default-active: light-dark(hsl(200 2% 66%), hsl(210 2% 40%));
-    --bg-btn-disabled: light-dark(hsl(0 0% 97%), hsl(220 6% 10%));
-
-    --bg-btn-ghost-hover: light-dark(hsl(0 0% 95%), hsl(220 5% 12%));
-    --bg-btn-ghost-active: light-dark(hsl(0 0% 89%), hsl(220 3% 18%));
-
-    --bg-btn-inactive: light-dark(hsl(0 0% 89%), hsl(220 3% 18%));
-    --bg-btn-inactive-hover: light-dark(hsl(0 0% 85%), hsl(220 2% 24%));
-    --bg-btn-inactive-active: light-dark(hsl(0 0% 85%), hsl(220 2% 24%));
-    --border-btn-inactive-focus: light-dark(hsl(200 2% 66%), hsl(210 2% 40%));
-
-    --bg-input: light-dark(hsl(0 0% 95%), hsl(220 5% 12%));
-    --bg-input-hover: light-dark(hsl(0 0% 92%), hsl(220 4% 15%));
-    --bg-input-active: light-dark(hsl(0 0% 89%), hsl(220 3% 18%));
-    --bg-input-disabled: light-dark(hsl(0 0% 97%), hsl(220 6% 10%));
-    --border-input: light-dark(hsl(0 0% 85%), hsl(220 2% 24%));
-    --border-input-hover: light-dark(hsl(210 2% 76%), hsl(220 2% 32%));
-    --border-input-focus: light-dark(hsl(200 2% 66%), hsl(210 2% 40%));
-    --border-input-active: light-dark(hsl(200 2% 66%), hsl(210 2% 40%));
-    --border-input-disabled: light-dark(hsl(0 0% 89%), hsl(220 3% 18%));
-
-    --bg-card: light-dark(hsl(0 0% 95%), hsl(220 5% 12%));
-    --bg-icon-chip: light-dark(hsl(0 0% 89%), hsl(220 3% 18%));
-    --bg-panel: light-dark(hsl(0 0% 97%), hsl(220 6% 10%));
-
-    --btn-bg: var(--bg-btn-default);
-    --btn-active-bg: var(--bg-btn-inactive);
-    --btn-active-border: var(--border-btn-inactive-focus);
-    --btn-active-hover-bg: light-dark(hsl(180 2% 77%), hsl(210 3% 29%));
-    --btn-active-hover-border: light-dark(hsl(195 2% 57%), hsl(216 2% 49%));
-    --btn-active-pressed-bg: light-dark(hsl(220 2% 72%), hsl(220 2% 35%));
-    --btn-active-pressed-border: light-dark(hsl(204 2% 53%), hsl(210 2% 53%));
-    --overlay-backdrop: light-dark(
-      hsl(180 1% 78% / 0.75),
-      hsl(225 3% 29% / 0.75)
-    );
-
-    --btn-danger-border: light-dark(hsl(6 44% 68%), hsl(5 26% 45%));
-    --btn-danger-hover-bg: light-dark(hsl(9 39% 90%), hsl(0 15% 18%));
-    --btn-danger-focus: light-dark(hsl(6 44% 63%), hsl(5 29% 51%));
-
-    --btn-success-border: light-dark(hsl(145 22% 59%), hsl(146 26% 38%));
-    --btn-success-hover-bg: light-dark(hsl(145 20% 88%), hsl(154 17% 16%));
-    --btn-success-focus: light-dark(hsl(146 22% 53%), hsl(146 27% 43%));
-
-    --btn-info-border: light-dark(hsl(208 39% 65%), hsl(212 23% 48%));
-    --btn-info-hover-bg: light-dark(hsl(207 33% 89%), hsl(214 16% 19%));
-    --btn-info-focus: light-dark(hsl(208 40% 59%), hsl(212 27% 54%));
-
-    --btn-warning-border: light-dark(hsl(42 34% 63%), hsl(40 31% 41%));
-    --btn-warning-hover-bg: light-dark(hsl(43 32% 89%), hsl(40 17% 17%));
-    --btn-warning-focus: light-dark(hsl(42 34% 57%), hsl(40 32% 46%));
-
-    --notification-bg: var(--bg-btn-inactive);
-    --muted-text-color: var(--text-muted);
-
-    --focus-ring: 2px solid var(--link-color);
+    --focus-ring: 2px solid var(--color-primary);
     --focus-ring-offset: 2px;
 
     color-scheme: light dark;
@@ -126,9 +97,10 @@
   body {
     margin: 0;
 
-    font-family: var(--font-sans);
-    background: var(--page-bg);
-    color: var(--text-color);
+    font: var(--type-body);
+    font-optical-sizing: auto;
+    background: var(--bg);
+    color: var(--text);
     letter-spacing: 0;
   }
 
@@ -142,26 +114,23 @@
   }
 
   h1 {
-    font-size: 1.5rem;
-    font-weight: 600;
+    font: var(--type-h1);
   }
 
   h2 {
-    font-size: 1.25rem;
-    font-weight: 600;
+    font: var(--type-h2);
   }
 
   h3 {
-    font-size: 1.125rem;
-    font-weight: 600;
+    font: var(--type-body);
   }
 
   h4 {
-    font-size: 1rem;
-    font-weight: 600;
+    font: var(--type-body-sm);
   }
 
   p {
+    font: var(--type-body);
     text-wrap: pretty;
     padding: 0;
     margin: 0;

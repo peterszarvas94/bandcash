@@ -66,6 +66,17 @@ func NotificationsContent() templ.Component {
 			return templ_7745c5c3_Err
 		}
 		templ_7745c5c3_Err = shared.LoadingActionButtonWithSignal(shared.LoadingActionButtonWithSignalProps{
+			ClassName:     "btn btn-warning",
+			OnClick:       "@post('/dev/notifications/warning')",
+			DisabledExpr:  "$_notifyWarning",
+			Label:         "Warning",
+			IconName:      icons.IconTriangleAlert,
+			LoadingSignal: "_notifyWarning",
+		}).Render(ctx, templ_7745c5c3_Buffer)
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Err = shared.LoadingActionButtonWithSignal(shared.LoadingActionButtonWithSignalProps{
 			ClassName:     "btn btn-success",
 			OnClick:       "@post('/dev/notifications/success')",
 			DisabledExpr:  "$_notifySuccess",

@@ -34,6 +34,14 @@ templ NotificationsContent() {
 			LoadingSignal: "_notifyInfo",
 		})
 		@shared.LoadingActionButtonWithSignal(shared.LoadingActionButtonWithSignalProps{
+			ClassName:     "btn btn-warning",
+			OnClick:       "@post('/dev/notifications/warning')",
+			DisabledExpr:  "$_notifyWarning",
+			Label:         "Warning",
+			IconName:      icons.IconTriangleAlert,
+			LoadingSignal: "_notifyWarning",
+		})
+		@shared.LoadingActionButtonWithSignal(shared.LoadingActionButtonWithSignalProps{
 			ClassName:     "btn btn-success",
 			OnClick:       "@post('/dev/notifications/success')",
 			DisabledExpr:  "$_notifySuccess",

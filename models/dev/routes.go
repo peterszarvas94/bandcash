@@ -23,6 +23,7 @@ func RegisterRoutes(e *echo.Echo) {
 	g.POST("/notifications/success", h.TestSuccess)
 	g.POST("/notifications/error", h.TestError)
 	g.POST("/notifications/info", h.TestInfo)
+	g.POST("/notifications/warning", h.TestWarning)
 	g.GET("/emails/login", h.PreviewLoginEmail)
 	g.GET("/emails/invite", h.PreviewInviteEmail)
 	g.GET("/emails/invite-accepted", h.PreviewInviteAcceptedEmail)
