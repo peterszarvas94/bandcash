@@ -12,7 +12,7 @@ ruby = "3.4.2"
 "gem:kamal" = "2.10.1"
 
 [tasks]
-app = "SUPERADMIN_EMAIL=admin@bandcash.localhost air"
+app = "air"
 preflight = "go run ./cmd/devpreflight/main.go"
 assets = "go run ./cmd/assets/main.go"
 start = "./tmp/server"
@@ -28,7 +28,7 @@ sqlc = "sqlc generate"
 goose-up = "goose -dir internal/db/migrations sqlite3 sqlite.db up"
 goose-status = "goose -dir internal/db/migrations sqlite3 sqlite.db status"
 goose-create = "goose -dir internal/db/migrations create ${name} sql"
-seed = "SUPERADMIN_EMAIL=admin@bandcash.localhost go run ./cmd/seed/main.go"
+seed = "go run ./cmd/seed/main.go"
 mailpit = "mailpit --listen 0.0.0.0:8025 --smtp 0.0.0.0:1025"
 check-versions = "go run ./cmd/checkversions"
 kamal = "env -u GEM_HOME -u GEM_PATH $(mise which kamal)"
@@ -47,7 +47,7 @@ run = "go build -o tmp/server cmd/server/main.go"
 [tasks.run]
 run = [
   { task = "assets" },
-  "SUPERADMIN_EMAIL=admin@bandcash.localhost go run ./cmd/server/main.go",
+  "go run ./cmd/server/main.go",
 ]
 
 [tasks.check]

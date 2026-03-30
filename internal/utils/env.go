@@ -28,6 +28,8 @@ type EnvConfig struct {
 	EmailFrom        string
 }
 
+const DefaultSuperadminEmail = "admin@bandcash.localhost"
+
 var (
 	envOnce sync.Once
 	envCfg  *EnvConfig
@@ -53,7 +55,7 @@ type envVars struct {
 	// URL is the public base URL used for links and callbacks.
 	URL string `env:"URL" envDefault:"http://bandcash.localhost:9080" validate:"required_if=AppEnv production,required_if=AppEnv staging"`
 	// SuperadminEmail is the bootstrap superadmin account email.
-	SuperadminEmail string `env:"SUPERADMIN_EMAIL" validate:"required,email"`
+	SuperadminEmail string `env:"SUPERADMIN_EMAIL" envDefault:"admin@bandcash.localhost" validate:"required,email"`
 	// DisableRateLimit disables request rate limiting (useful for local dev).
 	DisableRateLimit bool `env:"DISABLE_RATE_LIMIT" envDefault:"true"`
 	// SMTPHost is the SMTP server host for outgoing email.
@@ -86,6 +88,9 @@ func Env() *EnvConfig {
 		}
 
 		superadminEmail := strings.ToLower(strings.TrimSpace(parsed.SuperadminEmail))
+		if (parsed.AppEnv == "production" || parsed.AppEnv == "staging") && superadminEmail == DefaultSuperadminEmail {
+			panic("invalid env vars: SUPERADMIN_EMAIL must be overridden in staging/production")
+		}
 
 		logLevel, err := parseLogLevel(parsed.LogLevel)
 		if err != nil {

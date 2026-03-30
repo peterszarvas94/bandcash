@@ -1,6 +1,6 @@
 # Language Features
 
-This document describes how language selection works across public and authenticated pages.
+This document describes locale resolution and sync behavior across public and authenticated pages.
 
 ## Resolution Order
 
@@ -11,31 +11,47 @@ Locale is resolved in this order:
 3. `Accept-Language` header
 4. default locale (`hu`)
 
-Implementation: `internal/i18n/i18n.go` (`LocaleFromRequest`).
+Source: `internal/i18n/i18n.go` (`LocaleFromRequest`).
 
-## Public Pages
+## Persistence Rules
 
-- Public pages use a per-page language picker (`GET` form with `lang` query).
-- When `lang` is present, locale middleware persists it into the `locale` cookie.
-- Navigation can stay clean (no `lang` propagation required on every link), because cookie fallback keeps the selected locale.
+- **Guest users**
+  - Public language picker submits `GET` with `lang`.
+  - Locale middleware stores that value in the `locale` cookie.
+  - Next pages can omit `lang` in links and still keep locale.
 
-Implementation:
+- **Authenticated users**
+  - Auth middleware resolves locale from `preferred_lang` with optional query override.
+  - Resolved locale is written to `locale` cookie on each authenticated request.
+  - Account language update writes both DB (`preferred_lang`) and `locale` cookie.
 
-- `internal/middleware/locale.go`
-- `models/shared/component_page_language_picker.templ`
+- **Authenticated users on public pages**
+  - Home/auth handlers sync `?lang` into `preferred_lang` so changes on `/`, `/login`, and legal pages persist into account/group pages.
 
-## Authenticated Users
+## Main Integration Points
 
-- Auth middleware resolves locale from user preference (`preferred_lang`) with optional query override.
-- Resolved locale is written into the `locale` cookie for consistency across routes.
-- Account language update persists to DB and updates the cookie immediately.
+- Locale resolution: `internal/i18n/i18n.go`
+- Locale cookie write on query override: `internal/middleware/locale.go`
+- Auth locale binding + cookie sync: `internal/middleware/auth.go`
+- Account language save: `models/account/handlers.go` (`UpdateLanguage`)
+- Public language picker UI: `models/shared/component_page_language_picker.templ`
+- Public-page DB sync helpers:
+  - `models/home/handlers.go`
+  - `models/auth/handlers.go`
 
-Implementation:
+## UX Notes
 
-- `internal/middleware/auth.go`
-- `models/account/handlers.go` (`UpdateLanguage`)
+- Shared short language labels are `ENG` / `HUN`.
+- Public and account selectors use `input-xs` sizing.
+- Header/footer links no longer need explicit `?lang` propagation for normal navigation.
 
-## UI Notes
+## Short Summary
 
-- Shared short language labels use `ENG` / `HUN`.
-- Account language selector and public page picker use compact input sizing (`input-xs`).
+- Guest persistence: query -> locale cookie.
+- Auth persistence: query/user pref -> locale cookie + DB pref.
+
+## Troubleshooting
+
+- If locale reverts between pages, verify the `locale` cookie is present and path is `/`.
+- If locale changes are not reflected on authenticated group/account pages, verify `preferred_lang` update happened (`users.preferred_lang`).
+- If a deep link should force locale, use explicit `?lang=...` once; cookie and DB sync will follow.

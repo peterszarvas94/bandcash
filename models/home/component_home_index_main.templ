@@ -6,21 +6,23 @@ import (
 )
 
 templ HomeIndexMain(data HomeData) {
-	<section class="home-landing">
+	<section class="home-page">
 		@shared.PageLanguagePicker("/", data.CurrentLang)
-		<h1>{ data.Title }</h1>
-		<p class="text-muted">{ ctxi18n.T(ctx, "home.subtitle") }</p>
-		if data.IsAuthenticated {
-			<p>{ ctxi18n.T(ctx, "home.logged_in") }</p>
-			<div class="row row-wrap home-landing-actions">
-				<a class="btn btn-primary" href="/groups">{ ctxi18n.T(ctx, "home.go_to_groups") }</a>
-				<a class="btn" href="/account">{ ctxi18n.T(ctx, "account.account") }</a>
-			</div>
-		} else {
-			<div class="row row-wrap home-landing-actions">
-				<a class="btn btn-primary" href="/login">{ ctxi18n.T(ctx, "home.join_for_free") }</a>
-				<a class="btn" href="/pricing">{ ctxi18n.T(ctx, "home.pricing") }</a>
-			</div>
-		}
+		<div class="home-landing">
+			<h1>{ data.Title }</h1>
+			<p class="text-muted">{ ctxi18n.T(ctx, "home.subtitle") }</p>
+			if data.IsAuthenticated {
+				<p>{ ctxi18n.T(ctx, "home.logged_in") }</p>
+				<div class="row row-wrap home-landing-actions">
+					<a class="btn btn-primary" href="/groups">{ ctxi18n.T(ctx, "home.go_to_groups") }</a>
+					<a class="btn" href="/account">{ ctxi18n.T(ctx, "account.account") }</a>
+				</div>
+			} else {
+				<div class="row row-wrap home-landing-actions">
+					<a class="btn btn-primary" href="/login">{ ctxi18n.T(ctx, "home.join_for_free") }</a>
+					<a class="btn" href="/pricing">{ ctxi18n.T(ctx, "home.pricing") }</a>
+				</div>
+			}
+		</div>
 	</section>
 }

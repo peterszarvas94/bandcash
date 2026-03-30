@@ -1,15 +1,5 @@
 # datastar
 
-## What I do
-
-- Provide Datastar attribute conventions and safe defaults for this repo.
-- Map common UI behaviors to Datastar attributes.
-- Include current CSRF + security expectations for Datastar mutations.
-
-## When to use me
-
-Use this when implementing interactive UI behaviors with Datastar.
-
 ## Key references
 
 - Attributes reference: https://data-star.dev/reference/attributes
