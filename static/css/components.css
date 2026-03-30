@@ -176,16 +176,6 @@
       outline-offset: calc(var(--focus-ring-offset) * -1);
     }
 
-    &:disabled,
-    &[disabled],
-    &[aria-disabled="true"] {
-      opacity: 1;
-      cursor: not-allowed;
-      color: var(--text-muted);
-      background: light-dark(hsl(0 0% 97%), hsl(220 6% 10%));
-      border-color: transparent;
-    }
-
     &.btn-sm {
       min-height: 2rem;
       padding: calc(var(--space) * 0.5) calc(var(--space) * 1.25);
@@ -378,11 +368,7 @@
       background: light-dark(hsl(0 0% 89%), hsl(220 3% 18%));
       border-color: transparent;
 
-      &:not(:disabled):not([disabled]):hover {
-        background: light-dark(hsl(0 0% 85%), hsl(220 2% 24%));
-        border-color: transparent;
-      }
-
+      &:not(:disabled):not([disabled]):hover,
       &:not(:disabled):not([disabled]):active {
         background: light-dark(hsl(0 0% 85%), hsl(220 2% 24%));
         border-color: transparent;
@@ -391,6 +377,19 @@
       &:focus-visible {
         border-color: light-dark(hsl(200 2% 66%), hsl(210 2% 40%));
       }
+    }
+
+    &:disabled,
+    &[disabled],
+    &[aria-disabled="true"],
+    &.btn-active:disabled,
+    &.btn-active[disabled],
+    &.btn-active[aria-disabled="true"] {
+      opacity: 1;
+      cursor: not-allowed;
+      color: var(--text-muted);
+      background: light-dark(hsl(0 0% 97%), hsl(220 6% 10%));
+      border-color: transparent;
     }
 
     .icon {
@@ -441,11 +440,14 @@
       outline: var(--focus-ring);
       outline-offset: calc(var(--focus-ring-offset) * -1);
       border-radius: 0;
-      border-color: light-dark(hsl(200 2% 66%), hsl(210 2% 40%));
     }
 
     &:active {
       background: light-dark(hsl(0 0% 89%), hsl(220 3% 18%));
+    }
+
+    &:focus-visible,
+    &:active {
       border-color: light-dark(hsl(200 2% 66%), hsl(210 2% 40%));
     }
 
@@ -471,8 +473,9 @@
   }
 
   .link,
-  .link:visited {
-    color: var(--text-muted);
+  .link:visited,
+  .table-link,
+  .table-link:visited {
     text-decoration: none;
     text-decoration-thickness: 1px;
     text-underline-offset: 0.14em;
@@ -489,21 +492,14 @@
     }
   }
 
+  .link,
+  .link:visited {
+    color: var(--text-muted);
+  }
+
   .table-link,
   .table-link:visited {
     color: var(--text);
-    text-decoration: none;
-
-    &:hover {
-      color: inherit;
-      text-decoration: underline;
-    }
-
-    &:focus-visible {
-      outline: var(--focus-ring);
-      outline-offset: var(--focus-ring-offset);
-      border-radius: 0;
-    }
   }
 
   .icon {
@@ -1094,25 +1090,44 @@
 
   .tab,
   .tab:visited {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 2rem;
+    padding: calc(var(--space) * 0.5) calc(var(--space) * 1.25);
+    border: var(--border) solid transparent;
+    background: transparent;
     color: var(--text-muted);
     text-decoration: none;
 
     &:hover {
       color: inherit;
-      text-decoration: underline;
+      text-decoration: none;
+      background: light-dark(hsl(0 0% 95%), hsl(220 5% 12%));
     }
 
     &:focus-visible {
       outline: var(--focus-ring);
-      outline-offset: var(--focus-ring-offset);
-      border-radius: 0;
+      outline-offset: calc(var(--focus-ring-offset) * -1);
     }
   }
 
   .tab.tab-active,
   .tab.tab-active:visited {
     color: var(--text);
-    text-decoration: underline;
+    text-decoration: none;
+    background: light-dark(hsl(0 0% 89%), hsl(220 3% 18%));
+    border-color: light-dark(hsl(200 2% 66%), hsl(210 2% 40%));
+
+    &:hover {
+      background: light-dark(hsl(180 2% 77%), hsl(210 3% 29%));
+      border-color: light-dark(hsl(195 2% 57%), hsl(216 2% 49%));
+    }
+
+    &:active {
+      background: light-dark(hsl(220 2% 72%), hsl(220 2% 35%));
+      border-color: light-dark(hsl(204 2% 53%), hsl(210 2% 53%));
+    }
   }
 
   .link.link-active,

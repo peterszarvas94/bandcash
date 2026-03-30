@@ -56,8 +56,8 @@
     --space: 0.5rem;
     --font-sans: "Inter", system-ui, sans-serif;
     --font-mono: ui-monospace, monospace;
-    --type-h1: 700 1.125rem/1.4 var(--font-sans);
-    --type-h2: 700 1rem/1.4 var(--font-sans);
+    --type-h1: 700 1.5rem/1.8 var(--font-sans);
+    --type-h2: 700 1.2rem/1.4 var(--font-sans);
     --type-body: 400 1rem/1.4 var(--font-sans);
     --type-body-sm: 400 0.875rem/1.4 var(--font-sans);
 

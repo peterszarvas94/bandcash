@@ -36,9 +36,16 @@ var devOnlyAssetSpecs = []assetSpec{
 }
 
 func main() {
-	token, err := generateToken()
-	if err != nil {
-		panic(err)
+	appEnv := normalizedAppEnv()
+	isDevelopment := appEnv == "development"
+
+	token := ""
+	if !isDevelopment {
+		var err error
+		token, err = generateToken()
+		if err != nil {
+			panic(err)
+		}
 	}
 
 	sourceImportMap, err := loadSourceImportMap("static/importmap.json")
@@ -46,9 +53,8 @@ func main() {
 		panic(err)
 	}
 
-	appEnv := strings.TrimSpace(strings.ToLower(os.Getenv("APP_ENV")))
 	assetSpecs := append([]assetSpec{}, coreAssetSpecs...)
-	if appEnv == "development" {
+	if isDevelopment {
 		assetSpecs = append(assetSpecs, devOnlyAssetSpecs...)
 	}
 
@@ -62,7 +68,11 @@ func main() {
 	manifest := map[string]string{}
 	targetRelativePath := map[string]string{}
 	for _, spec := range assetSpecs {
-		targetRelativePath[spec.Logical] = fingerprintedPath(spec.Logical, token)
+		if isDevelopment {
+			targetRelativePath[spec.Logical] = spec.Logical
+		} else {
+			targetRelativePath[spec.Logical] = fingerprintedPath(spec.Logical, token)
+		}
 		manifest[spec.Logical] = "/static/gen/" + targetRelativePath[spec.Logical]
 	}
 
@@ -116,7 +126,20 @@ func main() {
 		panic(err)
 	}
 
+	if isDevelopment {
+		fmt.Println("generated development assets without fingerprint token")
+		return
+	}
+
 	fmt.Printf("generated tokenized assets with token: %s\n", token)
+}
+
+func normalizedAppEnv() string {
+	appEnv := strings.TrimSpace(strings.ToLower(os.Getenv("APP_ENV")))
+	if appEnv == "" {
+		return "development"
+	}
+	return appEnv
 }
 
 func generateToken() (string, error) {

@@ -64,6 +64,18 @@ templ ButtonVariantsContent(linkSelector string) {
 			@icons.Trash2(templ.Attributes{"class": "icon"})
 			<span>Danger</span>
 		</button>
+		<button class="btn btn-sm btn-ghost" type="button">
+			@icons.Info(templ.Attributes{"class": "icon"})
+			<span>Ghost</span>
+		</button>
+		<button class="btn btn-sm btn-active" type="button">
+			@icons.Check(templ.Attributes{"class": "icon"})
+			<span>Active</span>
+		</button>
+		<button class="btn btn-sm btn-inactive" type="button">
+			@icons.Icon(icons.IconCircleOff, templ.Attributes{"class": "icon"})
+			<span>Inactive</span>
+		</button>
 		<button class="btn btn-sm btn-success" type="button" disabled>
 			@icons.X(templ.Attributes{"class": "icon"})
 			<span>Disabled</span>
@@ -90,6 +102,18 @@ templ ButtonVariantsContent(linkSelector string) {
 			@icons.Trash2(templ.Attributes{"class": "icon"})
 			<span>Danger</span>
 		</button>
+		<button class="btn btn-xs btn-ghost" type="button">
+			@icons.Info(templ.Attributes{"class": "icon"})
+			<span>Ghost</span>
+		</button>
+		<button class="btn btn-xs btn-active" type="button">
+			@icons.Check(templ.Attributes{"class": "icon"})
+			<span>Active</span>
+		</button>
+		<button class="btn btn-xs btn-inactive" type="button">
+			@icons.Icon(icons.IconCircleOff, templ.Attributes{"class": "icon"})
+			<span>Inactive</span>
+		</button>
 		<button class="btn btn-xs btn-success" type="button" disabled>
 			@icons.X(templ.Attributes{"class": "icon"})
 			<span>Disabled</span>
@@ -111,6 +135,15 @@ templ ButtonVariantsContent(linkSelector string) {
 		<button class="btn btn-danger btn-icon" type="button" aria-label="Danger icon" title="Danger icon">
 			@icons.Trash2(templ.Attributes{"class": "icon"})
 		</button>
+		<button class="btn btn-ghost btn-icon" type="button" aria-label="Ghost icon" title="Ghost icon">
+			@icons.Info(templ.Attributes{"class": "icon"})
+		</button>
+		<button class="btn btn-active btn-icon" type="button" aria-label="Active icon" title="Active icon">
+			@icons.Check(templ.Attributes{"class": "icon"})
+		</button>
+		<button class="btn btn-inactive btn-icon" type="button" aria-label="Inactive icon" title="Inactive icon">
+			@icons.Icon(icons.IconCircleOff, templ.Attributes{"class": "icon"})
+		</button>
 		<button class="btn btn-danger btn-icon" type="button" aria-label="Disabled icon" title="Disabled icon" disabled>
 			@icons.X(templ.Attributes{"class": "icon"})
 		</button>
@@ -130,6 +163,15 @@ templ ButtonVariantsContent(linkSelector string) {
 		</button>
 		<button class="btn btn-sm btn-danger btn-icon" type="button" aria-label="Small danger icon" title="Small danger icon">
 			@icons.Trash2(templ.Attributes{"class": "icon"})
+		</button>
+		<button class="btn btn-sm btn-ghost btn-icon" type="button" aria-label="Small ghost icon" title="Small ghost icon">
+			@icons.Info(templ.Attributes{"class": "icon"})
+		</button>
+		<button class="btn btn-sm btn-active btn-icon" type="button" aria-label="Small active icon" title="Small active icon">
+			@icons.Check(templ.Attributes{"class": "icon"})
+		</button>
+		<button class="btn btn-sm btn-inactive btn-icon" type="button" aria-label="Small inactive icon" title="Small inactive icon">
+			@icons.Icon(icons.IconCircleOff, templ.Attributes{"class": "icon"})
 		</button>
 		<button class="btn btn-sm btn-danger btn-icon" type="button" aria-label="Small disabled icon" title="Small disabled icon" disabled>
 			@icons.X(templ.Attributes{"class": "icon"})
@@ -151,6 +193,15 @@ templ ButtonVariantsContent(linkSelector string) {
 		<button class="btn btn-xs btn-danger btn-icon" type="button" aria-label="Extra small danger icon" title="Extra small danger icon">
 			@icons.Trash2(templ.Attributes{"class": "icon"})
 		</button>
+		<button class="btn btn-xs btn-ghost btn-icon" type="button" aria-label="Extra small ghost icon" title="Extra small ghost icon">
+			@icons.Info(templ.Attributes{"class": "icon"})
+		</button>
+		<button class="btn btn-xs btn-active btn-icon" type="button" aria-label="Extra small active icon" title="Extra small active icon">
+			@icons.Check(templ.Attributes{"class": "icon"})
+		</button>
+		<button class="btn btn-xs btn-inactive btn-icon" type="button" aria-label="Extra small inactive icon" title="Extra small inactive icon">
+			@icons.Icon(icons.IconCircleOff, templ.Attributes{"class": "icon"})
+		</button>
 		<button class="btn btn-xs btn-danger btn-icon" type="button" aria-label="Extra small disabled icon" title="Extra small disabled icon" disabled>
 			@icons.X(templ.Attributes{"class": "icon"})
 		</button>
@@ -161,6 +212,9 @@ templ ButtonVariantsContent(linkSelector string) {
 		<button class="btn btn-success" type="button"><span>Success</span></button>
 		<button class="btn btn-warning" type="button"><span>Warning</span></button>
 		<button class="btn btn-danger" type="button"><span>Danger</span></button>
+		<button class="btn btn-ghost" type="button"><span>Ghost</span></button>
+		<button class="btn btn-active" type="button"><span>Active</span></button>
+		<button class="btn btn-inactive" type="button"><span>Inactive</span></button>
 		<button class="btn" type="button" disabled><span>Disabled</span></button>
 	</div>
 	<div class="row row-wrap">
@@ -169,6 +223,9 @@ templ ButtonVariantsContent(linkSelector string) {
 		<button class="btn btn-sm btn-success" type="button"><span>Success</span></button>
 		<button class="btn btn-sm btn-warning" type="button"><span>Warning</span></button>
 		<button class="btn btn-sm btn-danger" type="button"><span>Danger</span></button>
+		<button class="btn btn-sm btn-ghost" type="button"><span>Ghost</span></button>
+		<button class="btn btn-sm btn-active" type="button"><span>Active</span></button>
+		<button class="btn btn-sm btn-inactive" type="button"><span>Inactive</span></button>
 		<button class="btn btn-sm" type="button" disabled><span>Disabled</span></button>
 	</div>
 	<div class="row row-wrap">
@@ -177,6 +234,9 @@ templ ButtonVariantsContent(linkSelector string) {
 		<button class="btn btn-xs btn-success" type="button"><span>Success</span></button>
 		<button class="btn btn-xs btn-warning" type="button"><span>Warning</span></button>
 		<button class="btn btn-xs btn-danger" type="button"><span>Danger</span></button>
+		<button class="btn btn-xs btn-ghost" type="button"><span>Ghost</span></button>
+		<button class="btn btn-xs btn-active" type="button"><span>Active</span></button>
+		<button class="btn btn-xs btn-inactive" type="button"><span>Inactive</span></button>
 		<button class="btn btn-xs" type="button" disabled><span>Disabled</span></button>
 	</div>
 }
