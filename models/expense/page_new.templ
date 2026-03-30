@@ -1,12 +1,9 @@
 package expense
 
 import (
-	appi18n "bandcash/internal/i18n"
-	"bandcash/internal/utils"
 	shared "bandcash/models/shared"
-	icons "bandcash/models/shared/icons"
-	ctxi18n "github.com/invopop/ctxi18n/i18n"
-	"fmt"
+	"bandcash/internal/utils"
+	appi18n "bandcash/internal/i18n"
 )
 
 templ ExpenseNewPage(data NewExpensePageData) {
@@ -32,50 +29,4 @@ templ ExpenseNewPage(data NewExpensePageData) {
 			@shared.GroupLayout("expense-new", data.Breadcrumbs, data.UserEmail, shared.AppPrimaryNav("groups", data.UserEmail != ""), ExpenseNewForm(data))
 		</body>
 	</html>
-}
-
-templ ExpenseNewForm(data NewExpensePageData) {
-	@shared.GroupTabs(data.GroupID, "expenses")
-	<h1>{ ctxi18n.T(ctx, "expenses.add") }</h1>
-	<form class="form" data-on:submit={ fmt.Sprintf("@post('/groups/%s/expenses')", data.GroupID) } data-indicator:_fetching>
-		<div class="field">
-			<label for="expense-new-title" class="row">{ ctxi18n.T(ctx, "fields.title") } <span class="color-error">*</span></label>
-			<input id="expense-new-title" type="text" data-bind="formData.title" class="input"/>
-			<div data-show="$errors && $errors.title" class="color-error" data-text="$errors.title"></div>
-		</div>
-		<div class="field">
-			<label for="expense-new-description">{ ctxi18n.T(ctx, "fields.description") }</label>
-			<textarea id="expense-new-description" data-bind="formData.description" rows="3" class="input"></textarea>
-			<div data-show="$errors && $errors.description" class="color-error" data-text="$errors.description"></div>
-		</div>
-		<div class="field">
-			<label for="expense-new-amount" class="row">{ ctxi18n.T(ctx, "fields.expense") } <span class="color-error">*</span></label>
-			<input id="expense-new-amount" type="number" data-bind="formData.amount" step="1" min="1" class="input"/>
-			<div data-show="$errors && $errors.amount" class="color-error" data-text="$errors.amount"></div>
-		</div>
-		<div class="field">
-			<label for="expense-new-date" class="row">{ ctxi18n.T(ctx, "fields.date") } <span class="color-error">*</span></label>
-			<input id="expense-new-date" type="date" data-bind="formData.date" class="input"/>
-			<div data-show="$errors && $errors.date" class="color-error" data-text="$errors.date"></div>
-		</div>
-		<div class="field">
-			<label for="expense-new-paid" class="row">{ ctxi18n.T(ctx, "table.paid") }</label>
-			@shared.Toggle(shared.ToggleProps{
-				Bind:         "formData.paid",
-				DisabledExpr: "$_fetching",
-				Off:          ctxi18n.T(ctx, "table.unpaid"),
-				On:           ctxi18n.T(ctx, "table.paid"),
-				OnClass:      "btn-success",
-			})
-		</div>
-		<div class="field" data-show="$formData.paid" style="display: none">
-			<label for="expense-new-paid-at" class="row">{ ctxi18n.T(ctx, "fields.paid_at") }</label>
-			<input id="expense-new-paid-at" type="date" data-bind="formData.paidAt" class="input"/>
-		</div>
-		@shared.LoadingSubmitButton(shared.LoadingSubmitButtonProps{
-			ClassName: "btn btn-primary",
-			Label:     ctxi18n.T(ctx, "expenses.create"),
-			IconName:  icons.IconSave,
-		})
-	</form>
 }

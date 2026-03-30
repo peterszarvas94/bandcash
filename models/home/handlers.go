@@ -1,6 +1,7 @@
 package home
 
 import (
+	ctxi18n "github.com/invopop/ctxi18n/i18n"
 	"github.com/labstack/echo/v4"
 
 	"bandcash/internal/db"
@@ -33,7 +34,8 @@ func (h *Home) Index(c echo.Context) error {
 func (h *Home) Pricing(c echo.Context) error {
 	utils.EnsureTabID(c)
 
-	data := h.LegalDataWithTitle(c.Request().Context(), "Bandcash Pricing", "Pricing")
+	ctx := c.Request().Context()
+	data := h.LegalDataWithTitle(ctx, ctxi18n.T(ctx, "legal.page_title_pricing"), ctxi18n.T(ctx, "legal.pricing"))
 	data.IsAuthenticated, data.UserEmail = sessionUser(c)
 	return utils.RenderPage(c, HomePricing(data))
 }
@@ -41,7 +43,8 @@ func (h *Home) Pricing(c echo.Context) error {
 func (h *Home) TermsAndConditions(c echo.Context) error {
 	utils.EnsureTabID(c)
 
-	data := h.LegalDataWithTitle(c.Request().Context(), "Terms and Conditions - Bandcash", "Terms and Conditions")
+	ctx := c.Request().Context()
+	data := h.LegalDataWithTitle(ctx, ctxi18n.T(ctx, "legal.page_title_terms"), ctxi18n.T(ctx, "legal.terms_and_conditions"))
 	data.IsAuthenticated, data.UserEmail = sessionUser(c)
 	return utils.RenderPage(c, HomeTermsAndConditions(data))
 }
@@ -49,7 +52,8 @@ func (h *Home) TermsAndConditions(c echo.Context) error {
 func (h *Home) PrivacyPolicy(c echo.Context) error {
 	utils.EnsureTabID(c)
 
-	data := h.LegalDataWithTitle(c.Request().Context(), "Privacy Policy - Bandcash", "Privacy Policy")
+	ctx := c.Request().Context()
+	data := h.LegalDataWithTitle(ctx, ctxi18n.T(ctx, "legal.page_title_privacy"), ctxi18n.T(ctx, "legal.privacy_policy"))
 	data.IsAuthenticated, data.UserEmail = sessionUser(c)
 	return utils.RenderPage(c, HomePrivacyPolicy(data))
 }
@@ -57,7 +61,8 @@ func (h *Home) PrivacyPolicy(c echo.Context) error {
 func (h *Home) RefundPolicy(c echo.Context) error {
 	utils.EnsureTabID(c)
 
-	data := h.LegalDataWithTitle(c.Request().Context(), "Refund Policy - Bandcash", "Refund Policy")
+	ctx := c.Request().Context()
+	data := h.LegalDataWithTitle(ctx, ctxi18n.T(ctx, "legal.page_title_refund"), ctxi18n.T(ctx, "legal.refund_policy"))
 	data.IsAuthenticated, data.UserEmail = sessionUser(c)
 	return utils.RenderPage(c, HomeRefundPolicy(data))
 }

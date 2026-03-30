@@ -1,16 +1,13 @@
 package shared
 
 import (
-	"fmt"
-
-	ctxi18n "github.com/invopop/ctxi18n/i18n"
-
 	"bandcash/internal/utils"
 	icons "bandcash/models/shared/icons"
+	ctxi18n "github.com/invopop/ctxi18n/i18n"
 )
 
 templ Breadcrumbs(crumbs []utils.Crumb) {
-	<nav class="breadcrumbs hide-mobile" aria-label={ ctxi18n.T(ctx, "nav.breadcrumb") }>
+	<nav class="breadcrumbs" aria-label={ ctxi18n.T(ctx, "nav.breadcrumb") }>
 		<a href="/">
 			@icons.BadgeEuro(templ.Attributes{"class": "icon"})
 			{ ctxi18n.T(ctx, "nav.home") }
@@ -24,19 +21,4 @@ templ Breadcrumbs(crumbs []utils.Crumb) {
 			}
 		}
 	</nav>
-}
-
-templ LanguageSelect(id string, currentLang string, loadingSignal string) {
-	<div class="field">
-		<label for={ id }>{ ctxi18n.T(ctx, "account.language") }</label>
-		<div class="row row-wrap items-center">
-			<select id={ id } data-bind="formData.lang" class="input w-fit">
-				<option value="en" selected?={ currentLang == "en" }>{ ctxi18n.T(ctx, "language.en") }</option>
-				<option value="hu" selected?={ currentLang == "hu" }>{ ctxi18n.T(ctx, "language.hu") }</option>
-			</select>
-			<span data-show={ fmt.Sprintf("$%s", loadingSignal) } style="display: none">
-				@icons.LoaderCircle(templ.Attributes{"class": "icon icon-spin"})
-			</span>
-		</div>
-	</div>
 }

@@ -1,0 +1,11 @@
+package shared
+
+import (
+	"fmt"
+)
+
+templ THActions(widthRem int) {
+	<th data-actions-col style={ fmt.Sprintf("--actions-w-rem: %d", widthRem) }>
+		{ children... }
+	</th>
+}

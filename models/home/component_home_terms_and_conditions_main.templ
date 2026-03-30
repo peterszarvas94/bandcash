@@ -1,0 +1,12 @@
+package home
+
+import ctxi18n "github.com/invopop/ctxi18n/i18n"
+
+templ HomeTermsAndConditionsMain() {
+	<section class="section">
+		<header>
+			<h1>{ ctxi18n.T(ctx, "legal.terms_and_conditions") }</h1>
+		</header>
+		@LegalPlaceholderBanner()
+	</section>
+}

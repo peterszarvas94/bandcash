@@ -2,54 +2,17 @@ package shared
 
 import (
 	ctxi18n "github.com/invopop/ctxi18n/i18n"
-
-	"bandcash/internal/utils"
 )
-
-func isAdminActive(active string) bool {
-	return active == "admin" || active == "admin-overview" || active == "admin-flags" || active == "admin-users" || active == "admin-groups"
-}
-
-func isLegalItemActive(active string, item string) bool {
-	return active == item
-}
 
 templ AppPrimaryNav(active string, isAuthenticated bool) {
 	if isAuthenticated {
 		<nav class="nav" aria-label={ ctxi18n.T(ctx, "nav.primary") }>
-			<a class={ "link nav-link", templ.KV("is-active", active == "groups") } href="/groups">
+			<a class={ "link nav-link", templ.KV("nav-link-active", active == "groups") } href="/groups">
 				{ ctxi18n.T(ctx, "groups.title") }
 			</a>
-			<a class={ "link nav-link", templ.KV("is-active", active == "account") } href="/account">
+			<a class={ "link nav-link", templ.KV("nav-link-active", active == "account") } href="/account">
 				{ ctxi18n.T(ctx, "account.account") }
 			</a>
 		</nav>
 	}
-}
-
-templ AppFooterNav(active string, userEmail string) {
-	<nav aria-label={ ctxi18n.T(ctx, "nav.footer") }>
-		if utils.Env().SuperadminEmail != "" && userEmail != "" && userEmail == utils.Env().SuperadminEmail {
-			<a class={ "link nav-link", templ.KV("is-active", isAdminActive(active)) } href="/admin/overview">
-				{ ctxi18n.T(ctx, "nav.admin") }
-			</a>
-		}
-		if utils.Env().AppEnv == "development" {
-			<a class={ "link nav-link", templ.KV("is-active", active == "dev") } href="/dev">
-				Dev
-			</a>
-		}
-		<a class={ "link nav-link", templ.KV("is-active", isLegalItemActive(active, "legal-pricing")) } href="/pricing">
-			Pricing
-		</a>
-		<a class={ "link nav-link", templ.KV("is-active", isLegalItemActive(active, "legal-terms")) } href="/terms-and-conditions">
-			Terms and Conditions
-		</a>
-		<a class={ "link nav-link", templ.KV("is-active", isLegalItemActive(active, "legal-privacy")) } href="/privacy-policy">
-			Privacy Policy
-		</a>
-		<a class={ "link nav-link", templ.KV("is-active", isLegalItemActive(active, "legal-refund")) } href="/refund-policy">
-			Refund Policy
-		</a>
-	</nav>
 }

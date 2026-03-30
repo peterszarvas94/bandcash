@@ -73,7 +73,7 @@ func contextWithLocale(base context.Context, locale string) context.Context {
 }
 
 func verifyLink(baseURL, token, locale string) string {
-	return fmt.Sprintf("%s/auth/verify?token=%s&lang=%s", baseURL, token, locale)
+	return fmt.Sprintf("%s/login/verify?token=%s&lang=%s", baseURL, token, locale)
 }
 
 func groupLink(baseURL, groupID string) string {

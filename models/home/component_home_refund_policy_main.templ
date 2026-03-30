@@ -1,0 +1,12 @@
+package home
+
+import ctxi18n "github.com/invopop/ctxi18n/i18n"
+
+templ HomeRefundPolicyMain() {
+	<section class="section">
+		<header>
+			<h1>{ ctxi18n.T(ctx, "legal.refund_policy") }</h1>
+		</header>
+		@LegalPlaceholderBanner()
+	</section>
+}

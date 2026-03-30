@@ -127,7 +127,7 @@ func (g *Group) EditGroupPage(c echo.Context) error {
 func (g *Group) CreateGroup(c echo.Context) error {
 	userID := middleware.GetUserID(c)
 	if userID == "" {
-		err := utils.SSEHub.Redirect(c, "/auth/login")
+		err := utils.SSEHub.Redirect(c, "/login")
 		if err != nil {
 			return c.NoContent(http.StatusInternalServerError)
 		}
@@ -183,7 +183,7 @@ func (g *Group) GroupsPage(c echo.Context) error {
 	userID := middleware.GetUserID(c)
 	userEmail := getUserEmail(c)
 	if userID == "" {
-		return c.Redirect(http.StatusFound, "/auth/login")
+		return c.Redirect(http.StatusFound, "/login")
 	}
 
 	query := utils.ParseTableQuery(c, g.model)
@@ -258,7 +258,7 @@ func (g *Group) LeaveGroup(c echo.Context) error {
 	userID := middleware.GetUserID(c)
 	var err error
 	if userID == "" {
-		err = utils.SSEHub.Redirect(c, "/auth/login")
+		err = utils.SSEHub.Redirect(c, "/login")
 		if err != nil {
 			return c.NoContent(http.StatusInternalServerError)
 		}
@@ -332,7 +332,7 @@ func (g *Group) DeleteGroup(c echo.Context) error {
 	}
 	var err error
 	if userID == "" {
-		err = utils.SSEHub.Redirect(c, "/auth/login")
+		err = utils.SSEHub.Redirect(c, "/login")
 		if err != nil {
 			return c.NoContent(http.StatusInternalServerError)
 		}

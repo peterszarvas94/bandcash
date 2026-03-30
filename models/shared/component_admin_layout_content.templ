@@ -1,0 +1,7 @@
+package shared
+
+import "bandcash/internal/utils"
+
+templ AdminLayoutContent(id string, breadcrumbs []utils.Crumb, userEmail string, main templ.Component) {
+	@GroupLayout(id, breadcrumbs, userEmail, AppPrimaryNav("", userEmail != ""), main)
+}

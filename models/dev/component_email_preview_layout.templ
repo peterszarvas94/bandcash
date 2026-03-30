@@ -1,0 +1,30 @@
+package dev
+
+import (
+	appi18n "bandcash/internal/i18n"
+	shared "bandcash/models/shared"
+)
+
+templ EmailPreviewLayout(title string, content templ.Component) {
+	<!DOCTYPE html>
+	<html lang={ appi18n.LocaleCode(ctx) }>
+		@shared.Head(title)
+		<body>
+			<style>
+				.dev-mail-wrap { max-width: 980px; margin: 24px auto; padding: 0 12px; }
+				.dev-mail-client { border: 1px solid #d5d8de; border-radius: 10px; overflow: hidden; background: #ffffff; color: #111827; }
+				.dev-mail-head { padding: 12px 14px; border-bottom: 1px solid #e6e6e6; background: #f7f8fa; }
+				.dev-mail-meta { padding: 12px 14px; border-bottom: 1px solid #e6e6e6; font-size: 14px; line-height: 1.5; background: #ffffff; }
+
+				@media (prefers-color-scheme: dark) {
+					.dev-mail-client { border-color: #3f4654; background: #161a22; color: #e5e7eb; }
+					.dev-mail-head { border-bottom-color: #343b49; background: #202634; }
+					.dev-mail-meta { border-bottom-color: #343b49; background: #161a22; }
+				}
+			</style>
+			<div class="dev-mail-wrap">
+				@content
+			</div>
+		</body>
+	</html>
+}

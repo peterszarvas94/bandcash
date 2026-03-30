@@ -1,9 +1,6 @@
 package shared
 
-import (
-	appi18n "bandcash/internal/i18n"
-	icons "bandcash/models/shared/icons"
-)
+import icons "bandcash/models/shared/icons"
 
 type ErrorPageData struct {
 	Title      string
@@ -16,23 +13,5 @@ type ErrorPageData struct {
 }
 
 templ ErrorPage(data ErrorPageData) {
-	<!DOCTYPE html>
-	<html lang={ appi18n.LocaleCode(ctx) }>
-		@Head(data.Title)
-		<body>
-			<main id="app" class="error-page">
-				<section class="error-card">
-					<div class="error-icon">
-						@icons.Icon(data.IconName, templ.Attributes{"class": "icon"})
-					</div>
-					<p class="error-status">HTTP { data.StatusCode }</p>
-					<h1>{ data.Heading }</h1>
-					<p class="text-muted">{ data.Message }</p>
-					<div class="row row-wrap justify-center pt">
-						<a class="btn" href={ data.HomeHref }>{ data.HomeLabel }</a>
-					</div>
-				</section>
-			</main>
-		</body>
-	</html>
+	@ErrorLayout(data.Title, ErrorPageMain(data))
 }

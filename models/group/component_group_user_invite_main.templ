@@ -1,0 +1,32 @@
+package group
+
+import (
+	"fmt"
+	ctxi18n "github.com/invopop/ctxi18n/i18n"
+	shared "bandcash/models/shared"
+	"bandcash/internal/utils"
+)
+
+templ GroupUserInviteMain(data UserInvitePageData) {
+	@shared.GroupTabs(data.GroupID, "users")
+	<section class="details">
+		<h1>{ data.UserRow.Email }</h1>
+		if data.IsAdmin {
+			<div class="actions">
+				@GroupUserInviteDetailsActions(data)
+			</div>
+		}
+	</section>
+	<div class="pb">
+		@shared.DetailsCardWithClass(fmt.Sprintf("group_user_invite_%s", data.UserRow.InviteID), []shared.DetailsRow{
+			{Label: ctxi18n.T(ctx, "fields.role"), Value: func() string {
+				if data.UserRow.Role == "admin" {
+					return ctxi18n.T(ctx, "groups.role_admin")
+				}
+				return ctxi18n.T(ctx, "groups.role_viewer")
+			}()},
+			{Label: ctxi18n.T(ctx, "fields.status"), Value: ctxi18n.T(ctx, "groups.pending")},
+			{Label: ctxi18n.T(ctx, "groups.created"), Value: utils.FormatTimeLocalized(ctx, data.UserRow.CreatedAt)},
+		}, "")
+	</div>
+}

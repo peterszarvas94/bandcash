@@ -3,7 +3,9 @@ package auth
 import "bandcash/internal/utils"
 
 type AuthPageData struct {
-	Title       string
-	Breadcrumbs []utils.Crumb
-	UserEmail   string
+	Title           string
+	Breadcrumbs     []utils.Crumb
+	CurrentLang     string
+	IsAuthenticated bool
+	UserEmail       string
 }

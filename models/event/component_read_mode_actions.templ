@@ -1,0 +1,40 @@
+package event
+
+import (
+	"fmt"
+	shared "bandcash/models/shared"
+	icons "bandcash/models/shared/icons"
+	ctxi18n "github.com/invopop/ctxi18n/i18n"
+	"bandcash/internal/utils"
+)
+
+templ ReadModeActions(data EventData) {
+	if data.IsAdmin {
+		{{
+			editParticipantsExpr := fmt.Sprintf("@post('/groups/%s/events/%s/participants/draft')", data.GroupID, data.Event.ID)
+			deleteEventExpr := fmt.Sprintf(
+				"$sure = {title: %s, message: %s, submitLabel: %s, cancelLabel: %s, method: 'delete', url: '/groups/%s/events/%s', triggerID: 'event-show-delete', open: true, fetching: false}",
+				utils.JSONString(ctxi18n.T(ctx, "events.delete_confirm")),
+				utils.JSONString(ctxi18n.T(ctx, "confirm.destructive_message")),
+				utils.JSONString(ctxi18n.T(ctx, "actions.delete")),
+				utils.JSONString(ctxi18n.T(ctx, "actions.cancel")),
+				data.GroupID,
+				data.Event.ID,
+			)
+		}}
+	@shared.ActionButton(shared.ActionButtonProps{
+		ClassName:    "btn btn-primary",
+		OnClick:      editParticipantsExpr,
+		DisabledExpr: "$_fetching",
+		Label:        ctxi18n.T(ctx, "actions.edit"),
+		IconName:     icons.IconPencil,
+	})
+		@shared.ActionButton(shared.ActionButtonProps{
+			ClassName:    "btn btn-danger",
+			OnClick:      deleteEventExpr,
+			DisabledExpr: "$_fetching",
+			Label:        ctxi18n.T(ctx, "actions.delete"),
+			IconName:     icons.IconTrash2,
+		})
+	}
+}

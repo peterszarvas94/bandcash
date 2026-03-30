@@ -1,14 +1,9 @@
 package account
 
 import (
-	"fmt"
-
-	ctxi18n "github.com/invopop/ctxi18n/i18n"
-
+	shared "bandcash/models/shared"
 	appi18n "bandcash/internal/i18n"
 	"bandcash/internal/utils"
-	shared "bandcash/models/shared"
-	icons "bandcash/models/shared/icons"
 )
 
 templ SessionsPage(data SessionsData) {
@@ -22,55 +17,4 @@ templ SessionsPage(data SessionsData) {
 			@shared.GroupLayout("account-sessions", data.Breadcrumbs, data.UserEmail, shared.AppPrimaryNav("account", data.UserEmail != ""), SessionsMain(data))
 		</body>
 	</html>
-}
-
-templ SessionsMain(data SessionsData) {
-	<section class="pb">
-		<header class="row items-center justify-between pb">
-			<h1>{ ctxi18n.T(ctx, "account.account") }</h1>
-			if len(data.Sessions) > 1 {
-				@shared.LoadingActionButton(shared.LoadingActionButtonProps{
-					ClassName:    "btn btn-danger",
-					OnClick:      "@delete('/account/sessions')",
-					DisabledExpr: "$_fetching",
-					Label:        ctxi18n.T(ctx, "account.logout_everywhere"),
-					IconName:      icons.IconLogOut,
-				})
-			}
-		</header>
-		
-		if len(data.Sessions) == 0 {
-			<p>{ ctxi18n.T(ctx, "account.no_sessions") }</p>
-		} else {
-			<ul class="stack">
-				for _, session := range data.Sessions {
-					<li class="row items-center justify-between card">
-						<div>
-							<p class="font-medium">
-							if session.ID == data.CurrentSessionID {
-								{ ctxi18n.T(ctx, "account.current_session") }
-							} else if session.CreatedAt.Valid {
-									{ ctxi18n.T(ctx, "account.session_from") } { session.CreatedAt.Time.Format("2006-01-02 15:04") }
-								} else {
-									{ ctxi18n.T(ctx, "account.session_from") } -
-								}
-							</p>
-							<p class="text-sm color-muted">
-								{ ctxi18n.T(ctx, "account.expires") }: { session.ExpiresAt.Format("2006-01-02") }
-							</p>
-						</div>
-						if session.ID != data.CurrentSessionID {
-							@shared.LoadingActionButton(shared.LoadingActionButtonProps{
-								ClassName:    "btn btn-sm btn-danger",
-								OnClick:      fmt.Sprintf("@delete('/account/sessions/%s')", session.ID),
-								DisabledExpr: "$_fetching",
-								Label:        ctxi18n.T(ctx, "auth.logout"),
-								IconName:      icons.IconLogOut,
-							})
-						}
-					</li>
-				}
-			</ul>
-		}
-	</section>
 }

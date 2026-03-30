@@ -1,0 +1,35 @@
+package shared
+
+import (
+	"bandcash/internal/utils"
+	ctxi18n "github.com/invopop/ctxi18n/i18n"
+)
+
+templ Footer(userEmail string) {
+	<footer>
+		<nav aria-label={ ctxi18n.T(ctx, "nav.footer") }>
+			if utils.Env().SuperadminEmail != "" && userEmail != "" && userEmail == utils.Env().SuperadminEmail {
+				<a class="link nav-link" href="/admin/overview">
+					{ ctxi18n.T(ctx, "nav.admin") }
+				</a>
+			}
+		if utils.Env().AppEnv == "development" {
+			<a class="link nav-link" href="/dev">
+				Dev
+			</a>
+		}
+		<a class="link nav-link" href="/pricing">
+			{ ctxi18n.T(ctx, "legal.pricing") }
+		</a>
+		<a class="link nav-link" href="/terms-and-conditions">
+			{ ctxi18n.T(ctx, "legal.terms_and_conditions") }
+		</a>
+		<a class="link nav-link" href="/privacy-policy">
+			{ ctxi18n.T(ctx, "legal.privacy_policy") }
+		</a>
+		<a class="link nav-link" href="/refund-policy">
+			{ ctxi18n.T(ctx, "legal.refund_policy") }
+		</a>
+		</nav>
+	</footer>
+}

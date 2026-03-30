@@ -46,7 +46,7 @@ async function runAuthSpam(output, csrf, msgStartAuth, msgDoneAuth) {
       },
     };
 
-    const res = await fetch("/auth/login", {
+    const res = await fetch("/login", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

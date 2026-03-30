@@ -57,7 +57,7 @@ func (a *Admin) renderDashboard(c echo.Context, tab string) error {
 	userID := middleware.GetUserID(c)
 	user, err := db.Qry.GetUserByID(c.Request().Context(), userID)
 	if err != nil {
-		return c.Redirect(http.StatusFound, "/auth/login")
+		return c.Redirect(http.StatusFound, "/login")
 	}
 
 	if tab != "flags" && tab != "users" && tab != "groups" && tab != "sessions" {
@@ -681,7 +681,7 @@ func (a *Admin) patchRecentSessions(c echo.Context) error {
 	userID := middleware.GetUserID(c)
 	user, err := db.Qry.GetUserByID(c.Request().Context(), userID)
 	if err != nil {
-		return c.Redirect(http.StatusFound, "/auth/login")
+		return c.Redirect(http.StatusFound, "/login")
 	}
 
 	usersCount, err := db.Qry.CountUsers(c.Request().Context())
@@ -805,7 +805,7 @@ func (a *Admin) patchRecentUsers(c echo.Context) error {
 	userID := middleware.GetUserID(c)
 	user, err := db.Qry.GetUserByID(c.Request().Context(), userID)
 	if err != nil {
-		return c.Redirect(http.StatusFound, "/auth/login")
+		return c.Redirect(http.StatusFound, "/login")
 	}
 
 	// Get stats for overview (always needed for full page render)

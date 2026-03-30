@@ -3,13 +3,9 @@ package shared
 	type DetailsRow struct {
 		Label      string
 		LabelClass string
-	Value      string
-	ValueClass string
-	Action     templ.Component
-}
-
-templ DetailsCard(stateKey string, rows []DetailsRow) {
-	@DetailsCardWithClass(stateKey, rows, "")
+		Value      string
+		ValueClass string
+		Action     templ.Component
 }
 
 templ DetailsCardWithClass(stateKey string, rows []DetailsRow, className string) {
@@ -38,19 +34,4 @@ templ DetailsCardWithClass(stateKey string, rows []DetailsRow, className string)
 			}
 		</dl>
 	</section>
-}
-
-templ DetailsSection(stateKey string, rows []DetailsRow) {
-	<div class="pb">
-		@DetailsCard(stateKey, rows)
-	</div>
-}
-
-templ Details(summary string, content templ.Component) {
-	{{ _ = summary }}
-	<div class="pb">
-		<div class="detail-box">
-			@content
-		</div>
-	</div>
 }

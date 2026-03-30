@@ -1,14 +1,9 @@
 package group
 
 import (
-	"fmt"
-
-	ctxi18n "github.com/invopop/ctxi18n/i18n"
-
-	appi18n "bandcash/internal/i18n"
-	"bandcash/internal/utils"
 	shared "bandcash/models/shared"
-	icons "bandcash/models/shared/icons"
+	"bandcash/internal/utils"
+	appi18n "bandcash/internal/i18n"
 )
 
 templ GroupUserPage(data UserPageData) {
@@ -23,106 +18,4 @@ templ GroupUserPage(data UserPageData) {
 			@shared.GroupLayout("group-user", data.Breadcrumbs, data.UserEmail, shared.AppPrimaryNav("groups", data.UserEmail != ""), GroupUserMain(data))
 		</body>
 	</html>
-}
-
-templ GroupUserMain(data UserPageData) {
-	@shared.GroupTabs(data.GroupID, "users")
-	<section class="details">
-		<h1>{ data.UserRow.Email }</h1>
-		if data.IsAdmin {
-			<div class="actions">
-				@GroupUserDetailsActions(data)
-			</div>
-		}
-	</section>
-	<div class="pb">
-		@shared.DetailsCard(fmt.Sprintf("group_user_%s", data.UserRow.UserID), []shared.DetailsRow{
-			{Label: ctxi18n.T(ctx, "fields.role"), Value: func() string {
-				if data.UserRow.Role == "admin" {
-					return ctxi18n.T(ctx, "groups.role_admin")
-				}
-				return ctxi18n.T(ctx, "groups.role_viewer")
-			}()},
-			{Label: ctxi18n.T(ctx, "fields.status"), Value: ctxi18n.T(ctx, "groups.active")},
-			{Label: ctxi18n.T(ctx, "groups.created"), Value: utils.FormatTimeLocalized(ctx, data.UserRow.CreatedAt)},
-		})
-	</div>
-}
-
-templ GroupUserDetailsActions(data UserPageData) {
-	<a class="btn btn-primary" href={ fmt.Sprintf("/groups/%s/users/%s/edit", data.GroupID, data.UserRow.UserID) }>
-		@icons.Pencil(templ.Attributes{"class": "icon"})
-		{ ctxi18n.T(ctx, "actions.edit") }
-	</a>
-	@shared.SureActionButton(shared.SureActionButtonProps{
-		ClassName:    "btn btn-danger",
-		DisabledExpr: "$_fetching",
-		Label:        ctxi18n.T(ctx, "actions.delete"),
-		IconName:     icons.IconTrash2,
-		Dialog: shared.SureDialogProps{
-			Title:       ctxi18n.T(ctx, "groups.remove_viewer_confirm"),
-			Message:     ctxi18n.T(ctx, "confirm.destructive_message"),
-			SubmitLabel: ctxi18n.T(ctx, "actions.delete"),
-			CancelLabel: ctxi18n.T(ctx, "actions.cancel"),
-			Method:      "delete",
-			URL:         fmt.Sprintf("/groups/%s/users/%s", data.GroupID, data.UserRow.UserID),
-			TriggerID:   "group-user-delete",
-		},
-	})
-}
-
-templ GroupUserInvitePage(data UserInvitePageData) {
-	{{ tabID := utils.GenerateID("tab") }}
-	<!DOCTYPE html>
-	<html lang={ appi18n.LocaleCode(ctx) }>
-		@shared.Head(data.Title)
-		<body>
-			<div data-signals={ templ.JSONString(map[string]any{"tab_id": tabID, "csrf": utils.CSRFTokenFromContext(ctx)}) } data-init="@get('/sse')"></div>
-			@shared.Notifications()
-			@shared.SureDialog()
-			@shared.GroupLayout("group-user-invite", data.Breadcrumbs, data.UserEmail, shared.AppPrimaryNav("groups", data.UserEmail != ""), GroupUserInviteMain(data))
-		</body>
-	</html>
-}
-
-templ GroupUserInviteMain(data UserInvitePageData) {
-	@shared.GroupTabs(data.GroupID, "users")
-	<section class="details">
-		<h1>{ data.UserRow.Email }</h1>
-		if data.IsAdmin {
-			<div class="actions">
-				@GroupUserInviteDetailsActions(data)
-			</div>
-		}
-	</section>
-	<div class="pb">
-		@shared.DetailsCard(fmt.Sprintf("group_user_invite_%s", data.UserRow.InviteID), []shared.DetailsRow{
-			{Label: ctxi18n.T(ctx, "fields.role"), Value: func() string {
-				if data.UserRow.Role == "admin" {
-					return ctxi18n.T(ctx, "groups.role_admin")
-				}
-				return ctxi18n.T(ctx, "groups.role_viewer")
-			}()},
-			{Label: ctxi18n.T(ctx, "fields.status"), Value: ctxi18n.T(ctx, "groups.pending")},
-			{Label: ctxi18n.T(ctx, "groups.created"), Value: utils.FormatTimeLocalized(ctx, data.UserRow.CreatedAt)},
-		})
-	</div>
-}
-
-templ GroupUserInviteDetailsActions(data UserInvitePageData) {
-	@shared.SureActionButton(shared.SureActionButtonProps{
-		ClassName:    "btn btn-danger",
-		DisabledExpr: "$_fetching",
-		Label:        ctxi18n.T(ctx, "actions.delete"),
-		IconName:     icons.IconTrash2,
-		Dialog: shared.SureDialogProps{
-			Title:       ctxi18n.T(ctx, "groups.remove_viewer_confirm"),
-			Message:     ctxi18n.T(ctx, "confirm.destructive_message"),
-			SubmitLabel: ctxi18n.T(ctx, "actions.delete"),
-			CancelLabel: ctxi18n.T(ctx, "actions.cancel"),
-			Method:      "delete",
-			URL:         fmt.Sprintf("/groups/%s/users/%s", data.GroupID, data.UserRow.InviteID),
-			TriggerID:   "group-user-invite-delete",
-		},
-	})
 }

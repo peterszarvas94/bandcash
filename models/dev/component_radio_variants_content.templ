@@ -1,0 +1,74 @@
+package dev
+
+import (
+	shared "bandcash/models/shared"
+)
+
+templ RadioVariantsContent(linkSelector string) {
+	<div class="field">
+		<label>Client side (button)</label>
+		<div class="row row-tight row-wrap">
+			@shared.RadioButton(shared.RadioButtonProps{Bind: "radioDemo", Value: "all", Label: "Option 1", ClassName: "btn btn-xs"})
+			@shared.RadioButton(shared.RadioButtonProps{Bind: "radioDemo", Value: "paid", Label: "Option 2", ClassName: "btn btn-xs"})
+			@shared.RadioButton(shared.RadioButtonProps{Bind: "radioDemo", Value: "unpaid", Label: "Option 3", ClassName: "btn btn-xs"})
+		</div>
+		<div class="row row-tight row-wrap">
+			@shared.RadioButton(shared.RadioButtonProps{IsSelected: true, Label: "Option 1 (disabled)", ClassName: "btn btn-xs", DisabledExpr: "true"})
+			@shared.RadioButton(shared.RadioButtonProps{IsSelected: false, Label: "Option 2 (disabled)", ClassName: "btn btn-xs", DisabledExpr: "true"})
+			@shared.RadioButton(shared.RadioButtonProps{IsSelected: false, Label: "Option 3 (disabled)", ClassName: "btn btn-xs", DisabledExpr: "true"})
+		</div>
+		<div class="row row-tight row-wrap">
+			@shared.RadioButton(shared.RadioButtonProps{Bind: "radioDemo", Value: "all", Label: "Option 1 success", ClassName: "btn btn-xs", ActiveClass: "btn-success"})
+			@shared.RadioButton(shared.RadioButtonProps{Bind: "radioDemo", Value: "paid", Label: "Option 2 success", ClassName: "btn btn-xs", ActiveClass: "btn-success"})
+			@shared.RadioButton(shared.RadioButtonProps{Bind: "radioDemo", Value: "unpaid", Label: "Option 3 success", ClassName: "btn btn-xs", ActiveClass: "btn-success"})
+		</div>
+		<div class="row row-tight row-wrap">
+			@shared.RadioButton(shared.RadioButtonProps{IsSelected: true, Label: "Option 1 success (disabled)", ClassName: "btn btn-xs", ActiveClass: "btn-success", DisabledExpr: "true"})
+			@shared.RadioButton(shared.RadioButtonProps{IsSelected: false, Label: "Option 2 success (disabled)", ClassName: "btn btn-xs", ActiveClass: "btn-success", DisabledExpr: "true"})
+			@shared.RadioButton(shared.RadioButtonProps{IsSelected: false, Label: "Option 3 success (disabled)", ClassName: "btn btn-xs", ActiveClass: "btn-success", DisabledExpr: "true"})
+		</div>
+		<div class="row row-tight row-wrap">
+			@shared.RadioButton(shared.RadioButtonProps{Bind: "radioDemo", Value: "all", Label: "Option 1 danger", ClassName: "btn btn-xs", ActiveClass: "btn-danger"})
+			@shared.RadioButton(shared.RadioButtonProps{Bind: "radioDemo", Value: "paid", Label: "Option 2 danger", ClassName: "btn btn-xs", ActiveClass: "btn-danger"})
+			@shared.RadioButton(shared.RadioButtonProps{Bind: "radioDemo", Value: "unpaid", Label: "Option 3 danger", ClassName: "btn btn-xs", ActiveClass: "btn-danger"})
+		</div>
+		<div class="row row-tight row-wrap">
+			@shared.RadioButton(shared.RadioButtonProps{IsSelected: true, Label: "Option 1 danger (disabled)", ClassName: "btn btn-xs", ActiveClass: "btn-danger", DisabledExpr: "true"})
+			@shared.RadioButton(shared.RadioButtonProps{IsSelected: false, Label: "Option 2 danger (disabled)", ClassName: "btn btn-xs", ActiveClass: "btn-danger", DisabledExpr: "true"})
+			@shared.RadioButton(shared.RadioButtonProps{IsSelected: false, Label: "Option 3 danger (disabled)", ClassName: "btn btn-xs", ActiveClass: "btn-danger", DisabledExpr: "true"})
+		</div>
+	</div>
+	<div class="field">
+		<label>Server side (link)</label>
+		<div class="row row-tight row-wrap">
+			@shared.RadioLink(shared.RadioLinkProps{Href: "/dev?selector=all", Label: "Option 1", IsSelected: linkSelector == "all", ClassName: "btn btn-xs"})
+			@shared.RadioLink(shared.RadioLinkProps{Href: "/dev?selector=2026", Label: "Option 2", IsSelected: linkSelector == "2026", ClassName: "btn btn-xs"})
+			@shared.RadioLink(shared.RadioLinkProps{Href: "/dev?selector=custom", Label: "Option 3", IsSelected: linkSelector == "custom", ClassName: "btn btn-xs"})
+		</div>
+		<div class="row row-tight row-wrap">
+			@shared.RadioLink(shared.RadioLinkProps{Href: "/dev?selector=all", Label: "Option 1 (disabled)", IsSelected: true, Disabled: true, ClassName: "btn btn-xs"})
+			@shared.RadioLink(shared.RadioLinkProps{Href: "/dev?selector=2026", Label: "Option 2 (disabled)", IsSelected: false, Disabled: true, ClassName: "btn btn-xs"})
+			@shared.RadioLink(shared.RadioLinkProps{Href: "/dev?selector=custom", Label: "Option 3 (disabled)", IsSelected: false, Disabled: true, ClassName: "btn btn-xs"})
+		</div>
+		<div class="row row-tight row-wrap">
+			@shared.RadioLink(shared.RadioLinkProps{Href: "/dev?selector=all", Label: "Option 1 success", IsSelected: linkSelector == "all", ClassName: "btn btn-xs", ActiveClass: "btn-success"})
+			@shared.RadioLink(shared.RadioLinkProps{Href: "/dev?selector=2026", Label: "Option 2 success", IsSelected: linkSelector == "2026", ClassName: "btn btn-xs", ActiveClass: "btn-success"})
+			@shared.RadioLink(shared.RadioLinkProps{Href: "/dev?selector=custom", Label: "Option 3 success", IsSelected: linkSelector == "custom", ClassName: "btn btn-xs", ActiveClass: "btn-success"})
+		</div>
+		<div class="row row-tight row-wrap">
+			@shared.RadioLink(shared.RadioLinkProps{Href: "/dev?selector=all", Label: "Option 1 success (disabled)", IsSelected: true, Disabled: true, ClassName: "btn btn-xs", ActiveClass: "btn-success"})
+			@shared.RadioLink(shared.RadioLinkProps{Href: "/dev?selector=2026", Label: "Option 2 success (disabled)", IsSelected: false, Disabled: true, ClassName: "btn btn-xs", ActiveClass: "btn-success"})
+			@shared.RadioLink(shared.RadioLinkProps{Href: "/dev?selector=custom", Label: "Option 3 success (disabled)", IsSelected: false, Disabled: true, ClassName: "btn btn-xs", ActiveClass: "btn-success"})
+		</div>
+		<div class="row row-tight row-wrap">
+			@shared.RadioLink(shared.RadioLinkProps{Href: "/dev?selector=all", Label: "Option 1 danger", IsSelected: linkSelector == "all", ClassName: "btn btn-xs", ActiveClass: "btn-danger"})
+			@shared.RadioLink(shared.RadioLinkProps{Href: "/dev?selector=2026", Label: "Option 2 danger", IsSelected: linkSelector == "2026", ClassName: "btn btn-xs", ActiveClass: "btn-danger"})
+			@shared.RadioLink(shared.RadioLinkProps{Href: "/dev?selector=custom", Label: "Option 3 danger", IsSelected: linkSelector == "custom", ClassName: "btn btn-xs", ActiveClass: "btn-danger"})
+		</div>
+		<div class="row row-tight row-wrap">
+			@shared.RadioLink(shared.RadioLinkProps{Href: "/dev?selector=all", Label: "Option 1 danger (disabled)", IsSelected: true, Disabled: true, ClassName: "btn btn-xs", ActiveClass: "btn-danger"})
+			@shared.RadioLink(shared.RadioLinkProps{Href: "/dev?selector=2026", Label: "Option 2 danger (disabled)", IsSelected: false, Disabled: true, ClassName: "btn btn-xs", ActiveClass: "btn-danger"})
+			@shared.RadioLink(shared.RadioLinkProps{Href: "/dev?selector=custom", Label: "Option 3 danger (disabled)", IsSelected: false, Disabled: true, ClassName: "btn btn-xs", ActiveClass: "btn-danger"})
+		</div>
+	</div>
+}

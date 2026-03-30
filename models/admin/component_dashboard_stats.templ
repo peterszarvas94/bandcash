@@ -1,0 +1,16 @@
+package admin
+
+import (
+	ctxi18n "github.com/invopop/ctxi18n/i18n"
+	shared "bandcash/models/shared"
+	"bandcash/internal/utils"
+)
+
+templ DashboardStats(data DashboardData) {
+	@shared.DetailsCardWithClass("admin_overview", []shared.DetailsRow{
+		{Label: ctxi18n.T(ctx, "admin.total_users"), Value: utils.FormatNumberLocalized(ctx, data.UsersCount)},
+		{Label: ctxi18n.T(ctx, "admin.total_groups"), Value: utils.FormatNumberLocalized(ctx, data.GroupsCount)},
+		{Label: ctxi18n.T(ctx, "admin.total_events"), Value: utils.FormatNumberLocalized(ctx, data.EventsCount)},
+		{Label: ctxi18n.T(ctx, "admin.total_members"), Value: utils.FormatNumberLocalized(ctx, data.MembersCount)},
+	}, "")
+}

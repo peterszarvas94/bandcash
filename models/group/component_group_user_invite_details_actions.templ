@@ -1,0 +1,26 @@
+package group
+
+import (
+	"fmt"
+	ctxi18n "github.com/invopop/ctxi18n/i18n"
+	shared "bandcash/models/shared"
+	icons "bandcash/models/shared/icons"
+)
+
+templ GroupUserInviteDetailsActions(data UserInvitePageData) {
+	@shared.SureActionButton(shared.SureActionButtonProps{
+		ClassName:    "btn btn-danger",
+		DisabledExpr: "$_fetching",
+		Label:        ctxi18n.T(ctx, "actions.delete"),
+		IconName:     icons.IconTrash2,
+		Dialog: shared.SureDialogProps{
+			Title:       ctxi18n.T(ctx, "groups.remove_viewer_confirm"),
+			Message:     ctxi18n.T(ctx, "confirm.destructive_message"),
+			SubmitLabel: ctxi18n.T(ctx, "actions.delete"),
+			CancelLabel: ctxi18n.T(ctx, "actions.cancel"),
+			Method:      "delete",
+			URL:         fmt.Sprintf("/groups/%s/users/%s", data.GroupID, data.UserRow.InviteID),
+			TriggerID:   "group-user-invite-delete",
+		},
+	})
+}

@@ -1,25 +1,8 @@
 package shared
 
 import (
-	ctxi18n "github.com/invopop/ctxi18n/i18n"
-
 	"bandcash/internal/utils"
 )
-
-templ Header(crumbs []utils.Crumb, nav templ.Component) {
-	<header>
-		<div class="header_inner">
-			@Breadcrumbs(crumbs)
-			@nav
-		</div>
-	</header>
-}
-
-templ Footer(userEmail string) {
-	<footer>
-		@AppFooterNav("", userEmail)
-	</footer>
-}
 
 templ GroupLayout(id string, crumbs []utils.Crumb, userEmail string, nav templ.Component, main templ.Component) {
 	<div id={ id } class="grouplayout">
@@ -31,24 +14,4 @@ templ GroupLayout(id string, crumbs []utils.Crumb, userEmail string, nav templ.C
 			@Footer(userEmail)
 		</div>
 	</div>
-}
-
-templ GroupTabs(groupID string, activeTab string) {
-	<nav class="secondary" aria-label={ ctxi18n.T(ctx, "groups.actions") }>
-		<a class={ "link nav-link", templ.KV("is-active", activeTab == "events") } href={ "/groups/" + groupID + "/events" }>{ ctxi18n.T(ctx, "events.title") }</a>
-		<a class={ "link nav-link", templ.KV("is-active", activeTab == "expenses") } href={ "/groups/" + groupID + "/expenses" }>{ ctxi18n.T(ctx, "expenses.title") }</a>
-		<a class={ "link nav-link", templ.KV("is-active", activeTab == "members") } href={ "/groups/" + groupID + "/members" }>{ ctxi18n.T(ctx, "members.title") }</a>
-		<a class={ "link nav-link", templ.KV("is-active", activeTab == "users") } href={ "/groups/" + groupID + "/users" }>{ ctxi18n.T(ctx, "groups.users") }</a>
-	</nav>
-}
-
-templ Section(title string, children templ.Component) {
-	<section class="section">
-		<header>
-			<h2>{ title }</h2>
-		</header>
-		<div>
-			@children
-		</div>
-	</section>
 }

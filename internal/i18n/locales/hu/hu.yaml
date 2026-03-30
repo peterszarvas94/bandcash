@@ -16,6 +16,7 @@ hu:
     actions: "Műveletek"
     logged_in_as: "Bejelentkezve mint"
   auth:
+    sign_in: "Bejelentkezés"
     logout: "Kijelentkezés"
     email: "Email"
     email_placeholder: "te@email.com"
@@ -140,8 +141,22 @@ hu:
         copy_link: "Vagy másold be ezt a linket a böngésződbe:"
         contact_admins: "Ha ez váratlan, lépj kapcsolatba a csoport adminjaival:"
   home:
+    join_for_free: "Csatlakozás ingyen"
+    subtitle: "Kövesd egy helyen a közös pénzeket, eseményeket, költségeket és elszámolásokat."
+    pricing: "Árazás"
     logged_in: "Már be vagy jelentkezve."
     go_to_groups: "Tovább a csoportokhoz"
+  legal:
+    pricing: "Árazás"
+    terms_and_conditions: "Felhasználási feltételek"
+    privacy_policy: "Adatvédelmi szabályzat"
+    refund_policy: "Visszatérítési szabályzat"
+    page_title_pricing: "Bandcash - Árazás"
+    page_title_terms: "Bandcash - Felhasználási feltételek"
+    page_title_privacy: "Bandcash - Adatvédelmi szabályzat"
+    page_title_refund: "Bandcash - Visszatérítési szabályzat"
+    under_construction_title: "Ez az oldal még készül"
+    under_construction_body: "A végleges jogi tartalom előkészítés alatt áll. Kérjük, nézz vissza hamarosan."
   account:
     title: "Fiók"
     page_title: "Bandcash - Fiók"

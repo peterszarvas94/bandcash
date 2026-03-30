@@ -26,7 +26,7 @@ func RequireAuth(next echo.HandlerFunc) echo.HandlerFunc {
 	return func(c echo.Context) error {
 		userID := getSessionUserID(c)
 		if userID == "" {
-			return c.Redirect(http.StatusFound, "/auth/login")
+			return c.Redirect(http.StatusFound, "/login")
 		}
 
 		// Verify user exists
@@ -34,19 +34,19 @@ func RequireAuth(next echo.HandlerFunc) echo.HandlerFunc {
 		if err != nil {
 			slog.Warn("auth: invalid session user", "user_id", userID)
 			clearSession(c)
-			return c.Redirect(http.StatusFound, "/auth/login")
+			return c.Redirect(http.StatusFound, "/login")
 		}
 
 		bannedCount, err := db.Qry.IsUserBanned(c.Request().Context(), user.ID)
 		if err != nil {
 			slog.Warn("auth: failed to check user ban", "user_id", user.ID, "err", err)
 			clearSession(c)
-			return c.Redirect(http.StatusFound, "/auth/login")
+			return c.Redirect(http.StatusFound, "/login")
 		}
 		if bannedCount > 0 {
 			clearSession(c)
 			utils.Notify(c, "error", ctxi18n.T(c.Request().Context(), "auth.banned"))
-			return c.Redirect(http.StatusFound, "/auth/login")
+			return c.Redirect(http.StatusFound, "/login")
 		}
 
 		isSuperadmin := false

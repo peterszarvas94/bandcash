@@ -1,0 +1,53 @@
+package dev
+
+import (
+	shared "bandcash/models/shared"
+	icons "bandcash/models/shared/icons"
+)
+
+templ NotificationsContent() {
+	<form class="form" data-on:submit="@post('/dev/notifications/inline')" data-indicator:_notifyInline>
+		<div class="field">
+			<label>Required field</label>
+			<div class="row row-tight">
+				<input type="text" data-bind="formData.name" placeholder="Required field" class="input"/>
+				<button type="submit" class="btn" data-attr:disabled="$_notifyInline">
+					<span data-show="!$_notifyInline">
+						@icons.Save(templ.Attributes{"class": "icon"})
+					</span>
+					<span data-show="$_notifyInline" style="display: none">
+						@icons.LoaderCircle(templ.Attributes{"class": "icon icon-spin"})
+					</span>
+					Inline validation
+				</button>
+			</div>
+			<div data-show="$errors && $errors.name" class="color-error" data-text="$errors.name"></div>
+		</div>
+	</form>
+	<div class="row row-wrap">
+		@shared.LoadingActionButtonWithSignal(shared.LoadingActionButtonWithSignalProps{
+			ClassName:     "btn",
+			OnClick:       "@post('/dev/notifications/info')",
+			DisabledExpr:  "$_notifyInfo",
+			Label:         "Info",
+			IconName:      icons.IconInfo,
+			LoadingSignal: "_notifyInfo",
+		})
+		@shared.LoadingActionButtonWithSignal(shared.LoadingActionButtonWithSignalProps{
+			ClassName:     "btn btn-success",
+			OnClick:       "@post('/dev/notifications/success')",
+			DisabledExpr:  "$_notifySuccess",
+			Label:         "Success",
+			IconName:      icons.IconCheck,
+			LoadingSignal: "_notifySuccess",
+		})
+		@shared.LoadingActionButtonWithSignal(shared.LoadingActionButtonWithSignalProps{
+			ClassName:     "btn btn-danger",
+			OnClick:       "@post('/dev/notifications/error')",
+			DisabledExpr:  "$_notifyError",
+			Label:         "Error",
+			IconName:      icons.IconCircleX,
+			LoadingSignal: "_notifyError",
+		})
+	</div>
+}

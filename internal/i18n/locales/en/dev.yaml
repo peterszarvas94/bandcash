@@ -18,7 +18,7 @@ en:
       title: "Rate Limit"
       description: "Use these buttons to send bursts of requests and verify 429 responses locally."
       spam_health: "Spam /health"
-      spam_auth: "Spam /auth/login"
+      spam_auth: "Spam /login"
       ready: "Ready. Click a button to start."
       start_health: "start health spam"
       done_health: "health done"

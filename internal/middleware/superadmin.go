@@ -22,12 +22,12 @@ func RequireSuperadmin(next echo.HandlerFunc) echo.HandlerFunc {
 
 		userID := GetUserID(c)
 		if userID == "" {
-			return c.Redirect(http.StatusFound, "/auth/login")
+			return c.Redirect(http.StatusFound, "/login")
 		}
 
 		user, err := db.Qry.GetUserByID(c.Request().Context(), userID)
 		if err != nil {
-			return c.Redirect(http.StatusFound, "/auth/login")
+			return c.Redirect(http.StatusFound, "/login")
 		}
 
 		if strings.ToLower(strings.TrimSpace(user.Email)) != allowedEmail {

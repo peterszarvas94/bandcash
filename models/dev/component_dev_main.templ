@@ -1,0 +1,20 @@
+package dev
+
+import (
+	shared "bandcash/models/shared"
+)
+
+templ DevMain(linkSelector string) {
+	<h1>Dev tools</h1>
+	@shared.Section("Button variants", ButtonVariantsContent(linkSelector))
+	@shared.Section("Toggle variants", ToggleVariantsContent())
+	@shared.Section("Radio variants", RadioVariantsContent(linkSelector))
+	@shared.Section("Form controls", FormControlsContent())
+	@shared.Section("Notifications", NotificationsContent())
+	@shared.Section("Email previews", EmailPreviewContent())
+	@shared.Section("Error pages", ErrorPagePreviewContent())
+	@shared.Section("Loading indicator test", LoadingIndicatorContent())
+	@shared.Section("Table query tests", TableQueryTestContent())
+	@shared.Section("Rate limit", RateLimitContent())
+	@shared.Section("Body limit", BodyLimitContent())
+}

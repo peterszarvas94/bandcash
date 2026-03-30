@@ -752,20 +752,49 @@
     }
   }
 
-  .home {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    width: 100%;
-    min-height: 100vh;
-
-    .home_inner {
-      padding: var(--space);
-      width: 100%;
-      max-width: var(--content-width);
+  .homelayout {
+    .homelayout_inner {
       display: flex;
       flex-direction: column;
-      flex: 1 0 auto;
+      min-height: calc(100vh - var(--header-height));
+      min-height: calc(100lvh - var(--header-height));
+
+      main#app.home {
+        max-width: var(--content-width);
+        width: 100%;
+        margin: 0 auto;
+        padding-top: var(--space);
+        padding-right: var(--page-padding-inline);
+        padding-bottom: var(--space);
+        padding-left: var(--page-padding-inline);
+        flex: 1 0 auto;
+        display: flex;
+        flex-direction: column;
+
+        .home-landing {
+          max-width: 42rem;
+          margin: 0 auto;
+          flex: 1 0 auto;
+          display: grid;
+          align-content: center;
+          gap: var(--space);
+
+          > h1,
+          > p {
+            margin: 0;
+          }
+        }
+
+        .home-landing-actions {
+          padding-top: calc(var(--space) * 0.5);
+        }
+
+        .auth-link-page {
+          flex: 1 0 auto;
+          display: grid;
+          place-content: center;
+        }
+      }
     }
   }
 
@@ -774,6 +803,8 @@
     flex-direction: column;
     align-items: center;
     min-height: 100vh;
+    min-height: 100lvh;
+    justify-content: center;
     align-content: center;
 
     .error-card {
@@ -819,20 +850,28 @@
     gap: var(--space);
     align-items: start;
     border: var(--border) solid
-      color-mix(in srgb, var(--error-color) 60%, var(--border-color) 40%);
+      color-mix(in srgb, var(--color-warning) 60%, var(--border-color) 40%);
     padding: calc(var(--space) * 1.25);
     margin-bottom: calc(var(--space) * 1.5);
-    background: color-mix(in srgb, var(--page-bg) 90%, var(--error-color) 10%);
+    background: color-mix(
+      in srgb,
+      var(--page-bg) 90%,
+      var(--color-warning) 10%
+    );
 
     p {
-      color: color-mix(in srgb, var(--text-color) 88%, var(--error-color) 12%);
+      color: color-mix(
+        in srgb,
+        var(--text-color) 88%,
+        var(--color-warning) 12%
+      );
     }
   }
 
   .legal-banner-warning {
     width: 1.5rem;
     height: 1.5rem;
-    color: var(--error-color);
+    color: var(--color-warning);
   }
 
   .pricing-grid {
@@ -877,47 +916,6 @@
     padding-left: calc(var(--space) * 2);
     display: grid;
     gap: calc(var(--space) * 0.5);
-  }
-
-  .home-hero {
-    position: relative;
-    margin: 0;
-    border: var(--border) solid var(--border-color);
-    background: color-mix(in srgb, var(--page-bg) 94%, var(--text-color) 6%);
-    overflow: hidden;
-
-    > img {
-      width: 100%;
-      height: auto;
-      aspect-ratio: 16 / 9;
-      object-fit: cover;
-      display: block;
-    }
-
-    > figcaption {
-      position: absolute;
-      inset: auto 0 0 0;
-      display: grid;
-      gap: calc(var(--space) * 0.5);
-      padding: calc(var(--space) * 2);
-      color: #fff;
-      background: linear-gradient(
-        to top,
-        color-mix(in srgb, #000 68%, transparent),
-        color-mix(in srgb, #000 8%, transparent)
-      );
-
-      h1,
-      p {
-        margin: 0;
-      }
-
-      > p {
-        max-width: 48ch;
-        font-size: 0.95rem;
-        line-height: 1.5;
-      }
-    }
   }
 
   #notifications-popover {
@@ -1134,49 +1132,48 @@
     }
   }
 
-  .grouplayout {
-    > header {
-      position: sticky;
-      top: 0;
-      z-index: 20;
-      background: var(--page-bg);
-      border-bottom: var(--border) solid var(--border-color);
+  :is(.grouplayout, .homelayout) > header {
+    position: sticky;
+    top: 0;
+    z-index: 20;
+    background: var(--page-bg);
+    border-bottom: var(--border) solid var(--border-color);
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: var(--header-height);
+
+    .header_inner {
+      padding: var(--space);
       width: 100%;
+      max-width: var(--content-width);
       display: flex;
-      justify-content: center;
+      justify-content: space-between;
       align-items: center;
-      height: var(--header-height);
+      gap: var(--space);
 
-      .header_inner {
-        padding: var(--space);
-        width: 100%;
-        max-width: var(--content-width);
+      nav.breadcrumbs {
         display: flex;
-        justify-content: space-between;
         align-items: center;
-        gap: var(--space);
+        gap: calc(var(--space) * 0.5);
+        flex-wrap: wrap;
+        line-height: 1.6;
+        height: fit-content;
+        min-height: 2.25rem;
 
-        nav.breadcrumbs {
-          display: flex;
+        > a,
+        > span {
+          color: inherit;
+          display: inline-flex;
           align-items: center;
           gap: calc(var(--space) * 0.5);
-          flex-wrap: wrap;
-          line-height: 1.6;
-          height: fit-content;
-          min-height: 2.25rem;
-          padding-bottom: calc(var(--space) * 0.5);
-
-          > a,
-          > span {
-            color: inherit;
-            display: inline-flex;
-            align-items: center;
-            gap: calc(var(--space) * 0.5);
-          }
         }
       }
     }
+  }
 
+  .grouplayout {
     .grouplayout_inner {
       display: flex;
       flex-direction: column;
@@ -1239,35 +1236,8 @@
       text-decoration: underline;
     }
 
-    &.is-active {
+    &.nav-link-active {
       font-weight: 600;
     }
-  }
-
-  @media (max-width: 680px) {
-    /* .grouplayout { */
-    /*   header { */
-    /*     border-bottom: 0; */
-    /*     padding-top: var(--space); */
-    /**/
-    /*     nav.breadcrumbs { */
-    /*       display: none; */
-    /*     } */
-    /*   } */
-    /**/
-    /*   footer { */
-    /*     nav { */
-    /*       gap: calc(var(--space) * 0.5); */
-    /*     } */
-    /*   } */
-    /* } */
-    /**/
-    /* .nav { */
-    /*   gap: calc(var(--space) * 0.5); */
-    /* } */
-    /**/
-    /* .nav-link { */
-    /*   width: 100%; */
-    /* } */
   }
 }

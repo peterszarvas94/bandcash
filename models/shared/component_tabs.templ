@@ -1,0 +1,21 @@
+package shared
+
+type TabItem struct {
+	Label    string
+	Href     string
+	IsActive bool
+}
+
+templ Tabs(ariaLabel string, className string, items []TabItem) {
+	{{
+		navClass := "secondary"
+		if className != "" {
+			navClass += " " + className
+		}
+	}}
+	<nav class={ navClass } aria-label={ ariaLabel }>
+		for _, item := range items {
+			<a class={ "link nav-link", templ.KV("nav-link-active", item.IsActive) } href={ item.Href }>{ item.Label }</a>
+		}
+	</nav>
+}

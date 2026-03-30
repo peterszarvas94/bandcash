@@ -1,0 +1,14 @@
+package shared
+
+import (
+	"bandcash/internal/utils"
+)
+
+templ Header(crumbs []utils.Crumb, nav templ.Component) {
+	<header>
+		<div class="header_inner">
+			@Breadcrumbs(crumbs)
+			@nav
+		</div>
+	</header>
+}

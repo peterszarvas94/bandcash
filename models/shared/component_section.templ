@@ -1,0 +1,12 @@
+package shared
+
+templ Section(title string, children templ.Component) {
+	<section class="section">
+		<header>
+			<h2>{ title }</h2>
+		</header>
+		<div>
+			@children
+		</div>
+	</section>
+}

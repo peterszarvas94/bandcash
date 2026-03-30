@@ -1,0 +1,8 @@
+package shared
+
+import appi18n "bandcash/internal/i18n"
+import "bandcash/internal/utils"
+
+templ HomeLayout(id string, title string, signals map[string]any, breadcrumbs []utils.Crumb, userEmail string, currentLang string, langAction string, isAuthenticated bool, main templ.Component) {
+	@BaseLayout(title, appi18n.LocaleCode(ctx), signals, Notifications(), HomeLayoutContent(id, breadcrumbs, userEmail, currentLang, langAction, isAuthenticated, main))
+}

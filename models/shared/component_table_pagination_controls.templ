@@ -1,0 +1,98 @@
+package shared
+
+import (
+	"fmt"
+	"bandcash/internal/utils"
+	icons "bandcash/models/shared/icons"
+	ctxi18n "github.com/invopop/ctxi18n/i18n"
+)
+
+templ TablePaginationControls(basePath string, query utils.TableQuery, pager utils.TablePagination) {
+	<form class="row row-wrap" method="get" action={ basePath }>
+		if query.Search != "" {
+			<input type="hidden" name="q" value={ query.Search }/>
+		}
+		if query.SortSet {
+			<input type="hidden" name="sort" value={ query.Sort }/>
+			<input type="hidden" name="dir" value={ query.Dir }/>
+		}
+		if query.PageSize != utils.DefaultTablePageSize {
+			<input type="hidden" name="pageSize" value={ fmt.Sprintf("%d", query.PageSize) }/>
+		}
+		if query.Summary != utils.SummaryModeAll {
+			<input type="hidden" name="summary" value={ query.Summary }/>
+		}
+		if query.Year != "" {
+			<input type="hidden" name="year" value={ query.Year }/>
+		}
+		if query.DateMode == "custom" {
+			<input type="hidden" name="dateMode" value="custom"/>
+		}
+		if query.From != "" {
+			<input type="hidden" name="from" value={ query.From }/>
+		}
+		if query.To != "" {
+			<input type="hidden" name="to" value={ query.To }/>
+		}
+		if pager.HasPrev {
+			<a
+				class="btn btn-xs btn-icon btn-table hide-tablet"
+				href={ utils.BuildTablePageURL(basePath, query, 1, pager.TotalPages) }
+				aria-label={ ctxi18n.T(ctx, "table.first") }
+				title={ ctxi18n.T(ctx, "table.first") }
+			>
+				1
+			</a>
+			<a
+				class="btn btn-xs btn-icon btn-table"
+				href={ utils.BuildTablePageURL(basePath, query, pager.Page-1, pager.TotalPages) }
+				aria-label={ ctxi18n.T(ctx, "table.prev") }
+				title={ ctxi18n.T(ctx, "table.prev") }
+			>
+				@icons.ArrowLeft(templ.Attributes{"class": "icon"})
+			</a>
+		} else {
+			<button type="button" class="btn btn-xs btn-icon btn-table hide-tablet" aria-label={ ctxi18n.T(ctx, "table.first") } title={ ctxi18n.T(ctx, "table.first") } disabled>
+				1
+			</button>
+			<button type="button" class="btn btn-xs btn-icon btn-table" aria-label={ ctxi18n.T(ctx, "table.prev") } title={ ctxi18n.T(ctx, "table.prev") } disabled>
+				@icons.ArrowLeft(templ.Attributes{"class": "icon"})
+			</button>
+		}
+		<label class="row">
+			<span class="text-sm hide-tablet">{ ctxi18n.T(ctx, "table.page") }</span>
+			<span class="row row-tight hide-tablet">
+				<input type="number" min="1" max={ fmt.Sprintf("%d", pager.TotalPages) } step="1" name="page" value={ fmt.Sprintf("%d", pager.Page) } aria-label={ ctxi18n.T(ctx, "table.page") } class="input input-xs"/>
+				<button class="btn btn-xs btn-icon btn-table" type="submit" aria-label={ ctxi18n.T(ctx, "table.go") } title={ ctxi18n.T(ctx, "table.go") }>
+					@icons.FileInput(templ.Attributes{"class": "icon"})
+				</button>
+			</span>
+			<span class="text-sm show-tablet" aria-live="polite" aria-label={ fmt.Sprintf("%s %d/%d", ctxi18n.T(ctx, "table.page"), pager.Page, pager.TotalPages) }>{ fmt.Sprintf("%d/%d", pager.Page, pager.TotalPages) }</span>
+		</label>
+		if pager.HasNext {
+			<a
+				class="btn btn-xs btn-icon btn-table"
+				href={ utils.BuildTablePageURL(basePath, query, pager.Page+1, pager.TotalPages) }
+				aria-label={ ctxi18n.T(ctx, "table.next") }
+				title={ ctxi18n.T(ctx, "table.next") }
+			>
+				@icons.ArrowRight(templ.Attributes{"class": "icon"})
+			</a>
+			<a
+				class="btn btn-xs btn-icon btn-table hide-tablet"
+				href={ utils.BuildTablePageURL(basePath, query, pager.TotalPages, pager.TotalPages) }
+				aria-label={ ctxi18n.T(ctx, "table.last") }
+				title={ ctxi18n.T(ctx, "table.last") }
+			>
+				{ fmt.Sprintf("%d", pager.TotalPages) }
+			</a>
+		} else {
+			<button type="button" class="btn btn-xs btn-icon btn-table" aria-label={ ctxi18n.T(ctx, "table.next") } title={ ctxi18n.T(ctx, "table.next") } disabled>
+				@icons.ArrowRight(templ.Attributes{"class": "icon"})
+			</button>
+			<button type="button" class="btn btn-xs btn-icon btn-table hide-tablet" aria-label={ ctxi18n.T(ctx, "table.last") } title={ ctxi18n.T(ctx, "table.last") } disabled>
+				{ fmt.Sprintf("%d", pager.TotalPages) }
+			</button>
+		}
+	</form>
+}

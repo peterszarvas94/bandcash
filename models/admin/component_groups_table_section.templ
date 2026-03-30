@@ -1,0 +1,54 @@
+package admin
+
+import (
+	"fmt"
+	ctxi18n "github.com/invopop/ctxi18n/i18n"
+	shared "bandcash/models/shared"
+	"bandcash/internal/utils"
+)
+
+templ GroupsTableSection(data DashboardData) {
+	<div class="table-section">
+		@shared.TableSearchFormWithClass(fmt.Sprintf("/admin/%s", "groups"), data.GroupQuery, "table.search_placeholder_admin_groups", "")
+		@shared.TablePaginationRow(fmt.Sprintf("/admin/%s", "groups"), data.GroupQuery, data.GroupPager)
+		@shared.TableOpenFixed(data.GroupsTable, "") {
+			<thead>
+				<tr>
+					@shared.THCol(data.GroupsTable.Col("name")) {
+						@shared.TableSortHeader(ctxi18n.T(ctx, "groups.name"), "name", data.GroupQuery, adminGroupsSortURL(data, "name"))
+					}
+					@shared.THCol(data.GroupsTable.Col("admin")) {
+						{ ctxi18n.T(ctx, "groups.admin") }
+					}
+					@shared.THCol(data.GroupsTable.Col("viewers")) {
+						{ ctxi18n.T(ctx, "groups.viewers") }
+					}
+					@shared.THCol(data.GroupsTable.Col("created_at")) {
+						@shared.TableSortHeader(ctxi18n.T(ctx, "groups.created"), "createdAt", data.GroupQuery, adminGroupsSortURL(data, "createdAt"))
+					}
+				</tr>
+			</thead>
+			<tbody>
+				for _, group := range data.Groups {
+					<tr>
+						<td><a class="link" href={ fmt.Sprintf("/groups/%s/events", group.ID) }>{ group.Name }</a></td>
+						<td>{ group.AdminUserID }</td>
+						<td></td>
+						<td>
+							if group.CreatedAt.Valid {
+								{ utils.FormatTimeLocalized(ctx, group.CreatedAt.Time) }
+							} else {
+								{ "-" }
+							}
+						</td>
+					</tr>
+				}
+				if len(data.Groups) == 0 {
+					<tr>
+						<td colspan="4">{ ctxi18n.T(ctx, "table.empty") }</td>
+					</tr>
+				}
+			</tbody>
+		}
+	</div>
+}

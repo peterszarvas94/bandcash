@@ -1,0 +1,15 @@
+package shared
+
+templ BaseLayout(title string, lang string, signals map[string]any, overlays templ.Component, content templ.Component) {
+	<!DOCTYPE html>
+	<html lang={ lang }>
+		@Head(title)
+		<body>
+			if signals != nil {
+				<div data-signals={ templ.JSONString(signals) } data-init="@get('/sse')"></div>
+			}
+			@overlays
+			@content
+		</body>
+	</html>
+}

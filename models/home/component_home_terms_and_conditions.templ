@@ -1,0 +1,9 @@
+package home
+
+import (
+	shared "bandcash/models/shared"
+)
+
+templ HomeTermsAndConditions(data HomeData) {
+	@shared.LegalLayout("home-terms", data.Title, data.Breadcrumbs, data.UserEmail, data.IsAuthenticated, HomeTermsAndConditionsMain())
+}

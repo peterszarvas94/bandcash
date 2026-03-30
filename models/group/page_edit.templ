@@ -1,14 +1,9 @@
 package group
 
 import (
-	"fmt"
-
-	ctxi18n "github.com/invopop/ctxi18n/i18n"
-
-	appi18n "bandcash/internal/i18n"
-	"bandcash/internal/utils"
 	shared "bandcash/models/shared"
-	icons "bandcash/models/shared/icons"
+	"bandcash/internal/utils"
+	appi18n "bandcash/internal/i18n"
 )
 
 templ GroupEditPage(data EditGroupPageData) {
@@ -29,21 +24,4 @@ templ GroupEditPage(data EditGroupPageData) {
 			@shared.GroupLayout("group-edit", data.Breadcrumbs, data.UserEmail, shared.AppPrimaryNav("groups", data.UserEmail != ""), GroupEditForm(data))
 		</body>
 	</html>
-}
-
-templ GroupEditForm(data EditGroupPageData) {
-	@shared.GroupTabs(data.GroupID, "users")
-	<h1>{ ctxi18n.T(ctx, "groups.edit") }</h1>
-	<form class="form" data-on:submit={ fmt.Sprintf("@put('/groups/%s')", data.GroupID) } data-indicator:_fetching>
-		<div class="field">
-			<label for="group-edit-name" class="row">{ ctxi18n.T(ctx, "groups.name") } <span class="color-error">*</span></label>
-			<input id="group-edit-name" type="text" data-bind="formData.name" placeholder={ ctxi18n.T(ctx, "groups.name_placeholder") } class="input"/>
-			<div data-show="$errors && $errors.name" class="color-error" data-text="$errors.name"></div>
-		</div>
-		@shared.LoadingSubmitButton(shared.LoadingSubmitButtonProps{
-			ClassName: "btn btn-primary",
-			Label:     ctxi18n.T(ctx, "groups.update"),
-			IconName:  icons.IconSave,
-		})
-	</form>
 }

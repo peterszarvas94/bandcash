@@ -1,0 +1,34 @@
+package dev
+
+import (
+	shared "bandcash/models/shared"
+)
+
+templ TableQueryTestContent() {
+	<div class="row row-wrap">
+		@shared.IDActionButton(shared.IDActionButtonProps{
+			ID:        "query-test-events-valid",
+			ClassName: "btn",
+			Label:     "Events valid query",
+		})
+		@shared.IDActionButton(shared.IDActionButtonProps{
+			ID:        "query-test-events-invalid",
+			ClassName: "btn",
+			Label:     "Events invalid values",
+		})
+		@shared.IDActionButton(shared.IDActionButtonProps{
+			ID:        "query-test-members-valid",
+			ClassName: "btn",
+			Label:     "Members valid query",
+		})
+		@shared.IDActionButton(shared.IDActionButtonProps{
+			ID:        "query-test-expenses-valid",
+			ClassName: "btn",
+			Label:     "Expenses valid query",
+		})
+		<button id="query-test-clear" type="button" class="btn">
+			Clear
+		</button>
+	</div>
+	<pre id="query-test-output">Ready.</pre>
+}

@@ -1,0 +1,9 @@
+package home
+
+import (
+	shared "bandcash/models/shared"
+)
+
+templ HomeRefundPolicy(data HomeData) {
+	@shared.LegalLayout("home-refund", data.Title, data.Breadcrumbs, data.UserEmail, data.IsAuthenticated, HomeRefundPolicyMain())
+}

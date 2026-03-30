@@ -16,6 +16,7 @@ en:
     actions: "Actions"
     logged_in_as: "Logged in as"
   auth:
+    sign_in: "Sign in"
     logout: "Logout"
     email: "Email"
     email_placeholder: "your@email.com"
@@ -140,8 +141,22 @@ en:
         copy_link: "Or copy and paste this link into your browser:"
         contact_admins: "Contact group admins:"
   home:
+    join_for_free: "Join for free"
+    subtitle: "Track shared group money, events, expenses, and payouts in one place."
+    pricing: "Pricing"
     logged_in: "You are already logged in."
     go_to_groups: "Go to Groups"
+  legal:
+    pricing: "Pricing"
+    terms_and_conditions: "Terms and Conditions"
+    privacy_policy: "Privacy Policy"
+    refund_policy: "Refund Policy"
+    page_title_pricing: "Bandcash - Pricing"
+    page_title_terms: "Bandcash - Terms and Conditions"
+    page_title_privacy: "Bandcash - Privacy Policy"
+    page_title_refund: "Bandcash - Refund Policy"
+    under_construction_title: "This page is under construction"
+    under_construction_body: "We are preparing the final legal content. Please check back soon."
   account:
     title: "Account"
     page_title: "Bandcash - Account"

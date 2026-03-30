@@ -2,10 +2,9 @@ package group
 
 import (
 	ctxi18n "github.com/invopop/ctxi18n/i18n"
-
-	"bandcash/internal/utils"
 	shared "bandcash/models/shared"
 	icons "bandcash/models/shared/icons"
+	"bandcash/internal/utils"
 )
 
 templ GroupsMain(data GroupsPageData) {
@@ -18,7 +17,7 @@ templ GroupsMain(data GroupsPageData) {
 			</a>
 		</div>
 	</section>
-	@shared.TableSearchForm("/groups", data.Query, "table.search_placeholder")
+	@shared.TableSearchFormWithClass("/groups", data.Query, "table.search_placeholder", "")
 	@shared.TablePaginationRow("/groups", data.Query, data.Pagination)
 	@shared.TableOpenFixed(data.GroupsTable, "") {
 		<thead>

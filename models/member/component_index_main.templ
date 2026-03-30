@@ -2,7 +2,6 @@ package member
 
 import (
 	"fmt"
-
 	"bandcash/internal/utils"
 	shared "bandcash/models/shared"
 	icons "bandcash/models/shared/icons"
@@ -22,7 +21,7 @@ templ MemberIndexMain(data MembersData) {
 			</div>
 		}
 	</section>
-	@shared.TableSearchForm(fmt.Sprintf("/groups/%s/members", data.GroupID), data.Query, "table.search_placeholder_members")
+	@shared.TableSearchFormWithClass(fmt.Sprintf("/groups/%s/members", data.GroupID), data.Query, "table.search_placeholder_members", "")
 	@shared.TablePaginationRow(fmt.Sprintf("/groups/%s/members", data.GroupID), data.Query, data.Pager)
 	@shared.TableOpenFixed(data.MembersTable, "") {
 		<thead>

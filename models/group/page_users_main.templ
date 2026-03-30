@@ -2,12 +2,10 @@ package group
 
 import (
 	"fmt"
-
 	ctxi18n "github.com/invopop/ctxi18n/i18n"
-
-	"bandcash/internal/utils"
 	shared "bandcash/models/shared"
 	icons "bandcash/models/shared/icons"
+	"bandcash/internal/utils"
 )
 
 templ GroupUsersMain(data UsersPageData) {
@@ -23,7 +21,7 @@ templ GroupUsersMain(data UsersPageData) {
 			</div>
 		}
 	</section>
-	@shared.TableSearchForm(usersTablePath(data.GroupID), data.Query, "table.search_placeholder_users")
+	@shared.TableSearchFormWithClass(usersTablePath(data.GroupID), data.Query, "table.search_placeholder_users", "")
 	@shared.TablePaginationRow(usersTablePath(data.GroupID), data.Query, data.Pager)
 	@shared.TableOpenFixed(data.UsersTable, "") {
 		<thead>

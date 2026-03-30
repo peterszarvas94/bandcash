@@ -1,0 +1,11 @@
+package shared
+
+import (
+	"fmt"
+)
+
+templ THCol(widthCh int) {
+	<th class="col-w" style={ fmt.Sprintf("--w-ch: %d", widthCh) }>
+		{ children... }
+	</th>
+}

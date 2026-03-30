@@ -2,12 +2,10 @@ package expense
 
 import (
 	"fmt"
-
-	ctxi18n "github.com/invopop/ctxi18n/i18n"
-
-	"bandcash/internal/utils"
 	shared "bandcash/models/shared"
 	icons "bandcash/models/shared/icons"
+	ctxi18n "github.com/invopop/ctxi18n/i18n"
+	"bandcash/internal/utils"
 )
 
 templ ExpenseShowMain(data ExpenseData) {
@@ -31,27 +29,29 @@ templ ExpenseShowMain(data ExpenseData) {
 		}
 	</section>
 	<div data-show="$formState !== 'edit'">
-		@shared.DetailsSection(fmt.Sprintf("expense_%s_overview", data.Expense.ID), []shared.DetailsRow{
-			{Label: ctxi18n.T(ctx, "nav.overview"), LabelClass: "section-title", Value: ""},
-			{Label: ctxi18n.T(ctx, "fields.description"), Value: data.Expense.Description},
-			{Label: ctxi18n.T(ctx, "fields.date"), Value: utils.FormatDateLocalized(ctx, data.Expense.Date)},
-			{Label: ctxi18n.T(ctx, "fields.expense"), Value: utils.FormatNumberLocalizedWithSign(ctx, data.Expense.Amount, false), Action: shared.Toggle(shared.ToggleProps{
-				IsOn:         data.Expense.Paid == 1,
-				OnClick:      togglePaidExpr,
-				DisabledExpr: "$_fetching",
-				Off:          ctxi18n.T(ctx, "table.unpaid"),
-				On:           ctxi18n.T(ctx, "table.paid"),
-				ClassName:    "btn btn-xs",
-				OffClass:     "btn-inactive",
-				OnClass:      "btn-success",
-			})},
-			{Label: ctxi18n.T(ctx, "fields.paid_at"), Value: func() string {
-				if !data.Expense.PaidAt.Valid {
-					return "-"
-				}
-				return utils.FormatDateLocalized(ctx, utils.FormatDateInput(data.Expense.PaidAt.String))
-			}()},
-		})
+		<div class="pb">
+			@shared.DetailsCardWithClass(fmt.Sprintf("expense_%s_overview", data.Expense.ID), []shared.DetailsRow{
+				{Label: ctxi18n.T(ctx, "nav.overview"), LabelClass: "section-title", Value: ""},
+				{Label: ctxi18n.T(ctx, "fields.description"), Value: data.Expense.Description},
+				{Label: ctxi18n.T(ctx, "fields.date"), Value: utils.FormatDateLocalized(ctx, data.Expense.Date)},
+				{Label: ctxi18n.T(ctx, "fields.expense"), Value: utils.FormatNumberLocalizedWithSign(ctx, data.Expense.Amount, false), Action: shared.Toggle(shared.ToggleProps{
+					IsOn:         data.Expense.Paid == 1,
+					OnClick:      togglePaidExpr,
+					DisabledExpr: "$_fetching",
+					Off:          ctxi18n.T(ctx, "table.unpaid"),
+					On:           ctxi18n.T(ctx, "table.paid"),
+					ClassName:    "btn btn-xs",
+					OffClass:     "btn-inactive",
+					OnClass:      "btn-success",
+				})},
+				{Label: ctxi18n.T(ctx, "fields.paid_at"), Value: func() string {
+					if !data.Expense.PaidAt.Valid {
+						return "-"
+					}
+					return utils.FormatDateLocalized(ctx, utils.FormatDateInput(data.Expense.PaidAt.String))
+				}()},
+			}, "")
+		</div>
 	</div>
 	if data.IsAdmin {
 		<div data-show="$formState === 'edit'" style="display: none">
@@ -106,32 +106,5 @@ templ ExpenseShowMain(data ExpenseData) {
 				</div>
 			</form>
 		</div>
-	}
-}
-
-templ ExpenseShowDetailsActions(data ExpenseData) {
-	if data.IsAdmin {
-		@shared.ActionButton(shared.ActionButtonProps{
-			ClassName:    "btn btn-primary",
-			OnClick:      "$formState = 'edit'; $errors = {title: '', description: '', amount: '', date: ''}",
-			DisabledExpr: "$formState !== '' || $_fetching",
-			Label:        ctxi18n.T(ctx, "actions.edit"),
-			IconName:     icons.IconPencil,
-		})
-		@shared.SureActionButton(shared.SureActionButtonProps{
-			ClassName:    "btn btn-danger",
-			DisabledExpr: "$formState !== '' || $_fetching",
-			Label:        ctxi18n.T(ctx, "actions.delete"),
-			IconName:     icons.IconTrash2,
-			Dialog: shared.SureDialogProps{
-				Title:       ctxi18n.T(ctx, "expenses.delete_confirm"),
-				Message:     ctxi18n.T(ctx, "confirm.destructive_message"),
-				SubmitLabel: ctxi18n.T(ctx, "actions.delete"),
-				CancelLabel: ctxi18n.T(ctx, "actions.cancel"),
-				Method:      "delete",
-				URL:         fmt.Sprintf("/groups/%s/expenses/%s", data.GroupID, data.Expense.ID),
-				TriggerID:   "expense-show-delete",
-			},
-		})
 	}
 }

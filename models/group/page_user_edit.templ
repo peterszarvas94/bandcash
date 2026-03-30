@@ -1,14 +1,9 @@
 package group
 
 import (
-	"fmt"
-
-	ctxi18n "github.com/invopop/ctxi18n/i18n"
-
-	appi18n "bandcash/internal/i18n"
-	"bandcash/internal/utils"
 	shared "bandcash/models/shared"
-	icons "bandcash/models/shared/icons"
+	"bandcash/internal/utils"
+	appi18n "bandcash/internal/i18n"
 )
 
 templ GroupUserEditPage(data UserEditPageData) {
@@ -28,27 +23,4 @@ templ GroupUserEditPage(data UserEditPageData) {
 			@shared.GroupLayout("group-user-edit", data.Breadcrumbs, data.UserEmail, shared.AppPrimaryNav("groups", data.UserEmail != ""), GroupUserEditForm(data))
 		</body>
 	</html>
-}
-
-templ GroupUserEditForm(data UserEditPageData) {
-	@shared.GroupTabs(data.GroupID, "users")
-	<h1>{ ctxi18n.T(ctx, "actions.edit") }</h1>
-	<form class="form" data-on:submit={ fmt.Sprintf("($formData.role === 'admin' ? @put('/groups/%s/users/%s/admin') : @put('/groups/%s/users/%s/viewer'))", data.GroupID, data.UserRow.UserID, data.GroupID, data.UserRow.UserID) } data-indicator:_fetching>
-		<div class="field">
-			<label for="group-user-edit-email">{ ctxi18n.T(ctx, "auth.email") }</label>
-			<input id="group-user-edit-email" class="input" type="text" value={ data.UserRow.Email } disabled/>
-		</div>
-		<div class="field">
-			<label for="group-user-edit-role" class="row">{ ctxi18n.T(ctx, "fields.role") } <span class="color-error">*</span></label>
-			<select id="group-user-edit-role" data-bind="formData.role" class="input">
-				<option value="viewer">{ ctxi18n.T(ctx, "groups.role_viewer") }</option>
-				<option value="admin">{ ctxi18n.T(ctx, "groups.role_admin") }</option>
-			</select>
-		</div>
-		@shared.LoadingSubmitButton(shared.LoadingSubmitButtonProps{
-			ClassName: "btn btn-primary",
-			Label:     ctxi18n.T(ctx, "groups.update"),
-			IconName:  icons.IconSave,
-		})
-	</form>
 }

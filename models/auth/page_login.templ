@@ -1,64 +1,21 @@
 package auth
 
 import (
-	
-	ctxi18n "github.com/invopop/ctxi18n/i18n"
-
-	appi18n "bandcash/internal/i18n"
-	"bandcash/internal/utils"
 	shared "bandcash/models/shared"
-	icons "bandcash/models/shared/icons"
+	"bandcash/internal/utils"
 )
 
 templ LoginPage(data AuthPageData) {
 	{{ tabID := utils.GenerateID("tab") }}
-	<!DOCTYPE html>
-	<html lang={ appi18n.LocaleCode(ctx) }>
-		@shared.Head(data.Title)
-		<body>
-			<div data-signals={templ.JSONString(map[string]any{"tab_id": tabID, "csrf": utils.CSRFTokenFromContext(ctx), "authError": "", "authServerError": "", "authState": "form", "submittedEmail": "", "submittedEmailMasked": "", "resendRemaining": 0, "formData": map[string]any{"email": ""}})} data-init="@get('/sse')"></div>
-			@shared.Notifications()
-			@shared.GroupLayout("auth-login", data.Breadcrumbs, data.UserEmail, shared.AppPrimaryNav("", data.UserEmail != ""), LoginMain())
-		</body>
-	</html>
-}
-
-templ LoginMain() {
-	<div data-show="$authState === 'form'">
-		<form class="form" data-on:submit="@post('/auth/login')" data-indicator:_fetching>
-			<div class="field">
-				<label for="auth-login-email" class="row">{ ctxi18n.T(ctx, "auth.email") } <span class="color-error">*</span></label>
-				<input id="auth-login-email" type="email" data-bind="formData.email" placeholder={ ctxi18n.T(ctx, "auth.email_placeholder") } class="input"/>
-				<div data-show="$authError !== ''" class="color-error" data-text="$authError"></div>
-				<div data-show="$authServerError !== ''" class="color-error" data-text="$authServerError"></div>
-			</div>
-		@shared.LoadingSubmitButton(shared.LoadingSubmitButtonProps{
-			ClassName: "btn btn-primary",
-			Label:     ctxi18n.T(ctx, "auth.send_link"),
-			IconName:  icons.IconSend,
-		})
-		</form>
-	</div>
-	<div data-show="$authState === 'sent'" style="display: none" class="form">
-		<div data-show="$authState === 'sent'" data-on-interval__duration.1s="$resendRemaining = Math.max(0, $resendRemaining - 1)" style="display: none"></div>
-		<p>{ ctxi18n.T(ctx, "auth.check_email_safe") }</p>
-		<p><strong>{ ctxi18n.T(ctx, "auth.masked_email") }:</strong> <span data-text="$submittedEmailMasked"></span></p>
-		<div class="row row-wrap">
-			@shared.LoadingActionButton(shared.LoadingActionButtonProps{
-				ClassName:     "btn",
-				OnClick:       "@post('/auth/login')",
-				DisabledExpr:  "$_fetching || $resendRemaining > 0",
-				Label:         ctxi18n.T(ctx, "auth.resend_email"),
-				IconName:      icons.IconSend,
-			})
-			<span data-show="$resendRemaining > 0" data-text="'(' + $resendRemaining + 's)'"></span>
-			@shared.LoadingActionButton(shared.LoadingActionButtonProps{
-				ClassName:     "btn",
-				OnClick:       "$authState = 'form'; $authError = ''; $authServerError = ''; $formData.email = $submittedEmail",
-				DisabledExpr:  "$_fetching",
-				Label:         ctxi18n.T(ctx, "auth.use_different_email"),
-				IconName:      icons.IconPencil,
-			})
-		</div>
-	</div>
+	@shared.HomeLayout(
+		"auth-login",
+		data.Title,
+		map[string]any{"tab_id": tabID, "csrf": utils.CSRFTokenFromContext(ctx), "authError": "", "authServerError": "", "authState": "form", "submittedEmail": "", "submittedEmailMasked": "", "resendRemaining": 0, "formData": map[string]any{"email": ""}},
+		data.Breadcrumbs,
+		data.UserEmail,
+		data.CurrentLang,
+		"/login",
+		data.IsAuthenticated,
+		LoginMain(),
+	)
 }

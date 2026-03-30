@@ -1,0 +1,43 @@
+package dev
+
+import (
+	icons "bandcash/models/shared/icons"
+)
+
+templ LoadingIndicatorContent() {
+	<div class="row row-wrap">
+		<form data-on:submit="@post('/dev/spinner')" data-indicator:_fetching>
+			<button class="btn" type="submit" data-on:click="$activeSpinner = 'request'" data-attr:disabled="$_fetching">
+				<span data-show="$_fetching && $activeSpinner === 'request'" style="display: none">
+					@icons.LoaderCircle(templ.Attributes{"class": "icon icon-spin"})
+				</span>
+				<span data-show="!($_fetching && $activeSpinner === 'request')">
+					@icons.Play(templ.Attributes{"class": "icon"})
+				</span>
+				<span>Spinner 500ms</span>
+			</button>
+		</form>
+		<form data-on:submit="@post('/dev/spinner?ms=750')" data-indicator:_fetching>
+			<button class="btn" type="submit" data-on:click="$activeSpinner = 'quick'" data-attr:disabled="$_fetching">
+				<span data-show="$_fetching && $activeSpinner === 'quick'" style="display: none">
+					@icons.LoaderCircle(templ.Attributes{"class": "icon icon-spin"})
+				</span>
+				<span data-show="!($_fetching && $activeSpinner === 'quick')">
+					@icons.Play(templ.Attributes{"class": "icon"})
+				</span>
+				<span>Spinner 750ms</span>
+			</button>
+		</form>
+		<form data-on:submit="@post('/dev/spinner?ms=3000')" data-indicator:_fetching>
+			<button class="btn" type="submit" data-on:click="$activeSpinner = 'slow'" data-attr:disabled="$_fetching">
+				<span data-show="$_fetching && $activeSpinner === 'slow'" style="display: none">
+					@icons.LoaderCircle(templ.Attributes{"class": "icon icon-spin"})
+				</span>
+				<span data-show="!($_fetching && $activeSpinner === 'slow')">
+					@icons.Play(templ.Attributes{"class": "icon"})
+				</span>
+				<span>Spinner 3000ms</span>
+			</button>
+		</form>
+	</div>
+}

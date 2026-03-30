@@ -64,6 +64,20 @@ func maskEmail(email string) string {
 	return maskedLocal + "@" + maskedDomain
 }
 
+func authSessionUser(c echo.Context) (bool, string) {
+	if cookie, err := c.Cookie(utils.SessionCookieName); err == nil && cookie.Value != "" {
+		if session, err := db.Qry.GetUserSessionByToken(c.Request().Context(), cookie.Value); err == nil {
+			if user, err := db.Qry.GetUserByID(c.Request().Context(), session.UserID); err == nil {
+				return true, user.Email
+			}
+
+			return true, ""
+		}
+	}
+
+	return false, ""
+}
+
 func (a *Auth) patchLoginSentState(c echo.Context, emailAddress string) {
 	_ = utils.SSEHub.PatchSignals(c, map[string]any{
 		"authError":            "",
@@ -90,7 +104,19 @@ func (a *Auth) renderVerifyLinkError(c echo.Context, status int) error {
 
 // LoginPage shows the login form
 func (a *Auth) LoginPage(c echo.Context) error {
-	return c.Redirect(http.StatusFound, "/")
+	utils.EnsureTabID(c)
+
+	ctx := c.Request().Context()
+	isAuthenticated, userEmail := authSessionUser(c)
+	data := AuthPageData{
+		Title:           ctxi18n.T(ctx, "auth.sign_in") + " - Bandcash",
+		Breadcrumbs:     []utils.Crumb{{Label: ctxi18n.T(ctx, "auth.sign_in")}},
+		CurrentLang:     appi18n.LocaleCode(ctx),
+		IsAuthenticated: isAuthenticated,
+		UserEmail:       userEmail,
+	}
+
+	return utils.RenderPage(c, LoginPage(data))
 }
 
 // LoginRequest handles login form submission (sends magic link)
@@ -188,7 +214,7 @@ func (a *Auth) LoginRequest(c echo.Context) error {
 
 // LoginSentPage shows confirmation that email was sent
 func (a *Auth) LoginSentPage(c echo.Context) error {
-	return c.Redirect(http.StatusFound, "/")
+	return c.Redirect(http.StatusFound, "/login")
 }
 
 // VerifyMagicLink handles the magic link verification
@@ -251,7 +277,7 @@ func (a *Auth) VerifyMagicLink(c echo.Context) error {
 	}
 	if bannedCount > 0 {
 		utils.Notify(c, "error", ctxi18n.T(c.Request().Context(), "auth.banned"))
-		return c.Redirect(http.StatusFound, "/auth/login")
+		return c.Redirect(http.StatusFound, "/login")
 	}
 
 	// Create session

@@ -36,6 +36,20 @@ type devTabSignals struct {
 
 var devErrorFields = []string{"name"}
 
+func devSessionUser(c echo.Context) (bool, string) {
+	if cookie, err := c.Cookie(utils.SessionCookieName); err == nil && cookie.Value != "" {
+		if session, err := db.Qry.GetUserSessionByToken(c.Request().Context(), cookie.Value); err == nil {
+			if user, err := db.Qry.GetUserByID(c.Request().Context(), session.UserID); err == nil {
+				return true, user.Email
+			}
+
+			return true, ""
+		}
+	}
+
+	return false, ""
+}
+
 func (h *DevNotifications) DevPageHandler(c echo.Context) error {
 	utils.EnsureTabID(c)
 	selector := strings.TrimSpace(c.QueryParam("selector"))
@@ -44,7 +58,8 @@ func (h *DevNotifications) DevPageHandler(c echo.Context) error {
 	default:
 		selector = "all"
 	}
-	return utils.RenderPage(c, DevPage(selector))
+	isAuthenticated, userEmail := devSessionUser(c)
+	return utils.RenderPage(c, DevPage(selector, isAuthenticated, userEmail))
 }
 
 func (h *DevNotifications) TestInline(c echo.Context) error {

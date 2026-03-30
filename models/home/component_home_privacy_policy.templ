@@ -1,0 +1,9 @@
+package home
+
+import (
+	shared "bandcash/models/shared"
+)
+
+templ HomePrivacyPolicy(data HomeData) {
+	@shared.LegalLayout("home-privacy", data.Title, data.Breadcrumbs, data.UserEmail, data.IsAuthenticated, HomePrivacyPolicyMain())
+}

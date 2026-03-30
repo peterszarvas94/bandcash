@@ -1,0 +1,10 @@
+package shared
+
+templ Details(summary string, content templ.Component) {
+	{{ _ = summary }}
+	<div class="pb">
+		<div class="detail-box">
+			@content
+		</div>
+	</div>
+}
