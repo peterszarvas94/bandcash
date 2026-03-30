@@ -26,20 +26,12 @@ templ NotificationsContent() {
 	</form>
 	<div class="row row-wrap">
 		@shared.LoadingActionButtonWithSignal(shared.LoadingActionButtonWithSignalProps{
-			ClassName:     "btn",
+			ClassName:     "btn btn-info",
 			OnClick:       "@post('/dev/notifications/info')",
 			DisabledExpr:  "$_notifyInfo",
 			Label:         "Info",
 			IconName:      icons.IconInfo,
 			LoadingSignal: "_notifyInfo",
-		})
-		@shared.LoadingActionButtonWithSignal(shared.LoadingActionButtonWithSignalProps{
-			ClassName:     "btn btn-warning",
-			OnClick:       "@post('/dev/notifications/warning')",
-			DisabledExpr:  "$_notifyWarning",
-			Label:         "Warning",
-			IconName:      icons.IconTriangleAlert,
-			LoadingSignal: "_notifyWarning",
 		})
 		@shared.LoadingActionButtonWithSignal(shared.LoadingActionButtonWithSignalProps{
 			ClassName:     "btn btn-success",
@@ -50,7 +42,15 @@ templ NotificationsContent() {
 			LoadingSignal: "_notifySuccess",
 		})
 		@shared.LoadingActionButtonWithSignal(shared.LoadingActionButtonWithSignalProps{
-			ClassName:     "btn btn-danger",
+			ClassName:     "btn btn-warning",
+			OnClick:       "@post('/dev/notifications/warning')",
+			DisabledExpr:  "$_notifyWarning",
+			Label:         "Warning",
+			IconName:      icons.IconTriangleAlert,
+			LoadingSignal: "_notifyWarning",
+		})
+		@shared.LoadingActionButtonWithSignal(shared.LoadingActionButtonWithSignalProps{
+			ClassName:     "btn btn-error",
 			OnClick:       "@post('/dev/notifications/error')",
 			DisabledExpr:  "$_notifyError",
 			Label:         "Error",

@@ -37,21 +37,21 @@ templ EventTotalsContent(data EventsData) {
 				<dd>
 					<div class="detail-box-controls" role="radiogroup" aria-label={ ctxi18n.T(ctx, "table.paid") }>
 						@shared.RadioLink(shared.RadioLinkProps{
-							Href:       utils.BuildTableSummaryURL(fmt.Sprintf("/groups/%s/events", data.GroupID), data.Query, utils.SummaryModeAll),
+							Href:       utils.BuildTableSummaryURL(fmt.Sprintf("/groups/%s/overview", data.GroupID), data.Query, utils.SummaryModeAll),
 							Label:      ctxi18n.T(ctx, "table.all"),
 							IsSelected: data.Query.Summary == utils.SummaryModeAll,
 							NoIcon:     true,
 							ClassName:  "btn btn-xs",
 						})
 						@shared.RadioLink(shared.RadioLinkProps{
-							Href:       utils.BuildTableSummaryURL(fmt.Sprintf("/groups/%s/events", data.GroupID), data.Query, utils.SummaryModePaid),
+							Href:       utils.BuildTableSummaryURL(fmt.Sprintf("/groups/%s/overview", data.GroupID), data.Query, utils.SummaryModePaid),
 							Label:      ctxi18n.T(ctx, "table.paid"),
 							IsSelected: data.Query.Summary == utils.SummaryModePaid,
 							NoIcon:     true,
 							ClassName:  "btn btn-xs",
 						})
 						@shared.RadioLink(shared.RadioLinkProps{
-							Href:       utils.BuildTableSummaryURL(fmt.Sprintf("/groups/%s/events", data.GroupID), data.Query, utils.SummaryModeUnpaid),
+							Href:       utils.BuildTableSummaryURL(fmt.Sprintf("/groups/%s/overview", data.GroupID), data.Query, utils.SummaryModeUnpaid),
 							Label:      ctxi18n.T(ctx, "table.unpaid"),
 							IsSelected: data.Query.Summary == utils.SummaryModeUnpaid,
 							NoIcon:     true,

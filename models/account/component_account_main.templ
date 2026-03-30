@@ -6,9 +6,7 @@ import (
 )
 
 templ AccountMain(data AccountData) {
-	<header class="page-header">
-		<h1>{ ctxi18n.T(ctx, "account.account") }</h1>
-	</header>
+	<h1>{ ctxi18n.T(ctx, "account.account") }</h1>
 	@shared.Section("", LanguageForm(data.CurrentLang))
 	@shared.Section("", AccountContent(data))
 }

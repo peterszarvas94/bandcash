@@ -38,7 +38,7 @@ func ToggleVariantsContent() templ.Component {
 			return templ_7745c5c3_Err
 		}
 		templ_7745c5c3_Err = shared.Toggle(shared.ToggleProps{
-			Bind:         "toggleDefault",
+			Bind:         "toggle1",
 			DisabledExpr: "$_fetching",
 			Off:          "Toggle off",
 			On:           "Toggle on",
@@ -47,7 +47,7 @@ func ToggleVariantsContent() templ.Component {
 			return templ_7745c5c3_Err
 		}
 		templ_7745c5c3_Err = shared.Toggle(shared.ToggleProps{
-			Bind:         "toggleSuccess",
+			Bind:         "toggle2",
 			DisabledExpr: "$_fetching",
 			Off:          "Toggle off",
 			On:           "Toggle on",
@@ -57,7 +57,7 @@ func ToggleVariantsContent() templ.Component {
 			return templ_7745c5c3_Err
 		}
 		templ_7745c5c3_Err = shared.Toggle(shared.ToggleProps{
-			Bind:         "toggleWarning",
+			Bind:         "toggle3",
 			DisabledExpr: "$_fetching",
 			Off:          "Toggle off",
 			On:           "Toggle on",
@@ -67,11 +67,11 @@ func ToggleVariantsContent() templ.Component {
 			return templ_7745c5c3_Err
 		}
 		templ_7745c5c3_Err = shared.Toggle(shared.ToggleProps{
-			Bind:         "toggleDanger",
+			Bind:         "toggle4",
 			DisabledExpr: "$_fetching",
 			Off:          "Toggle off",
 			On:           "Toggle on",
-			OnClass:      "btn-danger",
+			OnClass:      "btn-error",
 		}).Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err

@@ -31,7 +31,7 @@ templ GroupsTableSection(data DashboardData) {
 			<tbody>
 				for _, group := range data.Groups {
 					<tr>
-					<td><a class="table-link" href={ fmt.Sprintf("/groups/%s/events", group.ID) }>{ group.Name }</a></td>
+					<td><a class="table-link" href={ fmt.Sprintf("/groups/%s/overview", group.ID) }>{ group.Name }</a></td>
 						<td>{ group.AdminUserID }</td>
 						<td></td>
 						<td>

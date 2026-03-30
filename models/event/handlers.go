@@ -425,8 +425,8 @@ func (e *Events) NewEventPage(c echo.Context) error {
 		Title: ctxi18n.T(c.Request().Context(), "events.page_title"),
 		Breadcrumbs: []utils.Crumb{
 			{Label: ctxi18n.T(c.Request().Context(), "groups.title"), Href: "/groups"},
-			{Label: group.Name, Href: "/groups/" + groupID + "/events"},
-			{Label: ctxi18n.T(c.Request().Context(), "events.title"), Href: "/groups/" + groupID + "/events"},
+			{Label: group.Name, Href: "/groups/" + groupID + "/overview"},
+			{Label: ctxi18n.T(c.Request().Context(), "groups.overview"), Href: "/groups/" + groupID + "/overview"},
 			{Label: ctxi18n.T(c.Request().Context(), "events.add")},
 		},
 		UserEmail: userEmail,
@@ -465,8 +465,8 @@ func (e *Events) EditEventPage(c echo.Context) error {
 		Title: ctxi18n.T(c.Request().Context(), "events.page_title"),
 		Breadcrumbs: []utils.Crumb{
 			{Label: ctxi18n.T(c.Request().Context(), "groups.title"), Href: "/groups"},
-			{Label: group.Name, Href: "/groups/" + groupID + "/events"},
-			{Label: ctxi18n.T(c.Request().Context(), "events.title"), Href: "/groups/" + groupID + "/events"},
+			{Label: group.Name, Href: "/groups/" + groupID + "/overview"},
+			{Label: ctxi18n.T(c.Request().Context(), "groups.overview"), Href: "/groups/" + groupID + "/overview"},
 			{Label: event.Title, Href: "/groups/" + groupID + "/events/" + id},
 			{Label: ctxi18n.T(c.Request().Context(), "events.edit")},
 		},
@@ -532,7 +532,7 @@ func (e *Events) Create(c echo.Context) error {
 	// Clear cache to ensure fresh data on next load
 	utils.InvalidateGroupCaches(groupID)
 
-	err = utils.SSEHub.Redirect(c, "/groups/"+groupID+"/events")
+	err = utils.SSEHub.Redirect(c, "/groups/"+groupID+"/overview")
 	if err != nil {
 		slog.Warn("event.create: failed to redirect", "err", err)
 	}
@@ -650,7 +650,7 @@ func (e *Events) Destroy(c echo.Context) error {
 	utils.Notify(c, "success", ctxi18n.T(c.Request().Context(), "events.notifications.deleted"))
 
 	if signals.Mode == "single" {
-		err = utils.SSEHub.Redirect(c, "/groups/"+groupID+"/events")
+		err = utils.SSEHub.Redirect(c, "/groups/"+groupID+"/overview")
 		if err != nil {
 			slog.Warn("event.destroy: failed to redirect", "err", err)
 		}

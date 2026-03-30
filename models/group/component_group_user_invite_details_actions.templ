@@ -9,7 +9,7 @@ import (
 
 templ GroupUserInviteDetailsActions(data UserInvitePageData) {
 	@shared.SureActionButton(shared.SureActionButtonProps{
-		ClassName:    "btn btn-danger",
+		ClassName:    "btn btn-sm btn-error",
 		DisabledExpr: "$_fetching",
 		Label:        ctxi18n.T(ctx, "actions.delete"),
 		IconName:     icons.IconTrash2,

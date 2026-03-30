@@ -16,14 +16,12 @@ templ EventShowMain(data EventData) {
 		cancelParticipantsEditExpr := fmt.Sprintf("@delete('/groups/%s/events/%s/participants/draft')", data.GroupID, data.Event.ID)
 		togglePaidExpr := fmt.Sprintf("@put('/groups/%s/events/%s/toggle-paid', {mode: 'single'})", data.GroupID, data.Event.ID)
 	}}
-	<header class="page-header">
-		<h1>{ data.Event.Title }</h1>
-		if data.IsAdmin {
-			<div class="actions" data-show="$participantEditorMode === 'read'">
-				@ReadModeActions(data)
-			</div>
-		}
-	</header>
+	<h1>{ data.Event.Title }</h1>
+	if data.IsAdmin {
+		<div class="row row-wrap pb" data-show="$participantEditorMode === 'read'">
+			@ReadModeActions(data)
+		</div>
+	}
 	<div data-show="$participantEditorMode === 'read'">
 		@shared.DetailsCardWithClass(fmt.Sprintf("event_%s_overview", data.Event.ID), []shared.DetailsRow{
 			{Label: ctxi18n.T(ctx, "nav.overview"), LabelClass: "section-title", Value: ""},
@@ -322,7 +320,7 @@ templ EventShowMain(data EventData) {
 											IconName:     icons.IconCopy,
 										})
 										@shared.IconActionButton(shared.IconActionButtonProps{
-											ClassName:    "btn btn-ghost btn-sm btn-danger btn-icon",
+									ClassName:    "btn btn-ghost btn-sm btn-error btn-icon",
 											OnClick:      removeDraftExpr,
 											DisabledExpr: "$_fetching",
 											AriaLabel:    ctxi18n.T(ctx, "actions.delete"),

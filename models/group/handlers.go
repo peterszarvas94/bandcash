@@ -112,7 +112,7 @@ func (g *Group) EditGroupPage(c echo.Context) error {
 		Title: ctxi18n.T(c.Request().Context(), "groups.page_title"),
 		Breadcrumbs: []utils.Crumb{
 			{Label: ctxi18n.T(c.Request().Context(), "groups.title"), Href: "/groups"},
-			{Label: group.Name, Href: "/groups/" + group.ID + "/events"},
+			{Label: group.Name, Href: "/groups/" + group.ID + "/overview"},
 			{Label: ctxi18n.T(c.Request().Context(), "groups.edit")},
 		},
 		UserEmail: userEmail,
@@ -170,7 +170,7 @@ func (g *Group) CreateGroup(c echo.Context) error {
 	utils.Notify(c, "success", ctxi18n.T(c.Request().Context(), "groups.messages.created"))
 
 	// Redirect to group events
-	err = utils.SSEHub.Redirect(c, "/groups/"+group.ID+"/events")
+	err = utils.SSEHub.Redirect(c, "/groups/"+group.ID+"/overview")
 	if err != nil {
 		return c.NoContent(http.StatusInternalServerError)
 	}
@@ -204,7 +204,7 @@ func (g *Group) GroupsPage(c echo.Context) error {
 // GroupPage shows group details and admin actions.
 func (g *Group) GroupPage(c echo.Context) error {
 	groupID := middleware.GetGroupID(c)
-	return c.Redirect(http.StatusFound, "/groups/"+groupID+"/events")
+	return c.Redirect(http.StatusFound, "/groups/"+groupID+"/overview")
 }
 
 // UpdateGroup updates group name (admin only).
@@ -236,7 +236,7 @@ func (g *Group) UpdateGroup(c echo.Context) error {
 
 	utils.Notify(c, "success", ctxi18n.T(c.Request().Context(), "groups.messages.updated"))
 
-	err = utils.SSEHub.Redirect(c, "/groups/"+groupID+"/events")
+	err = utils.SSEHub.Redirect(c, "/groups/"+groupID+"/overview")
 	if err != nil {
 		return c.NoContent(http.StatusInternalServerError)
 	}
@@ -438,7 +438,7 @@ func (g *Group) UsersNewPage(c echo.Context) error {
 		Title: ctxi18n.T(c.Request().Context(), "groups.users_page_title"),
 		Breadcrumbs: []utils.Crumb{
 			{Label: ctxi18n.T(c.Request().Context(), "groups.title"), Href: "/groups"},
-			{Label: group.Name, Href: "/groups/" + groupID + "/events"},
+			{Label: group.Name, Href: "/groups/" + groupID + "/overview"},
 			{Label: ctxi18n.T(c.Request().Context(), "groups.users"), Href: "/groups/" + groupID + "/users"},
 			{Label: ctxi18n.T(c.Request().Context(), "groups.invite_user")},
 		},
@@ -488,7 +488,7 @@ func (g *Group) UserEditPage(c echo.Context) error {
 		Title: ctxi18n.T(ctx, "groups.users_page_title"),
 		Breadcrumbs: []utils.Crumb{
 			{Label: ctxi18n.T(ctx, "groups.title"), Href: "/groups"},
-			{Label: group.Name, Href: "/groups/" + groupID + "/events"},
+			{Label: group.Name, Href: "/groups/" + groupID + "/overview"},
 			{Label: ctxi18n.T(ctx, "groups.users"), Href: "/groups/" + groupID + "/users"},
 			{Label: user.Email, Href: "/groups/" + groupID + "/users/" + user.ID},
 			{Label: ctxi18n.T(ctx, "actions.edit")},
@@ -557,7 +557,7 @@ func (g *Group) UserPage(c echo.Context) error {
 		Title: ctxi18n.T(ctx, "groups.users_page_title"),
 		Breadcrumbs: []utils.Crumb{
 			{Label: ctxi18n.T(ctx, "groups.title"), Href: "/groups"},
-			{Label: group.Name, Href: "/groups/" + groupID + "/events"},
+			{Label: group.Name, Href: "/groups/" + groupID + "/overview"},
 			{Label: ctxi18n.T(ctx, "groups.users"), Href: "/groups/" + groupID + "/users"},
 			{Label: user.Email},
 		},
@@ -626,7 +626,7 @@ func (g *Group) UserInvitePage(c echo.Context) error {
 		Title: ctxi18n.T(ctx, "groups.users_page_title"),
 		Breadcrumbs: []utils.Crumb{
 			{Label: ctxi18n.T(ctx, "groups.title"), Href: "/groups"},
-			{Label: group.Name, Href: "/groups/" + groupID + "/events"},
+			{Label: group.Name, Href: "/groups/" + groupID + "/overview"},
 			{Label: ctxi18n.T(ctx, "groups.users"), Href: "/groups/" + groupID + "/users"},
 			{Label: row.Email},
 		},
@@ -1053,7 +1053,7 @@ func (g *Group) usersPageData(c echo.Context, groupID string, values url.Values)
 		Title: ctxi18n.T(ctx, "groups.users_page_title"),
 		Breadcrumbs: []utils.Crumb{
 			{Label: ctxi18n.T(ctx, "groups.title"), Href: "/groups"},
-			{Label: group.Name, Href: "/groups/" + group.ID + "/events"},
+			{Label: group.Name, Href: "/groups/" + group.ID + "/overview"},
 			{Label: ctxi18n.T(ctx, "groups.users"), Href: "/groups/" + group.ID + "/users"},
 		},
 		UserEmail:     getUserEmail(c),
@@ -1403,7 +1403,7 @@ func (g *Group) groupPageData(c echo.Context, groupID string) (GroupPageData, er
 
 	return GroupPageData{
 		Title:          "Bandcash - " + group.Name,
-		Breadcrumbs:    []utils.Crumb{{Label: ctxi18n.T(ctx, "groups.title"), Href: "/groups"}, {Label: group.Name, Href: "/groups/" + groupID + "/events"}, {Label: ctxi18n.T(ctx, "nav.overview")}},
+		Breadcrumbs:    []utils.Crumb{{Label: ctxi18n.T(ctx, "groups.title"), Href: "/groups"}, {Label: group.Name, Href: "/groups/" + groupID + "/overview"}, {Label: ctxi18n.T(ctx, "groups.overview")}},
 		UserEmail:      getUserEmail(c),
 		Group:          group,
 		Admin:          admin,

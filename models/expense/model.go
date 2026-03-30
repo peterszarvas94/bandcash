@@ -191,7 +191,7 @@ func (e *Expenses) buildExpensesData(ctx context.Context, groupID string, group 
 		FilteredUnpaid:     totals.Unpaid,
 		Breadcrumbs: []utils.Crumb{
 			{Label: ctxi18n.T(ctx, "groups.title"), Href: "/groups"},
-			{Label: group.Name, Href: "/groups/" + groupID + "/events"},
+			{Label: group.Name, Href: "/groups/" + groupID + "/overview"},
 			{Label: ctxi18n.T(ctx, "expenses.title")},
 		},
 		ExpensesTable: utils.ExpensesIndexTableLayout(),
@@ -218,7 +218,7 @@ func (e *Expenses) GetShowData(ctx context.Context, groupID, expenseID string) (
 		GroupID: groupID,
 		Breadcrumbs: []utils.Crumb{
 			{Label: ctxi18n.T(ctx, "groups.title"), Href: "/groups"},
-			{Label: group.Name, Href: "/groups/" + groupID + "/events"},
+			{Label: group.Name, Href: "/groups/" + groupID + "/overview"},
 			{Label: ctxi18n.T(ctx, "expenses.title"), Href: "/groups/" + groupID + "/expenses"},
 			{Label: expense.Title},
 		},

@@ -226,7 +226,7 @@ func UsersTableSection(data DashboardData) templ.Component {
 					}
 				} else {
 					templ_7745c5c3_Err = shared.LoadingIconActionButton(shared.LoadingIconActionButtonProps{
-						ClassName:    "btn btn-sm btn-danger btn-icon",
+						ClassName:    "btn btn-sm btn-error btn-icon",
 						OnClick:      fmt.Sprintf("@post('/admin/users/%s/ban')", user.ID),
 						DisabledExpr: "$_fetching",
 						AriaLabel:    ctxi18n.T(ctx, "admin.users.ban"),

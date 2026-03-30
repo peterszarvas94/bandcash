@@ -281,7 +281,7 @@ func SessionsTableSection(data DashboardData) templ.Component {
 					return templ_7745c5c3_Err
 				}
 				templ_7745c5c3_Err = shared.LoadingIconActionButton(shared.LoadingIconActionButtonProps{
-					ClassName:    "btn btn-sm btn-danger btn-icon",
+					ClassName:    "btn btn-sm btn-error btn-icon",
 					OnClick:      fmt.Sprintf("@delete('/admin/users/%s/sessions/%s')", session.UserID, session.ID),
 					DisabledExpr: "$_fetching",
 					AriaLabel:    ctxi18n.T(ctx, "auth.logout"),

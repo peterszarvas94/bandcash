@@ -21,7 +21,7 @@ templ GroupEditPage(data EditGroupPageData) {
 				"errors": map[string]any{"name": ""},
 			}) } data-init="@get('/sse')"></div>
 			@shared.Notifications()
-			@shared.GroupLayout("group-edit", data.Breadcrumbs, data.UserEmail, shared.AppPrimaryNav("/groups", data.UserEmail != ""), shared.GroupTabs(data.GroupID, "users"), GroupEditForm(data))
+			@shared.GroupLayout("group-edit", data.Breadcrumbs, data.UserEmail, shared.AppPrimaryNav("/groups", data.UserEmail != ""), shared.GroupTabs(data.GroupID, "events"), GroupEditForm(data))
 		</body>
 	</html>
 }

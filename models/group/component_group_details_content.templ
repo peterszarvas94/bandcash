@@ -8,14 +8,12 @@ import (
 )
 
 templ GroupDetailsContent(data GroupPageData) {
-	<header class="page-header">
-		<h1>{ data.Group.Name }</h1>
-		if data.IsAdmin {
-			<div class="actions">
-				@GroupDetailsActions(data)
-			</div>
-		}
-	</header>
+	<h1>{ data.Group.Name }</h1>
+	if data.IsAdmin {
+		<div class="row row-wrap pb">
+			@GroupDetailsActions(data)
+		</div>
+	}
 	<div class="pb">
 		@shared.DetailsCardWithClass(fmt.Sprintf("group_%s_overview", data.Group.ID), []shared.DetailsRow{
 			{Label: ctxi18n.T(ctx, "nav.overview"), LabelClass: "section-title", Value: ""},

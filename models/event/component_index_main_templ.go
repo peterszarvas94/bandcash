@@ -137,7 +137,7 @@ func EventTotalsContent(data EventsData) templ.Component {
 			return templ_7745c5c3_Err
 		}
 		templ_7745c5c3_Err = shared.RadioLink(shared.RadioLinkProps{
-			Href:       utils.BuildTableSummaryURL(fmt.Sprintf("/groups/%s/events", data.GroupID), data.Query, utils.SummaryModeAll),
+			Href:       utils.BuildTableSummaryURL(fmt.Sprintf("/groups/%s/overview", data.GroupID), data.Query, utils.SummaryModeAll),
 			Label:      ctxi18n.T(ctx, "table.all"),
 			IsSelected: data.Query.Summary == utils.SummaryModeAll,
 			NoIcon:     true,
@@ -147,7 +147,7 @@ func EventTotalsContent(data EventsData) templ.Component {
 			return templ_7745c5c3_Err
 		}
 		templ_7745c5c3_Err = shared.RadioLink(shared.RadioLinkProps{
-			Href:       utils.BuildTableSummaryURL(fmt.Sprintf("/groups/%s/events", data.GroupID), data.Query, utils.SummaryModePaid),
+			Href:       utils.BuildTableSummaryURL(fmt.Sprintf("/groups/%s/overview", data.GroupID), data.Query, utils.SummaryModePaid),
 			Label:      ctxi18n.T(ctx, "table.paid"),
 			IsSelected: data.Query.Summary == utils.SummaryModePaid,
 			NoIcon:     true,
@@ -157,7 +157,7 @@ func EventTotalsContent(data EventsData) templ.Component {
 			return templ_7745c5c3_Err
 		}
 		templ_7745c5c3_Err = shared.RadioLink(shared.RadioLinkProps{
-			Href:       utils.BuildTableSummaryURL(fmt.Sprintf("/groups/%s/events", data.GroupID), data.Query, utils.SummaryModeUnpaid),
+			Href:       utils.BuildTableSummaryURL(fmt.Sprintf("/groups/%s/overview", data.GroupID), data.Query, utils.SummaryModeUnpaid),
 			Label:      ctxi18n.T(ctx, "table.unpaid"),
 			IsSelected: data.Query.Summary == utils.SummaryModeUnpaid,
 			NoIcon:     true,

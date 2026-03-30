@@ -109,7 +109,7 @@ func (e *Expenses) NewExpensePage(c echo.Context) error {
 		Title: ctxi18n.T(c.Request().Context(), "expenses.page_title"),
 		Breadcrumbs: []utils.Crumb{
 			{Label: ctxi18n.T(c.Request().Context(), "groups.title"), Href: "/groups"},
-			{Label: group.Name, Href: "/groups/" + groupID + "/events"},
+			{Label: group.Name, Href: "/groups/" + groupID + "/overview"},
 			{Label: ctxi18n.T(c.Request().Context(), "expenses.title"), Href: "/groups/" + groupID + "/expenses"},
 			{Label: ctxi18n.T(c.Request().Context(), "expenses.add")},
 		},
@@ -149,7 +149,7 @@ func (e *Expenses) EditExpensePage(c echo.Context) error {
 		Title: ctxi18n.T(c.Request().Context(), "expenses.page_title"),
 		Breadcrumbs: []utils.Crumb{
 			{Label: ctxi18n.T(c.Request().Context(), "groups.title"), Href: "/groups"},
-			{Label: group.Name, Href: "/groups/" + groupID + "/events"},
+			{Label: group.Name, Href: "/groups/" + groupID + "/overview"},
 			{Label: ctxi18n.T(c.Request().Context(), "expenses.title"), Href: "/groups/" + groupID + "/expenses"},
 			{Label: expense.Title, Href: "/groups/" + groupID + "/expenses/" + id},
 			{Label: ctxi18n.T(c.Request().Context(), "expenses.edit")},

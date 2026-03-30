@@ -36,14 +36,14 @@ func GroupUserDetailsActions(data UserPageData) templ.Component {
 			templ_7745c5c3_Var1 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<a class=\"btn btn-primary\" href=\"")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<a class=\"btn btn-sm\" href=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var2 templ.SafeURL
 		templ_7745c5c3_Var2, templ_7745c5c3_Err = templ.JoinURLErrs(fmt.Sprintf("/groups/%s/users/%s/edit", data.GroupID, data.UserRow.UserID))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/group/component_group_user_details_actions.templ`, Line: 11, Col: 109}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/group/component_group_user_details_actions.templ`, Line: 11, Col: 104}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var2))
 		if templ_7745c5c3_Err != nil {
@@ -71,7 +71,7 @@ func GroupUserDetailsActions(data UserPageData) templ.Component {
 			return templ_7745c5c3_Err
 		}
 		templ_7745c5c3_Err = shared.SureActionButton(shared.SureActionButtonProps{
-			ClassName:    "btn btn-danger",
+			ClassName:    "btn btn-sm btn-error",
 			DisabledExpr: "$_fetching",
 			Label:        ctxi18n.T(ctx, "actions.delete"),
 			IconName:     icons.IconTrash2,

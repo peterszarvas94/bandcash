@@ -78,7 +78,7 @@ func (p *Members) NewMemberPage(c echo.Context) error {
 		Title: ctxi18n.T(c.Request().Context(), "members.page_title"),
 		Breadcrumbs: []utils.Crumb{
 			{Label: ctxi18n.T(c.Request().Context(), "groups.title"), Href: "/groups"},
-			{Label: group.Name, Href: "/groups/" + groupID + "/events"},
+			{Label: group.Name, Href: "/groups/" + groupID + "/overview"},
 			{Label: ctxi18n.T(c.Request().Context(), "members.title"), Href: "/groups/" + groupID + "/members"},
 			{Label: ctxi18n.T(c.Request().Context(), "members.add")},
 		},
@@ -118,7 +118,7 @@ func (p *Members) EditMemberPage(c echo.Context) error {
 		Title: ctxi18n.T(c.Request().Context(), "members.page_title"),
 		Breadcrumbs: []utils.Crumb{
 			{Label: ctxi18n.T(c.Request().Context(), "groups.title"), Href: "/groups"},
-			{Label: group.Name, Href: "/groups/" + groupID + "/events"},
+			{Label: group.Name, Href: "/groups/" + groupID + "/overview"},
 			{Label: ctxi18n.T(c.Request().Context(), "members.title"), Href: "/groups/" + groupID + "/members"},
 			{Label: member.Name, Href: "/groups/" + groupID + "/members/" + id},
 			{Label: ctxi18n.T(c.Request().Context(), "members.edit")},

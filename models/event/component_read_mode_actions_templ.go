@@ -49,7 +49,7 @@ func ReadModeActions(data EventData) templ.Component {
 				data.Event.ID,
 			)
 			templ_7745c5c3_Err = shared.ActionButton(shared.ActionButtonProps{
-				ClassName:    "btn btn-primary",
+				ClassName:    "btn btn-sm",
 				OnClick:      editParticipantsExpr,
 				DisabledExpr: "$_fetching",
 				Label:        ctxi18n.T(ctx, "actions.edit"),
@@ -63,7 +63,7 @@ func ReadModeActions(data EventData) templ.Component {
 				return templ_7745c5c3_Err
 			}
 			templ_7745c5c3_Err = shared.ActionButton(shared.ActionButtonProps{
-				ClassName:    "btn btn-danger",
+				ClassName:    "btn btn-sm btn-error",
 				OnClick:      deleteEventExpr,
 				DisabledExpr: "$_fetching",
 				Label:        ctxi18n.T(ctx, "actions.delete"),

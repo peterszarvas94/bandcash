@@ -38,7 +38,7 @@ func MemberShowDetailsActions(data MemberData) templ.Component {
 		ctx = templ.ClearChildren(ctx)
 		if data.IsAdmin {
 			templ_7745c5c3_Err = shared.ActionButton(shared.ActionButtonProps{
-				ClassName:    "btn btn-primary",
+				ClassName:    "btn btn-sm",
 				OnClick:      "$formState = 'edit'; $errors = {name: '', description: ''}",
 				DisabledExpr: "$formState !== '' || $_fetching",
 				Label:        ctxi18n.T(ctx, "actions.edit"),
@@ -52,7 +52,7 @@ func MemberShowDetailsActions(data MemberData) templ.Component {
 				return templ_7745c5c3_Err
 			}
 			templ_7745c5c3_Err = shared.SureActionButton(shared.SureActionButtonProps{
-				ClassName:    "btn btn-danger",
+				ClassName:    "btn btn-sm btn-error",
 				DisabledExpr: "$formState !== '' || $_fetching",
 				Label:        ctxi18n.T(ctx, "actions.delete"),
 				IconName:     icons.IconTrash2,

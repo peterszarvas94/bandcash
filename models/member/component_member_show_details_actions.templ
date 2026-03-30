@@ -10,14 +10,14 @@ import (
 templ MemberShowDetailsActions(data MemberData) {
 	if data.IsAdmin {
 	@shared.ActionButton(shared.ActionButtonProps{
-		ClassName:    "btn btn-primary",
+		ClassName:    "btn btn-sm",
 		OnClick:      "$formState = 'edit'; $errors = {name: '', description: ''}",
 		DisabledExpr: "$formState !== '' || $_fetching",
 		Label:        ctxi18n.T(ctx, "actions.edit"),
 		IconName:     icons.IconPencil,
 	})
 		@shared.SureActionButton(shared.SureActionButtonProps{
-			ClassName:    "btn btn-danger",
+			ClassName:    "btn btn-sm btn-error",
 			DisabledExpr: "$formState !== '' || $_fetching",
 			Label:        ctxi18n.T(ctx, "actions.delete"),
 			IconName:     icons.IconTrash2,

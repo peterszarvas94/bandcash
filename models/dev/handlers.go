@@ -54,9 +54,9 @@ func (h *DevNotifications) DevPageHandler(c echo.Context) error {
 	utils.EnsureTabID(c)
 	selector := strings.TrimSpace(c.QueryParam("selector"))
 	switch selector {
-	case "all", "2026", "custom":
+	case "1", "2", "3":
 	default:
-		selector = "all"
+		selector = "1"
 	}
 	isAuthenticated, userEmail := devSessionUser(c)
 	return utils.RenderPage(c, DevPage(selector, isAuthenticated, userEmail))

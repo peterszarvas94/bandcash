@@ -45,35 +45,11 @@ func ButtonVariantsContent(linkSelector string) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = icons.Activity(templ.Attributes{"class": "icon"}).Render(ctx, templ_7745c5c3_Buffer)
+		templ_7745c5c3_Err = icons.ArrowRight(templ.Attributes{"class": "icon"}).Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "<span>Primary</span></button> <button class=\"btn btn-success\" type=\"button\">")
-		if templ_7745c5c3_Err != nil {
-			return templ_7745c5c3_Err
-		}
-		templ_7745c5c3_Err = icons.Check(templ.Attributes{"class": "icon"}).Render(ctx, templ_7745c5c3_Buffer)
-		if templ_7745c5c3_Err != nil {
-			return templ_7745c5c3_Err
-		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, "<span>Success</span></button> <button class=\"btn btn-warning\" type=\"button\">")
-		if templ_7745c5c3_Err != nil {
-			return templ_7745c5c3_Err
-		}
-		templ_7745c5c3_Err = icons.TriangleAlert(templ.Attributes{"class": "icon"}).Render(ctx, templ_7745c5c3_Buffer)
-		if templ_7745c5c3_Err != nil {
-			return templ_7745c5c3_Err
-		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 5, "<span>Warning</span></button> <button class=\"btn btn-danger\" type=\"button\">")
-		if templ_7745c5c3_Err != nil {
-			return templ_7745c5c3_Err
-		}
-		templ_7745c5c3_Err = icons.Trash2(templ.Attributes{"class": "icon"}).Render(ctx, templ_7745c5c3_Buffer)
-		if templ_7745c5c3_Err != nil {
-			return templ_7745c5c3_Err
-		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 6, "<span>Danger</span></button> <button class=\"btn btn-ghost\" type=\"button\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "<span>Primary</span></button> <button class=\"btn btn-info\" type=\"button\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -81,7 +57,7 @@ func ButtonVariantsContent(linkSelector string) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 7, "<span>Ghost</span></button> <button class=\"btn btn-active\" type=\"button\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, "<span>Info</span></button> <button class=\"btn btn-success\" type=\"button\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -89,15 +65,39 @@ func ButtonVariantsContent(linkSelector string) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 8, "<span>Active</span></button> <button class=\"btn btn-inactive\" type=\"button\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 5, "<span>Success</span></button> <button class=\"btn btn-warning\" type=\"button\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = icons.Icon(icons.IconCircleOff, templ.Attributes{"class": "icon"}).Render(ctx, templ_7745c5c3_Buffer)
+		templ_7745c5c3_Err = icons.TriangleAlert(templ.Attributes{"class": "icon"}).Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 9, "<span>Inactive</span></button> <button class=\"btn\" type=\"button\" disabled>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 6, "<span>Warning</span></button> <button class=\"btn btn-error\" type=\"button\">")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Err = icons.CircleX(templ.Attributes{"class": "icon"}).Render(ctx, templ_7745c5c3_Buffer)
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 7, "<span>Error</span></button> <button class=\"btn btn-ghost\" type=\"button\">")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Err = icons.Ghost(templ.Attributes{"class": "icon"}).Render(ctx, templ_7745c5c3_Buffer)
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 8, "<span>Ghost</span></button> <button class=\"btn btn-active\" type=\"button\">")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Err = icons.Check(templ.Attributes{"class": "icon"}).Render(ctx, templ_7745c5c3_Buffer)
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 9, "<span>Active</span></button> <button class=\"btn\" type=\"button\" disabled>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -117,35 +117,11 @@ func ButtonVariantsContent(linkSelector string) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = icons.Activity(templ.Attributes{"class": "icon"}).Render(ctx, templ_7745c5c3_Buffer)
+		templ_7745c5c3_Err = icons.ArrowRight(templ.Attributes{"class": "icon"}).Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 12, "<span>Primary</span></button> <button class=\"btn btn-sm btn-success\" type=\"button\">")
-		if templ_7745c5c3_Err != nil {
-			return templ_7745c5c3_Err
-		}
-		templ_7745c5c3_Err = icons.Check(templ.Attributes{"class": "icon"}).Render(ctx, templ_7745c5c3_Buffer)
-		if templ_7745c5c3_Err != nil {
-			return templ_7745c5c3_Err
-		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 13, "<span>Success</span></button> <button class=\"btn btn-sm btn-warning\" type=\"button\">")
-		if templ_7745c5c3_Err != nil {
-			return templ_7745c5c3_Err
-		}
-		templ_7745c5c3_Err = icons.TriangleAlert(templ.Attributes{"class": "icon"}).Render(ctx, templ_7745c5c3_Buffer)
-		if templ_7745c5c3_Err != nil {
-			return templ_7745c5c3_Err
-		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 14, "<span>Warning</span></button> <button class=\"btn btn-sm btn-danger\" type=\"button\">")
-		if templ_7745c5c3_Err != nil {
-			return templ_7745c5c3_Err
-		}
-		templ_7745c5c3_Err = icons.Trash2(templ.Attributes{"class": "icon"}).Render(ctx, templ_7745c5c3_Buffer)
-		if templ_7745c5c3_Err != nil {
-			return templ_7745c5c3_Err
-		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 15, "<span>Danger</span></button> <button class=\"btn btn-sm btn-ghost\" type=\"button\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 12, "<span>Primary</span></button> <button class=\"btn btn-sm btn-info\" type=\"button\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -153,7 +129,7 @@ func ButtonVariantsContent(linkSelector string) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 16, "<span>Ghost</span></button> <button class=\"btn btn-sm btn-active\" type=\"button\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 13, "<span>Info</span></button> <button class=\"btn btn-sm btn-success\" type=\"button\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -161,15 +137,39 @@ func ButtonVariantsContent(linkSelector string) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 17, "<span>Active</span></button> <button class=\"btn btn-sm btn-inactive\" type=\"button\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 14, "<span>Success</span></button> <button class=\"btn btn-sm btn-warning\" type=\"button\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = icons.Icon(icons.IconCircleOff, templ.Attributes{"class": "icon"}).Render(ctx, templ_7745c5c3_Buffer)
+		templ_7745c5c3_Err = icons.TriangleAlert(templ.Attributes{"class": "icon"}).Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 18, "<span>Inactive</span></button> <button class=\"btn btn-sm btn-success\" type=\"button\" disabled>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 15, "<span>Warning</span></button> <button class=\"btn btn-sm btn-error\" type=\"button\">")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Err = icons.CircleX(templ.Attributes{"class": "icon"}).Render(ctx, templ_7745c5c3_Buffer)
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 16, "<span>Error</span></button> <button class=\"btn btn-sm btn-ghost\" type=\"button\">")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Err = icons.Ghost(templ.Attributes{"class": "icon"}).Render(ctx, templ_7745c5c3_Buffer)
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 17, "<span>Ghost</span></button> <button class=\"btn btn-sm btn-active\" type=\"button\">")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Err = icons.Check(templ.Attributes{"class": "icon"}).Render(ctx, templ_7745c5c3_Buffer)
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 18, "<span>Active</span></button> <button class=\"btn btn-sm btn-success\" type=\"button\" disabled>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -189,35 +189,11 @@ func ButtonVariantsContent(linkSelector string) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = icons.Activity(templ.Attributes{"class": "icon"}).Render(ctx, templ_7745c5c3_Buffer)
+		templ_7745c5c3_Err = icons.ArrowRight(templ.Attributes{"class": "icon"}).Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 21, "<span>Primary</span></button> <button class=\"btn btn-xs btn-success\" type=\"button\">")
-		if templ_7745c5c3_Err != nil {
-			return templ_7745c5c3_Err
-		}
-		templ_7745c5c3_Err = icons.Check(templ.Attributes{"class": "icon"}).Render(ctx, templ_7745c5c3_Buffer)
-		if templ_7745c5c3_Err != nil {
-			return templ_7745c5c3_Err
-		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 22, "<span>Success</span></button> <button class=\"btn btn-xs btn-warning\" type=\"button\">")
-		if templ_7745c5c3_Err != nil {
-			return templ_7745c5c3_Err
-		}
-		templ_7745c5c3_Err = icons.TriangleAlert(templ.Attributes{"class": "icon"}).Render(ctx, templ_7745c5c3_Buffer)
-		if templ_7745c5c3_Err != nil {
-			return templ_7745c5c3_Err
-		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 23, "<span>Warning</span></button> <button class=\"btn btn-xs btn-danger\" type=\"button\">")
-		if templ_7745c5c3_Err != nil {
-			return templ_7745c5c3_Err
-		}
-		templ_7745c5c3_Err = icons.Trash2(templ.Attributes{"class": "icon"}).Render(ctx, templ_7745c5c3_Buffer)
-		if templ_7745c5c3_Err != nil {
-			return templ_7745c5c3_Err
-		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 24, "<span>Danger</span></button> <button class=\"btn btn-xs btn-ghost\" type=\"button\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 21, "<span>Primary</span></button> <button class=\"btn btn-xs btn-info\" type=\"button\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -225,7 +201,7 @@ func ButtonVariantsContent(linkSelector string) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 25, "<span>Ghost</span></button> <button class=\"btn btn-xs btn-active\" type=\"button\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 22, "<span>Info</span></button> <button class=\"btn btn-xs btn-success\" type=\"button\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -233,15 +209,39 @@ func ButtonVariantsContent(linkSelector string) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 26, "<span>Active</span></button> <button class=\"btn btn-xs btn-inactive\" type=\"button\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 23, "<span>Success</span></button> <button class=\"btn btn-xs btn-warning\" type=\"button\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = icons.Icon(icons.IconCircleOff, templ.Attributes{"class": "icon"}).Render(ctx, templ_7745c5c3_Buffer)
+		templ_7745c5c3_Err = icons.TriangleAlert(templ.Attributes{"class": "icon"}).Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 27, "<span>Inactive</span></button> <button class=\"btn btn-xs btn-success\" type=\"button\" disabled>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 24, "<span>Warning</span></button> <button class=\"btn btn-xs btn-error\" type=\"button\">")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Err = icons.CircleX(templ.Attributes{"class": "icon"}).Render(ctx, templ_7745c5c3_Buffer)
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 25, "<span>Error</span></button> <button class=\"btn btn-xs btn-ghost\" type=\"button\">")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Err = icons.Ghost(templ.Attributes{"class": "icon"}).Render(ctx, templ_7745c5c3_Buffer)
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 26, "<span>Ghost</span></button> <button class=\"btn btn-xs btn-active\" type=\"button\">")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Err = icons.Check(templ.Attributes{"class": "icon"}).Render(ctx, templ_7745c5c3_Buffer)
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 27, "<span>Active</span></button> <button class=\"btn btn-xs btn-success\" type=\"button\" disabled>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -261,35 +261,11 @@ func ButtonVariantsContent(linkSelector string) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = icons.Activity(templ.Attributes{"class": "icon"}).Render(ctx, templ_7745c5c3_Buffer)
+		templ_7745c5c3_Err = icons.ArrowRight(templ.Attributes{"class": "icon"}).Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 30, "</button> <button class=\"btn btn-success btn-icon\" type=\"button\" aria-label=\"Success icon\" title=\"Success icon\">")
-		if templ_7745c5c3_Err != nil {
-			return templ_7745c5c3_Err
-		}
-		templ_7745c5c3_Err = icons.Check(templ.Attributes{"class": "icon"}).Render(ctx, templ_7745c5c3_Buffer)
-		if templ_7745c5c3_Err != nil {
-			return templ_7745c5c3_Err
-		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 31, "</button> <button class=\"btn btn-warning btn-icon\" type=\"button\" aria-label=\"Warning icon\" title=\"Warning icon\">")
-		if templ_7745c5c3_Err != nil {
-			return templ_7745c5c3_Err
-		}
-		templ_7745c5c3_Err = icons.TriangleAlert(templ.Attributes{"class": "icon"}).Render(ctx, templ_7745c5c3_Buffer)
-		if templ_7745c5c3_Err != nil {
-			return templ_7745c5c3_Err
-		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 32, "</button> <button class=\"btn btn-danger btn-icon\" type=\"button\" aria-label=\"Danger icon\" title=\"Danger icon\">")
-		if templ_7745c5c3_Err != nil {
-			return templ_7745c5c3_Err
-		}
-		templ_7745c5c3_Err = icons.Trash2(templ.Attributes{"class": "icon"}).Render(ctx, templ_7745c5c3_Buffer)
-		if templ_7745c5c3_Err != nil {
-			return templ_7745c5c3_Err
-		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 33, "</button> <button class=\"btn btn-ghost btn-icon\" type=\"button\" aria-label=\"Ghost icon\" title=\"Ghost icon\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 30, "</button> <button class=\"btn btn-info btn-icon\" type=\"button\" aria-label=\"Info icon\" title=\"Info icon\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -297,7 +273,7 @@ func ButtonVariantsContent(linkSelector string) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 34, "</button> <button class=\"btn btn-active btn-icon\" type=\"button\" aria-label=\"Active icon\" title=\"Active icon\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 31, "</button> <button class=\"btn btn-success btn-icon\" type=\"button\" aria-label=\"Success icon\" title=\"Success icon\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -305,15 +281,39 @@ func ButtonVariantsContent(linkSelector string) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 35, "</button> <button class=\"btn btn-inactive btn-icon\" type=\"button\" aria-label=\"Inactive icon\" title=\"Inactive icon\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 32, "</button> <button class=\"btn btn-warning btn-icon\" type=\"button\" aria-label=\"Warning icon\" title=\"Warning icon\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = icons.Icon(icons.IconCircleOff, templ.Attributes{"class": "icon"}).Render(ctx, templ_7745c5c3_Buffer)
+		templ_7745c5c3_Err = icons.TriangleAlert(templ.Attributes{"class": "icon"}).Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 36, "</button> <button class=\"btn btn-danger btn-icon\" type=\"button\" aria-label=\"Disabled icon\" title=\"Disabled icon\" disabled>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 33, "</button> <button class=\"btn btn-error btn-icon\" type=\"button\" aria-label=\"Error icon\" title=\"Error icon\">")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Err = icons.CircleX(templ.Attributes{"class": "icon"}).Render(ctx, templ_7745c5c3_Buffer)
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 34, "</button> <button class=\"btn btn-ghost btn-icon\" type=\"button\" aria-label=\"Ghost icon\" title=\"Ghost icon\">")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Err = icons.Ghost(templ.Attributes{"class": "icon"}).Render(ctx, templ_7745c5c3_Buffer)
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 35, "</button> <button class=\"btn btn-active btn-icon\" type=\"button\" aria-label=\"Active icon\" title=\"Active icon\">")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Err = icons.Check(templ.Attributes{"class": "icon"}).Render(ctx, templ_7745c5c3_Buffer)
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 36, "</button> <button class=\"btn btn-error btn-icon\" type=\"button\" aria-label=\"Disabled icon\" title=\"Disabled icon\" disabled>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -333,35 +333,11 @@ func ButtonVariantsContent(linkSelector string) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = icons.Activity(templ.Attributes{"class": "icon"}).Render(ctx, templ_7745c5c3_Buffer)
+		templ_7745c5c3_Err = icons.ArrowRight(templ.Attributes{"class": "icon"}).Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 39, "</button> <button class=\"btn btn-sm btn-success btn-icon\" type=\"button\" aria-label=\"Small success icon\" title=\"Small success icon\">")
-		if templ_7745c5c3_Err != nil {
-			return templ_7745c5c3_Err
-		}
-		templ_7745c5c3_Err = icons.Check(templ.Attributes{"class": "icon"}).Render(ctx, templ_7745c5c3_Buffer)
-		if templ_7745c5c3_Err != nil {
-			return templ_7745c5c3_Err
-		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 40, "</button> <button class=\"btn btn-sm btn-warning btn-icon\" type=\"button\" aria-label=\"Small warning icon\" title=\"Small warning icon\">")
-		if templ_7745c5c3_Err != nil {
-			return templ_7745c5c3_Err
-		}
-		templ_7745c5c3_Err = icons.TriangleAlert(templ.Attributes{"class": "icon"}).Render(ctx, templ_7745c5c3_Buffer)
-		if templ_7745c5c3_Err != nil {
-			return templ_7745c5c3_Err
-		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 41, "</button> <button class=\"btn btn-sm btn-danger btn-icon\" type=\"button\" aria-label=\"Small danger icon\" title=\"Small danger icon\">")
-		if templ_7745c5c3_Err != nil {
-			return templ_7745c5c3_Err
-		}
-		templ_7745c5c3_Err = icons.Trash2(templ.Attributes{"class": "icon"}).Render(ctx, templ_7745c5c3_Buffer)
-		if templ_7745c5c3_Err != nil {
-			return templ_7745c5c3_Err
-		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 42, "</button> <button class=\"btn btn-sm btn-ghost btn-icon\" type=\"button\" aria-label=\"Small ghost icon\" title=\"Small ghost icon\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 39, "</button> <button class=\"btn btn-sm btn-info btn-icon\" type=\"button\" aria-label=\"Small info icon\" title=\"Small info icon\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -369,7 +345,7 @@ func ButtonVariantsContent(linkSelector string) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 43, "</button> <button class=\"btn btn-sm btn-active btn-icon\" type=\"button\" aria-label=\"Small active icon\" title=\"Small active icon\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 40, "</button> <button class=\"btn btn-sm btn-success btn-icon\" type=\"button\" aria-label=\"Small success icon\" title=\"Small success icon\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -377,15 +353,39 @@ func ButtonVariantsContent(linkSelector string) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 44, "</button> <button class=\"btn btn-sm btn-inactive btn-icon\" type=\"button\" aria-label=\"Small inactive icon\" title=\"Small inactive icon\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 41, "</button> <button class=\"btn btn-sm btn-warning btn-icon\" type=\"button\" aria-label=\"Small warning icon\" title=\"Small warning icon\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = icons.Icon(icons.IconCircleOff, templ.Attributes{"class": "icon"}).Render(ctx, templ_7745c5c3_Buffer)
+		templ_7745c5c3_Err = icons.TriangleAlert(templ.Attributes{"class": "icon"}).Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 45, "</button> <button class=\"btn btn-sm btn-danger btn-icon\" type=\"button\" aria-label=\"Small disabled icon\" title=\"Small disabled icon\" disabled>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 42, "</button> <button class=\"btn btn-sm btn-error btn-icon\" type=\"button\" aria-label=\"Small error icon\" title=\"Small error icon\">")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Err = icons.CircleX(templ.Attributes{"class": "icon"}).Render(ctx, templ_7745c5c3_Buffer)
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 43, "</button> <button class=\"btn btn-sm btn-ghost btn-icon\" type=\"button\" aria-label=\"Small ghost icon\" title=\"Small ghost icon\">")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Err = icons.Ghost(templ.Attributes{"class": "icon"}).Render(ctx, templ_7745c5c3_Buffer)
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 44, "</button> <button class=\"btn btn-sm btn-active btn-icon\" type=\"button\" aria-label=\"Small active icon\" title=\"Small active icon\">")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Err = icons.Check(templ.Attributes{"class": "icon"}).Render(ctx, templ_7745c5c3_Buffer)
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 45, "</button> <button class=\"btn btn-sm btn-error btn-icon\" type=\"button\" aria-label=\"Small disabled icon\" title=\"Small disabled icon\" disabled>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -405,35 +405,11 @@ func ButtonVariantsContent(linkSelector string) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = icons.Activity(templ.Attributes{"class": "icon"}).Render(ctx, templ_7745c5c3_Buffer)
+		templ_7745c5c3_Err = icons.ArrowRight(templ.Attributes{"class": "icon"}).Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 48, "</button> <button class=\"btn btn-xs btn-success btn-icon\" type=\"button\" aria-label=\"Extra small success icon\" title=\"Extra small success icon\">")
-		if templ_7745c5c3_Err != nil {
-			return templ_7745c5c3_Err
-		}
-		templ_7745c5c3_Err = icons.Check(templ.Attributes{"class": "icon"}).Render(ctx, templ_7745c5c3_Buffer)
-		if templ_7745c5c3_Err != nil {
-			return templ_7745c5c3_Err
-		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 49, "</button> <button class=\"btn btn-xs btn-warning btn-icon\" type=\"button\" aria-label=\"Extra small warning icon\" title=\"Extra small warning icon\">")
-		if templ_7745c5c3_Err != nil {
-			return templ_7745c5c3_Err
-		}
-		templ_7745c5c3_Err = icons.TriangleAlert(templ.Attributes{"class": "icon"}).Render(ctx, templ_7745c5c3_Buffer)
-		if templ_7745c5c3_Err != nil {
-			return templ_7745c5c3_Err
-		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 50, "</button> <button class=\"btn btn-xs btn-danger btn-icon\" type=\"button\" aria-label=\"Extra small danger icon\" title=\"Extra small danger icon\">")
-		if templ_7745c5c3_Err != nil {
-			return templ_7745c5c3_Err
-		}
-		templ_7745c5c3_Err = icons.Trash2(templ.Attributes{"class": "icon"}).Render(ctx, templ_7745c5c3_Buffer)
-		if templ_7745c5c3_Err != nil {
-			return templ_7745c5c3_Err
-		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 51, "</button> <button class=\"btn btn-xs btn-ghost btn-icon\" type=\"button\" aria-label=\"Extra small ghost icon\" title=\"Extra small ghost icon\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 48, "</button> <button class=\"btn btn-xs btn-info btn-icon\" type=\"button\" aria-label=\"Extra small info icon\" title=\"Extra small info icon\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -441,7 +417,7 @@ func ButtonVariantsContent(linkSelector string) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 52, "</button> <button class=\"btn btn-xs btn-active btn-icon\" type=\"button\" aria-label=\"Extra small active icon\" title=\"Extra small active icon\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 49, "</button> <button class=\"btn btn-xs btn-success btn-icon\" type=\"button\" aria-label=\"Extra small success icon\" title=\"Extra small success icon\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -449,15 +425,39 @@ func ButtonVariantsContent(linkSelector string) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 53, "</button> <button class=\"btn btn-xs btn-inactive btn-icon\" type=\"button\" aria-label=\"Extra small inactive icon\" title=\"Extra small inactive icon\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 50, "</button> <button class=\"btn btn-xs btn-warning btn-icon\" type=\"button\" aria-label=\"Extra small warning icon\" title=\"Extra small warning icon\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = icons.Icon(icons.IconCircleOff, templ.Attributes{"class": "icon"}).Render(ctx, templ_7745c5c3_Buffer)
+		templ_7745c5c3_Err = icons.TriangleAlert(templ.Attributes{"class": "icon"}).Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 54, "</button> <button class=\"btn btn-xs btn-danger btn-icon\" type=\"button\" aria-label=\"Extra small disabled icon\" title=\"Extra small disabled icon\" disabled>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 51, "</button> <button class=\"btn btn-xs btn-error btn-icon\" type=\"button\" aria-label=\"Extra small error icon\" title=\"Extra small error icon\">")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Err = icons.CircleX(templ.Attributes{"class": "icon"}).Render(ctx, templ_7745c5c3_Buffer)
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 52, "</button> <button class=\"btn btn-xs btn-ghost btn-icon\" type=\"button\" aria-label=\"Extra small ghost icon\" title=\"Extra small ghost icon\">")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Err = icons.Ghost(templ.Attributes{"class": "icon"}).Render(ctx, templ_7745c5c3_Buffer)
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 53, "</button> <button class=\"btn btn-xs btn-active btn-icon\" type=\"button\" aria-label=\"Extra small active icon\" title=\"Extra small active icon\">")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Err = icons.Check(templ.Attributes{"class": "icon"}).Render(ctx, templ_7745c5c3_Buffer)
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 54, "</button> <button class=\"btn btn-xs btn-error btn-icon\" type=\"button\" aria-label=\"Extra small disabled icon\" title=\"Extra small disabled icon\" disabled>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -465,7 +465,7 @@ func ButtonVariantsContent(linkSelector string) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 55, "</button></div><div class=\"row row-wrap\"><button class=\"btn\" type=\"button\"><span>Default</span></button> <button class=\"btn btn-primary\" type=\"button\"><span>Primary</span></button> <button class=\"btn btn-success\" type=\"button\"><span>Success</span></button> <button class=\"btn btn-warning\" type=\"button\"><span>Warning</span></button> <button class=\"btn btn-danger\" type=\"button\"><span>Danger</span></button> <button class=\"btn btn-ghost\" type=\"button\"><span>Ghost</span></button> <button class=\"btn btn-active\" type=\"button\"><span>Active</span></button> <button class=\"btn btn-inactive\" type=\"button\"><span>Inactive</span></button> <button class=\"btn\" type=\"button\" disabled><span>Disabled</span></button></div><div class=\"row row-wrap\"><button class=\"btn btn-sm\" type=\"button\"><span>Default</span></button> <button class=\"btn btn-sm btn-primary\" type=\"button\"><span>Primary</span></button> <button class=\"btn btn-sm btn-success\" type=\"button\"><span>Success</span></button> <button class=\"btn btn-sm btn-warning\" type=\"button\"><span>Warning</span></button> <button class=\"btn btn-sm btn-danger\" type=\"button\"><span>Danger</span></button> <button class=\"btn btn-sm btn-ghost\" type=\"button\"><span>Ghost</span></button> <button class=\"btn btn-sm btn-active\" type=\"button\"><span>Active</span></button> <button class=\"btn btn-sm btn-inactive\" type=\"button\"><span>Inactive</span></button> <button class=\"btn btn-sm\" type=\"button\" disabled><span>Disabled</span></button></div><div class=\"row row-wrap\"><button class=\"btn btn-xs\" type=\"button\"><span>Default</span></button> <button class=\"btn btn-xs btn-primary\" type=\"button\"><span>Primary</span></button> <button class=\"btn btn-xs btn-success\" type=\"button\"><span>Success</span></button> <button class=\"btn btn-xs btn-warning\" type=\"button\"><span>Warning</span></button> <button class=\"btn btn-xs btn-danger\" type=\"button\"><span>Danger</span></button> <button class=\"btn btn-xs btn-ghost\" type=\"button\"><span>Ghost</span></button> <button class=\"btn btn-xs btn-active\" type=\"button\"><span>Active</span></button> <button class=\"btn btn-xs btn-inactive\" type=\"button\"><span>Inactive</span></button> <button class=\"btn btn-xs\" type=\"button\" disabled><span>Disabled</span></button></div>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 55, "</button></div><div class=\"row row-wrap\"><button class=\"btn\" type=\"button\"><span>Default</span></button> <button class=\"btn btn-primary\" type=\"button\"><span>Primary</span></button> <button class=\"btn btn-info\" type=\"button\"><span>Info</span></button> <button class=\"btn btn-success\" type=\"button\"><span>Success</span></button> <button class=\"btn btn-warning\" type=\"button\"><span>Warning</span></button> <button class=\"btn btn-error\" type=\"button\"><span>Error</span></button> <button class=\"btn btn-ghost\" type=\"button\"><span>Ghost</span></button> <button class=\"btn btn-active\" type=\"button\"><span>Active</span></button> <button class=\"btn\" type=\"button\" disabled><span>Disabled</span></button></div><div class=\"row row-wrap\"><button class=\"btn btn-sm\" type=\"button\"><span>Default</span></button> <button class=\"btn btn-sm btn-primary\" type=\"button\"><span>Primary</span></button> <button class=\"btn btn-sm btn-info\" type=\"button\"><span>Info</span></button> <button class=\"btn btn-sm btn-success\" type=\"button\"><span>Success</span></button> <button class=\"btn btn-sm btn-warning\" type=\"button\"><span>Warning</span></button> <button class=\"btn btn-sm btn-error\" type=\"button\"><span>Error</span></button> <button class=\"btn btn-sm btn-ghost\" type=\"button\"><span>Ghost</span></button> <button class=\"btn btn-sm btn-active\" type=\"button\"><span>Active</span></button> <button class=\"btn btn-sm\" type=\"button\" disabled><span>Disabled</span></button></div><div class=\"row row-wrap\"><button class=\"btn btn-xs\" type=\"button\"><span>Default</span></button> <button class=\"btn btn-xs btn-primary\" type=\"button\"><span>Primary</span></button> <button class=\"btn btn-xs btn-info\" type=\"button\"><span>Info</span></button> <button class=\"btn btn-xs btn-success\" type=\"button\"><span>Success</span></button> <button class=\"btn btn-xs btn-warning\" type=\"button\"><span>Warning</span></button> <button class=\"btn btn-xs btn-error\" type=\"button\"><span>Error</span></button> <button class=\"btn btn-xs btn-ghost\" type=\"button\"><span>Ghost</span></button> <button class=\"btn btn-xs btn-active\" type=\"button\"><span>Active</span></button> <button class=\"btn btn-xs\" type=\"button\" disabled><span>Disabled</span></button></div>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

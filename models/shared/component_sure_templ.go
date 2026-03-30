@@ -144,7 +144,7 @@ func SureDialog() templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 8, "<span data-text=\"$sure.cancelLabel\"></span></button> <button id=\"sure-submit\" type=\"button\" class=\"btn btn-danger\" data-attr:disabled=\"$sure.fetching\" data-on:click=\"")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 8, "<span data-text=\"$sure.cancelLabel\"></span></button> <button id=\"sure-submit\" type=\"button\" class=\"btn btn-error\" data-attr:disabled=\"$sure.fetching\" data-on:click=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

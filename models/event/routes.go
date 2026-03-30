@@ -1,6 +1,8 @@
 package event
 
 import (
+	"net/http"
+
 	"github.com/labstack/echo/v4"
 
 	"bandcash/internal/middleware"
@@ -12,7 +14,11 @@ func RegisterRoutes(e *echo.Echo) *Events {
 	// Group routes under /groups/:groupId with auth middleware
 	g := e.Group("/groups/:groupId", middleware.RequireAuth, middleware.WithDetailState, middleware.RequireGroup)
 
-	g.GET("/events", events.Index)
+	g.GET("/overview", events.Index)
+	g.GET("/events", func(c echo.Context) error {
+		groupID := c.Param("groupId")
+		return c.Redirect(http.StatusMovedPermanently, "/groups/"+groupID+"/overview")
+	})
 	g.GET("/events/:id", events.Show)
 
 	// Admin only routes

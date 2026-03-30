@@ -7,31 +7,31 @@ import (
 templ ToggleVariantsContent() {
 	<div class="row row-wrap">
 		@shared.Toggle(shared.ToggleProps{
-			Bind:         "toggleDefault",
+			Bind:         "toggle1",
 			DisabledExpr: "$_fetching",
 			Off:          "Toggle off",
 			On:           "Toggle on",
 		})
 		@shared.Toggle(shared.ToggleProps{
-			Bind:         "toggleSuccess",
+			Bind:         "toggle2",
 			DisabledExpr: "$_fetching",
 			Off:          "Toggle off",
 			On:           "Toggle on",
 			OnClass:      "btn-success",
 		})
 		@shared.Toggle(shared.ToggleProps{
-			Bind:         "toggleWarning",
+			Bind:         "toggle3",
 			DisabledExpr: "$_fetching",
 			Off:          "Toggle off",
 			On:           "Toggle on",
 			OnClass:      "btn-warning",
 		})
 		@shared.Toggle(shared.ToggleProps{
-			Bind:         "toggleDanger",
+			Bind:         "toggle4",
 			DisabledExpr: "$_fetching",
 			Off:          "Toggle off",
 			On:           "Toggle on",
-			OnClass:      "btn-danger",
+			OnClass:      "btn-error",
 		})
 	</div>
 	<div class="row row-wrap">
