@@ -15,6 +15,36 @@ Use this when implementing interactive UI behaviors with Datastar.
 - Attributes reference: https://data-star.dev/reference/attributes
 - Example (active search): https://data-star.dev/examples/active_search
 
+## Quick reference (major attributes)
+
+- `data-signals` - declares reactive state for this element subtree.
+  - Example: `data-signals="{ open: false, csrf: '' }"`
+- `data-init` - runs an action when the element initializes.
+  - Example: `data-init="@get('/sse')"`
+- `data-bind` - two-way binds an input/select/textarea to a signal key.
+  - Example: `data-bind="formData.name"`
+- `data-show` - conditionally renders visibility based on an expression.
+  - Example: `data-show="$open"` (use `style="display: none"` to avoid flicker)
+- `data-on:<event>` - binds event handlers and can call server actions.
+  - Example: `data-on:click="open = !open"`
+  - Example: `data-on:submit="@post('/groups')"`
+  - Common modifiers: `__debounce`, `__throttle`, `__once`, key filters (for example Enter).
+- `data-indicator:<name>` - toggles a loading signal around network actions.
+  - Example: `data-indicator:fetching` to expose `$fetching`
+- `data-attr:<attrName>` - binds a DOM attribute to an expression.
+  - Example: `data-attr:disabled="$fetching"`
+- `data-class:<className>` - toggles a CSS class from an expression.
+  - Example: `data-class:is-loading="$fetching"`
+
+## Offline quick reference (server actions)
+
+- `@get('/path')` - fetch read-only data/partials.
+- `@post('/path')` - create/mutate server state.
+- `@put('/path')` - full update.
+- `@patch('/path')` - partial update.
+- `@delete('/path')` - delete resource.
+- Pattern: place actions in `data-on:*` or `data-init`, and include `csrf` in signals for unsafe methods.
+
 ## SSE conventions in this repo
 
 - Global stream at `/sse`.
