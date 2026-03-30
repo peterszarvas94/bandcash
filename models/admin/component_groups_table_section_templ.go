@@ -167,14 +167,14 @@ func GroupsTableSection(data DashboardData) templ.Component {
 				return templ_7745c5c3_Err
 			}
 			for _, group := range data.Groups {
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, "<tr><td><a class=\"link\" href=\"")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, "<tr><td><a class=\"table-link\" href=\"")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
 				var templ_7745c5c3_Var9 templ.SafeURL
 				templ_7745c5c3_Var9, templ_7745c5c3_Err = templ.JoinURLErrs(fmt.Sprintf("/groups/%s/events", group.ID))
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/admin/component_groups_table_section.templ`, Line: 34, Col: 75}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/admin/component_groups_table_section.templ`, Line: 34, Col: 80}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var9))
 				if templ_7745c5c3_Err != nil {
@@ -187,7 +187,7 @@ func GroupsTableSection(data DashboardData) templ.Component {
 				var templ_7745c5c3_Var10 string
 				templ_7745c5c3_Var10, templ_7745c5c3_Err = templ.JoinStringErrs(group.Name)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/admin/component_groups_table_section.templ`, Line: 34, Col: 90}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/admin/component_groups_table_section.templ`, Line: 34, Col: 95}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var10))
 				if templ_7745c5c3_Err != nil {

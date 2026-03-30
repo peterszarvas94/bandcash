@@ -36,10 +36,6 @@ func GroupUserEditForm(data UserEditPageData) templ.Component {
 			templ_7745c5c3_Var1 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = shared.GroupTabs(data.GroupID, "users").Render(ctx, templ_7745c5c3_Buffer)
-		if templ_7745c5c3_Err != nil {
-			return templ_7745c5c3_Err
-		}
 		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<h1>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
@@ -47,7 +43,7 @@ func GroupUserEditForm(data UserEditPageData) templ.Component {
 		var templ_7745c5c3_Var2 string
 		templ_7745c5c3_Var2, templ_7745c5c3_Err = templ.JoinStringErrs(ctxi18n.T(ctx, "actions.edit"))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/group/component_group_user_edit_form.templ`, Line: 12, Col: 37}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/group/component_group_user_edit_form.templ`, Line: 11, Col: 37}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var2))
 		if templ_7745c5c3_Err != nil {
@@ -60,7 +56,7 @@ func GroupUserEditForm(data UserEditPageData) templ.Component {
 		var templ_7745c5c3_Var3 string
 		templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("($formData.role === 'admin' ? @put('/groups/%s/users/%s/admin') : @put('/groups/%s/users/%s/viewer'))", data.GroupID, data.UserRow.UserID, data.GroupID, data.UserRow.UserID))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/group/component_group_user_edit_form.templ`, Line: 13, Col: 223}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/group/component_group_user_edit_form.templ`, Line: 12, Col: 223}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var3))
 		if templ_7745c5c3_Err != nil {
@@ -73,7 +69,7 @@ func GroupUserEditForm(data UserEditPageData) templ.Component {
 		var templ_7745c5c3_Var4 string
 		templ_7745c5c3_Var4, templ_7745c5c3_Err = templ.JoinStringErrs(ctxi18n.T(ctx, "auth.email"))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/group/component_group_user_edit_form.templ`, Line: 15, Col: 68}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/group/component_group_user_edit_form.templ`, Line: 14, Col: 68}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var4))
 		if templ_7745c5c3_Err != nil {
@@ -86,7 +82,7 @@ func GroupUserEditForm(data UserEditPageData) templ.Component {
 		var templ_7745c5c3_Var5 string
 		templ_7745c5c3_Var5, templ_7745c5c3_Err = templ.JoinStringErrs(data.UserRow.Email)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/group/component_group_user_edit_form.templ`, Line: 16, Col: 89}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/group/component_group_user_edit_form.templ`, Line: 15, Col: 89}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var5))
 		if templ_7745c5c3_Err != nil {
@@ -99,7 +95,7 @@ func GroupUserEditForm(data UserEditPageData) templ.Component {
 		var templ_7745c5c3_Var6 string
 		templ_7745c5c3_Var6, templ_7745c5c3_Err = templ.JoinStringErrs(ctxi18n.T(ctx, "fields.role"))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/group/component_group_user_edit_form.templ`, Line: 19, Col: 80}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/group/component_group_user_edit_form.templ`, Line: 18, Col: 80}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var6))
 		if templ_7745c5c3_Err != nil {
@@ -112,7 +108,7 @@ func GroupUserEditForm(data UserEditPageData) templ.Component {
 		var templ_7745c5c3_Var7 string
 		templ_7745c5c3_Var7, templ_7745c5c3_Err = templ.JoinStringErrs(ctxi18n.T(ctx, "groups.role_viewer"))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/group/component_group_user_edit_form.templ`, Line: 21, Col: 65}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/group/component_group_user_edit_form.templ`, Line: 20, Col: 65}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var7))
 		if templ_7745c5c3_Err != nil {
@@ -125,7 +121,7 @@ func GroupUserEditForm(data UserEditPageData) templ.Component {
 		var templ_7745c5c3_Var8 string
 		templ_7745c5c3_Var8, templ_7745c5c3_Err = templ.JoinStringErrs(ctxi18n.T(ctx, "groups.role_admin"))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/group/component_group_user_edit_form.templ`, Line: 22, Col: 63}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/group/component_group_user_edit_form.templ`, Line: 21, Col: 63}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var8))
 		if templ_7745c5c3_Err != nil {

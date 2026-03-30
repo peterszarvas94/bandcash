@@ -15,6 +15,8 @@ Use this for request flow, Datastar signal handling, and SSE response behavior.
 - Keep handler signal structs and templ signal usage in sync.
 - Prefer `utils.SSEHub.PatchHTML` and `PatchSignals` for partial updates.
 - Use `utils.Notify` for user-visible success/error/warning notifications.
+- Keep `tab_id` stable across patch cycles; in page templates use `utils.EnsureTabIDFromContext(ctx)`.
+- For table-scoped mutations, use `mode: 'table'` (not ad-hoc mode values) and normalize `signals.TableQuery` in handlers.
 
 ## Multi-step and Dynamic UI
 

@@ -26,7 +26,7 @@ templ ExpenseNewPage(data NewExpensePageData) {
 				"errors": map[string]any{"title": "", "description": "", "amount": "", "date": ""},
 			}) } data-init="@get('/sse')"></div>
 			@shared.Notifications()
-			@shared.GroupLayout("expense-new", data.Breadcrumbs, data.UserEmail, shared.AppPrimaryNav("groups", data.UserEmail != ""), ExpenseNewForm(data))
+			@shared.GroupLayout("expense-new", data.Breadcrumbs, data.UserEmail, shared.AppPrimaryNav("/groups", data.UserEmail != ""), shared.GroupTabs(data.GroupID, "expenses"), ExpenseNewForm(data))
 		</body>
 	</html>
 }

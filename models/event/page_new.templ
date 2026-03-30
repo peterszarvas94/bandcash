@@ -27,7 +27,7 @@ templ EventNewPage(data NewEventPageData) {
 				"errors": map[string]any{"title": "", "time": "", "place": "", "description": "", "amount": ""},
 			}) } data-init="@get('/sse')"></div>
 			@shared.Notifications()
-			@shared.GroupLayout("event-new", data.Breadcrumbs, data.UserEmail, shared.AppPrimaryNav("groups", data.UserEmail != ""), EventNewForm(data))
+			@shared.GroupLayout("event-new", data.Breadcrumbs, data.UserEmail, shared.AppPrimaryNav("/groups", data.UserEmail != ""), shared.GroupTabs(data.GroupID, "events"), EventNewForm(data))
 		</body>
 	</html>
 }

@@ -64,7 +64,7 @@ func HomeLayoutContent(id string, breadcrumbs []utils.Crumb, userEmail string, i
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = Footer(userEmail).Render(ctx, templ_7745c5c3_Buffer)
+		templ_7745c5c3_Err = Footer(userEmail, id).Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

@@ -15,7 +15,7 @@ templ EventShow(data EventData) {
 			<div data-signals={templ.JSONString(eventShowSignals(tabID, data, utils.CSRFTokenFromContext(ctx)))} data-init="@get('/sse')"></div>
 			@shared.Notifications()
 			@shared.SureDialog()
-			@shared.GroupLayout("event-show", data.Breadcrumbs, data.UserEmail, shared.AppPrimaryNav("groups", data.UserEmail != ""), EventShowMain(data))
+			@shared.GroupLayout("event-show", data.Breadcrumbs, data.UserEmail, shared.AppPrimaryNav("/groups", data.UserEmail != ""), shared.GroupTabs(data.GroupID, "events"), EventShowMain(data))
 		</body>
 	</html>
 }

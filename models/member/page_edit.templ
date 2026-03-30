@@ -22,7 +22,7 @@ templ MemberEditPage(data EditMemberPageData) {
 				"errors": map[string]any{"name": "", "description": ""},
 			}) } data-init="@get('/sse')"></div>
 			@shared.Notifications()
-			@shared.GroupLayout("member-edit", data.Breadcrumbs, data.UserEmail, shared.AppPrimaryNav("groups", data.UserEmail != ""), MemberEditForm(data))
+			@shared.GroupLayout("member-edit", data.Breadcrumbs, data.UserEmail, shared.AppPrimaryNav("/groups", data.UserEmail != ""), shared.GroupTabs(data.GroupID, "members"), MemberEditForm(data))
 		</body>
 	</html>
 }

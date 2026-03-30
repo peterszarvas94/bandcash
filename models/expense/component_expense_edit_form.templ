@@ -8,7 +8,6 @@ import (
 )
 
 templ ExpenseEditForm(data EditExpensePageData) {
-	@shared.GroupTabs(data.GroupID, "expenses")
 	<h1>{ ctxi18n.T(ctx, "expenses.edit") }</h1>
 	<form class="form" data-on:submit={ fmt.Sprintf("@put('/groups/%s/expenses/%s')", data.GroupID, data.Expense.ID) } data-indicator:_fetching>
 		<div class="field">

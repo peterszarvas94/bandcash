@@ -7,10 +7,10 @@ import (
 templ AppPrimaryNav(active string, isAuthenticated bool) {
 	if isAuthenticated {
 		<nav class="nav" aria-label={ ctxi18n.T(ctx, "nav.primary") }>
-			<a class={ "link nav-link", templ.KV("nav-link-active", active == "groups") } href="/groups">
+			<a class={ "link", templ.KV("link-active", active == "/groups") } href="/groups">
 				{ ctxi18n.T(ctx, "groups.title") }
 			</a>
-			<a class={ "link nav-link", templ.KV("nav-link-active", active == "account") } href="/account">
+			<a class={ "link", templ.KV("link-active", active == "/account") } href="/account">
 				{ ctxi18n.T(ctx, "account.account") }
 			</a>
 		</nav>

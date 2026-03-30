@@ -36,10 +36,6 @@ func GroupUserInviteMain(data UserInvitePageData) templ.Component {
 			templ_7745c5c3_Var1 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = shared.GroupTabs(data.GroupID, "users").Render(ctx, templ_7745c5c3_Buffer)
-		if templ_7745c5c3_Err != nil {
-			return templ_7745c5c3_Err
-		}
 		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<section class=\"details\"><h1>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
@@ -47,7 +43,7 @@ func GroupUserInviteMain(data UserInvitePageData) templ.Component {
 		var templ_7745c5c3_Var2 string
 		templ_7745c5c3_Var2, templ_7745c5c3_Err = templ.JoinStringErrs(data.UserRow.Email)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/group/component_group_user_invite_main.templ`, Line: 13, Col: 26}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/group/component_group_user_invite_main.templ`, Line: 12, Col: 26}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var2))
 		if templ_7745c5c3_Err != nil {

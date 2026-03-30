@@ -4,14 +4,17 @@ import (
 	"bandcash/internal/utils"
 )
 
-templ GroupLayout(id string, crumbs []utils.Crumb, userEmail string, nav templ.Component, main templ.Component) {
+templ GroupLayout(id string, crumbs []utils.Crumb, userEmail string, nav templ.Component, tabs templ.Component, main templ.Component) {
 	<div id={ id } class="grouplayout">
 		@Header(crumbs, nav)
 		<div class="grouplayout_inner">
 			<main id="app">
+				if tabs != nil {
+					@tabs
+				}
 				@main
 			</main>
-			@Footer(userEmail)
+			@Footer(userEmail, id)
 		</div>
 	</div>
 }

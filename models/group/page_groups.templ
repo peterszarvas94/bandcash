@@ -17,7 +17,7 @@ templ GroupsPage(data GroupsPageData) {
 				data-init="@get('/sse')"
 			></div>
 			@shared.Notifications()
-			@shared.GroupLayout("group-dashboard", data.Breadcrumbs, data.UserEmail, shared.AppPrimaryNav("groups", data.UserEmail != ""), GroupsMain(data))
+			@shared.GroupLayout("group-dashboard", data.Breadcrumbs, data.UserEmail, shared.AppPrimaryNav("/groups", data.UserEmail != ""), nil, GroupsMain(data))
 		</body>
 	</html>
 }

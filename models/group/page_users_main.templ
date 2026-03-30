@@ -9,7 +9,6 @@ import (
 )
 
 templ GroupUsersMain(data UsersPageData) {
-	@shared.GroupTabs(data.GroupID, "users")
 	<section class="details">
 		<h1>{ ctxi18n.T(ctx, "groups.users") }</h1>
 		if data.IsAdmin {
@@ -53,7 +52,7 @@ templ GroupUsersMain(data UsersPageData) {
 					}
 				}}
 				<tr>
-					<td><a class="link" href={ rowPath }>{ row.Email }</a></td>
+					<td><a class="table-link" href={ rowPath }>{ row.Email }</a></td>
 					<td>
 						if data.IsAdmin {
 							@shared.Toggle(shared.ToggleProps{

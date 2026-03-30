@@ -21,7 +21,7 @@ templ GroupUsersNewPage(data UsersNewPageData) {
 				},
 			}) } data-init="@get('/sse')"></div>
 			@shared.Notifications()
-			@shared.GroupLayout("group-users-new", data.Breadcrumbs, data.UserEmail, shared.AppPrimaryNav("groups", data.UserEmail != ""), GroupUsersNewForm(data))
+			@shared.GroupLayout("group-users-new", data.Breadcrumbs, data.UserEmail, shared.AppPrimaryNav("/groups", data.UserEmail != ""), shared.GroupTabs(data.GroupID, "users"), GroupUsersNewForm(data))
 		</body>
 	</html>
 }

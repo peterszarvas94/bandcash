@@ -8,7 +8,6 @@ import (
 )
 
 templ EventEditForm(data EditEventPageData) {
-	@shared.GroupTabs(data.GroupID, "events")
 	<h1>{ ctxi18n.T(ctx, "events.edit") }</h1>
 	<form class="form" data-on:submit={ fmt.Sprintf("@put('/groups/%s/events/%s')", data.GroupID, data.Event.ID) } data-indicator:_fetching>
 		<div class="field">

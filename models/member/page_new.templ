@@ -22,7 +22,7 @@ templ MemberNewPage(data NewMemberPageData) {
 				"errors": map[string]any{"name": "", "description": ""},
 			}) } data-init="@get('/sse')"></div>
 			@shared.Notifications()
-			@shared.GroupLayout("member-new", data.Breadcrumbs, data.UserEmail, shared.AppPrimaryNav("groups", data.UserEmail != ""), MemberNewForm(data))
+			@shared.GroupLayout("member-new", data.Breadcrumbs, data.UserEmail, shared.AppPrimaryNav("/groups", data.UserEmail != ""), shared.GroupTabs(data.GroupID, "members"), MemberNewForm(data))
 		</body>
 	</html>
 }

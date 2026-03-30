@@ -18,7 +18,7 @@ templ GroupUsersPage(data UsersPageData) {
 		<body>
 			<div data-signals={ templ.JSONString(map[string]any{"tab_id": tabID, "csrf": utils.CSRFTokenFromContext(ctx), "mode": "table", "tableQuery": utils.TableQuerySignals(data.Query)}) } data-init="@get('/sse')"></div>
 			@shared.Notifications()
-			@shared.GroupLayout("group-users", data.Breadcrumbs, data.UserEmail, shared.AppPrimaryNav("groups", data.UserEmail != ""), GroupUsersMain(data))
+			@shared.GroupLayout("group-users", data.Breadcrumbs, data.UserEmail, shared.AppPrimaryNav("/groups", data.UserEmail != ""), shared.GroupTabs(data.GroupID, "users"), GroupUsersMain(data))
 		</body>
 	</html>
 }

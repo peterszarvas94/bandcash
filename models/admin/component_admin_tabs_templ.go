@@ -35,13 +35,58 @@ func AdminTabs(data DashboardData) templ.Component {
 			templ_7745c5c3_Var1 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = shared.Tabs(ctxi18n.T(ctx, "nav.sections"), "row row-tight", []shared.TabItem{
+		templ_7745c5c3_Err = shared.Tabs(ctxi18n.T(ctx, "nav.sections"), []shared.TabItem{
 			{Label: ctxi18n.T(ctx, "admin.tab.overview"), Href: fmt.Sprintf("/admin/%s", "overview"), IsActive: data.Tab == "overview"},
 			{Label: ctxi18n.T(ctx, "admin.tab.flags"), Href: fmt.Sprintf("/admin/%s", "flags"), IsActive: data.Tab == "flags"},
 			{Label: ctxi18n.T(ctx, "admin.tab.users"), Href: fmt.Sprintf("/admin/%s", "users"), IsActive: data.Tab == "users"},
 			{Label: ctxi18n.T(ctx, "admin.tab.groups"), Href: fmt.Sprintf("/admin/%s", "groups"), IsActive: data.Tab == "groups"},
 			{Label: ctxi18n.T(ctx, "admin.tab.sessions"), Href: fmt.Sprintf("/admin/%s", "sessions"), IsActive: data.Tab == "sessions"},
 		}).Render(ctx, templ_7745c5c3_Buffer)
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		return nil
+	})
+}
+
+func AdminLayout(data DashboardData) templ.Component {
+	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
+		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
+		if templ_7745c5c3_CtxErr := ctx.Err(); templ_7745c5c3_CtxErr != nil {
+			return templ_7745c5c3_CtxErr
+		}
+		templ_7745c5c3_Buffer, templ_7745c5c3_IsBuffer := templruntime.GetBuffer(templ_7745c5c3_W)
+		if !templ_7745c5c3_IsBuffer {
+			defer func() {
+				templ_7745c5c3_BufErr := templruntime.ReleaseBuffer(templ_7745c5c3_Buffer)
+				if templ_7745c5c3_Err == nil {
+					templ_7745c5c3_Err = templ_7745c5c3_BufErr
+				}
+			}()
+		}
+		ctx = templ.InitializeContext(ctx)
+		templ_7745c5c3_Var2 := templ.GetChildren(ctx)
+		if templ_7745c5c3_Var2 == nil {
+			templ_7745c5c3_Var2 = templ.NopComponent
+		}
+		ctx = templ.ClearChildren(ctx)
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<div class=\"hide-tablet pb\">")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Err = AdminTabs(data).Render(ctx, templ_7745c5c3_Buffer)
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "</div><div class=\"show-tablet pb\">")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Err = shared.Details(adminTabLabel(ctx, data.Tab), AdminTabs(data)).Render(ctx, templ_7745c5c3_Buffer)
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "</div>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

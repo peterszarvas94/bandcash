@@ -37,7 +37,7 @@ templ GroupsMain(data GroupsPageData) {
 				for _, group := range data.AllGroups {
 					<tr>
 						<td>
-							<a class="link" href={ "/groups/" + group.Group.ID + "/events" }>{ group.Group.Name }</a>
+							<a class="table-link" href={ "/groups/" + group.Group.ID + "/events" }>{ group.Group.Name }</a>
 						</td>
 						<td>
 							if group.Role == "admin" {

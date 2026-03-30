@@ -9,7 +9,6 @@ import (
 )
 
 templ ExpenseIndexMain(data ExpensesData) {
-	@shared.GroupTabs(data.GroupID, "expenses")
 	<section class="details">
 		<h1>{ ctxi18n.T(ctx, "expenses.title") }</h1>
 		if data.IsAdmin {
@@ -109,7 +108,7 @@ templ ExpenseIndexMain(data ExpensesData) {
 					}
 				}}
 				<tr>
-					<td><a class="link cell-ellipsis" href={ fmt.Sprintf("/groups/%s/expenses/%s", data.GroupID, expense.ID) }>{ expense.Title }</a></td>
+					<td><a class="table-link cell-ellipsis" href={ fmt.Sprintf("/groups/%s/expenses/%s", data.GroupID, expense.ID) }>{ expense.Title }</a></td>
 					<td>{ utils.FormatDateLocalized(ctx, expense.Date) }</td>
 					<td class="text-right">{ utils.FormatNumberLocalized(ctx, expense.Amount) }</td>
 					<td>

@@ -2,17 +2,10 @@ package admin
 
 import (
 	ctxi18n "github.com/invopop/ctxi18n/i18n"
-	shared "bandcash/models/shared"
 )
 
 templ DashboardMain(data DashboardData) {
 	<h1>{ ctxi18n.T(ctx, "admin.dashboard") }</h1>
-	<div class="hide-tablet pb">
-		@AdminTabs(data)
-	</div>
-	<div class="show-tablet">
-		@shared.Details(adminTabLabel(ctx, data.Tab), AdminTabs(data))
-	</div>
 	<div>
 		// Tab content
 		if data.Tab == "overview" {

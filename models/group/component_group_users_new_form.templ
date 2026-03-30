@@ -8,7 +8,6 @@ import (
 )
 
 templ GroupUsersNewForm(data UsersNewPageData) {
-	@shared.GroupTabs(data.GroupID, "users")
 	<h1>{ ctxi18n.T(ctx, "groups.invite_user") }</h1>
 	<form class="form" data-on:submit={ fmt.Sprintf("@post('/groups/%s/users')", data.GroupID) } data-indicator:_fetching>
 		<div class="field">

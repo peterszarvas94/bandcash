@@ -20,7 +20,7 @@ templ GroupUserEditPage(data UserEditPageData) {
 				},
 			}) } data-init="@get('/sse')"></div>
 			@shared.Notifications()
-			@shared.GroupLayout("group-user-edit", data.Breadcrumbs, data.UserEmail, shared.AppPrimaryNav("groups", data.UserEmail != ""), GroupUserEditForm(data))
+			@shared.GroupLayout("group-user-edit", data.Breadcrumbs, data.UserEmail, shared.AppPrimaryNav("/groups", data.UserEmail != ""), shared.GroupTabs(data.GroupID, "users"), GroupUserEditForm(data))
 		</body>
 	</html>
 }

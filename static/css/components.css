@@ -79,10 +79,7 @@
     &.table-fixed {
       table-layout: fixed;
       width: 100%;
-      min-width: calc(
-        (var(--table-data-w-ch, 0) * 1ch) +
-          (var(--table-actions-w-rem, 0) * 1rem)
-      );
+      min-width: 100%;
 
       th,
       td {
@@ -91,7 +88,8 @@
       }
 
       .col-w {
-        width: calc(var(--w-ch) * 1ch);
+        width: auto;
+        max-width: none;
       }
 
       th[data-actions-col],
@@ -104,34 +102,41 @@
         text-overflow: clip;
       }
 
-      &.table-grid {
-        thead,
-        tbody {
-          display: block;
-          width: 100%;
-        }
+      @media (max-width: 1020px) {
+        min-width: calc(
+          (var(--table-data-w-ch, 0) * 1ch) +
+            (var(--table-actions-w-rem, 0) * 1rem)
+        );
 
-        tr {
-          display: grid;
-          grid-template-columns: var(--table-grid-template);
-          width: 100%;
-        }
+        &.table-grid {
+          thead,
+          tbody {
+            display: block;
+            width: 100%;
+          }
 
-        th,
-        td {
-          min-width: 0;
-        }
+          tr {
+            display: grid;
+            grid-template-columns: var(--table-grid-template);
+            width: 100%;
+          }
 
-        .col-w {
-          width: auto;
-          max-width: none;
-        }
+          th,
+          td {
+            min-width: 0;
+          }
 
-        th[data-actions-col],
-        td[data-actions-col] {
-          width: auto;
-          min-width: 0;
-          max-width: none;
+          .col-w {
+            width: auto;
+            max-width: none;
+          }
+
+          th[data-actions-col],
+          td[data-actions-col] {
+            width: auto;
+            min-width: 0;
+            max-width: none;
+          }
         }
       }
     }
@@ -139,8 +144,12 @@
 
   .table-scroll {
     width: 100%;
-    overflow-x: auto;
+    overflow-x: visible;
     -webkit-overflow-scrolling: touch;
+
+    @media (max-width: 1020px) {
+      overflow-x: auto;
+    }
   }
 
   .btn {
@@ -464,13 +473,31 @@
 
   .link,
   .link:visited {
-    color: var(--link-color);
-    text-decoration: underline;
+    color: var(--muted-text-color);
+    text-decoration: none;
     text-decoration-thickness: 1px;
     text-underline-offset: 0.14em;
 
     &:hover {
-      color: light-dark(hsl(212 71% 36%), hsl(210 73% 68%));
+      color: inherit;
+      text-decoration: underline;
+    }
+
+    &:focus-visible {
+      outline: var(--focus-ring);
+      outline-offset: var(--focus-ring-offset);
+      border-radius: 0;
+    }
+  }
+
+  .table-link,
+  .table-link:visited {
+    color: var(--text-color);
+    text-decoration: none;
+
+    &:hover {
+      color: inherit;
+      text-decoration: underline;
     }
 
     &:focus-visible {
@@ -996,25 +1023,13 @@
 
         > a,
         > span {
-          color: inherit;
           display: inline-flex;
           align-items: center;
           gap: calc(var(--space) * 0.5);
         }
 
-        > a {
-          text-decoration: none;
+        > span {
           color: inherit;
-
-          &:hover {
-            color: inherit;
-            text-decoration: underline;
-          }
-
-          &:focus-visible {
-            outline: var(--focus-ring);
-            outline-offset: var(--focus-ring-offset);
-          }
         }
       }
     }
@@ -1066,41 +1081,41 @@
     gap: calc(var(--space) * 0.75);
   }
 
-  nav.secondary {
+  nav.tabs {
     display: flex;
     flex-wrap: wrap;
     align-items: center;
-    gap: calc(var(--space) * 0.75);
+    gap: calc(var(--space) * 1.1);
+    margin-bottom: calc(var(--space) * 1.25);
   }
 
-  .nav-link {
-    display: inline-flex;
-    align-items: center;
-    gap: calc(var(--space) * 0.45);
-    color: inherit;
+  .tab,
+  .tab:visited {
+    color: var(--muted-text-color);
     text-decoration: none;
-
-    &:visited {
-      color: inherit;
-    }
 
     &:hover {
       color: inherit;
       text-decoration: underline;
     }
 
-    &:active {
-      color: inherit;
-      text-decoration: none;
-    }
-
     &:focus-visible {
       outline: var(--focus-ring);
       outline-offset: var(--focus-ring-offset);
+      border-radius: 0;
     }
+  }
 
-    &.nav-link-active {
-      font-weight: 600;
-    }
+  .tab.tab-active,
+  .tab.tab-active:visited {
+    color: var(--text-color);
+    text-decoration: underline;
+  }
+
+  .link.link-active,
+  .link.link-active:visited {
+    color: var(--text-color);
+    font-weight: inherit;
+    text-decoration: none;
   }
 }

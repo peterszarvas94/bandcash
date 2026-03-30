@@ -5,6 +5,6 @@ import (
 	"bandcash/internal/utils"
 )
 
-templ AdminLayout(id string, title string, signals map[string]any, breadcrumbs []utils.Crumb, userEmail string, main templ.Component) {
-	@BaseLayout(title, appi18n.LocaleCode(ctx), signals, Notifications(), AdminLayoutContent(id, breadcrumbs, userEmail, main))
+templ AdminLayout(id string, title string, signals map[string]any, breadcrumbs []utils.Crumb, userEmail string, tabs templ.Component, main templ.Component) {
+	@BaseLayout(title, appi18n.LocaleCode(ctx), signals, Notifications(), AdminLayoutContent(id, breadcrumbs, userEmail, tabs, main))
 }

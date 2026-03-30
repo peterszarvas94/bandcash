@@ -17,7 +17,7 @@ templ LanguagePage(data AccountData) {
 				data-init="@get('/sse')"
 			></div>
 			@shared.Notifications()
-			@shared.GroupLayout("public-language", data.Breadcrumbs, data.UserEmail, shared.AppPrimaryNav("account", data.UserEmail != ""), LanguageMain(data))
+			@shared.GroupLayout("public-language", data.Breadcrumbs, data.UserEmail, shared.AppPrimaryNav("/account", data.UserEmail != ""), nil, LanguageMain(data))
 		</body>
 	</html>
 }

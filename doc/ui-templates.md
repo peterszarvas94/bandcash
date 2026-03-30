@@ -27,6 +27,9 @@ Use this for page layout, buttons, tables, and form changes.
 - Align numeric values with `.text-right`.
 - Prefer `shared.TableSearchForm(...)` and `shared.TableSortHeader(...)`.
 - Build table actions with `utils.TableSearchAction(...)`.
+- For table row toggles that patch the same page, send `mode: 'table'` and include `tableQuery: $tableQuery`.
+- For table row toggles, use `DisabledExpr: "false"` (avoid coupling row actions to global `$_fetching`).
+- Initialize page `tab_id` in templates with `utils.EnsureTabIDFromContext(ctx)`.
 
 ## Notes
 - Keep markup in existing sections; do not introduce new layout wrappers unless needed.

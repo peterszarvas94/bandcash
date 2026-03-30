@@ -14,6 +14,7 @@ templ DashboardPage(data DashboardData) {
 		map[string]any{"tab_id": tabID, "csrf": utils.CSRFTokenFromContext(ctx)},
 		data.Breadcrumbs,
 		data.UserEmail,
+		AdminLayout(data),
 		DashboardMain(data),
 	)
 }

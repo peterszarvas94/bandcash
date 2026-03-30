@@ -15,7 +15,7 @@ templ AccountIndex(data AccountData) {
 			<div data-signals={ templ.JSONString(map[string]any{"tab_id": tabID, "csrf": utils.CSRFTokenFromContext(ctx), "formData": map[string]any{"lang": data.CurrentLang}}) } data-init="@get('/sse')"></div>
 			@shared.Notifications()
 			@shared.SureDialog()
-			@shared.GroupLayout("account-index", data.Breadcrumbs, data.UserEmail, shared.AppPrimaryNav("account", data.UserEmail != ""), AccountMain(data))
+			@shared.GroupLayout("account-index", data.Breadcrumbs, data.UserEmail, shared.AppPrimaryNav("/account", data.UserEmail != ""), nil, AccountMain(data))
 		</body>
 	</html>
 }

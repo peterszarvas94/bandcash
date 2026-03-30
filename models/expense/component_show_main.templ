@@ -19,7 +19,6 @@ templ ExpenseShowMain(data ExpenseData) {
 			return utils.FormatDateInput(data.Expense.PaidAt.String)
 		}()) + "}; $errors = {title: '', description: '', amount: '', date: ''}"
 	}}
-	@shared.GroupTabs(data.GroupID, "expenses")
 	<section class="details">
 		<h1>{ data.Expense.Title }</h1>
 		if data.IsAdmin {

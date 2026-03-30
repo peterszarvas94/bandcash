@@ -42,6 +42,7 @@ func DashboardPage(data DashboardData) templ.Component {
 			map[string]any{"tab_id": tabID, "csrf": utils.CSRFTokenFromContext(ctx)},
 			data.Breadcrumbs,
 			data.UserEmail,
+			AdminLayout(data),
 			DashboardMain(data),
 		).Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {

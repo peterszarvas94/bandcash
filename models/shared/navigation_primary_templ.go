@@ -51,7 +51,7 @@ func AppPrimaryNav(active string, isAuthenticated bool) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			var templ_7745c5c3_Var3 = []any{"link nav-link", templ.KV("nav-link-active", active == "groups")}
+			var templ_7745c5c3_Var3 = []any{"link", templ.KV("link-active", active == "/groups")}
 			templ_7745c5c3_Err = templ.RenderCSSItems(ctx, templ_7745c5c3_Buffer, templ_7745c5c3_Var3...)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
@@ -86,7 +86,7 @@ func AppPrimaryNav(active string, isAuthenticated bool) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			var templ_7745c5c3_Var6 = []any{"link nav-link", templ.KV("nav-link-active", active == "account")}
+			var templ_7745c5c3_Var6 = []any{"link", templ.KV("link-active", active == "/account")}
 			templ_7745c5c3_Err = templ.RenderCSSItems(ctx, templ_7745c5c3_Buffer, templ_7745c5c3_Var6...)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
