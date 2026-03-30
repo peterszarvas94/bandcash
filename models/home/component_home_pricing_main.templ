@@ -1,9 +1,11 @@
 package home
 
 import ctxi18n "github.com/invopop/ctxi18n/i18n"
+import shared "bandcash/models/shared"
 
-templ HomePricingMain() {
+templ HomePricingMain(currentLang string) {
 	<section class="section">
+		@shared.PageLanguagePicker("/pricing", currentLang)
 		<header>
 			<h1>{ ctxi18n.T(ctx, "legal.pricing") }</h1>
 		</header>

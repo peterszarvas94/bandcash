@@ -1,11 +1,13 @@
 package home
 
 import (
+	shared "bandcash/models/shared"
 	ctxi18n "github.com/invopop/ctxi18n/i18n"
 )
 
 templ HomeIndexMain(data HomeData) {
 	<section class="home-landing">
+		@shared.PageLanguagePicker("/", data.CurrentLang)
 		<h1>{ data.Title }</h1>
 		<p class="text-muted">{ ctxi18n.T(ctx, "home.subtitle") }</p>
 		if data.IsAuthenticated {

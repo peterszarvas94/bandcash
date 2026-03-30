@@ -41,10 +41,8 @@ func LoginPage(data AuthPageData) templ.Component {
 			map[string]any{"tab_id": tabID, "csrf": utils.CSRFTokenFromContext(ctx), "authError": "", "authServerError": "", "authState": "form", "submittedEmail": "", "submittedEmailMasked": "", "resendRemaining": 0, "formData": map[string]any{"email": ""}},
 			data.Breadcrumbs,
 			data.UserEmail,
-			data.CurrentLang,
-			"/login",
 			data.IsAuthenticated,
-			LoginMain(),
+			LoginMain(data.CurrentLang, "/login"),
 		).Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err

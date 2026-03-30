@@ -65,17 +65,40 @@ func maskEmail(email string) string {
 }
 
 func authSessionUser(c echo.Context) (bool, string) {
-	if cookie, err := c.Cookie(utils.SessionCookieName); err == nil && cookie.Value != "" {
-		if session, err := db.Qry.GetUserSessionByToken(c.Request().Context(), cookie.Value); err == nil {
-			if user, err := db.Qry.GetUserByID(c.Request().Context(), session.UserID); err == nil {
-				return true, user.Email
-			}
-
-			return true, ""
-		}
+	cookie, err := c.Cookie(utils.SessionCookieName)
+	if err != nil || cookie.Value == "" {
+		return false, ""
 	}
 
-	return false, ""
+	session, err := db.Qry.GetUserSessionByToken(c.Request().Context(), cookie.Value)
+	if err != nil {
+		return false, ""
+	}
+
+	user, err := db.Qry.GetUserByID(c.Request().Context(), session.UserID)
+	if err != nil {
+		return true, ""
+	}
+
+	syncPreferredLangFromQuery(c, user.ID, user.PreferredLang)
+	return true, user.Email
+}
+
+func syncPreferredLangFromQuery(c echo.Context, userID string, currentPreferredLang string) {
+	rawLang := strings.TrimSpace(c.QueryParam("lang"))
+	if rawLang == "" {
+		return
+	}
+
+	lang := appi18n.NormalizeLocale(rawLang)
+	if appi18n.NormalizeLocale(currentPreferredLang) == lang {
+		return
+	}
+
+	_ = db.Qry.UpdateUserPreferredLang(c.Request().Context(), db.UpdateUserPreferredLangParams{
+		ID:            userID,
+		PreferredLang: lang,
+	})
 }
 
 func (a *Auth) patchLoginSentState(c echo.Context, emailAddress string) {

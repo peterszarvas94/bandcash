@@ -2,9 +2,9 @@ package shared
 
 import "bandcash/internal/utils"
 
-templ HomeLayoutContent(id string, breadcrumbs []utils.Crumb, userEmail string, currentLang string, langAction string, isAuthenticated bool, main templ.Component) {
+templ HomeLayoutContent(id string, breadcrumbs []utils.Crumb, userEmail string, isAuthenticated bool, main templ.Component) {
 	<div id={ id } class="homelayout">
-		@Header(breadcrumbs, HomeHeaderNav(currentLang, langAction, isAuthenticated))
+		@Header(breadcrumbs, HomeHeaderNav(isAuthenticated))
 		<div class="homelayout_inner">
 			<main id="app" class="home">
 				@main

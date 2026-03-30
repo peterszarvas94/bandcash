@@ -59,6 +59,7 @@ func RequireAuth(next echo.HandlerFunc) echo.HandlerFunc {
 		if rawLang := strings.TrimSpace(c.QueryParam("lang")); rawLang != "" {
 			preferredLang = appi18n.NormalizeLocale(rawLang)
 		}
+		utils.SetLocaleCookie(c, preferredLang)
 		if localizedCtx, localeErr := ctxi18nlib.WithLocale(c.Request().Context(), preferredLang); localeErr == nil {
 			c.SetRequest(c.Request().WithContext(localizedCtx))
 		}

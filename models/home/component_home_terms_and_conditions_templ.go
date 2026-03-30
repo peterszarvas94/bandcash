@@ -33,7 +33,7 @@ func HomeTermsAndConditions(data HomeData) templ.Component {
 			templ_7745c5c3_Var1 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = shared.LegalLayout("home-terms", data.Title, data.Breadcrumbs, data.UserEmail, data.IsAuthenticated, HomeTermsAndConditionsMain()).Render(ctx, templ_7745c5c3_Buffer)
+		templ_7745c5c3_Err = shared.LegalLayout("home-terms", data.Title, data.Breadcrumbs, data.UserEmail, data.IsAuthenticated, HomeTermsAndConditionsMain(data.CurrentLang)).Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

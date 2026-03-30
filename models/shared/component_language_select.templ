@@ -10,9 +10,9 @@ templ LanguageSelect(id string, currentLang string, loadingSignal string) {
 	<div class="field">
 		<label for={ id }>{ ctxi18n.T(ctx, "account.language") }</label>
 		<div class="row row-wrap items-center">
-			<select id={ id } data-bind="formData.lang" class="input w-fit">
-				<option value="en" selected?={ currentLang == "en" }>{ ctxi18n.T(ctx, "language.en") }</option>
-				<option value="hu" selected?={ currentLang == "hu" }>{ ctxi18n.T(ctx, "language.hu") }</option>
+			<select id={ id } data-bind="formData.lang" class="input input-xs w-fit">
+				<option value="en" selected?={ currentLang == "en" }>ENG</option>
+				<option value="hu" selected?={ currentLang == "hu" }>HUN</option>
 			</select>
 			<span data-show={ fmt.Sprintf("$%s", loadingSignal) } style="display: none">
 				@icons.LoaderCircle(templ.Attributes{"class": "icon icon-spin"})

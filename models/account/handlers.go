@@ -65,6 +65,7 @@ func (s *Account) UpdateLanguage(c echo.Context) error {
 	if err := db.Qry.UpdateUserPreferredLang(c.Request().Context(), db.UpdateUserPreferredLangParams{PreferredLang: locale, ID: middleware.GetUserID(c)}); err != nil {
 		return c.NoContent(http.StatusInternalServerError)
 	}
+	utils.SetLocaleCookie(c, locale)
 	notifyCtx, err := ctxi18nlib.WithLocale(c.Request().Context(), locale)
 	if err != nil {
 		notifyCtx = c.Request().Context()

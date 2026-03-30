@@ -9,7 +9,6 @@ import "github.com/a-h/templ"
 import templruntime "github.com/a-h/templ/runtime"
 
 import (
-	appi18n "bandcash/internal/i18n"
 	"bandcash/internal/utils"
 )
 
@@ -34,7 +33,7 @@ func LegalLayout(id string, title string, breadcrumbs []utils.Crumb, userEmail s
 			templ_7745c5c3_Var1 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = HomeLayout(id, title, nil, breadcrumbs, userEmail, appi18n.LocaleCode(ctx), "/", isAuthenticated, main).Render(ctx, templ_7745c5c3_Buffer)
+		templ_7745c5c3_Err = HomeLayout(id, title, nil, breadcrumbs, userEmail, isAuthenticated, main).Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

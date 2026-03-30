@@ -13,9 +13,7 @@ templ LoginPage(data AuthPageData) {
 		map[string]any{"tab_id": tabID, "csrf": utils.CSRFTokenFromContext(ctx), "authError": "", "authServerError": "", "authState": "form", "submittedEmail": "", "submittedEmailMasked": "", "resendRemaining": 0, "formData": map[string]any{"email": ""}},
 		data.Breadcrumbs,
 		data.UserEmail,
-		data.CurrentLang,
-		"/login",
 		data.IsAuthenticated,
-		LoginMain(),
+		LoginMain(data.CurrentLang, "/login"),
 	)
 }

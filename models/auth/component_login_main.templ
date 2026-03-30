@@ -6,8 +6,9 @@ import (
 	icons "bandcash/models/shared/icons"
 )
 
-templ LoginMain() {
+templ LoginMain(currentLang string, langAction string) {
 	<section class="auth-link-page">
+		@shared.PageLanguagePicker(langAction, currentLang)
 		<div data-show="$authState === 'form'">
 			<form class="form" data-on:submit="@post('/login')" data-indicator:_fetching>
 				<div class="field">

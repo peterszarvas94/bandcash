@@ -1,25 +1,51 @@
 package home
 
 import (
+	"strings"
+
 	ctxi18n "github.com/invopop/ctxi18n/i18n"
 	"github.com/labstack/echo/v4"
 
 	"bandcash/internal/db"
+	appi18n "bandcash/internal/i18n"
 	"bandcash/internal/utils"
 )
 
 func sessionUser(c echo.Context) (bool, string) {
-	if cookie, err := c.Cookie(utils.SessionCookieName); err == nil && cookie.Value != "" {
-		if session, err := db.Qry.GetUserSessionByToken(c.Request().Context(), cookie.Value); err == nil {
-			if user, err := db.Qry.GetUserByID(c.Request().Context(), session.UserID); err == nil {
-				return true, user.Email
-			}
-
-			return true, ""
-		}
+	cookie, err := c.Cookie(utils.SessionCookieName)
+	if err != nil || cookie.Value == "" {
+		return false, ""
 	}
 
-	return false, ""
+	session, err := db.Qry.GetUserSessionByToken(c.Request().Context(), cookie.Value)
+	if err != nil {
+		return false, ""
+	}
+
+	user, err := db.Qry.GetUserByID(c.Request().Context(), session.UserID)
+	if err != nil {
+		return true, ""
+	}
+
+	syncPreferredLangFromQuery(c, user.ID, user.PreferredLang)
+	return true, user.Email
+}
+
+func syncPreferredLangFromQuery(c echo.Context, userID string, currentPreferredLang string) {
+	rawLang := strings.TrimSpace(c.QueryParam("lang"))
+	if rawLang == "" {
+		return
+	}
+
+	lang := appi18n.NormalizeLocale(rawLang)
+	if appi18n.NormalizeLocale(currentPreferredLang) == lang {
+		return
+	}
+
+	_ = db.Qry.UpdateUserPreferredLang(c.Request().Context(), db.UpdateUserPreferredLangParams{
+		ID:            userID,
+		PreferredLang: lang,
+	})
 }
 
 // Index renders the home page with welcome message.

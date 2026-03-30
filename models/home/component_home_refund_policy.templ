@@ -5,5 +5,5 @@ import (
 )
 
 templ HomeRefundPolicy(data HomeData) {
-	@shared.LegalLayout("home-refund", data.Title, data.Breadcrumbs, data.UserEmail, data.IsAuthenticated, HomeRefundPolicyMain())
+	@shared.LegalLayout("home-refund", data.Title, data.Breadcrumbs, data.UserEmail, data.IsAuthenticated, HomeRefundPolicyMain(data.CurrentLang))
 }

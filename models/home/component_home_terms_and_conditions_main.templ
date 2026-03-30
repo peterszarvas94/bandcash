@@ -1,9 +1,11 @@
 package home
 
 import ctxi18n "github.com/invopop/ctxi18n/i18n"
+import shared "bandcash/models/shared"
 
-templ HomeTermsAndConditionsMain() {
+templ HomeTermsAndConditionsMain(currentLang string) {
 	<section class="section">
+		@shared.PageLanguagePicker("/terms-and-conditions", currentLang)
 		<header>
 			<h1>{ ctxi18n.T(ctx, "legal.terms_and_conditions") }</h1>
 		</header>

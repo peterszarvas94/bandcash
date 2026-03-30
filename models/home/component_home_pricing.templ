@@ -5,5 +5,5 @@ import (
 )
 
 templ HomePricing(data HomeData) {
-	@shared.LegalLayout("home-pricing", data.Title, data.Breadcrumbs, data.UserEmail, data.IsAuthenticated, HomePricingMain())
+	@shared.LegalLayout("home-pricing", data.Title, data.Breadcrumbs, data.UserEmail, data.IsAuthenticated, HomePricingMain(data.CurrentLang))
 }

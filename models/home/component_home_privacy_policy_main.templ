@@ -1,9 +1,11 @@
 package home
 
 import ctxi18n "github.com/invopop/ctxi18n/i18n"
+import shared "bandcash/models/shared"
 
-templ HomePrivacyPolicyMain() {
+templ HomePrivacyPolicyMain(currentLang string) {
 	<section class="section">
+		@shared.PageLanguagePicker("/privacy-policy", currentLang)
 		<header>
 			<h1>{ ctxi18n.T(ctx, "legal.privacy_policy") }</h1>
 		</header>

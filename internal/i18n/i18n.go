@@ -12,7 +12,8 @@ import (
 )
 
 const (
-	DefaultLocale = "hu"
+	DefaultLocale    = "hu"
+	LocaleCookieName = "locale"
 )
 
 var SupportedLocales = []string{"en", "hu"}
@@ -51,6 +52,14 @@ func LocaleFromRequest(r *http.Request) string {
 	if lang := NormalizeLocale(r.URL.Query().Get("lang")); lang != "" {
 		if r.URL.Query().Get("lang") != "" {
 			return lang
+		}
+	}
+
+	if cookie, err := r.Cookie(LocaleCookieName); err == nil {
+		if lang := NormalizeLocale(cookie.Value); lang != "" {
+			if strings.TrimSpace(cookie.Value) != "" {
+				return lang
+			}
 		}
 	}
 

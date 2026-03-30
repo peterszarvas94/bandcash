@@ -13,23 +13,23 @@ templ Footer(userEmail string) {
 					{ ctxi18n.T(ctx, "nav.admin") }
 				</a>
 			}
-		if utils.Env().AppEnv == "development" {
-			<a class="link nav-link" href="/dev">
-				Dev
+			if utils.Env().AppEnv == "development" {
+				<a class="link nav-link" href="/dev">
+					Dev
+				</a>
+			}
+			<a class="link nav-link" href="/pricing">
+				{ ctxi18n.T(ctx, "legal.pricing") }
 			</a>
-		}
-		<a class="link nav-link" href="/pricing">
-			{ ctxi18n.T(ctx, "legal.pricing") }
-		</a>
-		<a class="link nav-link" href="/terms-and-conditions">
-			{ ctxi18n.T(ctx, "legal.terms_and_conditions") }
-		</a>
-		<a class="link nav-link" href="/privacy-policy">
-			{ ctxi18n.T(ctx, "legal.privacy_policy") }
-		</a>
-		<a class="link nav-link" href="/refund-policy">
-			{ ctxi18n.T(ctx, "legal.refund_policy") }
-		</a>
+			<a class="link nav-link" href="/terms-and-conditions">
+				{ ctxi18n.T(ctx, "legal.terms_and_conditions") }
+			</a>
+			<a class="link nav-link" href="/privacy-policy">
+				{ ctxi18n.T(ctx, "legal.privacy_policy") }
+			</a>
+			<a class="link nav-link" href="/refund-policy">
+				{ ctxi18n.T(ctx, "legal.refund_policy") }
+			</a>
 		</nav>
 	</footer>
 }

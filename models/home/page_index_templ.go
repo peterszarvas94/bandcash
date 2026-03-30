@@ -39,8 +39,6 @@ func HomeIndex(data HomeData) templ.Component {
 			nil,
 			data.Breadcrumbs,
 			data.UserEmail,
-			data.CurrentLang,
-			"/",
 			data.IsAuthenticated,
 			HomeIndexMain(data),
 		).Render(ctx, templ_7745c5c3_Buffer)

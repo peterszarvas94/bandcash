@@ -1,15 +1,11 @@
 package shared
 
-import ctxi18n "github.com/invopop/ctxi18n/i18n"
+import (
+	ctxi18n "github.com/invopop/ctxi18n/i18n"
+)
 
-templ HomeHeaderNav(currentLang string, langAction string, isAuthenticated bool) {
+templ HomeHeaderNav(isAuthenticated bool) {
 	<div class="row row-wrap items-center">
-		<form method="get" action={ langAction }>
-			<select id="home-topbar-lang" name="lang" class="input input-xs w-fit" aria-label={ ctxi18n.T(ctx, "account.language") } onchange="this.form.submit()">
-				<option value="en" selected?={ currentLang == "en" }>ENG</option>
-				<option value="hu" selected?={ currentLang == "hu" }>HUN</option>
-			</select>
-		</form>
 		if isAuthenticated {
 			@AppPrimaryNav("", true)
 		} else {
