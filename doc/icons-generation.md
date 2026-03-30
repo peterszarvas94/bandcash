@@ -1,7 +1,4 @@
----
-name: icons-generation
-description: Generate only the needed Lucide templ icons for this repo.
----
+# icons-generation
 
 ## What I do
 - Keep icon generation small and fast.

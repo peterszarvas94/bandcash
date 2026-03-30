@@ -1,7 +1,4 @@
----
-name: datastar
-description: Datastar attribute usage and patterns, based on official docs and examples.
----
+# datastar
 
 ## What I do
 

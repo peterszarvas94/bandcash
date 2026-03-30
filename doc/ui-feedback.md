@@ -1,4 +1,4 @@
-# Skill: ui-feedback
+# ui-feedback
 
 ## Goal
 Apply one strict feedback model across the app.

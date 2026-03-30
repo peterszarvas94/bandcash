@@ -1,7 +1,4 @@
----
-name: repo-navigation
-description: Quick path map and scoped search rules for this repo.
----
+# repo-navigation
 
 ## What I do
 - Provide a fast map of key directories and file types.

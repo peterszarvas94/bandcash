@@ -1,7 +1,4 @@
----
-name: sqlc-goose
-description: Manage database migrations with goose and type-safe queries with sqlc in this repo.
----
+# sqlc-goose
 
 ## What I do
 - Add or update SQL migrations for the app database.

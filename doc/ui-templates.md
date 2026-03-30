@@ -1,7 +1,4 @@
----
-name: ui-templates
-description: HTML template and form conventions for UI changes.
----
+# ui-templates
 
 ## What I do
 - Point to template locations and shared head/layout usage.

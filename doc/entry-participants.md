@@ -1,7 +1,4 @@
----
-name: entry-participants
-description: UI and handler conventions for entry participants (tables, add/remove).
----
+# entry-participants
 
 ## What I do
 - Point to event detail templates and participant table markup.
