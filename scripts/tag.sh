@@ -8,6 +8,10 @@ usage() {
   echo "  major - Increment major version (x+1.0.0)"
   echo "  minor - Increment minor version (x.y+1.0)"
   echo "  patch - Increment patch version (x.y.z+1)"
+  echo ""
+  echo "Tag prefix is selected by branch:"
+  echo "  development -> staging-vX.Y.Z"
+  echo "  others      -> vX.Y.Z"
 }
 
 # Require exactly one argument
@@ -18,6 +22,12 @@ if [ $# -ne 1 ]; then
 fi
 
 BUMP_TYPE="$1"
+
+CURRENT_BRANCH=$(git rev-parse --abbrev-ref HEAD)
+TAG_PREFIX="v"
+if [ "$CURRENT_BRANCH" = "development" ]; then
+  TAG_PREFIX="staging-v"
+fi
 
 # Validate bump type
 case "$BUMP_TYPE" in
@@ -35,16 +45,16 @@ case "$BUMP_TYPE" in
     ;;
 esac
 
-# Get the latest tag, default to v0.0.0 if none exists
-latest_tag=$(git tag --list 'v*' --sort=-v:refname | head -1)
+# Get latest tag by branch prefix, default to 0.0.0 if none exists
+latest_tag=$(git tag --list "${TAG_PREFIX}*" --sort=-v:refname | sed -n '1p')
 
 if [ -z "$latest_tag" ]; then
   major=0
   minor=0
   patch=0
 else
-  # Parse version components (assumes format vX.Y.Z)
-  version=${latest_tag#v}
+  # Parse version components (assumes format <prefix>X.Y.Z)
+  version=${latest_tag#${TAG_PREFIX}}
   major=$(echo "$version" | cut -d. -f1)
   minor=$(echo "$version" | cut -d. -f2)
   patch=$(echo "$version" | cut -d. -f3)
@@ -66,8 +76,9 @@ case "$BUMP_TYPE" in
     ;;
 esac
 
-new_tag="v${major}.${minor}.${patch}"
+new_tag="${TAG_PREFIX}${major}.${minor}.${patch}"
 
+echo "Current branch: $CURRENT_BRANCH"
 echo "Current tag: ${latest_tag:-none}"
 echo "Bumping $BUMP_TYPE version..."
 echo "Creating tag: $new_tag"
