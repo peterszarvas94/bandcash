@@ -86,8 +86,9 @@ func (q *Queries) CountGroupPendingInvitesFiltered(ctx context.Context, arg Coun
 
 const countGroupReadersFiltered = `-- name: CountGroupReadersFiltered :one
 SELECT COUNT(*) FROM users
-JOIN group_readers ON group_readers.user_id = users.id
-WHERE group_readers.group_id = ?1
+JOIN group_access ON group_access.user_id = users.id
+WHERE group_access.group_id = ?1
+  AND group_access.role = 'viewer'
   AND (
     ?2 = ''
     OR LOWER(users.email) LIKE '%' || LOWER(?2) || '%'
@@ -202,8 +203,10 @@ func (q *Queries) CreateGroup(ctx context.Context, arg CreateGroupParams) (Group
 }
 
 const createGroupAdmin = `-- name: CreateGroupAdmin :one
-INSERT INTO group_admins (id, user_id, group_id)
-VALUES (?, ?, ?)
+INSERT INTO group_access (id, user_id, group_id, role)
+VALUES (?, ?, ?, 'admin')
+ON CONFLICT(user_id, group_id) DO UPDATE SET role = 'admin'
+WHERE group_access.role != 'owner'
 RETURNING id, user_id, group_id, created_at
 `
 
@@ -213,9 +216,16 @@ type CreateGroupAdminParams struct {
 	GroupID string `json:"group_id"`
 }
 
-func (q *Queries) CreateGroupAdmin(ctx context.Context, arg CreateGroupAdminParams) (GroupAdmin, error) {
+type CreateGroupAdminRow struct {
+	ID        string       `json:"id"`
+	UserID    string       `json:"user_id"`
+	GroupID   string       `json:"group_id"`
+	CreatedAt sql.NullTime `json:"created_at"`
+}
+
+func (q *Queries) CreateGroupAdmin(ctx context.Context, arg CreateGroupAdminParams) (CreateGroupAdminRow, error) {
 	row := q.db.QueryRowContext(ctx, createGroupAdmin, arg.ID, arg.UserID, arg.GroupID)
-	var i GroupAdmin
+	var i CreateGroupAdminRow
 	err := row.Scan(
 		&i.ID,
 		&i.UserID,
@@ -226,8 +236,10 @@ func (q *Queries) CreateGroupAdmin(ctx context.Context, arg CreateGroupAdminPara
 }
 
 const createGroupReader = `-- name: CreateGroupReader :one
-INSERT INTO group_readers (id, user_id, group_id)
-VALUES (?, ?, ?)
+INSERT INTO group_access (id, user_id, group_id, role)
+VALUES (?, ?, ?, 'viewer')
+ON CONFLICT(user_id, group_id) DO UPDATE SET role = 'viewer'
+WHERE group_access.role != 'owner'
 RETURNING id, user_id, group_id, created_at
 `
 
@@ -237,9 +249,16 @@ type CreateGroupReaderParams struct {
 	GroupID string `json:"group_id"`
 }
 
-func (q *Queries) CreateGroupReader(ctx context.Context, arg CreateGroupReaderParams) (GroupReader, error) {
+type CreateGroupReaderRow struct {
+	ID        string       `json:"id"`
+	UserID    string       `json:"user_id"`
+	GroupID   string       `json:"group_id"`
+	CreatedAt sql.NullTime `json:"created_at"`
+}
+
+func (q *Queries) CreateGroupReader(ctx context.Context, arg CreateGroupReaderParams) (CreateGroupReaderRow, error) {
 	row := q.db.QueryRowContext(ctx, createGroupReader, arg.ID, arg.UserID, arg.GroupID)
-	var i GroupReader
+	var i CreateGroupReaderRow
 	err := row.Scan(
 		&i.ID,
 		&i.UserID,
@@ -527,8 +546,9 @@ func (q *Queries) GetGroupByID(ctx context.Context, id string) (Group, error) {
 
 const getGroupReaders = `-- name: GetGroupReaders :many
 SELECT users.id, users.email, users.created_at, users.preferred_lang FROM users
-JOIN group_readers ON group_readers.user_id = users.id
-WHERE group_readers.group_id = ?
+JOIN group_access ON group_access.user_id = users.id
+WHERE group_access.group_id = ?
+  AND group_access.role = 'viewer'
 `
 
 func (q *Queries) GetGroupReaders(ctx context.Context, groupID string) ([]User, error) {
@@ -635,9 +655,10 @@ func (q *Queries) GetUserSessionByToken(ctx context.Context, token string) (User
 
 const isGroupAdmin = `-- name: IsGroupAdmin :one
 SELECT COUNT(*)
-FROM group_admins
+FROM group_access
 WHERE user_id = ?
   AND group_id = ?
+  AND role = 'admin'
 `
 
 type IsGroupAdminParams struct {
@@ -653,8 +674,10 @@ func (q *Queries) IsGroupAdmin(ctx context.Context, arg IsGroupAdminParams) (int
 }
 
 const isGroupReader = `-- name: IsGroupReader :one
-SELECT COUNT(*) FROM group_readers
-WHERE user_id = ? AND group_id = ?
+SELECT COUNT(*) FROM group_access
+WHERE user_id = ?
+  AND group_id = ?
+  AND role = 'viewer'
 `
 
 type IsGroupReaderParams struct {
@@ -683,8 +706,9 @@ func (q *Queries) IsUserBanned(ctx context.Context, userID string) (int64, error
 
 const listGroupAdminUserIDs = `-- name: ListGroupAdminUserIDs :many
 SELECT user_id
-FROM group_admins
+FROM group_access
 WHERE group_id = ?
+  AND role = 'admin'
 `
 
 func (q *Queries) ListGroupAdminUserIDs(ctx context.Context, groupID string) ([]string, error) {
@@ -1115,8 +1139,9 @@ func (q *Queries) ListGroupPendingInvitesByEmailDescFiltered(ctx context.Context
 
 const listGroupReadersByEmailAscFiltered = `-- name: ListGroupReadersByEmailAscFiltered :many
 SELECT users.id, users.email, users.created_at, users.preferred_lang FROM users
-JOIN group_readers ON group_readers.user_id = users.id
-WHERE group_readers.group_id = ?1
+JOIN group_access ON group_access.user_id = users.id
+WHERE group_access.group_id = ?1
+  AND group_access.role = 'viewer'
   AND (
     ?2 = ''
     OR LOWER(users.email) LIKE '%' || LOWER(?2) || '%'
@@ -1167,8 +1192,9 @@ func (q *Queries) ListGroupReadersByEmailAscFiltered(ctx context.Context, arg Li
 
 const listGroupReadersByEmailDescFiltered = `-- name: ListGroupReadersByEmailDescFiltered :many
 SELECT users.id, users.email, users.created_at, users.preferred_lang FROM users
-JOIN group_readers ON group_readers.user_id = users.id
-WHERE group_readers.group_id = ?1
+JOIN group_access ON group_access.user_id = users.id
+WHERE group_access.group_id = ?1
+  AND group_access.role = 'viewer'
   AND (
     ?2 = ''
     OR LOWER(users.email) LIKE '%' || LOWER(?2) || '%'
@@ -1544,7 +1570,7 @@ SELECT
   g.name,
   g.admin_user_id,
   g.created_at,
-  CASE WHEN g.admin_user_id = ?3 THEN 'admin' ELSE 'viewer' END as role,
+  CASE WHEN g.admin_user_id = ?3 THEN 'owner' ELSE 'viewer' END as role,
   u.email as admin_email
 FROM groups g
 JOIN users u ON u.id = g.admin_user_id
@@ -1656,7 +1682,7 @@ SELECT
   g.name,
   g.admin_user_id,
   g.created_at,
-  CASE WHEN g.admin_user_id = ?3 THEN 'admin' ELSE 'viewer' END as role,
+  CASE WHEN g.admin_user_id = ?3 THEN 'owner' ELSE 'viewer' END as role,
   u.email as admin_email
 FROM groups g
 JOIN users u ON u.id = g.admin_user_id
@@ -1763,7 +1789,7 @@ SELECT
   g.name,
   g.admin_user_id,
   g.created_at,
-  CASE WHEN g.admin_user_id = ?3 THEN 'admin' ELSE 'viewer' END as role
+  CASE WHEN g.admin_user_id = ?3 THEN 'owner' ELSE 'viewer' END as role
 FROM groups g
 JOIN users u ON u.id = g.admin_user_id
 WHERE g.admin_user_id = ?3
@@ -1870,7 +1896,7 @@ SELECT
   g.name,
   g.admin_user_id,
   g.created_at,
-  CASE WHEN g.admin_user_id = ?3 THEN 'admin' ELSE 'viewer' END as role
+  CASE WHEN g.admin_user_id = ?3 THEN 'owner' ELSE 'viewer' END as role
 FROM groups g
 JOIN users u ON u.id = g.admin_user_id
 WHERE g.admin_user_id = ?3
@@ -1977,7 +2003,7 @@ SELECT
   g.name,
   g.admin_user_id,
   g.created_at,
-  CASE WHEN g.admin_user_id = ?3 THEN 'admin' ELSE 'viewer' END as role
+  CASE WHEN g.admin_user_id = ?3 THEN 'owner' ELSE 'viewer' END as role
 FROM groups g
 JOIN users u ON u.id = g.admin_user_id
 WHERE g.admin_user_id = ?3
@@ -2084,7 +2110,7 @@ SELECT
   g.name,
   g.admin_user_id,
   g.created_at,
-  CASE WHEN g.admin_user_id = ?3 THEN 'admin' ELSE 'viewer' END as role
+  CASE WHEN g.admin_user_id = ?3 THEN 'owner' ELSE 'viewer' END as role
 FROM groups g
 JOIN users u ON u.id = g.admin_user_id
 WHERE g.admin_user_id = ?3
@@ -2221,9 +2247,10 @@ func (q *Queries) ListUserSessions(ctx context.Context, userID string) ([]UserSe
 }
 
 const removeGroupAdmin = `-- name: RemoveGroupAdmin :exec
-DELETE FROM group_admins
+DELETE FROM group_access
 WHERE user_id = ?
   AND group_id = ?
+  AND role = 'admin'
 `
 
 type RemoveGroupAdminParams struct {
@@ -2237,8 +2264,10 @@ func (q *Queries) RemoveGroupAdmin(ctx context.Context, arg RemoveGroupAdminPara
 }
 
 const removeGroupReader = `-- name: RemoveGroupReader :exec
-DELETE FROM group_readers
-WHERE user_id = ? AND group_id = ?
+DELETE FROM group_access
+WHERE user_id = ?
+  AND group_id = ?
+  AND role = 'viewer'
 `
 
 type RemoveGroupReaderParams struct {

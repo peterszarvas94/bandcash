@@ -38,7 +38,9 @@ templ GroupsMain(data GroupsPageData) {
 						<a class="table-link" href={ "/groups/" + group.Group.ID + "/overview" }>{ group.Group.Name }</a>
 						</td>
 						<td>
-							if group.Role == "admin" {
+							if group.Role == "owner" {
+								<span class="badge badge-primary">{ ctxi18n.T(ctx, "groups.role_owner") }</span>
+							} else if group.Role == "admin" {
 								<span class="badge badge-primary">{ ctxi18n.T(ctx, "groups.role_admin") }</span>
 							} else {
 								<span class="badge">{ ctxi18n.T(ctx, "groups.role_viewer") }</span>

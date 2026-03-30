@@ -55,6 +55,14 @@ type Group struct {
 	CreatedAt   sql.NullTime `json:"created_at"`
 }
 
+type GroupAccess struct {
+	ID        string       `json:"id"`
+	UserID    string       `json:"user_id"`
+	GroupID   string       `json:"group_id"`
+	Role      string       `json:"role"`
+	CreatedAt sql.NullTime `json:"created_at"`
+}
+
 type GroupAdmin struct {
 	ID        string       `json:"id"`
 	UserID    string       `json:"user_id"`

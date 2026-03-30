@@ -89,19 +89,23 @@ DELETE FROM groups
 WHERE id = ?;
 
 -- name: CreateGroupReader :one
-INSERT INTO group_readers (id, user_id, group_id)
-VALUES (?, ?, ?)
-RETURNING *;
+INSERT INTO group_access (id, user_id, group_id, role)
+VALUES (?, ?, ?, 'viewer')
+ON CONFLICT(user_id, group_id) DO UPDATE SET role = 'viewer'
+WHERE group_access.role != 'owner'
+RETURNING id, user_id, group_id, created_at;
 
 -- name: GetGroupReaders :many
 SELECT users.* FROM users
-JOIN group_readers ON group_readers.user_id = users.id
-WHERE group_readers.group_id = ?;
+JOIN group_access ON group_access.user_id = users.id
+WHERE group_access.group_id = ?
+  AND group_access.role = 'viewer';
 
 -- name: CountGroupReadersFiltered :one
 SELECT COUNT(*) FROM users
-JOIN group_readers ON group_readers.user_id = users.id
-WHERE group_readers.group_id = sqlc.arg(group_id)
+JOIN group_access ON group_access.user_id = users.id
+WHERE group_access.group_id = sqlc.arg(group_id)
+  AND group_access.role = 'viewer'
   AND (
     sqlc.arg(search) = ''
     OR LOWER(users.email) LIKE '%' || LOWER(sqlc.arg(search)) || '%'
@@ -109,8 +113,9 @@ WHERE group_readers.group_id = sqlc.arg(group_id)
 
 -- name: ListGroupReadersByEmailAscFiltered :many
 SELECT users.* FROM users
-JOIN group_readers ON group_readers.user_id = users.id
-WHERE group_readers.group_id = sqlc.arg(group_id)
+JOIN group_access ON group_access.user_id = users.id
+WHERE group_access.group_id = sqlc.arg(group_id)
+  AND group_access.role = 'viewer'
   AND (
     sqlc.arg(search) = ''
     OR LOWER(users.email) LIKE '%' || LOWER(sqlc.arg(search)) || '%'
@@ -120,8 +125,9 @@ LIMIT sqlc.arg(limit) OFFSET sqlc.arg(offset);
 
 -- name: ListGroupReadersByEmailDescFiltered :many
 SELECT users.* FROM users
-JOIN group_readers ON group_readers.user_id = users.id
-WHERE group_readers.group_id = sqlc.arg(group_id)
+JOIN group_access ON group_access.user_id = users.id
+WHERE group_access.group_id = sqlc.arg(group_id)
+  AND group_access.role = 'viewer'
   AND (
     sqlc.arg(search) = ''
     OR LOWER(users.email) LIKE '%' || LOWER(sqlc.arg(search)) || '%'
@@ -130,12 +136,16 @@ ORDER BY LOWER(users.email) DESC
 LIMIT sqlc.arg(limit) OFFSET sqlc.arg(offset);
 
 -- name: IsGroupReader :one
-SELECT COUNT(*) FROM group_readers
-WHERE user_id = ? AND group_id = ?;
+SELECT COUNT(*) FROM group_access
+WHERE user_id = ?
+  AND group_id = ?
+  AND role = 'viewer';
 
 -- name: RemoveGroupReader :exec
-DELETE FROM group_readers
-WHERE user_id = ? AND group_id = ?;
+DELETE FROM group_access
+WHERE user_id = ?
+  AND group_id = ?
+  AND role = 'viewer';
 
 -- name: CreateMagicLink :one
 INSERT INTO magic_links (id, token, email, action, group_id, expires_at)
@@ -235,25 +245,30 @@ WHERE id = ?
   AND used_at IS NULL;
 
 -- name: CreateGroupAdmin :one
-INSERT INTO group_admins (id, user_id, group_id)
-VALUES (?, ?, ?)
-RETURNING *;
+INSERT INTO group_access (id, user_id, group_id, role)
+VALUES (?, ?, ?, 'admin')
+ON CONFLICT(user_id, group_id) DO UPDATE SET role = 'admin'
+WHERE group_access.role != 'owner'
+RETURNING id, user_id, group_id, created_at;
 
 -- name: IsGroupAdmin :one
 SELECT COUNT(*)
-FROM group_admins
+FROM group_access
 WHERE user_id = ?
-  AND group_id = ?;
+  AND group_id = ?
+  AND role = 'admin';
 
 -- name: RemoveGroupAdmin :exec
-DELETE FROM group_admins
+DELETE FROM group_access
 WHERE user_id = ?
-  AND group_id = ?;
+  AND group_id = ?
+  AND role = 'admin';
 
 -- name: ListGroupAdminUserIDs :many
 SELECT user_id
-FROM group_admins
-WHERE group_id = ?;
+FROM group_access
+WHERE group_id = ?
+  AND role = 'admin';
 
 -- name: CountGroupAdminsFiltered :one
 SELECT COUNT(*) FROM (
@@ -369,7 +384,7 @@ SELECT
   g.name,
   g.admin_user_id,
   g.created_at,
-  CASE WHEN g.admin_user_id = sqlc.arg(user_id) THEN 'admin' ELSE 'viewer' END as role
+  CASE WHEN g.admin_user_id = sqlc.arg(user_id) THEN 'owner' ELSE 'viewer' END as role
 FROM groups g
 JOIN users u ON u.id = g.admin_user_id
 WHERE g.admin_user_id = sqlc.arg(user_id)
@@ -426,7 +441,7 @@ SELECT
   g.name,
   g.admin_user_id,
   g.created_at,
-  CASE WHEN g.admin_user_id = sqlc.arg(user_id) THEN 'admin' ELSE 'viewer' END as role
+  CASE WHEN g.admin_user_id = sqlc.arg(user_id) THEN 'owner' ELSE 'viewer' END as role
 FROM groups g
 JOIN users u ON u.id = g.admin_user_id
 WHERE g.admin_user_id = sqlc.arg(user_id)
@@ -483,7 +498,7 @@ SELECT
   g.name,
   g.admin_user_id,
   g.created_at,
-  CASE WHEN g.admin_user_id = sqlc.arg(user_id) THEN 'admin' ELSE 'viewer' END as role
+  CASE WHEN g.admin_user_id = sqlc.arg(user_id) THEN 'owner' ELSE 'viewer' END as role
 FROM groups g
 JOIN users u ON u.id = g.admin_user_id
 WHERE g.admin_user_id = sqlc.arg(user_id)
@@ -540,7 +555,7 @@ SELECT
   g.name,
   g.admin_user_id,
   g.created_at,
-  CASE WHEN g.admin_user_id = sqlc.arg(user_id) THEN 'admin' ELSE 'viewer' END as role
+  CASE WHEN g.admin_user_id = sqlc.arg(user_id) THEN 'owner' ELSE 'viewer' END as role
 FROM groups g
 JOIN users u ON u.id = g.admin_user_id
 WHERE g.admin_user_id = sqlc.arg(user_id)
@@ -597,7 +612,7 @@ SELECT
   g.name,
   g.admin_user_id,
   g.created_at,
-  CASE WHEN g.admin_user_id = sqlc.arg(user_id) THEN 'admin' ELSE 'viewer' END as role,
+  CASE WHEN g.admin_user_id = sqlc.arg(user_id) THEN 'owner' ELSE 'viewer' END as role,
   u.email as admin_email
 FROM groups g
 JOIN users u ON u.id = g.admin_user_id
@@ -657,7 +672,7 @@ SELECT
   g.name,
   g.admin_user_id,
   g.created_at,
-  CASE WHEN g.admin_user_id = sqlc.arg(user_id) THEN 'admin' ELSE 'viewer' END as role,
+  CASE WHEN g.admin_user_id = sqlc.arg(user_id) THEN 'owner' ELSE 'viewer' END as role,
   u.email as admin_email
 FROM groups g
 JOIN users u ON u.id = g.admin_user_id

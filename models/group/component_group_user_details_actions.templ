@@ -8,6 +8,23 @@ import (
 )
 
 templ GroupUserDetailsActions(data UserPageData) {
+	if data.CurrentUserID == data.Group.AdminUserID && data.UserRow.Role != "owner" {
+		@shared.SureActionButton(shared.SureActionButtonProps{
+			ClassName:    "btn btn-sm btn-warning",
+			DisabledExpr: "false",
+			Label:        ctxi18n.T(ctx, "groups.transfer_group"),
+			IconName:     icons.IconShieldUser,
+			Dialog: shared.SureDialogProps{
+				Title:       ctxi18n.T(ctx, "groups.transfer_group_confirm"),
+				Message:     ctxi18n.T(ctx, "confirm.destructive_message"),
+				SubmitLabel: ctxi18n.T(ctx, "groups.transfer_group"),
+				CancelLabel: ctxi18n.T(ctx, "actions.cancel"),
+				Method:      "put",
+				URL:         fmt.Sprintf("/groups/%s/users/%s/transfer-owner", data.GroupID, data.UserRow.UserID),
+				TriggerID:   "group-user-transfer-owner",
+			},
+		})
+	}
 	<a class="btn btn-sm" href={ fmt.Sprintf("/groups/%s/users/%s/edit", data.GroupID, data.UserRow.UserID) }>
 		@icons.Pencil(templ.Attributes{"class": "icon"})
 		{ ctxi18n.T(ctx, "actions.edit") }

@@ -32,6 +32,7 @@ func RegisterRoutes(e *echo.Echo) *Group {
 	adminUsersRoutes.DELETE("/users/:id", grp.DeleteUserEntry)
 	adminUsersRoutes.PUT("/users/:id/admin", grp.PromoteViewerToAdmin)
 	adminUsersRoutes.PUT("/users/:id/viewer", grp.DemoteAdminToViewer)
+	adminUsersRoutes.PUT("/users/:id/transfer-owner", grp.TransferGroupOwnership)
 
 	return grp
 }

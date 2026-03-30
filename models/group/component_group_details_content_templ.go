@@ -74,7 +74,7 @@ func GroupDetailsContent(data GroupPageData) templ.Component {
 		templ_7745c5c3_Err = shared.DetailsCardWithClass(fmt.Sprintf("group_%s_overview", data.Group.ID), []shared.DetailsRow{
 			{Label: ctxi18n.T(ctx, "nav.overview"), LabelClass: "section-title", Value: ""},
 			{Label: ctxi18n.T(ctx, "groups.name"), Value: data.Group.Name},
-			{Label: ctxi18n.T(ctx, "groups.admin"), Value: data.Admin.Email},
+			{Label: ctxi18n.T(ctx, "groups.owner"), Value: data.Admin.Email},
 			{
 				Label: ctxi18n.T(ctx, "groups.created"),
 				Value: func() string {

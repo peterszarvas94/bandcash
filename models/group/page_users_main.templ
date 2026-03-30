@@ -44,7 +44,7 @@ templ GroupUsersMain(data UsersPageData) {
 					makeAdminExpr := fmt.Sprintf("@put('/groups/%s/users/%s/admin', {mode: 'table', tableQuery: $tableQuery})", data.Group.ID, row.UserID)
 					makeViewerExpr := fmt.Sprintf("@put('/groups/%s/users/%s/viewer', {mode: 'table', tableQuery: $tableQuery})", data.Group.ID, row.UserID)
 					roleToggleExpr := makeAdminExpr
-					roleToggleDisabled := row.Status == "pending"
+					roleToggleDisabled := row.Status == "pending" || row.Role == "owner"
 					if row.Role == "admin" {
 						roleToggleExpr = makeViewerExpr
 					}
@@ -52,7 +52,12 @@ templ GroupUsersMain(data UsersPageData) {
 				<tr>
 					<td><a class="table-link" href={ rowPath }>{ row.Email }</a></td>
 					<td>
-						if data.IsAdmin {
+						if row.Role == "owner" {
+							<button class="btn btn-xs btn-active" type="button" disabled>
+								@icons.ShieldUser(templ.Attributes{"class": "icon"})
+								{ ctxi18n.T(ctx, "groups.role_owner") }
+							</button>
+						} else if data.IsAdmin {
 							@shared.Toggle(shared.ToggleProps{
 								IsOn:         row.Role == "admin",
 								Disabled:     roleToggleDisabled,
@@ -60,12 +65,16 @@ templ GroupUsersMain(data UsersPageData) {
 								DisabledExpr: "false",
 								Off:          ctxi18n.T(ctx, "groups.role_viewer"),
 								On:           ctxi18n.T(ctx, "groups.role_admin"),
+								OffIcon:      icons.IconShieldOff,
+								OnIcon:       icons.IconShield,
 								ClassName:    "btn btn-xs",
 								OnClass:      "btn-success",
 							})
 						} else {
 							if row.Role == "admin" {
 								{ ctxi18n.T(ctx, "groups.role_admin") }
+							} else if row.Role == "owner" {
+								{ ctxi18n.T(ctx, "groups.role_owner") }
 							} else {
 								{ ctxi18n.T(ctx, "groups.role_viewer") }
 							}

@@ -466,6 +466,7 @@ func (g *Group) UserEditPage(c echo.Context) error {
 		return c.NoContent(http.StatusInternalServerError)
 	}
 
+	isOwnerRole := group.AdminUserID == userID
 	isAdminRole := isAdminUser(ctx, groupID, userID)
 	if !isAdminRole {
 		readerCount, readerErr := db.Qry.IsGroupReader(ctx, db.IsGroupReaderParams{UserID: userID, GroupID: groupID})
@@ -480,7 +481,9 @@ func (g *Group) UserEditPage(c echo.Context) error {
 	}
 
 	row := GroupUserRow{Kind: "user", Status: "active", Email: user.Email, UserID: user.ID, Role: "viewer"}
-	if isAdminRole {
+	if isOwnerRole {
+		row.Role = "owner"
+	} else if isAdminRole {
 		row.Role = "admin"
 	}
 
@@ -521,6 +524,7 @@ func (g *Group) UserPage(c echo.Context) error {
 		return c.NoContent(http.StatusInternalServerError)
 	}
 
+	isOwnerRole := group.AdminUserID == userID
 	isAdminRole := isAdminUser(ctx, groupID, userID)
 	if !isAdminRole {
 		readerCount, readerErr := db.Qry.IsGroupReader(ctx, db.IsGroupReaderParams{UserID: userID, GroupID: groupID})
@@ -538,6 +542,9 @@ func (g *Group) UserPage(c echo.Context) error {
 		Kind:   "user",
 		Status: "active",
 		Role: func() string {
+			if isOwnerRole {
+				return "owner"
+			}
 			if isAdminRole {
 				return "admin"
 			}
@@ -988,6 +995,59 @@ func (g *Group) DemoteAdminToViewer(c echo.Context) error {
 	return c.NoContent(http.StatusOK)
 }
 
+func (g *Group) TransferGroupOwnership(c echo.Context) error {
+	signals := tabSignals{}
+	if err := datastar.ReadSignals(c.Request(), &signals); err != nil {
+		return c.NoContent(http.StatusBadRequest)
+	}
+	if !utils.SetTabID(c, signals.TabID) {
+		return c.NoContent(http.StatusBadRequest)
+	}
+
+	groupID := middleware.GetGroupID(c)
+	userID := c.Param("userId")
+	if userID == "" {
+		userID = c.Param("id")
+	}
+	if !utils.IsValidID(userID, "usr") {
+		return g.redirectUsersPage(c, groupID, "", "groups.errors.invalid_user", http.StatusBadRequest)
+	}
+
+	ctx := c.Request().Context()
+	group, err := db.Qry.GetGroupByID(ctx, groupID)
+	if err != nil {
+		return g.redirectUsersPage(c, groupID, "", "groups.errors.group_not_found", http.StatusNotFound)
+	}
+
+	currentUserID := middleware.GetUserID(c)
+	if group.AdminUserID != currentUserID {
+		return g.redirectUsersPage(c, groupID, "", "groups.errors.owner_required", http.StatusForbidden)
+	}
+	if userID == group.AdminUserID {
+		return g.redirectUsersPage(c, groupID, "", "groups.errors.already_owner", http.StatusConflict)
+	}
+
+	isMember := isAdminUser(ctx, groupID, userID)
+	if !isMember {
+		viewerCount, viewerErr := db.Qry.IsGroupReader(ctx, db.IsGroupReaderParams{UserID: userID, GroupID: groupID})
+		if viewerErr != nil || viewerCount == 0 {
+			return g.redirectUsersPage(c, groupID, "", "groups.errors.invalid_user", http.StatusBadRequest)
+		}
+	}
+
+	if err := db.Qry.UpdateGroupAdmin(ctx, db.UpdateGroupAdminParams{AdminUserID: userID, ID: groupID}); err != nil {
+		slog.Error("group: failed to transfer ownership", "group_id", groupID, "user_id", userID, "err", err)
+		return g.redirectUsersPage(c, groupID, "", "groups.errors.transfer_failed", http.StatusInternalServerError)
+	}
+
+	utils.Notify(c, "success", ctxi18n.T(ctx, "groups.messages.owner_transferred"))
+	err = utils.SSEHub.Redirect(c, "/groups/"+groupID+"/users/"+userID)
+	if err != nil {
+		return c.NoContent(http.StatusInternalServerError)
+	}
+	return c.NoContent(http.StatusOK)
+}
+
 // CancelInvite removes a pending invitation from the group.
 func (g *Group) CancelInvite(c echo.Context) error {
 	signals := tabSignals{}
@@ -1095,6 +1155,11 @@ func tableQueryValues(query utils.TableQuery) url.Values {
 }
 
 func (g *Group) buildUserRows(ctx context.Context, groupID string) ([]GroupUserRow, error) {
+	group, err := db.Qry.GetGroupByID(ctx, groupID)
+	if err != nil {
+		return nil, err
+	}
+
 	admins, err := listGroupAdmins(ctx, groupID)
 	if err != nil {
 		return nil, err
@@ -1103,10 +1168,14 @@ func (g *Group) buildUserRows(ctx context.Context, groupID string) ([]GroupUserR
 	rows := make([]GroupUserRow, 0, len(admins))
 	for _, admin := range admins {
 		adminIDs[admin.ID] = struct{}{}
+		role := "admin"
+		if admin.ID == group.AdminUserID {
+			role = "owner"
+		}
 		rows = append(rows, GroupUserRow{
 			Kind:      "user",
 			Status:    "active",
-			Role:      "admin",
+			Role:      role,
 			Email:     admin.Email,
 			UserID:    admin.ID,
 			CreatedAt: admin.CreatedAt.Time,

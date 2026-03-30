@@ -10,7 +10,7 @@ import (
 templ EventTotalsContent(data EventsData) {
 	<section class="detail-box bb-0 pb">
 		<dl>
-			<div><dt>{ ctxi18n.T(ctx, "groups.admin") }</dt><dd>{ data.GroupAdminEmail }</dd></div>
+			<div><dt>{ ctxi18n.T(ctx, "groups.owner") }</dt><dd>{ data.GroupAdminEmail }</dd></div>
 			<div><dt>{ ctxi18n.T(ctx, "groups.created") }</dt><dd>{ data.GroupCreatedAt }</dd></div>
 		</dl>
 	</section>

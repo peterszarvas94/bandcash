@@ -53,7 +53,6 @@ templ SureDialog() {
 					data-attr:disabled="$sure.fetching"
 					data-on:click={ sureCloseExpr }
 				>
-					@icons.Icon(icons.IconX, templ.Attributes{"class": "icon"})
 					<span data-text="$sure.cancelLabel"></span>
 				</button>
 				<button
@@ -64,9 +63,6 @@ templ SureDialog() {
 					data-on:click={ sureSubmitExpr }
 					data-on:datastar-fetch={ sureFetchDoneExpr }
 				>
-					<span data-show="!$sure.fetching">
-						@icons.Icon(icons.IconTrash2, templ.Attributes{"class": "icon"})
-					</span>
 					<span data-show="$sure.fetching" style="display: none">
 						@icons.LoaderCircle(templ.Attributes{"class": "icon icon-spin"})
 					</span>

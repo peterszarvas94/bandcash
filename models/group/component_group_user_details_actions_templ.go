@@ -36,6 +36,26 @@ func GroupUserDetailsActions(data UserPageData) templ.Component {
 			templ_7745c5c3_Var1 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
+		if data.CurrentUserID == data.Group.AdminUserID && data.UserRow.Role != "owner" {
+			templ_7745c5c3_Err = shared.SureActionButton(shared.SureActionButtonProps{
+				ClassName:    "btn btn-sm btn-warning",
+				DisabledExpr: "false",
+				Label:        ctxi18n.T(ctx, "groups.transfer_group"),
+				IconName:     icons.IconShieldUser,
+				Dialog: shared.SureDialogProps{
+					Title:       ctxi18n.T(ctx, "groups.transfer_group_confirm"),
+					Message:     ctxi18n.T(ctx, "confirm.destructive_message"),
+					SubmitLabel: ctxi18n.T(ctx, "groups.transfer_group"),
+					CancelLabel: ctxi18n.T(ctx, "actions.cancel"),
+					Method:      "put",
+					URL:         fmt.Sprintf("/groups/%s/users/%s/transfer-owner", data.GroupID, data.UserRow.UserID),
+					TriggerID:   "group-user-transfer-owner",
+				},
+			}).Render(ctx, templ_7745c5c3_Buffer)
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+		}
 		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<a class=\"btn btn-sm\" href=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
@@ -43,7 +63,7 @@ func GroupUserDetailsActions(data UserPageData) templ.Component {
 		var templ_7745c5c3_Var2 templ.SafeURL
 		templ_7745c5c3_Var2, templ_7745c5c3_Err = templ.JoinURLErrs(fmt.Sprintf("/groups/%s/users/%s/edit", data.GroupID, data.UserRow.UserID))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/group/component_group_user_details_actions.templ`, Line: 11, Col: 104}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/group/component_group_user_details_actions.templ`, Line: 28, Col: 104}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var2))
 		if templ_7745c5c3_Err != nil {
@@ -60,7 +80,7 @@ func GroupUserDetailsActions(data UserPageData) templ.Component {
 		var templ_7745c5c3_Var3 string
 		templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.JoinStringErrs(ctxi18n.T(ctx, "actions.edit"))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/group/component_group_user_details_actions.templ`, Line: 13, Col: 34}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/group/component_group_user_details_actions.templ`, Line: 30, Col: 34}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var3))
 		if templ_7745c5c3_Err != nil {

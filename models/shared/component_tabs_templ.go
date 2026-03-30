@@ -53,7 +53,7 @@ func Tabs(ariaLabel string, items []TabItem) templ.Component {
 			return templ_7745c5c3_Err
 		}
 		for _, item := range items {
-			var templ_7745c5c3_Var3 = []any{"tab", templ.KV("tab-active", item.IsActive)}
+			var templ_7745c5c3_Var3 = []any{"tab", "btn", "btn-sm", templ.KV("btn-active", item.IsActive), templ.KV("btn-ghost", !item.IsActive)}
 			templ_7745c5c3_Err = templ.RenderCSSItems(ctx, templ_7745c5c3_Buffer, templ_7745c5c3_Var3...)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
@@ -78,7 +78,7 @@ func Tabs(ariaLabel string, items []TabItem) templ.Component {
 			var templ_7745c5c3_Var5 templ.SafeURL
 			templ_7745c5c3_Var5, templ_7745c5c3_Err = templ.JoinURLErrs(item.Href)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/shared/component_tabs.templ`, Line: 12, Col: 77}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/shared/component_tabs.templ`, Line: 12, Col: 133}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var5))
 			if templ_7745c5c3_Err != nil {
@@ -91,7 +91,7 @@ func Tabs(ariaLabel string, items []TabItem) templ.Component {
 			var templ_7745c5c3_Var6 string
 			templ_7745c5c3_Var6, templ_7745c5c3_Err = templ.JoinStringErrs(item.Label)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/shared/component_tabs.templ`, Line: 12, Col: 92}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/shared/component_tabs.templ`, Line: 12, Col: 148}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var6))
 			if templ_7745c5c3_Err != nil {

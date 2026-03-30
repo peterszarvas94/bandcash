@@ -73,6 +73,9 @@ func GroupUserMain(data UserPageData) templ.Component {
 		}
 		templ_7745c5c3_Err = shared.DetailsCardWithClass(fmt.Sprintf("group_user_%s", data.UserRow.UserID), []shared.DetailsRow{
 			{Label: ctxi18n.T(ctx, "fields.role"), Value: func() string {
+				if data.UserRow.Role == "owner" {
+					return ctxi18n.T(ctx, "groups.role_owner")
+				}
 				if data.UserRow.Role == "admin" {
 					return ctxi18n.T(ctx, "groups.role_admin")
 				}
