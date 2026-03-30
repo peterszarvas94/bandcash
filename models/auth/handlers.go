@@ -441,13 +441,13 @@ func (a *Auth) Logout(c echo.Context) error {
 func (a *Auth) Dashboard(c echo.Context) error {
 	userID := middleware.GetUserID(c)
 
-	adminGroups, err := db.Qry.ListGroupsByAdmin(c.Request().Context(), db.ListGroupsByAdminParams{OwnerUserID: userID, UserID: userID})
+	adminGroups, err := db.Qry.ListGroupsByAdmin(c.Request().Context(), userID)
 	if err != nil {
 		slog.Error("auth: failed to load admin groups", "err", err)
 		return c.Redirect(http.StatusFound, "/groups/new")
 	}
 
-	readerGroups, err := db.Qry.ListGroupsByReader(c.Request().Context(), db.ListGroupsByReaderParams{UserID: userID, AdminUserID: userID})
+	readerGroups, err := db.Qry.ListGroupsByReader(c.Request().Context(), userID)
 	if err != nil {
 		slog.Error("auth: failed to load reader groups", "err", err)
 		return c.Redirect(http.StatusFound, "/groups/new")

@@ -466,13 +466,9 @@ func (g *Group) UserEditPage(c echo.Context) error {
 		return c.NoContent(http.StatusInternalServerError)
 	}
 
-	isOwnerRole := group.AdminUserID == userID
-	isAdminRole := isAdminUser(ctx, groupID, userID)
-	if !isAdminRole {
-		readerCount, readerErr := db.Qry.IsGroupReader(ctx, db.IsGroupReaderParams{UserID: userID, GroupID: groupID})
-		if readerErr != nil || readerCount == 0 {
-			return c.NoContent(http.StatusNotFound)
-		}
+	role, roleErr := getGroupAccessRole(ctx, groupID, userID)
+	if roleErr != nil {
+		return c.NoContent(http.StatusNotFound)
 	}
 
 	user, err := db.Qry.GetUserByID(ctx, userID)
@@ -481,9 +477,9 @@ func (g *Group) UserEditPage(c echo.Context) error {
 	}
 
 	row := GroupUserRow{Kind: "user", Status: "active", Email: user.Email, UserID: user.ID, Role: "viewer"}
-	if isOwnerRole {
+	if role == "owner" {
 		row.Role = "owner"
-	} else if isAdminRole {
+	} else if role == "admin" {
 		row.Role = "admin"
 	}
 
@@ -524,13 +520,9 @@ func (g *Group) UserPage(c echo.Context) error {
 		return c.NoContent(http.StatusInternalServerError)
 	}
 
-	isOwnerRole := group.AdminUserID == userID
-	isAdminRole := isAdminUser(ctx, groupID, userID)
-	if !isAdminRole {
-		readerCount, readerErr := db.Qry.IsGroupReader(ctx, db.IsGroupReaderParams{UserID: userID, GroupID: groupID})
-		if readerErr != nil || readerCount == 0 {
-			return c.NoContent(http.StatusNotFound)
-		}
+	role, roleErr := getGroupAccessRole(ctx, groupID, userID)
+	if roleErr != nil {
+		return c.NoContent(http.StatusNotFound)
 	}
 
 	user, err := db.Qry.GetUserByID(ctx, userID)
@@ -542,10 +534,10 @@ func (g *Group) UserPage(c echo.Context) error {
 		Kind:   "user",
 		Status: "active",
 		Role: func() string {
-			if isOwnerRole {
+			if role == "owner" {
 				return "owner"
 			}
-			if isAdminRole {
+			if role == "admin" {
 				return "admin"
 			}
 			return "viewer"
@@ -735,23 +727,11 @@ func (g *Group) AddViewer(c echo.Context) error {
 	// If user exists and already has access, short-circuit
 	user, err := db.Qry.GetUserByEmail(c.Request().Context(), emailAddress)
 	if err == nil {
-		if group.AdminUserID == user.ID {
+		userRole, roleErr := getGroupAccessRole(c.Request().Context(), groupID, user.ID)
+		if roleErr == nil && (userRole == "owner" || userRole == "admin") {
 			return g.patchUsersPageWithState(c, groupID, signals.TableQuery, "groups.messages.already_admin", "")
 		}
-
-		adminCount, adminErr := db.Qry.IsGroupAdmin(c.Request().Context(), db.IsGroupAdminParams{
-			UserID:  user.ID,
-			GroupID: groupID,
-		})
-		if adminErr == nil && adminCount > 0 {
-			return g.patchUsersPageWithState(c, groupID, signals.TableQuery, "groups.messages.already_admin", "")
-		}
-
-		count, err := db.Qry.IsGroupReader(c.Request().Context(), db.IsGroupReaderParams{
-			UserID:  user.ID,
-			GroupID: groupID,
-		})
-		if err == nil && count > 0 {
+		if roleErr == nil && userRole == "viewer" {
 			if inviteRole == "admin" {
 				err = db.Qry.RemoveGroupReader(c.Request().Context(), db.RemoveGroupReaderParams{
 					UserID:  user.ID,
@@ -879,18 +859,15 @@ func (g *Group) PromoteViewerToAdmin(c echo.Context) error {
 		return g.redirectUsersPage(c, groupID, "groups.messages.already_admin", "", http.StatusOK)
 	}
 
-	count, err := db.Qry.IsGroupReader(ctx, db.IsGroupReaderParams{
-		UserID:  userID,
-		GroupID: groupID,
-	})
-	if err != nil || count == 0 {
+	role, roleErr := getGroupAccessRole(ctx, groupID, userID)
+	if roleErr != nil || role != "viewer" {
 		if signals.Mode == "table" {
 			return g.patchUsersPageWithState(c, groupID, signals.TableQuery, "", "groups.errors.promote_failed")
 		}
 		return g.redirectUsersPage(c, groupID, "", "groups.errors.promote_failed", http.StatusInternalServerError)
 	}
 
-	err = db.Qry.RemoveGroupReader(ctx, db.RemoveGroupReaderParams{
+	err := db.Qry.RemoveGroupReader(ctx, db.RemoveGroupReaderParams{
 		UserID:  userID,
 		GroupID: groupID,
 	})
@@ -1027,12 +1004,8 @@ func (g *Group) TransferGroupOwnership(c echo.Context) error {
 		return g.redirectUsersPage(c, groupID, "", "groups.errors.already_owner", http.StatusConflict)
 	}
 
-	isMember := isAdminUser(ctx, groupID, userID)
-	if !isMember {
-		viewerCount, viewerErr := db.Qry.IsGroupReader(ctx, db.IsGroupReaderParams{UserID: userID, GroupID: groupID})
-		if viewerErr != nil || viewerCount == 0 {
-			return g.redirectUsersPage(c, groupID, "", "groups.errors.invalid_user", http.StatusBadRequest)
-		}
+	if _, roleErr := getGroupAccessRole(ctx, groupID, userID); roleErr != nil {
+		return g.redirectUsersPage(c, groupID, "", "groups.errors.invalid_user", http.StatusBadRequest)
 	}
 
 	if err := db.Qry.UpdateGroupAdmin(ctx, db.UpdateGroupAdminParams{AdminUserID: userID, ID: groupID}); err != nil {
@@ -1155,48 +1128,25 @@ func tableQueryValues(query utils.TableQuery) url.Values {
 }
 
 func (g *Group) buildUserRows(ctx context.Context, groupID string) ([]GroupUserRow, error) {
-	group, err := db.Qry.GetGroupByID(ctx, groupID)
+	userAccessRows, err := db.Qry.ListGroupUserAccess(ctx, groupID)
 	if err != nil {
 		return nil, err
 	}
-
-	admins, err := listGroupAdmins(ctx, groupID)
-	if err != nil {
-		return nil, err
-	}
-	adminIDs := make(map[string]struct{}, len(admins))
-	rows := make([]GroupUserRow, 0, len(admins))
-	for _, admin := range admins {
-		adminIDs[admin.ID] = struct{}{}
-		role := "admin"
-		if admin.ID == group.AdminUserID {
-			role = "owner"
+	rows := make([]GroupUserRow, 0, len(userAccessRows))
+	for _, accessRow := range userAccessRows {
+		createdAt := time.Time{}
+		if accessRow.AccessCreatedAt.Valid {
+			createdAt = accessRow.AccessCreatedAt.Time
+		} else if accessRow.CreatedAt.Valid {
+			createdAt = accessRow.CreatedAt.Time
 		}
 		rows = append(rows, GroupUserRow{
 			Kind:      "user",
 			Status:    "active",
-			Role:      role,
-			Email:     admin.Email,
-			UserID:    admin.ID,
-			CreatedAt: admin.CreatedAt.Time,
-		})
-	}
-
-	viewers, err := db.Qry.GetGroupReaders(ctx, groupID)
-	if err != nil {
-		return nil, err
-	}
-	for _, viewer := range viewers {
-		if _, isAdmin := adminIDs[viewer.ID]; isAdmin {
-			continue
-		}
-		rows = append(rows, GroupUserRow{
-			Kind:      "user",
-			Status:    "active",
-			Role:      "viewer",
-			Email:     viewer.Email,
-			UserID:    viewer.ID,
-			CreatedAt: viewer.CreatedAt.Time,
+			Role:      accessRow.Role,
+			Email:     accessRow.Email,
+			UserID:    accessRow.ID,
+			CreatedAt: createdAt,
 		})
 	}
 
@@ -1278,44 +1228,19 @@ func pageUserRows(rows []GroupUserRow, query utils.TableQuery) []GroupUserRow {
 }
 
 func listGroupAdmins(ctx context.Context, groupID string) ([]db.User, error) {
-	group, err := db.Qry.GetGroupByID(ctx, groupID)
-	if err != nil {
-		return nil, err
-	}
-	primary, err := db.Qry.GetUserByID(ctx, group.AdminUserID)
-	if err != nil {
-		return nil, err
-	}
-	admins := []db.User{primary}
-	seen := map[string]struct{}{primary.ID: {}}
-	adminIDs, err := db.Qry.ListGroupAdminUserIDs(ctx, groupID)
-	if err != nil {
-		return nil, err
-	}
-	for _, adminID := range adminIDs {
-		if _, ok := seen[adminID]; ok {
-			continue
-		}
-		admin, userErr := db.Qry.GetUserByID(ctx, adminID)
-		if userErr != nil {
-			continue
-		}
-		admins = append(admins, admin)
-		seen[admin.ID] = struct{}{}
-	}
-	return admins, nil
+	return db.Qry.ListGroupAdmins(ctx, groupID)
 }
 
 func isAdminUser(ctx context.Context, groupID, userID string) bool {
-	group, err := db.Qry.GetGroupByID(ctx, groupID)
+	role, err := getGroupAccessRole(ctx, groupID, userID)
 	if err != nil {
 		return false
 	}
-	if group.AdminUserID == userID {
-		return true
-	}
-	count, err := db.Qry.IsGroupAdmin(ctx, db.IsGroupAdminParams{UserID: userID, GroupID: groupID})
-	return err == nil && count > 0
+	return role == "owner" || role == "admin"
+}
+
+func getGroupAccessRole(ctx context.Context, groupID, userID string) (string, error) {
+	return db.Qry.GetGroupAccessRole(ctx, db.GetGroupAccessRoleParams{UserID: userID, GroupID: groupID})
 }
 
 func (g *Group) demoteAdminToViewer(ctx context.Context, groupID, userID string) error {

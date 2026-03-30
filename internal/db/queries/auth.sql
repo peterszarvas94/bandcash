@@ -39,38 +39,27 @@ SELECT * FROM groups
 WHERE id = ?;
 
 -- name: GetGroupByAdmin :one
-SELECT * FROM groups
-WHERE admin_user_id = sqlc.arg(owner_user_id)
-   OR id IN (
-     SELECT group_id
-     FROM group_admins
-     WHERE user_id = sqlc.arg(user_id)
-   )
+SELECT g.*
+FROM groups g
+JOIN group_access ga ON ga.group_id = g.id
+WHERE ga.user_id = sqlc.arg(user_id)
+  AND ga.role IN ('owner', 'admin')
 LIMIT 1;
 
 -- name: ListGroupsByAdmin :many
-SELECT *
-FROM groups
-WHERE admin_user_id = sqlc.arg(owner_user_id)
-   OR id IN (
-     SELECT group_id
-     FROM group_admins
-     WHERE user_id = sqlc.arg(user_id)
-   )
+SELECT g.*
+FROM groups g
+JOIN group_access ga ON ga.group_id = g.id
+WHERE ga.user_id = sqlc.arg(user_id)
+  AND ga.role IN ('owner', 'admin')
 ORDER BY created_at DESC;
 
 -- name: ListGroupsByReader :many
 SELECT g.*
 FROM groups g
-JOIN group_readers gr ON gr.group_id = g.id
-WHERE gr.user_id = ?
-  AND g.admin_user_id != ?
-  AND NOT EXISTS (
-    SELECT 1
-    FROM group_admins ga
-    WHERE ga.group_id = g.id
-      AND ga.user_id = gr.user_id
-  )
+JOIN group_access ga ON ga.group_id = g.id
+WHERE ga.user_id = sqlc.arg(user_id)
+  AND ga.role = 'viewer'
 ORDER BY g.created_at DESC;
 
 -- name: UpdateGroupAdmin :exec
@@ -100,6 +89,19 @@ SELECT users.* FROM users
 JOIN group_access ON group_access.user_id = users.id
 WHERE group_access.group_id = ?
   AND group_access.role = 'viewer';
+
+-- name: ListGroupUserAccess :many
+SELECT
+  users.id,
+  users.email,
+  users.created_at,
+  users.preferred_lang,
+  group_access.role,
+  group_access.created_at AS access_created_at
+FROM users
+JOIN group_access ON group_access.user_id = users.id
+WHERE group_access.group_id = ?
+ORDER BY group_access.created_at ASC, LOWER(users.email) ASC;
 
 -- name: CountGroupReadersFiltered :one
 SELECT COUNT(*) FROM users
@@ -140,6 +142,12 @@ SELECT COUNT(*) FROM group_access
 WHERE user_id = ?
   AND group_id = ?
   AND role = 'viewer';
+
+-- name: GetGroupAccessRole :one
+SELECT role
+FROM group_access
+WHERE user_id = ?
+  AND group_id = ?;
 
 -- name: RemoveGroupReader :exec
 DELETE FROM group_access
@@ -270,163 +278,74 @@ FROM group_access
 WHERE group_id = ?
   AND role = 'admin';
 
+-- name: ListGroupAdmins :many
+SELECT u.*
+FROM users u
+JOIN group_access ga ON ga.user_id = u.id
+WHERE ga.group_id = ?
+  AND ga.role IN ('owner', 'admin')
+ORDER BY LOWER(u.email) ASC;
+
 -- name: CountGroupAdminsFiltered :one
-SELECT COUNT(*) FROM (
-  SELECT u.id
-  FROM groups g
-  JOIN users u ON u.id = g.admin_user_id
-  WHERE g.id = sqlc.arg(group_id)
-    AND (
-      sqlc.arg(search) = ''
-      OR LOWER(u.email) LIKE '%' || LOWER(sqlc.arg(search)) || '%'
-    )
-  UNION
-  SELECT u.id
-  FROM group_admins ga
-  JOIN users u ON u.id = ga.user_id
-  WHERE ga.group_id = sqlc.arg(group_id)
-    AND (
-      sqlc.arg(search) = ''
-      OR LOWER(u.email) LIKE '%' || LOWER(sqlc.arg(search)) || '%'
-    )
-);
+SELECT COUNT(*)
+FROM users u
+JOIN group_access ga ON ga.user_id = u.id
+WHERE ga.group_id = sqlc.arg(group_id)
+  AND ga.role IN ('owner', 'admin')
+  AND (
+    sqlc.arg(search) = ''
+    OR LOWER(u.email) LIKE '%' || LOWER(sqlc.arg(search)) || '%'
+  );
 
 -- name: ListGroupAdminsByEmailAscFiltered :many
-SELECT * FROM users
-WHERE id IN (
-  SELECT u.id
-  FROM groups g
-  JOIN users u ON u.id = g.admin_user_id
-  WHERE g.id = sqlc.arg(group_id)
-    AND (
-      sqlc.arg(search) = ''
-      OR LOWER(u.email) LIKE '%' || LOWER(sqlc.arg(search)) || '%'
-    )
-  UNION
-  SELECT u.id
-  FROM group_admins ga
-  JOIN users u ON u.id = ga.user_id
-  WHERE ga.group_id = sqlc.arg(group_id)
-    AND (
-      sqlc.arg(search) = ''
-      OR LOWER(u.email) LIKE '%' || LOWER(sqlc.arg(search)) || '%'
-    )
-)
+SELECT u.*
+FROM users u
+JOIN group_access ga ON ga.user_id = u.id
+WHERE ga.group_id = sqlc.arg(group_id)
+  AND ga.role IN ('owner', 'admin')
+  AND (
+    sqlc.arg(search) = ''
+    OR LOWER(u.email) LIKE '%' || LOWER(sqlc.arg(search)) || '%'
+  )
 ORDER BY LOWER(email) ASC
 LIMIT sqlc.arg(limit) OFFSET sqlc.arg(offset);
 
 -- name: ListGroupAdminsByEmailDescFiltered :many
-SELECT * FROM users
-WHERE id IN (
-  SELECT u.id
-  FROM groups g
-  JOIN users u ON u.id = g.admin_user_id
-  WHERE g.id = sqlc.arg(group_id)
-    AND (
-      sqlc.arg(search) = ''
-      OR LOWER(u.email) LIKE '%' || LOWER(sqlc.arg(search)) || '%'
-    )
-  UNION
-  SELECT u.id
-  FROM group_admins ga
-  JOIN users u ON u.id = ga.user_id
-  WHERE ga.group_id = sqlc.arg(group_id)
-    AND (
-      sqlc.arg(search) = ''
-      OR LOWER(u.email) LIKE '%' || LOWER(sqlc.arg(search)) || '%'
-    )
-)
+SELECT u.*
+FROM users u
+JOIN group_access ga ON ga.user_id = u.id
+WHERE ga.group_id = sqlc.arg(group_id)
+  AND ga.role IN ('owner', 'admin')
+  AND (
+    sqlc.arg(search) = ''
+    OR LOWER(u.email) LIKE '%' || LOWER(sqlc.arg(search)) || '%'
+  )
 ORDER BY LOWER(email) DESC
 LIMIT sqlc.arg(limit) OFFSET sqlc.arg(offset);
 
 -- name: CountUserGroupsFiltered :one
-SELECT COUNT(*) FROM (
-  SELECT g.id FROM groups g
-  JOIN users u ON u.id = g.admin_user_id
-  WHERE g.admin_user_id = sqlc.arg(user_id)
-    AND (
-      sqlc.arg(search) = ''
-      OR g.name LIKE '%' || sqlc.arg(search) || '%'
-      OR u.email LIKE '%' || sqlc.arg(search) || '%'
-    )
-  UNION
-  SELECT g.id FROM groups g
-  JOIN group_admins ga ON ga.group_id = g.id
-  JOIN users u ON u.id = g.admin_user_id
-  WHERE ga.user_id = sqlc.arg(user_id)
-    AND g.admin_user_id != sqlc.arg(user_id)
-    AND (
-      sqlc.arg(search) = ''
-      OR g.name LIKE '%' || sqlc.arg(search) || '%'
-      OR u.email LIKE '%' || sqlc.arg(search) || '%'
-    )
-  UNION
-  SELECT g.id FROM groups g
-  JOIN group_readers gr ON gr.group_id = g.id
-  JOIN users u ON u.id = g.admin_user_id
-  WHERE gr.user_id = sqlc.arg(user_id)
-    AND g.admin_user_id != sqlc.arg(user_id)
-  AND NOT EXISTS (
-    SELECT 1 FROM group_admins ga
-    WHERE ga.group_id = g.id
-        AND ga.user_id = gr.user_id
-    )
-    AND (
-      sqlc.arg(search) = ''
-      OR g.name LIKE '%' || sqlc.arg(search) || '%'
-      OR u.email LIKE '%' || sqlc.arg(search) || '%'
-    )
-);
-
--- name: ListUserGroupsByNameAscFiltered :many
-SELECT 
-  g.id,
-  g.name,
-  g.admin_user_id,
-  g.created_at,
-  CASE WHEN g.admin_user_id = sqlc.arg(user_id) THEN 'owner' ELSE 'viewer' END as role
+SELECT COUNT(*)
 FROM groups g
+JOIN group_access ga ON ga.group_id = g.id
 JOIN users u ON u.id = g.admin_user_id
-WHERE g.admin_user_id = sqlc.arg(user_id)
+WHERE ga.user_id = sqlc.arg(user_id)
   AND (
     sqlc.arg(search) = ''
     OR g.name LIKE '%' || sqlc.arg(search) || '%'
     OR u.email LIKE '%' || sqlc.arg(search) || '%'
-  )
-UNION ALL
+  );
+
+-- name: ListUserGroupsByNameAscFiltered :many
 SELECT
   g.id,
   g.name,
   g.admin_user_id,
   g.created_at,
-  'admin' as role
+  ga.role
 FROM groups g
-JOIN group_admins ga ON ga.group_id = g.id
+JOIN group_access ga ON ga.group_id = g.id
 JOIN users u ON u.id = g.admin_user_id
 WHERE ga.user_id = sqlc.arg(user_id)
-  AND g.admin_user_id != sqlc.arg(user_id)
-  AND (
-    sqlc.arg(search) = ''
-    OR g.name LIKE '%' || sqlc.arg(search) || '%'
-    OR u.email LIKE '%' || sqlc.arg(search) || '%'
-  )
-UNION ALL
-SELECT 
-  g.id,
-  g.name,
-  g.admin_user_id,
-  g.created_at,
-  'viewer' as role
-FROM groups g
-JOIN group_readers gr ON gr.group_id = g.id
-JOIN users u ON u.id = g.admin_user_id
-WHERE gr.user_id = sqlc.arg(user_id)
-  AND g.admin_user_id != sqlc.arg(user_id)
-  AND NOT EXISTS (
-    SELECT 1 FROM group_admins ga
-    WHERE ga.group_id = g.id
-      AND ga.user_id = gr.user_id
-  )
   AND (
     sqlc.arg(search) = ''
     OR g.name LIKE '%' || sqlc.arg(search) || '%'
@@ -436,54 +355,16 @@ ORDER BY g.name COLLATE NOCASE ASC, g.created_at DESC
 LIMIT sqlc.arg(limit) OFFSET sqlc.arg(offset);
 
 -- name: ListUserGroupsByNameDescFiltered :many
-SELECT 
-  g.id,
-  g.name,
-  g.admin_user_id,
-  g.created_at,
-  CASE WHEN g.admin_user_id = sqlc.arg(user_id) THEN 'owner' ELSE 'viewer' END as role
-FROM groups g
-JOIN users u ON u.id = g.admin_user_id
-WHERE g.admin_user_id = sqlc.arg(user_id)
-  AND (
-    sqlc.arg(search) = ''
-    OR g.name LIKE '%' || sqlc.arg(search) || '%'
-    OR u.email LIKE '%' || sqlc.arg(search) || '%'
-  )
-UNION ALL
 SELECT
   g.id,
   g.name,
   g.admin_user_id,
   g.created_at,
-  'admin' as role
+  ga.role
 FROM groups g
-JOIN group_admins ga ON ga.group_id = g.id
+JOIN group_access ga ON ga.group_id = g.id
 JOIN users u ON u.id = g.admin_user_id
 WHERE ga.user_id = sqlc.arg(user_id)
-  AND g.admin_user_id != sqlc.arg(user_id)
-  AND (
-    sqlc.arg(search) = ''
-    OR g.name LIKE '%' || sqlc.arg(search) || '%'
-    OR u.email LIKE '%' || sqlc.arg(search) || '%'
-  )
-UNION ALL
-SELECT 
-  g.id,
-  g.name,
-  g.admin_user_id,
-  g.created_at,
-  'viewer' as role
-FROM groups g
-JOIN group_readers gr ON gr.group_id = g.id
-JOIN users u ON u.id = g.admin_user_id
-WHERE gr.user_id = sqlc.arg(user_id)
-  AND g.admin_user_id != sqlc.arg(user_id)
-  AND NOT EXISTS (
-    SELECT 1 FROM group_admins ga
-    WHERE ga.group_id = g.id
-      AND ga.user_id = gr.user_id
-  )
   AND (
     sqlc.arg(search) = ''
     OR g.name LIKE '%' || sqlc.arg(search) || '%'
@@ -493,54 +374,16 @@ ORDER BY g.name COLLATE NOCASE DESC, g.created_at DESC
 LIMIT sqlc.arg(limit) OFFSET sqlc.arg(offset);
 
 -- name: ListUserGroupsByCreatedAscFiltered :many
-SELECT 
-  g.id,
-  g.name,
-  g.admin_user_id,
-  g.created_at,
-  CASE WHEN g.admin_user_id = sqlc.arg(user_id) THEN 'owner' ELSE 'viewer' END as role
-FROM groups g
-JOIN users u ON u.id = g.admin_user_id
-WHERE g.admin_user_id = sqlc.arg(user_id)
-  AND (
-    sqlc.arg(search) = ''
-    OR g.name LIKE '%' || sqlc.arg(search) || '%'
-    OR u.email LIKE '%' || sqlc.arg(search) || '%'
-  )
-UNION ALL
 SELECT
   g.id,
   g.name,
   g.admin_user_id,
   g.created_at,
-  'admin' as role
+  ga.role
 FROM groups g
-JOIN group_admins ga ON ga.group_id = g.id
+JOIN group_access ga ON ga.group_id = g.id
 JOIN users u ON u.id = g.admin_user_id
 WHERE ga.user_id = sqlc.arg(user_id)
-  AND g.admin_user_id != sqlc.arg(user_id)
-  AND (
-    sqlc.arg(search) = ''
-    OR g.name LIKE '%' || sqlc.arg(search) || '%'
-    OR u.email LIKE '%' || sqlc.arg(search) || '%'
-  )
-UNION ALL
-SELECT 
-  g.id,
-  g.name,
-  g.admin_user_id,
-  g.created_at,
-  'viewer' as role
-FROM groups g
-JOIN group_readers gr ON gr.group_id = g.id
-JOIN users u ON u.id = g.admin_user_id
-WHERE gr.user_id = sqlc.arg(user_id)
-  AND g.admin_user_id != sqlc.arg(user_id)
-  AND NOT EXISTS (
-    SELECT 1 FROM group_admins ga
-    WHERE ga.group_id = g.id
-      AND ga.user_id = gr.user_id
-  )
   AND (
     sqlc.arg(search) = ''
     OR g.name LIKE '%' || sqlc.arg(search) || '%'
@@ -550,54 +393,16 @@ ORDER BY g.created_at ASC, g.name COLLATE NOCASE ASC
 LIMIT sqlc.arg(limit) OFFSET sqlc.arg(offset);
 
 -- name: ListUserGroupsByCreatedDescFiltered :many
-SELECT 
-  g.id,
-  g.name,
-  g.admin_user_id,
-  g.created_at,
-  CASE WHEN g.admin_user_id = sqlc.arg(user_id) THEN 'owner' ELSE 'viewer' END as role
-FROM groups g
-JOIN users u ON u.id = g.admin_user_id
-WHERE g.admin_user_id = sqlc.arg(user_id)
-  AND (
-    sqlc.arg(search) = ''
-    OR g.name LIKE '%' || sqlc.arg(search) || '%'
-    OR u.email LIKE '%' || sqlc.arg(search) || '%'
-  )
-UNION ALL
 SELECT
   g.id,
   g.name,
   g.admin_user_id,
   g.created_at,
-  'admin' as role
+  ga.role
 FROM groups g
-JOIN group_admins ga ON ga.group_id = g.id
+JOIN group_access ga ON ga.group_id = g.id
 JOIN users u ON u.id = g.admin_user_id
 WHERE ga.user_id = sqlc.arg(user_id)
-  AND g.admin_user_id != sqlc.arg(user_id)
-  AND (
-    sqlc.arg(search) = ''
-    OR g.name LIKE '%' || sqlc.arg(search) || '%'
-    OR u.email LIKE '%' || sqlc.arg(search) || '%'
-  )
-UNION ALL
-SELECT 
-  g.id,
-  g.name,
-  g.admin_user_id,
-  g.created_at,
-  'viewer' as role
-FROM groups g
-JOIN group_readers gr ON gr.group_id = g.id
-JOIN users u ON u.id = g.admin_user_id
-WHERE gr.user_id = sqlc.arg(user_id)
-  AND g.admin_user_id != sqlc.arg(user_id)
-  AND NOT EXISTS (
-    SELECT 1 FROM group_admins ga
-    WHERE ga.group_id = g.id
-      AND ga.user_id = gr.user_id
-  )
   AND (
     sqlc.arg(search) = ''
     OR g.name LIKE '%' || sqlc.arg(search) || '%'
@@ -607,57 +412,17 @@ ORDER BY g.created_at DESC, g.name COLLATE NOCASE ASC
 LIMIT sqlc.arg(limit) OFFSET sqlc.arg(offset);
 
 -- name: ListUserGroupsByAdminAscFiltered :many
-SELECT 
-  g.id,
-  g.name,
-  g.admin_user_id,
-  g.created_at,
-  CASE WHEN g.admin_user_id = sqlc.arg(user_id) THEN 'owner' ELSE 'viewer' END as role,
-  u.email as admin_email
-FROM groups g
-JOIN users u ON u.id = g.admin_user_id
-WHERE g.admin_user_id = sqlc.arg(user_id)
-  AND (
-    sqlc.arg(search) = ''
-    OR g.name LIKE '%' || sqlc.arg(search) || '%'
-    OR u.email LIKE '%' || sqlc.arg(search) || '%'
-  )
-UNION ALL
 SELECT
   g.id,
   g.name,
   g.admin_user_id,
   g.created_at,
-  'admin' as role,
+  ga.role,
   u.email as admin_email
 FROM groups g
-JOIN group_admins ga ON ga.group_id = g.id
+JOIN group_access ga ON ga.group_id = g.id
 JOIN users u ON u.id = g.admin_user_id
 WHERE ga.user_id = sqlc.arg(user_id)
-  AND g.admin_user_id != sqlc.arg(user_id)
-  AND (
-    sqlc.arg(search) = ''
-    OR g.name LIKE '%' || sqlc.arg(search) || '%'
-    OR u.email LIKE '%' || sqlc.arg(search) || '%'
-  )
-UNION ALL
-SELECT 
-  g.id,
-  g.name,
-  g.admin_user_id,
-  g.created_at,
-  'viewer' as role,
-  u.email as admin_email
-FROM groups g
-JOIN group_readers gr ON gr.group_id = g.id
-JOIN users u ON u.id = g.admin_user_id
-WHERE gr.user_id = sqlc.arg(user_id)
-  AND g.admin_user_id != sqlc.arg(user_id)
-  AND NOT EXISTS (
-    SELECT 1 FROM group_admins ga
-    WHERE ga.group_id = g.id
-      AND ga.user_id = gr.user_id
-  )
   AND (
     sqlc.arg(search) = ''
     OR g.name LIKE '%' || sqlc.arg(search) || '%'
@@ -667,52 +432,17 @@ ORDER BY admin_email COLLATE NOCASE ASC, g.name COLLATE NOCASE ASC
 LIMIT sqlc.arg(limit) OFFSET sqlc.arg(offset);
 
 -- name: ListUserGroupsByAdminDescFiltered :many
-SELECT 
-  g.id,
-  g.name,
-  g.admin_user_id,
-  g.created_at,
-  CASE WHEN g.admin_user_id = sqlc.arg(user_id) THEN 'owner' ELSE 'viewer' END as role,
-  u.email as admin_email
-FROM groups g
-JOIN users u ON u.id = g.admin_user_id
-WHERE g.admin_user_id = sqlc.arg(user_id)
-  AND (
-    sqlc.arg(search) = ''
-    OR g.name LIKE '%' || sqlc.arg(search) || '%'
-    OR u.email LIKE '%' || sqlc.arg(search) || '%'
-  )
-UNION ALL
 SELECT
   g.id,
   g.name,
   g.admin_user_id,
   g.created_at,
-  'admin' as role,
+  ga.role,
   u.email as admin_email
 FROM groups g
-JOIN group_admins ga ON ga.group_id = g.id
+JOIN group_access ga ON ga.group_id = g.id
 JOIN users u ON u.id = g.admin_user_id
 WHERE ga.user_id = sqlc.arg(user_id)
-  AND g.admin_user_id != sqlc.arg(user_id)
-  AND (
-    sqlc.arg(search) = ''
-    OR g.name LIKE '%' || sqlc.arg(search) || '%'
-    OR u.email LIKE '%' || sqlc.arg(search) || '%'
-  )
-UNION ALL
-SELECT 
-  g.id,
-  g.name,
-  g.admin_user_id,
-  g.created_at,
-  'viewer' as role,
-  u.email as admin_email
-FROM groups g
-JOIN group_readers gr ON gr.group_id = g.id
-JOIN users u ON u.id = g.admin_user_id
-WHERE gr.user_id = sqlc.arg(user_id)
-  AND g.admin_user_id != sqlc.arg(user_id)
   AND (
     sqlc.arg(search) = ''
     OR g.name LIKE '%' || sqlc.arg(search) || '%'

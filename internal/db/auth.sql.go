@@ -28,25 +28,15 @@ func (q *Queries) BanUser(ctx context.Context, arg BanUserParams) error {
 }
 
 const countGroupAdminsFiltered = `-- name: CountGroupAdminsFiltered :one
-SELECT COUNT(*) FROM (
-  SELECT u.id
-  FROM groups g
-  JOIN users u ON u.id = g.admin_user_id
-  WHERE g.id = ?1
-    AND (
-      ?2 = ''
-      OR LOWER(u.email) LIKE '%' || LOWER(?2) || '%'
-    )
-  UNION
-  SELECT u.id
-  FROM group_admins ga
-  JOIN users u ON u.id = ga.user_id
-  WHERE ga.group_id = ?1
-    AND (
-      ?2 = ''
-      OR LOWER(u.email) LIKE '%' || LOWER(?2) || '%'
-    )
-)
+SELECT COUNT(*)
+FROM users u
+JOIN group_access ga ON ga.user_id = u.id
+WHERE ga.group_id = ?1
+  AND ga.role IN ('owner', 'admin')
+  AND (
+    ?2 = ''
+    OR LOWER(u.email) LIKE '%' || LOWER(?2) || '%'
+  )
 `
 
 type CountGroupAdminsFilteredParams struct {
@@ -127,43 +117,16 @@ func (q *Queries) CountSessionsFiltered(ctx context.Context, search interface{})
 }
 
 const countUserGroupsFiltered = `-- name: CountUserGroupsFiltered :one
-SELECT COUNT(*) FROM (
-  SELECT g.id FROM groups g
-  JOIN users u ON u.id = g.admin_user_id
-  WHERE g.admin_user_id = ?1
-    AND (
-      ?2 = ''
-      OR g.name LIKE '%' || ?2 || '%'
-      OR u.email LIKE '%' || ?2 || '%'
-    )
-  UNION
-  SELECT g.id FROM groups g
-  JOIN group_admins ga ON ga.group_id = g.id
-  JOIN users u ON u.id = g.admin_user_id
-  WHERE ga.user_id = ?1
-    AND g.admin_user_id != ?1
-    AND (
-      ?2 = ''
-      OR g.name LIKE '%' || ?2 || '%'
-      OR u.email LIKE '%' || ?2 || '%'
-    )
-  UNION
-  SELECT g.id FROM groups g
-  JOIN group_readers gr ON gr.group_id = g.id
-  JOIN users u ON u.id = g.admin_user_id
-  WHERE gr.user_id = ?1
-    AND g.admin_user_id != ?1
-  AND NOT EXISTS (
-    SELECT 1 FROM group_admins ga
-    WHERE ga.group_id = g.id
-        AND ga.user_id = gr.user_id
-    )
-    AND (
-      ?2 = ''
-      OR g.name LIKE '%' || ?2 || '%'
-      OR u.email LIKE '%' || ?2 || '%'
-    )
-)
+SELECT COUNT(*)
+FROM groups g
+JOIN group_access ga ON ga.group_id = g.id
+JOIN users u ON u.id = g.admin_user_id
+WHERE ga.user_id = ?1
+  AND (
+    ?2 = ''
+    OR g.name LIKE '%' || ?2 || '%'
+    OR u.email LIKE '%' || ?2 || '%'
+  )
 `
 
 type CountUserGroupsFilteredParams struct {
@@ -499,24 +462,36 @@ func (q *Queries) DeleteUserSessionByID(ctx context.Context, id string) error {
 	return err
 }
 
+const getGroupAccessRole = `-- name: GetGroupAccessRole :one
+SELECT role
+FROM group_access
+WHERE user_id = ?
+  AND group_id = ?
+`
+
+type GetGroupAccessRoleParams struct {
+	UserID  string `json:"user_id"`
+	GroupID string `json:"group_id"`
+}
+
+func (q *Queries) GetGroupAccessRole(ctx context.Context, arg GetGroupAccessRoleParams) (string, error) {
+	row := q.db.QueryRowContext(ctx, getGroupAccessRole, arg.UserID, arg.GroupID)
+	var role string
+	err := row.Scan(&role)
+	return role, err
+}
+
 const getGroupByAdmin = `-- name: GetGroupByAdmin :one
-SELECT id, name, admin_user_id, created_at FROM groups
-WHERE admin_user_id = ?1
-   OR id IN (
-     SELECT group_id
-     FROM group_admins
-     WHERE user_id = ?2
-   )
+SELECT g.id, g.name, g.admin_user_id, g.created_at
+FROM groups g
+JOIN group_access ga ON ga.group_id = g.id
+WHERE ga.user_id = ?1
+  AND ga.role IN ('owner', 'admin')
 LIMIT 1
 `
 
-type GetGroupByAdminParams struct {
-	OwnerUserID string `json:"owner_user_id"`
-	UserID      string `json:"user_id"`
-}
-
-func (q *Queries) GetGroupByAdmin(ctx context.Context, arg GetGroupByAdminParams) (Group, error) {
-	row := q.db.QueryRowContext(ctx, getGroupByAdmin, arg.OwnerUserID, arg.UserID)
+func (q *Queries) GetGroupByAdmin(ctx context.Context, userID string) (Group, error) {
+	row := q.db.QueryRowContext(ctx, getGroupByAdmin, userID)
 	var i Group
 	err := row.Scan(
 		&i.ID,
@@ -734,27 +709,53 @@ func (q *Queries) ListGroupAdminUserIDs(ctx context.Context, groupID string) ([]
 	return items, nil
 }
 
+const listGroupAdmins = `-- name: ListGroupAdmins :many
+SELECT u.id, u.email, u.created_at, u.preferred_lang
+FROM users u
+JOIN group_access ga ON ga.user_id = u.id
+WHERE ga.group_id = ?
+  AND ga.role IN ('owner', 'admin')
+ORDER BY LOWER(u.email) ASC
+`
+
+func (q *Queries) ListGroupAdmins(ctx context.Context, groupID string) ([]User, error) {
+	rows, err := q.db.QueryContext(ctx, listGroupAdmins, groupID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []User{}
+	for rows.Next() {
+		var i User
+		if err := rows.Scan(
+			&i.ID,
+			&i.Email,
+			&i.CreatedAt,
+			&i.PreferredLang,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const listGroupAdminsByEmailAscFiltered = `-- name: ListGroupAdminsByEmailAscFiltered :many
-SELECT id, email, created_at, preferred_lang FROM users
-WHERE id IN (
-  SELECT u.id
-  FROM groups g
-  JOIN users u ON u.id = g.admin_user_id
-  WHERE g.id = ?1
-    AND (
-      ?2 = ''
-      OR LOWER(u.email) LIKE '%' || LOWER(?2) || '%'
-    )
-  UNION
-  SELECT u.id
-  FROM group_admins ga
-  JOIN users u ON u.id = ga.user_id
-  WHERE ga.group_id = ?1
-    AND (
-      ?2 = ''
-      OR LOWER(u.email) LIKE '%' || LOWER(?2) || '%'
-    )
-)
+SELECT u.id, u.email, u.created_at, u.preferred_lang
+FROM users u
+JOIN group_access ga ON ga.user_id = u.id
+WHERE ga.group_id = ?1
+  AND ga.role IN ('owner', 'admin')
+  AND (
+    ?2 = ''
+    OR LOWER(u.email) LIKE '%' || LOWER(?2) || '%'
+  )
 ORDER BY LOWER(email) ASC
 LIMIT ?4 OFFSET ?3
 `
@@ -800,26 +801,15 @@ func (q *Queries) ListGroupAdminsByEmailAscFiltered(ctx context.Context, arg Lis
 }
 
 const listGroupAdminsByEmailDescFiltered = `-- name: ListGroupAdminsByEmailDescFiltered :many
-SELECT id, email, created_at, preferred_lang FROM users
-WHERE id IN (
-  SELECT u.id
-  FROM groups g
-  JOIN users u ON u.id = g.admin_user_id
-  WHERE g.id = ?1
-    AND (
-      ?2 = ''
-      OR LOWER(u.email) LIKE '%' || LOWER(?2) || '%'
-    )
-  UNION
-  SELECT u.id
-  FROM group_admins ga
-  JOIN users u ON u.id = ga.user_id
-  WHERE ga.group_id = ?1
-    AND (
-      ?2 = ''
-      OR LOWER(u.email) LIKE '%' || LOWER(?2) || '%'
-    )
-)
+SELECT u.id, u.email, u.created_at, u.preferred_lang
+FROM users u
+JOIN group_access ga ON ga.user_id = u.id
+WHERE ga.group_id = ?1
+  AND ga.role IN ('owner', 'admin')
+  AND (
+    ?2 = ''
+    OR LOWER(u.email) LIKE '%' || LOWER(?2) || '%'
+  )
 ORDER BY LOWER(email) DESC
 LIMIT ?4 OFFSET ?3
 `
@@ -1243,25 +1233,70 @@ func (q *Queries) ListGroupReadersByEmailDescFiltered(ctx context.Context, arg L
 	return items, nil
 }
 
+const listGroupUserAccess = `-- name: ListGroupUserAccess :many
+SELECT
+  users.id,
+  users.email,
+  users.created_at,
+  users.preferred_lang,
+  group_access.role,
+  group_access.created_at AS access_created_at
+FROM users
+JOIN group_access ON group_access.user_id = users.id
+WHERE group_access.group_id = ?
+ORDER BY group_access.created_at ASC, LOWER(users.email) ASC
+`
+
+type ListGroupUserAccessRow struct {
+	ID              string       `json:"id"`
+	Email           string       `json:"email"`
+	CreatedAt       sql.NullTime `json:"created_at"`
+	PreferredLang   string       `json:"preferred_lang"`
+	Role            string       `json:"role"`
+	AccessCreatedAt sql.NullTime `json:"access_created_at"`
+}
+
+func (q *Queries) ListGroupUserAccess(ctx context.Context, groupID string) ([]ListGroupUserAccessRow, error) {
+	rows, err := q.db.QueryContext(ctx, listGroupUserAccess, groupID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []ListGroupUserAccessRow{}
+	for rows.Next() {
+		var i ListGroupUserAccessRow
+		if err := rows.Scan(
+			&i.ID,
+			&i.Email,
+			&i.CreatedAt,
+			&i.PreferredLang,
+			&i.Role,
+			&i.AccessCreatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const listGroupsByAdmin = `-- name: ListGroupsByAdmin :many
-SELECT id, name, admin_user_id, created_at
-FROM groups
-WHERE admin_user_id = ?1
-   OR id IN (
-     SELECT group_id
-     FROM group_admins
-     WHERE user_id = ?2
-   )
+SELECT g.id, g.name, g.admin_user_id, g.created_at
+FROM groups g
+JOIN group_access ga ON ga.group_id = g.id
+WHERE ga.user_id = ?1
+  AND ga.role IN ('owner', 'admin')
 ORDER BY created_at DESC
 `
 
-type ListGroupsByAdminParams struct {
-	OwnerUserID string `json:"owner_user_id"`
-	UserID      string `json:"user_id"`
-}
-
-func (q *Queries) ListGroupsByAdmin(ctx context.Context, arg ListGroupsByAdminParams) ([]Group, error) {
-	rows, err := q.db.QueryContext(ctx, listGroupsByAdmin, arg.OwnerUserID, arg.UserID)
+func (q *Queries) ListGroupsByAdmin(ctx context.Context, userID string) ([]Group, error) {
+	rows, err := q.db.QueryContext(ctx, listGroupsByAdmin, userID)
 	if err != nil {
 		return nil, err
 	}
@@ -1291,25 +1326,14 @@ func (q *Queries) ListGroupsByAdmin(ctx context.Context, arg ListGroupsByAdminPa
 const listGroupsByReader = `-- name: ListGroupsByReader :many
 SELECT g.id, g.name, g.admin_user_id, g.created_at
 FROM groups g
-JOIN group_readers gr ON gr.group_id = g.id
-WHERE gr.user_id = ?
-  AND g.admin_user_id != ?
-  AND NOT EXISTS (
-    SELECT 1
-    FROM group_admins ga
-    WHERE ga.group_id = g.id
-      AND ga.user_id = gr.user_id
-  )
+JOIN group_access ga ON ga.group_id = g.id
+WHERE ga.user_id = ?1
+  AND ga.role = 'viewer'
 ORDER BY g.created_at DESC
 `
 
-type ListGroupsByReaderParams struct {
-	UserID      string `json:"user_id"`
-	AdminUserID string `json:"admin_user_id"`
-}
-
-func (q *Queries) ListGroupsByReader(ctx context.Context, arg ListGroupsByReaderParams) ([]Group, error) {
-	rows, err := q.db.QueryContext(ctx, listGroupsByReader, arg.UserID, arg.AdminUserID)
+func (q *Queries) ListGroupsByReader(ctx context.Context, userID string) ([]Group, error) {
+	rows, err := q.db.QueryContext(ctx, listGroupsByReader, userID)
 	if err != nil {
 		return nil, err
 	}
@@ -1565,71 +1589,31 @@ func (q *Queries) ListSessionsByEmailDescFiltered(ctx context.Context, arg ListS
 }
 
 const listUserGroupsByAdminAscFiltered = `-- name: ListUserGroupsByAdminAscFiltered :many
-SELECT 
-  g.id,
-  g.name,
-  g.admin_user_id,
-  g.created_at,
-  CASE WHEN g.admin_user_id = ?3 THEN 'owner' ELSE 'viewer' END as role,
-  u.email as admin_email
-FROM groups g
-JOIN users u ON u.id = g.admin_user_id
-WHERE g.admin_user_id = ?3
-  AND (
-    ?4 = ''
-    OR g.name LIKE '%' || ?4 || '%'
-    OR u.email LIKE '%' || ?4 || '%'
-  )
-UNION ALL
 SELECT
   g.id,
   g.name,
   g.admin_user_id,
   g.created_at,
-  'admin' as role,
+  ga.role,
   u.email as admin_email
 FROM groups g
-JOIN group_admins ga ON ga.group_id = g.id
+JOIN group_access ga ON ga.group_id = g.id
 JOIN users u ON u.id = g.admin_user_id
-WHERE ga.user_id = ?3
-  AND g.admin_user_id != ?3
+WHERE ga.user_id = ?1
   AND (
-    ?4 = ''
-    OR g.name LIKE '%' || ?4 || '%'
-    OR u.email LIKE '%' || ?4 || '%'
-  )
-UNION ALL
-SELECT 
-  g.id,
-  g.name,
-  g.admin_user_id,
-  g.created_at,
-  'viewer' as role,
-  u.email as admin_email
-FROM groups g
-JOIN group_readers gr ON gr.group_id = g.id
-JOIN users u ON u.id = g.admin_user_id
-WHERE gr.user_id = ?3
-  AND g.admin_user_id != ?3
-  AND NOT EXISTS (
-    SELECT 1 FROM group_admins ga
-    WHERE ga.group_id = g.id
-      AND ga.user_id = gr.user_id
-  )
-  AND (
-    ?4 = ''
-    OR g.name LIKE '%' || ?4 || '%'
-    OR u.email LIKE '%' || ?4 || '%'
+    ?2 = ''
+    OR g.name LIKE '%' || ?2 || '%'
+    OR u.email LIKE '%' || ?2 || '%'
   )
 ORDER BY admin_email COLLATE NOCASE ASC, g.name COLLATE NOCASE ASC
-LIMIT ?2 OFFSET ?1
+LIMIT ?4 OFFSET ?3
 `
 
 type ListUserGroupsByAdminAscFilteredParams struct {
-	Offset int64       `json:"offset"`
-	Limit  int64       `json:"limit"`
 	UserID string      `json:"user_id"`
 	Search interface{} `json:"search"`
+	Offset int64       `json:"offset"`
+	Limit  int64       `json:"limit"`
 }
 
 type ListUserGroupsByAdminAscFilteredRow struct {
@@ -1643,10 +1627,10 @@ type ListUserGroupsByAdminAscFilteredRow struct {
 
 func (q *Queries) ListUserGroupsByAdminAscFiltered(ctx context.Context, arg ListUserGroupsByAdminAscFilteredParams) ([]ListUserGroupsByAdminAscFilteredRow, error) {
 	rows, err := q.db.QueryContext(ctx, listUserGroupsByAdminAscFiltered,
-		arg.Offset,
-		arg.Limit,
 		arg.UserID,
 		arg.Search,
+		arg.Offset,
+		arg.Limit,
 	)
 	if err != nil {
 		return nil, err
@@ -1677,66 +1661,31 @@ func (q *Queries) ListUserGroupsByAdminAscFiltered(ctx context.Context, arg List
 }
 
 const listUserGroupsByAdminDescFiltered = `-- name: ListUserGroupsByAdminDescFiltered :many
-SELECT 
-  g.id,
-  g.name,
-  g.admin_user_id,
-  g.created_at,
-  CASE WHEN g.admin_user_id = ?3 THEN 'owner' ELSE 'viewer' END as role,
-  u.email as admin_email
-FROM groups g
-JOIN users u ON u.id = g.admin_user_id
-WHERE g.admin_user_id = ?3
-  AND (
-    ?4 = ''
-    OR g.name LIKE '%' || ?4 || '%'
-    OR u.email LIKE '%' || ?4 || '%'
-  )
-UNION ALL
 SELECT
   g.id,
   g.name,
   g.admin_user_id,
   g.created_at,
-  'admin' as role,
+  ga.role,
   u.email as admin_email
 FROM groups g
-JOIN group_admins ga ON ga.group_id = g.id
+JOIN group_access ga ON ga.group_id = g.id
 JOIN users u ON u.id = g.admin_user_id
-WHERE ga.user_id = ?3
-  AND g.admin_user_id != ?3
+WHERE ga.user_id = ?1
   AND (
-    ?4 = ''
-    OR g.name LIKE '%' || ?4 || '%'
-    OR u.email LIKE '%' || ?4 || '%'
-  )
-UNION ALL
-SELECT 
-  g.id,
-  g.name,
-  g.admin_user_id,
-  g.created_at,
-  'viewer' as role,
-  u.email as admin_email
-FROM groups g
-JOIN group_readers gr ON gr.group_id = g.id
-JOIN users u ON u.id = g.admin_user_id
-WHERE gr.user_id = ?3
-  AND g.admin_user_id != ?3
-  AND (
-    ?4 = ''
-    OR g.name LIKE '%' || ?4 || '%'
-    OR u.email LIKE '%' || ?4 || '%'
+    ?2 = ''
+    OR g.name LIKE '%' || ?2 || '%'
+    OR u.email LIKE '%' || ?2 || '%'
   )
 ORDER BY admin_email COLLATE NOCASE DESC, g.name COLLATE NOCASE ASC
-LIMIT ?2 OFFSET ?1
+LIMIT ?4 OFFSET ?3
 `
 
 type ListUserGroupsByAdminDescFilteredParams struct {
-	Offset int64       `json:"offset"`
-	Limit  int64       `json:"limit"`
 	UserID string      `json:"user_id"`
 	Search interface{} `json:"search"`
+	Offset int64       `json:"offset"`
+	Limit  int64       `json:"limit"`
 }
 
 type ListUserGroupsByAdminDescFilteredRow struct {
@@ -1750,10 +1699,10 @@ type ListUserGroupsByAdminDescFilteredRow struct {
 
 func (q *Queries) ListUserGroupsByAdminDescFiltered(ctx context.Context, arg ListUserGroupsByAdminDescFilteredParams) ([]ListUserGroupsByAdminDescFilteredRow, error) {
 	rows, err := q.db.QueryContext(ctx, listUserGroupsByAdminDescFiltered,
-		arg.Offset,
-		arg.Limit,
 		arg.UserID,
 		arg.Search,
+		arg.Offset,
+		arg.Limit,
 	)
 	if err != nil {
 		return nil, err
@@ -1784,68 +1733,30 @@ func (q *Queries) ListUserGroupsByAdminDescFiltered(ctx context.Context, arg Lis
 }
 
 const listUserGroupsByCreatedAscFiltered = `-- name: ListUserGroupsByCreatedAscFiltered :many
-SELECT 
-  g.id,
-  g.name,
-  g.admin_user_id,
-  g.created_at,
-  CASE WHEN g.admin_user_id = ?3 THEN 'owner' ELSE 'viewer' END as role
-FROM groups g
-JOIN users u ON u.id = g.admin_user_id
-WHERE g.admin_user_id = ?3
-  AND (
-    ?4 = ''
-    OR g.name LIKE '%' || ?4 || '%'
-    OR u.email LIKE '%' || ?4 || '%'
-  )
-UNION ALL
 SELECT
   g.id,
   g.name,
   g.admin_user_id,
   g.created_at,
-  'admin' as role
+  ga.role
 FROM groups g
-JOIN group_admins ga ON ga.group_id = g.id
+JOIN group_access ga ON ga.group_id = g.id
 JOIN users u ON u.id = g.admin_user_id
-WHERE ga.user_id = ?3
-  AND g.admin_user_id != ?3
+WHERE ga.user_id = ?1
   AND (
-    ?4 = ''
-    OR g.name LIKE '%' || ?4 || '%'
-    OR u.email LIKE '%' || ?4 || '%'
-  )
-UNION ALL
-SELECT 
-  g.id,
-  g.name,
-  g.admin_user_id,
-  g.created_at,
-  'viewer' as role
-FROM groups g
-JOIN group_readers gr ON gr.group_id = g.id
-JOIN users u ON u.id = g.admin_user_id
-WHERE gr.user_id = ?3
-  AND g.admin_user_id != ?3
-  AND NOT EXISTS (
-    SELECT 1 FROM group_admins ga
-    WHERE ga.group_id = g.id
-      AND ga.user_id = gr.user_id
-  )
-  AND (
-    ?4 = ''
-    OR g.name LIKE '%' || ?4 || '%'
-    OR u.email LIKE '%' || ?4 || '%'
+    ?2 = ''
+    OR g.name LIKE '%' || ?2 || '%'
+    OR u.email LIKE '%' || ?2 || '%'
   )
 ORDER BY g.created_at ASC, g.name COLLATE NOCASE ASC
-LIMIT ?2 OFFSET ?1
+LIMIT ?4 OFFSET ?3
 `
 
 type ListUserGroupsByCreatedAscFilteredParams struct {
-	Offset int64       `json:"offset"`
-	Limit  int64       `json:"limit"`
 	UserID string      `json:"user_id"`
 	Search interface{} `json:"search"`
+	Offset int64       `json:"offset"`
+	Limit  int64       `json:"limit"`
 }
 
 type ListUserGroupsByCreatedAscFilteredRow struct {
@@ -1858,10 +1769,10 @@ type ListUserGroupsByCreatedAscFilteredRow struct {
 
 func (q *Queries) ListUserGroupsByCreatedAscFiltered(ctx context.Context, arg ListUserGroupsByCreatedAscFilteredParams) ([]ListUserGroupsByCreatedAscFilteredRow, error) {
 	rows, err := q.db.QueryContext(ctx, listUserGroupsByCreatedAscFiltered,
-		arg.Offset,
-		arg.Limit,
 		arg.UserID,
 		arg.Search,
+		arg.Offset,
+		arg.Limit,
 	)
 	if err != nil {
 		return nil, err
@@ -1891,68 +1802,30 @@ func (q *Queries) ListUserGroupsByCreatedAscFiltered(ctx context.Context, arg Li
 }
 
 const listUserGroupsByCreatedDescFiltered = `-- name: ListUserGroupsByCreatedDescFiltered :many
-SELECT 
-  g.id,
-  g.name,
-  g.admin_user_id,
-  g.created_at,
-  CASE WHEN g.admin_user_id = ?3 THEN 'owner' ELSE 'viewer' END as role
-FROM groups g
-JOIN users u ON u.id = g.admin_user_id
-WHERE g.admin_user_id = ?3
-  AND (
-    ?4 = ''
-    OR g.name LIKE '%' || ?4 || '%'
-    OR u.email LIKE '%' || ?4 || '%'
-  )
-UNION ALL
 SELECT
   g.id,
   g.name,
   g.admin_user_id,
   g.created_at,
-  'admin' as role
+  ga.role
 FROM groups g
-JOIN group_admins ga ON ga.group_id = g.id
+JOIN group_access ga ON ga.group_id = g.id
 JOIN users u ON u.id = g.admin_user_id
-WHERE ga.user_id = ?3
-  AND g.admin_user_id != ?3
+WHERE ga.user_id = ?1
   AND (
-    ?4 = ''
-    OR g.name LIKE '%' || ?4 || '%'
-    OR u.email LIKE '%' || ?4 || '%'
-  )
-UNION ALL
-SELECT 
-  g.id,
-  g.name,
-  g.admin_user_id,
-  g.created_at,
-  'viewer' as role
-FROM groups g
-JOIN group_readers gr ON gr.group_id = g.id
-JOIN users u ON u.id = g.admin_user_id
-WHERE gr.user_id = ?3
-  AND g.admin_user_id != ?3
-  AND NOT EXISTS (
-    SELECT 1 FROM group_admins ga
-    WHERE ga.group_id = g.id
-      AND ga.user_id = gr.user_id
-  )
-  AND (
-    ?4 = ''
-    OR g.name LIKE '%' || ?4 || '%'
-    OR u.email LIKE '%' || ?4 || '%'
+    ?2 = ''
+    OR g.name LIKE '%' || ?2 || '%'
+    OR u.email LIKE '%' || ?2 || '%'
   )
 ORDER BY g.created_at DESC, g.name COLLATE NOCASE ASC
-LIMIT ?2 OFFSET ?1
+LIMIT ?4 OFFSET ?3
 `
 
 type ListUserGroupsByCreatedDescFilteredParams struct {
-	Offset int64       `json:"offset"`
-	Limit  int64       `json:"limit"`
 	UserID string      `json:"user_id"`
 	Search interface{} `json:"search"`
+	Offset int64       `json:"offset"`
+	Limit  int64       `json:"limit"`
 }
 
 type ListUserGroupsByCreatedDescFilteredRow struct {
@@ -1965,10 +1838,10 @@ type ListUserGroupsByCreatedDescFilteredRow struct {
 
 func (q *Queries) ListUserGroupsByCreatedDescFiltered(ctx context.Context, arg ListUserGroupsByCreatedDescFilteredParams) ([]ListUserGroupsByCreatedDescFilteredRow, error) {
 	rows, err := q.db.QueryContext(ctx, listUserGroupsByCreatedDescFiltered,
-		arg.Offset,
-		arg.Limit,
 		arg.UserID,
 		arg.Search,
+		arg.Offset,
+		arg.Limit,
 	)
 	if err != nil {
 		return nil, err
@@ -1998,68 +1871,30 @@ func (q *Queries) ListUserGroupsByCreatedDescFiltered(ctx context.Context, arg L
 }
 
 const listUserGroupsByNameAscFiltered = `-- name: ListUserGroupsByNameAscFiltered :many
-SELECT 
-  g.id,
-  g.name,
-  g.admin_user_id,
-  g.created_at,
-  CASE WHEN g.admin_user_id = ?3 THEN 'owner' ELSE 'viewer' END as role
-FROM groups g
-JOIN users u ON u.id = g.admin_user_id
-WHERE g.admin_user_id = ?3
-  AND (
-    ?4 = ''
-    OR g.name LIKE '%' || ?4 || '%'
-    OR u.email LIKE '%' || ?4 || '%'
-  )
-UNION ALL
 SELECT
   g.id,
   g.name,
   g.admin_user_id,
   g.created_at,
-  'admin' as role
+  ga.role
 FROM groups g
-JOIN group_admins ga ON ga.group_id = g.id
+JOIN group_access ga ON ga.group_id = g.id
 JOIN users u ON u.id = g.admin_user_id
-WHERE ga.user_id = ?3
-  AND g.admin_user_id != ?3
+WHERE ga.user_id = ?1
   AND (
-    ?4 = ''
-    OR g.name LIKE '%' || ?4 || '%'
-    OR u.email LIKE '%' || ?4 || '%'
-  )
-UNION ALL
-SELECT 
-  g.id,
-  g.name,
-  g.admin_user_id,
-  g.created_at,
-  'viewer' as role
-FROM groups g
-JOIN group_readers gr ON gr.group_id = g.id
-JOIN users u ON u.id = g.admin_user_id
-WHERE gr.user_id = ?3
-  AND g.admin_user_id != ?3
-  AND NOT EXISTS (
-    SELECT 1 FROM group_admins ga
-    WHERE ga.group_id = g.id
-      AND ga.user_id = gr.user_id
-  )
-  AND (
-    ?4 = ''
-    OR g.name LIKE '%' || ?4 || '%'
-    OR u.email LIKE '%' || ?4 || '%'
+    ?2 = ''
+    OR g.name LIKE '%' || ?2 || '%'
+    OR u.email LIKE '%' || ?2 || '%'
   )
 ORDER BY g.name COLLATE NOCASE ASC, g.created_at DESC
-LIMIT ?2 OFFSET ?1
+LIMIT ?4 OFFSET ?3
 `
 
 type ListUserGroupsByNameAscFilteredParams struct {
-	Offset int64       `json:"offset"`
-	Limit  int64       `json:"limit"`
 	UserID string      `json:"user_id"`
 	Search interface{} `json:"search"`
+	Offset int64       `json:"offset"`
+	Limit  int64       `json:"limit"`
 }
 
 type ListUserGroupsByNameAscFilteredRow struct {
@@ -2072,10 +1907,10 @@ type ListUserGroupsByNameAscFilteredRow struct {
 
 func (q *Queries) ListUserGroupsByNameAscFiltered(ctx context.Context, arg ListUserGroupsByNameAscFilteredParams) ([]ListUserGroupsByNameAscFilteredRow, error) {
 	rows, err := q.db.QueryContext(ctx, listUserGroupsByNameAscFiltered,
-		arg.Offset,
-		arg.Limit,
 		arg.UserID,
 		arg.Search,
+		arg.Offset,
+		arg.Limit,
 	)
 	if err != nil {
 		return nil, err
@@ -2105,68 +1940,30 @@ func (q *Queries) ListUserGroupsByNameAscFiltered(ctx context.Context, arg ListU
 }
 
 const listUserGroupsByNameDescFiltered = `-- name: ListUserGroupsByNameDescFiltered :many
-SELECT 
-  g.id,
-  g.name,
-  g.admin_user_id,
-  g.created_at,
-  CASE WHEN g.admin_user_id = ?3 THEN 'owner' ELSE 'viewer' END as role
-FROM groups g
-JOIN users u ON u.id = g.admin_user_id
-WHERE g.admin_user_id = ?3
-  AND (
-    ?4 = ''
-    OR g.name LIKE '%' || ?4 || '%'
-    OR u.email LIKE '%' || ?4 || '%'
-  )
-UNION ALL
 SELECT
   g.id,
   g.name,
   g.admin_user_id,
   g.created_at,
-  'admin' as role
+  ga.role
 FROM groups g
-JOIN group_admins ga ON ga.group_id = g.id
+JOIN group_access ga ON ga.group_id = g.id
 JOIN users u ON u.id = g.admin_user_id
-WHERE ga.user_id = ?3
-  AND g.admin_user_id != ?3
+WHERE ga.user_id = ?1
   AND (
-    ?4 = ''
-    OR g.name LIKE '%' || ?4 || '%'
-    OR u.email LIKE '%' || ?4 || '%'
-  )
-UNION ALL
-SELECT 
-  g.id,
-  g.name,
-  g.admin_user_id,
-  g.created_at,
-  'viewer' as role
-FROM groups g
-JOIN group_readers gr ON gr.group_id = g.id
-JOIN users u ON u.id = g.admin_user_id
-WHERE gr.user_id = ?3
-  AND g.admin_user_id != ?3
-  AND NOT EXISTS (
-    SELECT 1 FROM group_admins ga
-    WHERE ga.group_id = g.id
-      AND ga.user_id = gr.user_id
-  )
-  AND (
-    ?4 = ''
-    OR g.name LIKE '%' || ?4 || '%'
-    OR u.email LIKE '%' || ?4 || '%'
+    ?2 = ''
+    OR g.name LIKE '%' || ?2 || '%'
+    OR u.email LIKE '%' || ?2 || '%'
   )
 ORDER BY g.name COLLATE NOCASE DESC, g.created_at DESC
-LIMIT ?2 OFFSET ?1
+LIMIT ?4 OFFSET ?3
 `
 
 type ListUserGroupsByNameDescFilteredParams struct {
-	Offset int64       `json:"offset"`
-	Limit  int64       `json:"limit"`
 	UserID string      `json:"user_id"`
 	Search interface{} `json:"search"`
+	Offset int64       `json:"offset"`
+	Limit  int64       `json:"limit"`
 }
 
 type ListUserGroupsByNameDescFilteredRow struct {
@@ -2179,10 +1976,10 @@ type ListUserGroupsByNameDescFilteredRow struct {
 
 func (q *Queries) ListUserGroupsByNameDescFiltered(ctx context.Context, arg ListUserGroupsByNameDescFilteredParams) ([]ListUserGroupsByNameDescFilteredRow, error) {
 	rows, err := q.db.QueryContext(ctx, listUserGroupsByNameDescFiltered,
-		arg.Offset,
-		arg.Limit,
 		arg.UserID,
 		arg.Search,
+		arg.Offset,
+		arg.Limit,
 	)
 	if err != nil {
 		return nil, err

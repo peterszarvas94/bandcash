@@ -81,48 +81,23 @@ func RequireGroup(next echo.HandlerFunc) echo.HandlerFunc {
 			return c.String(http.StatusBadRequest, "Invalid group ID")
 		}
 
-		group, err := db.Qry.GetGroupByID(c.Request().Context(), groupID)
-		if err != nil {
-			utils.Notify(c, "error", ctxi18n.T(c.Request().Context(), "groups.errors.access_denied"))
-			return c.Redirect(http.StatusFound, "/groups")
-		}
-
 		if isSuperadmin {
 			c.Set(string(GroupIDKey), groupID)
 			c.Set(string(IsAdminKey), true)
 			return next(c)
 		}
 
-		// Check if admin
-		if group.AdminUserID == userID {
-			c.Set(string(GroupIDKey), groupID)
-			c.Set(string(IsAdminKey), true)
-			return next(c)
-		}
-
-		// Check if reader
-		adminCount, err := db.Qry.IsGroupAdmin(c.Request().Context(), db.IsGroupAdminParams{
+		role, err := db.Qry.GetGroupAccessRole(c.Request().Context(), db.GetGroupAccessRoleParams{
 			UserID:  userID,
 			GroupID: groupID,
 		})
-		if err == nil && adminCount > 0 {
-			c.Set(string(GroupIDKey), groupID)
-			c.Set(string(IsAdminKey), true)
-			return next(c)
-		}
-
-		// Check if viewer
-		readerCount, err := db.Qry.IsGroupReader(c.Request().Context(), db.IsGroupReaderParams{
-			UserID:  userID,
-			GroupID: groupID,
-		})
-		if err != nil || readerCount == 0 {
+		if err != nil {
 			utils.Notify(c, "error", ctxi18n.T(c.Request().Context(), "groups.errors.access_denied"))
 			return c.Redirect(http.StatusFound, "/groups")
 		}
 
 		c.Set(string(GroupIDKey), groupID)
-		c.Set(string(IsAdminKey), false)
+		c.Set(string(IsAdminKey), role == "owner" || role == "admin")
 		return next(c)
 	}
 }
