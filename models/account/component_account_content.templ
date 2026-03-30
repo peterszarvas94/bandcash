@@ -2,42 +2,44 @@ package account
 
 import (
 	shared "bandcash/models/shared"
-	ctxi18n "github.com/invopop/ctxi18n/i18n"
 	icons "bandcash/models/shared/icons"
+	ctxi18n "github.com/invopop/ctxi18n/i18n"
 )
 
 templ AccountContent(data AccountData) {
 	<div class="row row-wrap">
 		{ ctxi18n.T(ctx, "nav.logged_in_as") } <strong>{ data.UserEmail }</strong>
 	</div>
-	@shared.SureActionButton(shared.SureActionButtonProps{
-		ClassName:    "btn",
-		DisabledExpr: "false",
-		Label:        ctxi18n.T(ctx, "auth.logout"),
-		IconName:     icons.IconLogOut,
-		Dialog: shared.SureDialogProps{
-			Title:       ctxi18n.T(ctx, "auth.logout"),
-			Message:     ctxi18n.T(ctx, "confirm.destructive_message"),
-			SubmitLabel: ctxi18n.T(ctx, "auth.logout"),
-			CancelLabel: ctxi18n.T(ctx, "actions.cancel"),
-			Method:      "delete",
-			URL:         "/session",
-			TriggerID:   "account-logout",
-		},
-	})
-	@shared.SureActionButton(shared.SureActionButtonProps{
-		ClassName:    "btn btn-danger",
-		DisabledExpr: "false",
-		Label:        ctxi18n.T(ctx, "account.logout_everywhere"),
-		IconName:     icons.IconLogOut,
-		Dialog: shared.SureDialogProps{
-			Title:       ctxi18n.T(ctx, "account.logout_everywhere"),
-			Message:     ctxi18n.T(ctx, "confirm.destructive_message"),
-			SubmitLabel: ctxi18n.T(ctx, "account.logout_everywhere"),
-			CancelLabel: ctxi18n.T(ctx, "actions.cancel"),
-			Method:      "delete",
-			URL:         "/account/sessions",
-			TriggerID:   "account-logout-everywhere",
-		},
-	})
+	<div class="row row-wrap">
+		@shared.SureActionButton(shared.SureActionButtonProps{
+			ClassName:    "btn",
+			DisabledExpr: "false",
+			Label:        ctxi18n.T(ctx, "auth.logout"),
+			IconName:     icons.IconLogOut,
+			Dialog: shared.SureDialogProps{
+				Title:       ctxi18n.T(ctx, "auth.logout"),
+				Message:     ctxi18n.T(ctx, "confirm.destructive_message"),
+				SubmitLabel: ctxi18n.T(ctx, "auth.logout"),
+				CancelLabel: ctxi18n.T(ctx, "actions.cancel"),
+				Method:      "delete",
+				URL:         "/session",
+				TriggerID:   "account-logout",
+			},
+		})
+		@shared.SureActionButton(shared.SureActionButtonProps{
+			ClassName:    "btn btn-danger",
+			DisabledExpr: "false",
+			Label:        ctxi18n.T(ctx, "account.logout_everywhere"),
+			IconName:     icons.IconLogOut,
+			Dialog: shared.SureDialogProps{
+				Title:       ctxi18n.T(ctx, "account.logout_everywhere"),
+				Message:     ctxi18n.T(ctx, "confirm.destructive_message"),
+				SubmitLabel: ctxi18n.T(ctx, "account.logout_everywhere"),
+				CancelLabel: ctxi18n.T(ctx, "actions.cancel"),
+				Method:      "delete",
+				URL:         "/account/sessions",
+				TriggerID:   "account-logout-everywhere",
+			},
+		})
+	</div>
 }

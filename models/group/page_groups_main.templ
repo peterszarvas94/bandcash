@@ -8,7 +8,7 @@ import (
 )
 
 templ GroupsMain(data GroupsPageData) {
-	<section class="details">
+	<header class="page-header">
 		<h1>{ ctxi18n.T(ctx, "groups.title") }</h1>
 		<div class="actions">
 			<a href="/groups/new" class="btn btn-primary">
@@ -16,7 +16,7 @@ templ GroupsMain(data GroupsPageData) {
 				{ ctxi18n.T(ctx, "groups.create") }
 			</a>
 		</div>
-	</section>
+	</header>
 	@shared.TableSearchFormWithClass("/groups", data.Query, "table.search_placeholder", "")
 	@shared.TablePaginationRow("/groups", data.Query, data.Pagination)
 	@shared.TableOpenFixed(data.GroupsTable, "") {

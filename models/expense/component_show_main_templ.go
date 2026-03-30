@@ -45,7 +45,7 @@ func ExpenseShowMain(data ExpenseData) templ.Component {
 			}
 			return utils.FormatDateInput(data.Expense.PaidAt.String)
 		}()) + "}; $errors = {title: '', description: '', amount: '', date: ''}"
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<section class=\"details\"><h1>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<header class=\"page-header\"><h1>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -76,7 +76,7 @@ func ExpenseShowMain(data ExpenseData) templ.Component {
 				return templ_7745c5c3_Err
 			}
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 5, "</section><div data-show=\"$formState !== 'edit'\"><div class=\"pb\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 5, "</header><div data-show=\"$formState !== 'edit'\"><div class=\"pb\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

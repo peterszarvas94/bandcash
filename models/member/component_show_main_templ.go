@@ -39,7 +39,7 @@ func MemberShowMain(data MemberData) templ.Component {
 		ctx = templ.ClearChildren(ctx)
 		updateExpr := fmt.Sprintf("@put('/groups/%s/members/%s')", data.GroupID, data.Member.ID)
 		cancelExpr := "$formState = ''; $formData = {name: " + utils.JSONString(data.Member.Name) + ", description: " + utils.JSONString(data.Member.Description) + "}; $errors = {name: '', description: ''}"
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<section class=\"details\"><h1>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<header class=\"page-header\"><h1>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -70,7 +70,7 @@ func MemberShowMain(data MemberData) templ.Component {
 				return templ_7745c5c3_Err
 			}
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 5, "</section><div data-show=\"$formState !== 'edit'\"><section class=\"detail-box bb-0 pb\"><dl><div><dt>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 5, "</header><div data-show=\"$formState !== 'edit'\"><section class=\"detail-box bb-0 pb\"><dl><div><dt>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

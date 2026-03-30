@@ -9,7 +9,7 @@ import (
 )
 
 templ MemberIndexMain(data MembersData) {
-	<section class="details">
+	<header class="page-header">
 		<h1>{ ctxi18n.T(ctx, "members.title") }</h1>
 		if data.IsAdmin {
 			<div class="actions">
@@ -19,7 +19,7 @@ templ MemberIndexMain(data MembersData) {
 				</a>
 			</div>
 		}
-	</section>
+	</header>
 	@shared.TableSearchFormWithClass(fmt.Sprintf("/groups/%s/members", data.GroupID), data.Query, "table.search_placeholder_members", "")
 	@shared.TablePaginationRow(fmt.Sprintf("/groups/%s/members", data.GroupID), data.Query, data.Pager)
 	@shared.TableOpenFixed(data.MembersTable, "") {

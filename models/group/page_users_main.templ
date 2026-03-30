@@ -9,7 +9,7 @@ import (
 )
 
 templ GroupUsersMain(data UsersPageData) {
-	<section class="details">
+	<header class="page-header">
 		<h1>{ ctxi18n.T(ctx, "groups.users") }</h1>
 		if data.IsAdmin {
 			<div class="actions">
@@ -19,7 +19,7 @@ templ GroupUsersMain(data UsersPageData) {
 				</a>
 			</div>
 		}
-	</section>
+	</header>
 	@shared.TableSearchFormWithClass(usersTablePath(data.GroupID), data.Query, "table.search_placeholder_users", "")
 	@shared.TablePaginationRow(usersTablePath(data.GroupID), data.Query, data.Pager)
 	@shared.TableOpenFixed(data.UsersTable, "") {

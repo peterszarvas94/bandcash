@@ -8,14 +8,14 @@ import (
 )
 
 templ GroupUserMain(data UserPageData) {
-	<section class="details">
+	<header class="page-header">
 		<h1>{ data.UserRow.Email }</h1>
 		if data.IsAdmin {
 			<div class="actions">
 				@GroupUserDetailsActions(data)
 			</div>
 		}
-	</section>
+	</header>
 	<div class="pb">
 		@shared.DetailsCardWithClass(fmt.Sprintf("group_user_%s", data.UserRow.UserID), []shared.DetailsRow{
 			{Label: ctxi18n.T(ctx, "fields.role"), Value: func() string {

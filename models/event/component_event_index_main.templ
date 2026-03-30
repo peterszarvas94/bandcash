@@ -9,7 +9,7 @@ import (
 )
 
 templ EventIndexMain(data EventsData) {
-	<section class="details">
+	<header class="page-header">
 		<h1>{ ctxi18n.T(ctx, "events.title") }</h1>
 		if data.IsAdmin {
 			<div class="actions">
@@ -19,7 +19,7 @@ templ EventIndexMain(data EventsData) {
 				</a>
 			</div>
 		}
-	</section>
+	</header>
 	@EventTotalsContent(data)
 	@shared.TableSearchFormWithClass(fmt.Sprintf("/groups/%s/events", data.GroupID), data.Query, "table.search_placeholder_events", "pt")
 	<div class="row row-wrap justify-between pb" role="radiogroup" aria-label={ ctxi18n.T(ctx, "table.date_filters") }>

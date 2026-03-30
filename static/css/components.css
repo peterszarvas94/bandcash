@@ -641,6 +641,7 @@
           > h1 {
             font-size: 3rem;
             text-align: center;
+            padding-bottom: 0;
 
             @media (max-width: 1020px) {
               font-size: 2rem;
@@ -1004,7 +1005,7 @@
     }
   }
 
-  section.details {
+  header.page-header {
     display: flex;
     align-items: center;
     gap: var(--space);

@@ -6,9 +6,9 @@ import (
 )
 
 templ AccountMain(data AccountData) {
-	<h1>{ ctxi18n.T(ctx, "account.account") }</h1>
-	@shared.Section(ctxi18n.T(ctx, "account.language"), LanguageForm(data.CurrentLang))
-	if data.UserEmail != "" {
-		@shared.Section(ctxi18n.T(ctx, "account.account"), AccountContent(data))
-	}
+	<header class="page-header">
+		<h1>{ ctxi18n.T(ctx, "account.account") }</h1>
+	</header>
+	@shared.Section("", LanguageForm(data.CurrentLang))
+	@shared.Section("", AccountContent(data))
 }

@@ -13,14 +13,14 @@ templ MemberShowMain(data MemberData) {
 		updateExpr := fmt.Sprintf("@put('/groups/%s/members/%s')", data.GroupID, data.Member.ID)
 		cancelExpr := "$formState = ''; $formData = {name: " + utils.JSONString(data.Member.Name) + ", description: " + utils.JSONString(data.Member.Description) + "}; $errors = {name: '', description: ''}"
 	}}
-	<section class="details">
+	<header class="page-header">
 		<h1>{ data.Member.Name }</h1>
 		if data.IsAdmin {
 			<div class="actions" data-show="$formState !== 'edit'">
 				@MemberShowDetailsActions(data)
 			</div>
 		}
-	</section>
+	</header>
 	<div data-show="$formState !== 'edit'">
 		<section class="detail-box bb-0 pb">
 			<dl>
