@@ -17,6 +17,7 @@ func RegisterRoutes(e *echo.Echo) *Group {
 	// Group users pages for any group member
 	usersRoutes := e.Group("/groups/:groupId", middleware.RequireAuth, middleware.WithDetailState, middleware.RequireGroup)
 	usersRoutes.GET("", grp.GroupPage)
+	usersRoutes.GET("/about", grp.AboutPage)
 	usersRoutes.GET("/users", grp.UsersPage)
 	usersRoutes.GET("/users/:id", grp.UsersEntryPage)
 	usersRoutes.POST("/leave", grp.LeaveGroup)

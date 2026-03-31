@@ -9,7 +9,7 @@ import (
 
 templ EventNewForm(data NewEventPageData) {
 	<h1>{ ctxi18n.T(ctx, "events.add") }</h1>
-	<form class="form" data-on:submit={ fmt.Sprintf("@post('/groups/%s/events')", data.GroupID) } data-indicator:_fetching>
+	<form class="form w-details" data-on:submit={ fmt.Sprintf("@post('/groups/%s/events')", data.GroupID) } data-indicator:_fetching>
 		<div class="field">
 			<label for="event-new-title" class="row">{ ctxi18n.T(ctx, "fields.title") } <span class="color-error">*</span></label>
 			<input id="event-new-title" type="text" data-bind="formData.title" class="input"/>

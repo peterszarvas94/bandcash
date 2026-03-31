@@ -16,33 +16,14 @@ templ EventIndexMain(data EventsData) {
 				@icons.Icon(icons.IconPlus, templ.Attributes{"class": "icon"})
 				{ ctxi18n.T(ctx, "events.add") }
 			</a>
-			<a href={ fmt.Sprintf("/groups/%s/edit", data.GroupID) } class="btn btn-sm">
-				@icons.Icon(icons.IconPencil, templ.Attributes{"class": "icon"})
-				{ ctxi18n.T(ctx, "actions.edit") }
-			</a>
-			@shared.SureActionButton(shared.SureActionButtonProps{
-				ClassName:    "btn btn-sm btn-error",
-				DisabledExpr: "$_fetching",
-				Label:        ctxi18n.T(ctx, "actions.delete"),
-				IconName:     icons.IconTrash2,
-				Dialog: shared.SureDialogProps{
-					Title:       ctxi18n.T(ctx, "groups.delete_confirm"),
-					Message:     ctxi18n.T(ctx, "confirm.destructive_message"),
-					SubmitLabel: ctxi18n.T(ctx, "actions.delete"),
-					CancelLabel: ctxi18n.T(ctx, "actions.cancel"),
-					Method:      "delete",
-					URL:         fmt.Sprintf("/groups/%s", data.GroupID),
-					TriggerID:   "group-events-delete",
-				},
-			})
 		</div>
 	}
 	@EventTotalsContent(data)
-	@shared.TableSearchFormWithClass(fmt.Sprintf("/groups/%s/overview", data.GroupID), data.Query, "table.search_placeholder_events", "pt")
+	@shared.TableSearchFormWithClass(fmt.Sprintf("/groups/%s/events", data.GroupID), data.Query, "table.search_placeholder_events", "pt")
 	<div class="row row-wrap justify-between pb" role="radiogroup" aria-label={ ctxi18n.T(ctx, "table.date_filters") }>
 		<div class="row row-tight">
 			@shared.RadioLink(shared.RadioLinkProps{
-				Href:       utils.BuildTableDateClearURL(fmt.Sprintf("/groups/%s/overview", data.GroupID), data.Query),
+				Href:       utils.BuildTableDateClearURL(fmt.Sprintf("/groups/%s/events", data.GroupID), data.Query),
 				Label:      ctxi18n.T(ctx, "table.all"),
 				IsSelected: utils.DateFilterAllActive(data.Query),
 				NoIcon:     true,
@@ -50,7 +31,7 @@ templ EventIndexMain(data EventsData) {
 			})
 			for _, year := range data.RecentYears {
 				@shared.RadioLink(shared.RadioLinkProps{
-					Href:       utils.BuildTableDateYearURL(fmt.Sprintf("/groups/%s/overview", data.GroupID), data.Query, fmt.Sprintf("%d", year)),
+					Href:       utils.BuildTableDateYearURL(fmt.Sprintf("/groups/%s/events", data.GroupID), data.Query, fmt.Sprintf("%d", year)),
 					Label:      fmt.Sprintf("%d", year),
 					IsSelected: utils.DateFilterYearActive(data.Query, fmt.Sprintf("%d", year)),
 					NoIcon:     true,
@@ -58,7 +39,7 @@ templ EventIndexMain(data EventsData) {
 				})
 			}
 			@shared.RadioLink(shared.RadioLinkProps{
-				Href:       utils.BuildTableDateCustomURL(fmt.Sprintf("/groups/%s/overview", data.GroupID), data.Query),
+				Href:       utils.BuildTableDateCustomURL(fmt.Sprintf("/groups/%s/events", data.GroupID), data.Query),
 				Label:      ctxi18n.T(ctx, "table.custom"),
 				IsSelected: utils.DateFilterCustomActive(data.Query),
 				NoIcon:     true,
@@ -66,7 +47,7 @@ templ EventIndexMain(data EventsData) {
 			})
 		</div>
 		if utils.DateFilterCustomActive(data.Query) {
-			<form class="row row-tight" method="get" action={ fmt.Sprintf("/groups/%s/overview", data.GroupID) }>
+			<form class="row row-tight" method="get" action={ fmt.Sprintf("/groups/%s/events", data.GroupID) }>
 				if data.Query.Search != "" {
 					<input type="hidden" name="q" value={ data.Query.Search }/>
 				}
@@ -90,27 +71,27 @@ templ EventIndexMain(data EventsData) {
 			</form>
 		}
 	</div>
-	@shared.TablePaginationRow(fmt.Sprintf("/groups/%s/overview", data.GroupID), data.Query, data.Pager)
+	@shared.TablePaginationRow(fmt.Sprintf("/groups/%s/events", data.GroupID), data.Query, data.Pager)
 	@shared.TableOpenFixed(data.EventsTable, "") {
 		<thead>
 			<tr>
 				@shared.THCol(data.EventsTable.Col("title")) {
-					@shared.TableSortHeader(ctxi18n.T(ctx, "fields.title"), "title", data.Query, utils.BuildTableSortURL(fmt.Sprintf("/groups/%s/overview", data.GroupID), data.Query, "title"))
+					@shared.TableSortHeader(ctxi18n.T(ctx, "fields.title"), "title", data.Query, utils.BuildTableSortURL(fmt.Sprintf("/groups/%s/events", data.GroupID), data.Query, "title"))
 				}
 				@shared.THCol(data.EventsTable.Col("time")) {
-					@shared.TableSortHeader(ctxi18n.T(ctx, "fields.time"), "time", data.Query, utils.BuildTableSortURL(fmt.Sprintf("/groups/%s/overview", data.GroupID), data.Query, "time"))
+					@shared.TableSortHeader(ctxi18n.T(ctx, "fields.time"), "time", data.Query, utils.BuildTableSortURL(fmt.Sprintf("/groups/%s/events", data.GroupID), data.Query, "time"))
 				}
 				@shared.THCol(data.EventsTable.Col("place")) {
-					@shared.TableSortHeader(ctxi18n.T(ctx, "fields.place"), "place", data.Query, utils.BuildTableSortURL(fmt.Sprintf("/groups/%s/overview", data.GroupID), data.Query, "place"))
+					@shared.TableSortHeader(ctxi18n.T(ctx, "fields.place"), "place", data.Query, utils.BuildTableSortURL(fmt.Sprintf("/groups/%s/events", data.GroupID), data.Query, "place"))
 				}
 				@shared.THCol(data.EventsTable.Col("amount")) {
-					@shared.TableSortHeader(ctxi18n.T(ctx, "fields.income"), "amount", data.Query, utils.BuildTableSortURL(fmt.Sprintf("/groups/%s/overview", data.GroupID), data.Query, "amount"))
+					@shared.TableSortHeader(ctxi18n.T(ctx, "fields.income"), "amount", data.Query, utils.BuildTableSortURL(fmt.Sprintf("/groups/%s/events", data.GroupID), data.Query, "amount"))
 				}
 				@shared.THCol(data.EventsTable.Col("paid")) {
-					@shared.TableSortHeader(ctxi18n.T(ctx, "table.paid"), "paid", data.Query, utils.BuildTableSortURL(fmt.Sprintf("/groups/%s/overview", data.GroupID), data.Query, "paid"))
+					@shared.TableSortHeader(ctxi18n.T(ctx, "table.paid"), "paid", data.Query, utils.BuildTableSortURL(fmt.Sprintf("/groups/%s/events", data.GroupID), data.Query, "paid"))
 				}
 				@shared.THCol(data.EventsTable.Col("paid_at")) {
-					@shared.TableSortHeader(ctxi18n.T(ctx, "fields.paid_at"), "paid_at", data.Query, utils.BuildTableSortURL(fmt.Sprintf("/groups/%s/overview", data.GroupID), data.Query, "paid_at"))
+					@shared.TableSortHeader(ctxi18n.T(ctx, "fields.paid_at"), "paid_at", data.Query, utils.BuildTableSortURL(fmt.Sprintf("/groups/%s/events", data.GroupID), data.Query, "paid_at"))
 				}
 			</tr>
 		</thead>

@@ -9,7 +9,7 @@ import (
 
 templ ExpenseNewForm(data NewExpensePageData) {
 	<h1>{ ctxi18n.T(ctx, "expenses.add") }</h1>
-	<form class="form" data-on:submit={ fmt.Sprintf("@post('/groups/%s/expenses')", data.GroupID) } data-indicator:_fetching>
+	<form class="form w-details" data-on:submit={ fmt.Sprintf("@post('/groups/%s/expenses')", data.GroupID) } data-indicator:_fetching>
 		<div class="field">
 			<label for="expense-new-title" class="row">{ ctxi18n.T(ctx, "fields.title") } <span class="color-error">*</span></label>
 			<input id="expense-new-title" type="text" data-bind="formData.title" class="input"/>

@@ -399,7 +399,7 @@ func (a *Auth) VerifyMagicLink(c echo.Context) error {
 			slog.Warn("auth.verify: failed to send invite accepted email", "group_id", groupID, "user_id", user.ID, "err", err)
 		}
 
-		return c.Redirect(http.StatusFound, "/groups/"+groupID+"/overview")
+		return c.Redirect(http.StatusFound, "/groups/"+groupID+"/events")
 	}
 
 	// Redirect to groups page
@@ -480,9 +480,9 @@ func (a *Auth) Dashboard(c echo.Context) error {
 
 	if len(adminGroups)+len(filteredReaders) == 1 {
 		if len(adminGroups) == 1 {
-			return c.Redirect(http.StatusFound, "/groups/"+adminGroups[0].ID+"/overview")
+			return c.Redirect(http.StatusFound, "/groups/"+adminGroups[0].ID+"/events")
 		}
-		return c.Redirect(http.StatusFound, "/groups/"+filteredReaders[0].ID+"/overview")
+		return c.Redirect(http.StatusFound, "/groups/"+filteredReaders[0].ID+"/events")
 	}
 
 	return c.Redirect(http.StatusFound, "/groups")

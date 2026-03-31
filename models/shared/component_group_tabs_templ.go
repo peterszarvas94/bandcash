@@ -34,10 +34,11 @@ func GroupTabs(groupID string, activeTab string) templ.Component {
 		}
 		ctx = templ.ClearChildren(ctx)
 		templ_7745c5c3_Err = Tabs(ctxi18n.T(ctx, "groups.actions"), []TabItem{
-			{Label: ctxi18n.T(ctx, "groups.overview"), Href: "/groups/" + groupID + "/overview", IsActive: activeTab == "events"},
+			{Label: ctxi18n.T(ctx, "events.title"), Href: "/groups/" + groupID + "/events", IsActive: activeTab == "events"},
 			{Label: ctxi18n.T(ctx, "expenses.title"), Href: "/groups/" + groupID + "/expenses", IsActive: activeTab == "expenses"},
 			{Label: ctxi18n.T(ctx, "members.title"), Href: "/groups/" + groupID + "/members", IsActive: activeTab == "members"},
 			{Label: ctxi18n.T(ctx, "groups.users"), Href: "/groups/" + groupID + "/users", IsActive: activeTab == "users"},
+			{Label: ctxi18n.T(ctx, "groups.about"), Href: "/groups/" + groupID + "/about", IsActive: activeTab == "about"},
 		}).Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err

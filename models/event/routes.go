@@ -14,10 +14,10 @@ func RegisterRoutes(e *echo.Echo) *Events {
 	// Group routes under /groups/:groupId with auth middleware
 	g := e.Group("/groups/:groupId", middleware.RequireAuth, middleware.WithDetailState, middleware.RequireGroup)
 
-	g.GET("/overview", events.Index)
-	g.GET("/events", func(c echo.Context) error {
+	g.GET("/events", events.Index)
+	g.GET("/overview", func(c echo.Context) error {
 		groupID := c.Param("groupId")
-		return c.Redirect(http.StatusMovedPermanently, "/groups/"+groupID+"/overview")
+		return c.Redirect(http.StatusMovedPermanently, "/groups/"+groupID+"/events")
 	})
 	g.GET("/events/:id", events.Show)
 

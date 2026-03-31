@@ -22,7 +22,7 @@ templ GroupsMain(data GroupsPageData) {
 			<ul class="grid content-start" aria-label={ ctxi18n.T(ctx, "groups.title") }>
 				for _, group := range data.AllGroups {
 					<li>
-						<a class="group-card" href={ "/groups/" + group.Group.ID + "/overview" }>
+						<a class="group-card" href={ "/groups/" + group.Group.ID + "/events" }>
 							<h2>
 								{ group.Group.Name }
 							</h2>

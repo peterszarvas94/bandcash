@@ -37,23 +37,43 @@ func GroupDetailsActions(data GroupPageData) templ.Component {
 		}
 		ctx = templ.ClearChildren(ctx)
 		if data.IsAdmin {
-			templ_7745c5c3_Err = shared.ActionButton(shared.ActionButtonProps{
-				ClassName:    "btn btn-sm",
-				OnClick:      "$formState = 'edit'; $errors = {name: ''}",
-				DisabledExpr: "$formState !== '' || $_fetching",
-				Label:        ctxi18n.T(ctx, "actions.edit"),
-				IconName:     icons.IconPencil,
-			}).Render(ctx, templ_7745c5c3_Buffer)
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<a href=\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, " ")
+			var templ_7745c5c3_Var2 templ.SafeURL
+			templ_7745c5c3_Var2, templ_7745c5c3_Err = templ.JoinURLErrs("/groups/" + data.Group.ID + "/edit")
+			if templ_7745c5c3_Err != nil {
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/group/component_group_details_actions.templ`, Line: 12, Col: 48}
+			}
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var2))
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "\" class=\"btn btn-sm\">")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			templ_7745c5c3_Err = icons.Icon(icons.IconPencil, templ.Attributes{"class": "icon"}).Render(ctx, templ_7745c5c3_Buffer)
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			var templ_7745c5c3_Var3 string
+			templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.JoinStringErrs(ctxi18n.T(ctx, "actions.edit"))
+			if templ_7745c5c3_Err != nil {
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/group/component_group_details_actions.templ`, Line: 14, Col: 35}
+			}
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var3))
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "</a>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			templ_7745c5c3_Err = shared.SureActionButton(shared.SureActionButtonProps{
 				ClassName:    "btn btn-sm btn-error",
-				DisabledExpr: "$formState !== '' || $_fetching",
+				DisabledExpr: "$_fetching",
 				Label:        ctxi18n.T(ctx, "groups.delete"),
 				IconName:     icons.IconTrash2,
 				Dialog: shared.SureDialogProps{
