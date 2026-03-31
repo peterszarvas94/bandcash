@@ -1,0 +1,18 @@
+package admin
+
+import (
+	shared "bandcash/models/shared"
+)
+
+templ AdminFlagsPage(data DashboardData) {
+	@shared.AdminLayout(shared.AdminLayoutProps{
+		Title:           data.Title,
+		Crumbs:          data.Breadcrumbs,
+		Signals:         data.Signals,
+		Content:         FlagsContent(data.SignupEnabled),
+		ActiveTab:       "flags",
+		ActiveUrl:       "/admin/flags",
+		IsAuthenticated: data.IsAuthenticated,
+		IsSuperAdmin:    data.IsSuperAdmin,
+	})
+}

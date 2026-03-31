@@ -6,16 +6,21 @@ import (
 )
 
 type AccountData struct {
-	Title       string
-	Breadcrumbs []utils.Crumb
-	CurrentLang string
-	UserEmail   string
+	Title           string
+	Breadcrumbs     []utils.Crumb
+	CurrentLang     string
+	UserEmail       string
+	Signals         map[string]any
+	IsAuthenticated bool
+	IsSuperAdmin    bool
 }
 
 type SessionsData struct {
 	Title            string
 	Breadcrumbs      []utils.Crumb
-	UserEmail        string
 	CurrentSessionID string
 	Sessions         []db.UserSession
+	Signals          map[string]any
+	IsAuthenticated  bool
+	IsSuperAdmin     bool
 }

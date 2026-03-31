@@ -1,21 +1,19 @@
 package member
 
 import (
-	"bandcash/internal/utils"
 	shared "bandcash/models/shared"
-	appi18n "bandcash/internal/i18n"
 )
 
 templ MemberIndex(data MembersData) {
-	{{ tabID := utils.EnsureTabIDFromContext(ctx) }}
-	<!doctype html>
-	<html lang={appi18n.LocaleCode(ctx)}>
-		@shared.Head(data.Title)
-		<body>
-			<div data-signals={templ.JSONString(memberIndexSignals(tabID, utils.CSRFTokenFromContext(ctx), utils.TableQuerySignals(data.Query)))} data-init="@get('/sse')"></div>
-			@shared.Notifications()
-			@shared.SureDialog()
-			@shared.GroupLayout("member-index", data.Breadcrumbs, data.UserEmail, shared.AppPrimaryNav("/groups", data.UserEmail != ""), shared.GroupTabs(data.GroupID, "members"), MemberIndexMain(data))
-		</body>
-	</html>
+	@shared.GroupLayout(shared.GroupLayoutProps{
+		Title:           data.Title,
+		Crumbs:          data.Breadcrumbs,
+		Signals:         data.Signals,
+		Content:         MemberIndexMain(data),
+		ActiveUrl:       "/groups",
+		IsAuthenticated: data.IsAuthenticated,
+		IsSuperAdmin:    data.IsSuperAdmin,
+		GroupId:         data.GroupID,
+		Groups:          shared.GroupTabs(data.GroupID, "members"),
+	})
 }

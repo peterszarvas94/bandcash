@@ -2,10 +2,8 @@ package member
 
 import "bandcash/internal/utils"
 
-func memberIndexSignals(tabID, csrfToken string, query map[string]any) map[string]any {
+func memberIndexSignals(query map[string]any) map[string]any {
 	return map[string]any{
-		"tab_id":         tabID,
-		"csrf":           csrfToken,
 		"tableQuery":     query,
 		"mode":           "table",
 		"formState":      "",
@@ -16,10 +14,8 @@ func memberIndexSignals(tabID, csrfToken string, query map[string]any) map[strin
 	}
 }
 
-func memberShowSignals(tabID string, data MemberData, csrfToken string) map[string]any {
+func memberShowSignals(data MemberData) map[string]any {
 	return map[string]any{
-		"tab_id":         tabID,
-		"csrf":           csrfToken,
 		"mode":           "single",
 		"tableQuery":     utils.TableQuerySignals(data.Query),
 		"formState":      "",

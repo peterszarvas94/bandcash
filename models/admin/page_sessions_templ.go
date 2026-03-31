@@ -9,12 +9,10 @@ import "github.com/a-h/templ"
 import templruntime "github.com/a-h/templ/runtime"
 
 import (
-	"bandcash/internal/utils"
 	shared "bandcash/models/shared"
-	"fmt"
 )
 
-func DashboardPage(data DashboardData) templ.Component {
+func AdminSessionsPage(data DashboardData) templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
 		if templ_7745c5c3_CtxErr := ctx.Err(); templ_7745c5c3_CtxErr != nil {
@@ -35,38 +33,21 @@ func DashboardPage(data DashboardData) templ.Component {
 			templ_7745c5c3_Var1 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		tabID := utils.EnsureTabIDFromContext(ctx)
-		templ_7745c5c3_Err = shared.AdminLayout(
-			"admin-dashboard",
-			data.Title,
-			map[string]any{"tab_id": tabID, "csrf": utils.CSRFTokenFromContext(ctx)},
-			data.Breadcrumbs,
-			data.UserEmail,
-			AdminLayout(data),
-			DashboardMain(data),
-		).Render(ctx, templ_7745c5c3_Buffer)
+		templ_7745c5c3_Err = shared.AdminLayout(shared.AdminLayoutProps{
+			Title:           data.Title,
+			Crumbs:          data.Breadcrumbs,
+			Signals:         data.Signals,
+			Content:         SessionsTableSection(data),
+			ActiveTab:       "sessions",
+			ActiveUrl:       "/admin/sessions",
+			IsAuthenticated: data.IsAuthenticated,
+			IsSuperAdmin:    data.IsSuperAdmin,
+		}).Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		return nil
 	})
-}
-
-// URL builders for admin table controls
-func adminUsersSortURL(data DashboardData, column string) string {
-	return utils.BuildTableSortURL("/admin/users", data.UserQuery, column)
-}
-
-func adminGroupsSortURL(data DashboardData, column string) string {
-	return utils.BuildTableSortURL("/admin/groups", data.GroupQuery, column)
-}
-
-func adminPageSizeURL(query utils.TableQuery, tab string, pageSize int) string {
-	return utils.BuildTablePageSizeURL(fmt.Sprintf("/admin/%s", tab), query, pageSize)
-}
-
-func adminSessionsSortURL(data DashboardData, column string) string {
-	return utils.BuildTableSortURL("/admin/sessions", data.SessionQuery, column)
 }
 
 var _ = templruntime.GeneratedTemplate

@@ -97,7 +97,6 @@ func paidAtArg(isPaid bool, paidAt string) sql.NullString {
 func (e *Expenses) NewExpensePage(c echo.Context) error {
 	utils.EnsureTabID(c)
 	groupID := middleware.GetGroupID(c)
-	userEmail := getUserEmail(c)
 
 	group, err := db.Qry.GetGroupByID(c.Request().Context(), groupID)
 	if err != nil {
@@ -113,8 +112,13 @@ func (e *Expenses) NewExpensePage(c echo.Context) error {
 			{Label: ctxi18n.T(c.Request().Context(), "expenses.title"), Href: "/groups/" + groupID + "/expenses"},
 			{Label: ctxi18n.T(c.Request().Context(), "expenses.add")},
 		},
-		UserEmail: userEmail,
-		GroupID:   groupID,
+		GroupID: groupID,
+		Signals: map[string]any{
+			"formData": map[string]any{"title": "", "description": "", "amount": 0, "date": "", "paid": false, "paidAt": ""},
+			"errors":   map[string]any{"title": "", "description": "", "amount": "", "date": ""},
+		},
+		IsAuthenticated: true,
+		IsSuperAdmin:    middleware.IsSuperadmin(c),
 	}
 	return utils.RenderPage(c, ExpenseNewPage(data))
 }
@@ -122,7 +126,6 @@ func (e *Expenses) NewExpensePage(c echo.Context) error {
 func (e *Expenses) EditExpensePage(c echo.Context) error {
 	utils.EnsureTabID(c)
 	groupID := middleware.GetGroupID(c)
-	userEmail := getUserEmail(c)
 
 	id := c.Param("id")
 	if !utils.IsValidID(id, utils.PrefixExpense) {
@@ -154,9 +157,26 @@ func (e *Expenses) EditExpensePage(c echo.Context) error {
 			{Label: expense.Title, Href: "/groups/" + groupID + "/expenses/" + id},
 			{Label: ctxi18n.T(c.Request().Context(), "expenses.edit")},
 		},
-		UserEmail: userEmail,
-		GroupID:   groupID,
-		Expense:   &expense,
+		GroupID: groupID,
+		Expense: &expense,
+		Signals: map[string]any{
+			"formData": map[string]any{
+				"title":       expense.Title,
+				"description": expense.Description,
+				"amount":      expense.Amount,
+				"date":        expense.Date,
+				"paid":        expense.Paid == 1,
+				"paidAt": func() string {
+					if !expense.PaidAt.Valid {
+						return ""
+					}
+					return utils.FormatDateInput(expense.PaidAt.String)
+				}(),
+			},
+			"errors": map[string]any{"title": "", "description": "", "amount": "", "date": ""},
+		},
+		IsAuthenticated: true,
+		IsSuperAdmin:    middleware.IsSuperadmin(c),
 	}
 	return utils.RenderPage(c, ExpenseEditPage(data))
 }
@@ -164,7 +184,6 @@ func (e *Expenses) EditExpensePage(c echo.Context) error {
 func (e *Expenses) Index(c echo.Context) error {
 	utils.EnsureTabID(c)
 	groupID := middleware.GetGroupID(c)
-	userEmail := getUserEmail(c)
 	query := utils.ParseTableQuery(c, e)
 
 	data, err := e.GetIndexData(c.Request().Context(), groupID, query)
@@ -173,7 +192,9 @@ func (e *Expenses) Index(c echo.Context) error {
 		return c.NoContent(http.StatusInternalServerError)
 	}
 	applyExpenseTableByRole(&data, middleware.IsAdmin(c))
-	data.UserEmail = userEmail
+	data.Signals = expenseIndexSignals(data.Query)
+	data.IsAuthenticated = true
+	data.IsSuperAdmin = middleware.IsSuperadmin(c)
 
 	return utils.RenderPage(c, ExpenseIndex(data))
 }
@@ -181,7 +202,6 @@ func (e *Expenses) Index(c echo.Context) error {
 func (e *Expenses) Show(c echo.Context) error {
 	utils.EnsureTabID(c)
 	groupID := middleware.GetGroupID(c)
-	userEmail := getUserEmail(c)
 
 	id := c.Param("id")
 	if !utils.IsValidID(id, utils.PrefixExpense) {
@@ -195,7 +215,9 @@ func (e *Expenses) Show(c echo.Context) error {
 		return c.NoContent(http.StatusInternalServerError)
 	}
 	data.IsAdmin = middleware.IsAdmin(c)
-	data.UserEmail = userEmail
+	data.Signals = expenseShowSignals(data)
+	data.IsAuthenticated = true
+	data.IsSuperAdmin = middleware.IsSuperadmin(c)
 
 	return utils.RenderPage(c, ExpenseShow(data))
 }
@@ -318,7 +340,6 @@ func (e *Expenses) Update(c echo.Context) error {
 
 func (e *Expenses) Destroy(c echo.Context) error {
 	groupID := middleware.GetGroupID(c)
-	userEmail := getUserEmail(c)
 
 	id := c.Param("id")
 	if !utils.IsValidID(id, utils.PrefixExpense) {
@@ -368,7 +389,9 @@ func (e *Expenses) Destroy(c echo.Context) error {
 		return c.NoContent(http.StatusInternalServerError)
 	}
 	applyExpenseTableByRole(&data, middleware.IsAdmin(c))
-	data.UserEmail = userEmail
+	data.Signals = expenseIndexSignals(data.Query)
+	data.IsAuthenticated = true
+	data.IsSuperAdmin = middleware.IsSuperadmin(c)
 
 	html, err := utils.RenderHTMLForRequest(c, ExpenseIndex(data))
 	if err != nil {
@@ -382,7 +405,6 @@ func (e *Expenses) Destroy(c echo.Context) error {
 
 func (e *Expenses) TogglePaid(c echo.Context) error {
 	groupID := middleware.GetGroupID(c)
-	userEmail := getUserEmail(c)
 
 	id := c.Param("id")
 	if !utils.IsValidID(id, utils.PrefixExpense) {
@@ -428,7 +450,9 @@ func (e *Expenses) TogglePaid(c echo.Context) error {
 			return c.NoContent(http.StatusInternalServerError)
 		}
 		data.IsAdmin = middleware.IsAdmin(c)
-		data.UserEmail = userEmail
+		data.Signals = expenseShowSignals(data)
+		data.IsAuthenticated = true
+		data.IsSuperAdmin = middleware.IsSuperadmin(c)
 		html, err := utils.RenderHTMLForRequest(c, ExpenseShow(data))
 		if err != nil {
 			slog.Error("expense.togglePaid: failed to render", "err", err)
@@ -445,7 +469,9 @@ func (e *Expenses) TogglePaid(c echo.Context) error {
 		return c.NoContent(http.StatusInternalServerError)
 	}
 	applyExpenseTableByRole(&data, middleware.IsAdmin(c))
-	data.UserEmail = userEmail
+	data.Signals = expenseIndexSignals(data.Query)
+	data.IsAuthenticated = true
+	data.IsSuperAdmin = middleware.IsSuperadmin(c)
 	html, err := utils.RenderHTMLForRequest(c, ExpenseIndex(data))
 	if err != nil {
 		slog.Error("expense.togglePaid: failed to render", "err", err)

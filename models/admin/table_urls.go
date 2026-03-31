@@ -2,25 +2,10 @@ package admin
 
 import (
 	"fmt"
+
 	"bandcash/internal/utils"
-	shared "bandcash/models/shared"
 )
 
-templ DashboardPage(data DashboardData) {
-	{{ tabID := utils.EnsureTabIDFromContext(ctx) }}
-	@shared.AdminLayout(
-		"admin-dashboard",
-		data.Title,
-		map[string]any{"tab_id": tabID, "csrf": utils.CSRFTokenFromContext(ctx)},
-		data.Breadcrumbs,
-		data.UserEmail,
-		AdminLayout(data),
-		DashboardMain(data),
-	)
-}
-
-
-// URL builders for admin table controls
 func adminUsersSortURL(data DashboardData, column string) string {
 	return utils.BuildTableSortURL("/admin/users", data.UserQuery, column)
 }

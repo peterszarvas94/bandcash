@@ -1,28 +1,19 @@
 package member
 
 import (
-	"bandcash/internal/utils"
 	shared "bandcash/models/shared"
-	appi18n "bandcash/internal/i18n"
 )
 
 templ MemberEditPage(data EditMemberPageData) {
-	{{ tabID := utils.EnsureTabIDFromContext(ctx) }}
-	<!DOCTYPE html>
-	<html lang={ appi18n.LocaleCode(ctx) }>
-		@shared.Head(data.Title)
-		<body>
-			<div data-signals={ templ.JSONString(map[string]any{
-				"tab_id": tabID,
-				"csrf":   utils.CSRFTokenFromContext(ctx),
-				"formData": map[string]any{
-					"name":        data.Member.Name,
-					"description": data.Member.Description,
-				},
-				"errors": map[string]any{"name": "", "description": ""},
-			}) } data-init="@get('/sse')"></div>
-			@shared.Notifications()
-			@shared.GroupLayout("member-edit", data.Breadcrumbs, data.UserEmail, shared.AppPrimaryNav("/groups", data.UserEmail != ""), shared.GroupTabs(data.GroupID, "members"), MemberEditForm(data))
-		</body>
-	</html>
+	@shared.GroupLayout(shared.GroupLayoutProps{
+		Title:  data.Title,
+		Crumbs: data.Breadcrumbs,
+		Signals:         data.Signals,
+		Content:         MemberEditForm(data),
+		ActiveUrl:       "/groups",
+		IsAuthenticated: data.IsAuthenticated,
+		IsSuperAdmin:    data.IsSuperAdmin,
+		GroupId:         data.GroupID,
+		Groups:          shared.GroupTabs(data.GroupID, "members"),
+	})
 }

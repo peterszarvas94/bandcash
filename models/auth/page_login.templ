@@ -2,18 +2,16 @@ package auth
 
 import (
 	shared "bandcash/models/shared"
-	"bandcash/internal/utils"
 )
 
 templ LoginPage(data AuthPageData) {
-	{{ tabID := utils.EnsureTabIDFromContext(ctx) }}
-	@shared.HomeLayout(
-		"auth-login",
-		data.Title,
-		map[string]any{"tab_id": tabID, "csrf": utils.CSRFTokenFromContext(ctx), "authError": "", "authServerError": "", "authState": "form", "submittedEmail": "", "submittedEmailMasked": "", "resendRemaining": 0, "formData": map[string]any{"email": ""}},
-		data.Breadcrumbs,
-		data.UserEmail,
-		data.IsAuthenticated,
-		LoginMain(data.CurrentLang, "/login"),
-	)
+	@shared.CommonLayout(shared.CommonLayoutProps{
+		Title:           data.Title,
+		Crumbs:          data.Breadcrumbs,
+		Signals:         data.Signals,
+		Content:         LoginMain(data.CurrentLang, "/login"),
+		ActiveUrl:       "/login",
+		IsAuthenticated: data.IsAuthenticated,
+		IsSuperAdmin:    data.IsSuperAdmin,
+	})
 }

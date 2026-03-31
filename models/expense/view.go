@@ -13,9 +13,11 @@ type ExpensesData struct {
 	Query              utils.TableQuery
 	Pager              utils.TablePagination
 	Breadcrumbs        []utils.Crumb
+	Signals            map[string]any
 	GroupID            string
 	IsAdmin            bool
-	UserEmail          string
+	IsAuthenticated    bool
+	IsSuperAdmin       bool
 	TotalExpenseAmount int64
 	TotalPaid          int64
 	TotalUnpaid        int64
@@ -26,25 +28,31 @@ type ExpensesData struct {
 }
 
 type ExpenseData struct {
-	Title       string
-	Expense     *db.Expense
-	Breadcrumbs []utils.Crumb
-	GroupID     string
-	IsAdmin     bool
-	UserEmail   string
+	Title           string
+	Expense         *db.Expense
+	Breadcrumbs     []utils.Crumb
+	Signals         map[string]any
+	GroupID         string
+	IsAdmin         bool
+	IsAuthenticated bool
+	IsSuperAdmin    bool
 }
 
 type NewExpensePageData struct {
-	Title       string
-	Breadcrumbs []utils.Crumb
-	UserEmail   string
-	GroupID     string
+	Title           string
+	Breadcrumbs     []utils.Crumb
+	GroupID         string
+	Signals         map[string]any
+	IsAuthenticated bool
+	IsSuperAdmin    bool
 }
 
 type EditExpensePageData struct {
-	Title       string
-	Breadcrumbs []utils.Crumb
-	UserEmail   string
-	GroupID     string
-	Expense     *db.Expense
+	Title           string
+	Breadcrumbs     []utils.Crumb
+	GroupID         string
+	Expense         *db.Expense
+	Signals         map[string]any
+	IsAuthenticated bool
+	IsSuperAdmin    bool
 }

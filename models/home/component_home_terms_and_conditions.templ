@@ -5,5 +5,13 @@ import (
 )
 
 templ HomeTermsAndConditions(data HomeData) {
-	@shared.LegalLayout("home-terms", data.Title, data.Breadcrumbs, data.UserEmail, data.IsAuthenticated, HomeTermsAndConditionsMain(data.CurrentLang))
+	@shared.CommonLayout(shared.CommonLayoutProps{
+		Title:           data.Title,
+		Crumbs:          data.Breadcrumbs,
+		Signals:         nil,
+		Content:         HomeTermsAndConditionsMain(data.CurrentLang),
+		ActiveUrl:       "/terms-and-conditions",
+		IsAuthenticated: data.IsAuthenticated,
+		IsSuperAdmin:    data.IsSuperAdmin,
+	})
 }

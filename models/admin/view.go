@@ -16,10 +16,12 @@ type RecentUserRow struct {
 }
 
 type DashboardData struct {
-	Title       string
-	Breadcrumbs []utils.Crumb
-	UserEmail   string
-	Tab         string
+	Title           string
+	Breadcrumbs     []utils.Crumb
+	Tab             string
+	Signals         map[string]any
+	IsAuthenticated bool
+	IsSuperAdmin    bool
 
 	// Overview stats (always present)
 	UsersCount    int64

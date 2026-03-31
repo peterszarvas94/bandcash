@@ -23,8 +23,8 @@ templ BaseLayout(props BaseLayoutProps) {
 		if signals == nil {
 			signals = make(map[string]any)
 		}
-		signals["tabId"] = tabID
-		signals["csrfToken"] = csrfToken
+		signals["tab_id"] = tabID
+		signals["csrf"] = csrfToken
 	}}
 	<!DOCTYPE html>
 	<html lang={ appi18n.LocaleCode(ctx) }>
@@ -33,10 +33,12 @@ templ BaseLayout(props BaseLayoutProps) {
 			<div data-signals={ templ.JSONString(signals) } data-init="@get('/sse')"></div>
 			@Notifications()
 			@SureDialog()
-			<div class="page">
+			<div class="base_layout">
 				@Header(props.Crumbs, props.ActiveUrl, props.IsAuthenticated)
-				<div class="page">
-					@props.Content
+				<div class="content">
+					<div class="content_inner">
+						@props.Content
+					</div>
 					@Footer(props.IsSuperAdmin, props.ActiveUrl)
 				</div>
 			</div>

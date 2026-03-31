@@ -1,8 +1,24 @@
 package shared
 
-import appi18n "bandcash/internal/i18n"
 import "bandcash/internal/utils"
 
+func homeLayoutActiveURL(id string) string {
+	switch id {
+	case "auth-login":
+		return "/login"
+	default:
+		return "/"
+	}
+}
+
 templ HomeLayout(id string, title string, signals map[string]any, breadcrumbs []utils.Crumb, userEmail string, isAuthenticated bool, main templ.Component) {
-	@BaseLayout(title, appi18n.LocaleCode(ctx), signals, Notifications(), HomeLayoutContent(id, breadcrumbs, userEmail, isAuthenticated, main))
+	@BaseLayout(BaseLayoutProps{
+		Title:           title,
+		Crumbs:          breadcrumbs,
+		Signals:         signals,
+		Content:         main,
+		ActiveUrl:       homeLayoutActiveURL(id),
+		IsAuthenticated: isAuthenticated,
+		IsSuperAdmin:    false,
+	})
 }

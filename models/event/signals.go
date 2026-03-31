@@ -2,10 +2,8 @@ package event
 
 import "bandcash/internal/utils"
 
-func eventIndexSignals(tabID, csrfToken string, query utils.TableQuery) map[string]any {
+func eventIndexSignals(query utils.TableQuery) map[string]any {
 	return map[string]any{
-		"tab_id":          tabID,
-		"csrf":            csrfToken,
 		"tableQuery":      utils.TableQuerySignals(query),
 		"dateRange":       map[string]any{"from": query.From, "to": query.To},
 		"showCustomRange": query.DateMode == "custom" || query.From != "" || query.To != "",
@@ -20,7 +18,7 @@ func eventIndexSignals(tabID, csrfToken string, query utils.TableQuery) map[stri
 	}
 }
 
-func eventShowSignals(tabID string, data EventData, csrfToken string) map[string]any {
+func eventShowSignals(data EventData) map[string]any {
 	wizardRows := make([]map[string]any, 0, len(data.WizardRows))
 	wizardMemberIDs := make(map[string]string, len(data.WizardRows))
 	wizardAmounts := make(map[string]int64, len(data.WizardRows))
@@ -60,8 +58,6 @@ func eventShowSignals(tabID string, data EventData, csrfToken string) map[string
 	}
 
 	return map[string]any{
-		"tab_id":                tabID,
-		"csrf":                  csrfToken,
 		"mode":                  "single",
 		"draftRowsAction":       "",
 		"draftRowsRowId":        "",

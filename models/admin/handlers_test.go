@@ -37,14 +37,14 @@ func TestParseIntParamAndAdminQueries(t *testing.T) {
 }
 
 func TestAdminTabLabelFallback(t *testing.T) {
-	overview := adminTabLabel(t.Context(), "overview")
-	if overview == "" {
-		t.Fatal("expected overview label")
+	flags := adminTabLabel(t.Context(), "flags")
+	if flags == "" {
+		t.Fatal("expected flags label")
 	}
 
 	unknown := adminTabLabel(t.Context(), "unknown")
-	if unknown != overview {
-		t.Fatalf("expected unknown tab to fallback to overview label, got %q want %q", unknown, overview)
+	if unknown != flags {
+		t.Fatalf("expected unknown tab to fallback to flags label, got %q want %q", unknown, flags)
 	}
 }
 

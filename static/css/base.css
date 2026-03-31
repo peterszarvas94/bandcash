@@ -76,7 +76,8 @@
     --color-info: light-dark(hsl(208 56% 42%), hsl(212 67% 74%));
     --color-warning: light-dark(hsl(42 53% 39%), hsl(40 56% 62%));
 
-    --content-width: 70rem;
+    --content-width: 80ch;
+    --sidebar-width: 15rem;
     --details-width: 40rem;
     --page-padding-inline: var(--space);
 

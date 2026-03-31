@@ -1,0 +1,18 @@
+package admin
+
+import (
+	shared "bandcash/models/shared"
+)
+
+templ AdminUsersPage(data DashboardData) {
+	@shared.AdminLayout(shared.AdminLayoutProps{
+		Title:           data.Title,
+		Crumbs:          data.Breadcrumbs,
+		Signals:         data.Signals,
+		Content:         UsersTableSection(data),
+		ActiveTab:       "users",
+		ActiveUrl:       "/admin/users",
+		IsAuthenticated: data.IsAuthenticated,
+		IsSuperAdmin:    data.IsSuperAdmin,
+	})
+}

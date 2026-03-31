@@ -36,6 +36,9 @@ func (s *Account) Index(c echo.Context) error {
 		data.UserEmail = user.Email
 		data.CurrentLang = appi18n.NormalizeLocale(user.PreferredLang)
 	}
+	data.Signals = map[string]any{"formData": map[string]any{"lang": data.CurrentLang}}
+	data.IsAuthenticated = true
+	data.IsSuperAdmin = middleware.IsSuperadmin(c)
 	return utils.RenderPage(c, AccountIndex(data))
 }
 
@@ -49,6 +52,9 @@ func (s *Account) LanguagePage(c echo.Context) error {
 		data.UserEmail = user.Email
 		data.CurrentLang = appi18n.NormalizeLocale(user.PreferredLang)
 	}
+	data.Signals = map[string]any{"formData": map[string]any{"lang": data.CurrentLang}}
+	data.IsAuthenticated = true
+	data.IsSuperAdmin = middleware.IsSuperadmin(c)
 	return utils.RenderPage(c, LanguagePage(data))
 }
 
@@ -128,9 +134,9 @@ func (s *Account) SessionsPage(c echo.Context) error {
 		}
 	}
 
-	if user, err := db.Qry.GetUserByID(c.Request().Context(), userID); err == nil {
-		data.UserEmail = user.Email
-	}
+	data.Signals = nil
+	data.IsAuthenticated = true
+	data.IsSuperAdmin = middleware.IsSuperadmin(c)
 
 	return utils.RenderPage(c, SessionsPage(data))
 }

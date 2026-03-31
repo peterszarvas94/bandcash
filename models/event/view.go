@@ -15,6 +15,7 @@ type EventData struct {
 	Members           []db.Member
 	AllMembers        []db.Member
 	Breadcrumbs       []utils.Crumb
+	Signals           map[string]any
 	Leftover          int64
 	TotalPaid         int64
 	TotalUnpaid       int64
@@ -26,7 +27,8 @@ type EventData struct {
 	EditorMode        string
 	GroupID           string
 	IsAdmin           bool
-	UserEmail         string
+	IsAuthenticated   bool
+	IsSuperAdmin      bool
 	ParticipantsTable utils.TableLayout
 }
 
@@ -43,18 +45,22 @@ type ParticipantWizardRow struct {
 }
 
 type NewEventPageData struct {
-	Title       string
-	Breadcrumbs []utils.Crumb
-	UserEmail   string
-	GroupID     string
+	Title           string
+	Breadcrumbs     []utils.Crumb
+	GroupID         string
+	Signals         map[string]any
+	IsAuthenticated bool
+	IsSuperAdmin    bool
 }
 
 type EditEventPageData struct {
-	Title       string
-	Breadcrumbs []utils.Crumb
-	UserEmail   string
-	GroupID     string
-	Event       *db.Event
+	Title           string
+	Breadcrumbs     []utils.Crumb
+	GroupID         string
+	Event           *db.Event
+	Signals         map[string]any
+	IsAuthenticated bool
+	IsSuperAdmin    bool
 }
 
 type EventsData struct {
@@ -67,9 +73,11 @@ type EventsData struct {
 	Query                  utils.TableQuery
 	Pager                  utils.TablePagination
 	Breadcrumbs            []utils.Crumb
+	Signals                map[string]any
 	GroupID                string
 	IsAdmin                bool
-	UserEmail              string
+	IsAuthenticated        bool
+	IsSuperAdmin           bool
 	TotalEventAmount       int64
 	TotalPaid              int64
 	TotalUnpaid            int64

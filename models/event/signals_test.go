@@ -17,7 +17,7 @@ func TestEventShowSignalsInitializesNoteExpandedPerParticipant(t *testing.T) {
 		},
 	}
 
-	signals := eventShowSignals("tab_testTabID1234567890", data, "csrf-token")
+	signals := eventShowSignals(data)
 	raw, ok := signals["noteExpanded"]
 	if !ok {
 		t.Fatalf("expected noteExpanded signal to be present")

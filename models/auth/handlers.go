@@ -130,13 +130,14 @@ func (a *Auth) LoginPage(c echo.Context) error {
 	utils.EnsureTabID(c)
 
 	ctx := c.Request().Context()
-	isAuthenticated, userEmail := authSessionUser(c)
+	isAuthenticated, _ := authSessionUser(c)
 	data := AuthPageData{
 		Title:           ctxi18n.T(ctx, "auth.sign_in") + " - Bandcash",
 		Breadcrumbs:     []utils.Crumb{{Label: ctxi18n.T(ctx, "auth.sign_in")}},
 		CurrentLang:     appi18n.LocaleCode(ctx),
 		IsAuthenticated: isAuthenticated,
-		UserEmail:       userEmail,
+		IsSuperAdmin:    false,
+		Signals:         map[string]any{"authError": "", "authServerError": "", "authState": "form", "submittedEmail": "", "submittedEmailMasked": "", "resendRemaining": 0, "formData": map[string]any{"email": ""}},
 	}
 
 	return utils.RenderPage(c, LoginPage(data))

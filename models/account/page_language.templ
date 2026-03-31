@@ -1,0 +1,17 @@
+package account
+
+import (
+	shared "bandcash/models/shared"
+)
+
+templ LanguagePage(data AccountData) {
+	@shared.CommonLayout(shared.CommonLayoutProps{
+		Title:           data.Title,
+		Crumbs:          data.Breadcrumbs,
+		Signals:         data.Signals,
+		Content:         LanguageMain(data),
+		ActiveUrl:       "/account",
+		IsAuthenticated: data.IsAuthenticated,
+		IsSuperAdmin:    data.IsSuperAdmin,
+	})
+}

@@ -7,9 +7,9 @@ type TabItem struct {
 }
 
 templ Tabs(ariaLabel string, items []TabItem) {
-	<aside class="tabs" aria-label={ ariaLabel }>
+	<div class="tabs" aria-label={ ariaLabel }>
 		for _, item := range items {
 			<a class={ "tab", "btn", "btn-sm", templ.KV("btn-active", item.IsActive), templ.KV("btn-ghost", !item.IsActive) } href={ item.Href }>{ item.Label }</a>
 		}
-	</aside>
+	</div>
 }

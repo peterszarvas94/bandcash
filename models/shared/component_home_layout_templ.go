@@ -8,8 +8,16 @@ package shared
 import "github.com/a-h/templ"
 import templruntime "github.com/a-h/templ/runtime"
 
-import appi18n "bandcash/internal/i18n"
 import "bandcash/internal/utils"
+
+func homeLayoutActiveURL(id string) string {
+	switch id {
+	case "auth-login":
+		return "/login"
+	default:
+		return "/"
+	}
+}
 
 func HomeLayout(id string, title string, signals map[string]any, breadcrumbs []utils.Crumb, userEmail string, isAuthenticated bool, main templ.Component) templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
@@ -32,7 +40,15 @@ func HomeLayout(id string, title string, signals map[string]any, breadcrumbs []u
 			templ_7745c5c3_Var1 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = BaseLayout(title, appi18n.LocaleCode(ctx), signals, Notifications(), HomeLayoutContent(id, breadcrumbs, userEmail, isAuthenticated, main)).Render(ctx, templ_7745c5c3_Buffer)
+		templ_7745c5c3_Err = BaseLayout(BaseLayoutProps{
+			Title:           title,
+			Crumbs:          breadcrumbs,
+			Signals:         signals,
+			Content:         main,
+			ActiveUrl:       homeLayoutActiveURL(id),
+			IsAuthenticated: isAuthenticated,
+			IsSuperAdmin:    false,
+		}).Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

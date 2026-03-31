@@ -2,36 +2,18 @@ package expense
 
 import (
 	shared "bandcash/models/shared"
-	"bandcash/internal/utils"
-	appi18n "bandcash/internal/i18n"
 )
 
 templ ExpenseEditPage(data EditExpensePageData) {
-	{{ tabID := utils.EnsureTabIDFromContext(ctx) }}
-	<!DOCTYPE html>
-	<html lang={ appi18n.LocaleCode(ctx) }>
-		@shared.Head(data.Title)
-		<body>
-			<div data-signals={ templ.JSONString(map[string]any{
-				"tab_id": tabID,
-				"csrf":   utils.CSRFTokenFromContext(ctx),
-				"formData": map[string]any{
-					"title":       data.Expense.Title,
-					"description": data.Expense.Description,
-					"amount":      data.Expense.Amount,
-					"date":        data.Expense.Date,
-					"paid":        data.Expense.Paid == 1,
-					"paidAt": func() string {
-						if !data.Expense.PaidAt.Valid {
-							return ""
-						}
-						return utils.FormatDateInput(data.Expense.PaidAt.String)
-					}(),
-				},
-				"errors": map[string]any{"title": "", "description": "", "amount": "", "date": ""},
-			}) } data-init="@get('/sse')"></div>
-			@shared.Notifications()
-			@shared.GroupLayout("expense-edit", data.Breadcrumbs, data.UserEmail, shared.AppPrimaryNav("/groups", data.UserEmail != ""), shared.GroupTabs(data.GroupID, "expenses"), ExpenseEditForm(data))
-		</body>
-	</html>
+	@shared.GroupLayout(shared.GroupLayoutProps{
+		Title:  data.Title,
+		Crumbs: data.Breadcrumbs,
+		Signals:         data.Signals,
+		Content:         ExpenseEditForm(data),
+		ActiveUrl:       "/groups",
+		IsAuthenticated: data.IsAuthenticated,
+		IsSuperAdmin:    data.IsSuperAdmin,
+		GroupId:         data.GroupID,
+		Groups:          shared.GroupTabs(data.GroupID, "expenses"),
+	})
 }

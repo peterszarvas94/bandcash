@@ -1,0 +1,39 @@
+package shared
+
+import "bandcash/internal/utils"
+
+templ TabContent(tabs, content templ.Component) {
+	<div class="tab_layout">
+		<aside>
+			@tabs
+		</aside>
+		<main>
+			@content
+		</main>
+	</div>
+}
+
+type TabLayoutProps struct {
+	Title           string
+	Crumbs          []utils.Crumb
+	Signals         map[string]any
+	Tabs            templ.Component
+	TabId           string
+	ActiveTab       string
+	Content         templ.Component
+	ActiveUrl       string
+	IsAuthenticated bool
+	IsSuperAdmin    bool
+}
+
+templ TabLayout(props TabLayoutProps) {
+	@BaseLayout(BaseLayoutProps{
+		Title:           props.Title,
+		Crumbs:          props.Crumbs,
+		Signals:         props.Signals,
+		Content:         TabContent(props.Tabs, props.Content),
+		ActiveUrl:       props.ActiveUrl,
+		IsAuthenticated: props.IsAuthenticated,
+		IsSuperAdmin:    props.IsSuperAdmin,
+	})
+}

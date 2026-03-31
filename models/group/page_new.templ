@@ -1,20 +1,15 @@
 package group
 
-import (
-	shared "bandcash/models/shared"
-	"bandcash/internal/utils"
-	appi18n "bandcash/internal/i18n"
-)
+import shared "bandcash/models/shared"
 
 templ GroupNewPage(data NewGroupPageData) {
-	{{ tabID := utils.EnsureTabIDFromContext(ctx) }}
-	<!DOCTYPE html>
-	<html lang={ appi18n.LocaleCode(ctx) }>
-		@shared.Head(data.Title)
-		<body>
-			<div data-signals={templ.JSONString(map[string]any{"tab_id": tabID, "csrf": utils.CSRFTokenFromContext(ctx), "formData": map[string]any{"name": ""}})} data-init="@get('/sse')"></div>
-			@shared.Notifications()
-			@shared.GroupLayout("group-new", data.Breadcrumbs, data.UserEmail, shared.AppPrimaryNav("/groups", data.UserEmail != ""), nil, GroupNewMain())
-		</body>
-	</html>
+	@shared.CommonLayout(shared.CommonLayoutProps{
+		Title:           data.Title,
+		Crumbs:          data.Breadcrumbs,
+		Signals:         data.Signals,
+		Content:         GroupNewMain(),
+		ActiveUrl:       "/groups",
+		IsAuthenticated: data.IsAuthenticated,
+		IsSuperAdmin:    data.IsSuperAdmin,
+	})
 }

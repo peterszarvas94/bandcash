@@ -5,5 +5,13 @@ import (
 )
 
 templ HomePricing(data HomeData) {
-	@shared.LegalLayout("home-pricing", data.Title, data.Breadcrumbs, data.UserEmail, data.IsAuthenticated, HomePricingMain(data.CurrentLang))
+	@shared.CommonLayout(shared.CommonLayoutProps{
+		Title:           data.Title,
+		Crumbs:          data.Breadcrumbs,
+		Signals:         nil,
+		Content:         HomePricingMain(data.CurrentLang),
+		ActiveUrl:       "/pricing",
+		IsAuthenticated: data.IsAuthenticated,
+		IsSuperAdmin:    data.IsSuperAdmin,
+	})
 }

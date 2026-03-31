@@ -3,5 +3,8 @@ package shared
 import "bandcash/internal/utils"
 
 templ AdminLayoutContent(id string, breadcrumbs []utils.Crumb, userEmail string, tabs templ.Component, main templ.Component) {
-	@GroupLayout(id, breadcrumbs, userEmail, AppPrimaryNav("", userEmail != ""), tabs, main)
+	<div id={ id } class="group">
+		@tabs
+		@main
+	</div>
 }

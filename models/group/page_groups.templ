@@ -2,22 +2,16 @@ package group
 
 import (
 	shared "bandcash/models/shared"
-	"bandcash/internal/utils"
-	appi18n "bandcash/internal/i18n"
 )
 
 templ GroupsPage(data GroupsPageData) {
-	{{ tabID := utils.EnsureTabIDFromContext(ctx) }}
-	<!DOCTYPE html>
-	<html lang={ appi18n.LocaleCode(ctx) }>
-		@shared.Head(data.Title)
-		<body>
-			<div
-				data-signals={ templ.JSONString(map[string]any{"tab_id": tabID, "csrf": utils.CSRFTokenFromContext(ctx), "mode": "table", "tableQuery": utils.TableQuerySignals(data.Query)}) }
-				data-init="@get('/sse')"
-			></div>
-			@shared.Notifications()
-			@shared.GroupLayout("group-dashboard", data.Breadcrumbs, data.UserEmail, shared.AppPrimaryNav("/groups", data.UserEmail != ""), nil, GroupsMain(data))
-		</body>
-	</html>
+	@shared.CommonLayout(shared.CommonLayoutProps{
+		Title:           data.Title,
+		Crumbs:          data.Breadcrumbs,
+		Signals:         data.Signals,
+		Content:         GroupsMain(data),
+		ActiveUrl:       "/groups",
+		IsAuthenticated: data.IsAuthenticated,
+		IsSuperAdmin:    data.IsSuperAdmin,
+	})
 }

@@ -2,19 +2,16 @@ package account
 
 import (
 	shared "bandcash/models/shared"
-	appi18n "bandcash/internal/i18n"
-	"bandcash/internal/utils"
 )
 
 templ SessionsPage(data SessionsData) {
-	{{ tabID := utils.EnsureTabIDFromContext(ctx) }}
-	<!DOCTYPE html>
-	<html lang={ appi18n.LocaleCode(ctx) }>
-		@shared.Head(data.Title)
-		<body>
-			<div data-signals={ templ.JSONString(map[string]any{"tab_id": tabID, "csrf": utils.CSRFTokenFromContext(ctx)}) } data-init="@get('/sse')"></div>
-			@shared.Notifications()
-			@shared.GroupLayout("account-sessions", data.Breadcrumbs, data.UserEmail, shared.AppPrimaryNav("/account", data.UserEmail != ""), nil, SessionsMain(data))
-		</body>
-	</html>
+	@shared.CommonLayout(shared.CommonLayoutProps{
+		Title:           data.Title,
+		Crumbs:          data.Breadcrumbs,
+		Signals:         data.Signals,
+		Content:         SessionsMain(data),
+		ActiveUrl:       "/account",
+		IsAuthenticated: data.IsAuthenticated,
+		IsSuperAdmin:    data.IsSuperAdmin,
+	})
 }

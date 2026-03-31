@@ -310,14 +310,15 @@ func patchWizardError(c echo.Context, wizard participantWizardSignals, message s
 	})
 }
 
-func (e *Events) patchEventShow(c echo.Context, groupID, eventID, userEmail string, query utils.TableQuery, editorMode string, eventForm eventData, wizardEventAmount int64, wizardRows []participantBulkRowData, wizardMemberIDs map[string]string, wizardAmounts map[string]int64, wizardExpenses map[string]int64, wizardNotes map[string]string, wizardPaids map[string]bool, wizardPaidAts map[string]string, wizardError string) error {
+func (e *Events) patchEventShow(c echo.Context, groupID, eventID string, query utils.TableQuery, editorMode string, eventForm eventData, wizardEventAmount int64, wizardRows []participantBulkRowData, wizardMemberIDs map[string]string, wizardAmounts map[string]int64, wizardExpenses map[string]int64, wizardNotes map[string]string, wizardPaids map[string]bool, wizardPaidAts map[string]string, wizardError string) error {
 	data, err := e.GetShowData(c.Request().Context(), groupID, eventID, query)
 	if err != nil {
 		return err
 	}
 
 	applyEventShowTableByRole(&data, middleware.IsAdmin(c))
-	data.UserEmail = userEmail
+	data.IsAuthenticated = true
+	data.IsSuperAdmin = middleware.IsSuperadmin(c)
 
 	if editorMode != "" {
 		data.EditorMode = editorMode
@@ -358,6 +359,7 @@ func (e *Events) patchEventShow(c echo.Context, groupID, eventID, userEmail stri
 	}
 
 	data.WizardError = wizardError
+	data.Signals = eventShowSignals(data)
 
 	html, err := utils.RenderHTMLForRequest(c, EventShow(data))
 	if err != nil {
@@ -365,14 +367,13 @@ func (e *Events) patchEventShow(c echo.Context, groupID, eventID, userEmail stri
 	}
 
 	utils.SSEHub.PatchHTML(c, html)
-	utils.SSEHub.PatchSignals(c, eventShowSignals(utils.EnsureTabID(c), data, utils.CSRFTokenFromContext(c.Request().Context())))
+	utils.SSEHub.PatchSignals(c, eventShowSignals(data))
 	return nil
 }
 
 func (e *Events) Index(c echo.Context) error {
 	utils.EnsureTabID(c)
 	groupID := middleware.GetGroupID(c)
-	userEmail := getUserEmail(c)
 	query := utils.ParseTableQuery(c, e)
 
 	data, err := e.GetIndexData(c.Request().Context(), groupID, query)
@@ -381,7 +382,9 @@ func (e *Events) Index(c echo.Context) error {
 		return c.NoContent(http.StatusInternalServerError)
 	}
 	applyEventIndexTableByRole(&data, middleware.IsAdmin(c))
-	data.UserEmail = userEmail
+	data.Signals = eventIndexSignals(data.Query)
+	data.IsAuthenticated = true
+	data.IsSuperAdmin = middleware.IsSuperadmin(c)
 
 	slog.Debug("event.index", "event_count", len(data.Events))
 	return utils.RenderPage(c, EventIndex(data))
@@ -390,7 +393,6 @@ func (e *Events) Index(c echo.Context) error {
 func (e *Events) Show(c echo.Context) error {
 	utils.EnsureTabID(c)
 	groupID := middleware.GetGroupID(c)
-	userEmail := getUserEmail(c)
 	query := parseParticipantTableQuery(c, e)
 
 	id := c.Param("id")
@@ -405,7 +407,9 @@ func (e *Events) Show(c echo.Context) error {
 		return c.NoContent(http.StatusInternalServerError)
 	}
 	applyEventShowTableByRole(&data, middleware.IsAdmin(c))
-	data.UserEmail = userEmail
+	data.Signals = eventShowSignals(data)
+	data.IsAuthenticated = true
+	data.IsSuperAdmin = middleware.IsSuperadmin(c)
 
 	return utils.RenderPage(c, EventShow(data))
 }
@@ -413,7 +417,6 @@ func (e *Events) Show(c echo.Context) error {
 func (e *Events) NewEventPage(c echo.Context) error {
 	utils.EnsureTabID(c)
 	groupID := middleware.GetGroupID(c)
-	userEmail := getUserEmail(c)
 
 	group, err := db.Qry.GetGroupByID(c.Request().Context(), groupID)
 	if err != nil {
@@ -429,8 +432,13 @@ func (e *Events) NewEventPage(c echo.Context) error {
 			{Label: ctxi18n.T(c.Request().Context(), "groups.overview"), Href: "/groups/" + groupID + "/overview"},
 			{Label: ctxi18n.T(c.Request().Context(), "events.add")},
 		},
-		UserEmail: userEmail,
-		GroupID:   groupID,
+		GroupID: groupID,
+		Signals: map[string]any{
+			"formData": map[string]any{"title": "", "time": "", "place": "", "description": "", "amount": 0, "paid": false, "paidAt": ""},
+			"errors":   map[string]any{"title": "", "time": "", "place": "", "description": "", "amount": ""},
+		},
+		IsAuthenticated: true,
+		IsSuperAdmin:    middleware.IsSuperadmin(c),
 	}
 	return utils.RenderPage(c, EventNewPage(data))
 }
@@ -438,7 +446,6 @@ func (e *Events) NewEventPage(c echo.Context) error {
 func (e *Events) EditEventPage(c echo.Context) error {
 	utils.EnsureTabID(c)
 	groupID := middleware.GetGroupID(c)
-	userEmail := getUserEmail(c)
 
 	id := c.Param("id")
 	if !utils.IsValidID(id, utils.PrefixEvent) {
@@ -470,9 +477,27 @@ func (e *Events) EditEventPage(c echo.Context) error {
 			{Label: event.Title, Href: "/groups/" + groupID + "/events/" + id},
 			{Label: ctxi18n.T(c.Request().Context(), "events.edit")},
 		},
-		UserEmail: userEmail,
-		GroupID:   groupID,
-		Event:     &event,
+		GroupID: groupID,
+		Event:   &event,
+		Signals: map[string]any{
+			"formData": map[string]any{
+				"title":       event.Title,
+				"time":        event.Time,
+				"place":       event.Place,
+				"description": event.Description,
+				"amount":      event.Amount,
+				"paid":        event.Paid == 1,
+				"paidAt": func() string {
+					if !event.PaidAt.Valid {
+						return ""
+					}
+					return utils.FormatDateInput(event.PaidAt.String)
+				}(),
+			},
+			"errors": map[string]any{"title": "", "time": "", "place": "", "description": "", "amount": ""},
+		},
+		IsAuthenticated: true,
+		IsSuperAdmin:    middleware.IsSuperadmin(c),
 	}
 	return utils.RenderPage(c, EventEditPage(data))
 }
@@ -618,7 +643,6 @@ func (e *Events) Update(c echo.Context) error {
 
 func (e *Events) Destroy(c echo.Context) error {
 	groupID := middleware.GetGroupID(c)
-	userEmail := getUserEmail(c)
 
 	id := c.Param("id")
 	if !utils.IsValidID(id, utils.PrefixEvent) {
@@ -669,7 +693,9 @@ func (e *Events) Destroy(c echo.Context) error {
 		return c.NoContent(http.StatusInternalServerError)
 	}
 	applyEventIndexTableByRole(&data, middleware.IsAdmin(c))
-	data.UserEmail = userEmail
+	data.Signals = eventIndexSignals(data.Query)
+	data.IsAuthenticated = true
+	data.IsSuperAdmin = middleware.IsSuperadmin(c)
 	html, err := utils.RenderHTMLForRequest(c, EventIndex(data))
 	if err != nil {
 		slog.Error("event.destroy: failed to render", "err", err)
@@ -683,7 +709,6 @@ func (e *Events) Destroy(c echo.Context) error {
 
 func (e *Events) ToggleParticipantPaid(c echo.Context) error {
 	groupID := middleware.GetGroupID(c)
-	userEmail := getUserEmail(c)
 
 	eventID := c.Param("id")
 	if !utils.IsValidID(eventID, utils.PrefixEvent) {
@@ -733,7 +758,9 @@ func (e *Events) ToggleParticipantPaid(c echo.Context) error {
 		return c.NoContent(http.StatusInternalServerError)
 	}
 	applyEventShowTableByRole(&data, middleware.IsAdmin(c))
-	data.UserEmail = userEmail
+	data.Signals = eventShowSignals(data)
+	data.IsAuthenticated = true
+	data.IsSuperAdmin = middleware.IsSuperadmin(c)
 	html, err := utils.RenderHTMLForRequest(c, EventShow(data))
 	if err != nil {
 		slog.Error("participant.togglePaid: failed to render", "err", err)
@@ -746,7 +773,6 @@ func (e *Events) ToggleParticipantPaid(c echo.Context) error {
 
 func (e *Events) OpenParticipantsDraft(c echo.Context) error {
 	groupID := middleware.GetGroupID(c)
-	userEmail := getUserEmail(c)
 
 	eventID := c.Param("id")
 	if !utils.IsValidID(eventID, utils.PrefixEvent) {
@@ -764,7 +790,7 @@ func (e *Events) OpenParticipantsDraft(c echo.Context) error {
 	}
 	query = utils.NormalizeTableQuery(signals.TableQuery, e.ParticipantTableQuerySpec())
 
-	if err := e.patchEventShow(c, groupID, eventID, userEmail, query, "edit", eventData{}, 0, nil, nil, nil, nil, nil, nil, nil, ""); err != nil {
+	if err := e.patchEventShow(c, groupID, eventID, query, "edit", eventData{}, 0, nil, nil, nil, nil, nil, nil, nil, ""); err != nil {
 		slog.Error("participant.draft.open: failed to render", "err", err)
 		return c.NoContent(http.StatusInternalServerError)
 	}
@@ -774,7 +800,6 @@ func (e *Events) OpenParticipantsDraft(c echo.Context) error {
 
 func (e *Events) CancelParticipantsDraft(c echo.Context) error {
 	groupID := middleware.GetGroupID(c)
-	userEmail := getUserEmail(c)
 
 	eventID := c.Param("id")
 	if !utils.IsValidID(eventID, utils.PrefixEvent) {
@@ -792,7 +817,7 @@ func (e *Events) CancelParticipantsDraft(c echo.Context) error {
 	}
 	query = utils.NormalizeTableQuery(signals.TableQuery, e.ParticipantTableQuerySpec())
 
-	if err := e.patchEventShow(c, groupID, eventID, userEmail, query, "read", eventData{}, 0, nil, nil, nil, nil, nil, nil, nil, ""); err != nil {
+	if err := e.patchEventShow(c, groupID, eventID, query, "read", eventData{}, 0, nil, nil, nil, nil, nil, nil, nil, ""); err != nil {
 		slog.Error("participant.draft.cancel: failed to render", "err", err)
 		return c.NoContent(http.StatusInternalServerError)
 	}
@@ -802,7 +827,6 @@ func (e *Events) CancelParticipantsDraft(c echo.Context) error {
 
 func (e *Events) UpdateParticipantsDraftRows(c echo.Context) error {
 	groupID := middleware.GetGroupID(c)
-	userEmail := getUserEmail(c)
 
 	eventID := c.Param("id")
 	if !utils.IsValidID(eventID, utils.PrefixEvent) {
@@ -938,7 +962,7 @@ func (e *Events) UpdateParticipantsDraftRows(c echo.Context) error {
 	}
 
 	query := utils.NormalizeTableQuery(signals.TableQuery, e.ParticipantTableQuerySpec())
-	if err := e.patchEventShow(c, groupID, eventID, userEmail, query, "edit", signals.EventFormData, signals.Wizard.EventAmount, rows, signals.Wizard.MemberIDs, signals.Wizard.Amounts, signals.Wizard.Expenses, signals.Wizard.Notes, signals.Wizard.Paids, signals.Wizard.PaidAts, ""); err != nil {
+	if err := e.patchEventShow(c, groupID, eventID, query, "edit", signals.EventFormData, signals.Wizard.EventAmount, rows, signals.Wizard.MemberIDs, signals.Wizard.Amounts, signals.Wizard.Expenses, signals.Wizard.Notes, signals.Wizard.Paids, signals.Wizard.PaidAts, ""); err != nil {
 		slog.Error("participant.draft.rows: failed to render", "err", err)
 		return c.NoContent(http.StatusInternalServerError)
 	}
@@ -948,7 +972,6 @@ func (e *Events) UpdateParticipantsDraftRows(c echo.Context) error {
 
 func (e *Events) SaveParticipantsBulk(c echo.Context) error {
 	groupID := middleware.GetGroupID(c)
-	userEmail := getUserEmail(c)
 
 	eventID := c.Param("id")
 	if !utils.IsValidID(eventID, utils.PrefixEvent) {
@@ -1180,7 +1203,7 @@ func (e *Events) SaveParticipantsBulk(c echo.Context) error {
 	utils.Notify(c, "success", ctxi18n.T(c.Request().Context(), "participants.notifications.updated"))
 
 	query := utils.NormalizeTableQuery(signals.TableQuery, e.ParticipantTableQuerySpec())
-	if err := e.patchEventShow(c, groupID, eventID, userEmail, query, "read", eventData{}, 0, nil, nil, nil, nil, nil, nil, nil, ""); err != nil {
+	if err := e.patchEventShow(c, groupID, eventID, query, "read", eventData{}, 0, nil, nil, nil, nil, nil, nil, nil, ""); err != nil {
 		slog.Error("participant.bulk: failed to render", "err", err)
 		return c.NoContent(http.StatusInternalServerError)
 	}
@@ -1191,7 +1214,6 @@ func (e *Events) SaveParticipantsBulk(c echo.Context) error {
 
 func (e *Events) TogglePaid(c echo.Context) error {
 	groupID := middleware.GetGroupID(c)
-	userEmail := getUserEmail(c)
 
 	id := c.Param("id")
 	if !utils.IsValidID(id, utils.PrefixEvent) {
@@ -1238,7 +1260,9 @@ func (e *Events) TogglePaid(c echo.Context) error {
 			return c.NoContent(http.StatusInternalServerError)
 		}
 		applyEventShowTableByRole(&data, middleware.IsAdmin(c))
-		data.UserEmail = userEmail
+		data.Signals = eventShowSignals(data)
+		data.IsAuthenticated = true
+		data.IsSuperAdmin = middleware.IsSuperadmin(c)
 		html, err := utils.RenderHTMLForRequest(c, EventShow(data))
 		if err != nil {
 			slog.Error("event.togglePaid: failed to render", "err", err)
@@ -1255,7 +1279,9 @@ func (e *Events) TogglePaid(c echo.Context) error {
 		return c.NoContent(http.StatusInternalServerError)
 	}
 	applyEventIndexTableByRole(&data, middleware.IsAdmin(c))
-	data.UserEmail = userEmail
+	data.Signals = eventIndexSignals(data.Query)
+	data.IsAuthenticated = true
+	data.IsSuperAdmin = middleware.IsSuperadmin(c)
 	html, err := utils.RenderHTMLForRequest(c, EventIndex(data))
 	if err != nil {
 		slog.Error("event.togglePaid: failed to render", "err", err)

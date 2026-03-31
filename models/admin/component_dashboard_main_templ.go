@@ -50,12 +50,7 @@ func DashboardMain(data DashboardData) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		if data.Tab == "overview" {
-			templ_7745c5c3_Err = DashboardStats(data).Render(ctx, templ_7745c5c3_Buffer)
-			if templ_7745c5c3_Err != nil {
-				return templ_7745c5c3_Err
-			}
-		} else if data.Tab == "flags" {
+		if data.Tab == "flags" {
 			templ_7745c5c3_Err = FlagsContent(data.SignupEnabled).Render(ctx, templ_7745c5c3_Buffer)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err

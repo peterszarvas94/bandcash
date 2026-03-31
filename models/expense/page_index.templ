@@ -2,20 +2,18 @@ package expense
 
 import (
 	shared "bandcash/models/shared"
-	"bandcash/internal/utils"
-	appi18n "bandcash/internal/i18n"
 )
 
 templ ExpenseIndex(data ExpensesData) {
-	{{ tabID := utils.EnsureTabIDFromContext(ctx) }}
-	<!doctype html>
-	<html lang={appi18n.LocaleCode(ctx)}>
-		@shared.Head(data.Title)
-		<body>
-			<div data-signals={templ.JSONString(expenseIndexSignals(tabID, utils.CSRFTokenFromContext(ctx), data.Query))} data-init="@get('/sse')"></div>
-			@shared.Notifications()
-			@shared.SureDialog()
-			@shared.GroupLayout("expense-index", data.Breadcrumbs, data.UserEmail, shared.AppPrimaryNav("/groups", data.UserEmail != ""), shared.GroupTabs(data.GroupID, "expenses"), ExpenseIndexMain(data))
-		</body>
-	</html>
+	@shared.GroupLayout(shared.GroupLayoutProps{
+		Title:           data.Title,
+		Crumbs:          data.Breadcrumbs,
+		Signals:         data.Signals,
+		Content:         ExpenseIndexMain(data),
+		ActiveUrl:       "/groups",
+		IsAuthenticated: data.IsAuthenticated,
+		IsSuperAdmin:    data.IsSuperAdmin,
+		GroupId:         data.GroupID,
+		Groups:          shared.GroupTabs(data.GroupID, "expenses"),
+	})
 }

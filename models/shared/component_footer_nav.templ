@@ -3,13 +3,14 @@ package shared
 import (
 	"bandcash/internal/utils"
 	ctxi18n "github.com/invopop/ctxi18n/i18n"
+	"strings"
 )
 
 templ Footer(isSuperAdmin bool, activeUrl string) {
 	<footer>
 		<nav aria-label={ ctxi18n.T(ctx, "nav.footer") }>
 			if isSuperAdmin {
-				<a class={ "link", templ.KV("link-active", activeUrl == "/admin/overview") } href="/admin/overview">
+				<a class={ "link", templ.KV("link-active", strings.HasPrefix(activeUrl, "/admin")) } href="/admin/flags">
 					{ ctxi18n.T(ctx, "nav.admin") }
 				</a>
 			}

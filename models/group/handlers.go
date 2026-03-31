@@ -87,11 +87,12 @@ type tabSignals struct {
 // NewGroupPage shows the form to create a new group
 func (g *Group) NewGroupPage(c echo.Context) error {
 	utils.EnsureTabID(c)
-	userEmail := getUserEmail(c)
 	data := NewGroupPageData{
-		Title:       ctxi18n.T(c.Request().Context(), "groups.new_page_title"),
-		Breadcrumbs: []utils.Crumb{{Label: ctxi18n.T(c.Request().Context(), "groups.title"), Href: "/groups"}, {Label: ctxi18n.T(c.Request().Context(), "groups.new")}},
-		UserEmail:   userEmail,
+		Title:           ctxi18n.T(c.Request().Context(), "groups.new_page_title"),
+		Breadcrumbs:     []utils.Crumb{{Label: ctxi18n.T(c.Request().Context(), "groups.title"), Href: "/groups"}, {Label: ctxi18n.T(c.Request().Context(), "groups.new")}},
+		Signals:         map[string]any{"formData": map[string]any{"name": ""}},
+		IsAuthenticated: true,
+		IsSuperAdmin:    middleware.IsSuperadmin(c),
 	}
 	return utils.RenderPage(c, GroupNewPage(data))
 }
@@ -100,7 +101,6 @@ func (g *Group) NewGroupPage(c echo.Context) error {
 func (g *Group) EditGroupPage(c echo.Context) error {
 	utils.EnsureTabID(c)
 	groupID := middleware.GetGroupID(c)
-	userEmail := getUserEmail(c)
 
 	group, err := db.Qry.GetGroupByID(c.Request().Context(), groupID)
 	if err != nil {
@@ -115,9 +115,14 @@ func (g *Group) EditGroupPage(c echo.Context) error {
 			{Label: group.Name, Href: "/groups/" + group.ID + "/overview"},
 			{Label: ctxi18n.T(c.Request().Context(), "groups.edit")},
 		},
-		UserEmail: userEmail,
-		GroupID:   groupID,
-		Group:     group,
+		GroupID: groupID,
+		Group:   group,
+		Signals: map[string]any{
+			"formData": map[string]any{"name": group.Name},
+			"errors":   map[string]any{"name": ""},
+		},
+		IsAuthenticated: true,
+		IsSuperAdmin:    middleware.IsSuperadmin(c),
 	}
 
 	return utils.RenderPage(c, GroupEditPage(data))
@@ -181,7 +186,6 @@ func (g *Group) CreateGroup(c echo.Context) error {
 func (g *Group) GroupsPage(c echo.Context) error {
 	utils.EnsureTabID(c)
 	userID := middleware.GetUserID(c)
-	userEmail := getUserEmail(c)
 	if userID == "" {
 		return c.Redirect(http.StatusFound, "/login")
 	}
@@ -196,7 +200,9 @@ func (g *Group) GroupsPage(c echo.Context) error {
 
 	data.Title = ctxi18n.T(c.Request().Context(), "groups.page_title")
 	data.Breadcrumbs = []utils.Crumb{{Label: ctxi18n.T(c.Request().Context(), "groups.title")}}
-	data.UserEmail = userEmail
+	data.Signals = map[string]any{"mode": "table", "tableQuery": utils.TableQuerySignals(data.Query)}
+	data.IsAuthenticated = true
+	data.IsSuperAdmin = middleware.IsSuperadmin(c)
 
 	return utils.RenderPage(c, GroupsPage(data))
 }
@@ -378,7 +384,9 @@ func (g *Group) DeleteGroup(c echo.Context) error {
 
 		data.Title = ctxi18n.T(c.Request().Context(), "groups.page_title")
 		data.Breadcrumbs = []utils.Crumb{{Label: ctxi18n.T(c.Request().Context(), "groups.title")}}
-		data.UserEmail = getUserEmail(c)
+		data.Signals = map[string]any{"mode": "table", "tableQuery": utils.TableQuerySignals(data.Query)}
+		data.IsAuthenticated = true
+		data.IsSuperAdmin = middleware.IsSuperadmin(c)
 
 		html, err := utils.RenderHTMLForRequest(c, GroupsPage(data))
 		if err != nil {
@@ -426,7 +434,6 @@ func (g *Group) UsersEntryPage(c echo.Context) error {
 func (g *Group) UsersNewPage(c echo.Context) error {
 	utils.EnsureTabID(c)
 	groupID := middleware.GetGroupID(c)
-	userEmail := getUserEmail(c)
 
 	group, err := db.Qry.GetGroupByID(c.Request().Context(), groupID)
 	if err != nil {
@@ -442,9 +449,13 @@ func (g *Group) UsersNewPage(c echo.Context) error {
 			{Label: ctxi18n.T(c.Request().Context(), "groups.users"), Href: "/groups/" + groupID + "/users"},
 			{Label: ctxi18n.T(c.Request().Context(), "groups.invite_user")},
 		},
-		UserEmail: userEmail,
-		GroupID:   groupID,
-		Group:     group,
+		GroupID: groupID,
+		Group:   group,
+		Signals: map[string]any{
+			"formData": map[string]any{"email": "", "role": "viewer"},
+		},
+		IsAuthenticated: true,
+		IsSuperAdmin:    middleware.IsSuperadmin(c),
 	}
 
 	return utils.RenderPage(c, GroupUsersNewPage(data))
@@ -492,10 +503,12 @@ func (g *Group) UserEditPage(c echo.Context) error {
 			{Label: user.Email, Href: "/groups/" + groupID + "/users/" + user.ID},
 			{Label: ctxi18n.T(ctx, "actions.edit")},
 		},
-		UserEmail: getUserEmail(c),
-		GroupID:   groupID,
-		Group:     group,
-		UserRow:   row,
+		GroupID:         groupID,
+		Group:           group,
+		UserRow:         row,
+		Signals:         map[string]any{"formData": map[string]any{"role": row.Role}},
+		IsAuthenticated: true,
+		IsSuperAdmin:    middleware.IsSuperadmin(c),
 	}
 
 	return utils.RenderPage(c, GroupUserEditPage(data))
@@ -560,12 +573,14 @@ func (g *Group) UserPage(c echo.Context) error {
 			{Label: ctxi18n.T(ctx, "groups.users"), Href: "/groups/" + groupID + "/users"},
 			{Label: user.Email},
 		},
-		UserEmail:     getUserEmail(c),
-		CurrentUserID: middleware.GetUserID(c),
-		GroupID:       groupID,
-		Group:         group,
-		UserRow:       row,
-		IsAdmin:       middleware.IsAdmin(c),
+		CurrentUserID:   middleware.GetUserID(c),
+		GroupID:         groupID,
+		Group:           group,
+		UserRow:         row,
+		IsAdmin:         middleware.IsAdmin(c),
+		Signals:         nil,
+		IsAuthenticated: true,
+		IsSuperAdmin:    middleware.IsSuperadmin(c),
 	}
 
 	return utils.RenderPage(c, GroupUserPage(data))
@@ -629,11 +644,13 @@ func (g *Group) UserInvitePage(c echo.Context) error {
 			{Label: ctxi18n.T(ctx, "groups.users"), Href: "/groups/" + groupID + "/users"},
 			{Label: row.Email},
 		},
-		UserEmail: getUserEmail(c),
-		GroupID:   groupID,
-		Group:     group,
-		UserRow:   row,
-		IsAdmin:   middleware.IsAdmin(c),
+		GroupID:         groupID,
+		Group:           group,
+		UserRow:         row,
+		IsAdmin:         middleware.IsAdmin(c),
+		Signals:         nil,
+		IsAuthenticated: true,
+		IsSuperAdmin:    middleware.IsSuperadmin(c),
 	}
 
 	return utils.RenderPage(c, GroupUserInvitePage(data))
@@ -1089,15 +1106,17 @@ func (g *Group) usersPageData(c echo.Context, groupID string, values url.Values)
 			{Label: group.Name, Href: "/groups/" + group.ID + "/overview"},
 			{Label: ctxi18n.T(ctx, "groups.users"), Href: "/groups/" + group.ID + "/users"},
 		},
-		UserEmail:     getUserEmail(c),
-		CurrentUserID: middleware.GetUserID(c),
-		Group:         group,
-		UserRows:      rows,
-		IsAdmin:       middleware.IsAdmin(c),
-		Query:         query,
-		Pager:         utils.BuildTablePagination(total, query),
-		GroupID:       groupID,
-		UsersTable:    utils.GroupUsersTableLayout(),
+		CurrentUserID:   middleware.GetUserID(c),
+		Group:           group,
+		UserRows:        rows,
+		IsAdmin:         middleware.IsAdmin(c),
+		Query:           query,
+		Pager:           utils.BuildTablePagination(total, query),
+		GroupID:         groupID,
+		UsersTable:      utils.GroupUsersTableLayout(),
+		Signals:         map[string]any{"mode": "table", "tableQuery": utils.TableQuerySignals(query)},
+		IsAuthenticated: true,
+		IsSuperAdmin:    middleware.IsSuperadmin(c),
 	}, nil
 }
 
@@ -1396,21 +1415,23 @@ func (g *Group) groupPageData(c echo.Context, groupID string) (GroupPageData, er
 	}
 
 	return GroupPageData{
-		Title:          "Bandcash - " + group.Name,
-		Breadcrumbs:    []utils.Crumb{{Label: ctxi18n.T(ctx, "groups.title"), Href: "/groups"}, {Label: group.Name, Href: "/groups/" + groupID + "/overview"}, {Label: ctxi18n.T(ctx, "groups.overview")}},
-		UserEmail:      getUserEmail(c),
-		Group:          group,
-		Admin:          admin,
-		Income:         totals.TotalEventAmount,
-		IncomePaid:     totals.EventPaid,
-		IncomeUnpaid:   totals.EventUnpaid,
-		Payouts:        totals.TotalPayoutAmount,
-		PayoutsPaid:    totals.PayoutPaid,
-		PayoutsUnpaid:  totals.PayoutUnpaid,
-		Expenses:       totals.TotalExpenseAmount,
-		ExpensesPaid:   totals.ExpensePaid,
-		ExpensesUnpaid: totals.ExpenseUnpaid,
-		Leftover:       totals.TotalLeftover,
-		IsAdmin:        middleware.IsAdmin(c),
+		Title:           "Bandcash - " + group.Name,
+		Breadcrumbs:     []utils.Crumb{{Label: ctxi18n.T(ctx, "groups.title"), Href: "/groups"}, {Label: group.Name, Href: "/groups/" + groupID + "/overview"}, {Label: ctxi18n.T(ctx, "groups.overview")}},
+		Signals:         map[string]any{"mode": "single", "formState": "", "eventFormState": "", "summaryMode": "all", "formData": map[string]any{"name": group.Name}, "errors": map[string]any{"name": ""}},
+		IsAuthenticated: true,
+		IsSuperAdmin:    middleware.IsSuperadmin(c),
+		Group:           group,
+		Admin:           admin,
+		Income:          totals.TotalEventAmount,
+		IncomePaid:      totals.EventPaid,
+		IncomeUnpaid:    totals.EventUnpaid,
+		Payouts:         totals.TotalPayoutAmount,
+		PayoutsPaid:     totals.PayoutPaid,
+		PayoutsUnpaid:   totals.PayoutUnpaid,
+		Expenses:        totals.TotalExpenseAmount,
+		ExpensesPaid:    totals.ExpensePaid,
+		ExpensesUnpaid:  totals.ExpenseUnpaid,
+		Leftover:        totals.TotalLeftover,
+		IsAdmin:         middleware.IsAdmin(c),
 	}, nil
 }

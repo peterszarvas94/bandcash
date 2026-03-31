@@ -21,48 +21,56 @@ type MemberEvent struct {
 }
 
 type MemberData struct {
-	Title        string
-	Member       *db.Member
-	Events       []MemberEvent
-	Breadcrumbs  []utils.Crumb
-	GroupID      string
-	IsAdmin      bool
-	UserEmail    string
-	Query        utils.TableQuery
-	Pager        utils.TablePagination
-	RecentYears  []int
-	TotalCut     int64
-	TotalExpense int64
-	TotalPayout  int64
-	TotalPaid    int64
-	TotalUnpaid  int64
-	EventsTable  utils.TableLayout
+	Title           string
+	Member          *db.Member
+	Events          []MemberEvent
+	Breadcrumbs     []utils.Crumb
+	Signals         map[string]any
+	GroupID         string
+	IsAdmin         bool
+	IsAuthenticated bool
+	IsSuperAdmin    bool
+	Query           utils.TableQuery
+	Pager           utils.TablePagination
+	RecentYears     []int
+	TotalCut        int64
+	TotalExpense    int64
+	TotalPayout     int64
+	TotalPaid       int64
+	TotalUnpaid     int64
+	EventsTable     utils.TableLayout
 }
 
 type MembersData struct {
-	Title        string
-	GroupName    string
-	Members      []db.Member
-	Query        utils.TableQuery
-	Pager        utils.TablePagination
-	Breadcrumbs  []utils.Crumb
-	GroupID      string
-	IsAdmin      bool
-	UserEmail    string
-	MembersTable utils.TableLayout
+	Title           string
+	GroupName       string
+	Members         []db.Member
+	Query           utils.TableQuery
+	Pager           utils.TablePagination
+	Breadcrumbs     []utils.Crumb
+	Signals         map[string]any
+	GroupID         string
+	IsAdmin         bool
+	IsAuthenticated bool
+	IsSuperAdmin    bool
+	MembersTable    utils.TableLayout
 }
 
 type NewMemberPageData struct {
-	Title       string
-	Breadcrumbs []utils.Crumb
-	UserEmail   string
-	GroupID     string
+	Title           string
+	Breadcrumbs     []utils.Crumb
+	GroupID         string
+	Signals         map[string]any
+	IsAuthenticated bool
+	IsSuperAdmin    bool
 }
 
 type EditMemberPageData struct {
-	Title       string
-	Breadcrumbs []utils.Crumb
-	UserEmail   string
-	GroupID     string
-	Member      *db.Member
+	Title           string
+	Breadcrumbs     []utils.Crumb
+	GroupID         string
+	Member          *db.Member
+	Signals         map[string]any
+	IsAuthenticated bool
+	IsSuperAdmin    bool
 }

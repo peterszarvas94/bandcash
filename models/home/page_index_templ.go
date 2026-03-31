@@ -33,15 +33,15 @@ func HomeIndex(data HomeData) templ.Component {
 			templ_7745c5c3_Var1 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = shared.HomeLayout(
-			"app",
-			data.Title,
-			nil,
-			data.Breadcrumbs,
-			data.UserEmail,
-			data.IsAuthenticated,
-			HomeIndexMain(data),
-		).Render(ctx, templ_7745c5c3_Buffer)
+		templ_7745c5c3_Err = shared.CommonLayout(shared.CommonLayoutProps{
+			Title:           data.Title,
+			Crumbs:          data.Breadcrumbs,
+			Signals:         nil,
+			Content:         HomeIndexMain(data),
+			ActiveUrl:       "/",
+			IsAuthenticated: data.IsAuthenticated,
+			IsSuperAdmin:    data.IsSuperAdmin,
+		}).Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

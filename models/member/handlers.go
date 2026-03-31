@@ -66,7 +66,6 @@ func applyMemberShowTableByRole(data *MemberData, isAdmin bool) {
 func (p *Members) NewMemberPage(c echo.Context) error {
 	utils.EnsureTabID(c)
 	groupID := middleware.GetGroupID(c)
-	userEmail := getUserEmail(c)
 
 	group, err := db.Qry.GetGroupByID(c.Request().Context(), groupID)
 	if err != nil {
@@ -82,8 +81,13 @@ func (p *Members) NewMemberPage(c echo.Context) error {
 			{Label: ctxi18n.T(c.Request().Context(), "members.title"), Href: "/groups/" + groupID + "/members"},
 			{Label: ctxi18n.T(c.Request().Context(), "members.add")},
 		},
-		UserEmail: userEmail,
-		GroupID:   groupID,
+		GroupID: groupID,
+		Signals: map[string]any{
+			"formData": map[string]any{"name": "", "description": ""},
+			"errors":   map[string]any{"name": "", "description": ""},
+		},
+		IsAuthenticated: true,
+		IsSuperAdmin:    middleware.IsSuperadmin(c),
 	}
 	return utils.RenderPage(c, MemberNewPage(data))
 }
@@ -91,7 +95,6 @@ func (p *Members) NewMemberPage(c echo.Context) error {
 func (p *Members) EditMemberPage(c echo.Context) error {
 	utils.EnsureTabID(c)
 	groupID := middleware.GetGroupID(c)
-	userEmail := getUserEmail(c)
 
 	id := c.Param("id")
 	if !utils.IsValidID(id, utils.PrefixMember) {
@@ -123,9 +126,14 @@ func (p *Members) EditMemberPage(c echo.Context) error {
 			{Label: member.Name, Href: "/groups/" + groupID + "/members/" + id},
 			{Label: ctxi18n.T(c.Request().Context(), "members.edit")},
 		},
-		UserEmail: userEmail,
-		GroupID:   groupID,
-		Member:    &member,
+		GroupID: groupID,
+		Member:  &member,
+		Signals: map[string]any{
+			"formData": map[string]any{"name": member.Name, "description": member.Description},
+			"errors":   map[string]any{"name": "", "description": ""},
+		},
+		IsAuthenticated: true,
+		IsSuperAdmin:    middleware.IsSuperadmin(c),
 	}
 	return utils.RenderPage(c, MemberEditPage(data))
 }
@@ -133,7 +141,6 @@ func (p *Members) EditMemberPage(c echo.Context) error {
 func (p *Members) Index(c echo.Context) error {
 	utils.EnsureTabID(c)
 	groupID := middleware.GetGroupID(c)
-	userEmail := getUserEmail(c)
 	query := utils.ParseTableQuery(c, p)
 
 	data, err := p.GetIndexData(c.Request().Context(), groupID, query)
@@ -142,7 +149,9 @@ func (p *Members) Index(c echo.Context) error {
 		return c.NoContent(http.StatusInternalServerError)
 	}
 	data.IsAdmin = middleware.IsAdmin(c)
-	data.UserEmail = userEmail
+	data.Signals = memberIndexSignals(utils.TableQuerySignals(data.Query))
+	data.IsAuthenticated = true
+	data.IsSuperAdmin = middleware.IsSuperadmin(c)
 
 	slog.Debug("member.index", "member_count", len(data.Members))
 	return utils.RenderPage(c, MemberIndex(data))
@@ -159,7 +168,6 @@ func (s staticTableQueryable) TableQuerySpec() utils.TableQuerySpec {
 func (p *Members) Show(c echo.Context) error {
 	utils.EnsureTabID(c)
 	groupID := middleware.GetGroupID(c)
-	userEmail := getUserEmail(c)
 	query := utils.ParseTableQuery(c, staticTableQueryable{spec: p.MemberEventsTableQuerySpec()})
 
 	id := c.Param("id")
@@ -174,7 +182,9 @@ func (p *Members) Show(c echo.Context) error {
 		return c.NoContent(http.StatusInternalServerError)
 	}
 	applyMemberShowTableByRole(&data, middleware.IsAdmin(c))
-	data.UserEmail = userEmail
+	data.Signals = memberShowSignals(data)
+	data.IsAuthenticated = true
+	data.IsSuperAdmin = middleware.IsSuperadmin(c)
 
 	return utils.RenderPage(c, MemberShow(data))
 }
@@ -273,7 +283,6 @@ func (p *Members) Update(c echo.Context) error {
 
 func (p *Members) Destroy(c echo.Context) error {
 	groupID := middleware.GetGroupID(c)
-	userEmail := getUserEmail(c)
 
 	id := c.Param("id")
 	if !utils.IsValidID(id, utils.PrefixMember) {
@@ -320,7 +329,9 @@ func (p *Members) Destroy(c echo.Context) error {
 		return c.NoContent(http.StatusInternalServerError)
 	}
 	data.IsAdmin = middleware.IsAdmin(c)
-	data.UserEmail = userEmail
+	data.Signals = memberIndexSignals(utils.TableQuerySignals(data.Query))
+	data.IsAuthenticated = true
+	data.IsSuperAdmin = middleware.IsSuperadmin(c)
 	html, err := utils.RenderHTMLForRequest(c, MemberIndex(data))
 	if err != nil {
 		slog.Error("member.destroy: failed to render", "err", err)
@@ -334,7 +345,6 @@ func (p *Members) Destroy(c echo.Context) error {
 
 func (p *Members) ToggleParticipantPaid(c echo.Context) error {
 	groupID := middleware.GetGroupID(c)
-	userEmail := getUserEmail(c)
 
 	memberID := c.Param("id")
 	if !utils.IsValidID(memberID, utils.PrefixMember) {
@@ -382,7 +392,9 @@ func (p *Members) ToggleParticipantPaid(c echo.Context) error {
 		return c.NoContent(http.StatusInternalServerError)
 	}
 	applyMemberShowTableByRole(&data, middleware.IsAdmin(c))
-	data.UserEmail = userEmail
+	data.Signals = memberShowSignals(data)
+	data.IsAuthenticated = true
+	data.IsSuperAdmin = middleware.IsSuperadmin(c)
 
 	html, err := utils.RenderHTMLForRequest(c, MemberShow(data))
 	if err != nil {

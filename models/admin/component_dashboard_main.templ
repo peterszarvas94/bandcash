@@ -7,10 +7,7 @@ import (
 templ DashboardMain(data DashboardData) {
 	<h1>{ ctxi18n.T(ctx, "admin.dashboard") }</h1>
 	<div>
-		// Tab content
-		if data.Tab == "overview" {
-			@DashboardStats(data)
-		} else if data.Tab == "flags" {
+		if data.Tab == "flags" {
 			@FlagsContent(data.SignupEnabled)
 		} else if data.Tab == "users" {
 			@UsersTableSection(data)

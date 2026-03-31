@@ -5,13 +5,13 @@ import (
 )
 
 templ HomeIndex(data HomeData) {
-	@shared.HomeLayout(
-		"app",
-		data.Title,
-		nil,
-		data.Breadcrumbs,
-		data.UserEmail,
-		data.IsAuthenticated,
-		HomeIndexMain(data),
-	)
+	@shared.CommonLayout(shared.CommonLayoutProps{
+		Title:           data.Title,
+		Crumbs:          data.Breadcrumbs,
+		Signals:         nil,
+		Content:         HomeIndexMain(data),
+		ActiveUrl:       "/",
+		IsAuthenticated: data.IsAuthenticated,
+		IsSuperAdmin:    data.IsSuperAdmin,
+	})
 }

@@ -1,19 +1,19 @@
 package group
 
 import (
-	appi18n "bandcash/internal/i18n"
-	"bandcash/internal/utils"
 	shared "bandcash/models/shared"
 )
 
 templ GroupPage(data GroupPageData) {
-	{{ tabID := utils.EnsureTabIDFromContext(ctx) }}
-	<!DOCTYPE html>
-	<html lang={ appi18n.LocaleCode(ctx) }>
-		@shared.Head(data.Title)
-		<body>
-			<div data-signals={ templ.JSONString(map[string]any{"tab_id": tabID, "csrf": utils.CSRFTokenFromContext(ctx), "mode": "single", "formState": "", "eventFormState": "", "summaryMode": "all", "formData": map[string]any{"name": data.Group.Name}, "errors": map[string]any{"name": ""}}) } data-init="@get('/sse')"></div>
-			@shared.GroupLayout("group-show", data.Breadcrumbs, data.UserEmail, shared.AppPrimaryNav("/groups", data.UserEmail != ""), shared.GroupTabs(data.Group.ID, ""), GroupDetailsContent(data))
-		</body>
-	</html>
+	@shared.GroupLayout(shared.GroupLayoutProps{
+		Title:           data.Title,
+		Crumbs:          data.Breadcrumbs,
+		Signals:         data.Signals,
+		Content:         GroupDetailsContent(data),
+		ActiveUrl:       "/groups",
+		IsAuthenticated: data.IsAuthenticated,
+		IsSuperAdmin:    data.IsSuperAdmin,
+		GroupId:         data.Group.ID,
+		Groups:          shared.GroupTabs(data.Group.ID, ""),
+	})
 }

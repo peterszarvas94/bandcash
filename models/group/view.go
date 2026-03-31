@@ -8,17 +8,21 @@ import (
 )
 
 type NewGroupPageData struct {
-	Title       string
-	Breadcrumbs []utils.Crumb
-	UserEmail   string
+	Title           string
+	Breadcrumbs     []utils.Crumb
+	Signals         map[string]any
+	IsAuthenticated bool
+	IsSuperAdmin    bool
 }
 
 type EditGroupPageData struct {
-	Title       string
-	Breadcrumbs []utils.Crumb
-	UserEmail   string
-	GroupID     string
-	Group       db.Group
+	Title           string
+	Breadcrumbs     []utils.Crumb
+	GroupID         string
+	Group           db.Group
+	Signals         map[string]any
+	IsAuthenticated bool
+	IsSuperAdmin    bool
 }
 
 type GroupWithRole struct {
@@ -29,15 +33,17 @@ type GroupWithRole struct {
 }
 
 type GroupsPageData struct {
-	Title        string
-	Breadcrumbs  []utils.Crumb
-	UserEmail    string
-	AllGroups    []GroupWithRole
-	AdminGroups  []GroupSummary
-	ReaderGroups []GroupSummary
-	Query        utils.TableQuery
-	Pagination   utils.TablePagination
-	GroupsTable  utils.TableLayout
+	Title           string
+	Breadcrumbs     []utils.Crumb
+	Signals         map[string]any
+	IsAuthenticated bool
+	IsSuperAdmin    bool
+	AllGroups       []GroupWithRole
+	AdminGroups     []GroupSummary
+	ReaderGroups    []GroupSummary
+	Query           utils.TableQuery
+	Pagination      utils.TablePagination
+	GroupsTable     utils.TableLayout
 }
 
 type GroupSummary struct {
@@ -47,55 +53,65 @@ type GroupSummary struct {
 }
 
 type UsersPageData struct {
-	Title         string
-	Breadcrumbs   []utils.Crumb
-	UserEmail     string
-	CurrentUserID string
-	Group         db.Group
-	UserRows      []GroupUserRow
-	IsAdmin       bool
-	Query         utils.TableQuery
-	Pager         utils.TablePagination
-	GroupID       string
-	UsersTable    utils.TableLayout
+	Title           string
+	Breadcrumbs     []utils.Crumb
+	Signals         map[string]any
+	IsAuthenticated bool
+	IsSuperAdmin    bool
+	CurrentUserID   string
+	Group           db.Group
+	UserRows        []GroupUserRow
+	IsAdmin         bool
+	Query           utils.TableQuery
+	Pager           utils.TablePagination
+	GroupID         string
+	UsersTable      utils.TableLayout
 }
 
 type UsersNewPageData struct {
-	Title       string
-	Breadcrumbs []utils.Crumb
-	UserEmail   string
-	GroupID     string
-	Group       db.Group
+	Title           string
+	Breadcrumbs     []utils.Crumb
+	GroupID         string
+	Group           db.Group
+	Signals         map[string]any
+	IsAuthenticated bool
+	IsSuperAdmin    bool
 }
 
 type UserPageData struct {
-	Title         string
-	Breadcrumbs   []utils.Crumb
-	UserEmail     string
-	CurrentUserID string
-	GroupID       string
-	Group         db.Group
-	UserRow       GroupUserRow
-	IsAdmin       bool
+	Title           string
+	Breadcrumbs     []utils.Crumb
+	Signals         map[string]any
+	IsAuthenticated bool
+	IsSuperAdmin    bool
+	CurrentUserID   string
+	GroupID         string
+	Group           db.Group
+	UserRow         GroupUserRow
+	IsAdmin         bool
 }
 
 type UserEditPageData struct {
-	Title       string
-	Breadcrumbs []utils.Crumb
-	UserEmail   string
-	GroupID     string
-	Group       db.Group
-	UserRow     GroupUserRow
+	Title           string
+	Breadcrumbs     []utils.Crumb
+	GroupID         string
+	Group           db.Group
+	UserRow         GroupUserRow
+	Signals         map[string]any
+	IsAuthenticated bool
+	IsSuperAdmin    bool
 }
 
 type UserInvitePageData struct {
-	Title       string
-	Breadcrumbs []utils.Crumb
-	UserEmail   string
-	GroupID     string
-	Group       db.Group
-	UserRow     GroupUserRow
-	IsAdmin     bool
+	Title           string
+	Breadcrumbs     []utils.Crumb
+	GroupID         string
+	Group           db.Group
+	UserRow         GroupUserRow
+	IsAdmin         bool
+	Signals         map[string]any
+	IsAuthenticated bool
+	IsSuperAdmin    bool
 }
 
 type GroupUserRow struct {
@@ -109,20 +125,22 @@ type GroupUserRow struct {
 }
 
 type GroupPageData struct {
-	Title          string
-	Breadcrumbs    []utils.Crumb
-	UserEmail      string
-	Group          db.Group
-	Admin          db.User
-	Income         int64
-	IncomePaid     int64
-	IncomeUnpaid   int64
-	Payouts        int64
-	PayoutsPaid    int64
-	PayoutsUnpaid  int64
-	Expenses       int64
-	ExpensesPaid   int64
-	ExpensesUnpaid int64
-	Leftover       int64
-	IsAdmin        bool
+	Title           string
+	Breadcrumbs     []utils.Crumb
+	Signals         map[string]any
+	IsAuthenticated bool
+	IsSuperAdmin    bool
+	Group           db.Group
+	Admin           db.User
+	Income          int64
+	IncomePaid      int64
+	IncomeUnpaid    int64
+	Payouts         int64
+	PayoutsPaid     int64
+	PayoutsUnpaid   int64
+	Expenses        int64
+	ExpensesPaid    int64
+	ExpensesUnpaid  int64
+	Leftover        int64
+	IsAdmin         bool
 }

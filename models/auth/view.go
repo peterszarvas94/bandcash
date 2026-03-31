@@ -7,5 +7,6 @@ type AuthPageData struct {
 	Breadcrumbs     []utils.Crumb
 	CurrentLang     string
 	IsAuthenticated bool
-	UserEmail       string
+	IsSuperAdmin    bool
+	Signals         map[string]any
 }

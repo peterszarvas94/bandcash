@@ -7,16 +7,15 @@ import (
 )
 
 templ DevPage(linkSelector string, isAuthenticated bool, userEmail string) {
-	{{ tabID := utils.EnsureTabIDFromContext(ctx) }}
-	@shared.BaseLayout(
-		"dev-page",
-		"Bandcash - Dev tools",
-		map[string]any{"tab_id": tabID, "csrf": utils.CSRFTokenFromContext(ctx), "errors": map[string]any{"name": ""}, "formData": map[string]any{"name": ""}, "_fetching": false, "activeSpinner": "", "_notifyInline": false, "_notifyInfo": false, "_notifyWarning": false, "_notifySuccess": false, "_notifyError": false, "toggleDefault": true, "toggleSuccess": true, "toggleWarning": true, "toggleDanger": true, "radioDemo": "all"},
-		[]utils.Crumb{{Label: "Dev tools"}},
-		userEmail,
-		isAuthenticated,
-		DevMain(linkSelector),
-	)
+	@shared.CommonLayout(shared.CommonLayoutProps{
+		Title:           "Bandcash - Dev tools",
+		Crumbs:          []utils.Crumb{{Label: "Dev tools"}},
+		Signals:         map[string]any{"errors": map[string]any{"name": ""}, "formData": map[string]any{"name": ""}, "_fetching": false, "activeSpinner": "", "_notifyInline": false, "_notifyInfo": false, "_notifyWarning": false, "_notifySuccess": false, "_notifyError": false, "toggleDefault": true, "toggleSuccess": true, "toggleWarning": true, "toggleDanger": true, "radioDemo": "all"},
+		Content:         DevMain(linkSelector),
+		ActiveUrl:       "/dev",
+		IsAuthenticated: isAuthenticated,
+		IsSuperAdmin:    false,
+	})
 	<script type="module" src={ assets.AssetPath("js/rate_limit_tester.js") }></script>
 	<script type="module" src={ assets.AssetPath("js/body_limit_tester.js") }></script>
 	<script type="module" src={ assets.AssetPath("js/table_query_tester.js") }></script>

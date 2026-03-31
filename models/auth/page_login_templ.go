@@ -9,7 +9,6 @@ import "github.com/a-h/templ"
 import templruntime "github.com/a-h/templ/runtime"
 
 import (
-	"bandcash/internal/utils"
 	shared "bandcash/models/shared"
 )
 
@@ -34,16 +33,15 @@ func LoginPage(data AuthPageData) templ.Component {
 			templ_7745c5c3_Var1 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		tabID := utils.EnsureTabIDFromContext(ctx)
-		templ_7745c5c3_Err = shared.HomeLayout(
-			"auth-login",
-			data.Title,
-			map[string]any{"tab_id": tabID, "csrf": utils.CSRFTokenFromContext(ctx), "authError": "", "authServerError": "", "authState": "form", "submittedEmail": "", "submittedEmailMasked": "", "resendRemaining": 0, "formData": map[string]any{"email": ""}},
-			data.Breadcrumbs,
-			data.UserEmail,
-			data.IsAuthenticated,
-			LoginMain(data.CurrentLang, "/login"),
-		).Render(ctx, templ_7745c5c3_Buffer)
+		templ_7745c5c3_Err = shared.CommonLayout(shared.CommonLayoutProps{
+			Title:           data.Title,
+			Crumbs:          data.Breadcrumbs,
+			Signals:         data.Signals,
+			Content:         LoginMain(data.CurrentLang, "/login"),
+			ActiveUrl:       "/login",
+			IsAuthenticated: data.IsAuthenticated,
+			IsSuperAdmin:    data.IsSuperAdmin,
+		}).Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
