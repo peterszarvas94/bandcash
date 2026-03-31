@@ -1,0 +1,34 @@
+package shared
+
+import "bandcash/internal/utils"
+
+templ GroupContent(tabs, content templ.Component) {
+	<div class="group">
+		@tabs
+		@content
+	</div>
+}
+
+type GroupLayoutProps struct {
+	Title           string
+	Crumbs          []utils.Crumb
+	Signals         map[string]any
+	Content         templ.Component
+	ActiveUrl       string
+	IsAuthenticated bool
+	IsSuperAdmin    bool
+	GroupId         string
+	ActiveTab       string
+}
+
+templ GroupLayout(props GroupLayoutProps) {
+	@BaseLayout(BaseLayoutProps{
+		Title:           props.Title,
+		Crumbs:          props.Crumbs,
+		Signals:         props.Signals,
+		Content:         GroupContent(GroupTabs(props.GroupId, props.ActiveTab), props.Content),
+		ActiveUrl:       props.ActiveUrl,
+		IsAuthenticated: props.IsAuthenticated,
+		IsSuperAdmin:    props.IsSuperAdmin,
+	})
+}

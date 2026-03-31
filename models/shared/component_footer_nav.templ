@@ -5,49 +5,29 @@ import (
 	ctxi18n "github.com/invopop/ctxi18n/i18n"
 )
 
-func footerActiveHref(pageID string) string {
-	switch pageID {
-	case "dev-page":
-		return "/dev"
-	case "home-pricing":
-		return "/pricing"
-	case "home-terms":
-		return "/terms-and-conditions"
-	case "home-privacy":
-		return "/privacy-policy"
-	case "home-refund":
-		return "/refund-policy"
-	case "admin-dashboard":
-		return "/admin/overview"
-	default:
-		return ""
-	}
-}
-
-templ Footer(userEmail string, pageID string) {
-	{{ activeHref := footerActiveHref(pageID) }}
+templ Footer(isSuperAdmin bool, activeUrl string) {
 	<footer>
 		<nav aria-label={ ctxi18n.T(ctx, "nav.footer") }>
-			if utils.Env().SuperadminEmail != "" && userEmail != "" && userEmail == utils.Env().SuperadminEmail {
-				<a class={ "link", templ.KV("link-active", activeHref == "/admin/overview") } href="/admin/overview">
+			if isSuperAdmin {
+				<a class={ "link", templ.KV("link-active", activeUrl == "/admin/overview") } href="/admin/overview">
 					{ ctxi18n.T(ctx, "nav.admin") }
 				</a>
 			}
 			if utils.Env().AppEnv == "development" {
-				<a class={ "link", templ.KV("link-active", activeHref == "/dev") } href="/dev">
+				<a class={ "link", templ.KV("link-active", activeUrl == "/dev") } href="/dev">
 					Dev
 				</a>
 			}
-			<a class={ "link", templ.KV("link-active", activeHref == "/pricing") } href="/pricing">
+			<a class={ "link", templ.KV("link-active", activeUrl == "/pricing") } href="/pricing">
 				{ ctxi18n.T(ctx, "legal.pricing") }
 			</a>
-			<a class={ "link", templ.KV("link-active", activeHref == "/terms-and-conditions") } href="/terms-and-conditions">
+			<a class={ "link", templ.KV("link-active", activeUrl == "/terms-and-conditions") } href="/terms-and-conditions">
 				{ ctxi18n.T(ctx, "legal.terms_and_conditions") }
 			</a>
-			<a class={ "link", templ.KV("link-active", activeHref == "/privacy-policy") } href="/privacy-policy">
+			<a class={ "link", templ.KV("link-active", activeUrl == "/privacy-policy") } href="/privacy-policy">
 				{ ctxi18n.T(ctx, "legal.privacy_policy") }
 			</a>
-			<a class={ "link", templ.KV("link-active", activeHref == "/refund-policy") } href="/refund-policy">
+			<a class={ "link", templ.KV("link-active", activeUrl == "/refund-policy") } href="/refund-policy">
 				{ ctxi18n.T(ctx, "legal.refund_policy") }
 			</a>
 		</nav>

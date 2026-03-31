@@ -1,14 +1,12 @@
 package shared
 
-import (
-	"bandcash/internal/utils"
-)
+import "bandcash/internal/utils"
 
-templ Header(crumbs []utils.Crumb, nav templ.Component) {
-	<header>
+templ Header(crumbs []utils.Crumb, activeUrl string, isAuthenticated bool) {
+	<header class="header">
 		<div class="header_inner">
 			@Breadcrumbs(crumbs)
-			@nav
+			@AppPrimaryNav(activeUrl, isAuthenticated)
 		</div>
 	</header>
 }

@@ -8,7 +8,12 @@ package shared
 import "github.com/a-h/templ"
 import templruntime "github.com/a-h/templ/runtime"
 
-func BaseLayout(title string, lang string, signals map[string]any, overlays templ.Component, content templ.Component) templ.Component {
+import (
+	appi18n "bandcash/internal/i18n"
+	"bandcash/internal/utils"
+)
+
+func BaseLayout(title string, crumbs []utils.Crumb, signals map[string]any, content templ.Component, activeUrl string, isAuthenticated bool, isSuperAdmin bool) templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
 		if templ_7745c5c3_CtxErr := ctx.Err(); templ_7745c5c3_CtxErr != nil {
@@ -34,9 +39,9 @@ func BaseLayout(title string, lang string, signals map[string]any, overlays temp
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var2 string
-		templ_7745c5c3_Var2, templ_7745c5c3_Err = templ.JoinStringErrs(lang)
+		templ_7745c5c3_Var2, templ_7745c5c3_Err = templ.JoinStringErrs(appi18n.LocaleCode(ctx))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/shared/component_base_layout.templ`, Line: 5, Col: 18}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/shared/component_base_layout.templ`, Line: 10, Col: 37}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var2))
 		if templ_7745c5c3_Err != nil {
@@ -62,7 +67,7 @@ func BaseLayout(title string, lang string, signals map[string]any, overlays temp
 			var templ_7745c5c3_Var3 string
 			templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.JoinStringErrs(templ.JSONString(signals))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/shared/component_base_layout.templ`, Line: 9, Col: 49}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/shared/component_base_layout.templ`, Line: 14, Col: 49}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var3))
 			if templ_7745c5c3_Err != nil {
@@ -73,7 +78,23 @@ func BaseLayout(title string, lang string, signals map[string]any, overlays temp
 				return templ_7745c5c3_Err
 			}
 		}
-		templ_7745c5c3_Err = overlays.Render(ctx, templ_7745c5c3_Buffer)
+		templ_7745c5c3_Err = Notifications().Render(ctx, templ_7745c5c3_Buffer)
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Err = SureDialog().Render(ctx, templ_7745c5c3_Buffer)
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 6, "<div class=\"page\">")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Err = Header(crumbs, activeUrl, isAuthenticated).Render(ctx, templ_7745c5c3_Buffer)
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 7, "<div class=\"page\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -81,7 +102,11 @@ func BaseLayout(title string, lang string, signals map[string]any, overlays temp
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 6, "</body></html>")
+		templ_7745c5c3_Err = Footer(isSuperAdmin, activeUrl).Render(ctx, templ_7745c5c3_Buffer)
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 8, "</div></div></body></html>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

@@ -1,9 +1,9 @@
 package group
 
 import (
-	shared "bandcash/models/shared"
-	"bandcash/internal/utils"
 	appi18n "bandcash/internal/i18n"
+	"bandcash/internal/utils"
+	shared "bandcash/models/shared"
 )
 
 templ GroupPage(data GroupPageData) {
@@ -13,8 +13,6 @@ templ GroupPage(data GroupPageData) {
 		@shared.Head(data.Title)
 		<body>
 			<div data-signals={ templ.JSONString(map[string]any{"tab_id": tabID, "csrf": utils.CSRFTokenFromContext(ctx), "mode": "single", "formState": "", "eventFormState": "", "summaryMode": "all", "formData": map[string]any{"name": data.Group.Name}, "errors": map[string]any{"name": ""}}) } data-init="@get('/sse')"></div>
-			@shared.Notifications()
-			@shared.SureDialog()
 			@shared.GroupLayout("group-show", data.Breadcrumbs, data.UserEmail, shared.AppPrimaryNav("/groups", data.UserEmail != ""), shared.GroupTabs(data.Group.ID, ""), GroupDetailsContent(data))
 		</body>
 	</html>

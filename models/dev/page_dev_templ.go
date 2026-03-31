@@ -36,7 +36,7 @@ func DevPage(linkSelector string, isAuthenticated bool, userEmail string) templ.
 		}
 		ctx = templ.ClearChildren(ctx)
 		tabID := utils.EnsureTabIDFromContext(ctx)
-		templ_7745c5c3_Err = shared.HomeLayout(
+		templ_7745c5c3_Err = shared.BaseLayout(
 			"dev-page",
 			"Bandcash - Dev tools",
 			map[string]any{"tab_id": tabID, "csrf": utils.CSRFTokenFromContext(ctx), "errors": map[string]any{"name": ""}, "formData": map[string]any{"name": ""}, "_fetching": false, "activeSpinner": "", "_notifyInline": false, "_notifyInfo": false, "_notifyWarning": false, "_notifySuccess": false, "_notifyError": false, "toggleDefault": true, "toggleSuccess": true, "toggleWarning": true, "toggleDanger": true, "radioDemo": "all"},

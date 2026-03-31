@@ -1,9 +1,9 @@
 package account
 
 import (
-	shared "bandcash/models/shared"
 	appi18n "bandcash/internal/i18n"
 	"bandcash/internal/utils"
+	shared "bandcash/models/shared"
 )
 
 templ AccountIndex(data AccountData) {
@@ -15,7 +15,7 @@ templ AccountIndex(data AccountData) {
 			<div data-signals={ templ.JSONString(map[string]any{"tab_id": tabID, "csrf": utils.CSRFTokenFromContext(ctx), "formData": map[string]any{"lang": data.CurrentLang}}) } data-init="@get('/sse')"></div>
 			@shared.Notifications()
 			@shared.SureDialog()
-			@shared.GroupLayout("account-index", data.Breadcrumbs, data.UserEmail, shared.AppPrimaryNav("/account", data.UserEmail != ""), nil, AccountMain(data))
+			@shared.SingleLayout("account-index", data.Breadcrumbs, data.UserEmail, shared.AppPrimaryNav("/account", data.UserEmail != ""), nil, AccountMain(data))
 		</body>
 	</html>
 }

@@ -70,7 +70,7 @@
     }
 
     &.table-fixed {
-      table-layout: fixed;
+      /* table-layout: fixed; */
       width: 100%;
       min-width: 100%;
 
@@ -1028,7 +1028,7 @@
     }
   }
 
-  :is(.grouplayout, .homelayout) > header {
+  header.header {
     position: sticky;
     top: 0;
     z-index: 20;
@@ -1079,23 +1079,54 @@
     }
   }
 
+  .singlelayout {
+    display: flex;
+    flex-direction: column;
+    min-height: calc(100vh - var(--header-height));
+
+    main {
+      max-width: var(--content-width);
+      width: 100%;
+      margin: 0 auto;
+      padding: var(--space);
+      flex: 1 0 auto;
+    }
+  }
+
+  /* contains the whole page, including header */
   .grouplayout {
+    /* contains tabs, main content and footer */
     .grouplayout_inner {
       display: flex;
       flex-direction: column;
+      gap: var(--space);
+      /* padding: var(--space); */
       min-height: calc(100vh - var(--header-height));
 
-      main#app {
-        max-width: var(--content-width);
-        width: 100%;
-        margin: 0 auto;
-        padding-top: var(--space);
-        padding-right: var(--page-padding-inline);
-        padding-bottom: var(--space);
-        padding-left: var(--page-padding-inline);
-        min-height: calc(100vh - 8rem);
-        min-height: calc(100lvh - 8rem);
-        flex: 1 0 auto;
+      /* contains tabs and main content */
+      .grouplayout_content {
+        /* max-width: var(--content-width); */
+        /* width: 100%; */
+        /* margin: 0 auto; */
+        /* padding-top: var(--space); */
+        /* padding-right: var(--page-padding-inline); */
+        /* padding-bottom: var(--space); */
+        /* padding-left: var(--page-padding-inline); */
+        /* min-height: calc(100vh - 8rem); */
+        /* min-height: calc(100lvh - 8rem); */
+        /* flex: 1 1 auto; */
+        /* display: flex; */
+        /* gap: var(--space); */
+        display: flex;
+        gap: var(--space);
+
+        /* tabs goes here */
+
+        /* main content goes here */
+        main {
+          /* width: 1000px; */
+          min-height: calc(100vh - 6rem);
+        }
       }
     }
   }
@@ -1126,12 +1157,13 @@
     gap: calc(var(--space) * 3);
   }
 
-  nav.tabs {
+  aside.tabs {
     display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    gap: calc(var(--space) * 1.1);
-    margin-bottom: calc(var(--space) * 1.25);
+    flex-direction: column;
+    width: 200px;
+    /* gap: calc(var(--space) * 1.1); */
+    /* margin-bottom: calc(var(--space) * 1.25); */
+    /* width: 200px; */
   }
 
   .tab,
