@@ -8,9 +8,8 @@ import (
 
 templ LoginMain(currentLang string, langAction string, signupEnabled bool) {
 	<section class="auth-page">
-		@shared.PageLanguagePicker(langAction, currentLang)
 		<div class="auth-link-page">
-			<h1>{ ctxi18n.T(ctx, "auth.sign_in") }</h1>
+			@shared.PageTitleWithLanguage(ctxi18n.T(ctx, "auth.sign_in"), langAction, currentLang)
 			if signupEnabled {
 				<p class="text-muted">{ ctxi18n.T(ctx, "auth.login_intro_signup_enabled") }</p>
 			} else {
@@ -20,15 +19,17 @@ templ LoginMain(currentLang string, langAction string, signupEnabled bool) {
 				<form class="form" data-on:submit="@post('/login')" data-indicator:_fetching>
 					<div class="field">
 						<label for="auth-login-email" class="row">{ ctxi18n.T(ctx, "auth.email") } <span class="color-error">*</span></label>
-						<input id="auth-login-email" type="email" data-bind="formData.email" placeholder={ ctxi18n.T(ctx, "auth.email_placeholder") } class="input"/>
+						<div class="row row-tight">
+							<input id="auth-login-email" type="email" data-bind="formData.email" placeholder={ ctxi18n.T(ctx, "auth.email_placeholder") } class="input"/>
+							@shared.LoadingSubmitButton(shared.LoadingSubmitButtonProps{
+								ClassName: "btn btn-primary btn-input",
+								Label:     ctxi18n.T(ctx, "auth.send_link"),
+								IconName:  icons.IconSend,
+							})
+						</div>
 						<div data-show="$authError !== ''" class="color-error" data-text="$authError"></div>
 						<div data-show="$authServerError !== ''" class="color-error" data-text="$authServerError"></div>
 					</div>
-					@shared.LoadingSubmitButton(shared.LoadingSubmitButtonProps{
-						ClassName: "btn btn-primary",
-						Label:     ctxi18n.T(ctx, "auth.send_link"),
-						IconName:  icons.IconSend,
-					})
 				</form>
 			</div>
 			<div data-show="$authState === 'sent'" style="display: none" class="form">

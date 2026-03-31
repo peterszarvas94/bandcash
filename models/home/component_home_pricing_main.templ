@@ -5,10 +5,7 @@ import shared "bandcash/models/shared"
 
 templ HomePricingMain(currentLang string) {
 	<section class="section">
-		@shared.PageLanguagePicker("/pricing", currentLang)
-		<header>
-			<h1>{ ctxi18n.T(ctx, "legal.pricing") }</h1>
-		</header>
+		@shared.PageTitleWithLanguage(ctxi18n.T(ctx, "legal.pricing"), "/pricing", currentLang)
 		@LegalPlaceholderBanner()
 	</section>
 }

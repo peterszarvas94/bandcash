@@ -44,7 +44,7 @@ func PageLanguagePicker(action string, currentLang string) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "\" class=\"page-language-picker\"><select id=\"page-lang\" name=\"lang\" class=\"input input-xs w-fit\" aria-label=\"")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "\"><select id=\"page-lang\" name=\"lang\" class=\"input input-xs w-fit\" aria-label=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

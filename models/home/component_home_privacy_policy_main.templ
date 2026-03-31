@@ -5,10 +5,7 @@ import shared "bandcash/models/shared"
 
 templ HomePrivacyPolicyMain(currentLang string) {
 	<section class="section">
-		@shared.PageLanguagePicker("/privacy-policy", currentLang)
-		<header>
-			<h1>{ ctxi18n.T(ctx, "legal.privacy_policy") }</h1>
-		</header>
+		@shared.PageTitleWithLanguage(ctxi18n.T(ctx, "legal.privacy_policy"), "/privacy-policy", currentLang)
 		@LegalPlaceholderBanner()
 	</section>
 }

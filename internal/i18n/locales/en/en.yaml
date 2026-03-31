@@ -143,7 +143,7 @@ en:
         copy_link: "Or copy and paste this link into your browser:"
         contact_admins: "Contact group admins:"
   home:
-    join_for_free: "Join for free"
+    join_for_free: "Try for free"
     subtitle: "Track your band's finances in one place"
     pricing: "Pricing"
     logged_in: "You are already logged in."

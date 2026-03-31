@@ -1,0 +1,8 @@
+package shared
+
+templ PageTitleWithLanguage(title string, action string, currentLang string) {
+	<div class="page-title-row">
+		<h1>{ title }</h1>
+		@PageLanguagePicker(action, currentLang)
+	</div>
+}

@@ -5,10 +5,7 @@ import shared "bandcash/models/shared"
 
 templ HomeTermsAndConditionsMain(currentLang string) {
 	<section class="section">
-		@shared.PageLanguagePicker("/terms-and-conditions", currentLang)
-		<header>
-			<h1>{ ctxi18n.T(ctx, "legal.terms_and_conditions") }</h1>
-		</header>
+		@shared.PageTitleWithLanguage(ctxi18n.T(ctx, "legal.terms_and_conditions"), "/terms-and-conditions", currentLang)
 		@LegalPlaceholderBanner()
 	</section>
 }

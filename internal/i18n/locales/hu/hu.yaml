@@ -143,9 +143,9 @@ hu:
         copy_link: "Vagy másold be ezt a linket a böngésződbe:"
         contact_admins: "Ha ez váratlan, lépj kapcsolatba a csoport adminjaival:"
   home:
-    join_for_free: "Csatlakozás ingyen"
+    join_for_free: "Próbáld ki ingyen"
     subtitle: "Kövesd a zenekarod pénzügyeit egy helyen"
-    pricing: "Árazás"
+    pricing: "Árak"
     logged_in: "Már be vagy jelentkezve."
     go_to_groups: "Tovább a csoportokhoz"
   legal:

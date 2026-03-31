@@ -5,10 +5,7 @@ import shared "bandcash/models/shared"
 
 templ HomeRefundPolicyMain(currentLang string) {
 	<section class="section">
-		@shared.PageLanguagePicker("/refund-policy", currentLang)
-		<header>
-			<h1>{ ctxi18n.T(ctx, "legal.refund_policy") }</h1>
-		</header>
+		@shared.PageTitleWithLanguage(ctxi18n.T(ctx, "legal.refund_policy"), "/refund-policy", currentLang)
 		@LegalPlaceholderBanner()
 	</section>
 }
