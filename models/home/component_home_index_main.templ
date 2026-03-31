@@ -2,7 +2,6 @@ package home
 
 import (
 	shared "bandcash/models/shared"
-	icons "bandcash/models/shared/icons"
 	ctxi18n "github.com/invopop/ctxi18n/i18n"
 )
 
@@ -14,25 +13,13 @@ templ HomeIndexMain(data HomeData) {
 			if data.IsAuthenticated {
 				<p class="notice">{ ctxi18n.T(ctx, "home.logged_in") }</p>
 				<div class="row row-wrap">
-					<a class="btn btn-primary" href="/groups">
-						@icons.Icon(icons.IconUsers, templ.Attributes{"class": "icon"})
-						{ ctxi18n.T(ctx, "home.go_to_groups") }
-					</a>
-					<a class="btn btn-ghost" href="/account">
-						@icons.Icon(icons.IconUser, templ.Attributes{"class": "icon"})
-						{ ctxi18n.T(ctx, "account.account") }
-					</a>
+					<a class="btn btn-primary" href="/groups">{ ctxi18n.T(ctx, "home.go_to_groups") }</a>
+					<a class="btn btn-ghost" href="/account">{ ctxi18n.T(ctx, "account.account") }</a>
 				</div>
 			} else {
 				<div class="row row-wrap">
-					<a class="btn btn-primary" href="/login">
-						@icons.Icon(icons.IconLogIn, templ.Attributes{"class": "icon"})
-						{ ctxi18n.T(ctx, "home.join_for_free") }
-					</a>
-					<a class="btn btn-ghost" href="/pricing">
-						@icons.Icon(icons.IconBadgeDollarSign, templ.Attributes{"class": "icon"})
-						{ ctxi18n.T(ctx, "home.pricing") }
-					</a>
+					<a class="btn btn-primary" href="/login">{ ctxi18n.T(ctx, "home.join_for_free") }</a>
+					<a class="btn btn-ghost" href="/pricing">{ ctxi18n.T(ctx, "home.pricing") }</a>
 				</div>
 			}
 		</div>

@@ -113,7 +113,7 @@ func LoginMain(currentLang string, langAction string, signupEnabled bool) templ.
 		templ_7745c5c3_Err = shared.LoadingSubmitButton(shared.LoadingSubmitButtonProps{
 			ClassName: "btn btn-primary btn-input",
 			Label:     ctxi18n.T(ctx, "auth.send_link"),
-			IconName:  icons.IconSend,
+			IconName:  icons.IconSendHorizontal,
 		}).Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
@@ -131,21 +131,49 @@ func LoginMain(currentLang string, langAction string, signupEnabled bool) templ.
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 10, ":</strong> <span data-text=\"$submittedEmailMasked\"></span></p><div class=\"row row-wrap\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 10, ":</strong> <span data-text=\"$submittedEmailMasked\"></span></p><div class=\"row row-wrap\"><button data-indicator:_fetching class=\"btn\" type=\"button\" data-signals=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = shared.LoadingActionButton(shared.LoadingActionButtonProps{
-			ClassName:    "btn",
-			OnClick:      "@post('/login')",
-			DisabledExpr: "$_fetching || $resendRemaining > 0",
-			Label:        ctxi18n.T(ctx, "auth.resend_email"),
-			IconName:     icons.IconSend,
-		}).Render(ctx, templ_7745c5c3_Buffer)
+		var templ_7745c5c3_Var7 string
+		templ_7745c5c3_Var7, templ_7745c5c3_Err = templ.JoinStringErrs(templ.JSONString(map[string]any{"_fetching": false}))
+		if templ_7745c5c3_Err != nil {
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/auth/component_login_main.templ`, Line: 43, Col: 73}
+		}
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var7))
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 11, "<span data-show=\"$resendRemaining > 0\" data-text=\"'(' + $resendRemaining + 's)'\"></span>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 11, "\" data-attr:disabled=\"$_fetching || $resendRemaining > 0\" data-on:click=\"@post('/login')\"><span data-show=\"!$_fetching\">")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Err = icons.Icon(icons.IconSendHorizontal, templ.Attributes{"class": "icon"}).Render(ctx, templ_7745c5c3_Buffer)
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 12, "</span> <span data-show=\"$_fetching\" style=\"display: none\">")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Err = icons.LoaderCircle(templ.Attributes{"class": "icon icon-spin"}).Render(ctx, templ_7745c5c3_Buffer)
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 13, "</span> <span>")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		var templ_7745c5c3_Var8 string
+		templ_7745c5c3_Var8, templ_7745c5c3_Err = templ.JoinStringErrs(ctxi18n.T(ctx, "auth.resend_email"))
+		if templ_7745c5c3_Err != nil {
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/auth/component_login_main.templ`, Line: 53, Col: 49}
+		}
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var8))
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 14, "</span> <span data-show=\"$resendRemaining > 0\" data-text=\"' (' + $resendRemaining + 's)'\" style=\"display: none\"></span></button>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -159,7 +187,7 @@ func LoginMain(currentLang string, langAction string, signupEnabled bool) templ.
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 12, "</div></div></div></section>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 15, "</div></div></div></section>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

@@ -586,10 +586,10 @@
 
   .groups {
     > form {
-      width: 100%;
+      width: min(100%, calc((16rem * 3) + (var(--space) * 2)));
 
       input {
-        width: min(28rem, 100%);
+        width: 100%;
       }
     }
 

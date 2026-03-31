@@ -24,7 +24,7 @@ templ LoginMain(currentLang string, langAction string, signupEnabled bool) {
 							@shared.LoadingSubmitButton(shared.LoadingSubmitButtonProps{
 								ClassName: "btn btn-primary btn-input",
 								Label:     ctxi18n.T(ctx, "auth.send_link"),
-								IconName:  icons.IconSend,
+								IconName:  icons.IconSendHorizontal,
 							})
 						</div>
 						<div data-show="$authError !== ''" class="color-error" data-text="$authError"></div>
@@ -36,14 +36,23 @@ templ LoginMain(currentLang string, langAction string, signupEnabled bool) {
 				<div data-show="$authState === 'sent'" data-on-interval__duration.1s="$resendRemaining = Math.max(0, $resendRemaining - 1)" style="display: none"></div>
 				<p><strong>{ ctxi18n.T(ctx, "auth.masked_email") }:</strong> <span data-text="$submittedEmailMasked"></span></p>
 				<div class="row row-wrap">
-					@shared.LoadingActionButton(shared.LoadingActionButtonProps{
-						ClassName:    "btn",
-						OnClick:      "@post('/login')",
-						DisabledExpr: "$_fetching || $resendRemaining > 0",
-						Label:        ctxi18n.T(ctx, "auth.resend_email"),
-						IconName:     icons.IconSend,
-					})
-					<span data-show="$resendRemaining > 0" data-text="'(' + $resendRemaining + 's)'"></span>
+					<button
+						data-indicator:_fetching
+						class="btn"
+						type="button"
+						data-signals={ templ.JSONString(map[string]any{"_fetching": false}) }
+						data-attr:disabled="$_fetching || $resendRemaining > 0"
+						data-on:click="@post('/login')"
+					>
+						<span data-show="!$_fetching">
+							@icons.Icon(icons.IconSendHorizontal, templ.Attributes{"class": "icon"})
+						</span>
+						<span data-show="$_fetching" style="display: none">
+							@icons.LoaderCircle(templ.Attributes{"class": "icon icon-spin"})
+						</span>
+						<span>{ ctxi18n.T(ctx, "auth.resend_email") }</span>
+						<span data-show="$resendRemaining > 0" data-text="' (' + $resendRemaining + 's)'" style="display: none"></span>
+					</button>
 					@shared.LoadingActionButton(shared.LoadingActionButtonProps{
 						ClassName:    "btn",
 						OnClick:      "$authState = 'form'; $authError = ''; $authServerError = ''; $formData.email = $submittedEmail",
