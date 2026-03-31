@@ -35,7 +35,7 @@ func DevPage(linkSelector string, isAuthenticated bool, userEmail string) templ.
 			templ_7745c5c3_Var1 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = shared.CommonLayout(shared.CommonLayoutProps{
+		templ_7745c5c3_Err = shared.WideLayout(shared.WideLayoutProps{
 			Title:           "Bandcash - Dev tools",
 			Crumbs:          []utils.Crumb{{Label: "Dev tools"}},
 			Signals:         map[string]any{"errors": map[string]any{"name": ""}, "formData": map[string]any{"name": ""}, "_fetching": false, "activeSpinner": "", "_notifyInline": false, "_notifyInfo": false, "_notifyWarning": false, "_notifySuccess": false, "_notifyError": false, "toggleDefault": true, "toggleSuccess": true, "toggleWarning": true, "toggleDanger": true, "radioDemo": "all"},

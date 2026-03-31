@@ -6,12 +6,16 @@ import (
 	icons "bandcash/models/shared/icons"
 )
 
-templ LoginMain(currentLang string, langAction string) {
+templ LoginMain(currentLang string, langAction string, signupEnabled bool) {
 	<section class="auth-page">
 		@shared.PageLanguagePicker(langAction, currentLang)
 		<div class="auth-link-page">
 			<h1>{ ctxi18n.T(ctx, "auth.sign_in") }</h1>
-			<p class="text-muted">{ ctxi18n.T(ctx, "auth.check_email_body") }</p>
+			if signupEnabled {
+				<p class="text-muted">{ ctxi18n.T(ctx, "auth.login_intro_signup_enabled") }</p>
+			} else {
+				<p class="text-muted">{ ctxi18n.T(ctx, "auth.login_intro_signup_disabled") }</p>
+			}
 			<div data-show="$authState === 'form'">
 				<form class="form" data-on:submit="@post('/login')" data-indicator:_fetching>
 					<div class="field">
@@ -29,7 +33,6 @@ templ LoginMain(currentLang string, langAction string) {
 			</div>
 			<div data-show="$authState === 'sent'" style="display: none" class="form">
 				<div data-show="$authState === 'sent'" data-on-interval__duration.1s="$resendRemaining = Math.max(0, $resendRemaining - 1)" style="display: none"></div>
-				<p>{ ctxi18n.T(ctx, "auth.check_email_safe") }</p>
 				<p><strong>{ ctxi18n.T(ctx, "auth.masked_email") }:</strong> <span data-text="$submittedEmailMasked"></span></p>
 				<div class="row row-wrap">
 					@shared.LoadingActionButton(shared.LoadingActionButtonProps{

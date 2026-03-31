@@ -131,10 +131,17 @@ func (a *Auth) LoginPage(c echo.Context) error {
 
 	ctx := c.Request().Context()
 	isAuthenticated, _ := authSessionUser(c)
+	signupEnabled := true
+	if flag, err := utils.IsSignupEnabled(ctx); err == nil {
+		signupEnabled = flag
+	} else {
+		slog.Warn("auth.login-page: failed to read signup flag", "err", err)
+	}
 	data := AuthPageData{
 		Title:           ctxi18n.T(ctx, "auth.sign_in") + " - Bandcash",
 		Breadcrumbs:     []utils.Crumb{{Label: ctxi18n.T(ctx, "auth.sign_in")}},
 		CurrentLang:     appi18n.LocaleCode(ctx),
+		SignupEnabled:   signupEnabled,
 		IsAuthenticated: isAuthenticated,
 		IsSuperAdmin:    false,
 		Signals:         map[string]any{"authError": "", "authServerError": "", "authState": "form", "submittedEmail": "", "submittedEmailMasked": "", "resendRemaining": 0, "formData": map[string]any{"email": ""}},

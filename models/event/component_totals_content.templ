@@ -1,0 +1,71 @@
+package event
+
+import (
+	"fmt"
+	shared "bandcash/models/shared"
+	ctxi18n "github.com/invopop/ctxi18n/i18n"
+	"bandcash/internal/utils"
+)
+
+templ EventTotalsContent(data EventsData) {
+	<section class="detail-box bb-0 pb">
+		<dl>
+			<div><dt>{ ctxi18n.T(ctx, "groups.owner") }</dt><dd>{ data.GroupAdminEmail }</dd></div>
+			<div><dt>{ ctxi18n.T(ctx, "groups.created") }</dt><dd>{ data.GroupCreatedAt }</dd></div>
+		</dl>
+	</section>
+	<section class="detail-box pb">
+		{{
+			incomeValue := data.FilteredTotal
+			payoutValue := data.FilteredPayoutsPaid + data.FilteredPayoutsUnpaid
+			expensesValue := data.FilteredExpensesPaid + data.FilteredExpensesUnpaid
+			switch data.Query.Summary {
+			case utils.SummaryModePaid:
+				incomeValue = data.FilteredIncomePaid
+				payoutValue = data.FilteredPayoutsPaid
+				expensesValue = data.FilteredExpensesPaid
+			case utils.SummaryModeUnpaid:
+				incomeValue = data.FilteredIncomeUnpaid
+				payoutValue = data.FilteredPayoutsUnpaid
+				expensesValue = data.FilteredExpensesUnpaid
+			}
+			leftoverValue := incomeValue - payoutValue - expensesValue
+		}}
+		<dl>
+			<div>
+				<dt>{ ctxi18n.T(ctx, "fields.calculations") }</dt>
+				<dd>
+					<div class="detail-box-controls" role="radiogroup" aria-label={ ctxi18n.T(ctx, "table.paid") }>
+						@shared.RadioLink(shared.RadioLinkProps{
+							Href:       utils.BuildTableSummaryURL(fmt.Sprintf("/groups/%s/overview", data.GroupID), data.Query, utils.SummaryModeAll),
+							Label:      ctxi18n.T(ctx, "table.all"),
+							IsSelected: data.Query.Summary == utils.SummaryModeAll,
+							NoIcon:     true,
+							ClassName:  "btn btn-xs",
+						})
+						@shared.RadioLink(shared.RadioLinkProps{
+							Href:       utils.BuildTableSummaryURL(fmt.Sprintf("/groups/%s/overview", data.GroupID), data.Query, utils.SummaryModePaid),
+							Label:      ctxi18n.T(ctx, "table.paid"),
+							IsSelected: data.Query.Summary == utils.SummaryModePaid,
+							NoIcon:     true,
+							ClassName:  "btn btn-xs",
+						})
+						@shared.RadioLink(shared.RadioLinkProps{
+							Href:       utils.BuildTableSummaryURL(fmt.Sprintf("/groups/%s/overview", data.GroupID), data.Query, utils.SummaryModeUnpaid),
+							Label:      ctxi18n.T(ctx, "table.unpaid"),
+							IsSelected: data.Query.Summary == utils.SummaryModeUnpaid,
+							NoIcon:     true,
+							ClassName:  "btn btn-xs",
+						})
+					</div>
+				</dd>
+			</div>
+		</dl>
+		<dl>
+			<div><dt>{ ctxi18n.T(ctx, "groups.income") }</dt><dd>{ utils.FormatNumberLocalized(ctx, incomeValue) }</dd></div>
+			<div><dt>{ ctxi18n.T(ctx, "groups.payouts") }</dt><dd>{ utils.FormatNumberLocalizedWithSign(ctx, payoutValue, false) }</dd></div>
+			<div><dt>{ ctxi18n.T(ctx, "groups.expenses") }</dt><dd>{ utils.FormatNumberLocalizedWithSign(ctx, expensesValue, false) }</dd></div>
+			<div><dt>{ ctxi18n.T(ctx, "groups.leftover") }</dt><dd>{ utils.FormatNumberLocalized(ctx, leftoverValue) }</dd></div>
+		</dl>
+	</section>
+}

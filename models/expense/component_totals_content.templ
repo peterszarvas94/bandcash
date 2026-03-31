@@ -1,0 +1,55 @@
+package expense
+
+import (
+	"fmt"
+	shared "bandcash/models/shared"
+	ctxi18n "github.com/invopop/ctxi18n/i18n"
+	"bandcash/internal/utils"
+)
+
+templ ExpenseTotalsContent(data ExpensesData) {
+	<section class="detail-box pb">
+		{{
+			expenseValue := data.FilteredTotal
+			switch data.Query.Summary {
+			case utils.SummaryModePaid:
+				expenseValue = data.FilteredPaid
+			case utils.SummaryModeUnpaid:
+				expenseValue = data.FilteredUnpaid
+			}
+		}}
+		<dl>
+			<div>
+				<dt>{ ctxi18n.T(ctx, "fields.calculations") }</dt>
+				<dd>
+					<div class="detail-box-controls" role="radiogroup" aria-label={ ctxi18n.T(ctx, "table.paid") }>
+						@shared.RadioLink(shared.RadioLinkProps{
+							Href:       utils.BuildTableSummaryURL(fmt.Sprintf("/groups/%s/expenses", data.GroupID), data.Query, utils.SummaryModeAll),
+							Label:      ctxi18n.T(ctx, "table.all"),
+							IsSelected: data.Query.Summary == utils.SummaryModeAll,
+							NoIcon:     true,
+							ClassName:  "btn btn-xs",
+						})
+						@shared.RadioLink(shared.RadioLinkProps{
+							Href:       utils.BuildTableSummaryURL(fmt.Sprintf("/groups/%s/expenses", data.GroupID), data.Query, utils.SummaryModePaid),
+							Label:      ctxi18n.T(ctx, "table.paid"),
+							IsSelected: data.Query.Summary == utils.SummaryModePaid,
+							NoIcon:     true,
+							ClassName:  "btn btn-xs",
+						})
+						@shared.RadioLink(shared.RadioLinkProps{
+							Href:       utils.BuildTableSummaryURL(fmt.Sprintf("/groups/%s/expenses", data.GroupID), data.Query, utils.SummaryModeUnpaid),
+							Label:      ctxi18n.T(ctx, "table.unpaid"),
+							IsSelected: data.Query.Summary == utils.SummaryModeUnpaid,
+							NoIcon:     true,
+							ClassName:  "btn btn-xs",
+						})
+					</div>
+				</dd>
+			</div>
+		</dl>
+		<dl>
+			<div><dt>{ ctxi18n.T(ctx, "groups.expenses") }</dt><dd>{ utils.FormatNumberLocalizedWithSign(ctx, expenseValue, false) }</dd></div>
+		</dl>
+	</section>
+}

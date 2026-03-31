@@ -37,7 +37,7 @@ func LoginPage(data AuthPageData) templ.Component {
 			Title:           data.Title,
 			Crumbs:          data.Breadcrumbs,
 			Signals:         data.Signals,
-			Content:         LoginMain(data.CurrentLang, "/login"),
+			Content:         LoginMain(data.CurrentLang, "/login", data.SignupEnabled),
 			ActiveUrl:       "/login",
 			IsAuthenticated: data.IsAuthenticated,
 			IsSuperAdmin:    data.IsSuperAdmin,

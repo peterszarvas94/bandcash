@@ -24,7 +24,7 @@ func sessionUser(c echo.Context) (bool, string) {
 
 	user, err := db.Qry.GetUserByID(c.Request().Context(), session.UserID)
 	if err != nil {
-		return true, ""
+		return false, ""
 	}
 
 	syncPreferredLangFromQuery(c, user.ID, user.PreferredLang)

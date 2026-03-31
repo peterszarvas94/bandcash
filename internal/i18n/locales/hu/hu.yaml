@@ -20,6 +20,8 @@ hu:
     logout: "Kijelentkezés"
     email: "Email"
     email_placeholder: "te@email.com"
+    login_intro_signup_enabled: "Küldünk egy belépési linket. Ha még nincs fiókod, automatikusan létrehozzuk neked."
+    login_intro_signup_disabled: "Küldünk egy belépési linket a meglévő fiókodhoz. Az új fiókok létrehozása jelenleg le van tiltva."
     check_email_safe: "Ha van hozzáférésed, küldtünk egy belépési linket."
     masked_email: "Elküldve ide"
     resend_email: "Belépési link újraküldése"

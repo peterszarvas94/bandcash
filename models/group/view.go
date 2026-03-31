@@ -26,10 +26,8 @@ type EditGroupPageData struct {
 }
 
 type GroupWithRole struct {
-	Group       db.Group
-	Role        string
-	ViewerCount int
-	AdminEmail  string
+	Group db.Group
+	Role  string
 }
 
 type GroupsPageData struct {

@@ -8,11 +8,9 @@ package dev
 import "github.com/a-h/templ"
 import templruntime "github.com/a-h/templ/runtime"
 
-import (
-	shared "bandcash/models/shared"
-)
+import shared "bandcash/models/shared"
 
-func DevMain(linkSelector string) templ.Component {
+func BadgeVariantsContent() templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
 		if templ_7745c5c3_CtxErr := ctx.Err(); templ_7745c5c3_CtxErr != nil {
@@ -33,55 +31,51 @@ func DevMain(linkSelector string) templ.Component {
 			templ_7745c5c3_Var1 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<h1>Dev tools</h1>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<div class=\"field\"><label>Color variants</label><div class=\"row row-wrap\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = shared.Section("Button variants", ButtonVariantsContent(linkSelector)).Render(ctx, templ_7745c5c3_Buffer)
+		templ_7745c5c3_Err = shared.Badge("default").Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = shared.Section("Toggle variants", ToggleVariantsContent()).Render(ctx, templ_7745c5c3_Buffer)
+		templ_7745c5c3_Err = shared.Badge("primary").Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = shared.Section("Radio variants", RadioVariantsContent(linkSelector)).Render(ctx, templ_7745c5c3_Buffer)
+		templ_7745c5c3_Err = shared.Badge("success").Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = shared.Section("Badge variants", BadgeVariantsContent()).Render(ctx, templ_7745c5c3_Buffer)
+		templ_7745c5c3_Err = shared.Badge("info").Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = shared.Section("Form controls", FormControlsContent()).Render(ctx, templ_7745c5c3_Buffer)
+		templ_7745c5c3_Err = shared.Badge("warning").Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = shared.Section("Notifications", NotificationsContent()).Render(ctx, templ_7745c5c3_Buffer)
+		templ_7745c5c3_Err = shared.Badge("error").Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = shared.Section("Email previews", EmailPreviewContent()).Render(ctx, templ_7745c5c3_Buffer)
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "</div></div><div class=\"field\"><label>Role variants</label><div class=\"row row-wrap\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = shared.Section("Error pages", ErrorPagePreviewContent()).Render(ctx, templ_7745c5c3_Buffer)
+		templ_7745c5c3_Err = shared.Badge("owner").Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = shared.Section("Loading indicator test", LoadingIndicatorContent()).Render(ctx, templ_7745c5c3_Buffer)
+		templ_7745c5c3_Err = shared.Badge("admin").Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = shared.Section("Table query tests", TableQueryTestContent()).Render(ctx, templ_7745c5c3_Buffer)
+		templ_7745c5c3_Err = shared.Badge("viewer").Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = shared.Section("Rate limit", RateLimitContent()).Render(ctx, templ_7745c5c3_Buffer)
-		if templ_7745c5c3_Err != nil {
-			return templ_7745c5c3_Err
-		}
-		templ_7745c5c3_Err = shared.Section("Body limit", BodyLimitContent()).Render(ctx, templ_7745c5c3_Buffer)
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "</div></div>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

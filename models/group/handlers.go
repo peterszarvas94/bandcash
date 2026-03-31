@@ -200,7 +200,7 @@ func (g *Group) GroupsPage(c echo.Context) error {
 
 	data.Title = ctxi18n.T(c.Request().Context(), "groups.page_title")
 	data.Breadcrumbs = []utils.Crumb{{Label: ctxi18n.T(c.Request().Context(), "groups.title")}}
-	data.Signals = map[string]any{"mode": "table", "tableQuery": utils.TableQuerySignals(data.Query)}
+	data.Signals = nil
 	data.IsAuthenticated = true
 	data.IsSuperAdmin = middleware.IsSuperadmin(c)
 

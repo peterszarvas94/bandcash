@@ -1,0 +1,38 @@
+package group
+
+import (
+	ctxi18n "github.com/invopop/ctxi18n/i18n"
+	shared "bandcash/models/shared"
+	icons "bandcash/models/shared/icons"
+)
+
+templ GroupsMain(data GroupsPageData) {
+	<section class="groups">
+		<header class="row row-wrap justify-between items-center pb">
+			<h1>{ ctxi18n.T(ctx, "groups.title") }</h1>
+			<a href="/groups/new" class="btn btn-sm btn-primary">
+				@icons.Plus(templ.Attributes{"class": "icon"})
+				{ ctxi18n.T(ctx, "groups.create") }
+			</a>
+		</header>
+		@shared.TableSearchFormWithClass("/groups", data.Query, "table.search_placeholder", "")
+		if len(data.AllGroups) == 0 {
+			<p class="text-muted">{ ctxi18n.T(ctx, "table.empty") }</p>
+		} else {
+			<ul class="grid content-start" aria-label={ ctxi18n.T(ctx, "groups.title") }>
+				for _, group := range data.AllGroups {
+					<li>
+						<a class="group-card" href={ "/groups/" + group.Group.ID + "/overview" }>
+							<h2>
+								{ group.Group.Name }
+							</h2>
+							<div class="group-card-footer">
+								@shared.Badge(group.Role)
+							</div>
+						</a>
+					</li>
+				}
+			</ul>
+		}
+	</section>
+}
