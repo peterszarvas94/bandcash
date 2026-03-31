@@ -42,7 +42,7 @@ func ExpenseEditPage(data EditExpensePageData) templ.Component {
 			IsAuthenticated: data.IsAuthenticated,
 			IsSuperAdmin:    data.IsSuperAdmin,
 			GroupId:         data.GroupID,
-			Groups:          shared.GroupTabs(data.GroupID, "expenses"),
+			ActiveTab:       "expenses",
 		}).Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err

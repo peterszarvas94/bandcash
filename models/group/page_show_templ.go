@@ -42,7 +42,7 @@ func GroupPage(data GroupPageData) templ.Component {
 			IsAuthenticated: data.IsAuthenticated,
 			IsSuperAdmin:    data.IsSuperAdmin,
 			GroupId:         data.Group.ID,
-			Groups:          shared.GroupTabs(data.Group.ID, ""),
+			ActiveTab:       "",
 		}).Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err

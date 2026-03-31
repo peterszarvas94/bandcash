@@ -15,7 +15,6 @@ type GroupLayoutProps struct {
 	Title           string
 	Crumbs          []utils.Crumb
 	Signals         map[string]any
-	Groups          templ.Component
 	GroupId         string
 	ActiveTab       string
 	Content         templ.Component

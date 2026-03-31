@@ -14,6 +14,6 @@ templ GroupPage(data GroupPageData) {
 		IsAuthenticated: data.IsAuthenticated,
 		IsSuperAdmin:    data.IsSuperAdmin,
 		GroupId:         data.Group.ID,
-		Groups:          shared.GroupTabs(data.Group.ID, ""),
+		ActiveTab:       "",
 	})
 }

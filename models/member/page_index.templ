@@ -14,6 +14,6 @@ templ MemberIndex(data MembersData) {
 		IsAuthenticated: data.IsAuthenticated,
 		IsSuperAdmin:    data.IsSuperAdmin,
 		GroupId:         data.GroupID,
-		Groups:          shared.GroupTabs(data.GroupID, "members"),
+		ActiveTab:       "members",
 	})
 }

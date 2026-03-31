@@ -14,6 +14,6 @@ templ ExpenseEditPage(data EditExpensePageData) {
 		IsAuthenticated: data.IsAuthenticated,
 		IsSuperAdmin:    data.IsSuperAdmin,
 		GroupId:         data.GroupID,
-		Groups:          shared.GroupTabs(data.GroupID, "expenses"),
+		ActiveTab:       "expenses",
 	})
 }
