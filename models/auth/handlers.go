@@ -131,6 +131,9 @@ func (a *Auth) LoginPage(c echo.Context) error {
 
 	ctx := c.Request().Context()
 	isAuthenticated, _ := authSessionUser(c)
+	if isAuthenticated {
+		return c.Redirect(http.StatusFound, "/groups")
+	}
 	signupEnabled := true
 	if flag, err := utils.IsSignupEnabled(ctx); err == nil {
 		signupEnabled = flag
