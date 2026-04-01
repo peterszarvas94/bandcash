@@ -9,9 +9,9 @@ templ HomeIndexMain(data HomeData) {
 	<section class="home-page">
 		<div class="home-content">
 			@shared.PageTitleWithLanguage(data.Title, "/", data.CurrentLang)
-			<p class="subtitle">{ ctxi18n.T(ctx, "home.subtitle") }</p>
+			<p class="catchphrase">{ ctxi18n.T(ctx, "home.catchphrase") }</p>
+			<p class="intro">{ ctxi18n.T(ctx, "home.intro") }</p>
 			if data.IsAuthenticated {
-				<p class="notice">{ ctxi18n.T(ctx, "home.logged_in") }</p>
 				<div class="row row-wrap">
 					<a class="btn btn-primary" href="/groups">{ ctxi18n.T(ctx, "home.go_to_groups") }</a>
 					<a class="btn btn-ghost" href="/account">{ ctxi18n.T(ctx, "account.account") }</a>
