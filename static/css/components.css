@@ -10,17 +10,12 @@
 
     th,
     td {
-      border-left: var(--border) solid var(--bg-dark);
       padding: calc(var(--space) * 0.5) var(--space);
       text-align: left;
       white-space: nowrap;
       word-break: normal;
       overflow-wrap: normal;
       vertical-align: middle;
-
-      &:first-child {
-        border-left: none;
-      }
     }
 
     th {
@@ -29,48 +24,11 @@
       font-weight: 600;
     }
 
-    tbody tr:nth-child(odd) {
-      background: var(--bg-light);
-    }
-
-    tbody tr:nth-child(even) {
-      background: var(--bg);
-    }
-
-    & th[data-actions-col],
-    & td[data-actions-col] {
-      width: 1%;
-      white-space: nowrap;
-      padding: 0;
-      display: flex;
-      flex-direction: row;
-      align-items: center;
-      justify-content: flex-end;
-      gap: 0;
-    }
-
-    &.table-sticky-actions {
-      th[data-actions-col],
-      td[data-actions-col] {
-        position: sticky;
-        right: 0;
-        z-index: 1;
-        background: var(--bg);
-        padding: 0;
-      }
-
-      tbody td[data-actions-col] {
-        background: inherit;
-      }
-
-      th[data-actions-col] {
-        z-index: 3;
-        background: var(--bg);
-      }
+    td {
+      border-top: var(--border) solid var(--bg-dark);
     }
 
     &.table-fixed {
-      /* table-layout: fixed; */
       width: 100%;
       min-width: 100%;
 
@@ -547,7 +505,6 @@
         display: flex;
         justify-content: flex-end;
         align-items: end;
-        border-top: 0;
         width: auto;
         padding: 0;
       }
@@ -640,11 +597,11 @@
       }
 
       footer {
-        border-top: var(--border) solid var(--bg-dark);
         width: 100%;
         display: flex;
         align-items: center;
         justify-content: center;
+        background: var(--bg-dark);
 
         nav {
           padding: var(--space);
@@ -672,10 +629,6 @@
 
     aside {
       width: var(--sidebar-width);
-      border-right-width: var(--border);
-      border-right-color: var(--bg-dark);
-      border-right-style: solid;
-      /* min-height: calc(100vh - var(--header-height)); */
       height: 100%;
       padding: var(--space);
 
@@ -748,10 +701,6 @@
         left: 0;
         bottom: 0;
         width: min(18rem, 84vw);
-        background: var(--bg);
-        border-right-width: var(--border);
-        border-right-color: var(--bg-dark);
-        border-right-style: solid;
         padding: var(--space);
         z-index: 30;
         display: none;
@@ -929,36 +878,6 @@
         margin-bottom: calc(var(--space) * 2.5);
       }
     }
-  }
-
-  .pricing-card {
-    display: grid;
-    gap: var(--space);
-    border: var(--border) solid var(--bg-dark);
-    background: var(--bg);
-    padding: calc(var(--space) * 1.5);
-  }
-
-  .pricing-card-featured {
-    border-color: var(--text);
-    background: var(--bg-dark);
-  }
-
-  .pricing-card-header {
-    display: grid;
-    gap: calc(var(--space) * 0.5);
-  }
-
-  .pricing-price {
-    font-size: 1.25rem;
-    font-weight: 600;
-  }
-
-  .pricing-features {
-    margin: 0;
-    padding-left: calc(var(--space) * 2);
-    display: grid;
-    gap: calc(var(--space) * 0.5);
   }
 
   #notifications-popover {
@@ -1171,7 +1090,8 @@
     top: 0;
     z-index: 20;
     background: var(--bg);
-    border-bottom: var(--border) solid var(--bg-dark);
+    border-bottom: var(--border) solid
+      light-dark(var(--bg-dark), var(--bg-light));
     width: 100%;
     display: flex;
     justify-content: center;
