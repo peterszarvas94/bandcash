@@ -34,14 +34,11 @@ templ EventShowMain(data EventData) {
 				return place
 			}()},
 			{Label: ctxi18n.T(ctx, "fields.description"), Value: data.Event.Description},
-			{Label: ctxi18n.T(ctx, "fields.income"), Value: utils.FormatNumberLocalized(ctx, data.Event.Amount), Action: shared.Toggle(shared.ToggleProps{
+			{Label: ctxi18n.T(ctx, "fields.income"), Value: utils.FormatNumberLocalized(ctx, data.Event.Amount), Action: shared.ToggleSwitch(shared.ToggleSwitchProps{
 				IsOn:         data.Event.Paid == 1,
 				OnClick:      togglePaidExpr,
 				DisabledExpr: "false",
-				Off:          ctxi18n.T(ctx, "table.unpaid"),
-				On:           ctxi18n.T(ctx, "table.paid"),
-				ClassName:    "btn btn-xs",
-				OnClass:      "btn-inverse",
+				AriaLabel:    ctxi18n.T(ctx, "table.paid"),
 			})},
 			{Label: ctxi18n.T(ctx, "fields.paid_at"), Value: func() string {
 				if !data.Event.PaidAt.Valid {
@@ -75,7 +72,7 @@ templ EventShowMain(data EventData) {
 				<div>
 					<dt>{ ctxi18n.T(ctx, "fields.calculations") }</dt>
 					<dd>
-						<div class="detail-box-controls" role="radiogroup" aria-label={ ctxi18n.T(ctx, "table.paid") }>
+						<div class="detail-box-controls segmented" role="radiogroup" aria-label={ ctxi18n.T(ctx, "table.paid") }>
 							@shared.RadioLink(shared.RadioLinkProps{
 								Href:       utils.BuildTableSummaryURL(fmt.Sprintf("/groups/%s/events/%s", data.GroupID, data.Event.ID), data.Query, utils.SummaryModeAll),
 								Label:      ctxi18n.T(ctx, "table.all"),
@@ -159,14 +156,11 @@ templ EventShowMain(data EventData) {
 						<td class="text-right">{ utils.FormatNumberLocalized(ctx, participant.ParticipantAmount+participant.ParticipantExpense) }</td>
 						<td>
 							if data.IsAdmin {
-								@shared.Toggle(shared.ToggleProps{
+								@shared.ToggleSwitch(shared.ToggleSwitchProps{
 									IsOn:         participant.ParticipantPaid == 1,
 									OnClick:      togglePaidExpr,
 									DisabledExpr: "false",
-									Off:          ctxi18n.T(ctx, "table.unpaid"),
-									On:           ctxi18n.T(ctx, "table.paid"),
-									ClassName:    "btn btn-xs",
-									OnClass:      "btn-inverse",
+									AriaLabel:    ctxi18n.T(ctx, "table.paid"),
 								})
 							} else {
 								{ paidLabel }
@@ -245,12 +239,10 @@ templ EventShowMain(data EventData) {
 				</div>
 				<div class="field">
 					<label for="event-edit-paid" class="row">{ ctxi18n.T(ctx, "table.paid") }</label>
-					@shared.Toggle(shared.ToggleProps{
+					@shared.ToggleSwitch(shared.ToggleSwitchProps{
 						Bind:         "eventFormData.paid",
 						DisabledExpr: "$_fetching",
-						Off:          ctxi18n.T(ctx, "table.unpaid"),
-						On:           ctxi18n.T(ctx, "table.paid"),
-						OnClass:      "btn-inverse",
+						AriaLabel:    ctxi18n.T(ctx, "table.paid"),
 					})
 				</div>
 				<div class="field" data-show="$eventFormData.paid" style="display: none">
@@ -298,12 +290,10 @@ templ EventShowMain(data EventData) {
 									<td class="text-right"><input type="number" class="input w-min-input" step="1" min="0" data-bind={ fmt.Sprintf("wizard.expenses.%s", row.RowID) }/></td>
 									<td class="text-right" data-text={ fmt.Sprintf("($wizard.amounts['%s'] || 0) + ($wizard.expenses['%s'] || 0)", row.RowID, row.RowID) }></td>
 									<td class="text-right">
-										@shared.Toggle(shared.ToggleProps{
+										@shared.ToggleSwitch(shared.ToggleSwitchProps{
 											Bind:         fmt.Sprintf("wizard.paids.%s", row.RowID),
 											DisabledExpr: "$_fetching",
-											Off:          ctxi18n.T(ctx, "table.unpaid"),
-											On:           ctxi18n.T(ctx, "table.paid"),
-											OnClass:      "btn-inverse",
+											AriaLabel:    ctxi18n.T(ctx, "table.paid"),
 										})
 									</td>
 									<td class="text-right">

@@ -58,17 +58,12 @@ templ GroupUsersMain(data UsersPageData) {
 								{ ctxi18n.T(ctx, "groups.role_owner") }
 							</button>
 						} else if data.IsAdmin {
-							@shared.Toggle(shared.ToggleProps{
+							@shared.ToggleSwitch(shared.ToggleSwitchProps{
 								IsOn:         row.Role == "admin",
 								Disabled:     roleToggleDisabled,
 								OnClick:      roleToggleExpr,
 								DisabledExpr: "false",
-								Off:          ctxi18n.T(ctx, "groups.role_viewer"),
-								On:           ctxi18n.T(ctx, "groups.role_admin"),
-								OffIcon:      icons.IconShieldOff,
-								OnIcon:       icons.IconShield,
-								ClassName:    "btn btn-xs",
-								OnClass:      "btn-inverse",
+								AriaLabel:    ctxi18n.T(ctx, "fields.role"),
 							})
 						} else {
 							if row.Role == "admin" {

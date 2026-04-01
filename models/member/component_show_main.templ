@@ -41,7 +41,7 @@ templ MemberShowMain(data MemberData) {
 				<div>
 					<dt>{ ctxi18n.T(ctx, "fields.calculations") }</dt>
 					<dd>
-						<div class="detail-box-controls" role="radiogroup" aria-label={ ctxi18n.T(ctx, "table.paid") }>
+						<div class="detail-box-controls segmented" role="radiogroup" aria-label={ ctxi18n.T(ctx, "table.paid") }>
 							@shared.RadioLink(shared.RadioLinkProps{
 								Href:       utils.BuildTableSummaryURL(fmt.Sprintf("/groups/%s/members/%s", data.GroupID, data.Member.ID), data.Query, utils.SummaryModeAll),
 								Label:      ctxi18n.T(ctx, "table.all"),
@@ -72,8 +72,8 @@ templ MemberShowMain(data MemberData) {
 			</dl>
 		</section>
 		@shared.TableSearchFormWithClass(fmt.Sprintf("/groups/%s/members/%s", data.GroupID, data.Member.ID), data.Query, "table.search_placeholder_member_events", "pt")
-		<div class="row row-wrap justify-between pb" role="radiogroup" aria-label={ ctxi18n.T(ctx, "table.date_filters") }>
-			<div class="row row-tight">
+		<div class="row row-wrap justify-between pb">
+			<div class="row row-tight segmented" role="radiogroup" aria-label={ ctxi18n.T(ctx, "table.date_filters") }>
 				@shared.RadioLink(shared.RadioLinkProps{
 					Href:       utils.BuildTableDateClearURL(fmt.Sprintf("/groups/%s/members/%s", data.GroupID, data.Member.ID), data.Query),
 					Label:      ctxi18n.T(ctx, "table.all"),
@@ -171,14 +171,11 @@ templ MemberShowMain(data MemberData) {
 					<td class="text-right">{ utils.FormatNumberLocalized(ctx, event.ParticipantAmount+event.ParticipantExpense) }</td>
 					<td>
 						if data.IsAdmin {
-							@shared.Toggle(shared.ToggleProps{
+							@shared.ToggleSwitch(shared.ToggleSwitchProps{
 								IsOn:         event.ParticipantPaid == 1,
 								OnClick:      togglePaidExpr,
 								DisabledExpr: "false",
-								Off:          ctxi18n.T(ctx, "table.unpaid"),
-								On:           ctxi18n.T(ctx, "table.paid"),
-								ClassName:    "btn btn-xs",
-								OnClass:      "btn-inverse",
+								AriaLabel:    ctxi18n.T(ctx, "table.paid"),
 							})
 						} else {
 							{ paidLabel }

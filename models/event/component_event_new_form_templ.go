@@ -144,12 +144,10 @@ func EventNewForm(data NewEventPageData) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = shared.Toggle(shared.ToggleProps{
+		templ_7745c5c3_Err = shared.ToggleSwitch(shared.ToggleSwitchProps{
 			Bind:         "formData.paid",
 			DisabledExpr: "$_fetching",
-			Off:          ctxi18n.T(ctx, "table.unpaid"),
-			On:           ctxi18n.T(ctx, "table.paid"),
-			OnClass:      "btn-inverse",
+			AriaLabel:    ctxi18n.T(ctx, "table.paid"),
 		}).Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
@@ -161,7 +159,7 @@ func EventNewForm(data NewEventPageData) templ.Component {
 		var templ_7745c5c3_Var10 string
 		templ_7745c5c3_Var10, templ_7745c5c3_Err = templ.JoinStringErrs(ctxi18n.T(ctx, "fields.paid_at"))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/event/component_event_new_form.templ`, Line: 49, Col: 80}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/event/component_event_new_form.templ`, Line: 47, Col: 80}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var10))
 		if templ_7745c5c3_Err != nil {

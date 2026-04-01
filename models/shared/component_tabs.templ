@@ -12,7 +12,7 @@ type TabItem struct {
 templ Tabs(ariaLabel string, items []TabItem) {
 	<div class="tabs" aria-label={ ariaLabel }>
 		for _, item := range items {
-			<a class={ "tab", "btn", "btn-sm", templ.KV("btn-primary", item.IsActive) } href={ item.Href }>
+			<a class={ "tab", "btn", "btn-sm", "btn-ghost" } href={ item.Href }>
 				if item.IconName != "" {
 					@icons.Icon(item.IconName, templ.Attributes{"class": "icon"})
 				}

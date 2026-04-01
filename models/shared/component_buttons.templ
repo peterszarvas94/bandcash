@@ -55,21 +55,6 @@ type ActionButtonProps struct {
 	IconName     icons.IconName
 }
 
-type ToggleProps struct {
-	Bind         string
-	IsOn         bool
-	Disabled     bool
-	OnClick      string
-	DisabledExpr string
-	Off          string
-	On           string
-	OffIcon      icons.IconName
-	OnIcon       icons.IconName
-	ClassName    string
-	OffClass     string
-	OnClass      string
-}
-
 type ToggleSwitchProps struct {
 	Bind         string
 	IsOn         bool
@@ -195,93 +180,6 @@ templ ActionButton(props ActionButtonProps) {
 	</button>
 }
 
-templ Toggle(props ToggleProps) {
-	{{
-		offText := props.Off
-		if offText == "" {
-			offText = "Toggle"
-		}
-		onText := props.On
-		if onText == "" {
-			onText = "Toggle"
-		}
-		offClass := props.OffClass
-		onClass := props.OnClass
-		if onClass == "" {
-			onClass = "btn-inverse"
-		}
-		offIcon := props.OffIcon
-		if offIcon == "" {
-			offIcon = icons.IconSquare
-		}
-		onIcon := props.OnIcon
-		if onIcon == "" {
-			onIcon = icons.IconSquareCheckBig
-		}
-		baseClass := props.ClassName
-		if baseClass == "" {
-			baseClass = "btn btn-xs"
-		}
-		disabledExpr := props.DisabledExpr
-		if props.Disabled {
-			if disabledExpr == "" {
-				disabledExpr = "true"
-			} else {
-				disabledExpr = fmt.Sprintf("(true) || (%s)", disabledExpr)
-			}
-		}
-		falseExpr := fmt.Sprintf("!$%s", props.Bind)
-		trueExpr := fmt.Sprintf("$%s", props.Bind)
-		setTrueExpr := fmt.Sprintf("$%s = true", props.Bind)
-		setFalseExpr := fmt.Sprintf("$%s = false", props.Bind)
-	}}
-	{{
-		offButtonClass := strings.TrimSpace(baseClass + " " + offClass)
-		onButtonClass := strings.TrimSpace(baseClass + " " + onClass)
-	}}
-	if props.Bind != "" {
-		<input type="checkbox" data-bind={ props.Bind } style="display: none"/>
-		<span data-show={ falseExpr }>
-			<button class={ offButtonClass } type="button" disabled?={ props.Disabled } data-attr:disabled={ disabledExpr } data-on:click={ setTrueExpr }>
-				@icons.Icon(offIcon, templ.Attributes{"class": "icon"})
-				{ offText }
-			</button>
-		</span>
-		<span data-show={ trueExpr } style="display: none">
-			<button class={ onButtonClass } type="button" disabled?={ props.Disabled } data-attr:disabled={ disabledExpr } data-on:click={ setFalseExpr }>
-				@icons.Icon(onIcon, templ.Attributes{"class": "icon"})
-				{ onText }
-			</button>
-		</span>
-	} else {
-		if props.IsOn {
-			if props.OnClick != "" {
-				<button class={ onButtonClass } type="button" disabled?={ props.Disabled } data-attr:disabled={ disabledExpr } data-on:click={ props.OnClick }>
-					@icons.Icon(onIcon, templ.Attributes{"class": "icon"})
-					{ onText }
-				</button>
-			} else {
-				<button class={ onButtonClass } type="button" disabled?={ props.Disabled } data-attr:disabled={ disabledExpr }>
-					@icons.Icon(onIcon, templ.Attributes{"class": "icon"})
-					{ onText }
-				</button>
-			}
-		} else {
-			if props.OnClick != "" {
-				<button class={ offButtonClass } type="button" disabled?={ props.Disabled } data-attr:disabled={ disabledExpr } data-on:click={ props.OnClick }>
-					@icons.Icon(offIcon, templ.Attributes{"class": "icon"})
-					{ offText }
-				</button>
-			} else {
-				<button class={ offButtonClass } type="button" disabled?={ props.Disabled } data-attr:disabled={ disabledExpr }>
-					@icons.Icon(offIcon, templ.Attributes{"class": "icon"})
-					{ offText }
-				</button>
-			}
-		}
-	}
-}
-
 templ ToggleSwitch(props ToggleSwitchProps) {
 	{{
 		baseClass := strings.TrimSpace(props.ClassName)
@@ -308,7 +206,7 @@ templ ToggleSwitch(props ToggleSwitchProps) {
 			isOnExpr := fmt.Sprintf("$%s", props.Bind)
 			toggleExpr := fmt.Sprintf("$%s = !$%s", props.Bind, props.Bind)
 			offClass := baseClass
-			onClass := strings.TrimSpace(baseClass + " is-on")
+			onClass := strings.TrimSpace(baseClass + " toggle-on")
 			classExpr := fmt.Sprintf("(%s) ? %s : %s", isOnExpr, utils.JSONString(onClass), utils.JSONString(offClass))
 		}}
 		<input type="checkbox" data-bind={ props.Bind } style="display: none"/>
@@ -327,7 +225,7 @@ templ ToggleSwitch(props ToggleSwitchProps) {
 		{{
 			className := baseClass
 			if props.IsOn {
-				className = strings.TrimSpace(baseClass + " is-on")
+				className = strings.TrimSpace(baseClass + " toggle-on")
 			}
 		}}
 		if props.OnClick != "" {

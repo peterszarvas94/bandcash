@@ -31,14 +31,11 @@ templ ExpenseShowMain(data ExpenseData) {
 				{Label: ctxi18n.T(ctx, "nav.overview"), LabelClass: "section-title", Value: ""},
 				{Label: ctxi18n.T(ctx, "fields.description"), Value: data.Expense.Description},
 				{Label: ctxi18n.T(ctx, "fields.date"), Value: utils.FormatDateLocalized(ctx, data.Expense.Date)},
-				{Label: ctxi18n.T(ctx, "fields.expense"), Value: utils.FormatNumberLocalizedWithSign(ctx, data.Expense.Amount, false), Action: shared.Toggle(shared.ToggleProps{
+				{Label: ctxi18n.T(ctx, "fields.expense"), Value: utils.FormatNumberLocalizedWithSign(ctx, data.Expense.Amount, false), Action: shared.ToggleSwitch(shared.ToggleSwitchProps{
 					IsOn:         data.Expense.Paid == 1,
 					OnClick:      togglePaidExpr,
 					DisabledExpr: "false",
-					Off:          ctxi18n.T(ctx, "table.unpaid"),
-					On:           ctxi18n.T(ctx, "table.paid"),
-					ClassName:    "btn btn-xs",
-					OnClass:      "btn-inverse",
+					AriaLabel:    ctxi18n.T(ctx, "table.paid"),
 				})},
 				{Label: ctxi18n.T(ctx, "fields.paid_at"), Value: func() string {
 					if !data.Expense.PaidAt.Valid {
@@ -74,12 +71,10 @@ templ ExpenseShowMain(data ExpenseData) {
 				</div>
 				<div class="field">
 					<label for="expense-show-paid" class="row">{ ctxi18n.T(ctx, "table.paid") }</label>
-					@shared.Toggle(shared.ToggleProps{
+					@shared.ToggleSwitch(shared.ToggleSwitchProps{
 						Bind:         "formData.paid",
 						DisabledExpr: "$_fetching",
-						Off:          ctxi18n.T(ctx, "table.unpaid"),
-						On:           ctxi18n.T(ctx, "table.paid"),
-						OnClass:      "btn-inverse",
+						AriaLabel:    ctxi18n.T(ctx, "table.paid"),
 					})
 				</div>
 				<div class="field" data-show="$formData.paid" style="display: none">

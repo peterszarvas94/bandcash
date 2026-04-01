@@ -37,12 +37,10 @@ templ EventNewForm(data NewEventPageData) {
 		</div>
 		<div class="field">
 			<label for="event-new-paid" class="row">{ ctxi18n.T(ctx, "table.paid") }</label>
-			@shared.Toggle(shared.ToggleProps{
+			@shared.ToggleSwitch(shared.ToggleSwitchProps{
 				Bind:         "formData.paid",
 				DisabledExpr: "$_fetching",
-				Off:          ctxi18n.T(ctx, "table.unpaid"),
-				On:           ctxi18n.T(ctx, "table.paid"),
-				OnClass:      "btn-inverse",
+				AriaLabel:    ctxi18n.T(ctx, "table.paid"),
 			})
 		</div>
 		<div class="field" data-show="$formData.paid" style="display: none">

@@ -7,10 +7,12 @@
     border-collapse: collapse;
     border-spacing: 0;
     table-layout: auto;
+    background: var(--bg-light);
 
     th,
     td {
-      padding: calc(var(--space) * 0.5) var(--space);
+      height: calc(var(--space) * 5);
+      padding: 0 var(--space);
       text-align: left;
       white-space: nowrap;
       word-break: normal;
@@ -20,12 +22,16 @@
 
     th {
       font-family: var(--font-sans);
-      background: var(--bg);
+      background: inherit;
       font-weight: 600;
     }
 
     td {
-      border-top: var(--border) solid var(--bg-dark);
+      border-top: var(--border) solid
+        light-dark(
+          var(--bg-dark),
+          color-mix(in srgb, var(--text-muted) 20%, transparent)
+        );
     }
 
     &.table-fixed {
@@ -98,6 +104,34 @@
     }
   }
 
+  .segmented {
+    display: flex;
+    flex-wrap: nowrap;
+    align-items: stretch;
+    width: fit-content;
+    max-width: 100%;
+    padding: 0;
+    gap: 0;
+    border: var(--border) solid var(--text-muted);
+    background: var(--bg-light);
+
+    > .btn,
+    > .btn:visited {
+      border-color: transparent;
+    }
+
+    > .btn.btn-inverse,
+    > .btn.btn-inverse:visited,
+    > .btn.btn-inverse:hover,
+    > .btn.btn-inverse:active {
+      border-color: transparent;
+    }
+  }
+
+  .row.segmented {
+    display: flex;
+  }
+
   .btn {
     display: inline-flex;
     align-items: center;
@@ -111,9 +145,9 @@
     text-align: center;
     white-space: nowrap;
     cursor: pointer;
-    border: var(--border) solid transparent;
+    border: var(--border) solid var(--text-muted);
     border-radius: 0;
-    background: transparent;
+    background: var(--bg-dark);
     color: var(--text);
     width: fit-content;
     height: fit-content;
@@ -121,13 +155,13 @@
 
     &:not(:disabled):not([disabled]):hover {
       background: var(--bg-light);
-      border-color: var(--text-muted);
+      border-color: var(--text);
       color: var(--text);
     }
 
     &:not(:disabled):not([disabled]):active {
       background: var(--bg-dark);
-      border-color: var(--text-muted);
+      border-color: var(--text);
       color: var(--text);
     }
 
@@ -245,6 +279,21 @@
       }
     }
 
+    &.btn-ghost {
+      background: transparent;
+      border-color: transparent;
+
+      &:not(:disabled):not([disabled]):hover {
+        background: var(--bg-light);
+        border-color: var(--text-muted);
+      }
+
+      &:not(:disabled):not([disabled]):active {
+        background: var(--bg-dark);
+        border-color: var(--text-muted);
+      }
+    }
+
     &:disabled,
     &[disabled],
     &[aria-disabled="true"] {
@@ -280,35 +329,36 @@
   }
 
   .toggle-switch {
+    --toggle-knob: 1rem;
+    --toggle-gap: 1px;
     position: relative;
-    display: inline-flex;
+    display: inline-block;
     box-sizing: border-box;
-    width: 2.75rem;
-    height: 1.5rem;
-    border: var(--border) solid var(--bg-dark);
-    border-radius: 999px;
+    width: calc((var(--toggle-knob) * 2) + (var(--toggle-gap) * 2) + 2px);
+    height: calc(var(--toggle-knob) + (var(--toggle-gap) * 2) + 2px);
+    border: var(--border) solid var(--text-muted);
+    border-radius: 0;
     background: var(--text-muted);
     cursor: pointer;
 
     &::after {
       content: "";
       position: absolute;
-      top: 50%;
-      left: 0.125rem;
-      width: 1.25rem;
-      height: 1.25rem;
-      border-radius: 999px;
+      top: var(--toggle-gap);
+      left: var(--toggle-gap);
+      width: var(--toggle-knob);
+      height: var(--toggle-knob);
+      border-radius: 0;
       background: var(--bg);
-      transform: translateY(-50%);
     }
 
-    &.is-on {
-      background: var(--text);
-      border-color: var(--text);
+    &.toggle-on {
+      background: var(--bg-primary);
+      border-color: var(--bg-primary);
 
       &::after {
-        background: var(--bg-light);
-        transform: translate(1.25rem, -50%);
+        background: var(--text-primary);
+        transform: translateX(var(--toggle-knob));
       }
     }
 
@@ -332,7 +382,7 @@
     width: 100%;
     height: 2.5rem;
     padding: var(--space) calc(var(--space) * 2);
-    border: var(--border) solid var(--bg-dark);
+    border: var(--border) solid var(--text);
     background: var(--bg);
     color: var(--text);
     transition:
@@ -341,7 +391,7 @@
 
     &:hover {
       background: var(--bg-light);
-      border-color: var(--text-muted);
+      border-color: var(--text);
     }
 
     &:focus-visible {
@@ -356,7 +406,7 @@
 
     &:focus-visible,
     &:active {
-      border-color: var(--text-muted);
+      border-color: var(--text);
     }
 
     &:disabled,
@@ -1048,7 +1098,7 @@
         padding-bottom: var(--space);
       }
 
-      .detail-box-controls {
+      .detail-box-controls:not(.segmented) {
         padding-top: var(--space);
       }
 

@@ -22,7 +22,7 @@ templ ExpenseTotalsContent(data ExpensesData) {
 			<div>
 				<dt>{ ctxi18n.T(ctx, "fields.calculations") }</dt>
 				<dd>
-					<div class="detail-box-controls" role="radiogroup" aria-label={ ctxi18n.T(ctx, "table.paid") }>
+					<div class="detail-box-controls segmented" role="radiogroup" aria-label={ ctxi18n.T(ctx, "table.paid") }>
 						@shared.RadioLink(shared.RadioLinkProps{
 							Href:       utils.BuildTableSummaryURL(fmt.Sprintf("/groups/%s/expenses", data.GroupID), data.Query, utils.SummaryModeAll),
 							Label:      ctxi18n.T(ctx, "table.all"),

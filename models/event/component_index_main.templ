@@ -20,8 +20,8 @@ templ EventIndexMain(data EventsData) {
 	}
 	@EventTotalsContent(data)
 	@shared.TableSearchFormWithClass(fmt.Sprintf("/groups/%s/events", data.GroupID), data.Query, "table.search_placeholder_events", "pt")
-	<div class="row row-wrap justify-between pb" role="radiogroup" aria-label={ ctxi18n.T(ctx, "table.date_filters") }>
-		<div class="row row-tight">
+	<div class="row row-wrap justify-between pb">
+		<div class="row row-tight segmented" role="radiogroup" aria-label={ ctxi18n.T(ctx, "table.date_filters") }>
 			@shared.RadioLink(shared.RadioLinkProps{
 				Href:       utils.BuildTableDateClearURL(fmt.Sprintf("/groups/%s/events", data.GroupID), data.Query),
 				Label:      ctxi18n.T(ctx, "table.all"),
@@ -115,14 +115,11 @@ templ EventIndexMain(data EventsData) {
 					<td class="text-right">{ utils.FormatNumberLocalized(ctx, event.Amount) }</td>
 					<td>
 						if data.IsAdmin {
-							@shared.Toggle(shared.ToggleProps{
+							@shared.ToggleSwitch(shared.ToggleSwitchProps{
 								IsOn:         event.Paid == 1,
 								OnClick:      togglePaidExpr,
 								DisabledExpr: "false",
-								Off:          ctxi18n.T(ctx, "table.unpaid"),
-								On:           ctxi18n.T(ctx, "table.paid"),
-								ClassName:    "btn btn-xs",
-								OnClass:      "btn-inverse",
+								AriaLabel:    ctxi18n.T(ctx, "table.paid"),
 							})
 						} else {
 							{ paidLabel }
