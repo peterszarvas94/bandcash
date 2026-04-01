@@ -605,7 +605,7 @@ func Toggle(props ToggleProps) templ.Component {
 		offClass := props.OffClass
 		onClass := props.OnClass
 		if onClass == "" {
-			onClass = "btn-primary"
+			onClass = "btn-inverse"
 		}
 		offIcon := props.OffIcon
 		if offIcon == "" {
@@ -1474,7 +1474,7 @@ func RadioButton(props RadioButtonProps) templ.Component {
 		}
 		activeClass := props.ActiveClass
 		if activeClass == "" {
-			activeClass = "btn-primary"
+			activeClass = "btn-inverse"
 		}
 		inactiveClass := props.InactiveClass
 		selectedClass := strings.TrimSpace(baseClass + " " + activeClass)
@@ -1806,7 +1806,7 @@ func RadioLink(props RadioLinkProps) templ.Component {
 		}
 		activeClass := props.ActiveClass
 		if activeClass == "" {
-			activeClass = "btn-primary"
+			activeClass = "btn-inverse"
 		}
 		inactiveClass := props.InactiveClass
 		className := strings.TrimSpace(baseClass + " " + inactiveClass)

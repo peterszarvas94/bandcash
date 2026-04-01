@@ -6,7 +6,7 @@ import (
 )
 
 templ DevPage(data DevPageData) {
-	@shared.WideLayout(shared.WideLayoutProps{
+	@shared.CommonLayout(shared.CommonLayoutProps{
 		Title:           data.Title,
 		Crumbs:          data.Breadcrumbs,
 		Signals:         data.Signals,

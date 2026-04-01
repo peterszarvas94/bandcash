@@ -259,7 +259,7 @@ func GroupUsersMain(data UsersPageData) templ.Component {
 						OffIcon:      icons.IconShieldOff,
 						OnIcon:       icons.IconShield,
 						ClassName:    "btn btn-xs",
-						OnClass:      "btn-primary",
+						OnClass:      "btn-inverse",
 					}).Render(ctx, templ_7745c5c3_Buffer)
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err

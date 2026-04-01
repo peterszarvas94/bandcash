@@ -38,7 +38,7 @@ templ ExpenseShowMain(data ExpenseData) {
 					Off:          ctxi18n.T(ctx, "table.unpaid"),
 					On:           ctxi18n.T(ctx, "table.paid"),
 					ClassName:    "btn btn-xs",
-					OnClass:      "btn-primary",
+					OnClass:      "btn-inverse",
 				})},
 				{Label: ctxi18n.T(ctx, "fields.paid_at"), Value: func() string {
 					if !data.Expense.PaidAt.Valid {
@@ -79,7 +79,7 @@ templ ExpenseShowMain(data ExpenseData) {
 						DisabledExpr: "$_fetching",
 						Off:          ctxi18n.T(ctx, "table.unpaid"),
 						On:           ctxi18n.T(ctx, "table.paid"),
-						OnClass:      "btn-primary",
+						OnClass:      "btn-inverse",
 					})
 				</div>
 				<div class="field" data-show="$formData.paid" style="display: none">

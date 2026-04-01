@@ -345,11 +345,11 @@
     }
 
     &.is-on {
-      background: var(--bg-primary);
-      border-color: var(--bg-primary);
+      background: var(--text);
+      border-color: var(--text);
 
       &::after {
-        background: var(--text-primary);
+        background: var(--bg-light);
         transform: translate(1.25rem, -50%);
       }
     }
@@ -663,6 +663,13 @@
     display: flex;
     width: 100%;
 
+    .toggle,
+    .backdrop,
+    .actions,
+    .title-row {
+      display: none;
+    }
+
     aside {
       width: var(--sidebar-width);
       border-right-width: var(--border);
@@ -689,6 +696,89 @@
     main {
       padding: var(--space);
       flex: 1 0 auto;
+    }
+
+    @media (max-width: 1020px) {
+      display: block;
+      position: relative;
+
+      .toggle {
+        display: none;
+      }
+
+      .open {
+        padding-top: var(--space);
+        label {
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+        }
+      }
+
+      .title-row {
+        display: flex;
+        gap: var(--space);
+
+        > h1 {
+          margin: 0;
+        }
+      }
+
+      .open .icon,
+      .close .icon {
+        margin: 0;
+        transform: none;
+      }
+
+      .tab-content > h1:first-child {
+        display: none;
+      }
+
+      .backdrop {
+        position: fixed;
+        inset: 0;
+        background: var(--bg-dark);
+        opacity: 0.75;
+        z-index: 20;
+      }
+
+      aside {
+        position: fixed;
+        top: var(--header-height);
+        left: 0;
+        bottom: 0;
+        width: min(18rem, 84vw);
+        background: var(--bg);
+        border-right-width: var(--border);
+        border-right-color: var(--bg-dark);
+        border-right-style: solid;
+        padding: var(--space);
+        z-index: 30;
+        display: none;
+
+        .actions {
+          display: flex;
+          justify-content: flex-start;
+          padding-bottom: var(--space);
+        }
+      }
+
+      main {
+        padding-top: 0;
+      }
+
+      .toggle:checked ~ .backdrop {
+        display: block;
+      }
+
+      .toggle:checked ~ aside {
+        display: block;
+      }
+
+      .toggle:checked ~ main .open {
+        visibility: hidden;
+        pointer-events: none;
+      }
     }
   }
 
@@ -975,6 +1065,7 @@
 
   .detail-box {
     display: grid;
+    align-content: start;
     flex: 0 1 var(--details-width);
     max-width: var(--details-width);
     padding: var(--space);

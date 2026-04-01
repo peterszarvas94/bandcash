@@ -1,14 +1,35 @@
 package shared
 
-import "bandcash/internal/utils"
+import (
+	"bandcash/internal/utils"
+	icons "bandcash/models/shared/icons"
+)
 
-templ TabContent(tabs, content templ.Component) {
+templ TabContent(tabID string, heading string, tabs, content templ.Component) {
+	{{ toggleID := tabID + "-toggle" }}
 	<div class="tab_layout">
+		<input id={ toggleID } class="toggle" type="checkbox"/>
+		<label for={ toggleID } class="backdrop" aria-hidden="true"></label>
 		<aside>
+			<header class="actions">
+				<label for={ toggleID } class="close btn btn-sm btn-inverse btn-icon" aria-label="Close tabs" title="Close tabs">
+					@icons.PanelLeftClose(templ.Attributes{"class": "icon"})
+				</label>
+			</header>
 			@tabs
 		</aside>
 		<main>
-			@content
+			<header class="title-row">
+				<div class="open">
+					<label for={ toggleID } class="btn btn-sm btn-primary btn-icon" aria-label="Open tabs" title="Open tabs">
+						@icons.PanelLeftOpen(templ.Attributes{"class": "icon"})
+					</label>
+				</div>
+				<h1>{ heading }</h1>
+			</header>
+			<section class="tab-content">
+				@content
+			</section>
 		</main>
 	</div>
 }
@@ -27,11 +48,17 @@ type TabLayoutProps struct {
 }
 
 templ TabLayout(props TabLayoutProps) {
+	{{
+		heading := ""
+		if len(props.Crumbs) > 0 {
+			heading = props.Crumbs[len(props.Crumbs)-1].Label
+		}
+	}}
 	@BaseLayout(BaseLayoutProps{
 		Title:           props.Title,
 		Crumbs:          props.Crumbs,
 		Signals:         props.Signals,
-		Content:         TabContent(props.Tabs, props.Content),
+		Content:         TabContent(props.TabId, heading, props.Tabs, props.Content),
 		ActiveUrl:       props.ActiveUrl,
 		IsAuthenticated: props.IsAuthenticated,
 		IsSuperAdmin:    props.IsSuperAdmin,

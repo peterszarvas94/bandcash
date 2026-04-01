@@ -149,7 +149,7 @@ func EventNewForm(data NewEventPageData) templ.Component {
 			DisabledExpr: "$_fetching",
 			Off:          ctxi18n.T(ctx, "table.unpaid"),
 			On:           ctxi18n.T(ctx, "table.paid"),
-			OnClass:      "btn-primary",
+			OnClass:      "btn-inverse",
 		}).Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err

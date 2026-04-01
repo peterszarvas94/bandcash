@@ -95,7 +95,7 @@ func EventShowMain(data EventData) templ.Component {
 				Off:          ctxi18n.T(ctx, "table.unpaid"),
 				On:           ctxi18n.T(ctx, "table.paid"),
 				ClassName:    "btn btn-xs",
-				OnClass:      "btn-primary",
+				OnClass:      "btn-inverse",
 			})},
 			{Label: ctxi18n.T(ctx, "fields.paid_at"), Value: func() string {
 				if !data.Event.PaidAt.Valid {
@@ -545,7 +545,7 @@ func EventShowMain(data EventData) templ.Component {
 						Off:          ctxi18n.T(ctx, "table.unpaid"),
 						On:           ctxi18n.T(ctx, "table.paid"),
 						ClassName:    "btn btn-xs",
-						OnClass:      "btn-primary",
+						OnClass:      "btn-inverse",
 					}).Render(ctx, templ_7745c5c3_Buffer)
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
@@ -908,7 +908,7 @@ func EventShowMain(data EventData) templ.Component {
 				DisabledExpr: "$_fetching",
 				Off:          ctxi18n.T(ctx, "table.unpaid"),
 				On:           ctxi18n.T(ctx, "table.paid"),
-				OnClass:      "btn-primary",
+				OnClass:      "btn-inverse",
 			}).Render(ctx, templ_7745c5c3_Buffer)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
@@ -1160,7 +1160,7 @@ func EventShowMain(data EventData) templ.Component {
 					DisabledExpr: "$_fetching",
 					Off:          ctxi18n.T(ctx, "table.unpaid"),
 					On:           ctxi18n.T(ctx, "table.paid"),
-					OnClass:      "btn-primary",
+					OnClass:      "btn-inverse",
 				}).Render(ctx, templ_7745c5c3_Buffer)
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
