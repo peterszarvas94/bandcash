@@ -37,15 +37,15 @@ func RadioVariantsContent(linkSelector string) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = shared.RadioButton(shared.RadioButtonProps{Bind: "radioDemo", Value: "1", Label: "Option", ClassName: "btn btn-xs"}).Render(ctx, templ_7745c5c3_Buffer)
+		templ_7745c5c3_Err = shared.RadioButton(shared.RadioButtonProps{Bind: "radioDemo", Value: "1", Label: "Option", ClassName: "btn btn-xs", NoIcon: true}).Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = shared.RadioButton(shared.RadioButtonProps{Bind: "radioDemo", Value: "2", Label: "Option", ClassName: "btn btn-xs"}).Render(ctx, templ_7745c5c3_Buffer)
+		templ_7745c5c3_Err = shared.RadioButton(shared.RadioButtonProps{Bind: "radioDemo", Value: "2", Label: "Option", ClassName: "btn btn-xs", NoIcon: true}).Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = shared.RadioButton(shared.RadioButtonProps{Bind: "radioDemo", Value: "3", Label: "Option", ClassName: "btn btn-xs"}).Render(ctx, templ_7745c5c3_Buffer)
+		templ_7745c5c3_Err = shared.RadioButton(shared.RadioButtonProps{Bind: "radioDemo", Value: "3", Label: "Option", ClassName: "btn btn-xs", NoIcon: true}).Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -53,31 +53,31 @@ func RadioVariantsContent(linkSelector string) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = shared.RadioButton(shared.RadioButtonProps{Bind: "radioDemo", Value: "1", Label: "Success", ClassName: "btn btn-xs", ActiveClass: "btn-success"}).Render(ctx, templ_7745c5c3_Buffer)
+		templ_7745c5c3_Err = shared.RadioButton(shared.RadioButtonProps{IsSelected: true, Label: "Disabled", ClassName: "btn btn-xs", DisabledExpr: "true", NoIcon: true}).Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = shared.RadioButton(shared.RadioButtonProps{Bind: "radioDemo", Value: "2", Label: "Success", ClassName: "btn btn-xs", ActiveClass: "btn-success"}).Render(ctx, templ_7745c5c3_Buffer)
+		templ_7745c5c3_Err = shared.RadioButton(shared.RadioButtonProps{IsSelected: false, Label: "Disabled", ClassName: "btn btn-xs", DisabledExpr: "true", NoIcon: true}).Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = shared.RadioButton(shared.RadioButtonProps{Bind: "radioDemo", Value: "3", Label: "Success", ClassName: "btn btn-xs", ActiveClass: "btn-success"}).Render(ctx, templ_7745c5c3_Buffer)
+		templ_7745c5c3_Err = shared.RadioButton(shared.RadioButtonProps{IsSelected: false, Label: "Disabled", ClassName: "btn btn-xs", DisabledExpr: "true", NoIcon: true}).Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "</div><div class=\"row row-tight row-wrap\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "</div></div><div class=\"field\"><label>Server side (link)</label><div class=\"row row-tight row-wrap\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = shared.RadioButton(shared.RadioButtonProps{Bind: "radioDemo", Value: "1", Label: "Warning", ClassName: "btn btn-xs", ActiveClass: "btn-warning"}).Render(ctx, templ_7745c5c3_Buffer)
+		templ_7745c5c3_Err = shared.RadioLink(shared.RadioLinkProps{Href: "/dev?selector=1", Label: "Option", IsSelected: linkSelector == "1", ClassName: "btn btn-xs", NoIcon: true}).Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = shared.RadioButton(shared.RadioButtonProps{Bind: "radioDemo", Value: "2", Label: "Warning", ClassName: "btn btn-xs", ActiveClass: "btn-warning"}).Render(ctx, templ_7745c5c3_Buffer)
+		templ_7745c5c3_Err = shared.RadioLink(shared.RadioLinkProps{Href: "/dev?selector=2", Label: "Option", IsSelected: linkSelector == "2", ClassName: "btn btn-xs", NoIcon: true}).Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = shared.RadioButton(shared.RadioButtonProps{Bind: "radioDemo", Value: "3", Label: "Warning", ClassName: "btn btn-xs", ActiveClass: "btn-warning"}).Render(ctx, templ_7745c5c3_Buffer)
+		templ_7745c5c3_Err = shared.RadioLink(shared.RadioLinkProps{Href: "/dev?selector=3", Label: "Option", IsSelected: linkSelector == "3", ClassName: "btn btn-xs", NoIcon: true}).Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -85,115 +85,19 @@ func RadioVariantsContent(linkSelector string) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = shared.RadioButton(shared.RadioButtonProps{Bind: "radioDemo", Value: "1", Label: "Danger", ClassName: "btn btn-xs", ActiveClass: "btn-error"}).Render(ctx, templ_7745c5c3_Buffer)
+		templ_7745c5c3_Err = shared.RadioLink(shared.RadioLinkProps{Href: "/dev?selector=1", Label: "Disabled", IsSelected: true, Disabled: true, ClassName: "btn btn-xs", NoIcon: true}).Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = shared.RadioButton(shared.RadioButtonProps{Bind: "radioDemo", Value: "2", Label: "Danger", ClassName: "btn btn-xs", ActiveClass: "btn-error"}).Render(ctx, templ_7745c5c3_Buffer)
+		templ_7745c5c3_Err = shared.RadioLink(shared.RadioLinkProps{Href: "/dev?selector=2", Label: "Disabled", IsSelected: false, Disabled: true, ClassName: "btn btn-xs", NoIcon: true}).Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = shared.RadioButton(shared.RadioButtonProps{Bind: "radioDemo", Value: "3", Label: "Danger", ClassName: "btn btn-xs", ActiveClass: "btn-error"}).Render(ctx, templ_7745c5c3_Buffer)
+		templ_7745c5c3_Err = shared.RadioLink(shared.RadioLinkProps{Href: "/dev?selector=3", Label: "Disabled", IsSelected: false, Disabled: true, ClassName: "btn btn-xs", NoIcon: true}).Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 5, "</div><div class=\"row row-tight row-wrap\">")
-		if templ_7745c5c3_Err != nil {
-			return templ_7745c5c3_Err
-		}
-		templ_7745c5c3_Err = shared.RadioButton(shared.RadioButtonProps{IsSelected: true, Label: "Disabled", ClassName: "btn btn-xs", DisabledExpr: "true"}).Render(ctx, templ_7745c5c3_Buffer)
-		if templ_7745c5c3_Err != nil {
-			return templ_7745c5c3_Err
-		}
-		templ_7745c5c3_Err = shared.RadioButton(shared.RadioButtonProps{IsSelected: false, Label: "Disabled", ClassName: "btn btn-xs", DisabledExpr: "true"}).Render(ctx, templ_7745c5c3_Buffer)
-		if templ_7745c5c3_Err != nil {
-			return templ_7745c5c3_Err
-		}
-		templ_7745c5c3_Err = shared.RadioButton(shared.RadioButtonProps{IsSelected: false, Label: "Disabled", ClassName: "btn btn-xs", DisabledExpr: "true"}).Render(ctx, templ_7745c5c3_Buffer)
-		if templ_7745c5c3_Err != nil {
-			return templ_7745c5c3_Err
-		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 6, "</div></div><div class=\"field\"><label>Server side (link)</label><div class=\"row row-tight row-wrap\">")
-		if templ_7745c5c3_Err != nil {
-			return templ_7745c5c3_Err
-		}
-		templ_7745c5c3_Err = shared.RadioLink(shared.RadioLinkProps{Href: "/dev?selector=1", Label: "Option", IsSelected: linkSelector == "1", ClassName: "btn btn-xs"}).Render(ctx, templ_7745c5c3_Buffer)
-		if templ_7745c5c3_Err != nil {
-			return templ_7745c5c3_Err
-		}
-		templ_7745c5c3_Err = shared.RadioLink(shared.RadioLinkProps{Href: "/dev?selector=2", Label: "Option", IsSelected: linkSelector == "2", ClassName: "btn btn-xs"}).Render(ctx, templ_7745c5c3_Buffer)
-		if templ_7745c5c3_Err != nil {
-			return templ_7745c5c3_Err
-		}
-		templ_7745c5c3_Err = shared.RadioLink(shared.RadioLinkProps{Href: "/dev?selector=3", Label: "Option", IsSelected: linkSelector == "3", ClassName: "btn btn-xs"}).Render(ctx, templ_7745c5c3_Buffer)
-		if templ_7745c5c3_Err != nil {
-			return templ_7745c5c3_Err
-		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 7, "</div><div class=\"row row-tight row-wrap\">")
-		if templ_7745c5c3_Err != nil {
-			return templ_7745c5c3_Err
-		}
-		templ_7745c5c3_Err = shared.RadioLink(shared.RadioLinkProps{Href: "/dev?selector=1", Label: "Success", IsSelected: linkSelector == "1", ClassName: "btn btn-xs", ActiveClass: "btn-success"}).Render(ctx, templ_7745c5c3_Buffer)
-		if templ_7745c5c3_Err != nil {
-			return templ_7745c5c3_Err
-		}
-		templ_7745c5c3_Err = shared.RadioLink(shared.RadioLinkProps{Href: "/dev?selector=2", Label: "Success", IsSelected: linkSelector == "2", ClassName: "btn btn-xs", ActiveClass: "btn-success"}).Render(ctx, templ_7745c5c3_Buffer)
-		if templ_7745c5c3_Err != nil {
-			return templ_7745c5c3_Err
-		}
-		templ_7745c5c3_Err = shared.RadioLink(shared.RadioLinkProps{Href: "/dev?selector=3", Label: "Success", IsSelected: linkSelector == "3", ClassName: "btn btn-xs", ActiveClass: "btn-success"}).Render(ctx, templ_7745c5c3_Buffer)
-		if templ_7745c5c3_Err != nil {
-			return templ_7745c5c3_Err
-		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 8, "</div><div class=\"row row-tight row-wrap\">")
-		if templ_7745c5c3_Err != nil {
-			return templ_7745c5c3_Err
-		}
-		templ_7745c5c3_Err = shared.RadioLink(shared.RadioLinkProps{Href: "/dev?selector=1", Label: "Warning", IsSelected: linkSelector == "1", ClassName: "btn btn-xs", ActiveClass: "btn-warning"}).Render(ctx, templ_7745c5c3_Buffer)
-		if templ_7745c5c3_Err != nil {
-			return templ_7745c5c3_Err
-		}
-		templ_7745c5c3_Err = shared.RadioLink(shared.RadioLinkProps{Href: "/dev?selector=2", Label: "Warning", IsSelected: linkSelector == "2", ClassName: "btn btn-xs", ActiveClass: "btn-warning"}).Render(ctx, templ_7745c5c3_Buffer)
-		if templ_7745c5c3_Err != nil {
-			return templ_7745c5c3_Err
-		}
-		templ_7745c5c3_Err = shared.RadioLink(shared.RadioLinkProps{Href: "/dev?selector=3", Label: "Warning", IsSelected: linkSelector == "3", ClassName: "btn btn-xs", ActiveClass: "btn-warning"}).Render(ctx, templ_7745c5c3_Buffer)
-		if templ_7745c5c3_Err != nil {
-			return templ_7745c5c3_Err
-		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 9, "</div><div class=\"row row-tight row-wrap\">")
-		if templ_7745c5c3_Err != nil {
-			return templ_7745c5c3_Err
-		}
-		templ_7745c5c3_Err = shared.RadioLink(shared.RadioLinkProps{Href: "/dev?selector=1", Label: "Danger", IsSelected: linkSelector == "1", ClassName: "btn btn-xs", ActiveClass: "btn-error"}).Render(ctx, templ_7745c5c3_Buffer)
-		if templ_7745c5c3_Err != nil {
-			return templ_7745c5c3_Err
-		}
-		templ_7745c5c3_Err = shared.RadioLink(shared.RadioLinkProps{Href: "/dev?selector=2", Label: "Danger", IsSelected: linkSelector == "2", ClassName: "btn btn-xs", ActiveClass: "btn-error"}).Render(ctx, templ_7745c5c3_Buffer)
-		if templ_7745c5c3_Err != nil {
-			return templ_7745c5c3_Err
-		}
-		templ_7745c5c3_Err = shared.RadioLink(shared.RadioLinkProps{Href: "/dev?selector=3", Label: "Danger", IsSelected: linkSelector == "3", ClassName: "btn btn-xs", ActiveClass: "btn-error"}).Render(ctx, templ_7745c5c3_Buffer)
-		if templ_7745c5c3_Err != nil {
-			return templ_7745c5c3_Err
-		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 10, "</div><div class=\"row row-tight row-wrap\">")
-		if templ_7745c5c3_Err != nil {
-			return templ_7745c5c3_Err
-		}
-		templ_7745c5c3_Err = shared.RadioLink(shared.RadioLinkProps{Href: "/dev?selector=1", Label: "Disabled", IsSelected: true, Disabled: true, ClassName: "btn btn-xs"}).Render(ctx, templ_7745c5c3_Buffer)
-		if templ_7745c5c3_Err != nil {
-			return templ_7745c5c3_Err
-		}
-		templ_7745c5c3_Err = shared.RadioLink(shared.RadioLinkProps{Href: "/dev?selector=2", Label: "Disabled", IsSelected: false, Disabled: true, ClassName: "btn btn-xs"}).Render(ctx, templ_7745c5c3_Buffer)
-		if templ_7745c5c3_Err != nil {
-			return templ_7745c5c3_Err
-		}
-		templ_7745c5c3_Err = shared.RadioLink(shared.RadioLinkProps{Href: "/dev?selector=3", Label: "Disabled", IsSelected: false, Disabled: true, ClassName: "btn btn-xs"}).Render(ctx, templ_7745c5c3_Buffer)
-		if templ_7745c5c3_Err != nil {
-			return templ_7745c5c3_Err
-		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 11, "</div></div>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 5, "</div></div>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

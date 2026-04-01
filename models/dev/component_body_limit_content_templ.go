@@ -48,7 +48,7 @@ func BodyLimitContent() templ.Component {
 		}
 		templ_7745c5c3_Err = shared.IDActionButton(shared.IDActionButtonProps{
 			ID:        "body-limit-global-big",
-			ClassName: "btn btn-error",
+			ClassName: "btn",
 			Label:     "POST /health (too large)",
 		}).Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
@@ -64,7 +64,7 @@ func BodyLimitContent() templ.Component {
 		}
 		templ_7745c5c3_Err = shared.IDActionButton(shared.IDActionButtonProps{
 			ID:        "body-limit-auth-big",
-			ClassName: "btn btn-error",
+			ClassName: "btn",
 			Label:     "POST /login (too large)",
 		}).Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {

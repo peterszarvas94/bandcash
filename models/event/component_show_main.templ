@@ -41,7 +41,7 @@ templ EventShowMain(data EventData) {
 				Off:          ctxi18n.T(ctx, "table.unpaid"),
 				On:           ctxi18n.T(ctx, "table.paid"),
 				ClassName:    "btn btn-xs",
-				OnClass:      "btn-success",
+				OnClass:      "btn-primary",
 			})},
 			{Label: ctxi18n.T(ctx, "fields.paid_at"), Value: func() string {
 				if !data.Event.PaidAt.Valid {
@@ -166,7 +166,7 @@ templ EventShowMain(data EventData) {
 									Off:          ctxi18n.T(ctx, "table.unpaid"),
 									On:           ctxi18n.T(ctx, "table.paid"),
 									ClassName:    "btn btn-xs",
-									OnClass:      "btn-success",
+									OnClass:      "btn-primary",
 								})
 							} else {
 								{ paidLabel }
@@ -178,7 +178,7 @@ templ EventShowMain(data EventData) {
 								<div class="row row-tight items-start">
 									<button
 										type="button"
-										class="btn btn-ghost btn-xs btn-icon"
+										class="btn btn-xs btn-icon"
 										data-show={ noteCollapsedShowExpr }
 										data-on:click={ noteExpandedExpr }
 										aria-label={ ctxi18n.T(ctx, "participants.note") }
@@ -188,7 +188,7 @@ templ EventShowMain(data EventData) {
 									</button>
 									<button
 										type="button"
-										class="btn btn-ghost btn-xs btn-icon"
+										class="btn btn-xs btn-icon"
 										data-show={ noteExpandedShowExpr }
 										style="display: none"
 										data-on:click={ noteExpandedExpr }
@@ -250,7 +250,7 @@ templ EventShowMain(data EventData) {
 						DisabledExpr: "$_fetching",
 						Off:          ctxi18n.T(ctx, "table.unpaid"),
 						On:           ctxi18n.T(ctx, "table.paid"),
-						OnClass:      "btn-success",
+						OnClass:      "btn-primary",
 					})
 				</div>
 				<div class="field" data-show="$eventFormData.paid" style="display: none">
@@ -303,7 +303,7 @@ templ EventShowMain(data EventData) {
 											DisabledExpr: "$_fetching",
 											Off:          ctxi18n.T(ctx, "table.unpaid"),
 											On:           ctxi18n.T(ctx, "table.paid"),
-											OnClass:      "btn-success",
+											OnClass:      "btn-primary",
 										})
 									</td>
 									<td class="text-right">
@@ -312,7 +312,7 @@ templ EventShowMain(data EventData) {
 									<td><textarea class="input w-min-input h-min-input" rows="1" style="resize: vertical;" data-bind={ fmt.Sprintf("wizard.notes.%s", row.RowID) }></textarea></td>
 									<td class="text-right">
 										@shared.IconActionButton(shared.IconActionButtonProps{
-											ClassName:    "btn btn-ghost btn-sm btn-icon",
+											ClassName:    "btn btn-sm btn-icon",
 											OnClick:      copyDraftExpr,
 											DisabledExpr: "$_fetching",
 											AriaLabel:    ctxi18n.T(ctx, "actions.copy"),
@@ -320,7 +320,7 @@ templ EventShowMain(data EventData) {
 											IconName:     icons.IconCopy,
 										})
 										@shared.IconActionButton(shared.IconActionButtonProps{
-									ClassName:    "btn btn-ghost btn-sm btn-error btn-icon",
+									ClassName:    "btn btn-sm btn-icon",
 											OnClick:      removeDraftExpr,
 											DisabledExpr: "$_fetching",
 											AriaLabel:    ctxi18n.T(ctx, "actions.delete"),

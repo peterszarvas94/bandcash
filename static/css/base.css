@@ -68,15 +68,11 @@
     --bg-dark: light-dark(hsl(0 0% 90%), hsl(0 0% 5%));
     --bg: light-dark(hsl(0 0% 95%), hsl(0 0% 10%));
     --bg-light: light-dark(hsl(0 0% 100%), hsl(0 0% 15%));
+    --bg-primary: light-dark(hsl(360 80% 60%), hsl(360 90% 70%));
+    /* --bg-primary: light-dark(hsl(15 80% 60%), hsl(15 100% 70%)); */
     --text: light-dark(hsl(0 0% 5%), hsl(0 0% 95%));
     --text-muted: light-dark(hsl(0 0% 30%), hsl(0 0% 70%));
-
-    --color-border: light-dark(hsl(216 7% 85%), hsl(218 6% 24%));
-    --color-primary: light-dark(hsl(212 75% 41%), hsl(209 75% 63%));
-    --color-success: light-dark(hsl(146 44% 33%), hsl(145 40% 58%));
-    --color-danger: light-dark(hsl(6 48% 48%), hsl(6 67% 69%));
-    --color-info: light-dark(hsl(208 56% 42%), hsl(212 67% 74%));
-    --color-warning: light-dark(hsl(42 53% 39%), hsl(40 56% 62%));
+    --text-primary: light-dark(hsl(0 0% 100%), hsl(0 0% 5%));
 
     --content-width: 80ch;
     --wide-width: 120ch;
@@ -84,7 +80,7 @@
     --details-width: 40rem;
     --page-padding-inline: var(--space);
 
-    --focus-ring: 2px solid var(--color-primary);
+    --focus-ring: 2px solid var(--text);
     --focus-ring-offset: 2px;
 
     color-scheme: light dark;

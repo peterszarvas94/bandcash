@@ -95,7 +95,7 @@ func EventShowMain(data EventData) templ.Component {
 				Off:          ctxi18n.T(ctx, "table.unpaid"),
 				On:           ctxi18n.T(ctx, "table.paid"),
 				ClassName:    "btn btn-xs",
-				OnClass:      "btn-success",
+				OnClass:      "btn-primary",
 			})},
 			{Label: ctxi18n.T(ctx, "fields.paid_at"), Value: func() string {
 				if !data.Event.PaidAt.Valid {
@@ -545,7 +545,7 @@ func EventShowMain(data EventData) templ.Component {
 						Off:          ctxi18n.T(ctx, "table.unpaid"),
 						On:           ctxi18n.T(ctx, "table.paid"),
 						ClassName:    "btn btn-xs",
-						OnClass:      "btn-success",
+						OnClass:      "btn-primary",
 					}).Render(ctx, templ_7745c5c3_Buffer)
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
@@ -579,7 +579,7 @@ func EventShowMain(data EventData) templ.Component {
 					return templ_7745c5c3_Err
 				}
 				if noteValue != "" {
-					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 26, "<div class=\"row row-tight items-start\"><button type=\"button\" class=\"btn btn-ghost btn-xs btn-icon\" data-show=\"")
+					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 26, "<div class=\"row row-tight items-start\"><button type=\"button\" class=\"btn btn-xs btn-icon\" data-show=\"")
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
@@ -639,7 +639,7 @@ func EventShowMain(data EventData) templ.Component {
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
-					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 31, "</button> <button type=\"button\" class=\"btn btn-ghost btn-xs btn-icon\" data-show=\"")
+					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 31, "</button> <button type=\"button\" class=\"btn btn-xs btn-icon\" data-show=\"")
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
@@ -908,7 +908,7 @@ func EventShowMain(data EventData) templ.Component {
 				DisabledExpr: "$_fetching",
 				Off:          ctxi18n.T(ctx, "table.unpaid"),
 				On:           ctxi18n.T(ctx, "table.paid"),
-				OnClass:      "btn-success",
+				OnClass:      "btn-primary",
 			}).Render(ctx, templ_7745c5c3_Buffer)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
@@ -1160,7 +1160,7 @@ func EventShowMain(data EventData) templ.Component {
 					DisabledExpr: "$_fetching",
 					Off:          ctxi18n.T(ctx, "table.unpaid"),
 					On:           ctxi18n.T(ctx, "table.paid"),
-					OnClass:      "btn-success",
+					OnClass:      "btn-primary",
 				}).Render(ctx, templ_7745c5c3_Buffer)
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
@@ -1209,7 +1209,7 @@ func EventShowMain(data EventData) templ.Component {
 					return templ_7745c5c3_Err
 				}
 				templ_7745c5c3_Err = shared.IconActionButton(shared.IconActionButtonProps{
-					ClassName:    "btn btn-ghost btn-sm btn-icon",
+					ClassName:    "btn btn-sm btn-icon",
 					OnClick:      copyDraftExpr,
 					DisabledExpr: "$_fetching",
 					AriaLabel:    ctxi18n.T(ctx, "actions.copy"),
@@ -1220,7 +1220,7 @@ func EventShowMain(data EventData) templ.Component {
 					return templ_7745c5c3_Err
 				}
 				templ_7745c5c3_Err = shared.IconActionButton(shared.IconActionButtonProps{
-					ClassName:    "btn btn-ghost btn-sm btn-error btn-icon",
+					ClassName:    "btn btn-sm btn-icon",
 					OnClick:      removeDraftExpr,
 					DisabledExpr: "$_fetching",
 					AriaLabel:    ctxi18n.T(ctx, "actions.delete"),

@@ -14,29 +14,9 @@ templ ButtonVariantsContent(linkSelector string) {
 			@icons.ArrowRight(templ.Attributes{"class": "icon"})
 			<span>Primary</span>
 		</button>
-		<button class="btn btn-info" type="button">
-			@icons.Info(templ.Attributes{"class": "icon"})
-			<span>Info</span>
-		</button>
-		<button class="btn btn-success" type="button">
-			@icons.Check(templ.Attributes{"class": "icon"})
-			<span>Success</span>
-		</button>
-		<button class="btn btn-warning" type="button">
-			@icons.TriangleAlert(templ.Attributes{"class": "icon"})
-			<span>Warning</span>
-		</button>
-		<button class="btn btn-error" type="button">
-			@icons.CircleX(templ.Attributes{"class": "icon"})
-			<span>Error</span>
-		</button>
-		<button class="btn btn-ghost" type="button">
-			@icons.Ghost(templ.Attributes{"class": "icon"})
-			<span>Ghost</span>
-		</button>
-		<button class="btn btn-active" type="button">
-			@icons.Check(templ.Attributes{"class": "icon"})
-			<span>Active</span>
+		<button class="btn btn-inverse" type="button">
+			@icons.RefreshCcw(templ.Attributes{"class": "icon"})
+			<span>Inverse</span>
 		</button>
 		<button class="btn" type="button" disabled>
 			@icons.X(templ.Attributes{"class": "icon"})
@@ -52,31 +32,11 @@ templ ButtonVariantsContent(linkSelector string) {
 			@icons.ArrowRight(templ.Attributes{"class": "icon"})
 			<span>Primary</span>
 		</button>
-		<button class="btn btn-sm btn-info" type="button">
-			@icons.Info(templ.Attributes{"class": "icon"})
-			<span>Info</span>
+		<button class="btn btn-sm btn-inverse" type="button">
+			@icons.RefreshCcw(templ.Attributes{"class": "icon"})
+			<span>Inverse</span>
 		</button>
-		<button class="btn btn-sm btn-success" type="button">
-			@icons.Check(templ.Attributes{"class": "icon"})
-			<span>Success</span>
-		</button>
-		<button class="btn btn-sm btn-warning" type="button">
-			@icons.TriangleAlert(templ.Attributes{"class": "icon"})
-			<span>Warning</span>
-		</button>
-		<button class="btn btn-sm btn-error" type="button">
-			@icons.CircleX(templ.Attributes{"class": "icon"})
-			<span>Error</span>
-		</button>
-		<button class="btn btn-sm btn-ghost" type="button">
-			@icons.Ghost(templ.Attributes{"class": "icon"})
-			<span>Ghost</span>
-		</button>
-		<button class="btn btn-sm btn-active" type="button">
-			@icons.Check(templ.Attributes{"class": "icon"})
-			<span>Active</span>
-		</button>
-		<button class="btn btn-sm btn-success" type="button" disabled>
+		<button class="btn btn-sm" type="button" disabled>
 			@icons.X(templ.Attributes{"class": "icon"})
 			<span>Disabled</span>
 		</button>
@@ -90,31 +50,11 @@ templ ButtonVariantsContent(linkSelector string) {
 			@icons.ArrowRight(templ.Attributes{"class": "icon"})
 			<span>Primary</span>
 		</button>
-		<button class="btn btn-xs btn-info" type="button">
-			@icons.Info(templ.Attributes{"class": "icon"})
-			<span>Info</span>
+		<button class="btn btn-xs btn-inverse" type="button">
+			@icons.RefreshCcw(templ.Attributes{"class": "icon"})
+			<span>Inverse</span>
 		</button>
-		<button class="btn btn-xs btn-success" type="button">
-			@icons.Check(templ.Attributes{"class": "icon"})
-			<span>Success</span>
-		</button>
-		<button class="btn btn-xs btn-warning" type="button">
-			@icons.TriangleAlert(templ.Attributes{"class": "icon"})
-			<span>Warning</span>
-		</button>
-		<button class="btn btn-xs btn-error" type="button">
-			@icons.CircleX(templ.Attributes{"class": "icon"})
-			<span>Error</span>
-		</button>
-		<button class="btn btn-xs btn-ghost" type="button">
-			@icons.Ghost(templ.Attributes{"class": "icon"})
-			<span>Ghost</span>
-		</button>
-		<button class="btn btn-xs btn-active" type="button">
-			@icons.Check(templ.Attributes{"class": "icon"})
-			<span>Active</span>
-		</button>
-		<button class="btn btn-xs btn-success" type="button" disabled>
+		<button class="btn btn-xs" type="button" disabled>
 			@icons.X(templ.Attributes{"class": "icon"})
 			<span>Disabled</span>
 		</button>
@@ -126,25 +66,10 @@ templ ButtonVariantsContent(linkSelector string) {
 		<button class="btn btn-primary btn-icon" type="button" aria-label="Primary icon" title="Primary icon">
 			@icons.ArrowRight(templ.Attributes{"class": "icon"})
 		</button>
-		<button class="btn btn-info btn-icon" type="button" aria-label="Info icon" title="Info icon">
-			@icons.Info(templ.Attributes{"class": "icon"})
+		<button class="btn btn-inverse btn-icon" type="button" aria-label="Inverse icon" title="Inverse icon">
+			@icons.RefreshCcw(templ.Attributes{"class": "icon"})
 		</button>
-		<button class="btn btn-success btn-icon" type="button" aria-label="Success icon" title="Success icon">
-			@icons.Check(templ.Attributes{"class": "icon"})
-		</button>
-		<button class="btn btn-warning btn-icon" type="button" aria-label="Warning icon" title="Warning icon">
-			@icons.TriangleAlert(templ.Attributes{"class": "icon"})
-		</button>
-		<button class="btn btn-error btn-icon" type="button" aria-label="Error icon" title="Error icon">
-			@icons.CircleX(templ.Attributes{"class": "icon"})
-		</button>
-		<button class="btn btn-ghost btn-icon" type="button" aria-label="Ghost icon" title="Ghost icon">
-			@icons.Ghost(templ.Attributes{"class": "icon"})
-		</button>
-		<button class="btn btn-active btn-icon" type="button" aria-label="Active icon" title="Active icon">
-			@icons.Check(templ.Attributes{"class": "icon"})
-		</button>
-		<button class="btn btn-error btn-icon" type="button" aria-label="Disabled icon" title="Disabled icon" disabled>
+		<button class="btn btn-icon" type="button" aria-label="Disabled icon" title="Disabled icon" disabled>
 			@icons.X(templ.Attributes{"class": "icon"})
 		</button>
 	</div>
@@ -155,25 +80,10 @@ templ ButtonVariantsContent(linkSelector string) {
 		<button class="btn btn-sm btn-primary btn-icon" type="button" aria-label="Small primary icon" title="Small primary icon">
 			@icons.ArrowRight(templ.Attributes{"class": "icon"})
 		</button>
-		<button class="btn btn-sm btn-info btn-icon" type="button" aria-label="Small info icon" title="Small info icon">
-			@icons.Info(templ.Attributes{"class": "icon"})
+		<button class="btn btn-sm btn-inverse btn-icon" type="button" aria-label="Small inverse icon" title="Small inverse icon">
+			@icons.RefreshCcw(templ.Attributes{"class": "icon"})
 		</button>
-		<button class="btn btn-sm btn-success btn-icon" type="button" aria-label="Small success icon" title="Small success icon">
-			@icons.Check(templ.Attributes{"class": "icon"})
-		</button>
-		<button class="btn btn-sm btn-warning btn-icon" type="button" aria-label="Small warning icon" title="Small warning icon">
-			@icons.TriangleAlert(templ.Attributes{"class": "icon"})
-		</button>
-		<button class="btn btn-sm btn-error btn-icon" type="button" aria-label="Small error icon" title="Small error icon">
-			@icons.CircleX(templ.Attributes{"class": "icon"})
-		</button>
-		<button class="btn btn-sm btn-ghost btn-icon" type="button" aria-label="Small ghost icon" title="Small ghost icon">
-			@icons.Ghost(templ.Attributes{"class": "icon"})
-		</button>
-		<button class="btn btn-sm btn-active btn-icon" type="button" aria-label="Small active icon" title="Small active icon">
-			@icons.Check(templ.Attributes{"class": "icon"})
-		</button>
-		<button class="btn btn-sm btn-error btn-icon" type="button" aria-label="Small disabled icon" title="Small disabled icon" disabled>
+		<button class="btn btn-sm btn-icon" type="button" aria-label="Small disabled icon" title="Small disabled icon" disabled>
 			@icons.X(templ.Attributes{"class": "icon"})
 		</button>
 	</div>
@@ -184,59 +94,29 @@ templ ButtonVariantsContent(linkSelector string) {
 		<button class="btn btn-xs btn-primary btn-icon" type="button" aria-label="Extra small primary icon" title="Extra small primary icon">
 			@icons.ArrowRight(templ.Attributes{"class": "icon"})
 		</button>
-		<button class="btn btn-xs btn-info btn-icon" type="button" aria-label="Extra small info icon" title="Extra small info icon">
-			@icons.Info(templ.Attributes{"class": "icon"})
+		<button class="btn btn-xs btn-inverse btn-icon" type="button" aria-label="Extra small inverse icon" title="Extra small inverse icon">
+			@icons.RefreshCcw(templ.Attributes{"class": "icon"})
 		</button>
-		<button class="btn btn-xs btn-success btn-icon" type="button" aria-label="Extra small success icon" title="Extra small success icon">
-			@icons.Check(templ.Attributes{"class": "icon"})
-		</button>
-		<button class="btn btn-xs btn-warning btn-icon" type="button" aria-label="Extra small warning icon" title="Extra small warning icon">
-			@icons.TriangleAlert(templ.Attributes{"class": "icon"})
-		</button>
-		<button class="btn btn-xs btn-error btn-icon" type="button" aria-label="Extra small error icon" title="Extra small error icon">
-			@icons.CircleX(templ.Attributes{"class": "icon"})
-		</button>
-		<button class="btn btn-xs btn-ghost btn-icon" type="button" aria-label="Extra small ghost icon" title="Extra small ghost icon">
-			@icons.Ghost(templ.Attributes{"class": "icon"})
-		</button>
-		<button class="btn btn-xs btn-active btn-icon" type="button" aria-label="Extra small active icon" title="Extra small active icon">
-			@icons.Check(templ.Attributes{"class": "icon"})
-		</button>
-		<button class="btn btn-xs btn-error btn-icon" type="button" aria-label="Extra small disabled icon" title="Extra small disabled icon" disabled>
+		<button class="btn btn-xs btn-icon" type="button" aria-label="Extra small disabled icon" title="Extra small disabled icon" disabled>
 			@icons.X(templ.Attributes{"class": "icon"})
 		</button>
 	</div>
 	<div class="row row-wrap">
 		<button class="btn" type="button"><span>Default</span></button>
 		<button class="btn btn-primary" type="button"><span>Primary</span></button>
-		<button class="btn btn-info" type="button"><span>Info</span></button>
-		<button class="btn btn-success" type="button"><span>Success</span></button>
-		<button class="btn btn-warning" type="button"><span>Warning</span></button>
-		<button class="btn btn-error" type="button"><span>Error</span></button>
-		<button class="btn btn-ghost" type="button"><span>Ghost</span></button>
-		<button class="btn btn-active" type="button"><span>Active</span></button>
+		<button class="btn btn-inverse" type="button"><span>Inverse</span></button>
 		<button class="btn" type="button" disabled><span>Disabled</span></button>
 	</div>
 	<div class="row row-wrap">
 		<button class="btn btn-sm" type="button"><span>Default</span></button>
 		<button class="btn btn-sm btn-primary" type="button"><span>Primary</span></button>
-		<button class="btn btn-sm btn-info" type="button"><span>Info</span></button>
-		<button class="btn btn-sm btn-success" type="button"><span>Success</span></button>
-		<button class="btn btn-sm btn-warning" type="button"><span>Warning</span></button>
-		<button class="btn btn-sm btn-error" type="button"><span>Error</span></button>
-		<button class="btn btn-sm btn-ghost" type="button"><span>Ghost</span></button>
-		<button class="btn btn-sm btn-active" type="button"><span>Active</span></button>
+		<button class="btn btn-sm btn-inverse" type="button"><span>Inverse</span></button>
 		<button class="btn btn-sm" type="button" disabled><span>Disabled</span></button>
 	</div>
 	<div class="row row-wrap">
 		<button class="btn btn-xs" type="button"><span>Default</span></button>
 		<button class="btn btn-xs btn-primary" type="button"><span>Primary</span></button>
-		<button class="btn btn-xs btn-info" type="button"><span>Info</span></button>
-		<button class="btn btn-xs btn-success" type="button"><span>Success</span></button>
-		<button class="btn btn-xs btn-warning" type="button"><span>Warning</span></button>
-		<button class="btn btn-xs btn-error" type="button"><span>Error</span></button>
-		<button class="btn btn-xs btn-ghost" type="button"><span>Ghost</span></button>
-		<button class="btn btn-xs btn-active" type="button"><span>Active</span></button>
+		<button class="btn btn-xs btn-inverse" type="button"><span>Inverse</span></button>
 		<button class="btn btn-xs" type="button" disabled><span>Disabled</span></button>
 	</div>
 }

@@ -63,7 +63,7 @@ func ReadModeActions(data EventData) templ.Component {
 				return templ_7745c5c3_Err
 			}
 			templ_7745c5c3_Err = shared.ActionButton(shared.ActionButtonProps{
-				ClassName:    "btn btn-sm btn-error",
+				ClassName:    "btn btn-sm",
 				OnClick:      deleteEventExpr,
 				DisabledExpr: "$_fetching",
 				Label:        ctxi18n.T(ctx, "actions.delete"),

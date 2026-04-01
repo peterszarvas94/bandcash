@@ -8,10 +8,13 @@ package shared
 import "github.com/a-h/templ"
 import templruntime "github.com/a-h/templ/runtime"
 
+import icons "bandcash/models/shared/icons"
+
 type TabItem struct {
 	Label    string
 	Href     string
 	IsActive bool
+	IconName icons.IconName
 }
 
 func Tabs(ariaLabel string, items []TabItem) templ.Component {
@@ -42,7 +45,7 @@ func Tabs(ariaLabel string, items []TabItem) templ.Component {
 		var templ_7745c5c3_Var2 string
 		templ_7745c5c3_Var2, templ_7745c5c3_Err = templ.JoinStringErrs(ariaLabel)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/shared/component_tabs.templ`, Line: 10, Col: 41}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/shared/component_tabs.templ`, Line: 13, Col: 41}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var2))
 		if templ_7745c5c3_Err != nil {
@@ -53,7 +56,7 @@ func Tabs(ariaLabel string, items []TabItem) templ.Component {
 			return templ_7745c5c3_Err
 		}
 		for _, item := range items {
-			var templ_7745c5c3_Var3 = []any{"tab", "btn", "btn-sm", templ.KV("btn-active", item.IsActive), templ.KV("btn-ghost", !item.IsActive)}
+			var templ_7745c5c3_Var3 = []any{"tab", "btn", "btn-sm", templ.KV("btn-primary", item.IsActive)}
 			templ_7745c5c3_Err = templ.RenderCSSItems(ctx, templ_7745c5c3_Buffer, templ_7745c5c3_Var3...)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
@@ -78,7 +81,7 @@ func Tabs(ariaLabel string, items []TabItem) templ.Component {
 			var templ_7745c5c3_Var5 templ.SafeURL
 			templ_7745c5c3_Var5, templ_7745c5c3_Err = templ.JoinURLErrs(item.Href)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/shared/component_tabs.templ`, Line: 12, Col: 133}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/shared/component_tabs.templ`, Line: 15, Col: 95}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var5))
 			if templ_7745c5c3_Err != nil {
@@ -88,10 +91,16 @@ func Tabs(ariaLabel string, items []TabItem) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
+			if item.IconName != "" {
+				templ_7745c5c3_Err = icons.Icon(item.IconName, templ.Attributes{"class": "icon"}).Render(ctx, templ_7745c5c3_Buffer)
+				if templ_7745c5c3_Err != nil {
+					return templ_7745c5c3_Err
+				}
+			}
 			var templ_7745c5c3_Var6 string
 			templ_7745c5c3_Var6, templ_7745c5c3_Err = templ.JoinStringErrs(item.Label)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/shared/component_tabs.templ`, Line: 12, Col: 148}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/shared/component_tabs.templ`, Line: 19, Col: 16}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var6))
 			if templ_7745c5c3_Err != nil {

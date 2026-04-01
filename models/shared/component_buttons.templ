@@ -70,6 +70,16 @@ type ToggleProps struct {
 	OnClass      string
 }
 
+type ToggleSwitchProps struct {
+	Bind         string
+	IsOn         bool
+	Disabled     bool
+	OnClick      string
+	DisabledExpr string
+	ClassName    string
+	AriaLabel    string
+}
+
 type RadioButtonProps struct {
 	Bind          string
 	Value         string
@@ -198,7 +208,7 @@ templ Toggle(props ToggleProps) {
 		offClass := props.OffClass
 		onClass := props.OnClass
 		if onClass == "" {
-			onClass = "btn-active"
+			onClass = "btn-primary"
 		}
 		offIcon := props.OffIcon
 		if offIcon == "" {
@@ -272,6 +282,79 @@ templ Toggle(props ToggleProps) {
 	}
 }
 
+templ ToggleSwitch(props ToggleSwitchProps) {
+	{{
+		baseClass := strings.TrimSpace(props.ClassName)
+		if baseClass == "" {
+			baseClass = "toggle-switch"
+		}
+		ariaLabel := strings.TrimSpace(props.AriaLabel)
+		if ariaLabel == "" {
+			ariaLabel = "Toggle"
+		}
+		disabledExpr := props.DisabledExpr
+		if props.Disabled {
+			if disabledExpr == "" {
+				disabledExpr = "true"
+			} else {
+				disabledExpr = fmt.Sprintf("(true) || (%s)", disabledExpr)
+			}
+		} else if disabledExpr == "" {
+			disabledExpr = "false"
+		}
+	}}
+	if props.Bind != "" {
+		{{
+			isOnExpr := fmt.Sprintf("$%s", props.Bind)
+			toggleExpr := fmt.Sprintf("$%s = !$%s", props.Bind, props.Bind)
+			offClass := baseClass
+			onClass := strings.TrimSpace(baseClass + " is-on")
+			classExpr := fmt.Sprintf("(%s) ? %s : %s", isOnExpr, utils.JSONString(onClass), utils.JSONString(offClass))
+		}}
+		<input type="checkbox" data-bind={ props.Bind } style="display: none"/>
+		<button
+			type="button"
+			role="switch"
+			aria-label={ ariaLabel }
+			class={ baseClass }
+			data-attr:class={ classExpr }
+			data-attr:aria-checked={ isOnExpr }
+			disabled?={ props.Disabled }
+			data-attr:disabled={ disabledExpr }
+			data-on:click={ toggleExpr }
+		></button>
+	} else {
+		{{
+			className := baseClass
+			if props.IsOn {
+				className = strings.TrimSpace(baseClass + " is-on")
+			}
+		}}
+		if props.OnClick != "" {
+			<button
+				type="button"
+				role="switch"
+				aria-label={ ariaLabel }
+				aria-checked={ fmt.Sprintf("%t", props.IsOn) }
+				class={ className }
+				disabled?={ props.Disabled }
+				data-attr:disabled={ disabledExpr }
+				data-on:click={ props.OnClick }
+			></button>
+		} else {
+			<button
+				type="button"
+				role="switch"
+				aria-label={ ariaLabel }
+				aria-checked={ fmt.Sprintf("%t", props.IsOn) }
+				class={ className }
+				disabled?={ props.Disabled }
+				data-attr:disabled={ disabledExpr }
+			></button>
+		}
+	}
+}
+
 templ RadioButton(props RadioButtonProps) {
 	{{
 		baseClass := props.ClassName
@@ -284,7 +367,7 @@ templ RadioButton(props RadioButtonProps) {
 		}
 		activeClass := props.ActiveClass
 		if activeClass == "" {
-			activeClass = "btn-active"
+			activeClass = "btn-primary"
 		}
 		inactiveClass := props.InactiveClass
 		selectedClass := strings.TrimSpace(baseClass + " " + activeClass)
@@ -349,7 +432,7 @@ templ RadioLink(props RadioLinkProps) {
 		}
 		activeClass := props.ActiveClass
 		if activeClass == "" {
-			activeClass = "btn-active"
+			activeClass = "btn-primary"
 		}
 		inactiveClass := props.InactiveClass
 		className := strings.TrimSpace(baseClass + " " + inactiveClass)

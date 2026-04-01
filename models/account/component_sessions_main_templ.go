@@ -55,7 +55,7 @@ func SessionsMain(data SessionsData) templ.Component {
 		}
 		if len(data.Sessions) > 1 {
 			templ_7745c5c3_Err = shared.LoadingActionButton(shared.LoadingActionButtonProps{
-				ClassName:    "btn btn-error",
+				ClassName:    "btn",
 				OnClick:      "@delete('/account/sessions')",
 				DisabledExpr: "$_fetching",
 				Label:        ctxi18n.T(ctx, "account.logout_everywhere"),
@@ -177,7 +177,7 @@ func SessionsMain(data SessionsData) templ.Component {
 				}
 				if session.ID != data.CurrentSessionID {
 					templ_7745c5c3_Err = shared.LoadingActionButton(shared.LoadingActionButtonProps{
-						ClassName:    "btn btn-sm btn-error",
+						ClassName:    "btn btn-sm",
 						OnClick:      fmt.Sprintf("@delete('/account/sessions/%s')", session.ID),
 						DisabledExpr: "$_fetching",
 						Label:        ctxi18n.T(ctx, "auth.logout"),

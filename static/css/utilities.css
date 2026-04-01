@@ -86,7 +86,7 @@
   }
 
   .color-error {
-    color: var(--color-danger);
+    color: var(--text);
   }
 
   .text-muted {
@@ -96,6 +96,10 @@
   .w-fit {
     width: fit-content;
     min-width: 0;
+  }
+
+  .grow-0 {
+    flex-grow: 0;
   }
 
   .w-half {

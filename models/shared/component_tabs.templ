@@ -1,15 +1,23 @@
 package shared
 
+import icons "bandcash/models/shared/icons"
+
 type TabItem struct {
 	Label    string
 	Href     string
 	IsActive bool
+	IconName icons.IconName
 }
 
 templ Tabs(ariaLabel string, items []TabItem) {
 	<div class="tabs" aria-label={ ariaLabel }>
 		for _, item := range items {
-			<a class={ "tab", "btn", "btn-sm", templ.KV("btn-active", item.IsActive), templ.KV("btn-ghost", !item.IsActive) } href={ item.Href }>{ item.Label }</a>
+			<a class={ "tab", "btn", "btn-sm", templ.KV("btn-primary", item.IsActive) } href={ item.Href }>
+				if item.IconName != "" {
+					@icons.Icon(item.IconName, templ.Attributes{"class": "icon"})
+				}
+				{ item.Label }
+			</a>
 		}
 	</div>
 }

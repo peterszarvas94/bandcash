@@ -55,7 +55,7 @@ func NotificationsContent() templ.Component {
 			return templ_7745c5c3_Err
 		}
 		templ_7745c5c3_Err = shared.LoadingActionButtonWithSignal(shared.LoadingActionButtonWithSignalProps{
-			ClassName:     "btn btn-info",
+			ClassName:     "btn",
 			OnClick:       "@post('/dev/notifications/info')",
 			DisabledExpr:  "$_notifyInfo",
 			Label:         "Info",
@@ -66,7 +66,7 @@ func NotificationsContent() templ.Component {
 			return templ_7745c5c3_Err
 		}
 		templ_7745c5c3_Err = shared.LoadingActionButtonWithSignal(shared.LoadingActionButtonWithSignalProps{
-			ClassName:     "btn btn-success",
+			ClassName:     "btn",
 			OnClick:       "@post('/dev/notifications/success')",
 			DisabledExpr:  "$_notifySuccess",
 			Label:         "Success",
@@ -77,7 +77,7 @@ func NotificationsContent() templ.Component {
 			return templ_7745c5c3_Err
 		}
 		templ_7745c5c3_Err = shared.LoadingActionButtonWithSignal(shared.LoadingActionButtonWithSignalProps{
-			ClassName:     "btn btn-warning",
+			ClassName:     "btn",
 			OnClick:       "@post('/dev/notifications/warning')",
 			DisabledExpr:  "$_notifyWarning",
 			Label:         "Warning",
@@ -88,7 +88,7 @@ func NotificationsContent() templ.Component {
 			return templ_7745c5c3_Err
 		}
 		templ_7745c5c3_Err = shared.LoadingActionButtonWithSignal(shared.LoadingActionButtonWithSignalProps{
-			ClassName:     "btn btn-error",
+			ClassName:     "btn",
 			OnClick:       "@post('/dev/notifications/error')",
 			DisabledExpr:  "$_notifyError",
 			Label:         "Error",

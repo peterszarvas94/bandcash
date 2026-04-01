@@ -91,7 +91,7 @@ func ExpenseShowMain(data ExpenseData) templ.Component {
 				Off:          ctxi18n.T(ctx, "table.unpaid"),
 				On:           ctxi18n.T(ctx, "table.paid"),
 				ClassName:    "btn btn-xs",
-				OnClass:      "btn-success",
+				OnClass:      "btn-primary",
 			})},
 			{Label: ctxi18n.T(ctx, "fields.paid_at"), Value: func() string {
 				if !data.Expense.PaidAt.Valid {
@@ -195,7 +195,7 @@ func ExpenseShowMain(data ExpenseData) templ.Component {
 				DisabledExpr: "$_fetching",
 				Off:          ctxi18n.T(ctx, "table.unpaid"),
 				On:           ctxi18n.T(ctx, "table.paid"),
-				OnClass:      "btn-success",
+				OnClass:      "btn-primary",
 			}).Render(ctx, templ_7745c5c3_Buffer)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err

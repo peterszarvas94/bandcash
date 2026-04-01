@@ -59,7 +59,15 @@ func (h *DevNotifications) DevPageHandler(c echo.Context) error {
 		selector = "1"
 	}
 	isAuthenticated, userEmail := devSessionUser(c)
-	return utils.RenderPage(c, DevPage(selector, isAuthenticated, userEmail))
+	data := DevPageData{
+		Title:           "Bandcash - Dev tools",
+		Breadcrumbs:     []utils.Crumb{{Label: "Dev tools"}},
+		Signals:         DevPageSignals(),
+		LinkSelector:    selector,
+		IsAuthenticated: isAuthenticated,
+		UserEmail:       userEmail,
+	}
+	return utils.RenderPage(c, DevPage(data))
 }
 
 func (h *DevNotifications) TestInline(c echo.Context) error {

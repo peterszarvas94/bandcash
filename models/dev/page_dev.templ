@@ -2,18 +2,17 @@ package dev
 
 import (
 	"bandcash/internal/assets"
-	"bandcash/internal/utils"
 	shared "bandcash/models/shared"
 )
 
-templ DevPage(linkSelector string, isAuthenticated bool, userEmail string) {
+templ DevPage(data DevPageData) {
 	@shared.WideLayout(shared.WideLayoutProps{
-		Title:           "Bandcash - Dev tools",
-		Crumbs:          []utils.Crumb{{Label: "Dev tools"}},
-		Signals:         map[string]any{"errors": map[string]any{"name": ""}, "formData": map[string]any{"name": ""}, "_fetching": false, "activeSpinner": "", "_notifyInline": false, "_notifyInfo": false, "_notifyWarning": false, "_notifySuccess": false, "_notifyError": false, "toggleDefault": true, "toggleSuccess": true, "toggleWarning": true, "toggleDanger": true, "radioDemo": "all"},
-		Content:         DevMain(linkSelector),
+		Title:           data.Title,
+		Crumbs:          data.Breadcrumbs,
+		Signals:         data.Signals,
+		Content:         DevMain(data.LinkSelector),
 		ActiveUrl:       "/dev",
-		IsAuthenticated: isAuthenticated,
+		IsAuthenticated: data.IsAuthenticated,
 		IsSuperAdmin:    false,
 	})
 	<script type="module" src={ assets.AssetPath("js/rate_limit_tester.js") }></script>

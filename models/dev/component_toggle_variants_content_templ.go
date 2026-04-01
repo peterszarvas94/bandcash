@@ -33,62 +33,31 @@ func ToggleVariantsContent() templ.Component {
 			templ_7745c5c3_Var1 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<div class=\"row row-wrap\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<div class=\"row row-wrap\"><div class=\"row items-center\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = shared.Toggle(shared.ToggleProps{
-			Bind:         "toggle1",
-			DisabledExpr: "$_fetching",
-			Off:          "Toggle off",
-			On:           "Toggle on",
-		}).Render(ctx, templ_7745c5c3_Buffer)
+		templ_7745c5c3_Err = shared.ToggleSwitch(shared.ToggleSwitchProps{Bind: "switchOff", AriaLabel: "Toggle off"}).Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = shared.Toggle(shared.ToggleProps{
-			Bind:         "toggle2",
-			DisabledExpr: "$_fetching",
-			Off:          "Toggle off",
-			On:           "Toggle on",
-			OnClass:      "btn-success",
-		}).Render(ctx, templ_7745c5c3_Buffer)
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "<span class=\"text-sm\">Toggle off</span></div><div class=\"row items-center\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = shared.Toggle(shared.ToggleProps{
-			Bind:         "toggle3",
-			DisabledExpr: "$_fetching",
-			Off:          "Toggle off",
-			On:           "Toggle on",
-			OnClass:      "btn-warning",
-		}).Render(ctx, templ_7745c5c3_Buffer)
+		templ_7745c5c3_Err = shared.ToggleSwitch(shared.ToggleSwitchProps{Bind: "switchOn", AriaLabel: "Toggle on"}).Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = shared.Toggle(shared.ToggleProps{
-			Bind:         "toggle4",
-			DisabledExpr: "$_fetching",
-			Off:          "Toggle off",
-			On:           "Toggle on",
-			OnClass:      "btn-error",
-		}).Render(ctx, templ_7745c5c3_Buffer)
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "<span class=\"text-sm\">Toggle on</span></div><div class=\"row items-center\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "</div><div class=\"row row-wrap\">")
+		templ_7745c5c3_Err = shared.ToggleSwitch(shared.ToggleSwitchProps{Bind: "switchDisabled", Disabled: true, AriaLabel: "Toggle off disabled"}).Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = shared.Toggle(shared.ToggleProps{IsOn: true, Disabled: true, Off: "Toggle off", On: "Toggle on (disabled)", OnClass: "btn-success"}).Render(ctx, templ_7745c5c3_Buffer)
-		if templ_7745c5c3_Err != nil {
-			return templ_7745c5c3_Err
-		}
-		templ_7745c5c3_Err = shared.Toggle(shared.ToggleProps{IsOn: false, Disabled: true, Off: "Toggle off (disabled)", On: "Toggle on", OnClass: "btn-warning"}).Render(ctx, templ_7745c5c3_Buffer)
-		if templ_7745c5c3_Err != nil {
-			return templ_7745c5c3_Err
-		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "</div>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, "<span class=\"text-sm\">Toggle off (disabled)</span></div></div>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

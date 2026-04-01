@@ -57,7 +57,7 @@ templ UsersTableSection(data DashboardData) {
 								})
 							} else {
 								@shared.LoadingIconActionButton(shared.LoadingIconActionButtonProps{
-								ClassName:    "btn btn-sm btn-error btn-icon",
+								ClassName:    "btn btn-sm btn-icon",
 									OnClick:      fmt.Sprintf("@post('/admin/users/%s/ban')", user.ID),
 									DisabledExpr: "$_fetching",
 									AriaLabel:    ctxi18n.T(ctx, "admin.users.ban"),

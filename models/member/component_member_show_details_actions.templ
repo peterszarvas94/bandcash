@@ -17,7 +17,7 @@ templ MemberShowDetailsActions(data MemberData) {
 		IconName:     icons.IconPencil,
 	})
 		@shared.SureActionButton(shared.SureActionButtonProps{
-			ClassName:    "btn btn-sm btn-error",
+			ClassName:    "btn btn-sm",
 			DisabledExpr: "$formState !== '' || $_fetching",
 			Label:        ctxi18n.T(ctx, "actions.delete"),
 			IconName:     icons.IconTrash2,

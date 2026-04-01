@@ -9,6 +9,7 @@ import "github.com/a-h/templ"
 import templruntime "github.com/a-h/templ/runtime"
 
 import (
+	icons "bandcash/models/shared/icons"
 	ctxi18n "github.com/invopop/ctxi18n/i18n"
 )
 
@@ -34,10 +35,10 @@ func AdminTabs(activeTab string) templ.Component {
 		}
 		ctx = templ.ClearChildren(ctx)
 		templ_7745c5c3_Err = Tabs(ctxi18n.T(ctx, "nav.actions"), []TabItem{
-			{Label: ctxi18n.T(ctx, "admin.tab.flags"), Href: "/admin/flags", IsActive: activeTab == "flags"},
-			{Label: ctxi18n.T(ctx, "admin.tab.users"), Href: "/admin/users", IsActive: activeTab == "users"},
-			{Label: ctxi18n.T(ctx, "admin.tab.groups"), Href: "/admin/groups", IsActive: activeTab == "groups"},
-			{Label: ctxi18n.T(ctx, "admin.tab.sessions"), Href: "/admin/sessions", IsActive: activeTab == "sessions"},
+			{Label: ctxi18n.T(ctx, "admin.tab.flags"), Href: "/admin/flags", IsActive: activeTab == "flags", IconName: icons.IconFlag},
+			{Label: ctxi18n.T(ctx, "admin.tab.users"), Href: "/admin/users", IsActive: activeTab == "users", IconName: icons.IconUsers},
+			{Label: ctxi18n.T(ctx, "admin.tab.groups"), Href: "/admin/groups", IsActive: activeTab == "groups", IconName: icons.IconBuilding2},
+			{Label: ctxi18n.T(ctx, "admin.tab.sessions"), Href: "/admin/sessions", IsActive: activeTab == "sessions", IconName: icons.IconClock},
 		}).Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err

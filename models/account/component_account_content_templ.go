@@ -84,7 +84,7 @@ func AccountContent(data AccountData) templ.Component {
 			return templ_7745c5c3_Err
 		}
 		templ_7745c5c3_Err = shared.SureActionButton(shared.SureActionButtonProps{
-			ClassName:    "btn btn-error",
+			ClassName:    "btn",
 			DisabledExpr: "false",
 			Label:        ctxi18n.T(ctx, "account.logout_everywhere"),
 			IconName:     icons.IconLogOut,

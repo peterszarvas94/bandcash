@@ -6,36 +6,17 @@ import (
 
 templ ToggleVariantsContent() {
 	<div class="row row-wrap">
-		@shared.Toggle(shared.ToggleProps{
-			Bind:         "toggle1",
-			DisabledExpr: "$_fetching",
-			Off:          "Toggle off",
-			On:           "Toggle on",
-		})
-		@shared.Toggle(shared.ToggleProps{
-			Bind:         "toggle2",
-			DisabledExpr: "$_fetching",
-			Off:          "Toggle off",
-			On:           "Toggle on",
-			OnClass:      "btn-success",
-		})
-		@shared.Toggle(shared.ToggleProps{
-			Bind:         "toggle3",
-			DisabledExpr: "$_fetching",
-			Off:          "Toggle off",
-			On:           "Toggle on",
-			OnClass:      "btn-warning",
-		})
-		@shared.Toggle(shared.ToggleProps{
-			Bind:         "toggle4",
-			DisabledExpr: "$_fetching",
-			Off:          "Toggle off",
-			On:           "Toggle on",
-			OnClass:      "btn-error",
-		})
-	</div>
-	<div class="row row-wrap">
-		@shared.Toggle(shared.ToggleProps{IsOn: true, Disabled: true, Off: "Toggle off", On: "Toggle on (disabled)", OnClass: "btn-success"})
-		@shared.Toggle(shared.ToggleProps{IsOn: false, Disabled: true, Off: "Toggle off (disabled)", On: "Toggle on", OnClass: "btn-warning"})
+		<div class="row items-center">
+			@shared.ToggleSwitch(shared.ToggleSwitchProps{Bind: "switchOff", AriaLabel: "Toggle off"})
+			<span class="text-sm">Toggle off</span>
+		</div>
+		<div class="row items-center">
+			@shared.ToggleSwitch(shared.ToggleSwitchProps{Bind: "switchOn", AriaLabel: "Toggle on"})
+			<span class="text-sm">Toggle on</span>
+		</div>
+		<div class="row items-center">
+			@shared.ToggleSwitch(shared.ToggleSwitchProps{Bind: "switchDisabled", Disabled: true, AriaLabel: "Toggle off disabled"})
+			<span class="text-sm">Toggle off (disabled)</span>
+		</div>
 	</div>
 }

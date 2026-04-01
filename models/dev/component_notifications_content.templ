@@ -26,7 +26,7 @@ templ NotificationsContent() {
 	</form>
 	<div class="row row-wrap">
 		@shared.LoadingActionButtonWithSignal(shared.LoadingActionButtonWithSignalProps{
-			ClassName:     "btn btn-info",
+			ClassName:     "btn",
 			OnClick:       "@post('/dev/notifications/info')",
 			DisabledExpr:  "$_notifyInfo",
 			Label:         "Info",
@@ -34,7 +34,7 @@ templ NotificationsContent() {
 			LoadingSignal: "_notifyInfo",
 		})
 		@shared.LoadingActionButtonWithSignal(shared.LoadingActionButtonWithSignalProps{
-			ClassName:     "btn btn-success",
+			ClassName:     "btn",
 			OnClick:       "@post('/dev/notifications/success')",
 			DisabledExpr:  "$_notifySuccess",
 			Label:         "Success",
@@ -42,7 +42,7 @@ templ NotificationsContent() {
 			LoadingSignal: "_notifySuccess",
 		})
 		@shared.LoadingActionButtonWithSignal(shared.LoadingActionButtonWithSignalProps{
-			ClassName:     "btn btn-warning",
+			ClassName:     "btn",
 			OnClick:       "@post('/dev/notifications/warning')",
 			DisabledExpr:  "$_notifyWarning",
 			Label:         "Warning",
@@ -50,7 +50,7 @@ templ NotificationsContent() {
 			LoadingSignal: "_notifyWarning",
 		})
 		@shared.LoadingActionButtonWithSignal(shared.LoadingActionButtonWithSignalProps{
-			ClassName:     "btn btn-error",
+			ClassName:     "btn",
 			OnClick:       "@post('/dev/notifications/error')",
 			DisabledExpr:  "$_notifyError",
 			Label:         "Error",

@@ -53,7 +53,7 @@ templ GroupUsersMain(data UsersPageData) {
 					<td><a class="table-link" href={ rowPath }>{ row.Email }</a></td>
 					<td>
 						if row.Role == "owner" {
-							<button class="btn btn-xs btn-active" type="button" disabled>
+							<button class="btn btn-xs" type="button" disabled>
 								@icons.ShieldUser(templ.Attributes{"class": "icon"})
 								{ ctxi18n.T(ctx, "groups.role_owner") }
 							</button>
@@ -68,7 +68,7 @@ templ GroupUsersMain(data UsersPageData) {
 								OffIcon:      icons.IconShieldOff,
 								OnIcon:       icons.IconShield,
 								ClassName:    "btn btn-xs",
-								OnClass:      "btn-success",
+								OnClass:      "btn-primary",
 							})
 						} else {
 							if row.Role == "admin" {
@@ -84,7 +84,7 @@ templ GroupUsersMain(data UsersPageData) {
 						if row.Status == "pending" {
 							<span class="badge">{ ctxi18n.T(ctx, "groups.pending") }</span>
 						} else {
-							<span class="badge badge-primary">{ ctxi18n.T(ctx, "groups.active") }</span>
+							<span class="badge">{ ctxi18n.T(ctx, "groups.active") }</span>
 						}
 					</td>
 				</tr>

@@ -37,7 +37,7 @@ templ ExpenseEditForm(data EditExpensePageData) {
 				DisabledExpr: "$_fetching",
 				Off:          ctxi18n.T(ctx, "table.unpaid"),
 				On:           ctxi18n.T(ctx, "table.paid"),
-				OnClass:      "btn-success",
+				OnClass:      "btn-primary",
 			})
 		</div>
 		<div class="field" data-show="$formData.paid" style="display: none">

@@ -570,7 +570,7 @@ func EventIndexMain(data EventsData) templ.Component {
 						Off:          ctxi18n.T(ctx, "table.unpaid"),
 						On:           ctxi18n.T(ctx, "table.paid"),
 						ClassName:    "btn btn-xs",
-						OnClass:      "btn-success",
+						OnClass:      "btn-primary",
 					}).Render(ctx, templ_7745c5c3_Buffer)
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err

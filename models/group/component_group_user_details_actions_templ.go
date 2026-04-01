@@ -38,7 +38,7 @@ func GroupUserDetailsActions(data UserPageData) templ.Component {
 		ctx = templ.ClearChildren(ctx)
 		if data.CurrentUserID == data.Group.AdminUserID && data.UserRow.Role != "owner" {
 			templ_7745c5c3_Err = shared.SureActionButton(shared.SureActionButtonProps{
-				ClassName:    "btn btn-sm btn-warning",
+				ClassName:    "btn btn-sm",
 				DisabledExpr: "false",
 				Label:        ctxi18n.T(ctx, "groups.transfer_group"),
 				IconName:     icons.IconShieldUser,
@@ -91,7 +91,7 @@ func GroupUserDetailsActions(data UserPageData) templ.Component {
 			return templ_7745c5c3_Err
 		}
 		templ_7745c5c3_Err = shared.SureActionButton(shared.SureActionButtonProps{
-			ClassName:    "btn btn-sm btn-error",
+			ClassName:    "btn btn-sm",
 			DisabledExpr: "$_fetching",
 			Label:        ctxi18n.T(ctx, "actions.delete"),
 			IconName:     icons.IconTrash2,

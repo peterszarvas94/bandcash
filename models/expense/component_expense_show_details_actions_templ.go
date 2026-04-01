@@ -52,7 +52,7 @@ func ExpenseShowDetailsActions(data ExpenseData) templ.Component {
 				return templ_7745c5c3_Err
 			}
 			templ_7745c5c3_Err = shared.SureActionButton(shared.SureActionButtonProps{
-				ClassName:    "btn btn-sm btn-error",
+				ClassName:    "btn btn-sm",
 				DisabledExpr: "$formState !== '' || $_fetching",
 				Label:        ctxi18n.T(ctx, "actions.delete"),
 				IconName:     icons.IconTrash2,

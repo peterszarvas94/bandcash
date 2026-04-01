@@ -6,6 +6,7 @@ import (
 
 templ DevMain(linkSelector string) {
 	<h1>Dev tools</h1>
+	@shared.Section("Colors", ColorsContent())
 	@shared.Section("Button variants", ButtonVariantsContent(linkSelector))
 	@shared.Section("Toggle variants", ToggleVariantsContent())
 	@shared.Section("Radio variants", RadioVariantsContent(linkSelector))
