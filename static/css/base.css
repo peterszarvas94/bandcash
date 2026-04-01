@@ -65,9 +65,9 @@
     --header-height: 3rem;
 
     /* Basic palette */
-    --bg-dark: light-dark(hsl(0 0% 85%), hsl(0 0% 5%));
-    --bg: light-dark(hsl(0 90% %), hsl(0 0% 10%));
-    --bg-light: light-dark(hsl(0 0% 95%), hsl(0 0% 15%));
+    --bg-dark: light-dark(hsl(0 0% 90%), hsl(0 0% 5%));
+    --bg: light-dark(hsl(0 0% 95%), hsl(0 0% 10%));
+    --bg-light: light-dark(hsl(0 0% 100%), hsl(0 0% 15%));
     --text: light-dark(hsl(0 0% 5%), hsl(0 0% 95%));
     --text-muted: light-dark(hsl(0 0% 30%), hsl(0 0% 70%));
 

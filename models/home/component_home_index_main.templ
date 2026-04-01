@@ -12,12 +12,12 @@ templ HomeIndexMain(data HomeData) {
 			<p class="catchphrase">{ ctxi18n.T(ctx, "home.catchphrase") }</p>
 			<p class="intro">{ ctxi18n.T(ctx, "home.intro") }</p>
 			if data.IsAuthenticated {
-				<div class="row row-wrap">
+				<div class="row row-wrap justify-center">
 					<a class="btn btn-primary" href="/groups">{ ctxi18n.T(ctx, "home.go_to_groups") }</a>
 					<a class="btn btn-ghost" href="/account">{ ctxi18n.T(ctx, "account.account") }</a>
 				</div>
 			} else {
-				<div class="row row-wrap">
+				<div class="row row-wrap justify-center">
 					<a class="btn btn-primary" href="/login">{ ctxi18n.T(ctx, "home.join_for_free") }</a>
 					<a class="btn btn-ghost" href="/pricing">{ ctxi18n.T(ctx, "home.pricing") }</a>
 				</div>
