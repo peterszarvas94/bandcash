@@ -58,39 +58,6 @@
         overflow: visible;
         text-overflow: clip;
       }
-
-      @media (max-width: 1020px) {
-        min-width: calc(
-          (var(--table-data-w-ch, 0) * 1ch) +
-            (var(--table-actions-w-rem, 0) * 1rem)
-        );
-
-        &.table-grid {
-          thead,
-          tbody {
-            display: block;
-            width: 100%;
-          }
-
-          tr {
-            display: grid;
-            grid-template-columns: var(--table-grid-template);
-            width: 100%;
-          }
-
-          th,
-          td {
-            min-width: 0;
-          }
-
-          th[data-actions-col],
-          td[data-actions-col] {
-            width: auto;
-            min-width: 0;
-            max-width: none;
-          }
-        }
-      }
     }
   }
 
@@ -672,14 +639,14 @@
 
     .toggle,
     .backdrop,
-    .actions,
-    .title-row {
+    .actions {
       display: none;
     }
 
     aside {
       width: var(--sidebar-width);
       height: 100%;
+      background: var(--bg-dark);
       padding: var(--space);
 
       .tabs {
@@ -701,6 +668,20 @@
       flex: 1 0 auto;
     }
 
+    .open {
+      display: none;
+      padding-bottom: var(--space);
+      position: sticky;
+      top: calc(var(--header-height) + var(--space));
+      left: var(--space);
+
+      label {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+    }
+
     @media (max-width: 1020px) {
       display: block;
       position: relative;
@@ -710,31 +691,13 @@
       }
 
       .open {
-        padding-top: var(--space);
-        label {
-          display: inline-flex;
-          align-items: center;
-          justify-content: center;
-        }
-      }
-
-      .title-row {
         display: flex;
-        gap: var(--space);
-
-        > h1 {
-          margin: 0;
-        }
       }
 
       .open .icon,
       .close .icon {
         margin: 0;
         transform: none;
-      }
-
-      .tab-content > h1:first-child {
-        display: none;
       }
 
       .backdrop {
@@ -751,6 +714,7 @@
         left: 0;
         bottom: 0;
         width: min(18rem, 84vw);
+        background: var(--bg-dark);
         padding: var(--space);
         z-index: 30;
         display: none;
@@ -760,10 +724,6 @@
           justify-content: flex-start;
           padding-bottom: var(--space);
         }
-      }
-
-      main {
-        padding-top: 0;
       }
 
       .toggle:checked ~ .backdrop {
@@ -1117,6 +1077,36 @@
         }
       }
     }
+  }
+
+  .calculations-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: var(--space);
+
+    > .detail-box {
+      max-width: none;
+      width: 100%;
+      flex: none;
+    }
+
+    @media (max-width: 1020px) {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  .calculations-card {
+    text-decoration: none;
+    color: inherit;
+  }
+
+  .calculations-card-title {
+    color: var(--text-muted);
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    padding-bottom: calc(var(--space) * 0.5);
   }
 
   header.page-header {

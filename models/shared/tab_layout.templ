@@ -5,7 +5,7 @@ import (
 	icons "bandcash/models/shared/icons"
 )
 
-templ TabContent(tabID string, heading string, tabs, content templ.Component) {
+templ TabContent(tabID string, tabs, content templ.Component) {
 	{{ toggleID := tabID + "-toggle" }}
 	<div class="tab_layout">
 		<input id={ toggleID } class="toggle" type="checkbox"/>
@@ -19,14 +19,11 @@ templ TabContent(tabID string, heading string, tabs, content templ.Component) {
 			@tabs
 		</aside>
 		<main>
-			<header class="title-row">
-				<div class="open">
-					<label for={ toggleID } class="btn btn-sm btn-primary btn-icon" aria-label="Open tabs" title="Open tabs">
-						@icons.PanelLeftOpen(templ.Attributes{"class": "icon"})
-					</label>
-				</div>
-				<h1>{ heading }</h1>
-			</header>
+			<div class="open">
+				<label for={ toggleID } class="open btn btn-sm btn-primary btn-icon" aria-label="Open tabs" title="Open tabs">
+					@icons.PanelLeftOpen(templ.Attributes{"class": "icon"})
+				</label>
+			</div>
 			<section class="tab-content">
 				@content
 			</section>
@@ -48,17 +45,11 @@ type TabLayoutProps struct {
 }
 
 templ TabLayout(props TabLayoutProps) {
-	{{
-		heading := ""
-		if len(props.Crumbs) > 0 {
-			heading = props.Crumbs[len(props.Crumbs)-1].Label
-		}
-	}}
 	@BaseLayout(BaseLayoutProps{
 		Title:           props.Title,
 		Crumbs:          props.Crumbs,
 		Signals:         props.Signals,
-		Content:         TabContent(props.TabId, heading, props.Tabs, props.Content),
+		Content:         TabContent(props.TabId, props.Tabs, props.Content),
 		ActiveUrl:       props.ActiveUrl,
 		IsAuthenticated: props.IsAuthenticated,
 		IsSuperAdmin:    props.IsSuperAdmin,

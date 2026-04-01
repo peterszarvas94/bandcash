@@ -65,7 +65,6 @@
     --bg: light-dark(hsl(0 0% 95%), hsl(0 0% 10%));
     --bg-light: light-dark(hsl(0 0% 100%), hsl(0 0% 15%));
     --bg-primary: light-dark(hsl(360 80% 60%), hsl(360 90% 70%));
-    /* --bg-primary: light-dark(hsl(15 80% 60%), hsl(15 100% 70%)); */
     --text: light-dark(hsl(0 0% 5%), hsl(0 0% 95%));
     --text-muted: light-dark(hsl(0 0% 30%), hsl(0 0% 70%));
     --text-primary: light-dark(hsl(0 0% 100%), hsl(0 0% 5%));
@@ -111,22 +110,22 @@
 
   h1 {
     font: 700 1.5rem var(--font-sans);
-    padding: 0.5rem 0;
+    padding-bottom: 0.25rem;
   }
 
   h2 {
     font: 700 1.2rem var(--font-sans);
-    padding-block: 0.2rem;
+    padding-bottom: 0.2rem;
   }
 
   h3 {
     font: 400 1rem var(--font-sans);
-    padding-block: 0.125rem;
+    padding-bottom: 0.125rem;
   }
 
   h4 {
     font: 400 0.875rem var(--font-sans);
-    padding-block: 0.1rem;
+    padding-bottom: 0.1rem;
   }
 
   p {

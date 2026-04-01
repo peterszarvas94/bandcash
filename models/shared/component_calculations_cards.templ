@@ -1,0 +1,29 @@
+package shared
+
+type CalculationStatRow struct {
+	Label string
+	Value string
+}
+
+type CalculationCard struct {
+	Title string
+	Rows  []CalculationStatRow
+}
+
+templ CalculationsCards(cards []CalculationCard) {
+	<div class="calculations-grid pb">
+		for _, card := range cards {
+			<section class="detail-box calculations-card">
+				<div class="calculations-card-title">{ card.Title }</div>
+				<dl>
+					for _, row := range card.Rows {
+						<div>
+							<dt>{ row.Label }</dt>
+							<dd>{ row.Value }</dd>
+						</div>
+					}
+				</dl>
+			</section>
+		}
+	</div>
+}

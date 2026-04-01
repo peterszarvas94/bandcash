@@ -55,54 +55,45 @@ templ EventShowMain(data EventData) {
 				incomeUnpaid = 0
 			}
 
-			incomeValue := data.Event.Amount
-			payoutValue := data.FilteredPaid + data.FilteredUnpaid
-			switch data.Query.Summary {
-			case utils.SummaryModePaid:
-				incomeValue = incomePaid
-				payoutValue = data.FilteredPaid
-			case utils.SummaryModeUnpaid:
-				incomeValue = incomeUnpaid
-				payoutValue = data.FilteredUnpaid
-			}
-			leftoverValue := incomeValue - payoutValue
+			allIncome := data.Event.Amount
+			allPayout := data.FilteredPaid + data.FilteredUnpaid
+			allLeftover := allIncome - allPayout
+
+			paidIncome := incomePaid
+			paidPayout := data.FilteredPaid
+			paidLeftover := paidIncome - paidPayout
+
+			unpaidIncome := incomeUnpaid
+			unpaidPayout := data.FilteredUnpaid
+			unpaidLeftover := unpaidIncome - unpaidPayout
 		}}
-		<section class="detail-box pb">
-			<dl>
-				<div>
-					<dt>{ ctxi18n.T(ctx, "fields.calculations") }</dt>
-					<dd>
-						<div class="detail-box-controls segmented" role="radiogroup" aria-label={ ctxi18n.T(ctx, "table.paid") }>
-							@shared.RadioLink(shared.RadioLinkProps{
-								Href:       utils.BuildTableSummaryURL(fmt.Sprintf("/groups/%s/events/%s", data.GroupID, data.Event.ID), data.Query, utils.SummaryModeAll),
-								Label:      ctxi18n.T(ctx, "table.all"),
-								IsSelected: data.Query.Summary == utils.SummaryModeAll,
-								NoIcon:     true,
-								ClassName:  "btn btn-xs",
-							})
-							@shared.RadioLink(shared.RadioLinkProps{
-								Href:       utils.BuildTableSummaryURL(fmt.Sprintf("/groups/%s/events/%s", data.GroupID, data.Event.ID), data.Query, utils.SummaryModePaid),
-								Label:      ctxi18n.T(ctx, "table.paid"),
-								IsSelected: data.Query.Summary == utils.SummaryModePaid,
-								NoIcon:     true,
-								ClassName:  "btn btn-xs",
-							})
-							@shared.RadioLink(shared.RadioLinkProps{
-								Href:       utils.BuildTableSummaryURL(fmt.Sprintf("/groups/%s/events/%s", data.GroupID, data.Event.ID), data.Query, utils.SummaryModeUnpaid),
-								Label:      ctxi18n.T(ctx, "table.unpaid"),
-								IsSelected: data.Query.Summary == utils.SummaryModeUnpaid,
-								NoIcon:     true,
-								ClassName:  "btn btn-xs",
-							})
-						</div>
-					</dd>
-				</div>
-			</dl>
-			<dl>
-				<div><dt>{ ctxi18n.T(ctx, "fields.income") }</dt><dd>{ utils.FormatNumberLocalized(ctx, incomeValue) }</dd></div>
-				<div><dt>{ ctxi18n.T(ctx, "participants.payout_total") }</dt><dd>{ utils.FormatNumberLocalizedWithSign(ctx, payoutValue, false) }</dd></div>
-				<div><dt>{ ctxi18n.T(ctx, "events.leftover") }</dt><dd>{ utils.FormatNumberLocalized(ctx, leftoverValue) }</dd></div>
-			</dl>
+		<section class="pb">
+			@shared.CalculationsCards([]shared.CalculationCard{
+				{
+					Title: ctxi18n.T(ctx, "table.all"),
+					Rows: []shared.CalculationStatRow{
+						{Label: ctxi18n.T(ctx, "fields.income"), Value: utils.FormatNumberLocalized(ctx, allIncome)},
+						{Label: ctxi18n.T(ctx, "participants.payout_total"), Value: utils.FormatNumberLocalizedWithSign(ctx, allPayout, false)},
+						{Label: ctxi18n.T(ctx, "events.leftover"), Value: utils.FormatNumberLocalized(ctx, allLeftover)},
+					},
+				},
+				{
+					Title: ctxi18n.T(ctx, "table.paid"),
+					Rows: []shared.CalculationStatRow{
+						{Label: ctxi18n.T(ctx, "fields.income"), Value: utils.FormatNumberLocalized(ctx, paidIncome)},
+						{Label: ctxi18n.T(ctx, "participants.payout_total"), Value: utils.FormatNumberLocalizedWithSign(ctx, paidPayout, false)},
+						{Label: ctxi18n.T(ctx, "events.leftover"), Value: utils.FormatNumberLocalized(ctx, paidLeftover)},
+					},
+				},
+				{
+					Title: ctxi18n.T(ctx, "table.unpaid"),
+					Rows: []shared.CalculationStatRow{
+						{Label: ctxi18n.T(ctx, "fields.income"), Value: utils.FormatNumberLocalized(ctx, unpaidIncome)},
+						{Label: ctxi18n.T(ctx, "participants.payout_total"), Value: utils.FormatNumberLocalizedWithSign(ctx, unpaidPayout, false)},
+						{Label: ctxi18n.T(ctx, "events.leftover"), Value: utils.FormatNumberLocalized(ctx, unpaidLeftover)},
+					},
+				},
+			})
 		</section>
 		@shared.TableSearchFormWithClass(fmt.Sprintf("/groups/%s/events/%s", data.GroupID, data.Event.ID), data.Query, "table.search_placeholder_members", "pt")
 		@shared.TablePaginationRow(fmt.Sprintf("/groups/%s/events/%s", data.GroupID, data.Event.ID), data.Query, data.Pager)

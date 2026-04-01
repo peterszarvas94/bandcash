@@ -11,7 +11,6 @@ import templruntime "github.com/a-h/templ/runtime"
 import (
 	"bandcash/internal/utils"
 	shared "bandcash/models/shared"
-	"fmt"
 	ctxi18n "github.com/invopop/ctxi18n/i18n"
 )
 
@@ -36,104 +35,26 @@ func ExpenseTotalsContent(data ExpensesData) templ.Component {
 			templ_7745c5c3_Var1 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<section class=\"detail-box pb\">")
-		if templ_7745c5c3_Err != nil {
-			return templ_7745c5c3_Err
-		}
-		expenseValue := data.FilteredTotal
-		switch data.Query.Summary {
-		case utils.SummaryModePaid:
-			expenseValue = data.FilteredPaid
-		case utils.SummaryModeUnpaid:
-			expenseValue = data.FilteredUnpaid
-		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "<dl><div><dt>")
-		if templ_7745c5c3_Err != nil {
-			return templ_7745c5c3_Err
-		}
-		var templ_7745c5c3_Var2 string
-		templ_7745c5c3_Var2, templ_7745c5c3_Err = templ.JoinStringErrs(ctxi18n.T(ctx, "fields.calculations"))
-		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/expense/component_totals_content.templ`, Line: 23, Col: 47}
-		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var2))
-		if templ_7745c5c3_Err != nil {
-			return templ_7745c5c3_Err
-		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "</dt><dd><div class=\"detail-box-controls segmented\" role=\"radiogroup\" aria-label=\"")
-		if templ_7745c5c3_Err != nil {
-			return templ_7745c5c3_Err
-		}
-		var templ_7745c5c3_Var3 string
-		templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.JoinStringErrs(ctxi18n.T(ctx, "table.paid"))
-		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/expense/component_totals_content.templ`, Line: 25, Col: 107}
-		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var3))
-		if templ_7745c5c3_Err != nil {
-			return templ_7745c5c3_Err
-		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, "\">")
-		if templ_7745c5c3_Err != nil {
-			return templ_7745c5c3_Err
-		}
-		templ_7745c5c3_Err = shared.RadioLink(shared.RadioLinkProps{
-			Href:       utils.BuildTableSummaryURL(fmt.Sprintf("/groups/%s/expenses", data.GroupID), data.Query, utils.SummaryModeAll),
-			Label:      ctxi18n.T(ctx, "table.all"),
-			IsSelected: data.Query.Summary == utils.SummaryModeAll,
-			NoIcon:     true,
-			ClassName:  "btn btn-xs",
+		templ_7745c5c3_Err = shared.CalculationsCards([]shared.CalculationCard{
+			{
+				Title: ctxi18n.T(ctx, "table.all"),
+				Rows: []shared.CalculationStatRow{
+					{Label: ctxi18n.T(ctx, "groups.expenses"), Value: utils.FormatNumberLocalizedWithSign(ctx, data.FilteredTotal, false)},
+				},
+			},
+			{
+				Title: ctxi18n.T(ctx, "table.paid"),
+				Rows: []shared.CalculationStatRow{
+					{Label: ctxi18n.T(ctx, "groups.expenses"), Value: utils.FormatNumberLocalizedWithSign(ctx, data.FilteredPaid, false)},
+				},
+			},
+			{
+				Title: ctxi18n.T(ctx, "table.unpaid"),
+				Rows: []shared.CalculationStatRow{
+					{Label: ctxi18n.T(ctx, "groups.expenses"), Value: utils.FormatNumberLocalizedWithSign(ctx, data.FilteredUnpaid, false)},
+				},
+			},
 		}).Render(ctx, templ_7745c5c3_Buffer)
-		if templ_7745c5c3_Err != nil {
-			return templ_7745c5c3_Err
-		}
-		templ_7745c5c3_Err = shared.RadioLink(shared.RadioLinkProps{
-			Href:       utils.BuildTableSummaryURL(fmt.Sprintf("/groups/%s/expenses", data.GroupID), data.Query, utils.SummaryModePaid),
-			Label:      ctxi18n.T(ctx, "table.paid"),
-			IsSelected: data.Query.Summary == utils.SummaryModePaid,
-			NoIcon:     true,
-			ClassName:  "btn btn-xs",
-		}).Render(ctx, templ_7745c5c3_Buffer)
-		if templ_7745c5c3_Err != nil {
-			return templ_7745c5c3_Err
-		}
-		templ_7745c5c3_Err = shared.RadioLink(shared.RadioLinkProps{
-			Href:       utils.BuildTableSummaryURL(fmt.Sprintf("/groups/%s/expenses", data.GroupID), data.Query, utils.SummaryModeUnpaid),
-			Label:      ctxi18n.T(ctx, "table.unpaid"),
-			IsSelected: data.Query.Summary == utils.SummaryModeUnpaid,
-			NoIcon:     true,
-			ClassName:  "btn btn-xs",
-		}).Render(ctx, templ_7745c5c3_Buffer)
-		if templ_7745c5c3_Err != nil {
-			return templ_7745c5c3_Err
-		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 5, "</div></dd></div></dl><dl><div><dt>")
-		if templ_7745c5c3_Err != nil {
-			return templ_7745c5c3_Err
-		}
-		var templ_7745c5c3_Var4 string
-		templ_7745c5c3_Var4, templ_7745c5c3_Err = templ.JoinStringErrs(ctxi18n.T(ctx, "groups.expenses"))
-		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/expense/component_totals_content.templ`, Line: 52, Col: 47}
-		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var4))
-		if templ_7745c5c3_Err != nil {
-			return templ_7745c5c3_Err
-		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 6, "</dt><dd>")
-		if templ_7745c5c3_Err != nil {
-			return templ_7745c5c3_Err
-		}
-		var templ_7745c5c3_Var5 string
-		templ_7745c5c3_Var5, templ_7745c5c3_Err = templ.JoinStringErrs(utils.FormatNumberLocalizedWithSign(ctx, expenseValue, false))
-		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/expense/component_totals_content.templ`, Line: 52, Col: 121}
-		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var5))
-		if templ_7745c5c3_Err != nil {
-			return templ_7745c5c3_Err
-		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 7, "</dd></div></dl></section>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
