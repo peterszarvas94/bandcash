@@ -24,6 +24,9 @@
         display: flex;
         align-items: center;
         gap: calc(var(--space) * 0.5);
+        min-width: 0;
+        flex: 1 1 auto;
+        overflow: hidden;
 
         > a,
         > span {
@@ -34,6 +37,11 @@
 
         > span {
           color: inherit;
+          flex: 0 0 auto;
+        }
+
+        > a:not(:first-child) {
+          min-width: 0;
         }
 
         @media (max-width: 1020px) {

@@ -6,6 +6,23 @@ import (
 	ctxi18n "github.com/invopop/ctxi18n/i18n"
 )
 
+func truncateBreadcrumbLabel(label string, maxRunes int) string {
+	if maxRunes <= 0 {
+		return label
+	}
+
+	runes := []rune(label)
+	if len(runes) <= maxRunes {
+		return label
+	}
+
+	if maxRunes <= 3 {
+		return string(runes[:maxRunes])
+	}
+
+	return string(runes[:maxRunes-3]) + "..."
+}
+
 templ Breadcrumbs(crumbs []utils.Crumb) {
 	<nav class="breadcrumbs" aria-label={ ctxi18n.T(ctx, "nav.breadcrumb") }>
 		<a class={ "link", templ.KV("link-active", len(crumbs) == 0) } href="/">
@@ -15,7 +32,7 @@ templ Breadcrumbs(crumbs []utils.Crumb) {
 		for i, crumb := range crumbs {
 			{{ isActive := i == len(crumbs)-1 }}
 			<span class="text-muted hide-tablet">/</span>
-			<a class={ "link hide-tablet", templ.KV("link-active", isActive) } href={ crumb.Href }>{ crumb.Label }</a>
+			<a class={ "link hide-tablet", templ.KV("link-active", isActive) } href={ crumb.Href } title={ crumb.Label }>{ truncateBreadcrumbLabel(crumb.Label, 20) }</a>
 		}
 	</nav>
 }
