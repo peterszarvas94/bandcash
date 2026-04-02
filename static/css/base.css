@@ -54,11 +54,17 @@
 
   :root {
     --space: 0.5rem;
+    --space-sm: calc(var(--space) * 0.5);
+    --space-lg: calc(var(--space) * 2);
     --font-sans: "Inter", system-ui, sans-serif;
     --font-mono: ui-monospace, monospace;
 
     --border: 1px;
-    --header-height: 3rem;
+    --radius: 0.5rem;
+    --radius-sm: calc(var(--radius) * 0.5);
+    --radius-lg: calc(var(--radius) * 1.5);
+    --radius-pill: 999px;
+    --header-height: 4rem;
 
     --bg-dark: light-dark(hsl(0 0% 90%), hsl(0 0% 5%));
     --bg: light-dark(hsl(0 0% 95%), hsl(0 0% 10%));
@@ -70,7 +76,7 @@
 
     --content-width: 80ch;
     --wide-width: 120ch;
-    --sidebar-width: 15rem;
+    --sidebar-width: 18rem;
     --details-width: 40rem;
     --page-padding-inline: var(--space);
 
@@ -93,7 +99,7 @@
 
     font: 400 1rem var(--font-sans);
     font-optical-sizing: auto;
-    background: var(--bg);
+    background: var(--bg-dark);
     color: var(--text);
     letter-spacing: 0;
   }
@@ -109,28 +115,28 @@
 
   h1 {
     font: 700 1.5rem var(--font-sans);
-    padding-bottom: 0.25rem;
+    padding-bottom: var(--space-lg);
   }
 
   h2 {
     font: 700 1.2rem var(--font-sans);
-    padding-bottom: 0.2rem;
+    padding-bottom: var(--space-lg);
   }
 
   h3 {
     font: 400 1rem var(--font-sans);
-    padding-bottom: 0.125rem;
+    padding-bottom: var(--space-lg);
   }
 
   h4 {
     font: 400 0.875rem var(--font-sans);
-    padding-bottom: 0.1rem;
+    padding-bottom: var(--space-lg);
   }
 
   p {
     font: 400 1rem var(--font-sans);
     text-wrap: pretty;
-    padding-block: 0.125rem;
+    padding-block: var(--space);
     padding-inline: 0;
     margin: 0;
   }

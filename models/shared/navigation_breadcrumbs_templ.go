@@ -110,6 +110,10 @@ func Breadcrumbs(crumbs []utils.Crumb) templ.Component {
 		}
 		for i, crumb := range crumbs {
 			isActive := i == len(crumbs)-1
+			label := truncateBreadcrumbLabel(crumb.Label, 20)
+			if isActive {
+				label = crumb.Label
+			}
 			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 6, "<span class=\"text-muted hide-tablet\">/</span> ")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
@@ -139,7 +143,7 @@ func Breadcrumbs(crumbs []utils.Crumb) templ.Component {
 			var templ_7745c5c3_Var8 templ.SafeURL
 			templ_7745c5c3_Var8, templ_7745c5c3_Err = templ.JoinURLErrs(crumb.Href)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/shared/navigation_breadcrumbs.templ`, Line: 35, Col: 87}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/shared/navigation_breadcrumbs.templ`, Line: 41, Col: 87}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var8))
 			if templ_7745c5c3_Err != nil {
@@ -152,7 +156,7 @@ func Breadcrumbs(crumbs []utils.Crumb) templ.Component {
 			var templ_7745c5c3_Var9 string
 			templ_7745c5c3_Var9, templ_7745c5c3_Err = templ.JoinStringErrs(crumb.Label)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/shared/navigation_breadcrumbs.templ`, Line: 35, Col: 109}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/shared/navigation_breadcrumbs.templ`, Line: 41, Col: 109}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var9))
 			if templ_7745c5c3_Err != nil {
@@ -163,9 +167,9 @@ func Breadcrumbs(crumbs []utils.Crumb) templ.Component {
 				return templ_7745c5c3_Err
 			}
 			var templ_7745c5c3_Var10 string
-			templ_7745c5c3_Var10, templ_7745c5c3_Err = templ.JoinStringErrs(truncateBreadcrumbLabel(crumb.Label, 20))
+			templ_7745c5c3_Var10, templ_7745c5c3_Err = templ.JoinStringErrs(label)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/shared/navigation_breadcrumbs.templ`, Line: 35, Col: 154}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/shared/navigation_breadcrumbs.templ`, Line: 41, Col: 119}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var10))
 			if templ_7745c5c3_Err != nil {

@@ -8,7 +8,7 @@ import (
 )
 
 templ TablePaginationControls(basePath string, query utils.TableQuery, pager utils.TablePagination) {
-	<form class="row row-wrap" method="get" action={ basePath }>
+	<form class="row row-wrap table-pagination-controls" method="get" action={ basePath }>
 		if query.Search != "" {
 			<input type="hidden" name="q" value={ query.Search }/>
 		}

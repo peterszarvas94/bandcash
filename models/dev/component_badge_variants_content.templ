@@ -4,9 +4,11 @@ import shared "bandcash/models/shared"
 
 templ BadgeVariantsContent() {
 	<div class="field">
-		<label>Base badge</label>
+		<label>Style variants</label>
 		<div class="row row-wrap">
 			@shared.Badge("default")
+			@shared.Badge("primary")
+			@shared.Badge("inverse")
 		</div>
 	</div>
 	<div class="field">

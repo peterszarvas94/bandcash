@@ -35,7 +35,7 @@ func TablePaginationRow(basePath string, query utils.TableQuery, pager utils.Tab
 			templ_7745c5c3_Var1 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<div class=\"row row-wrap justify-between pb\"><div class=\"row row-wrap row-tight\"><span class=\"hide-tablet text-sm pr\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<div class=\"table-pagination\"><div class=\"row row-wrap row-tight\"><span class=\"hide-tablet text-sm pr\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

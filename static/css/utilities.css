@@ -6,6 +6,10 @@
     gap: var(--space);
   }
 
+  .row-wide {
+    gap: var(--space-lg);
+  }
+
   .grid {
     display: grid;
     gap: var(--space);
@@ -53,7 +57,7 @@
 
   .input-sm {
     height: 2rem;
-    padding: calc(var(--space) * 0.5) calc(var(--space) * 1.25);
+    padding: var(--space-sm) var(--space);
   }
 
   .input-xs {
@@ -63,6 +67,10 @@
 
   .pb {
     padding-bottom: var(--space);
+  }
+
+  .pb-lg {
+    padding-bottom: var(--space-lg);
   }
 
   .pt {

@@ -178,13 +178,14 @@ en:
   language:
     en: "English"
     hu: "Hungarian"
-    table:
+  table:
     empty: "no items"
     all: "All"
     total: "Total"
     filtered: "Filtered"
     unpaid: "Unpaid"
     paid: "Paid"
+    paid_question: "Paid?"
     future_payouts: "Future Payouts"
     future_expense: "Future Expense"
     future_expenses: "Future Expenses"
@@ -223,6 +224,7 @@ en:
     expense: "Expense"
     name: "Name"
     role: "Role"
+    admin_question: "Admin?"
     status: "Status"
   actions:
     edit: "Edit"

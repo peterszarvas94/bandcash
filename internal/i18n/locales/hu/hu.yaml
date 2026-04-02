@@ -185,6 +185,7 @@ hu:
     filtered: "Szűrt"
     unpaid: "Nem fizetve"
     paid: "Fizetve"
+    paid_question: "Fizetve?"
     future_payouts: "Jövőbeli kifizetések"
     future_expense: "Jövőbeli költség"
     future_expenses: "Jövőbeli költségek"
@@ -223,6 +224,7 @@ hu:
     expense: "Költség"
     name: "Név"
     role: "Szerep"
+    admin_question: "Admin?"
     status: "Státusz"
   actions:
     edit: "Szerkesztés"

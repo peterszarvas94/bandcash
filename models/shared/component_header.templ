@@ -8,7 +8,7 @@ import (
 templ Header(crumbs []utils.Crumb, activeUrl string, isAuthenticated bool, hasTabSidebar bool, tabToggleID string) {
 	<header class="header">
 		<div class="header_inner">
-			<div class="row">
+			<div class="row row-wide">
 				if hasTabSidebar {
 					<label for={ tabToggleID } class="header-tab-toggle btn btn-sm btn-primary btn-icon" aria-label="Open tabs" title="Open tabs">
 						@icons.PanelLeftOpen(templ.Attributes{"class": "icon"})

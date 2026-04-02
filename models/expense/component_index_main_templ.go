@@ -425,7 +425,7 @@ func ExpenseIndexMain(data ExpensesData) templ.Component {
 					}()
 				}
 				ctx = templ.InitializeContext(ctx)
-				templ_7745c5c3_Err = shared.TableSortHeader(ctxi18n.T(ctx, "table.paid"), "paid", data.Query, utils.BuildTableSortURL(fmt.Sprintf("/groups/%s/expenses", data.GroupID), data.Query, "paid")).Render(ctx, templ_7745c5c3_Buffer)
+				templ_7745c5c3_Err = shared.TableSortHeader(ctxi18n.T(ctx, "table.paid_question"), "paid", data.Query, utils.BuildTableSortURL(fmt.Sprintf("/groups/%s/expenses", data.GroupID), data.Query, "paid")).Render(ctx, templ_7745c5c3_Buffer)
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}

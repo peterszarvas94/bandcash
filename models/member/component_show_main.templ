@@ -1,10 +1,10 @@
 package member
 
 import (
-	"fmt"
 	"bandcash/internal/utils"
 	shared "bandcash/models/shared"
 	icons "bandcash/models/shared/icons"
+	"fmt"
 	ctxi18n "github.com/invopop/ctxi18n/i18n"
 )
 
@@ -20,13 +20,15 @@ templ MemberShowMain(data MemberData) {
 		</div>
 	}
 	<div data-show="$formState !== 'edit'">
-		<section class="detail-box bb-0 pb">
-			<dl>
-				<div><dt>{ ctxi18n.T(ctx, "fields.name") }</dt><dd>{ data.Member.Name }</dd></div>
-				<div><dt>{ ctxi18n.T(ctx, "fields.description") }</dt><dd>{ data.Member.Description }</dd></div>
-				<div><dt>{ ctxi18n.T(ctx, "members.total_events") }</dt><dd>{ utils.FormatNumberLocalized(ctx, int64(data.Pager.TotalItems)) }</dd></div>
-			</dl>
-		</section>
+		<div class="pb">
+			<section class="detail-box">
+				<dl>
+					<div><dt>{ ctxi18n.T(ctx, "fields.name") }</dt><dd>{ data.Member.Name }</dd></div>
+					<div><dt>{ ctxi18n.T(ctx, "fields.description") }</dt><dd>{ data.Member.Description }</dd></div>
+					<div><dt>{ ctxi18n.T(ctx, "members.total_events") }</dt><dd>{ utils.FormatNumberLocalized(ctx, int64(data.Pager.TotalItems)) }</dd></div>
+				</dl>
+			</section>
+		</div>
 		<section class="pb">
 			@shared.CalculationsCards([]shared.CalculationCard{
 				{
@@ -106,98 +108,98 @@ templ MemberShowMain(data MemberData) {
 		</div>
 		@shared.TablePaginationRow(fmt.Sprintf("/groups/%s/members/%s", data.GroupID, data.Member.ID), data.Query, data.Pager)
 		@shared.TableOpenFixed(data.EventsTable, "") {
-		<thead>
-			<tr>
-				@shared.THCol(data.EventsTable.ColMaxWRem("title")) {
-					@shared.TableSortHeader(ctxi18n.T(ctx, "fields.event_title"), "title", data.Query, utils.BuildTableSortURL(fmt.Sprintf("/groups/%s/members/%s", data.GroupID, data.Member.ID), data.Query, "title"))
-				}
-				@shared.THCol(data.EventsTable.ColMaxWRem("time")) {
-					@shared.TableSortHeader(ctxi18n.T(ctx, "fields.time"), "time", data.Query, utils.BuildTableSortURL(fmt.Sprintf("/groups/%s/members/%s", data.GroupID, data.Member.ID), data.Query, "time"))
-				}
-				@shared.THCol(data.EventsTable.ColMaxWRem("participant_amount")) {
-					@shared.TableSortHeader(ctxi18n.T(ctx, "participants.cut"), "participant_amount", data.Query, utils.BuildTableSortURL(fmt.Sprintf("/groups/%s/members/%s", data.GroupID, data.Member.ID), data.Query, "participant_amount"))
-				}
-				@shared.THCol(data.EventsTable.ColMaxWRem("participant_expense")) {
-					@shared.TableSortHeader(ctxi18n.T(ctx, "participants.expense"), "participant_expense", data.Query, utils.BuildTableSortURL(fmt.Sprintf("/groups/%s/members/%s", data.GroupID, data.Member.ID), data.Query, "participant_expense"))
-				}
-				@shared.THCol(data.EventsTable.ColMaxWRem("total")) {
-					{ ctxi18n.T(ctx, "participants.total") }
-				}
-				@shared.THCol(data.EventsTable.ColMaxWRem("paid")) {
-					@shared.TableSortHeader(ctxi18n.T(ctx, "table.paid"), "paid", data.Query, utils.BuildTableSortURL(fmt.Sprintf("/groups/%s/members/%s", data.GroupID, data.Member.ID), data.Query, "paid"))
-				}
-				@shared.THCol(data.EventsTable.ColMaxWRem("paid_at")) {
-					@shared.TableSortHeader(ctxi18n.T(ctx, "fields.paid_at"), "paid_at", data.Query, utils.BuildTableSortURL(fmt.Sprintf("/groups/%s/members/%s", data.GroupID, data.Member.ID), data.Query, "paid_at"))
-				}
-			</tr>
-		</thead>
-		<tbody>
-			for _, event := range data.Events {
-				{{
-					togglePaidExpr := fmt.Sprintf("@put('/groups/%s/members/%s/events/%s/toggle-paid', {tableQuery: $tableQuery})", data.GroupID, data.Member.ID, event.ID)
-					paidLabel := ctxi18n.T(ctx, "table.unpaid")
-					if event.ParticipantPaid == 1 {
-						paidLabel = ctxi18n.T(ctx, "table.paid")
-					}
-					paidAtLabel := ""
-					if event.ParticipantPaidAt.Valid {
-						paidAtLabel = utils.FormatDateLocalized(ctx, utils.FormatDateInput(event.ParticipantPaidAt.String))
-					}
-				}}
+			<thead>
 				<tr>
-					<td><a class="table-link" href={ fmt.Sprintf("/groups/%s/events/%s", data.GroupID, event.ID) }>{ event.Title }</a></td>
-					<td>{ utils.FormatDateTimeLocalized(ctx, event.Time) }</td>
-					<td class="text-right">{ utils.FormatNumberLocalized(ctx, event.ParticipantAmount) }</td>
-					<td class="text-right">{ utils.FormatNumberLocalized(ctx, event.ParticipantExpense) }</td>
-					<td class="text-right">{ utils.FormatNumberLocalized(ctx, event.ParticipantAmount+event.ParticipantExpense) }</td>
-					<td>
-						if data.IsAdmin {
-							@shared.ToggleSwitch(shared.ToggleSwitchProps{
-								IsOn:         event.ParticipantPaid == 1,
-								OnClick:      togglePaidExpr,
-								DisabledExpr: "false",
-								AriaLabel:    ctxi18n.T(ctx, "table.paid"),
-							})
-						} else {
-							{ paidLabel }
+					@shared.THCol(data.EventsTable.ColMaxWRem("title")) {
+						@shared.TableSortHeader(ctxi18n.T(ctx, "fields.event_title"), "title", data.Query, utils.BuildTableSortURL(fmt.Sprintf("/groups/%s/members/%s", data.GroupID, data.Member.ID), data.Query, "title"))
+					}
+					@shared.THCol(data.EventsTable.ColMaxWRem("time")) {
+						@shared.TableSortHeader(ctxi18n.T(ctx, "fields.time"), "time", data.Query, utils.BuildTableSortURL(fmt.Sprintf("/groups/%s/members/%s", data.GroupID, data.Member.ID), data.Query, "time"))
+					}
+					@shared.THCol(data.EventsTable.ColMaxWRem("participant_amount")) {
+						@shared.TableSortHeader(ctxi18n.T(ctx, "participants.cut"), "participant_amount", data.Query, utils.BuildTableSortURL(fmt.Sprintf("/groups/%s/members/%s", data.GroupID, data.Member.ID), data.Query, "participant_amount"))
+					}
+					@shared.THCol(data.EventsTable.ColMaxWRem("participant_expense")) {
+						@shared.TableSortHeader(ctxi18n.T(ctx, "participants.expense"), "participant_expense", data.Query, utils.BuildTableSortURL(fmt.Sprintf("/groups/%s/members/%s", data.GroupID, data.Member.ID), data.Query, "participant_expense"))
+					}
+					@shared.THCol(data.EventsTable.ColMaxWRem("total")) {
+						{ ctxi18n.T(ctx, "participants.total") }
+					}
+					@shared.THCol(data.EventsTable.ColMaxWRem("paid")) {
+						@shared.TableSortHeader(ctxi18n.T(ctx, "table.paid_question"), "paid", data.Query, utils.BuildTableSortURL(fmt.Sprintf("/groups/%s/members/%s", data.GroupID, data.Member.ID), data.Query, "paid"))
+					}
+					@shared.THCol(data.EventsTable.ColMaxWRem("paid_at")) {
+						@shared.TableSortHeader(ctxi18n.T(ctx, "fields.paid_at"), "paid_at", data.Query, utils.BuildTableSortURL(fmt.Sprintf("/groups/%s/members/%s", data.GroupID, data.Member.ID), data.Query, "paid_at"))
+					}
+				</tr>
+			</thead>
+			<tbody>
+				for _, event := range data.Events {
+					{{
+						togglePaidExpr := fmt.Sprintf("@put('/groups/%s/members/%s/events/%s/toggle-paid', {tableQuery: $tableQuery})", data.GroupID, data.Member.ID, event.ID)
+						paidLabel := ctxi18n.T(ctx, "table.unpaid")
+						if event.ParticipantPaid == 1 {
+							paidLabel = ctxi18n.T(ctx, "table.paid")
 						}
-					</td>
-					<td>{ paidAtLabel }</td>
-				</tr>
-			}
-			if len(data.Events) == 0 {
-				<tr>
-					<td colspan="7">{ ctxi18n.T(ctx, "table.empty") }</td>
-				</tr>
-			}
-		</tbody>
+						paidAtLabel := ""
+						if event.ParticipantPaidAt.Valid {
+							paidAtLabel = utils.FormatDateLocalized(ctx, utils.FormatDateInput(event.ParticipantPaidAt.String))
+						}
+					}}
+					<tr>
+						<td><a class="table-link" href={ fmt.Sprintf("/groups/%s/events/%s", data.GroupID, event.ID) }>{ event.Title }</a></td>
+						<td>{ utils.FormatDateTimeLocalized(ctx, event.Time) }</td>
+						<td class="text-right">{ utils.FormatNumberLocalized(ctx, event.ParticipantAmount) }</td>
+						<td class="text-right">{ utils.FormatNumberLocalized(ctx, event.ParticipantExpense) }</td>
+						<td class="text-right">{ utils.FormatNumberLocalized(ctx, event.ParticipantAmount+event.ParticipantExpense) }</td>
+						<td>
+							if data.IsAdmin {
+								@shared.ToggleSwitch(shared.ToggleSwitchProps{
+									IsOn:         event.ParticipantPaid == 1,
+									OnClick:      togglePaidExpr,
+									DisabledExpr: "false",
+									AriaLabel:    ctxi18n.T(ctx, "table.paid"),
+								})
+							} else {
+								{ paidLabel }
+							}
+						</td>
+						<td>{ paidAtLabel }</td>
+					</tr>
+				}
+				if len(data.Events) == 0 {
+					<tr>
+						<td colspan="7">{ ctxi18n.T(ctx, "table.empty") }</td>
+					</tr>
+				}
+			</tbody>
 		}
 	</div>
 	if data.IsAdmin {
 		<div data-show="$formState === 'edit'" style="display: none">
 			<form class="form" data-on:submit={ updateExpr } data-indicator:_fetching>
 				<div class="field">
-					<label for="member-show-name" class="row">{ctxi18n.T(ctx, "fields.name")} <span class="fielderror">*</span></label>
+					<label for="member-show-name" class="row">{ ctxi18n.T(ctx, "fields.name") } <span class="fielderror">*</span></label>
 					<input id="member-show-name" type="text" data-bind="formData.name" class="input w-details"/>
 					<div data-show="$errors && $errors.name" class="fielderror" data-text="$errors.name"></div>
 				</div>
 				<div class="field">
-					<label for="member-show-description">{ctxi18n.T(ctx, "fields.description")}</label>
+					<label for="member-show-description">{ ctxi18n.T(ctx, "fields.description") }</label>
 					<textarea id="member-show-description" data-bind="formData.description" rows="3" class="input w-details"></textarea>
 					<div data-show="$errors && $errors.description" class="fielderror" data-text="$errors.description"></div>
 				</div>
 				<div class="row row-wrap">
-				@shared.LoadingSubmitButton(shared.LoadingSubmitButtonProps{
-					ClassName: "btn btn-primary",
-					Label:     ctxi18n.T(ctx, "members.update"),
-					IconName:  icons.IconSave,
-				})
+					@shared.LoadingSubmitButton(shared.LoadingSubmitButtonProps{
+						ClassName: "btn btn-primary",
+						Label:     ctxi18n.T(ctx, "members.update"),
+						IconName:  icons.IconSave,
+					})
 					@shared.ActionButton(shared.ActionButtonProps{
-						ClassName:     "btn",
-						OnClick:       cancelExpr,
-						DisabledExpr:  "$_fetching",
-						Label:         ctxi18n.T(ctx, "actions.cancel"),
-						IconName:      icons.IconX,
+						ClassName:    "btn",
+						OnClick:      cancelExpr,
+						DisabledExpr: "$_fetching",
+						Label:        ctxi18n.T(ctx, "actions.cancel"),
+						IconName:     icons.IconX,
 					})
 				</div>
 			</form>

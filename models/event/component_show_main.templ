@@ -1,18 +1,16 @@
 package event
 
 import (
-	"fmt"
+	"bandcash/internal/utils"
 	shared "bandcash/models/shared"
 	icons "bandcash/models/shared/icons"
+	"fmt"
 	ctxi18n "github.com/invopop/ctxi18n/i18n"
-	"bandcash/internal/utils"
 	"strings"
 )
 
 templ EventShowMain(data EventData) {
-	{{
-		togglePaidExpr := fmt.Sprintf("@put('/groups/%s/events/%s/toggle-paid', {mode: 'single'})", data.GroupID, data.Event.ID)
-	}}
+	{{ togglePaidExpr := fmt.Sprintf("@put('/groups/%s/events/%s/toggle-paid', {mode: 'single'})", data.GroupID, data.Event.ID) }}
 	<h1>{ data.Event.Title }</h1>
 	if data.IsAdmin {
 		<div class="row row-wrap pb" data-show="$participantEditorMode === 'read'">
@@ -20,30 +18,32 @@ templ EventShowMain(data EventData) {
 		</div>
 	}
 	<div data-show="$participantEditorMode === 'read'">
-		@shared.DetailsCardWithClass(fmt.Sprintf("event_%s_overview", data.Event.ID), []shared.DetailsRow{
-			{Label: ctxi18n.T(ctx, "nav.overview"), LabelClass: "section-title", Value: ""},
-			{Label: ctxi18n.T(ctx, "fields.time"), Value: utils.FormatDateTimeLocalized(ctx, data.Event.Time)},
-			{Label: ctxi18n.T(ctx, "fields.place"), Value: func() string {
-				place := strings.TrimSpace(data.Event.Place)
-				if place == "" {
-					return "-"
-				}
-				return place
-			}()},
-			{Label: ctxi18n.T(ctx, "fields.description"), Value: data.Event.Description},
-			{Label: ctxi18n.T(ctx, "fields.income"), Value: utils.FormatNumberLocalized(ctx, data.Event.Amount), Action: shared.ToggleSwitch(shared.ToggleSwitchProps{
-				IsOn:         data.Event.Paid == 1,
-				OnClick:      togglePaidExpr,
-				DisabledExpr: "false",
-				AriaLabel:    ctxi18n.T(ctx, "table.paid"),
-			})},
-			{Label: ctxi18n.T(ctx, "fields.paid_at"), Value: func() string {
-				if !data.Event.PaidAt.Valid {
-					return "-"
-				}
-				return utils.FormatDateLocalized(ctx, utils.FormatDateInput(data.Event.PaidAt.String))
-			}()},
-		}, "bb-0")
+		<div class="pb">
+			@shared.DetailsCardWithClass(fmt.Sprintf("event_%s_overview", data.Event.ID), []shared.DetailsRow{
+				{Label: ctxi18n.T(ctx, "nav.overview"), LabelClass: "section-title", Value: ""},
+				{Label: ctxi18n.T(ctx, "fields.time"), Value: utils.FormatDateTimeLocalized(ctx, data.Event.Time)},
+				{Label: ctxi18n.T(ctx, "fields.place"), Value: func() string {
+					place := strings.TrimSpace(data.Event.Place)
+					if place == "" {
+						return "-"
+					}
+					return place
+				}()},
+				{Label: ctxi18n.T(ctx, "fields.description"), Value: data.Event.Description},
+				{Label: ctxi18n.T(ctx, "fields.income"), Value: utils.FormatNumberLocalized(ctx, data.Event.Amount), Action: shared.ToggleSwitch(shared.ToggleSwitchProps{
+					IsOn:         data.Event.Paid == 1,
+					OnClick:      togglePaidExpr,
+					DisabledExpr: "false",
+					AriaLabel:    ctxi18n.T(ctx, "table.paid"),
+				})},
+				{Label: ctxi18n.T(ctx, "fields.paid_at"), Value: func() string {
+					if !data.Event.PaidAt.Valid {
+						return "-"
+					}
+					return utils.FormatDateLocalized(ctx, utils.FormatDateInput(data.Event.PaidAt.String))
+				}()},
+			}, "")
+		</div>
 		{{
 			incomePaid := int64(0)
 			incomeUnpaid := data.Event.Amount
@@ -110,7 +110,7 @@ templ EventShowMain(data EventData) {
 						@shared.TableSortHeader(ctxi18n.T(ctx, "participants.total"), "total", data.Query, utils.BuildTableSortURL(fmt.Sprintf("/groups/%s/events/%s", data.GroupID, data.Event.ID), data.Query, "total"))
 					}
 					@shared.THCol(data.ParticipantsTable.ColMaxWRem("paid")) {
-						@shared.TableSortHeader(ctxi18n.T(ctx, "table.paid"), "paid", data.Query, utils.BuildTableSortURL(fmt.Sprintf("/groups/%s/events/%s", data.GroupID, data.Event.ID), data.Query, "paid"))
+						@shared.TableSortHeader(ctxi18n.T(ctx, "table.paid_question"), "paid", data.Query, utils.BuildTableSortURL(fmt.Sprintf("/groups/%s/events/%s", data.GroupID, data.Event.ID), data.Query, "paid"))
 					}
 					@shared.THCol(data.ParticipantsTable.ColMaxWRem("paid_at")) {
 						@shared.TableSortHeader(ctxi18n.T(ctx, "fields.paid_at"), "paid_at", data.Query, utils.BuildTableSortURL(fmt.Sprintf("/groups/%s/events/%s", data.GroupID, data.Event.ID), data.Query, "paid_at"))

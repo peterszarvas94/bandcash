@@ -87,9 +87,9 @@ templ EventIndexMain(data EventsData) {
 				@shared.THCol(data.EventsTable.ColMaxWRem("amount")) {
 					@shared.TableSortHeader(ctxi18n.T(ctx, "fields.income"), "amount", data.Query, utils.BuildTableSortURL(fmt.Sprintf("/groups/%s/events", data.GroupID), data.Query, "amount"))
 				}
-				@shared.THCol(data.EventsTable.ColMaxWRem("paid")) {
-					@shared.TableSortHeader(ctxi18n.T(ctx, "table.paid"), "paid", data.Query, utils.BuildTableSortURL(fmt.Sprintf("/groups/%s/events", data.GroupID), data.Query, "paid"))
-				}
+			@shared.THCol(data.EventsTable.ColMaxWRem("paid")) {
+				@shared.TableSortHeader(ctxi18n.T(ctx, "table.paid_question"), "paid", data.Query, utils.BuildTableSortURL(fmt.Sprintf("/groups/%s/events", data.GroupID), data.Query, "paid"))
+			}
 				@shared.THCol(data.EventsTable.ColMaxWRem("paid_at")) {
 					@shared.TableSortHeader(ctxi18n.T(ctx, "fields.paid_at"), "paid_at", data.Query, utils.BuildTableSortURL(fmt.Sprintf("/groups/%s/events", data.GroupID), data.Query, "paid_at"))
 				}

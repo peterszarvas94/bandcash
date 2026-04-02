@@ -13,7 +13,7 @@
     height: var(--header-height);
 
     .header_inner {
-      padding: var(--space);
+      padding: var(--space-lg);
       width: 100%;
       display: flex;
       justify-content: space-between;
@@ -61,118 +61,111 @@
     }
   }
 
-  .table {
-    --table-col-min-w: 8rem;
-    font-variant-numeric: tabular-nums;
-    font-feature-settings: "tnum" 1;
-    width: 100%;
-    max-width: 100%;
-    border-collapse: collapse;
-    border-spacing: 0;
-    table-layout: auto;
-    background: var(--bg-light);
-
-    th,
-    td {
-      height: calc(var(--space) * 5);
-      padding: 0 var(--space);
-      text-align: left;
-      min-width: var(--table-col-min-w, 0);
-      white-space: nowrap;
-      word-break: normal;
-      overflow-wrap: normal;
-      vertical-align: middle;
-    }
-
-    thead tr,
-    tbody tr {
-      display: var(--table-row-display, table-row);
-      grid-template-columns: var(--grid-template-columns);
-    }
-
-    th,
-    td {
-      max-width: var(--max-w, 24rem);
-    }
-
-    th {
-      font-family: var(--font-sans);
-      background: inherit;
-      font-weight: 600;
-    }
-
-    td {
-      border-top: var(--border) solid
-        light-dark(
-          var(--bg-dark),
-          color-mix(in srgb, var(--text-muted) 20%, transparent)
-        );
-    }
-
-    min-width: 100%;
-
-    th,
-    td {
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-
-    th[data-actions-col],
-    td[data-actions-col] {
-      width: calc(var(--actions-w-rem, 0) * 1rem);
-      min-width: calc(var(--actions-w-rem, 0) * 1rem);
-      max-width: calc(var(--actions-w-rem, 0) * 1rem);
-      border-left: var(--border) solid var(--bg-dark);
-      overflow: visible;
-      text-overflow: clip;
-    }
-  }
-
   .table-scroll {
     width: 100%;
-    max-width: 100%;
+    max-width: 72rem;
     overflow-x: auto;
     -webkit-overflow-scrolling: touch;
+    border-radius: var(--radius);
 
-    > .table {
-      width: fit-content;
-      min-width: 0;
+    .table {
+      --table-col-min-w: 8rem;
+      font-variant-numeric: tabular-nums;
+      font-feature-settings: "tnum" 1;
+      width: max(100%, max-content);
+      border-collapse: collapse;
+      border-spacing: 0;
+      table-layout: auto;
+      background: var(--bg);
+      border-radius: var(--radius);
+      overflow: hidden;
+
+      th,
+      td {
+        height: calc(var(--space) * 5);
+        padding-block: var(--space);
+        padding-inline: var(--space-lg);
+        text-align: left;
+        min-width: var(--table-col-min-w, 0);
+        white-space: nowrap;
+        word-break: normal;
+        overflow-wrap: normal;
+        vertical-align: middle;
+      }
+
+      thead tr,
+      tbody tr {
+        display: var(--table-row-display, table-row);
+        grid-template-columns: var(--grid-template-columns);
+      }
+
+      th,
+      td {
+        max-width: var(--max-w, 24rem);
+      }
+
+      th:first-child,
+      td:first-child {
+        max-width: none;
+        text-overflow: clip;
+      }
+
+      th {
+        font-family: var(--font-sans);
+        background: inherit;
+        font-weight: 600;
+      }
+
+      td {
+        border-top: var(--border) solid
+          light-dark(
+            var(--bg-dark),
+            color-mix(in srgb, var(--text-muted) 20%, transparent)
+          );
+      }
+
+      min-width: 100%;
+
+      th,
+      td {
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+
+      th[data-actions-col],
+      td[data-actions-col] {
+        width: calc(var(--actions-w-rem, 0) * 1rem);
+        min-width: calc(var(--actions-w-rem, 0) * 1rem);
+        max-width: calc(var(--actions-w-rem, 0) * 1rem);
+        border-left: var(--border) solid var(--bg-dark);
+        overflow: visible;
+        text-overflow: clip;
+      }
     }
   }
 
-  .radiogroup {
+  .table-search {
+    display: flex;
+    align-items: center;
+    gap: var(--space);
+    padding-bottom: var(--space);
+    width: 100%;
+    max-width: 72rem;
+  }
+
+  .table-pagination {
     display: flex;
     flex-wrap: wrap;
     align-items: center;
-    width: fit-content;
-    max-width: 100%;
-    padding: calc(var(--space) * 0.25);
-    gap: calc(var(--space) * 0.5);
-    border: var(--border) solid var(--bg-dark);
-    background: var(--bg-dark);
-    border-radius: 0;
+    justify-content: space-between;
+    gap: var(--space);
+    padding-bottom: var(--space);
+    width: 100%;
+    max-width: 72rem;
+  }
 
-    > .btn,
-    > .btn:where(:visited),
-    > .btn:where(:not(:disabled, [disabled], [aria-disabled="true"])):hover,
-    > .btn:where(:not(:disabled, [disabled], [aria-disabled="true"])):active {
-      color: var(--text);
-      background: transparent;
-      border-color: transparent;
-    }
-
-    > .btn.btn-inverse,
-    > .btn.btn-inverse:where(:visited),
-    > .btn.btn-inverse:where(
-        :not(:disabled, [disabled], [aria-disabled="true"])
-      ):hover,
-    > .btn.btn-inverse:where(
-        :not(:disabled, [disabled], [aria-disabled="true"])
-      ):active {
-      color: var(--bg-light);
-      background: var(--text);
-      border-color: var(--bg);
-    }
+  .table-pagination-controls {
+    margin-left: auto;
   }
 
   .btn {
@@ -180,7 +173,8 @@
     align-items: center;
     justify-content: center;
     gap: var(--space);
-    padding: var(--space) calc(var(--space) * 1.5);
+    padding-block: var(--space);
+    padding-inline: var(--space-lg);
     font: inherit;
     font-size: 1rem;
     line-height: 1.5;
@@ -193,7 +187,7 @@
       color-mix(var(--text) 20%, transparent),
       var(--bg-light)
     );
-    border-radius: 0;
+    border-radius: var(--radius);
     background: var(--bg-dark);
     color: var(--text);
     width: fit-content;
@@ -232,7 +226,8 @@
     &.btn-input {
       min-height: 2.5rem;
       height: 2.5rem;
-      padding: var(--space) calc(var(--space) * 1.5);
+      padding-block: var(--space);
+      padding-inline: var(--space-lg);
     }
 
     &.btn-icon {
@@ -372,6 +367,41 @@
     }
   }
 
+  .radiogroup {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    width: fit-content;
+    max-width: 100%;
+    padding: calc(var(--space) * 0.25);
+    gap: calc(var(--space) * 0.5);
+    border: var(--border) solid var(--bg-dark);
+    background: var(--bg-dark);
+    border-radius: var(--radius);
+
+    > .btn,
+    > .btn:where(:visited),
+    > .btn:where(:not(:disabled, [disabled], [aria-disabled="true"])):hover,
+    > .btn:where(:not(:disabled, [disabled], [aria-disabled="true"])):active {
+      color: var(--text);
+      background: transparent;
+      border-color: transparent;
+    }
+
+    > .btn.btn-inverse,
+    > .btn.btn-inverse:where(:visited),
+    > .btn.btn-inverse:where(
+        :not(:disabled, [disabled], [aria-disabled="true"])
+      ):hover,
+    > .btn.btn-inverse:where(
+        :not(:disabled, [disabled], [aria-disabled="true"])
+      ):active {
+      color: var(--bg-light);
+      background: var(--text);
+      border-color: var(--bg);
+    }
+  }
+
   .toggle {
     --toggle-knob: 1rem;
     --toggle-gap: 1px;
@@ -381,7 +411,7 @@
     width: calc((var(--toggle-knob) * 2) + (var(--toggle-gap) * 2) + 2px);
     height: calc(var(--toggle-knob) + (var(--toggle-gap) * 2) + 2px);
     border: var(--border) solid var(--text-muted);
-    border-radius: 0;
+    border-radius: var(--radius-pill);
     background: var(--text-muted);
     cursor: pointer;
 
@@ -392,7 +422,7 @@
       left: var(--toggle-gap);
       width: var(--toggle-knob);
       height: var(--toggle-knob);
-      border-radius: 0;
+      border-radius: var(--radius-pill);
       background: var(--bg);
     }
 
@@ -422,10 +452,11 @@
   .input {
     field-sizing: content;
     font: inherit;
-    border-radius: var(--border);
+    border-radius: var(--radius);
     width: 100%;
     height: 2.5rem;
-    padding: var(--space) calc(var(--space) * 2);
+    padding-block: var(--space);
+    padding-inline: var(--space-lg);
     border: var(--border) solid var(--text);
     background: var(--bg);
     color: var(--text);
@@ -441,7 +472,7 @@
     &:focus-visible {
       outline: var(--focus-ring);
       outline-offset: var(--focus-ring-offset);
-      border-radius: 0;
+      border-radius: var(--radius);
     }
 
     &:where(:not(:disabled, [disabled], [aria-disabled="true"])):active {
@@ -505,7 +536,7 @@
     &:focus-visible {
       outline: var(--focus-ring);
       outline-offset: var(--focus-ring-offset);
-      border-radius: 0;
+      border-radius: var(--radius-sm);
     }
   }
 
@@ -550,13 +581,32 @@
   }
 
   .badge {
-    padding: calc(var(--space) * 0.25) calc(var(--space) * 0.5);
+    padding: var(--space-sm) var(--space);
     border: var(--border) solid var(--bg-dark);
     background: var(--bg);
     color: var(--text);
-    font-size: 0.75rem;
+    font-size: 0.875rem;
     text-transform: capitalize;
     white-space: nowrap;
+    border-radius: var(--radius-pill);
+  }
+
+  .badge-default {
+    border-color: var(--bg-dark);
+    background: var(--bg);
+    color: var(--text);
+  }
+
+  .badge-primary {
+    border-color: var(--bg-primary);
+    background: var(--bg-primary);
+    color: var(--text-primary);
+  }
+
+  .badge-inverse {
+    border-color: var(--bg);
+    background: var(--text);
+    color: var(--bg-light);
   }
 
   .groups {
@@ -586,6 +636,7 @@
       background: var(--bg-light);
       text-decoration: none;
       color: var(--text);
+      border-radius: var(--radius-lg);
 
       h2 {
         margin: 0;
@@ -714,7 +765,10 @@
         display: flex;
         align-items: center;
         justify-content: center;
-        background: var(--bg-dark);
+        background: var(--bg);
+
+        border-top: var(--border) solid
+          light-dark(var(--bg-dark), var(--bg-light));
 
         nav {
           padding: var(--space);
@@ -729,21 +783,20 @@
     }
 
     &.has-tab-sidebar {
-      .content {
-        .content_inner {
-          align-items: stretch;
-        }
-      }
-
       aside {
-        flex: 0 0 var(--sidebar-width);
+        position: fixed;
+        top: var(--header-height);
+        left: 0;
+        bottom: 0;
+        z-index: 30;
         width: var(--sidebar-width);
-        background: var(--bg-dark);
-        padding: var(--space);
+        background: var(--bg);
+        padding: var(--space-lg);
 
         .tabs {
           display: flex;
           flex-direction: column;
+          gap: var(--space);
 
           .tab,
           .tab:visited {
@@ -758,7 +811,8 @@
       .content_main {
         min-width: 0;
         overflow-x: hidden;
-        padding: var(--space);
+        padding: var(--space-lg) var(--space-lg) var(--space-lg)
+          calc(var(--sidebar-width) + var(--space-lg));
         flex: 1 1 auto;
       }
 
@@ -786,12 +840,6 @@
         aside {
           position: fixed;
           top: 0;
-          left: 0;
-          bottom: 0;
-          width: min(18rem, 84vw);
-          background: var(--bg-dark);
-          padding: var(--space);
-          z-index: 30;
           display: none;
 
           .actions {
@@ -799,6 +847,10 @@
             justify-content: flex-start;
             padding-bottom: var(--space);
           }
+        }
+
+        .content_main {
+          padding-left: var(--space-lg);
         }
 
         .nav-toggle:checked ~ .backdrop {
@@ -853,10 +905,11 @@
     .error-card {
       display: grid;
       gap: var(--space);
-      padding: calc(var(--space) * 2);
+      padding: var(--space-lg);
       border: var(--border) solid var(--bg-dark);
       background: var(--bg);
       text-align: center;
+      border-radius: var(--radius-lg);
 
       > h1,
       > p {
@@ -873,6 +926,7 @@
       justify-content: center;
       border: var(--border) solid var(--bg-dark);
       background: var(--bg-dark);
+      border-radius: var(--radius);
 
       .icon {
         width: 1.25rem;
@@ -896,6 +950,7 @@
     padding: calc(var(--space) * 1.25);
     margin-bottom: calc(var(--space) * 1.5);
     background: var(--bg-light);
+    border-radius: var(--radius-lg);
 
     p {
       color: var(--text);
@@ -995,7 +1050,7 @@
         border: var(--border) solid var(--bg-dark);
         border-left-width: calc(var(--border) * 3);
         border-left-color: var(--bg-primary);
-        border-radius: var(--border);
+        border-radius: var(--radius);
         background: var(--bg-dark);
         padding: calc(var(--space) * 0.75) var(--space);
 
@@ -1044,10 +1099,10 @@
     width: min(32rem, calc(100vw - 2rem));
     max-width: 100%;
     border: var(--border) solid var(--bg-dark);
-    border-radius: calc(var(--border) * 4);
+    border-radius: var(--radius-lg);
     background: var(--bg);
     color: var(--text);
-    padding: calc(var(--space) * 2);
+    padding: var(--space-lg);
     display: grid;
     gap: var(--space);
 
@@ -1076,6 +1131,7 @@
     padding: var(--space);
     border: var(--border) solid var(--bg-dark);
     background: var(--bg-light);
+    border-radius: var(--radius-lg);
 
     .detail-box-controls {
       display: flex;
@@ -1190,7 +1246,7 @@
     align-items: center;
     gap: var(--space);
     flex-wrap: wrap;
-    padding-bottom: calc(var(--space) * 2);
+    padding-bottom: var(--space-lg);
 
     > .actions {
       margin-left: auto;

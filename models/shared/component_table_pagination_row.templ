@@ -7,7 +7,7 @@ import (
 )
 
 templ TablePaginationRow(basePath string, query utils.TableQuery, pager utils.TablePagination) {
-	<div class="row row-wrap justify-between pb">
+	<div class="table-pagination">
 		<div class="row row-wrap row-tight">
 			<span class="hide-tablet text-sm pr">{ ctxi18n.T(ctx, "table.page_size") }</span>
 			<div class="radiogroup" role="radiogroup" aria-label={ ctxi18n.T(ctx, "table.page_size") }>
