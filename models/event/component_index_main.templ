@@ -75,22 +75,22 @@ templ EventIndexMain(data EventsData) {
 	@shared.TableOpenFixed(data.EventsTable, "") {
 		<thead>
 			<tr>
-				@shared.THCol(data.EventsTable.Col("title")) {
+				@shared.THCol(data.EventsTable.ColMaxWRem("title")) {
 					@shared.TableSortHeader(ctxi18n.T(ctx, "fields.title"), "title", data.Query, utils.BuildTableSortURL(fmt.Sprintf("/groups/%s/events", data.GroupID), data.Query, "title"))
 				}
-				@shared.THCol(data.EventsTable.Col("time")) {
+				@shared.THCol(data.EventsTable.ColMaxWRem("time")) {
 					@shared.TableSortHeader(ctxi18n.T(ctx, "fields.time"), "time", data.Query, utils.BuildTableSortURL(fmt.Sprintf("/groups/%s/events", data.GroupID), data.Query, "time"))
 				}
-				@shared.THCol(data.EventsTable.Col("place")) {
+				@shared.THCol(data.EventsTable.ColMaxWRem("place")) {
 					@shared.TableSortHeader(ctxi18n.T(ctx, "fields.place"), "place", data.Query, utils.BuildTableSortURL(fmt.Sprintf("/groups/%s/events", data.GroupID), data.Query, "place"))
 				}
-				@shared.THCol(data.EventsTable.Col("amount")) {
+				@shared.THCol(data.EventsTable.ColMaxWRem("amount")) {
 					@shared.TableSortHeader(ctxi18n.T(ctx, "fields.income"), "amount", data.Query, utils.BuildTableSortURL(fmt.Sprintf("/groups/%s/events", data.GroupID), data.Query, "amount"))
 				}
-				@shared.THCol(data.EventsTable.Col("paid")) {
+				@shared.THCol(data.EventsTable.ColMaxWRem("paid")) {
 					@shared.TableSortHeader(ctxi18n.T(ctx, "table.paid"), "paid", data.Query, utils.BuildTableSortURL(fmt.Sprintf("/groups/%s/events", data.GroupID), data.Query, "paid"))
 				}
-				@shared.THCol(data.EventsTable.Col("paid_at")) {
+				@shared.THCol(data.EventsTable.ColMaxWRem("paid_at")) {
 					@shared.TableSortHeader(ctxi18n.T(ctx, "fields.paid_at"), "paid_at", data.Query, utils.BuildTableSortURL(fmt.Sprintf("/groups/%s/events", data.GroupID), data.Query, "paid_at"))
 				}
 			</tr>

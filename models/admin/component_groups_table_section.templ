@@ -14,16 +14,16 @@ templ GroupsTableSection(data DashboardData) {
 		@shared.TableOpenFixed(data.GroupsTable, "") {
 			<thead>
 				<tr>
-					@shared.THCol(data.GroupsTable.Col("name")) {
+					@shared.THCol(data.GroupsTable.ColMaxWRem("name")) {
 						@shared.TableSortHeader(ctxi18n.T(ctx, "groups.name"), "name", data.GroupQuery, adminGroupsSortURL(data, "name"))
 					}
-					@shared.THCol(data.GroupsTable.Col("admin")) {
+					@shared.THCol(data.GroupsTable.ColMaxWRem("admin")) {
 						{ ctxi18n.T(ctx, "groups.admin") }
 					}
-					@shared.THCol(data.GroupsTable.Col("viewers")) {
+					@shared.THCol(data.GroupsTable.ColMaxWRem("viewers")) {
 						{ ctxi18n.T(ctx, "groups.viewers") }
 					}
-					@shared.THCol(data.GroupsTable.Col("created_at")) {
+					@shared.THCol(data.GroupsTable.ColMaxWRem("created_at")) {
 						@shared.TableSortHeader(ctxi18n.T(ctx, "groups.created"), "createdAt", data.GroupQuery, adminGroupsSortURL(data, "createdAt"))
 					}
 				</tr>

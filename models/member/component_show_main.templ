@@ -108,25 +108,25 @@ templ MemberShowMain(data MemberData) {
 		@shared.TableOpenFixed(data.EventsTable, "") {
 		<thead>
 			<tr>
-				@shared.THCol(data.EventsTable.Col("title")) {
+				@shared.THCol(data.EventsTable.ColMaxWRem("title")) {
 					@shared.TableSortHeader(ctxi18n.T(ctx, "fields.event_title"), "title", data.Query, utils.BuildTableSortURL(fmt.Sprintf("/groups/%s/members/%s", data.GroupID, data.Member.ID), data.Query, "title"))
 				}
-				@shared.THCol(data.EventsTable.Col("time")) {
+				@shared.THCol(data.EventsTable.ColMaxWRem("time")) {
 					@shared.TableSortHeader(ctxi18n.T(ctx, "fields.time"), "time", data.Query, utils.BuildTableSortURL(fmt.Sprintf("/groups/%s/members/%s", data.GroupID, data.Member.ID), data.Query, "time"))
 				}
-				@shared.THCol(data.EventsTable.Col("participant_amount")) {
+				@shared.THCol(data.EventsTable.ColMaxWRem("participant_amount")) {
 					@shared.TableSortHeader(ctxi18n.T(ctx, "participants.cut"), "participant_amount", data.Query, utils.BuildTableSortURL(fmt.Sprintf("/groups/%s/members/%s", data.GroupID, data.Member.ID), data.Query, "participant_amount"))
 				}
-				@shared.THCol(data.EventsTable.Col("participant_expense")) {
+				@shared.THCol(data.EventsTable.ColMaxWRem("participant_expense")) {
 					@shared.TableSortHeader(ctxi18n.T(ctx, "participants.expense"), "participant_expense", data.Query, utils.BuildTableSortURL(fmt.Sprintf("/groups/%s/members/%s", data.GroupID, data.Member.ID), data.Query, "participant_expense"))
 				}
-				@shared.THCol(data.EventsTable.Col("total")) {
+				@shared.THCol(data.EventsTable.ColMaxWRem("total")) {
 					{ ctxi18n.T(ctx, "participants.total") }
 				}
-				@shared.THCol(data.EventsTable.Col("paid")) {
+				@shared.THCol(data.EventsTable.ColMaxWRem("paid")) {
 					@shared.TableSortHeader(ctxi18n.T(ctx, "table.paid"), "paid", data.Query, utils.BuildTableSortURL(fmt.Sprintf("/groups/%s/members/%s", data.GroupID, data.Member.ID), data.Query, "paid"))
 				}
-				@shared.THCol(data.EventsTable.Col("paid_at")) {
+				@shared.THCol(data.EventsTable.ColMaxWRem("paid_at")) {
 					@shared.TableSortHeader(ctxi18n.T(ctx, "fields.paid_at"), "paid_at", data.Query, utils.BuildTableSortURL(fmt.Sprintf("/groups/%s/members/%s", data.GroupID, data.Member.ID), data.Query, "paid_at"))
 				}
 			</tr>

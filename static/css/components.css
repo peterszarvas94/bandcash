@@ -68,10 +68,16 @@
       height: calc(var(--space) * 5);
       padding: 0 var(--space);
       text-align: left;
+      min-width: 0;
       white-space: nowrap;
       word-break: normal;
       overflow-wrap: normal;
       vertical-align: middle;
+    }
+
+    th,
+    td {
+      max-width: var(--max-w, 24rem);
     }
 
     th {
@@ -96,11 +102,6 @@
       text-overflow: ellipsis;
     }
 
-    .col-w {
-      width: auto;
-      max-width: none;
-    }
-
     th[data-actions-col],
     td[data-actions-col] {
       width: calc(var(--actions-w-rem, 0) * 1rem);
@@ -114,11 +115,13 @@
 
   .table-scroll {
     width: 100%;
-    overflow-x: visible;
+    max-width: 100%;
+    overflow-x: auto;
     -webkit-overflow-scrolling: touch;
 
-    @media (max-width: 1020px) {
-      overflow-x: auto;
+    > .table {
+      width: fit-content;
+      min-width: 0;
     }
   }
 
@@ -446,6 +449,12 @@
       color: var(--text-muted);
     }
 
+    &.input-table {
+      width: 100%;
+      min-width: 0;
+      max-width: var(--max-w);
+    }
+
     &.input-primary,
     &.input-primary:where(
         :not(:disabled, [disabled], [aria-disabled="true"])
@@ -682,6 +691,7 @@
       .content_inner {
         display: flex;
         flex-grow: 1;
+        min-width: 0;
       }
 
       .footer {
@@ -711,8 +721,8 @@
       }
 
       aside {
+        flex: 0 0 var(--sidebar-width);
         width: var(--sidebar-width);
-        /* height: 100vh; */
         background: var(--bg-dark);
         padding: var(--space);
 
@@ -731,8 +741,10 @@
       }
 
       .content_main {
+        min-width: 0;
+        overflow-x: hidden;
         padding: var(--space);
-        flex: 1 0 auto;
+        flex: 1 1 auto;
       }
 
       @media (max-width: 1020px) {

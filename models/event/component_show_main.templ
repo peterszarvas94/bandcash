@@ -100,25 +100,25 @@ templ EventShowMain(data EventData) {
 		@shared.TableOpenFixed(data.ParticipantsTable, "") {
 			<thead>
 				<tr>
-					@shared.THCol(data.ParticipantsTable.Col("name")) {
+					@shared.THCol(data.ParticipantsTable.ColMaxWRem("name")) {
 						@shared.TableSortHeader(ctxi18n.T(ctx, "participants.member"), "name", data.Query, utils.BuildTableSortURL(fmt.Sprintf("/groups/%s/events/%s", data.GroupID, data.Event.ID), data.Query, "name"))
 					}
-					@shared.THCol(data.ParticipantsTable.Col("amount")) {
+					@shared.THCol(data.ParticipantsTable.ColMaxWRem("amount")) {
 						@shared.TableSortHeader(ctxi18n.T(ctx, "participants.cut"), "amount", data.Query, utils.BuildTableSortURL(fmt.Sprintf("/groups/%s/events/%s", data.GroupID, data.Event.ID), data.Query, "amount"))
 					}
-					@shared.THCol(data.ParticipantsTable.Col("expense")) {
+					@shared.THCol(data.ParticipantsTable.ColMaxWRem("expense")) {
 						@shared.TableSortHeader(ctxi18n.T(ctx, "participants.expense"), "expense", data.Query, utils.BuildTableSortURL(fmt.Sprintf("/groups/%s/events/%s", data.GroupID, data.Event.ID), data.Query, "expense"))
 					}
-					@shared.THCol(data.ParticipantsTable.Col("total")) {
+					@shared.THCol(data.ParticipantsTable.ColMaxWRem("total")) {
 						@shared.TableSortHeader(ctxi18n.T(ctx, "participants.total"), "total", data.Query, utils.BuildTableSortURL(fmt.Sprintf("/groups/%s/events/%s", data.GroupID, data.Event.ID), data.Query, "total"))
 					}
-					@shared.THCol(data.ParticipantsTable.Col("paid")) {
+					@shared.THCol(data.ParticipantsTable.ColMaxWRem("paid")) {
 						@shared.TableSortHeader(ctxi18n.T(ctx, "table.paid"), "paid", data.Query, utils.BuildTableSortURL(fmt.Sprintf("/groups/%s/events/%s", data.GroupID, data.Event.ID), data.Query, "paid"))
 					}
-					@shared.THCol(data.ParticipantsTable.Col("paid_at")) {
+					@shared.THCol(data.ParticipantsTable.ColMaxWRem("paid_at")) {
 						@shared.TableSortHeader(ctxi18n.T(ctx, "fields.paid_at"), "paid_at", data.Query, utils.BuildTableSortURL(fmt.Sprintf("/groups/%s/events/%s", data.GroupID, data.Event.ID), data.Query, "paid_at"))
 					}
-					@shared.THCol(data.ParticipantsTable.Col("note")) {
+					@shared.THCol(data.ParticipantsTable.ColMaxWRem("note")) {
 						{ ctxi18n.T(ctx, "participants.note") }
 					}
 				</tr>
@@ -252,13 +252,13 @@ templ EventShowMain(data EventData) {
 					<table class="table">
 						<thead>
 							<tr>
-								<th>{ ctxi18n.T(ctx, "participants.member") }</th>
-								<th>{ ctxi18n.T(ctx, "participants.cut_amount") }</th>
-								<th>{ ctxi18n.T(ctx, "participants.expense") }</th>
+								<th style={ fmt.Sprintf("--max-w: %drem", data.ParticipantsTable.ColMaxWRem("name")) }>{ ctxi18n.T(ctx, "participants.member") }</th>
+								<th style={ fmt.Sprintf("--max-w: %drem", data.ParticipantsTable.ColMaxWRem("amount")) }>{ ctxi18n.T(ctx, "participants.cut_amount") }</th>
+								<th style={ fmt.Sprintf("--max-w: %drem", data.ParticipantsTable.ColMaxWRem("expense")) }>{ ctxi18n.T(ctx, "participants.expense") }</th>
 								<th>{ ctxi18n.T(ctx, "participants.total") }</th>
 								<th>{ ctxi18n.T(ctx, "table.paid") }</th>
-								<th>{ ctxi18n.T(ctx, "fields.paid_at") }</th>
-								<th>{ ctxi18n.T(ctx, "participants.note") }</th>
+								<th style={ fmt.Sprintf("--max-w: %drem", data.ParticipantsTable.ColMaxWRem("paid_at")) }>{ ctxi18n.T(ctx, "fields.paid_at") }</th>
+								<th style={ fmt.Sprintf("--max-w: %drem", data.ParticipantsTable.ColMaxWRem("note")) }>{ ctxi18n.T(ctx, "participants.note") }</th>
 								<th></th>
 							</tr>
 						</thead>
@@ -269,28 +269,28 @@ templ EventShowMain(data EventData) {
 									copyDraftExpr := fmt.Sprintf("$draftRowsAction='copy'; $draftRowsRowId=%s; @post('/groups/%s/events/%s/participants/draft/rows')", utils.JSONString(row.RowID), data.GroupID, data.Event.ID)
 								}}
 								<tr>
-									<td>
-										<select class="input w-min-input" data-bind={ fmt.Sprintf("wizard.memberIds.%s", row.RowID) }>
+									<td style={ fmt.Sprintf("--max-w: %drem", data.ParticipantsTable.ColMaxWRem("name")) }>
+										<select class="input input-table" data-bind={ fmt.Sprintf("wizard.memberIds.%s", row.RowID) }>
 											<option value="">{ ctxi18n.T(ctx, "participants.select_member") }</option>
 											for _, member := range data.AllMembers {
 												<option value={ member.ID }>{ member.Name }</option>
 											}
 										</select>
 									</td>
-									<td class="text-right"><input type="number" class="input w-min-input" step="1" min="0" data-bind={ fmt.Sprintf("wizard.amounts.%s", row.RowID) }/></td>
-									<td class="text-right"><input type="number" class="input w-min-input" step="1" min="0" data-bind={ fmt.Sprintf("wizard.expenses.%s", row.RowID) }/></td>
+									<td style={ fmt.Sprintf("--max-w: %drem", data.ParticipantsTable.ColMaxWRem("amount")) }><input type="number" class="input input-table" step="1" min="0" data-bind={ fmt.Sprintf("wizard.amounts.%s", row.RowID) }/></td>
+									<td style={ fmt.Sprintf("--max-w: %drem", data.ParticipantsTable.ColMaxWRem("expense")) }><input type="number" class="input input-table" step="1" min="0" data-bind={ fmt.Sprintf("wizard.expenses.%s", row.RowID) }/></td>
 									<td class="text-right" data-text={ fmt.Sprintf("($wizard.amounts['%s'] || 0) + ($wizard.expenses['%s'] || 0)", row.RowID, row.RowID) }></td>
-									<td class="text-right">
+									<td>
 										@shared.ToggleSwitch(shared.ToggleSwitchProps{
 											Bind:         fmt.Sprintf("wizard.paids.%s", row.RowID),
 											DisabledExpr: "$_fetching",
 											AriaLabel:    ctxi18n.T(ctx, "table.paid"),
 										})
 									</td>
-									<td class="text-right">
-										<input type="date" class="input w-min-input" data-bind={ fmt.Sprintf("wizard.paidAts.%s", row.RowID) } data-attr:disabled={ fmt.Sprintf("!$wizard.paids.%s || $_fetching", row.RowID) }/>
+									<td style={ fmt.Sprintf("--max-w: %drem", data.ParticipantsTable.ColMaxWRem("paid_at")) }>
+										<input type="date" class="input input-table" data-bind={ fmt.Sprintf("wizard.paidAts.%s", row.RowID) } data-attr:disabled={ fmt.Sprintf("!$wizard.paids.%s || $_fetching", row.RowID) }/>
 									</td>
-									<td><textarea class="input w-min-input h-min-input" rows="1" style="resize: vertical;" data-bind={ fmt.Sprintf("wizard.notes.%s", row.RowID) }></textarea></td>
+									<td style={ fmt.Sprintf("--max-w: %drem", data.ParticipantsTable.ColMaxWRem("note")) }><textarea class="input input-table h-min-input" rows="1" style="resize: vertical;" data-bind={ fmt.Sprintf("wizard.notes.%s", row.RowID) }></textarea></td>
 									<td class="text-right">
 										@shared.IconActionButton(shared.IconActionButtonProps{
 											ClassName:    "btn btn-sm btn-icon",

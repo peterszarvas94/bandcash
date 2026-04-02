@@ -4,8 +4,8 @@ import (
 	"fmt"
 )
 
-templ THCol(widthCh int) {
-	<th class="col-w" style={ fmt.Sprintf("--w-ch: %d", widthCh) }>
+templ THCol(maxWRem int) {
+	<th style={ fmt.Sprintf("--max-w: %drem", maxWRem) }>
 		{ children... }
 	</th>
 }

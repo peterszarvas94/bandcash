@@ -2,114 +2,114 @@ package utils
 
 func EventsIndexTableLayout() TableLayout {
 	return NewTableLayout([]TableColumn{
-		{Key: "title", WidthCh: 28},
-		{Key: "time", WidthCh: 19},
-		{Key: "place", WidthCh: 18},
-		{Key: "amount", WidthCh: 12},
-		{Key: "paid", WidthCh: 14},
-		{Key: "paid_at", WidthCh: 14},
+		{Key: "title"},
+		{Key: "time"},
+		{Key: "place"},
+		{Key: "amount"},
+		{Key: "paid"},
+		{Key: "paid_at"},
 	}, 0)
 }
 
 func EventParticipantsTableLayout() TableLayout {
 	return NewTableLayout([]TableColumn{
-		{Key: "name", WidthCh: 24},
-		{Key: "amount", WidthCh: 12},
-		{Key: "expense", WidthCh: 12},
-		{Key: "total", WidthCh: 12},
-		{Key: "paid", WidthCh: 14},
-		{Key: "paid_at", WidthCh: 20},
-		{Key: "note", WidthCh: 24},
+		{Key: "name", MaxWRem: 10},
+		{Key: "amount", MaxWRem: 8},
+		{Key: "expense", MaxWRem: 8},
+		{Key: "total"},
+		{Key: "paid"},
+		{Key: "paid_at", MaxWRem: 8},
+		{Key: "note", MaxWRem: 24},
 	}, 0)
 }
 
 func ExpensesIndexTableLayout() TableLayout {
 	return NewTableLayout([]TableColumn{
-		{Key: "title", WidthCh: 20},
-		{Key: "date", WidthCh: 12},
-		{Key: "amount", WidthCh: 12},
-		{Key: "paid", WidthCh: 14},
-		{Key: "paid_at", WidthCh: 14},
+		{Key: "title"},
+		{Key: "date"},
+		{Key: "amount"},
+		{Key: "paid"},
+		{Key: "paid_at"},
 	}, 0)
 }
 
 func GroupsIndexTableLayout() TableLayout {
 	return NewTableLayout([]TableColumn{
-		{Key: "name", WidthCh: 24},
-		{Key: "role", WidthCh: 10},
+		{Key: "name"},
+		{Key: "role"},
 	}, 0)
 }
 
 func MembersIndexTableLayout() TableLayout {
 	return NewTableLayout([]TableColumn{
-		{Key: "name", WidthCh: 20},
-		{Key: "description", WidthCh: 32},
+		{Key: "name"},
+		{Key: "description"},
 	}, 0)
 }
 
 func MemberEventsTableLayout() TableLayout {
 	return NewTableLayout([]TableColumn{
-		{Key: "title", WidthCh: 22},
-		{Key: "time", WidthCh: 19},
-		{Key: "participant_amount", WidthCh: 12},
-		{Key: "participant_expense", WidthCh: 12},
-		{Key: "total", WidthCh: 12},
-		{Key: "paid", WidthCh: 14},
-		{Key: "paid_at", WidthCh: 14},
+		{Key: "title"},
+		{Key: "time"},
+		{Key: "participant_amount"},
+		{Key: "participant_expense"},
+		{Key: "total"},
+		{Key: "paid"},
+		{Key: "paid_at"},
 	}, 0)
 }
 
 func ViewersAdminsTableLayout() TableLayout {
 	return NewTableLayout([]TableColumn{
-		{Key: "email", WidthCh: 34},
+		{Key: "email"},
 	}, 2)
 }
 
 func ViewersPendingTableLayout() TableLayout {
 	return NewTableLayout([]TableColumn{
-		{Key: "email", WidthCh: 34},
-		{Key: "role", WidthCh: 10},
-		{Key: "created_at", WidthCh: 18},
+		{Key: "email"},
+		{Key: "role"},
+		{Key: "created_at"},
 	}, 2)
 }
 
 func ViewersTableLayout() TableLayout {
 	return NewTableLayout([]TableColumn{
-		{Key: "email", WidthCh: 34},
+		{Key: "email"},
 	}, 2)
 }
 
 func GroupUsersTableLayout() TableLayout {
 	return NewTableLayout([]TableColumn{
-		{Key: "email", WidthCh: 30},
-		{Key: "role", WidthCh: 10},
-		{Key: "status", WidthCh: 10},
+		{Key: "email"},
+		{Key: "role"},
+		{Key: "status"},
 	}, 0)
 }
 
 func AdminUsersTableLayout() TableLayout {
 	return NewTableLayout([]TableColumn{
-		{Key: "email", WidthCh: 34},
-		{Key: "created_at", WidthCh: 18},
-		{Key: "status", WidthCh: 12},
+		{Key: "email"},
+		{Key: "created_at"},
+		{Key: "status"},
 	}, 2)
 }
 
 func AdminGroupsTableLayout() TableLayout {
 	return NewTableLayout([]TableColumn{
-		{Key: "name", WidthCh: 24},
-		{Key: "admin", WidthCh: 24},
-		{Key: "viewers", WidthCh: 10},
-		{Key: "created_at", WidthCh: 18},
+		{Key: "name"},
+		{Key: "admin"},
+		{Key: "viewers"},
+		{Key: "created_at"},
 	}, 0)
 }
 
 func AdminSessionsTableLayout() TableLayout {
 	return NewTableLayout([]TableColumn{
-		{Key: "user_email", WidthCh: 28},
-		{Key: "session_id", WidthCh: 18},
-		{Key: "created_at", WidthCh: 16},
-		{Key: "expires_at", WidthCh: 16},
-		{Key: "actions", WidthCh: 10},
+		{Key: "user_email"},
+		{Key: "session_id"},
+		{Key: "created_at"},
+		{Key: "expires_at"},
+		{Key: "actions"},
 	}, 0)
 }

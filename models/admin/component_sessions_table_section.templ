@@ -15,19 +15,19 @@ templ SessionsTableSection(data DashboardData) {
 		@shared.TableOpenFixed(data.SessionsTable, "") {
 			<thead>
 				<tr>
-					@shared.THCol(data.SessionsTable.Col("user_email")) {
+					@shared.THCol(data.SessionsTable.ColMaxWRem("user_email")) {
 						@shared.TableSortHeader(ctxi18n.T(ctx, "auth.email"), "email", data.SessionQuery, adminSessionsSortURL(data, "email"))
 					}
-					@shared.THCol(data.SessionsTable.Col("session_id")) {
+					@shared.THCol(data.SessionsTable.ColMaxWRem("session_id")) {
 						{ ctxi18n.T(ctx, "admin.sessions.session_id") }
 					}
-					@shared.THCol(data.SessionsTable.Col("created_at")) {
+					@shared.THCol(data.SessionsTable.ColMaxWRem("created_at")) {
 						@shared.TableSortHeader(ctxi18n.T(ctx, "groups.created"), "createdAt", data.SessionQuery, adminSessionsSortURL(data, "createdAt"))
 					}
-					@shared.THCol(data.SessionsTable.Col("expires_at")) {
+					@shared.THCol(data.SessionsTable.ColMaxWRem("expires_at")) {
 						{ ctxi18n.T(ctx, "account.expires") }
 					}
-					@shared.THCol(data.SessionsTable.Col("actions")) {
+					@shared.THCol(data.SessionsTable.ColMaxWRem("actions")) {
 					}
 				</tr>
 			</thead>

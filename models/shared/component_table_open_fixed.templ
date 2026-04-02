@@ -2,12 +2,11 @@ package shared
 
 import (
 	"bandcash/internal/utils"
-	"fmt"
 )
 
 templ TableOpenFixed(layout utils.TableLayout, class string) {
 	<div class="table-scroll">
-		<table class={ "table", class } style={ fmt.Sprintf("--table-data-w-ch: %d; --table-actions-w-rem: %d; --table-grid-template: %s", layout.DataWidthCh, layout.ActionsWidthRem, layout.GridTemplate()) }>
+		<table class={ "table", class }>
 			{ children... }
 		</table>
 	</div>

@@ -23,13 +23,13 @@ templ GroupUsersMain(data UsersPageData) {
 	@shared.TableOpenFixed(data.UsersTable, "") {
 		<thead>
 			<tr>
-				@shared.THCol(data.UsersTable.Col("email")) {
+				@shared.THCol(data.UsersTable.ColMaxWRem("email")) {
 					@shared.TableSortHeader(ctxi18n.T(ctx, "auth.email"), "email", data.Query, utils.BuildTableSortURL(usersTablePath(data.GroupID), data.Query, "email"))
 				}
-				@shared.THCol(data.UsersTable.Col("role")) {
+				@shared.THCol(data.UsersTable.ColMaxWRem("role")) {
 					@shared.TableSortHeader(ctxi18n.T(ctx, "fields.role"), "role", data.Query, utils.BuildTableSortURL(usersTablePath(data.GroupID), data.Query, "role"))
 				}
-				@shared.THCol(data.UsersTable.Col("status")) {
+				@shared.THCol(data.UsersTable.ColMaxWRem("status")) {
 					@shared.TableSortHeader(ctxi18n.T(ctx, "fields.status"), "status", data.Query, utils.BuildTableSortURL(usersTablePath(data.GroupID), data.Query, "status"))
 				}
 			</tr>

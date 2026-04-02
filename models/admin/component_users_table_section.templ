@@ -15,13 +15,13 @@ templ UsersTableSection(data DashboardData) {
 		@shared.TableOpenFixed(data.UsersTable, "table-sticky-actions") {
 			<thead>
 				<tr>
-					@shared.THCol(data.UsersTable.Col("email")) {
+					@shared.THCol(data.UsersTable.ColMaxWRem("email")) {
 						@shared.TableSortHeader(ctxi18n.T(ctx, "auth.email"), "email", data.UserQuery, adminUsersSortURL(data, "email"))
 					}
-					@shared.THCol(data.UsersTable.Col("created_at")) {
+					@shared.THCol(data.UsersTable.ColMaxWRem("created_at")) {
 						@shared.TableSortHeader(ctxi18n.T(ctx, "groups.created"), "createdAt", data.UserQuery, adminUsersSortURL(data, "createdAt"))
 					}
-					@shared.THCol(data.UsersTable.Col("status")) {
+					@shared.THCol(data.UsersTable.ColMaxWRem("status")) {
 						{ ctxi18n.T(ctx, "admin.users.status") }
 					}
 					@shared.THActions(data.UsersTable.ActionsWidthRem)
