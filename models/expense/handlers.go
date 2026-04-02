@@ -261,11 +261,11 @@ func (e *Expenses) Create(c echo.Context) error {
 	})
 	if err != nil {
 		slog.Error("expense.create.table: failed to create expense", "err", err)
-		utils.Notify(c, "error", ctxi18n.T(c.Request().Context(), "expenses.notifications.create_failed"))
+		utils.Notify(c, ctxi18n.T(c.Request().Context(), "expenses.notifications.create_failed"))
 		return c.NoContent(http.StatusInternalServerError)
 	}
 
-	utils.Notify(c, "success", ctxi18n.T(c.Request().Context(), "expenses.notifications.created"))
+	utils.Notify(c, ctxi18n.T(c.Request().Context(), "expenses.notifications.created"))
 
 	// Clear cache to ensure fresh data on next load
 	utils.InvalidateGroupCaches(groupID)
@@ -322,11 +322,11 @@ func (e *Expenses) Update(c echo.Context) error {
 	})
 	if err != nil {
 		slog.Error("expense.update: failed to update expense", "err", err)
-		utils.Notify(c, "error", ctxi18n.T(c.Request().Context(), "expenses.notifications.update_failed"))
+		utils.Notify(c, ctxi18n.T(c.Request().Context(), "expenses.notifications.update_failed"))
 		return c.NoContent(http.StatusInternalServerError)
 	}
 
-	utils.Notify(c, "success", ctxi18n.T(c.Request().Context(), "expenses.notifications.updated"))
+	utils.Notify(c, ctxi18n.T(c.Request().Context(), "expenses.notifications.updated"))
 
 	// Clear cache to ensure fresh data on next load
 	utils.InvalidateGroupCaches(groupID)
@@ -363,11 +363,11 @@ func (e *Expenses) Destroy(c echo.Context) error {
 	})
 	if err != nil {
 		slog.Error("expense.destroy: failed to delete expense", "err", err)
-		utils.Notify(c, "error", ctxi18n.T(c.Request().Context(), "expenses.notifications.delete_failed"))
+		utils.Notify(c, ctxi18n.T(c.Request().Context(), "expenses.notifications.delete_failed"))
 		return c.NoContent(http.StatusInternalServerError)
 	}
 
-	utils.Notify(c, "success", ctxi18n.T(c.Request().Context(), "expenses.notifications.deleted"))
+	utils.Notify(c, ctxi18n.T(c.Request().Context(), "expenses.notifications.deleted"))
 
 	if signals.Mode == "single" {
 		err = utils.SSEHub.Redirect(c, "/groups/"+groupID+"/expenses")
@@ -428,7 +428,7 @@ func (e *Expenses) TogglePaid(c echo.Context) error {
 	})
 	if err != nil {
 		slog.Error("expense.togglePaid: failed to toggle paid status", "err", err)
-		utils.Notify(c, "error", ctxi18n.T(c.Request().Context(), "expenses.notifications.toggle_paid_failed"))
+		utils.Notify(c, ctxi18n.T(c.Request().Context(), "expenses.notifications.toggle_paid_failed"))
 		return c.NoContent(http.StatusInternalServerError)
 	}
 
@@ -438,9 +438,9 @@ func (e *Expenses) TogglePaid(c echo.Context) error {
 	utils.InvalidateGroupCaches(groupID)
 
 	if result.Paid == 1 {
-		utils.Notify(c, "success", ctxi18n.T(c.Request().Context(), "paid_status.marked_as_paid"))
+		utils.Notify(c, ctxi18n.T(c.Request().Context(), "paid_status.marked_as_paid"))
 	} else {
-		utils.Notify(c, "success", ctxi18n.T(c.Request().Context(), "paid_status.marked_as_unpaid"))
+		utils.Notify(c, ctxi18n.T(c.Request().Context(), "paid_status.marked_as_unpaid"))
 	}
 
 	if signals.Mode == "single" {

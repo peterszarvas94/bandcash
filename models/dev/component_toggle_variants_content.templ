@@ -18,5 +18,9 @@ templ ToggleVariantsContent() {
 			@shared.ToggleSwitch(shared.ToggleSwitchProps{Bind: "switchDisabled", Disabled: true, AriaLabel: "Toggle off disabled"})
 			<span class="text-sm">Toggle off (disabled)</span>
 		</div>
+		<div class="row items-center">
+			@shared.ToggleSwitch(shared.ToggleSwitchProps{Bind: "switchDisabledOn", Disabled: true, AriaLabel: "Toggle on disabled"})
+			<span class="text-sm">Toggle on (disabled)</span>
+		</div>
 	</div>
 }

@@ -91,7 +91,7 @@ func (h *DevNotifications) TestInline(c echo.Context) error {
 		"errors":   utils.GetEmptyErrors(devErrorFields),
 		"formData": map[string]any{"name": ""},
 	})
-	utils.Notify(c, "success", "Inline validation passed")
+	utils.Notify(c, "Inline validation passed")
 	if err := h.patchNotifications(c); err != nil {
 		return c.NoContent(http.StatusInternalServerError)
 	}
@@ -99,7 +99,7 @@ func (h *DevNotifications) TestInline(c echo.Context) error {
 	return c.NoContent(http.StatusOK)
 }
 
-func (h *DevNotifications) TestSuccess(c echo.Context) error {
+func (h *DevNotifications) Test(c echo.Context) error {
 	signals := devTabSignals{}
 	if err := datastar.ReadSignals(c.Request(), &signals); err != nil {
 		return c.NoContent(http.StatusBadRequest)
@@ -108,55 +108,7 @@ func (h *DevNotifications) TestSuccess(c echo.Context) error {
 		return c.NoContent(http.StatusBadRequest)
 	}
 
-	utils.Notify(c, "success", "Success notification test")
-	if err := h.patchNotifications(c); err != nil {
-		return c.NoContent(http.StatusInternalServerError)
-	}
-	return c.NoContent(http.StatusOK)
-}
-
-func (h *DevNotifications) TestError(c echo.Context) error {
-	signals := devTabSignals{}
-	if err := datastar.ReadSignals(c.Request(), &signals); err != nil {
-		return c.NoContent(http.StatusBadRequest)
-	}
-	if !utils.SetTabID(c, signals.TabID) {
-		return c.NoContent(http.StatusBadRequest)
-	}
-
-	utils.Notify(c, "error", "Error notification test")
-	if err := h.patchNotifications(c); err != nil {
-		return c.NoContent(http.StatusInternalServerError)
-	}
-	return c.NoContent(http.StatusOK)
-}
-
-func (h *DevNotifications) TestInfo(c echo.Context) error {
-	signals := devTabSignals{}
-	if err := datastar.ReadSignals(c.Request(), &signals); err != nil {
-		return c.NoContent(http.StatusBadRequest)
-	}
-	if !utils.SetTabID(c, signals.TabID) {
-		return c.NoContent(http.StatusBadRequest)
-	}
-
-	utils.Notify(c, "info", "Info notification test")
-	if err := h.patchNotifications(c); err != nil {
-		return c.NoContent(http.StatusInternalServerError)
-	}
-	return c.NoContent(http.StatusOK)
-}
-
-func (h *DevNotifications) TestWarning(c echo.Context) error {
-	signals := devTabSignals{}
-	if err := datastar.ReadSignals(c.Request(), &signals); err != nil {
-		return c.NoContent(http.StatusBadRequest)
-	}
-	if !utils.SetTabID(c, signals.TabID) {
-		return c.NoContent(http.StatusBadRequest)
-	}
-
-	utils.Notify(c, "warning", "Warning notification test")
+	utils.Notify(c, "Notification test")
 	if err := h.patchNotifications(c); err != nil {
 		return c.NoContent(http.StatusInternalServerError)
 	}
@@ -200,7 +152,7 @@ func (h *DevNotifications) TestMultiAction(c echo.Context) error {
 		"multiActionActive": "",
 	})
 
-	utils.Notify(c, "info", "Completed: "+action)
+	utils.Notify(c, "Completed: "+action)
 	if err := h.patchNotifications(c); err != nil {
 		return c.NoContent(http.StatusInternalServerError)
 	}

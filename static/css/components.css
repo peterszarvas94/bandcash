@@ -1,4 +1,55 @@
 @layer components {
+  .header {
+    position: sticky;
+    top: 0;
+    z-index: 20;
+    background: var(--bg);
+    border-bottom: var(--border) solid
+      light-dark(var(--bg-dark), var(--bg-light));
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: var(--header-height);
+
+    .header_inner {
+      padding: var(--space);
+      width: 100%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: var(--space);
+
+      nav.breadcrumbs {
+        display: flex;
+        align-items: center;
+        gap: calc(var(--space) * 0.5);
+        flex-wrap: wrap;
+        line-height: 1.6;
+        height: fit-content;
+        min-height: 2.25rem;
+
+        > a,
+        > span {
+          display: inline-flex;
+          align-items: center;
+          gap: calc(var(--space) * 0.5);
+        }
+
+        > span {
+          color: inherit;
+        }
+
+        @media (max-width: 1020px) {
+          > span,
+          > a:not(:first-child) {
+            display: none;
+          }
+        }
+      }
+    }
+  }
+
   .table {
     font-variant-numeric: tabular-nums;
     font-feature-settings: "tnum" 1;
@@ -71,32 +122,39 @@
     }
   }
 
-  .segmented {
+  .radiogroup {
     display: flex;
-    flex-wrap: nowrap;
-    align-items: stretch;
+    flex-wrap: wrap;
+    align-items: center;
     width: fit-content;
     max-width: 100%;
-    padding: 0;
-    gap: 0;
-    border: var(--border) solid var(--text-muted);
-    background: var(--bg-light);
+    padding: calc(var(--space) * 0.25);
+    gap: calc(var(--space) * 0.5);
+    border: var(--border) solid var(--bg-dark);
+    background: var(--bg-dark);
+    border-radius: 0;
 
     > .btn,
-    > .btn:visited {
+    > .btn:where(:visited),
+    > .btn:where(:not(:disabled, [disabled], [aria-disabled="true"])):hover,
+    > .btn:where(:not(:disabled, [disabled], [aria-disabled="true"])):active {
+      color: var(--text);
+      background: transparent;
       border-color: transparent;
     }
 
     > .btn.btn-inverse,
-    > .btn.btn-inverse:visited,
-    > .btn.btn-inverse:hover,
-    > .btn.btn-inverse:active {
-      border-color: transparent;
+    > .btn.btn-inverse:where(:visited),
+    > .btn.btn-inverse:where(
+        :not(:disabled, [disabled], [aria-disabled="true"])
+      ):hover,
+    > .btn.btn-inverse:where(
+        :not(:disabled, [disabled], [aria-disabled="true"])
+      ):active {
+      color: var(--bg-light);
+      background: var(--text);
+      border-color: var(--bg);
     }
-  }
-
-  .row.segmented {
-    display: flex;
   }
 
   .btn {
@@ -112,7 +170,11 @@
     text-align: center;
     white-space: nowrap;
     cursor: pointer;
-    border: var(--border) solid var(--text-muted);
+    border: var(--border) solid;
+    border-color: light-dark(
+      color-mix(var(--text) 20%, transparent),
+      var(--bg-light)
+    );
     border-radius: 0;
     background: var(--bg-dark);
     color: var(--text);
@@ -120,13 +182,13 @@
     height: fit-content;
     flex-shrink: 0;
 
-    &:not(:disabled):not([disabled]):hover {
+    &:where(:not(:disabled, [disabled], [aria-disabled="true"])):hover {
       background: var(--bg-light);
       border-color: var(--text);
       color: var(--text);
     }
 
-    &:not(:disabled):not([disabled]):active {
+    &:where(:not(:disabled, [disabled], [aria-disabled="true"])):active {
       background: var(--bg-dark);
       border-color: var(--text);
       color: var(--text);
@@ -134,7 +196,7 @@
 
     &:focus-visible {
       outline: var(--focus-ring);
-      outline-offset: calc(var(--focus-ring-offset) * -1);
+      outline-offset: var(--focus-ring-offset);
     }
 
     &.btn-sm {
@@ -199,8 +261,8 @@
       line-height: inherit;
       justify-content: flex-start;
 
-      &:not(:disabled):not([disabled]):hover,
-      &:not(:disabled):not([disabled]):active {
+      &:where(:not(:disabled, [disabled], [aria-disabled="true"])):hover,
+      &:where(:not(:disabled, [disabled], [aria-disabled="true"])):active {
         background: transparent;
         border-color: transparent;
       }
@@ -215,13 +277,13 @@
       background: var(--bg-primary);
       border-color: var(--bg-primary);
 
-      &:not(:disabled):not([disabled]):hover {
+      &:where(:not(:disabled, [disabled], [aria-disabled="true"])):hover {
         color: var(--text-primary);
         background: var(--bg-primary);
         border-color: var(--bg-primary);
       }
 
-      &:not(:disabled):not([disabled]):active {
+      &:where(:not(:disabled, [disabled], [aria-disabled="true"])):active {
         color: var(--text-primary);
         background: var(--bg-primary);
         border-color: var(--bg-primary);
@@ -231,18 +293,18 @@
     &.btn-inverse {
       color: var(--bg-light);
       background: var(--text);
-      border-color: var(--text);
+      border-color: var(--bg);
 
-      &:not(:disabled):not([disabled]):hover {
+      &:where(:not(:disabled, [disabled], [aria-disabled="true"])):hover {
         color: var(--bg-light);
         background: var(--text);
-        border-color: var(--text);
+        border-color: var(--bg);
       }
 
-      &:not(:disabled):not([disabled]):active {
+      &:where(:not(:disabled, [disabled], [aria-disabled="true"])):active {
         color: var(--bg-light);
         background: var(--text);
-        border-color: var(--text);
+        border-color: var(--bg);
       }
     }
 
@@ -250,25 +312,15 @@
       background: transparent;
       border-color: transparent;
 
-      &:not(:disabled):not([disabled]):hover {
+      &:where(:not(:disabled, [disabled], [aria-disabled="true"])):hover {
         background: var(--bg-light);
         border-color: var(--text-muted);
       }
 
-      &:not(:disabled):not([disabled]):active {
+      &:where(:not(:disabled, [disabled], [aria-disabled="true"])):active {
         background: var(--bg-dark);
         border-color: var(--text-muted);
       }
-    }
-
-    &:disabled,
-    &[disabled],
-    &[aria-disabled="true"] {
-      opacity: 1;
-      cursor: not-allowed;
-      color: var(--text-muted);
-      background: var(--bg-dark);
-      border-color: var(--bg-dark);
     }
 
     .icon {
@@ -293,9 +345,16 @@
       align-items: center;
       line-height: 1;
     }
+
+    &:disabled,
+    &[disabled],
+    &[aria-disabled="true"] {
+      opacity: var(--disabled-opacity);
+      cursor: not-allowed;
+    }
   }
 
-  .toggle-switch {
+  .toggle {
     --toggle-knob: 1rem;
     --toggle-gap: 1px;
     position: relative;
@@ -337,8 +396,8 @@
     &:disabled,
     &[disabled],
     &[aria-disabled="true"] {
+      opacity: var(--disabled-opacity);
       cursor: not-allowed;
-      opacity: 0.6;
     }
   }
 
@@ -356,33 +415,31 @@
       border-color 120ms ease,
       background-color 120ms ease;
 
-    &:hover {
+    &:where(:not(:disabled, [disabled], [aria-disabled="true"])):hover {
       background: var(--bg-light);
       border-color: var(--text);
     }
 
     &:focus-visible {
       outline: var(--focus-ring);
-      outline-offset: calc(var(--focus-ring-offset) * -1);
+      outline-offset: var(--focus-ring-offset);
       border-radius: 0;
     }
 
-    &:active {
+    &:where(:not(:disabled, [disabled], [aria-disabled="true"])):active {
       background: var(--bg-dark);
     }
 
     &:focus-visible,
-    &:active {
+    &:where(:not(:disabled, [disabled], [aria-disabled="true"])):active {
       border-color: var(--text);
     }
 
     &:disabled,
-    &[disabled] {
-      opacity: 0.6;
+    &[disabled],
+    &[aria-disabled="true"] {
+      opacity: var(--disabled-opacity);
       cursor: not-allowed;
-      background: var(--bg-dark);
-      border-color: var(--bg-dark);
-      color: var(--text-muted);
     }
 
     &::placeholder {
@@ -515,7 +572,7 @@
 
       &:focus-visible {
         outline: var(--focus-ring);
-        outline-offset: calc(var(--focus-ring-offset) * -1);
+        outline-offset: var(--focus-ring-offset);
       }
 
       .group-card-footer {
@@ -551,10 +608,6 @@
     textarea {
       min-height: 6rem;
       resize: vertical;
-    }
-
-    button {
-      width: fit-content;
     }
 
     .form-row {
@@ -613,7 +666,7 @@
         flex-grow: 1;
       }
 
-      footer {
+      .footer {
         width: 100%;
         display: flex;
         align-items: center;
@@ -637,7 +690,7 @@
     display: flex;
     width: 100%;
 
-    .toggle,
+    .nav-toggle,
     .backdrop,
     .actions {
       display: none;
@@ -686,7 +739,7 @@
       display: block;
       position: relative;
 
-      .toggle {
+      .nav-toggle {
         display: none;
       }
 
@@ -726,15 +779,15 @@
         }
       }
 
-      .toggle:checked ~ .backdrop {
+      .nav-toggle:checked ~ .backdrop {
         display: block;
       }
 
-      .toggle:checked ~ aside {
+      .nav-toggle:checked ~ aside {
         display: block;
       }
 
-      .toggle:checked ~ main .open {
+      .nav-toggle:checked ~ main .open {
         visibility: hidden;
         pointer-events: none;
       }
@@ -918,7 +971,7 @@
         gap: calc(var(--space) * 0.5);
         border: var(--border) solid var(--bg-dark);
         border-left-width: calc(var(--border) * 3);
-        border-left-color: var(--text-muted);
+        border-left-color: var(--bg-primary);
         border-radius: var(--border);
         background: var(--bg-dark);
         padding: calc(var(--space) * 0.75) var(--space);
@@ -1058,7 +1111,7 @@
         padding-bottom: var(--space);
       }
 
-      .detail-box-controls:not(.segmented) {
+      .detail-box-controls:not(.radiogroup) {
         padding-top: var(--space);
       }
 
@@ -1122,57 +1175,6 @@
       align-items: center;
       gap: var(--space);
       flex-wrap: wrap;
-    }
-  }
-
-  header.header {
-    position: sticky;
-    top: 0;
-    z-index: 20;
-    background: var(--bg);
-    border-bottom: var(--border) solid
-      light-dark(var(--bg-dark), var(--bg-light));
-    width: 100%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: var(--header-height);
-
-    .header_inner {
-      padding: var(--space);
-      width: 100%;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: var(--space);
-
-      nav.breadcrumbs {
-        display: flex;
-        align-items: center;
-        gap: calc(var(--space) * 0.5);
-        flex-wrap: wrap;
-        line-height: 1.6;
-        height: fit-content;
-        min-height: 2.25rem;
-
-        > a,
-        > span {
-          display: inline-flex;
-          align-items: center;
-          gap: calc(var(--space) * 0.5);
-        }
-
-        > span {
-          color: inherit;
-        }
-
-        @media (max-width: 1020px) {
-          > span,
-          > a:not(:first-child) {
-            display: none;
-          }
-        }
-      }
     }
   }
 

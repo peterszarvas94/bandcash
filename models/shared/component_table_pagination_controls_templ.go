@@ -375,7 +375,7 @@ func TablePaginationControls(basePath string, query utils.TableQuery, pager util
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 34, "</span> <span class=\"row row-tight hide-tablet\"><input type=\"number\" min=\"1\" max=\"")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 34, "</span> <span class=\"row hide-tablet\"><input type=\"number\" min=\"1\" max=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

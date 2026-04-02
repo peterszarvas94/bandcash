@@ -218,12 +218,12 @@ func (p *Members) Create(c echo.Context) error {
 	})
 	if err != nil {
 		slog.Error("member.create.table: failed to create member", "err", err)
-		utils.Notify(c, "error", ctxi18n.T(c.Request().Context(), "members.notifications.create_failed"))
+		utils.Notify(c, ctxi18n.T(c.Request().Context(), "members.notifications.create_failed"))
 		return c.NoContent(http.StatusInternalServerError)
 	}
 
 	slog.Debug("member.create.table", "id", member.ID, "name", member.Name)
-	utils.Notify(c, "success", ctxi18n.T(c.Request().Context(), "members.notifications.created"))
+	utils.Notify(c, ctxi18n.T(c.Request().Context(), "members.notifications.created"))
 
 	err = utils.SSEHub.Redirect(c, "/groups/"+groupID+"/members")
 	if err != nil {
@@ -267,12 +267,12 @@ func (p *Members) Update(c echo.Context) error {
 	})
 	if err != nil {
 		slog.Error("member.update: failed to update member", "err", err)
-		utils.Notify(c, "error", ctxi18n.T(c.Request().Context(), "members.notifications.update_failed"))
+		utils.Notify(c, ctxi18n.T(c.Request().Context(), "members.notifications.update_failed"))
 		return c.NoContent(http.StatusInternalServerError)
 	}
 
 	slog.Debug("member.update", "id", id)
-	utils.Notify(c, "success", ctxi18n.T(c.Request().Context(), "members.notifications.updated"))
+	utils.Notify(c, ctxi18n.T(c.Request().Context(), "members.notifications.updated"))
 
 	err = utils.SSEHub.Redirect(c, "/groups/"+groupID+"/members/"+id)
 	if err != nil {
@@ -306,12 +306,12 @@ func (p *Members) Destroy(c echo.Context) error {
 	})
 	if err != nil {
 		slog.Error("member.destroy: failed to delete member", "err", err)
-		utils.Notify(c, "error", ctxi18n.T(c.Request().Context(), "members.notifications.delete_failed"))
+		utils.Notify(c, ctxi18n.T(c.Request().Context(), "members.notifications.delete_failed"))
 		return c.NoContent(http.StatusInternalServerError)
 	}
 
 	slog.Debug("member.destroy", "id", id)
-	utils.Notify(c, "success", ctxi18n.T(c.Request().Context(), "members.notifications.deleted"))
+	utils.Notify(c, ctxi18n.T(c.Request().Context(), "members.notifications.deleted"))
 
 	if signals.Mode == "single" {
 		err = utils.SSEHub.Redirect(c, "/groups/"+groupID+"/members")
@@ -375,14 +375,14 @@ func (p *Members) ToggleParticipantPaid(c echo.Context) error {
 	})
 	if err != nil {
 		slog.Error("member.toggleParticipantPaid: failed to toggle paid status", "err", err)
-		utils.Notify(c, "error", ctxi18n.T(c.Request().Context(), "participants.notifications.toggle_paid_failed"))
+		utils.Notify(c, ctxi18n.T(c.Request().Context(), "participants.notifications.toggle_paid_failed"))
 		return c.NoContent(http.StatusInternalServerError)
 	}
 
 	if result.Paid == 1 {
-		utils.Notify(c, "success", ctxi18n.T(c.Request().Context(), "paid_status.marked_as_paid"))
+		utils.Notify(c, ctxi18n.T(c.Request().Context(), "paid_status.marked_as_paid"))
 	} else {
-		utils.Notify(c, "success", ctxi18n.T(c.Request().Context(), "paid_status.marked_as_unpaid"))
+		utils.Notify(c, ctxi18n.T(c.Request().Context(), "paid_status.marked_as_unpaid"))
 	}
 
 	query := utils.NormalizeTableQuery(signals.TableQuery, p.MemberEventsTableQuerySpec())

@@ -10,7 +10,6 @@ import (
 
 type Notification struct {
 	ID      string
-	Kind    string
 	Message string
 	Created time.Time
 }
@@ -83,7 +82,7 @@ func (s *notificationStore) DrainForRender(clientID string, includeActive bool) 
 	return result
 }
 
-func Notify(c echo.Context, kind, message string) {
+func Notify(c echo.Context, message string) {
 	if message == "" {
 		return
 	}
@@ -94,7 +93,6 @@ func Notify(c echo.Context, kind, message string) {
 	}
 	Notifications.Add(tabID, Notification{
 		ID:      GenerateID("ntf"),
-		Kind:    kind,
 		Message: message,
 		Created: time.Now(),
 	})

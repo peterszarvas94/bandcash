@@ -132,7 +132,11 @@ templ LoadingSubmitButton(props LoadingSubmitButtonProps) {
 }
 
 templ LoadingSubmitButtonWithSignal(props LoadingSubmitButtonWithSignalProps) {
-	<button type="submit" class={ props.ClassName } data-attr:disabled={ fmt.Sprintf("$%s", props.LoadingSignal) }>
+	{{
+		baseClass := strings.TrimSpace(props.ClassName)
+		disabledExpr := fmt.Sprintf("$%s", props.LoadingSignal)
+	}}
+	<button type="submit" class={ baseClass } data-attr:disabled={ disabledExpr }>
 		<span data-show={ fmt.Sprintf("!$%s", props.LoadingSignal) }>
 			@icons.Icon(props.IconName, templ.Attributes{"class": "icon"})
 		</span>
@@ -155,12 +159,19 @@ templ LoadingActionButton(props LoadingActionButtonProps) {
 }
 
 templ LoadingActionButtonWithSignal(props LoadingActionButtonWithSignalProps) {
+	{{
+		baseClass := strings.TrimSpace(props.ClassName)
+		disabledExpr := strings.TrimSpace(props.DisabledExpr)
+		if disabledExpr == "" {
+			disabledExpr = "false"
+		}
+	}}
 	<button
 		{ templ.Attributes{fmt.Sprintf("data-indicator:%s", props.LoadingSignal): ""}... }
-		class={ props.ClassName }
+		class={ baseClass }
 		type="button"
 		data-signals={ templ.JSONString(map[string]any{props.LoadingSignal: false}) }
-		data-attr:disabled={ props.DisabledExpr }
+		data-attr:disabled={ disabledExpr }
 		data-on:click={ props.OnClick }
 	>
 		<span data-show={ fmt.Sprintf("!$%s", props.LoadingSignal) }>
@@ -174,7 +185,14 @@ templ LoadingActionButtonWithSignal(props LoadingActionButtonWithSignalProps) {
 }
 
 templ ActionButton(props ActionButtonProps) {
-	<button class={ props.ClassName } type="button" data-attr:disabled={ props.DisabledExpr } data-on:click={ props.OnClick }>
+	{{
+		baseClass := strings.TrimSpace(props.ClassName)
+		disabledExpr := strings.TrimSpace(props.DisabledExpr)
+		if disabledExpr == "" {
+			disabledExpr = "false"
+		}
+	}}
+	<button class={ baseClass } type="button" data-attr:disabled={ disabledExpr } data-on:click={ props.OnClick }>
 		@icons.Icon(props.IconName, templ.Attributes{"class": "icon"})
 		<span>{ props.Label }</span>
 	</button>
@@ -184,7 +202,7 @@ templ ToggleSwitch(props ToggleSwitchProps) {
 	{{
 		baseClass := strings.TrimSpace(props.ClassName)
 		if baseClass == "" {
-			baseClass = "toggle-switch"
+			baseClass = "toggle"
 		}
 		ariaLabel := strings.TrimSpace(props.AriaLabel)
 		if ariaLabel == "" {
@@ -339,7 +357,7 @@ templ RadioLink(props RadioLinkProps) {
 		}
 	}}
 	if props.Disabled {
-		<a class={ className } disabled aria-disabled="true">
+		<a class={ className } aria-disabled="true">
 			if !props.NoIcon {
 				if props.IsSelected {
 					@icons.CircleDot(templ.Attributes{"class": "icon"})
@@ -365,6 +383,7 @@ templ RadioLink(props RadioLinkProps) {
 
 templ SureActionButton(props SureActionButtonProps) {
 	{{
+		baseClass := strings.TrimSpace(props.ClassName)
 		disabledExpr := fmt.Sprintf("(%s) || $sure.triggerID === %q", props.DisabledExpr, props.Dialog.TriggerID)
 		onClickExpr := fmt.Sprintf(
 			`$sure = {
@@ -390,7 +409,7 @@ templ SureActionButton(props SureActionButtonProps) {
 		showSpinnerExpr := fmt.Sprintf("$sure.triggerID === %q", props.Dialog.TriggerID)
 	}}
 	<button
-		class={ props.ClassName }
+		class={ baseClass }
 		type="button"
 		data-attr:disabled={ disabledExpr }
 		data-on:click={ onClickExpr }
@@ -406,13 +425,20 @@ templ SureActionButton(props SureActionButtonProps) {
 }
 
 templ LoadingIconActionButton(props LoadingIconActionButtonProps) {
+	{{
+		baseClass := strings.TrimSpace(props.ClassName)
+		disabledExpr := strings.TrimSpace(props.DisabledExpr)
+		if disabledExpr == "" {
+			disabledExpr = "false"
+		}
+	}}
 	<button
-		class={ props.ClassName }
+		class={ baseClass }
 		type="button"
 		aria-label={ props.AriaLabel }
 		title={ props.Title }
 		data-indicator:_fetching
-		data-attr:disabled={ props.DisabledExpr }
+		data-attr:disabled={ disabledExpr }
 		data-on:click={ props.OnClick }
 	>
 		<span data-show="!$_fetching">
@@ -425,12 +451,19 @@ templ LoadingIconActionButton(props LoadingIconActionButtonProps) {
 }
 
 templ IconActionButton(props IconActionButtonProps) {
+	{{
+		baseClass := strings.TrimSpace(props.ClassName)
+		disabledExpr := strings.TrimSpace(props.DisabledExpr)
+		if disabledExpr == "" {
+			disabledExpr = "false"
+		}
+	}}
 	<button
-		class={ props.ClassName }
+		class={ baseClass }
 		type="button"
 		aria-label={ props.AriaLabel }
 		title={ props.Title }
-		data-attr:disabled={ props.DisabledExpr }
+		data-attr:disabled={ disabledExpr }
 		data-on:click={ props.OnClick }
 	>
 		@icons.Icon(props.IconName, templ.Attributes{"class": "icon"})

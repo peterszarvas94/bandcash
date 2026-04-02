@@ -7,7 +7,7 @@ import (
 )
 
 templ Footer(isSuperAdmin bool, activeUrl string) {
-	<footer>
+	<footer class="footer">
 		<nav aria-label={ ctxi18n.T(ctx, "nav.footer") }>
 			if isSuperAdmin {
 				<a class={ "link", templ.KV("link-active", strings.HasPrefix(activeUrl, "/admin")) } href="/admin/flags">

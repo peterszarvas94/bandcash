@@ -324,11 +324,11 @@ func (a *Admin) UpdateSignupFlag(c echo.Context) error {
 
 	if err := utils.SetSignupEnabled(c.Request().Context(), next); err != nil {
 		slog.Error("admin.flags.update_signup: failed to update flag", "err", err)
-		utils.Notify(c, "error", ctxi18n.T(c.Request().Context(), "admin.flags.update_failed"))
+		utils.Notify(c, ctxi18n.T(c.Request().Context(), "admin.flags.update_failed"))
 		return c.NoContent(http.StatusInternalServerError)
 	}
 
-	utils.Notify(c, "success", ctxi18n.T(c.Request().Context(), "admin.flags.updated"))
+	utils.Notify(c, ctxi18n.T(c.Request().Context(), "admin.flags.updated"))
 	notificationsHTML, err := utils.RenderHTMLForRequest(c, shared.Notifications())
 	if err == nil {
 		_ = utils.SSEHub.PatchHTML(c, notificationsHTML)
@@ -366,7 +366,7 @@ func (a *Admin) setUserBanState(c echo.Context, banned bool) error {
 
 	currentUserID := middleware.GetUserID(c)
 	if currentUserID == userID {
-		utils.Notify(c, "error", ctxi18n.T(c.Request().Context(), "admin.users.cannot_ban_self"))
+		utils.Notify(c, ctxi18n.T(c.Request().Context(), "admin.users.cannot_ban_self"))
 		return a.patchRecentUsers(c)
 	}
 
@@ -374,18 +374,18 @@ func (a *Admin) setUserBanState(c echo.Context, banned bool) error {
 		err := db.Qry.BanUser(c.Request().Context(), db.BanUserParams{ID: utils.GenerateID("ban"), UserID: userID})
 		if err != nil {
 			slog.Error("admin.users.ban: failed to ban user", "user_id", userID, "err", err)
-			utils.Notify(c, "error", ctxi18n.T(c.Request().Context(), "admin.users.ban_failed"))
+			utils.Notify(c, ctxi18n.T(c.Request().Context(), "admin.users.ban_failed"))
 			return c.NoContent(http.StatusInternalServerError)
 		}
-		utils.Notify(c, "success", ctxi18n.T(c.Request().Context(), "admin.users.banned"))
+		utils.Notify(c, ctxi18n.T(c.Request().Context(), "admin.users.banned"))
 	} else {
 		err := db.Qry.UnbanUser(c.Request().Context(), userID)
 		if err != nil {
 			slog.Error("admin.users.unban: failed to unban user", "user_id", userID, "err", err)
-			utils.Notify(c, "error", ctxi18n.T(c.Request().Context(), "admin.users.unban_failed"))
+			utils.Notify(c, ctxi18n.T(c.Request().Context(), "admin.users.unban_failed"))
 			return c.NoContent(http.StatusInternalServerError)
 		}
-		utils.Notify(c, "success", ctxi18n.T(c.Request().Context(), "admin.users.unbanned"))
+		utils.Notify(c, ctxi18n.T(c.Request().Context(), "admin.users.unbanned"))
 	}
 
 	return a.patchRecentUsers(c)
@@ -415,11 +415,11 @@ func (a *Admin) LogoutSession(c echo.Context) error {
 
 	if err := db.Qry.DeleteUserSession(c.Request().Context(), db.DeleteUserSessionParams{ID: sessionID, UserID: userID}); err != nil {
 		slog.Error("admin.sessions.logout: failed to delete session", "session_id", sessionID, "err", err)
-		utils.Notify(c, "error", ctxi18n.T(c.Request().Context(), "admin.sessions.logout_failed"))
+		utils.Notify(c, ctxi18n.T(c.Request().Context(), "admin.sessions.logout_failed"))
 		return c.NoContent(http.StatusInternalServerError)
 	}
 
-	utils.Notify(c, "success", ctxi18n.T(c.Request().Context(), "admin.sessions.logged_out"))
+	utils.Notify(c, ctxi18n.T(c.Request().Context(), "admin.sessions.logged_out"))
 	if userID == currentUserID && currentSessionID != "" && currentSessionID == sessionID {
 		utils.ClearSessionCookie(c)
 		if err := utils.SSEHub.Redirect(c, "/login"); err != nil {
@@ -447,11 +447,11 @@ func (a *Admin) LogoutAllUserSessions(c echo.Context) error {
 
 	if err := db.Qry.DeleteAllUserSessions(c.Request().Context(), userID); err != nil {
 		slog.Error("admin.sessions.logout_all: failed to delete sessions", "user_id", userID, "err", err)
-		utils.Notify(c, "error", ctxi18n.T(c.Request().Context(), "admin.sessions.logout_all_failed"))
+		utils.Notify(c, ctxi18n.T(c.Request().Context(), "admin.sessions.logout_all_failed"))
 		return c.NoContent(http.StatusInternalServerError)
 	}
 
-	utils.Notify(c, "success", ctxi18n.T(c.Request().Context(), "admin.sessions.logged_out_all"))
+	utils.Notify(c, ctxi18n.T(c.Request().Context(), "admin.sessions.logged_out_all"))
 	if userID == middleware.GetUserID(c) {
 		utils.ClearSessionCookie(c)
 		if err := utils.SSEHub.Redirect(c, "/login"); err != nil {

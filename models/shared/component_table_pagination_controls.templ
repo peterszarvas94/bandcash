@@ -61,7 +61,7 @@ templ TablePaginationControls(basePath string, query utils.TableQuery, pager uti
 		}
 		<label class="row">
 			<span class="text-sm hide-tablet">{ ctxi18n.T(ctx, "table.page") }</span>
-			<span class="row row-tight hide-tablet">
+			<span class="row hide-tablet">
 				<input type="number" min="1" max={ fmt.Sprintf("%d", pager.TotalPages) } step="1" name="page" value={ fmt.Sprintf("%d", pager.Page) } aria-label={ ctxi18n.T(ctx, "table.page") } class="input input-xs"/>
 				<button class="btn btn-xs btn-icon btn-table" type="submit" aria-label={ ctxi18n.T(ctx, "table.go") } title={ ctxi18n.T(ctx, "table.go") }>
 					@icons.FileInput(templ.Attributes{"class": "icon"})

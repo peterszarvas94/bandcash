@@ -16,7 +16,7 @@ func RequireSuperadmin(next echo.HandlerFunc) echo.HandlerFunc {
 	return func(c echo.Context) error {
 		allowedEmail := strings.ToLower(strings.TrimSpace(utils.Env().SuperadminEmail))
 		if allowedEmail == "" {
-			utils.Notify(c, "error", ctxi18n.T(c.Request().Context(), "admin.access_denied"))
+			utils.Notify(c, ctxi18n.T(c.Request().Context(), "admin.access_denied"))
 			return c.Redirect(http.StatusFound, "/groups")
 		}
 
@@ -31,7 +31,7 @@ func RequireSuperadmin(next echo.HandlerFunc) echo.HandlerFunc {
 		}
 
 		if strings.ToLower(strings.TrimSpace(user.Email)) != allowedEmail {
-			utils.Notify(c, "error", ctxi18n.T(c.Request().Context(), "admin.access_denied"))
+			utils.Notify(c, ctxi18n.T(c.Request().Context(), "admin.access_denied"))
 			return c.Redirect(http.StatusFound, "/groups")
 		}
 

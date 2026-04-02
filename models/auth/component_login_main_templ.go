@@ -93,7 +93,7 @@ func LoginMain(currentLang string, langAction string, signupEnabled bool) templ.
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 7, " <span class=\"color-error\">*</span></label><div class=\"row row-tight\"><input id=\"auth-login-email\" type=\"email\" data-bind=\"formData.email\" placeholder=\"")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 7, " <span class=\"color-error\">*</span></label><div class=\"row\"><input id=\"auth-login-email\" type=\"email\" data-bind=\"formData.email\" placeholder=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

@@ -8,7 +8,7 @@ import (
 templ TabContent(tabID string, tabs, content templ.Component) {
 	{{ toggleID := tabID + "-toggle" }}
 	<div class="tab_layout">
-		<input id={ toggleID } class="toggle" type="checkbox"/>
+		<input id={ toggleID } class="nav-toggle" type="checkbox"/>
 		<label for={ toggleID } class="backdrop" aria-hidden="true"></label>
 		<aside>
 			<header class="actions">

@@ -19,7 +19,7 @@ templ LoginMain(currentLang string, langAction string, signupEnabled bool) {
 				<form class="form" data-on:submit="@post('/login')" data-indicator:_fetching>
 					<div class="field">
 						<label for="auth-login-email" class="row">{ ctxi18n.T(ctx, "auth.email") } <span class="color-error">*</span></label>
-						<div class="row row-tight">
+					<div class="row">
 							<input id="auth-login-email" type="email" data-bind="formData.email" placeholder={ ctxi18n.T(ctx, "auth.email_placeholder") } class="input"/>
 							@shared.LoadingSubmitButton(shared.LoadingSubmitButtonProps{
 								ClassName: "btn btn-primary btn-input",

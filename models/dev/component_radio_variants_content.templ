@@ -7,7 +7,7 @@ import (
 templ RadioVariantsContent(linkSelector string) {
 	<div class="field">
 		<label>Client side (button)</label>
-		<div class="row row-tight row-wrap segmented" role="radiogroup" aria-label="Client side options">
+		<div class="radiogroup" role="radiogroup" aria-label="Client side options">
 			@shared.RadioButton(shared.RadioButtonProps{Bind: "radioDemo", Value: "1", Label: "Option", ClassName: "btn btn-xs", NoIcon: true})
 			@shared.RadioButton(shared.RadioButtonProps{Bind: "radioDemo", Value: "2", Label: "Option", ClassName: "btn btn-xs", NoIcon: true})
 			@shared.RadioButton(shared.RadioButtonProps{Bind: "radioDemo", Value: "3", Label: "Option", ClassName: "btn btn-xs", NoIcon: true})
@@ -15,7 +15,7 @@ templ RadioVariantsContent(linkSelector string) {
 	</div>
 	<div class="field">
 		<label>Server side (link)</label>
-		<div class="row row-tight row-wrap segmented" role="radiogroup" aria-label="Server side options">
+		<div class="radiogroup" role="radiogroup" aria-label="Server side options">
 			@shared.RadioLink(shared.RadioLinkProps{Href: "/dev?selector=1", Label: "Option", IsSelected: linkSelector == "1", ClassName: "btn btn-xs", NoIcon: true})
 			@shared.RadioLink(shared.RadioLinkProps{Href: "/dev?selector=2", Label: "Option", IsSelected: linkSelector == "2", ClassName: "btn btn-xs", NoIcon: true})
 			@shared.RadioLink(shared.RadioLinkProps{Href: "/dev?selector=3", Label: "Option", IsSelected: linkSelector == "3", ClassName: "btn btn-xs", NoIcon: true})

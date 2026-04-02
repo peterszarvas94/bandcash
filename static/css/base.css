@@ -64,11 +64,10 @@
     --bg-dark: light-dark(hsl(0 0% 90%), hsl(0 0% 5%));
     --bg: light-dark(hsl(0 0% 95%), hsl(0 0% 10%));
     --bg-light: light-dark(hsl(0 0% 100%), hsl(0 0% 15%));
-    --bg-primary: light-dark(hsl(360 80% 60%), hsl(360 90% 70%));
+    --bg-primary: light-dark(hsl(15 70% 55%), hsl(15 90% 65%));
     --text: light-dark(hsl(0 0% 5%), hsl(0 0% 95%));
     --text-muted: light-dark(hsl(0 0% 30%), hsl(0 0% 70%));
     --text-primary: light-dark(hsl(0 0% 100%), hsl(0 0% 5%));
-
     --content-width: 80ch;
     --wide-width: 120ch;
     --sidebar-width: 15rem;
@@ -77,6 +76,7 @@
 
     --focus-ring: 2px solid var(--text);
     --focus-ring-offset: 2px;
+    --disabled-opacity: 0.7;
 
     color-scheme: light dark;
     interpolate-size: allow-keywords;
@@ -146,10 +146,18 @@
 
   button {
     font: inherit;
+    color: inherit;
+    background: none;
+    border: 0;
   }
 
   .table {
     font-family: inherit;
+  }
+
+  :where(:disabled, [disabled], [aria-disabled="true"]) {
+    opacity: var(--disabled-opacity);
+    cursor: not-allowed;
   }
 
   /* View transitions - disabled animations */

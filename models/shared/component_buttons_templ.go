@@ -185,7 +185,9 @@ func LoadingSubmitButtonWithSignal(props LoadingSubmitButtonWithSignalProps) tem
 			templ_7745c5c3_Var2 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		var templ_7745c5c3_Var3 = []any{props.ClassName}
+		baseClass := strings.TrimSpace(props.ClassName)
+		disabledExpr := fmt.Sprintf("$%s", props.LoadingSignal)
+		var templ_7745c5c3_Var3 = []any{baseClass}
 		templ_7745c5c3_Err = templ.RenderCSSItems(ctx, templ_7745c5c3_Buffer, templ_7745c5c3_Var3...)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
@@ -208,9 +210,9 @@ func LoadingSubmitButtonWithSignal(props LoadingSubmitButtonWithSignalProps) tem
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var5 string
-		templ_7745c5c3_Var5, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("$%s", props.LoadingSignal))
+		templ_7745c5c3_Var5, templ_7745c5c3_Err = templ.JoinStringErrs(disabledExpr)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/shared/component_buttons.templ`, Line: 135, Col: 109}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/shared/component_buttons.templ`, Line: 139, Col: 76}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var5))
 		if templ_7745c5c3_Err != nil {
@@ -223,7 +225,7 @@ func LoadingSubmitButtonWithSignal(props LoadingSubmitButtonWithSignalProps) tem
 		var templ_7745c5c3_Var6 string
 		templ_7745c5c3_Var6, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("!$%s", props.LoadingSignal))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/shared/component_buttons.templ`, Line: 136, Col: 60}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/shared/component_buttons.templ`, Line: 140, Col: 60}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var6))
 		if templ_7745c5c3_Err != nil {
@@ -244,7 +246,7 @@ func LoadingSubmitButtonWithSignal(props LoadingSubmitButtonWithSignalProps) tem
 		var templ_7745c5c3_Var7 string
 		templ_7745c5c3_Var7, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("$%s", props.LoadingSignal))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/shared/component_buttons.templ`, Line: 139, Col: 59}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/shared/component_buttons.templ`, Line: 143, Col: 59}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var7))
 		if templ_7745c5c3_Err != nil {
@@ -265,7 +267,7 @@ func LoadingSubmitButtonWithSignal(props LoadingSubmitButtonWithSignalProps) tem
 		var templ_7745c5c3_Var8 string
 		templ_7745c5c3_Var8, templ_7745c5c3_Err = templ.JoinStringErrs(props.Label)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/shared/component_buttons.templ`, Line: 142, Col: 21}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/shared/component_buttons.templ`, Line: 146, Col: 21}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var8))
 		if templ_7745c5c3_Err != nil {
@@ -336,7 +338,12 @@ func LoadingActionButtonWithSignal(props LoadingActionButtonWithSignalProps) tem
 			templ_7745c5c3_Var10 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		var templ_7745c5c3_Var11 = []any{props.ClassName}
+		baseClass := strings.TrimSpace(props.ClassName)
+		disabledExpr := strings.TrimSpace(props.DisabledExpr)
+		if disabledExpr == "" {
+			disabledExpr = "false"
+		}
+		var templ_7745c5c3_Var11 = []any{baseClass}
 		templ_7745c5c3_Err = templ.RenderCSSItems(ctx, templ_7745c5c3_Buffer, templ_7745c5c3_Var11...)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
@@ -369,7 +376,7 @@ func LoadingActionButtonWithSignal(props LoadingActionButtonWithSignalProps) tem
 		var templ_7745c5c3_Var13 string
 		templ_7745c5c3_Var13, templ_7745c5c3_Err = templ.JoinStringErrs(templ.JSONString(map[string]any{props.LoadingSignal: false}))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/shared/component_buttons.templ`, Line: 162, Col: 77}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/shared/component_buttons.templ`, Line: 173, Col: 77}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var13))
 		if templ_7745c5c3_Err != nil {
@@ -380,9 +387,9 @@ func LoadingActionButtonWithSignal(props LoadingActionButtonWithSignalProps) tem
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var14 string
-		templ_7745c5c3_Var14, templ_7745c5c3_Err = templ.JoinStringErrs(props.DisabledExpr)
+		templ_7745c5c3_Var14, templ_7745c5c3_Err = templ.JoinStringErrs(disabledExpr)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/shared/component_buttons.templ`, Line: 163, Col: 41}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/shared/component_buttons.templ`, Line: 174, Col: 35}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var14))
 		if templ_7745c5c3_Err != nil {
@@ -395,7 +402,7 @@ func LoadingActionButtonWithSignal(props LoadingActionButtonWithSignalProps) tem
 		var templ_7745c5c3_Var15 string
 		templ_7745c5c3_Var15, templ_7745c5c3_Err = templ.JoinStringErrs(props.OnClick)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/shared/component_buttons.templ`, Line: 164, Col: 31}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/shared/component_buttons.templ`, Line: 175, Col: 31}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var15))
 		if templ_7745c5c3_Err != nil {
@@ -408,7 +415,7 @@ func LoadingActionButtonWithSignal(props LoadingActionButtonWithSignalProps) tem
 		var templ_7745c5c3_Var16 string
 		templ_7745c5c3_Var16, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("!$%s", props.LoadingSignal))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/shared/component_buttons.templ`, Line: 166, Col: 60}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/shared/component_buttons.templ`, Line: 177, Col: 60}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var16))
 		if templ_7745c5c3_Err != nil {
@@ -429,7 +436,7 @@ func LoadingActionButtonWithSignal(props LoadingActionButtonWithSignalProps) tem
 		var templ_7745c5c3_Var17 string
 		templ_7745c5c3_Var17, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("$%s", props.LoadingSignal))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/shared/component_buttons.templ`, Line: 169, Col: 59}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/shared/component_buttons.templ`, Line: 180, Col: 59}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var17))
 		if templ_7745c5c3_Err != nil {
@@ -450,7 +457,7 @@ func LoadingActionButtonWithSignal(props LoadingActionButtonWithSignalProps) tem
 		var templ_7745c5c3_Var18 string
 		templ_7745c5c3_Var18, templ_7745c5c3_Err = templ.JoinStringErrs(props.Label)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/shared/component_buttons.templ`, Line: 172, Col: 21}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/shared/component_buttons.templ`, Line: 183, Col: 21}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var18))
 		if templ_7745c5c3_Err != nil {
@@ -485,7 +492,12 @@ func ActionButton(props ActionButtonProps) templ.Component {
 			templ_7745c5c3_Var19 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		var templ_7745c5c3_Var20 = []any{props.ClassName}
+		baseClass := strings.TrimSpace(props.ClassName)
+		disabledExpr := strings.TrimSpace(props.DisabledExpr)
+		if disabledExpr == "" {
+			disabledExpr = "false"
+		}
+		var templ_7745c5c3_Var20 = []any{baseClass}
 		templ_7745c5c3_Err = templ.RenderCSSItems(ctx, templ_7745c5c3_Buffer, templ_7745c5c3_Var20...)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
@@ -508,9 +520,9 @@ func ActionButton(props ActionButtonProps) templ.Component {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var22 string
-		templ_7745c5c3_Var22, templ_7745c5c3_Err = templ.JoinStringErrs(props.DisabledExpr)
+		templ_7745c5c3_Var22, templ_7745c5c3_Err = templ.JoinStringErrs(disabledExpr)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/shared/component_buttons.templ`, Line: 177, Col: 88}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/shared/component_buttons.templ`, Line: 195, Col: 76}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var22))
 		if templ_7745c5c3_Err != nil {
@@ -523,7 +535,7 @@ func ActionButton(props ActionButtonProps) templ.Component {
 		var templ_7745c5c3_Var23 string
 		templ_7745c5c3_Var23, templ_7745c5c3_Err = templ.JoinStringErrs(props.OnClick)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/shared/component_buttons.templ`, Line: 177, Col: 120}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/shared/component_buttons.templ`, Line: 195, Col: 108}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var23))
 		if templ_7745c5c3_Err != nil {
@@ -544,7 +556,7 @@ func ActionButton(props ActionButtonProps) templ.Component {
 		var templ_7745c5c3_Var24 string
 		templ_7745c5c3_Var24, templ_7745c5c3_Err = templ.JoinStringErrs(props.Label)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/shared/component_buttons.templ`, Line: 179, Col: 21}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/shared/component_buttons.templ`, Line: 197, Col: 21}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var24))
 		if templ_7745c5c3_Err != nil {
@@ -581,7 +593,7 @@ func ToggleSwitch(props ToggleSwitchProps) templ.Component {
 		ctx = templ.ClearChildren(ctx)
 		baseClass := strings.TrimSpace(props.ClassName)
 		if baseClass == "" {
-			baseClass = "toggle-switch"
+			baseClass = "toggle"
 		}
 		ariaLabel := strings.TrimSpace(props.AriaLabel)
 		if ariaLabel == "" {
@@ -610,7 +622,7 @@ func ToggleSwitch(props ToggleSwitchProps) templ.Component {
 			var templ_7745c5c3_Var26 string
 			templ_7745c5c3_Var26, templ_7745c5c3_Err = templ.JoinStringErrs(props.Bind)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/shared/component_buttons.templ`, Line: 212, Col: 47}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/shared/component_buttons.templ`, Line: 230, Col: 47}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var26))
 			if templ_7745c5c3_Err != nil {
@@ -632,7 +644,7 @@ func ToggleSwitch(props ToggleSwitchProps) templ.Component {
 			var templ_7745c5c3_Var28 string
 			templ_7745c5c3_Var28, templ_7745c5c3_Err = templ.JoinStringErrs(ariaLabel)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/shared/component_buttons.templ`, Line: 216, Col: 25}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/shared/component_buttons.templ`, Line: 234, Col: 25}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var28))
 			if templ_7745c5c3_Err != nil {
@@ -658,7 +670,7 @@ func ToggleSwitch(props ToggleSwitchProps) templ.Component {
 			var templ_7745c5c3_Var30 string
 			templ_7745c5c3_Var30, templ_7745c5c3_Err = templ.JoinStringErrs(classExpr)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/shared/component_buttons.templ`, Line: 218, Col: 30}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/shared/component_buttons.templ`, Line: 236, Col: 30}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var30))
 			if templ_7745c5c3_Err != nil {
@@ -671,7 +683,7 @@ func ToggleSwitch(props ToggleSwitchProps) templ.Component {
 			var templ_7745c5c3_Var31 string
 			templ_7745c5c3_Var31, templ_7745c5c3_Err = templ.JoinStringErrs(isOnExpr)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/shared/component_buttons.templ`, Line: 219, Col: 36}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/shared/component_buttons.templ`, Line: 237, Col: 36}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var31))
 			if templ_7745c5c3_Err != nil {
@@ -694,7 +706,7 @@ func ToggleSwitch(props ToggleSwitchProps) templ.Component {
 			var templ_7745c5c3_Var32 string
 			templ_7745c5c3_Var32, templ_7745c5c3_Err = templ.JoinStringErrs(disabledExpr)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/shared/component_buttons.templ`, Line: 221, Col: 36}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/shared/component_buttons.templ`, Line: 239, Col: 36}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var32))
 			if templ_7745c5c3_Err != nil {
@@ -707,7 +719,7 @@ func ToggleSwitch(props ToggleSwitchProps) templ.Component {
 			var templ_7745c5c3_Var33 string
 			templ_7745c5c3_Var33, templ_7745c5c3_Err = templ.JoinStringErrs(toggleExpr)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/shared/component_buttons.templ`, Line: 222, Col: 29}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/shared/component_buttons.templ`, Line: 240, Col: 29}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var33))
 			if templ_7745c5c3_Err != nil {
@@ -735,7 +747,7 @@ func ToggleSwitch(props ToggleSwitchProps) templ.Component {
 				var templ_7745c5c3_Var35 string
 				templ_7745c5c3_Var35, templ_7745c5c3_Err = templ.JoinStringErrs(ariaLabel)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/shared/component_buttons.templ`, Line: 235, Col: 26}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/shared/component_buttons.templ`, Line: 253, Col: 26}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var35))
 				if templ_7745c5c3_Err != nil {
@@ -748,7 +760,7 @@ func ToggleSwitch(props ToggleSwitchProps) templ.Component {
 				var templ_7745c5c3_Var36 string
 				templ_7745c5c3_Var36, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("%t", props.IsOn))
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/shared/component_buttons.templ`, Line: 236, Col: 48}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/shared/component_buttons.templ`, Line: 254, Col: 48}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var36))
 				if templ_7745c5c3_Err != nil {
@@ -784,7 +796,7 @@ func ToggleSwitch(props ToggleSwitchProps) templ.Component {
 				var templ_7745c5c3_Var38 string
 				templ_7745c5c3_Var38, templ_7745c5c3_Err = templ.JoinStringErrs(disabledExpr)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/shared/component_buttons.templ`, Line: 239, Col: 37}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/shared/component_buttons.templ`, Line: 257, Col: 37}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var38))
 				if templ_7745c5c3_Err != nil {
@@ -797,7 +809,7 @@ func ToggleSwitch(props ToggleSwitchProps) templ.Component {
 				var templ_7745c5c3_Var39 string
 				templ_7745c5c3_Var39, templ_7745c5c3_Err = templ.JoinStringErrs(props.OnClick)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/shared/component_buttons.templ`, Line: 240, Col: 33}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/shared/component_buttons.templ`, Line: 258, Col: 33}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var39))
 				if templ_7745c5c3_Err != nil {
@@ -820,7 +832,7 @@ func ToggleSwitch(props ToggleSwitchProps) templ.Component {
 				var templ_7745c5c3_Var41 string
 				templ_7745c5c3_Var41, templ_7745c5c3_Err = templ.JoinStringErrs(ariaLabel)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/shared/component_buttons.templ`, Line: 246, Col: 26}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/shared/component_buttons.templ`, Line: 264, Col: 26}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var41))
 				if templ_7745c5c3_Err != nil {
@@ -833,7 +845,7 @@ func ToggleSwitch(props ToggleSwitchProps) templ.Component {
 				var templ_7745c5c3_Var42 string
 				templ_7745c5c3_Var42, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("%t", props.IsOn))
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/shared/component_buttons.templ`, Line: 247, Col: 48}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/shared/component_buttons.templ`, Line: 265, Col: 48}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var42))
 				if templ_7745c5c3_Err != nil {
@@ -869,7 +881,7 @@ func ToggleSwitch(props ToggleSwitchProps) templ.Component {
 				var templ_7745c5c3_Var44 string
 				templ_7745c5c3_Var44, templ_7745c5c3_Err = templ.JoinStringErrs(disabledExpr)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/shared/component_buttons.templ`, Line: 250, Col: 37}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/shared/component_buttons.templ`, Line: 268, Col: 37}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var44))
 				if templ_7745c5c3_Err != nil {
@@ -951,7 +963,7 @@ func RadioButton(props RadioButtonProps) templ.Component {
 			var templ_7745c5c3_Var48 string
 			templ_7745c5c3_Var48, templ_7745c5c3_Err = templ.JoinStringErrs(classExpr)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/shared/component_buttons.templ`, Line: 281, Col: 71}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/shared/component_buttons.templ`, Line: 299, Col: 71}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var48))
 			if templ_7745c5c3_Err != nil {
@@ -964,7 +976,7 @@ func RadioButton(props RadioButtonProps) templ.Component {
 			var templ_7745c5c3_Var49 string
 			templ_7745c5c3_Var49, templ_7745c5c3_Err = templ.JoinStringErrs(selectedExpr)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/shared/component_buttons.templ`, Line: 281, Col: 111}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/shared/component_buttons.templ`, Line: 299, Col: 111}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var49))
 			if templ_7745c5c3_Err != nil {
@@ -977,7 +989,7 @@ func RadioButton(props RadioButtonProps) templ.Component {
 			var templ_7745c5c3_Var50 string
 			templ_7745c5c3_Var50, templ_7745c5c3_Err = templ.JoinStringErrs(disabledExpr)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/shared/component_buttons.templ`, Line: 281, Col: 147}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/shared/component_buttons.templ`, Line: 299, Col: 147}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var50))
 			if templ_7745c5c3_Err != nil {
@@ -990,7 +1002,7 @@ func RadioButton(props RadioButtonProps) templ.Component {
 			var templ_7745c5c3_Var51 string
 			templ_7745c5c3_Var51, templ_7745c5c3_Err = templ.JoinStringErrs(setExpr)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/shared/component_buttons.templ`, Line: 281, Col: 173}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/shared/component_buttons.templ`, Line: 299, Col: 173}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var51))
 			if templ_7745c5c3_Err != nil {
@@ -1008,7 +1020,7 @@ func RadioButton(props RadioButtonProps) templ.Component {
 				var templ_7745c5c3_Var52 string
 				templ_7745c5c3_Var52, templ_7745c5c3_Err = templ.JoinStringErrs(unselectedExpr)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/shared/component_buttons.templ`, Line: 283, Col: 36}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/shared/component_buttons.templ`, Line: 301, Col: 36}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var52))
 				if templ_7745c5c3_Err != nil {
@@ -1029,7 +1041,7 @@ func RadioButton(props RadioButtonProps) templ.Component {
 				var templ_7745c5c3_Var53 string
 				templ_7745c5c3_Var53, templ_7745c5c3_Err = templ.JoinStringErrs(selectedExpr)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/shared/component_buttons.templ`, Line: 286, Col: 34}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/shared/component_buttons.templ`, Line: 304, Col: 34}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var53))
 				if templ_7745c5c3_Err != nil {
@@ -1055,7 +1067,7 @@ func RadioButton(props RadioButtonProps) templ.Component {
 			var templ_7745c5c3_Var54 string
 			templ_7745c5c3_Var54, templ_7745c5c3_Err = templ.JoinStringErrs(props.Label)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/shared/component_buttons.templ`, Line: 290, Col: 22}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/shared/component_buttons.templ`, Line: 308, Col: 22}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var54))
 			if templ_7745c5c3_Err != nil {
@@ -1096,7 +1108,7 @@ func RadioButton(props RadioButtonProps) templ.Component {
 				var templ_7745c5c3_Var57 string
 				templ_7745c5c3_Var57, templ_7745c5c3_Err = templ.JoinStringErrs(disabledExpr)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/shared/component_buttons.templ`, Line: 300, Col: 78}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/shared/component_buttons.templ`, Line: 318, Col: 78}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var57))
 				if templ_7745c5c3_Err != nil {
@@ -1109,7 +1121,7 @@ func RadioButton(props RadioButtonProps) templ.Component {
 				var templ_7745c5c3_Var58 string
 				templ_7745c5c3_Var58, templ_7745c5c3_Err = templ.JoinStringErrs(props.OnClick)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/shared/component_buttons.templ`, Line: 300, Col: 110}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/shared/component_buttons.templ`, Line: 318, Col: 110}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var58))
 				if templ_7745c5c3_Err != nil {
@@ -1139,7 +1151,7 @@ func RadioButton(props RadioButtonProps) templ.Component {
 				var templ_7745c5c3_Var59 string
 				templ_7745c5c3_Var59, templ_7745c5c3_Err = templ.JoinStringErrs(props.Label)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/shared/component_buttons.templ`, Line: 308, Col: 23}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/shared/component_buttons.templ`, Line: 326, Col: 23}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var59))
 				if templ_7745c5c3_Err != nil {
@@ -1175,7 +1187,7 @@ func RadioButton(props RadioButtonProps) templ.Component {
 				var templ_7745c5c3_Var62 string
 				templ_7745c5c3_Var62, templ_7745c5c3_Err = templ.JoinStringErrs(disabledExpr)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/shared/component_buttons.templ`, Line: 311, Col: 78}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/shared/component_buttons.templ`, Line: 329, Col: 78}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var62))
 				if templ_7745c5c3_Err != nil {
@@ -1205,7 +1217,7 @@ func RadioButton(props RadioButtonProps) templ.Component {
 				var templ_7745c5c3_Var63 string
 				templ_7745c5c3_Var63, templ_7745c5c3_Err = templ.JoinStringErrs(props.Label)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/shared/component_buttons.templ`, Line: 319, Col: 23}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/shared/component_buttons.templ`, Line: 337, Col: 23}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var63))
 				if templ_7745c5c3_Err != nil {
@@ -1274,7 +1286,7 @@ func RadioLink(props RadioLinkProps) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 77, "\" disabled aria-disabled=\"true\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 77, "\" aria-disabled=\"true\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -1298,7 +1310,7 @@ func RadioLink(props RadioLinkProps) templ.Component {
 			var templ_7745c5c3_Var67 string
 			templ_7745c5c3_Var67, templ_7745c5c3_Err = templ.JoinStringErrs(props.Label)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/shared/component_buttons.templ`, Line: 350, Col: 22}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/shared/component_buttons.templ`, Line: 368, Col: 22}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var67))
 			if templ_7745c5c3_Err != nil {
@@ -1334,7 +1346,7 @@ func RadioLink(props RadioLinkProps) templ.Component {
 			var templ_7745c5c3_Var70 templ.SafeURL
 			templ_7745c5c3_Var70, templ_7745c5c3_Err = templ.JoinURLErrs(props.Href)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/shared/component_buttons.templ`, Line: 353, Col: 42}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/shared/component_buttons.templ`, Line: 371, Col: 42}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var70))
 			if templ_7745c5c3_Err != nil {
@@ -1347,7 +1359,7 @@ func RadioLink(props RadioLinkProps) templ.Component {
 			var templ_7745c5c3_Var71 string
 			templ_7745c5c3_Var71, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("%t", props.IsSelected))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/shared/component_buttons.templ`, Line: 353, Col: 95}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/shared/component_buttons.templ`, Line: 371, Col: 95}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var71))
 			if templ_7745c5c3_Err != nil {
@@ -1377,7 +1389,7 @@ func RadioLink(props RadioLinkProps) templ.Component {
 			var templ_7745c5c3_Var72 string
 			templ_7745c5c3_Var72, templ_7745c5c3_Err = templ.JoinStringErrs(props.Label)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/shared/component_buttons.templ`, Line: 361, Col: 22}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/shared/component_buttons.templ`, Line: 379, Col: 22}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var72))
 			if templ_7745c5c3_Err != nil {
@@ -1413,6 +1425,7 @@ func SureActionButton(props SureActionButtonProps) templ.Component {
 			templ_7745c5c3_Var73 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
+		baseClass := strings.TrimSpace(props.ClassName)
 		disabledExpr := fmt.Sprintf("(%s) || $sure.triggerID === %q", props.DisabledExpr, props.Dialog.TriggerID)
 		onClickExpr := fmt.Sprintf(
 			`$sure = {
@@ -1436,7 +1449,7 @@ func SureActionButton(props SureActionButtonProps) templ.Component {
 		)
 		showIconExpr := fmt.Sprintf("$sure.triggerID !== %q", props.Dialog.TriggerID)
 		showSpinnerExpr := fmt.Sprintf("$sure.triggerID === %q", props.Dialog.TriggerID)
-		var templ_7745c5c3_Var74 = []any{props.ClassName}
+		var templ_7745c5c3_Var74 = []any{baseClass}
 		templ_7745c5c3_Err = templ.RenderCSSItems(ctx, templ_7745c5c3_Buffer, templ_7745c5c3_Var74...)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
@@ -1461,7 +1474,7 @@ func SureActionButton(props SureActionButtonProps) templ.Component {
 		var templ_7745c5c3_Var76 string
 		templ_7745c5c3_Var76, templ_7745c5c3_Err = templ.JoinStringErrs(disabledExpr)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/shared/component_buttons.templ`, Line: 395, Col: 35}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/shared/component_buttons.templ`, Line: 414, Col: 35}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var76))
 		if templ_7745c5c3_Err != nil {
@@ -1474,7 +1487,7 @@ func SureActionButton(props SureActionButtonProps) templ.Component {
 		var templ_7745c5c3_Var77 string
 		templ_7745c5c3_Var77, templ_7745c5c3_Err = templ.JoinStringErrs(onClickExpr)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/shared/component_buttons.templ`, Line: 396, Col: 29}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/shared/component_buttons.templ`, Line: 415, Col: 29}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var77))
 		if templ_7745c5c3_Err != nil {
@@ -1487,7 +1500,7 @@ func SureActionButton(props SureActionButtonProps) templ.Component {
 		var templ_7745c5c3_Var78 string
 		templ_7745c5c3_Var78, templ_7745c5c3_Err = templ.JoinStringErrs(showIconExpr)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/shared/component_buttons.templ`, Line: 398, Col: 32}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/shared/component_buttons.templ`, Line: 417, Col: 32}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var78))
 		if templ_7745c5c3_Err != nil {
@@ -1508,7 +1521,7 @@ func SureActionButton(props SureActionButtonProps) templ.Component {
 		var templ_7745c5c3_Var79 string
 		templ_7745c5c3_Var79, templ_7745c5c3_Err = templ.JoinStringErrs(showSpinnerExpr)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/shared/component_buttons.templ`, Line: 401, Col: 35}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/shared/component_buttons.templ`, Line: 420, Col: 35}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var79))
 		if templ_7745c5c3_Err != nil {
@@ -1529,7 +1542,7 @@ func SureActionButton(props SureActionButtonProps) templ.Component {
 		var templ_7745c5c3_Var80 string
 		templ_7745c5c3_Var80, templ_7745c5c3_Err = templ.JoinStringErrs(props.Label)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/shared/component_buttons.templ`, Line: 404, Col: 21}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/shared/component_buttons.templ`, Line: 423, Col: 21}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var80))
 		if templ_7745c5c3_Err != nil {
@@ -1564,7 +1577,12 @@ func LoadingIconActionButton(props LoadingIconActionButtonProps) templ.Component
 			templ_7745c5c3_Var81 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		var templ_7745c5c3_Var82 = []any{props.ClassName}
+		baseClass := strings.TrimSpace(props.ClassName)
+		disabledExpr := strings.TrimSpace(props.DisabledExpr)
+		if disabledExpr == "" {
+			disabledExpr = "false"
+		}
+		var templ_7745c5c3_Var82 = []any{baseClass}
 		templ_7745c5c3_Err = templ.RenderCSSItems(ctx, templ_7745c5c3_Buffer, templ_7745c5c3_Var82...)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
@@ -1589,7 +1607,7 @@ func LoadingIconActionButton(props LoadingIconActionButtonProps) templ.Component
 		var templ_7745c5c3_Var84 string
 		templ_7745c5c3_Var84, templ_7745c5c3_Err = templ.JoinStringErrs(props.AriaLabel)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/shared/component_buttons.templ`, Line: 412, Col: 30}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/shared/component_buttons.templ`, Line: 438, Col: 30}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var84))
 		if templ_7745c5c3_Err != nil {
@@ -1602,7 +1620,7 @@ func LoadingIconActionButton(props LoadingIconActionButtonProps) templ.Component
 		var templ_7745c5c3_Var85 string
 		templ_7745c5c3_Var85, templ_7745c5c3_Err = templ.JoinStringErrs(props.Title)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/shared/component_buttons.templ`, Line: 413, Col: 21}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/shared/component_buttons.templ`, Line: 439, Col: 21}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var85))
 		if templ_7745c5c3_Err != nil {
@@ -1613,9 +1631,9 @@ func LoadingIconActionButton(props LoadingIconActionButtonProps) templ.Component
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var86 string
-		templ_7745c5c3_Var86, templ_7745c5c3_Err = templ.JoinStringErrs(props.DisabledExpr)
+		templ_7745c5c3_Var86, templ_7745c5c3_Err = templ.JoinStringErrs(disabledExpr)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/shared/component_buttons.templ`, Line: 415, Col: 41}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/shared/component_buttons.templ`, Line: 441, Col: 35}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var86))
 		if templ_7745c5c3_Err != nil {
@@ -1628,7 +1646,7 @@ func LoadingIconActionButton(props LoadingIconActionButtonProps) templ.Component
 		var templ_7745c5c3_Var87 string
 		templ_7745c5c3_Var87, templ_7745c5c3_Err = templ.JoinStringErrs(props.OnClick)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/shared/component_buttons.templ`, Line: 416, Col: 31}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/shared/component_buttons.templ`, Line: 442, Col: 31}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var87))
 		if templ_7745c5c3_Err != nil {
@@ -1679,7 +1697,12 @@ func IconActionButton(props IconActionButtonProps) templ.Component {
 			templ_7745c5c3_Var88 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		var templ_7745c5c3_Var89 = []any{props.ClassName}
+		baseClass := strings.TrimSpace(props.ClassName)
+		disabledExpr := strings.TrimSpace(props.DisabledExpr)
+		if disabledExpr == "" {
+			disabledExpr = "false"
+		}
+		var templ_7745c5c3_Var89 = []any{baseClass}
 		templ_7745c5c3_Err = templ.RenderCSSItems(ctx, templ_7745c5c3_Buffer, templ_7745c5c3_Var89...)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
@@ -1704,7 +1727,7 @@ func IconActionButton(props IconActionButtonProps) templ.Component {
 		var templ_7745c5c3_Var91 string
 		templ_7745c5c3_Var91, templ_7745c5c3_Err = templ.JoinStringErrs(props.AriaLabel)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/shared/component_buttons.templ`, Line: 431, Col: 30}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/shared/component_buttons.templ`, Line: 464, Col: 30}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var91))
 		if templ_7745c5c3_Err != nil {
@@ -1717,7 +1740,7 @@ func IconActionButton(props IconActionButtonProps) templ.Component {
 		var templ_7745c5c3_Var92 string
 		templ_7745c5c3_Var92, templ_7745c5c3_Err = templ.JoinStringErrs(props.Title)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/shared/component_buttons.templ`, Line: 432, Col: 21}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/shared/component_buttons.templ`, Line: 465, Col: 21}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var92))
 		if templ_7745c5c3_Err != nil {
@@ -1728,9 +1751,9 @@ func IconActionButton(props IconActionButtonProps) templ.Component {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var93 string
-		templ_7745c5c3_Var93, templ_7745c5c3_Err = templ.JoinStringErrs(props.DisabledExpr)
+		templ_7745c5c3_Var93, templ_7745c5c3_Err = templ.JoinStringErrs(disabledExpr)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/shared/component_buttons.templ`, Line: 433, Col: 41}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/shared/component_buttons.templ`, Line: 466, Col: 35}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var93))
 		if templ_7745c5c3_Err != nil {
@@ -1743,7 +1766,7 @@ func IconActionButton(props IconActionButtonProps) templ.Component {
 		var templ_7745c5c3_Var94 string
 		templ_7745c5c3_Var94, templ_7745c5c3_Err = templ.JoinStringErrs(props.OnClick)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/shared/component_buttons.templ`, Line: 434, Col: 31}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/shared/component_buttons.templ`, Line: 467, Col: 31}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var94))
 		if templ_7745c5c3_Err != nil {
@@ -1798,7 +1821,7 @@ func IDActionButton(props IDActionButtonProps) templ.Component {
 		var templ_7745c5c3_Var97 string
 		templ_7745c5c3_Var97, templ_7745c5c3_Err = templ.JoinStringErrs(props.ID)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/shared/component_buttons.templ`, Line: 441, Col: 22}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/shared/component_buttons.templ`, Line: 474, Col: 22}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var97))
 		if templ_7745c5c3_Err != nil {
@@ -1830,7 +1853,7 @@ func IDActionButton(props IDActionButtonProps) templ.Component {
 		var templ_7745c5c3_Var99 string
 		templ_7745c5c3_Var99, templ_7745c5c3_Err = templ.JoinStringErrs(props.Label)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/shared/component_buttons.templ`, Line: 445, Col: 15}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/shared/component_buttons.templ`, Line: 478, Col: 15}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var99))
 		if templ_7745c5c3_Err != nil {

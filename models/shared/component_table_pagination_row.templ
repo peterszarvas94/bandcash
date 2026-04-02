@@ -10,7 +10,7 @@ templ TablePaginationRow(basePath string, query utils.TableQuery, pager utils.Ta
 	<div class="row row-wrap justify-between pb">
 		<div class="row row-wrap row-tight">
 			<span class="hide-tablet text-sm pr">{ ctxi18n.T(ctx, "table.page_size") }</span>
-			<div class="row row-wrap row-tight segmented" role="radiogroup" aria-label={ ctxi18n.T(ctx, "table.page_size") }>
+			<div class="radiogroup" role="radiogroup" aria-label={ ctxi18n.T(ctx, "table.page_size") }>
 				for _, pageSize := range utils.StandardTablePageSizes {
 					@RadioLink(RadioLinkProps{
 						Href:       utils.BuildTablePageSizeURL(basePath, query, pageSize),

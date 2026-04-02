@@ -54,7 +54,7 @@ templ MemberShowMain(data MemberData) {
 		</section>
 		@shared.TableSearchFormWithClass(fmt.Sprintf("/groups/%s/members/%s", data.GroupID, data.Member.ID), data.Query, "table.search_placeholder_member_events", "pt")
 		<div class="row row-wrap justify-between pb">
-			<div class="row row-tight segmented" role="radiogroup" aria-label={ ctxi18n.T(ctx, "table.date_filters") }>
+			<div class="radiogroup" role="radiogroup" aria-label={ ctxi18n.T(ctx, "table.date_filters") }>
 				@shared.RadioLink(shared.RadioLinkProps{
 					Href:       utils.BuildTableDateClearURL(fmt.Sprintf("/groups/%s/members/%s", data.GroupID, data.Member.ID), data.Query),
 					Label:      ctxi18n.T(ctx, "table.all"),
@@ -80,7 +80,7 @@ templ MemberShowMain(data MemberData) {
 				})
 			</div>
 			if utils.DateFilterCustomActive(data.Query) {
-				<form class="row row-tight" method="get" action={ fmt.Sprintf("/groups/%s/members/%s", data.GroupID, data.Member.ID) }>
+				<form class="row" method="get" action={ fmt.Sprintf("/groups/%s/members/%s", data.GroupID, data.Member.ID) }>
 					if data.Query.Search != "" {
 						<input type="hidden" name="q" value={ data.Query.Search }/>
 					}

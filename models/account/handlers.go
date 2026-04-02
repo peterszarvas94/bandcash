@@ -76,7 +76,7 @@ func (s *Account) UpdateLanguage(c echo.Context) error {
 	if err != nil {
 		notifyCtx = c.Request().Context()
 	}
-	utils.Notify(c, "success", ctxi18n.T(notifyCtx, "account.notifications.language_saved"))
+	utils.Notify(c, ctxi18n.T(notifyCtx, "account.notifications.language_saved"))
 	err = utils.SSEHub.ExecuteScript(c, "window.location.reload()")
 	if err != nil {
 		return c.NoContent(http.StatusInternalServerError)
@@ -165,7 +165,7 @@ func (s *Account) LogoutSession(c echo.Context) error {
 		return c.NoContent(http.StatusInternalServerError)
 	}
 
-	utils.Notify(c, "success", ctxi18n.T(c.Request().Context(), "account.notifications.session_logged_out"))
+	utils.Notify(c, ctxi18n.T(c.Request().Context(), "account.notifications.session_logged_out"))
 	return c.NoContent(http.StatusOK)
 }
 
@@ -182,7 +182,7 @@ func (s *Account) LogoutAllOtherSessions(c echo.Context) error {
 
 	if err := db.Qry.DeleteAllUserSessions(c.Request().Context(), userID); err != nil {
 		slog.Error("account.sessions: failed to delete all sessions", "user_id", userID, "err", err)
-		utils.Notify(c, "error", ctxi18n.T(c.Request().Context(), "account.notifications.logout_everywhere_failed"))
+		utils.Notify(c, ctxi18n.T(c.Request().Context(), "account.notifications.logout_everywhere_failed"))
 		if notificationsHTML, renderErr := utils.RenderHTMLForRequest(c, shared.Notifications()); renderErr == nil {
 			_ = utils.SSEHub.PatchHTML(c, notificationsHTML)
 		}

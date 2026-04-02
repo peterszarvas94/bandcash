@@ -45,7 +45,7 @@ func RequireAuth(next echo.HandlerFunc) echo.HandlerFunc {
 		}
 		if bannedCount > 0 {
 			clearSession(c)
-			utils.Notify(c, "error", ctxi18n.T(c.Request().Context(), "auth.banned"))
+			utils.Notify(c, ctxi18n.T(c.Request().Context(), "auth.banned"))
 			return c.Redirect(http.StatusFound, "/login")
 		}
 
@@ -92,7 +92,7 @@ func RequireGroup(next echo.HandlerFunc) echo.HandlerFunc {
 			GroupID: groupID,
 		})
 		if err != nil {
-			utils.Notify(c, "error", ctxi18n.T(c.Request().Context(), "groups.errors.access_denied"))
+			utils.Notify(c, ctxi18n.T(c.Request().Context(), "groups.errors.access_denied"))
 			return c.Redirect(http.StatusFound, "/groups")
 		}
 

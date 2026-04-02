@@ -15,18 +15,16 @@ type DevPageData struct {
 
 func DevPageSignals() map[string]any {
 	return map[string]any{
-		"errors":         map[string]any{"name": ""},
-		"formData":       map[string]any{"name": ""},
-		"_fetching":      false,
-		"activeSpinner":  "",
-		"_notifyInline":  false,
-		"_notifyInfo":    false,
-		"_notifyWarning": false,
-		"_notifySuccess": false,
-		"_notifyError":   false,
-		"switchOff":      false,
-		"switchOn":       true,
-		"switchDisabled": false,
-		"radioDemo":      "1",
+		"errors":           map[string]any{"name": ""},
+		"formData":         map[string]any{"name": ""},
+		"_fetching":        false,
+		"activeSpinner":    "",
+		"_notifyInline":    false,
+		"_notifyTest":      false,
+		"switchOff":        false,
+		"switchOn":         true,
+		"switchDisabled":   false,
+		"switchDisabledOn": true,
+		"radioDemo":        "1",
 	}
 }

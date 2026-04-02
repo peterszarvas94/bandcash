@@ -446,6 +446,7 @@ func (e *Events) NewEventPage(c echo.Context) error {
 func (e *Events) EditEventPage(c echo.Context) error {
 	utils.EnsureTabID(c)
 	groupID := middleware.GetGroupID(c)
+	query := parseParticipantTableQuery(c, e)
 
 	id := c.Param("id")
 	if !utils.IsValidID(id, utils.PrefixEvent) {
@@ -453,53 +454,23 @@ func (e *Events) EditEventPage(c echo.Context) error {
 		return c.NoContent(http.StatusBadRequest)
 	}
 
-	group, err := db.Qry.GetGroupByID(c.Request().Context(), groupID)
+	data, err := e.GetShowData(c.Request().Context(), groupID, id, query)
 	if err != nil {
-		slog.Error("event.edit_page: failed to get group", "group_id", groupID, "err", err)
+		slog.Error("event.edit_page: failed to get data", "group_id", groupID, "event_id", id, "err", err)
 		return c.NoContent(http.StatusInternalServerError)
 	}
 
-	event, err := db.Qry.GetEvent(c.Request().Context(), db.GetEventParams{
-		ID:      id,
-		GroupID: groupID,
-	})
-	if err != nil {
-		slog.Error("event.edit_page: failed to get event", "err", err)
-		return c.NoContent(http.StatusInternalServerError)
+	applyEventShowTableByRole(&data, middleware.IsAdmin(c))
+	if len(data.Breadcrumbs) > 0 {
+		data.Breadcrumbs[len(data.Breadcrumbs)-1].Href = "/groups/" + groupID + "/events/" + id
 	}
+	data.Breadcrumbs = append(data.Breadcrumbs, utils.Crumb{Label: ctxi18n.T(c.Request().Context(), "events.edit")})
+	data.EditorMode = "edit"
+	data.Signals = eventShowSignals(data)
+	data.IsAuthenticated = true
+	data.IsSuperAdmin = middleware.IsSuperadmin(c)
 
-	data := EditEventPageData{
-		Title: ctxi18n.T(c.Request().Context(), "events.page_title"),
-		Breadcrumbs: []utils.Crumb{
-			{Label: ctxi18n.T(c.Request().Context(), "groups.title"), Href: "/groups"},
-			{Label: group.Name, Href: "/groups/" + groupID + "/events"},
-			{Label: ctxi18n.T(c.Request().Context(), "events.title"), Href: "/groups/" + groupID + "/events"},
-			{Label: event.Title, Href: "/groups/" + groupID + "/events/" + id},
-			{Label: ctxi18n.T(c.Request().Context(), "events.edit")},
-		},
-		GroupID: groupID,
-		Event:   &event,
-		Signals: map[string]any{
-			"formData": map[string]any{
-				"title":       event.Title,
-				"time":        event.Time,
-				"place":       event.Place,
-				"description": event.Description,
-				"amount":      event.Amount,
-				"paid":        event.Paid == 1,
-				"paidAt": func() string {
-					if !event.PaidAt.Valid {
-						return ""
-					}
-					return utils.FormatDateInput(event.PaidAt.String)
-				}(),
-			},
-			"errors": map[string]any{"title": "", "time": "", "place": "", "description": "", "amount": ""},
-		},
-		IsAuthenticated: true,
-		IsSuperAdmin:    middleware.IsSuperadmin(c),
-	}
-	return utils.RenderPage(c, EventEditPage(data))
+	return utils.RenderPage(c, EventShow(data))
 }
 
 func (e *Events) Create(c echo.Context) error {
@@ -547,12 +518,12 @@ func (e *Events) Create(c echo.Context) error {
 	})
 	if err != nil {
 		slog.Error("event.create.table: failed to create event", "err", err)
-		utils.Notify(c, "error", ctxi18n.T(c.Request().Context(), "events.notifications.create_failed"))
+		utils.Notify(c, ctxi18n.T(c.Request().Context(), "events.notifications.create_failed"))
 		return c.NoContent(http.StatusInternalServerError)
 	}
 
 	slog.Debug("event.create: created", "id", event.ID, "title", event.Title)
-	utils.Notify(c, "success", ctxi18n.T(c.Request().Context(), "events.notifications.created"))
+	utils.Notify(c, ctxi18n.T(c.Request().Context(), "events.notifications.created"))
 
 	// Clear cache to ensure fresh data on next load
 	utils.InvalidateGroupCaches(groupID)
@@ -623,12 +594,12 @@ func (e *Events) Update(c echo.Context) error {
 	})
 	if err != nil {
 		slog.Error("event.update: failed to update event", "err", err)
-		utils.Notify(c, "error", ctxi18n.T(c.Request().Context(), "events.notifications.update_failed"))
+		utils.Notify(c, ctxi18n.T(c.Request().Context(), "events.notifications.update_failed"))
 		return c.NoContent(http.StatusInternalServerError)
 	}
 
 	slog.Debug("event.update", "id", id)
-	utils.Notify(c, "success", ctxi18n.T(c.Request().Context(), "events.notifications.updated"))
+	utils.Notify(c, ctxi18n.T(c.Request().Context(), "events.notifications.updated"))
 
 	// Clear cache to ensure fresh data on next load
 	utils.InvalidateGroupCaches(groupID)
@@ -666,12 +637,12 @@ func (e *Events) Destroy(c echo.Context) error {
 	})
 	if err != nil {
 		slog.Error("event.destroy: failed to delete event", "err", err)
-		utils.Notify(c, "error", ctxi18n.T(c.Request().Context(), "events.notifications.delete_failed"))
+		utils.Notify(c, ctxi18n.T(c.Request().Context(), "events.notifications.delete_failed"))
 		return c.NoContent(http.StatusInternalServerError)
 	}
 
 	slog.Debug("event.destroy", "id", id)
-	utils.Notify(c, "success", ctxi18n.T(c.Request().Context(), "events.notifications.deleted"))
+	utils.Notify(c, ctxi18n.T(c.Request().Context(), "events.notifications.deleted"))
 
 	if signals.Mode == "single" {
 		err = utils.SSEHub.Redirect(c, "/groups/"+groupID+"/events")
@@ -739,16 +710,16 @@ func (e *Events) ToggleParticipantPaid(c echo.Context) error {
 	})
 	if err != nil {
 		slog.Error("participant.togglePaid: failed to toggle paid status", "err", err)
-		utils.Notify(c, "error", ctxi18n.T(c.Request().Context(), "participants.notifications.toggle_paid_failed"))
+		utils.Notify(c, ctxi18n.T(c.Request().Context(), "participants.notifications.toggle_paid_failed"))
 		return c.NoContent(http.StatusInternalServerError)
 	}
 
 	slog.Debug("participant.togglePaid", "event_id", eventID, "member_id", memberID)
 
 	if result.Paid == 1 {
-		utils.Notify(c, "success", ctxi18n.T(c.Request().Context(), "paid_status.marked_as_paid"))
+		utils.Notify(c, ctxi18n.T(c.Request().Context(), "paid_status.marked_as_paid"))
 	} else {
-		utils.Notify(c, "success", ctxi18n.T(c.Request().Context(), "paid_status.marked_as_unpaid"))
+		utils.Notify(c, ctxi18n.T(c.Request().Context(), "paid_status.marked_as_unpaid"))
 	}
 
 	query := utils.NormalizeTableQuery(signals.TableQuery, e.ParticipantTableQuerySpec())
@@ -780,7 +751,6 @@ func (e *Events) OpenParticipantsDraft(c echo.Context) error {
 		return c.NoContent(http.StatusBadRequest)
 	}
 
-	query := parseParticipantTableQuery(c, e)
 	var signals modeParams
 	if err := datastar.ReadSignals(c.Request(), &signals); err != nil {
 		return c.NoContent(http.StatusBadRequest)
@@ -788,11 +758,9 @@ func (e *Events) OpenParticipantsDraft(c echo.Context) error {
 	if !utils.SetTabID(c, signals.TabID) {
 		return c.NoContent(http.StatusBadRequest)
 	}
-	query = utils.NormalizeTableQuery(signals.TableQuery, e.ParticipantTableQuerySpec())
 
-	if err := e.patchEventShow(c, groupID, eventID, query, "edit", eventData{}, 0, nil, nil, nil, nil, nil, nil, nil, ""); err != nil {
-		slog.Error("participant.draft.open: failed to render", "err", err)
-		return c.NoContent(http.StatusInternalServerError)
+	if err := utils.SSEHub.Redirect(c, "/groups/"+groupID+"/events/"+eventID+"/edit"); err != nil {
+		slog.Warn("participant.draft.open: failed to redirect", "err", err)
 	}
 
 	return c.NoContent(http.StatusOK)
@@ -807,7 +775,6 @@ func (e *Events) CancelParticipantsDraft(c echo.Context) error {
 		return c.NoContent(http.StatusBadRequest)
 	}
 
-	query := parseParticipantTableQuery(c, e)
 	var signals participantDraftParams
 	if err := datastar.ReadSignals(c.Request(), &signals); err != nil {
 		return c.NoContent(http.StatusBadRequest)
@@ -815,11 +782,9 @@ func (e *Events) CancelParticipantsDraft(c echo.Context) error {
 	if !utils.SetTabID(c, signals.TabID) {
 		return c.NoContent(http.StatusBadRequest)
 	}
-	query = utils.NormalizeTableQuery(signals.TableQuery, e.ParticipantTableQuerySpec())
 
-	if err := e.patchEventShow(c, groupID, eventID, query, "read", eventData{}, 0, nil, nil, nil, nil, nil, nil, nil, ""); err != nil {
-		slog.Error("participant.draft.cancel: failed to render", "err", err)
-		return c.NoContent(http.StatusInternalServerError)
+	if err := utils.SSEHub.Redirect(c, "/groups/"+groupID+"/events/"+eventID); err != nil {
+		slog.Warn("participant.draft.cancel: failed to redirect", "err", err)
 	}
 
 	return c.NoContent(http.StatusOK)
@@ -1003,7 +968,7 @@ func (e *Events) SaveParticipantsBulk(c echo.Context) error {
 	members, err := db.Qry.ListMembers(c.Request().Context(), groupID)
 	if err != nil {
 		slog.Error("participant.bulk: failed to list members", "err", err)
-		utils.Notify(c, "error", ctxi18n.T(c.Request().Context(), "participants.notifications.update_failed"))
+		utils.Notify(c, ctxi18n.T(c.Request().Context(), "participants.notifications.update_failed"))
 		return c.NoContent(http.StatusInternalServerError)
 	}
 	memberIDs := make(map[string]struct{}, len(members))
@@ -1087,7 +1052,7 @@ func (e *Events) SaveParticipantsBulk(c echo.Context) error {
 	tx, err := db.DB.BeginTx(c.Request().Context(), &sql.TxOptions{})
 	if err != nil {
 		slog.Error("participant.bulk: failed to begin tx", "err", err)
-		utils.Notify(c, "error", ctxi18n.T(c.Request().Context(), "participants.notifications.update_failed"))
+		utils.Notify(c, ctxi18n.T(c.Request().Context(), "participants.notifications.update_failed"))
 		return c.NoContent(http.StatusInternalServerError)
 	}
 	defer tx.Rollback()
@@ -1111,14 +1076,14 @@ func (e *Events) SaveParticipantsBulk(c echo.Context) error {
 	})
 	if err != nil {
 		slog.Error("participant.bulk: failed to update event", "err", err)
-		utils.Notify(c, "error", ctxi18n.T(c.Request().Context(), "events.notifications.update_failed"))
+		utils.Notify(c, ctxi18n.T(c.Request().Context(), "events.notifications.update_failed"))
 		return c.NoContent(http.StatusInternalServerError)
 	}
 
 	currentParticipants, err := qtx.ListParticipantsByEvent(c.Request().Context(), db.ListParticipantsByEventParams{EventID: eventID, GroupID: groupID})
 	if err != nil {
 		slog.Error("participant.bulk: failed to list participants", "err", err)
-		utils.Notify(c, "error", ctxi18n.T(c.Request().Context(), "participants.notifications.update_failed"))
+		utils.Notify(c, ctxi18n.T(c.Request().Context(), "participants.notifications.update_failed"))
 		return c.NoContent(http.StatusInternalServerError)
 	}
 	currentSet := make(map[string]struct{}, len(currentParticipants))
@@ -1173,7 +1138,7 @@ func (e *Events) SaveParticipantsBulk(c echo.Context) error {
 		}
 		if err != nil {
 			slog.Error("participant.bulk: failed to upsert participant", "err", err, "event_id", eventID, "member_id", row.MemberID)
-			utils.Notify(c, "error", ctxi18n.T(c.Request().Context(), "participants.notifications.update_failed"))
+			utils.Notify(c, ctxi18n.T(c.Request().Context(), "participants.notifications.update_failed"))
 			return c.NoContent(http.StatusInternalServerError)
 		}
 	}
@@ -1189,23 +1154,24 @@ func (e *Events) SaveParticipantsBulk(c echo.Context) error {
 		})
 		if err != nil {
 			slog.Error("participant.bulk: failed to remove participant", "err", err, "event_id", eventID, "member_id", memberID)
-			utils.Notify(c, "error", ctxi18n.T(c.Request().Context(), "participants.notifications.update_failed"))
+			utils.Notify(c, ctxi18n.T(c.Request().Context(), "participants.notifications.update_failed"))
 			return c.NoContent(http.StatusInternalServerError)
 		}
 	}
 
 	if err = tx.Commit(); err != nil {
 		slog.Error("participant.bulk: failed to commit tx", "err", err)
-		utils.Notify(c, "error", ctxi18n.T(c.Request().Context(), "participants.notifications.update_failed"))
+		utils.Notify(c, ctxi18n.T(c.Request().Context(), "participants.notifications.update_failed"))
 		return c.NoContent(http.StatusInternalServerError)
 	}
 
-	utils.Notify(c, "success", ctxi18n.T(c.Request().Context(), "participants.notifications.updated"))
+	utils.Notify(c, ctxi18n.T(c.Request().Context(), "participants.notifications.updated"))
 
-	query := utils.NormalizeTableQuery(signals.TableQuery, e.ParticipantTableQuerySpec())
-	if err := e.patchEventShow(c, groupID, eventID, query, "read", eventData{}, 0, nil, nil, nil, nil, nil, nil, nil, ""); err != nil {
-		slog.Error("participant.bulk: failed to render", "err", err)
-		return c.NoContent(http.StatusInternalServerError)
+	// Clear cache to ensure fresh data on next load
+	utils.InvalidateGroupCaches(groupID)
+
+	if err := utils.SSEHub.Redirect(c, "/groups/"+groupID+"/events/"+eventID); err != nil {
+		slog.Warn("participant.bulk: failed to redirect", "err", err)
 	}
 
 	slog.Debug("participant.bulk", "event_id", eventID, "rows", len(signals.Wizard.Rows))
@@ -1237,7 +1203,7 @@ func (e *Events) TogglePaid(c echo.Context) error {
 	})
 	if err != nil {
 		slog.Error("event.togglePaid: failed to toggle paid status", "err", err)
-		utils.Notify(c, "error", ctxi18n.T(c.Request().Context(), "events.notifications.toggle_paid_failed"))
+		utils.Notify(c, ctxi18n.T(c.Request().Context(), "events.notifications.toggle_paid_failed"))
 		return c.NoContent(http.StatusInternalServerError)
 	}
 
@@ -1247,9 +1213,9 @@ func (e *Events) TogglePaid(c echo.Context) error {
 	utils.InvalidateGroupCaches(groupID)
 
 	if result.Paid == 1 {
-		utils.Notify(c, "success", ctxi18n.T(c.Request().Context(), "paid_status.marked_as_paid"))
+		utils.Notify(c, ctxi18n.T(c.Request().Context(), "paid_status.marked_as_paid"))
 	} else {
-		utils.Notify(c, "success", ctxi18n.T(c.Request().Context(), "paid_status.marked_as_unpaid"))
+		utils.Notify(c, ctxi18n.T(c.Request().Context(), "paid_status.marked_as_unpaid"))
 	}
 
 	if signals.Mode == "single" {

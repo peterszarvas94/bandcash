@@ -9,9 +9,9 @@ templ NotificationsContent() {
 	<form class="form" data-on:submit="@post('/dev/notifications/inline')" data-indicator:_notifyInline>
 		<div class="field">
 			<label>Required field</label>
-			<div class="row row-tight">
+			<div class="row">
 				<input type="text" data-bind="formData.name" placeholder="Required field" class="input"/>
-				<button type="submit" class="btn" data-attr:disabled="$_notifyInline">
+				<button type="submit" class="btn btn-input" data-attr:disabled="$_notifyInline">
 					<span data-show="!$_notifyInline">
 						@icons.Save(templ.Attributes{"class": "icon"})
 					</span>
@@ -26,36 +26,12 @@ templ NotificationsContent() {
 	</form>
 	<div class="row row-wrap">
 		@shared.LoadingActionButtonWithSignal(shared.LoadingActionButtonWithSignalProps{
-			ClassName:     "btn",
-			OnClick:       "@post('/dev/notifications/info')",
-			DisabledExpr:  "$_notifyInfo",
-			Label:         "Info",
-			IconName:      icons.IconInfo,
-			LoadingSignal: "_notifyInfo",
-		})
-		@shared.LoadingActionButtonWithSignal(shared.LoadingActionButtonWithSignalProps{
-			ClassName:     "btn",
-			OnClick:       "@post('/dev/notifications/success')",
-			DisabledExpr:  "$_notifySuccess",
-			Label:         "Success",
-			IconName:      icons.IconCheck,
-			LoadingSignal: "_notifySuccess",
-		})
-		@shared.LoadingActionButtonWithSignal(shared.LoadingActionButtonWithSignalProps{
-			ClassName:     "btn",
-			OnClick:       "@post('/dev/notifications/warning')",
-			DisabledExpr:  "$_notifyWarning",
-			Label:         "Warning",
-			IconName:      icons.IconTriangleAlert,
-			LoadingSignal: "_notifyWarning",
-		})
-		@shared.LoadingActionButtonWithSignal(shared.LoadingActionButtonWithSignalProps{
-			ClassName:     "btn",
-			OnClick:       "@post('/dev/notifications/error')",
-			DisabledExpr:  "$_notifyError",
-			Label:         "Error",
-			IconName:      icons.IconCircleX,
-			LoadingSignal: "_notifyError",
+			ClassName:     "btn btn-primary",
+			OnClick:       "@post('/dev/notifications/test')",
+			DisabledExpr:  "$_notifyTest",
+			Label:         "Notification test",
+			IconName:      icons.IconBell,
+			LoadingSignal: "_notifyTest",
 		})
 	</div>
 }

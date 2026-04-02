@@ -14,7 +14,7 @@ Apply one strict feedback model across the app.
    - Keep/patch form signals like `errors`, `authError`.
    - Return `422`.
 2. Non-validation failure:
-   - `utils.Notify(c, "error", ctxi18n.T(...))`.
+   - `utils.Notify(c, ctxi18n.T(...))`.
    - Return/redirect with normal flow.
 3. Success:
    - `utils.Notify(c, "success"|"info", ctxi18n.T(...))`.

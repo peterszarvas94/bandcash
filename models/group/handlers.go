@@ -148,7 +148,7 @@ func (g *Group) CreateGroup(c echo.Context) error {
 	}
 	signals.FormData.Name = strings.TrimSpace(signals.FormData.Name)
 	if errs := utils.ValidateWithLocale(c.Request().Context(), signals.FormData); errs != nil {
-		utils.Notify(c, "error", errs["name"])
+		utils.Notify(c, errs["name"])
 		return c.NoContent(http.StatusUnprocessableEntity)
 	}
 
@@ -172,7 +172,7 @@ func (g *Group) CreateGroup(c echo.Context) error {
 			slog.Warn("group.create: failed to send group created email", "group_id", group.ID, "err", err)
 		}
 	}
-	utils.Notify(c, "success", ctxi18n.T(c.Request().Context(), "groups.messages.created"))
+	utils.Notify(c, ctxi18n.T(c.Request().Context(), "groups.messages.created"))
 
 	// Redirect to group events
 	err = utils.SSEHub.Redirect(c, "/groups/"+group.ID+"/events")
@@ -249,11 +249,11 @@ func (g *Group) UpdateGroup(c echo.Context) error {
 	})
 	if err != nil {
 		slog.Error("group.update: failed to update group", "group_id", groupID, "err", err)
-		utils.Notify(c, "error", ctxi18n.T(c.Request().Context(), "groups.errors.update_failed"))
+		utils.Notify(c, ctxi18n.T(c.Request().Context(), "groups.errors.update_failed"))
 		return c.NoContent(http.StatusInternalServerError)
 	}
 
-	utils.Notify(c, "success", ctxi18n.T(c.Request().Context(), "groups.messages.updated"))
+	utils.Notify(c, ctxi18n.T(c.Request().Context(), "groups.messages.updated"))
 
 	err = utils.SSEHub.Redirect(c, "/groups/"+groupID+"/about")
 	if err != nil {
@@ -286,7 +286,7 @@ func (g *Group) LeaveGroup(c echo.Context) error {
 
 	_, err = db.Qry.GetGroupByID(c.Request().Context(), groupID)
 	if err != nil {
-		utils.Notify(c, "error", ctxi18n.T(c.Request().Context(), "groups.errors.group_not_found"))
+		utils.Notify(c, ctxi18n.T(c.Request().Context(), "groups.errors.group_not_found"))
 		err = utils.SSEHub.Redirect(c, "/groups")
 		if err != nil {
 			return c.NoContent(http.StatusInternalServerError)
@@ -296,10 +296,10 @@ func (g *Group) LeaveGroup(c echo.Context) error {
 	if isAdminUser(c.Request().Context(), groupID, userID) {
 		if err := g.removeAdminAccess(c.Request().Context(), groupID, userID); err != nil {
 			if err == errAtLeastOneAdmin {
-				utils.Notify(c, "error", ctxi18n.T(c.Request().Context(), "groups.errors.at_least_one_admin"))
+				utils.Notify(c, ctxi18n.T(c.Request().Context(), "groups.errors.at_least_one_admin"))
 			} else {
 				slog.Error("group: failed to leave as admin", "group_id", groupID, "user_id", userID, "err", err)
-				utils.Notify(c, "error", ctxi18n.T(c.Request().Context(), "groups.errors.leave_failed"))
+				utils.Notify(c, ctxi18n.T(c.Request().Context(), "groups.errors.leave_failed"))
 			}
 			err = utils.SSEHub.Redirect(c, "/groups")
 			if err != nil {
@@ -308,7 +308,7 @@ func (g *Group) LeaveGroup(c echo.Context) error {
 			return c.NoContent(http.StatusOK)
 		}
 
-		utils.Notify(c, "success", ctxi18n.T(c.Request().Context(), "groups.messages.left"))
+		utils.Notify(c, ctxi18n.T(c.Request().Context(), "groups.messages.left"))
 		err = utils.SSEHub.Redirect(c, "/groups")
 		if err != nil {
 			return c.NoContent(http.StatusInternalServerError)
@@ -322,7 +322,7 @@ func (g *Group) LeaveGroup(c echo.Context) error {
 	})
 	if err != nil {
 		slog.Error("group: failed to leave", "err", err)
-		utils.Notify(c, "error", ctxi18n.T(c.Request().Context(), "groups.errors.leave_failed"))
+		utils.Notify(c, ctxi18n.T(c.Request().Context(), "groups.errors.leave_failed"))
 		err = utils.SSEHub.Redirect(c, "/groups")
 		if err != nil {
 			return c.NoContent(http.StatusInternalServerError)
@@ -330,7 +330,7 @@ func (g *Group) LeaveGroup(c echo.Context) error {
 		return c.NoContent(http.StatusOK)
 	}
 
-	utils.Notify(c, "success", ctxi18n.T(c.Request().Context(), "groups.messages.left"))
+	utils.Notify(c, ctxi18n.T(c.Request().Context(), "groups.messages.left"))
 	err = utils.SSEHub.Redirect(c, "/groups")
 	if err != nil {
 		return c.NoContent(http.StatusInternalServerError)
@@ -360,7 +360,7 @@ func (g *Group) DeleteGroup(c echo.Context) error {
 
 	group, err := db.Qry.GetGroupByID(c.Request().Context(), groupID)
 	if err != nil {
-		utils.Notify(c, "error", ctxi18n.T(c.Request().Context(), "groups.errors.group_not_found"))
+		utils.Notify(c, ctxi18n.T(c.Request().Context(), "groups.errors.group_not_found"))
 		err = utils.SSEHub.Redirect(c, "/groups")
 		if err != nil {
 			return c.NoContent(http.StatusInternalServerError)
@@ -368,7 +368,7 @@ func (g *Group) DeleteGroup(c echo.Context) error {
 		return c.NoContent(http.StatusOK)
 	}
 	if group.AdminUserID != userID && !middleware.IsSuperadmin(c) {
-		utils.Notify(c, "error", ctxi18n.T(c.Request().Context(), "groups.errors.admin_required"))
+		utils.Notify(c, ctxi18n.T(c.Request().Context(), "groups.errors.admin_required"))
 		err = utils.SSEHub.Redirect(c, "/groups")
 		if err != nil {
 			return c.NoContent(http.StatusInternalServerError)
@@ -378,7 +378,7 @@ func (g *Group) DeleteGroup(c echo.Context) error {
 
 	if err := db.Qry.DeleteGroup(c.Request().Context(), groupID); err != nil {
 		slog.Error("group: failed to delete", "err", err)
-		utils.Notify(c, "error", ctxi18n.T(c.Request().Context(), "groups.errors.delete_failed"))
+		utils.Notify(c, ctxi18n.T(c.Request().Context(), "groups.errors.delete_failed"))
 		err = utils.SSEHub.Redirect(c, "/groups")
 		if err != nil {
 			return c.NoContent(http.StatusInternalServerError)
@@ -386,7 +386,7 @@ func (g *Group) DeleteGroup(c echo.Context) error {
 		return c.NoContent(http.StatusOK)
 	}
 
-	utils.Notify(c, "success", ctxi18n.T(c.Request().Context(), "groups.messages.deleted"))
+	utils.Notify(c, ctxi18n.T(c.Request().Context(), "groups.messages.deleted"))
 	if signals.Mode == "table" {
 		query := utils.NormalizeTableQuery(signals.TableQuery, g.model.TableQuerySpec())
 		data, err := g.model.GetGroupsPageData(c.Request().Context(), userID, query)
@@ -671,10 +671,10 @@ func (g *Group) UserInvitePage(c echo.Context) error {
 
 func (g *Group) redirectUsersPage(c echo.Context, groupID, messageKey, errorKey string, status int) error {
 	if messageKey != "" {
-		utils.Notify(c, "success", ctxi18n.T(c.Request().Context(), messageKey))
+		utils.Notify(c, ctxi18n.T(c.Request().Context(), messageKey))
 	}
 	if errorKey != "" {
-		utils.Notify(c, "error", ctxi18n.T(c.Request().Context(), errorKey))
+		utils.Notify(c, ctxi18n.T(c.Request().Context(), errorKey))
 	}
 	err := utils.SSEHub.Redirect(c, "/groups/"+groupID+"/users")
 	if err != nil {
@@ -685,10 +685,10 @@ func (g *Group) redirectUsersPage(c echo.Context, groupID, messageKey, errorKey 
 
 func (g *Group) patchUsersPage(c echo.Context, groupID, messageKey, errorKey string) error {
 	if messageKey != "" {
-		utils.Notify(c, "success", ctxi18n.T(c.Request().Context(), messageKey))
+		utils.Notify(c, ctxi18n.T(c.Request().Context(), messageKey))
 	}
 	if errorKey != "" {
-		utils.Notify(c, "error", ctxi18n.T(c.Request().Context(), errorKey))
+		utils.Notify(c, ctxi18n.T(c.Request().Context(), errorKey))
 	}
 	data, err := g.usersPageData(c, groupID, queryValuesFromReferer(c))
 	if err != nil {
@@ -708,10 +708,10 @@ func (g *Group) patchUsersPage(c echo.Context, groupID, messageKey, errorKey str
 
 func (g *Group) patchUsersPageWithState(c echo.Context, groupID string, query utils.TableQuery, messageKey, errorKey string) error {
 	if messageKey != "" {
-		utils.Notify(c, "success", ctxi18n.T(c.Request().Context(), messageKey))
+		utils.Notify(c, ctxi18n.T(c.Request().Context(), messageKey))
 	}
 	if errorKey != "" {
-		utils.Notify(c, "error", ctxi18n.T(c.Request().Context(), errorKey))
+		utils.Notify(c, ctxi18n.T(c.Request().Context(), errorKey))
 	}
 	data, err := g.usersPageData(c, groupID, tableQueryValues(query))
 	if err != nil {
@@ -742,7 +742,7 @@ func (g *Group) AddViewer(c echo.Context) error {
 	signals.FormData.Email = strings.ToLower(strings.TrimSpace(signals.FormData.Email))
 	signals.FormData.Role = normalizeInviteRole(signals.FormData.Role)
 	if errs := utils.ValidateWithLocale(c.Request().Context(), signals.FormData); errs != nil {
-		utils.Notify(c, "error", errs["email"])
+		utils.Notify(c, errs["email"])
 		return c.NoContent(http.StatusUnprocessableEntity)
 	}
 	emailAddress := signals.FormData.Email
@@ -808,7 +808,7 @@ func (g *Group) AddViewer(c echo.Context) error {
 		return g.patchUsersPageWithState(c, groupID, signals.TableQuery, "", "groups.errors.send_failed")
 	}
 
-	utils.Notify(c, "success", ctxi18n.T(c.Request().Context(), "groups.messages.invite_sent"))
+	utils.Notify(c, ctxi18n.T(c.Request().Context(), "groups.messages.invite_sent"))
 	err = utils.SSEHub.Redirect(c, "/groups/"+groupID+"/users")
 	if err != nil {
 		return c.NoContent(http.StatusInternalServerError)
@@ -934,7 +934,7 @@ func (g *Group) PromoteViewerToAdmin(c echo.Context) error {
 	if signals.Mode == "table" {
 		return g.patchUsersPageWithState(c, groupID, signals.TableQuery, "groups.messages.viewer_promoted", "")
 	}
-	utils.Notify(c, "success", ctxi18n.T(c.Request().Context(), "groups.messages.viewer_promoted"))
+	utils.Notify(c, ctxi18n.T(c.Request().Context(), "groups.messages.viewer_promoted"))
 	err = utils.SSEHub.Redirect(c, "/groups/"+groupID+"/users/"+userID)
 	if err != nil {
 		return c.NoContent(http.StatusInternalServerError)
@@ -994,7 +994,7 @@ func (g *Group) DemoteAdminToViewer(c echo.Context) error {
 	if signals.Mode == "table" {
 		return g.patchUsersPageWithState(c, groupID, signals.TableQuery, "groups.messages.admin_demoted", "")
 	}
-	utils.Notify(c, "success", ctxi18n.T(c.Request().Context(), "groups.messages.admin_demoted"))
+	utils.Notify(c, ctxi18n.T(c.Request().Context(), "groups.messages.admin_demoted"))
 	err = utils.SSEHub.Redirect(c, "/groups/"+groupID+"/users/"+userID)
 	if err != nil {
 		return c.NoContent(http.StatusInternalServerError)
@@ -1043,7 +1043,7 @@ func (g *Group) TransferGroupOwnership(c echo.Context) error {
 		return g.redirectUsersPage(c, groupID, "", "groups.errors.transfer_failed", http.StatusInternalServerError)
 	}
 
-	utils.Notify(c, "success", ctxi18n.T(ctx, "groups.messages.owner_transferred"))
+	utils.Notify(c, ctxi18n.T(ctx, "groups.messages.owner_transferred"))
 	err = utils.SSEHub.Redirect(c, "/groups/"+groupID+"/users/"+userID)
 	if err != nil {
 		return c.NoContent(http.StatusInternalServerError)
