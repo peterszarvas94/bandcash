@@ -31,11 +31,11 @@ func GroupsPage(data GroupsPageData) templ.Component {
 			templ_7745c5c3_Var1 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = shared.CommonLayout(shared.CommonLayoutProps{
+		templ_7745c5c3_Err = shared.BaseLayout(shared.BaseLayoutProps{
 			Title:           data.Title,
 			Crumbs:          data.Breadcrumbs,
 			Signals:         data.Signals,
-			Content:         GroupsMain(data),
+			Content:         shared.CommonContent(GroupsMain(data)),
 			ActiveUrl:       "/groups",
 			IsAuthenticated: data.IsAuthenticated,
 			IsSuperAdmin:    data.IsSuperAdmin,

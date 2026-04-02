@@ -5,14 +5,15 @@ import (
 )
 
 templ AdminFlagsPage(data DashboardData) {
-	@shared.AdminLayout(shared.AdminLayoutProps{
+	@shared.BaseLayout(shared.BaseLayoutProps{
 		Title:           data.Title,
 		Crumbs:          data.Breadcrumbs,
 		Signals:         data.Signals,
 		Content:         FlagsContent(data.SignupEnabled),
-		ActiveTab:       "flags",
 		ActiveUrl:       "/admin/flags",
 		IsAuthenticated: data.IsAuthenticated,
 		IsSuperAdmin:    data.IsSuperAdmin,
+		TabSidebar:      shared.AdminTabs("flags"),
+		TabToggleID:     "admin",
 	})
 }

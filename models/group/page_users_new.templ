@@ -5,7 +5,7 @@ import (
 )
 
 templ GroupUsersNewPage(data UsersNewPageData) {
-	@shared.GroupLayout(shared.GroupLayoutProps{
+	@shared.BaseLayout(shared.BaseLayoutProps{
 		Title:  data.Title,
 		Crumbs: data.Breadcrumbs,
 		Signals:         data.Signals,
@@ -13,7 +13,7 @@ templ GroupUsersNewPage(data UsersNewPageData) {
 		ActiveUrl:       "/groups",
 		IsAuthenticated: data.IsAuthenticated,
 		IsSuperAdmin:    data.IsSuperAdmin,
-		GroupId:         data.GroupID,
-		ActiveTab:       "users",
+		TabSidebar:      shared.GroupTabs(data.GroupID, "users"),
+		TabToggleID:     data.GroupID,
 	})
 }

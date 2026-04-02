@@ -3,11 +3,11 @@ package group
 import shared "bandcash/models/shared"
 
 templ GroupNewPage(data NewGroupPageData) {
-	@shared.CommonLayout(shared.CommonLayoutProps{
+	@shared.BaseLayout(shared.BaseLayoutProps{
 		Title:           data.Title,
 		Crumbs:          data.Breadcrumbs,
 		Signals:         data.Signals,
-		Content:         GroupNewMain(),
+		Content:         shared.CommonContent(GroupNewMain()),
 		ActiveUrl:       "/groups",
 		IsAuthenticated: data.IsAuthenticated,
 		IsSuperAdmin:    data.IsSuperAdmin,

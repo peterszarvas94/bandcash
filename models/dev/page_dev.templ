@@ -6,11 +6,11 @@ import (
 )
 
 templ DevPage(data DevPageData) {
-	@shared.CommonLayout(shared.CommonLayoutProps{
+	@shared.BaseLayout(shared.BaseLayoutProps{
 		Title:           data.Title,
 		Crumbs:          data.Breadcrumbs,
 		Signals:         data.Signals,
-		Content:         DevMain(data.LinkSelector),
+		Content:         shared.CommonContent(DevMain(data.LinkSelector)),
 		ActiveUrl:       "/dev",
 		IsAuthenticated: data.IsAuthenticated,
 		IsSuperAdmin:    false,

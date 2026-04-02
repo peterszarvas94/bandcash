@@ -132,7 +132,7 @@ func (a *Admin) UsersPage(c echo.Context) error {
 		Users:           users,
 		UserQuery:       query,
 		UserPager:       utils.BuildTablePagination(totalItems, query),
-		UsersTable:      utils.AdminUsersTableLayout(),
+		UsersTable:      AdminUsersTableLayout(),
 		IsAuthenticated: true,
 		IsSuperAdmin:    true,
 	}
@@ -211,7 +211,7 @@ func (a *Admin) GroupsPage(c echo.Context) error {
 		Groups:          groups,
 		GroupQuery:      query,
 		GroupPager:      utils.BuildTablePagination(totalItems, query),
-		GroupsTable:     utils.AdminGroupsTableLayout(),
+		GroupsTable:     AdminGroupsTableLayout(),
 		IsAuthenticated: true,
 		IsSuperAdmin:    true,
 	}
@@ -290,7 +290,7 @@ func (a *Admin) SessionsPage(c echo.Context) error {
 		Sessions:        sessions,
 		SessionQuery:    query,
 		SessionPager:    utils.BuildTablePagination(totalItems, query),
-		SessionsTable:   utils.AdminSessionsTableLayout(),
+		SessionsTable:   AdminSessionsTableLayout(),
 		IsAuthenticated: true,
 		IsSuperAdmin:    true,
 	}
@@ -549,7 +549,7 @@ func (a *Admin) patchRecentUsers(c echo.Context) error {
 		Users:           users,
 		UserQuery:       query,
 		UserPager:       utils.BuildTablePagination(totalItems, query),
-		UsersTable:      utils.AdminUsersTableLayout(),
+		UsersTable:      AdminUsersTableLayout(),
 		IsAuthenticated: true,
 		IsSuperAdmin:    true,
 	}
@@ -638,7 +638,7 @@ func (a *Admin) patchRecentSessions(c echo.Context) error {
 		Sessions:        sessions,
 		SessionQuery:    query,
 		SessionPager:    utils.BuildTablePagination(totalItems, query),
-		SessionsTable:   utils.AdminSessionsTableLayout(),
+		SessionsTable:   AdminSessionsTableLayout(),
 		IsAuthenticated: true,
 		IsSuperAdmin:    true,
 	}

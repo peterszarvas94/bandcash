@@ -323,6 +323,12 @@ func (e *Events) patchEventShow(c echo.Context, groupID, eventID string, query u
 	if editorMode != "" {
 		data.EditorMode = editorMode
 	}
+	if data.EditorMode == "edit" {
+		if len(data.Breadcrumbs) > 0 {
+			data.Breadcrumbs[len(data.Breadcrumbs)-1].Href = "/groups/" + groupID + "/events/" + eventID
+		}
+		data.Breadcrumbs = append(data.Breadcrumbs, utils.Crumb{Label: ctxi18n.T(c.Request().Context(), "events.edit")})
+	}
 
 	if eventForm.Title != "" || eventForm.Time != "" || eventForm.Place != "" || eventForm.Amount > 0 {
 		data.Event.Title = eventForm.Title
@@ -361,7 +367,12 @@ func (e *Events) patchEventShow(c echo.Context, groupID, eventID string, query u
 	data.WizardError = wizardError
 	data.Signals = eventShowSignals(data)
 
-	html, err := utils.RenderHTMLForRequest(c, EventShow(data))
+	var html string
+	if data.EditorMode == "edit" {
+		html, err = utils.RenderHTMLForRequest(c, EventEditPage(data))
+	} else {
+		html, err = utils.RenderHTMLForRequest(c, EventShow(data))
+	}
 	if err != nil {
 		return err
 	}
@@ -470,7 +481,7 @@ func (e *Events) EditEventPage(c echo.Context) error {
 	data.IsAuthenticated = true
 	data.IsSuperAdmin = middleware.IsSuperadmin(c)
 
-	return utils.RenderPage(c, EventShow(data))
+	return utils.RenderPage(c, EventEditPage(data))
 }
 
 func (e *Events) Create(c echo.Context) error {

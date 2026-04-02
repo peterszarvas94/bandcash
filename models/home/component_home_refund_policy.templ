@@ -5,11 +5,11 @@ import (
 )
 
 templ HomeRefundPolicy(data HomeData) {
-	@shared.CommonLayout(shared.CommonLayoutProps{
+	@shared.BaseLayout(shared.BaseLayoutProps{
 		Title:           data.Title,
 		Crumbs:          data.Breadcrumbs,
 		Signals:         nil,
-		Content:         HomeRefundPolicyMain(data.CurrentLang),
+		Content:         shared.CommonContent(HomeRefundPolicyMain(data.CurrentLang)),
 		ActiveUrl:       "/refund-policy",
 		IsAuthenticated: data.IsAuthenticated,
 		IsSuperAdmin:    data.IsSuperAdmin,

@@ -8,7 +8,10 @@ package shared
 import "github.com/a-h/templ"
 import templruntime "github.com/a-h/templ/runtime"
 
-import icons "bandcash/models/shared/icons"
+import (
+	"bandcash/internal/utils"
+	icons "bandcash/models/shared/icons"
+)
 
 type ErrorPageData struct {
 	Title      string
@@ -41,7 +44,14 @@ func ErrorPage(data ErrorPageData) templ.Component {
 			templ_7745c5c3_Var1 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = ErrorLayout(data.Title, ErrorPageMain(data)).Render(ctx, templ_7745c5c3_Buffer)
+		templ_7745c5c3_Err = BaseLayout(BaseLayoutProps{
+			Title:           data.Title,
+			Crumbs:          []utils.Crumb{},
+			Content:         ErrorPageMain(data),
+			ActiveUrl:       "",
+			IsAuthenticated: false,
+			IsSuperAdmin:    false,
+		}).Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

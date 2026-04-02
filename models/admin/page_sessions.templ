@@ -5,14 +5,15 @@ import (
 )
 
 templ AdminSessionsPage(data DashboardData) {
-	@shared.AdminLayout(shared.AdminLayoutProps{
+	@shared.BaseLayout(shared.BaseLayoutProps{
 		Title:           data.Title,
 		Crumbs:          data.Breadcrumbs,
 		Signals:         data.Signals,
 		Content:         SessionsTableSection(data),
-		ActiveTab:       "sessions",
 		ActiveUrl:       "/admin/sessions",
 		IsAuthenticated: data.IsAuthenticated,
 		IsSuperAdmin:    data.IsSuperAdmin,
+		TabSidebar:      shared.AdminTabs("sessions"),
+		TabToggleID:     "admin",
 	})
 }

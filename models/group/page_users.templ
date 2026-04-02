@@ -9,7 +9,7 @@ func usersTablePath(groupID string) string {
 }
 
 templ GroupUsersPage(data UsersPageData) {
-	@shared.GroupLayout(shared.GroupLayoutProps{
+	@shared.BaseLayout(shared.BaseLayoutProps{
 		Title:           data.Title,
 		Crumbs:          data.Breadcrumbs,
 		Signals:         data.Signals,
@@ -17,7 +17,7 @@ templ GroupUsersPage(data UsersPageData) {
 		ActiveUrl:       "/groups",
 		IsAuthenticated: data.IsAuthenticated,
 		IsSuperAdmin:    data.IsSuperAdmin,
-		GroupId:         data.GroupID,
-		ActiveTab:       "users",
+		TabSidebar:      shared.GroupTabs(data.GroupID, "users"),
+		TabToggleID:     data.GroupID,
 	})
 }

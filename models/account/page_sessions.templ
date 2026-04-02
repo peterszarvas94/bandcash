@@ -5,11 +5,11 @@ import (
 )
 
 templ SessionsPage(data SessionsData) {
-	@shared.CommonLayout(shared.CommonLayoutProps{
+	@shared.BaseLayout(shared.BaseLayoutProps{
 		Title:           data.Title,
 		Crumbs:          data.Breadcrumbs,
 		Signals:         data.Signals,
-		Content:         SessionsMain(data),
+		Content:         shared.CommonContent(SessionsMain(data)),
 		ActiveUrl:       "/account",
 		IsAuthenticated: data.IsAuthenticated,
 		IsSuperAdmin:    data.IsSuperAdmin,

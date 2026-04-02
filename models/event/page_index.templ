@@ -5,7 +5,7 @@ import (
 )
 
 templ EventIndex(data EventsData) {
-	@shared.GroupLayout(shared.GroupLayoutProps{
+	@shared.BaseLayout(shared.BaseLayoutProps{
 		Title:           data.Title,
 		Crumbs:          data.Breadcrumbs,
 		Signals:         data.Signals,
@@ -13,7 +13,7 @@ templ EventIndex(data EventsData) {
 		ActiveUrl:       "/groups",
 		IsAuthenticated: data.IsAuthenticated,
 		IsSuperAdmin:    data.IsSuperAdmin,
-		GroupId:         data.GroupID,
-		ActiveTab:       "events",
+		TabSidebar:      shared.GroupTabs(data.GroupID, "events"),
+		TabToggleID:     data.GroupID,
 	})
 }

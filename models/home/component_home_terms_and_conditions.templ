@@ -5,11 +5,11 @@ import (
 )
 
 templ HomeTermsAndConditions(data HomeData) {
-	@shared.CommonLayout(shared.CommonLayoutProps{
+	@shared.BaseLayout(shared.BaseLayoutProps{
 		Title:           data.Title,
 		Crumbs:          data.Breadcrumbs,
 		Signals:         nil,
-		Content:         HomeTermsAndConditionsMain(data.CurrentLang),
+		Content:         shared.CommonContent(HomeTermsAndConditionsMain(data.CurrentLang)),
 		ActiveUrl:       "/terms-and-conditions",
 		IsAuthenticated: data.IsAuthenticated,
 		IsSuperAdmin:    data.IsSuperAdmin,

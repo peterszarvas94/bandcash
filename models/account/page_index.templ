@@ -5,11 +5,11 @@ import (
 )
 
 templ AccountIndex(data AccountData) {
-	@shared.CommonLayout(shared.CommonLayoutProps{
+	@shared.BaseLayout(shared.BaseLayoutProps{
 		Title:           data.Title,
 		Crumbs:          data.Breadcrumbs,
 		Signals:         data.Signals,
-		Content:         AccountMain(data),
+		Content:         shared.CommonContent(AccountMain(data)),
 		ActiveUrl:       "/account",
 		IsAuthenticated: data.IsAuthenticated,
 		IsSuperAdmin:    data.IsSuperAdmin,

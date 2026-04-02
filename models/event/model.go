@@ -257,7 +257,7 @@ func (e *Events) GetShowData(ctx context.Context, groupID, eventID string, query
 			{Label: ctxi18n.T(ctx, "events.title"), Href: "/groups/" + groupID + "/events"},
 			{Label: event.Title},
 		},
-		ParticipantsTable: utils.EventParticipantsTableLayout(),
+		ParticipantsTable: EventParticipantsTableLayout(),
 	}, nil
 }
 
@@ -490,6 +490,6 @@ func (e *Events) buildEventsData(ctx context.Context, groupID string, group db.G
 			{Label: group.Name, Href: "/groups/" + groupID + "/events"},
 			{Label: ctxi18n.T(ctx, "events.title")},
 		},
-		EventsTable: utils.EventsIndexTableLayout(),
+		EventsTable: EventsIndexTableLayout(),
 	}, nil
 }

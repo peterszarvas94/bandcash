@@ -33,11 +33,11 @@ func HomeTermsAndConditions(data HomeData) templ.Component {
 			templ_7745c5c3_Var1 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = shared.CommonLayout(shared.CommonLayoutProps{
+		templ_7745c5c3_Err = shared.BaseLayout(shared.BaseLayoutProps{
 			Title:           data.Title,
 			Crumbs:          data.Breadcrumbs,
 			Signals:         nil,
-			Content:         HomeTermsAndConditionsMain(data.CurrentLang),
+			Content:         shared.CommonContent(HomeTermsAndConditionsMain(data.CurrentLang)),
 			ActiveUrl:       "/terms-and-conditions",
 			IsAuthenticated: data.IsAuthenticated,
 			IsSuperAdmin:    data.IsSuperAdmin,

@@ -194,7 +194,7 @@ func (e *Expenses) buildExpensesData(ctx context.Context, groupID string, group 
 			{Label: group.Name, Href: "/groups/" + groupID + "/events"},
 			{Label: ctxi18n.T(ctx, "expenses.title")},
 		},
-		ExpensesTable: utils.ExpensesIndexTableLayout(),
+		ExpensesTable: ExpensesIndexTableLayout(),
 	}, nil
 }
 

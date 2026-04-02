@@ -5,7 +5,7 @@ import (
 )
 
 templ GroupPage(data GroupPageData) {
-	@shared.GroupLayout(shared.GroupLayoutProps{
+	@shared.BaseLayout(shared.BaseLayoutProps{
 		Title:           data.Title,
 		Crumbs:          data.Breadcrumbs,
 		Signals:         data.Signals,
@@ -13,7 +13,7 @@ templ GroupPage(data GroupPageData) {
 		ActiveUrl:       "/groups",
 		IsAuthenticated: data.IsAuthenticated,
 		IsSuperAdmin:    data.IsSuperAdmin,
-		GroupId:         data.Group.ID,
-		ActiveTab:       "about",
+		TabSidebar:      shared.GroupTabs(data.Group.ID, "about"),
+		TabToggleID:     data.Group.ID,
 	})
 }

@@ -5,11 +5,11 @@ import (
 )
 
 templ HomePrivacyPolicy(data HomeData) {
-	@shared.CommonLayout(shared.CommonLayoutProps{
+	@shared.BaseLayout(shared.BaseLayoutProps{
 		Title:           data.Title,
 		Crumbs:          data.Breadcrumbs,
 		Signals:         nil,
-		Content:         HomePrivacyPolicyMain(data.CurrentLang),
+		Content:         shared.CommonContent(HomePrivacyPolicyMain(data.CurrentLang)),
 		ActiveUrl:       "/privacy-policy",
 		IsAuthenticated: data.IsAuthenticated,
 		IsSuperAdmin:    data.IsSuperAdmin,

@@ -1,35 +1,9 @@
 package shared
 
-import "bandcash/internal/utils"
-
 templ CommonContent(content templ.Component) {
 	<div class="common_layout">
 		<main>
 			@content
 		</main>
 	</div>
-}
-
-type CommonLayoutProps struct {
-	Title           string
-	Crumbs          []utils.Crumb
-	Signals         map[string]any
-	Content         templ.Component
-	ActiveUrl       string
-	IsAuthenticated bool
-	IsSuperAdmin    bool
-	CommonId        string
-	ActiveTab       string
-}
-
-templ CommonLayout(props CommonLayoutProps) {
-	@BaseLayout(BaseLayoutProps{
-		Title:           props.Title,
-		Crumbs:          props.Crumbs,
-		Signals:         props.Signals,
-		Content:         CommonContent(props.Content),
-		ActiveUrl:       props.ActiveUrl,
-		IsAuthenticated: props.IsAuthenticated,
-		IsSuperAdmin:    props.IsSuperAdmin,
-	})
 }

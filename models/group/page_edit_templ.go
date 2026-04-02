@@ -31,7 +31,7 @@ func GroupEditPage(data EditGroupPageData) templ.Component {
 			templ_7745c5c3_Var1 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = shared.GroupLayout(shared.GroupLayoutProps{
+		templ_7745c5c3_Err = shared.BaseLayout(shared.BaseLayoutProps{
 			Title:           data.Title,
 			Crumbs:          data.Breadcrumbs,
 			Signals:         data.Signals,
@@ -39,8 +39,8 @@ func GroupEditPage(data EditGroupPageData) templ.Component {
 			ActiveUrl:       "/groups",
 			IsAuthenticated: data.IsAuthenticated,
 			IsSuperAdmin:    data.IsSuperAdmin,
-			GroupId:         data.GroupID,
-			ActiveTab:       "events",
+			TabSidebar:      shared.GroupTabs(data.GroupID, "events"),
+			TabToggleID:     data.GroupID,
 		}).Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err

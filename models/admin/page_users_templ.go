@@ -33,15 +33,16 @@ func AdminUsersPage(data DashboardData) templ.Component {
 			templ_7745c5c3_Var1 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = shared.AdminLayout(shared.AdminLayoutProps{
+		templ_7745c5c3_Err = shared.BaseLayout(shared.BaseLayoutProps{
 			Title:           data.Title,
 			Crumbs:          data.Breadcrumbs,
 			Signals:         data.Signals,
 			Content:         UsersTableSection(data),
-			ActiveTab:       "users",
 			ActiveUrl:       "/admin/users",
 			IsAuthenticated: data.IsAuthenticated,
 			IsSuperAdmin:    data.IsSuperAdmin,
+			TabSidebar:      shared.AdminTabs("users"),
+			TabToggleID:     "admin",
 		}).Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err

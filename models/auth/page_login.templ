@@ -5,11 +5,11 @@ import (
 )
 
 templ LoginPage(data AuthPageData) {
-	@shared.CommonLayout(shared.CommonLayoutProps{
+	@shared.BaseLayout(shared.BaseLayoutProps{
 		Title:           data.Title,
 		Crumbs:          data.Breadcrumbs,
 		Signals:         data.Signals,
-		Content:         LoginMain(data.CurrentLang, "/login", data.SignupEnabled),
+		Content:         shared.CommonContent(LoginMain(data.CurrentLang, "/login", data.SignupEnabled)),
 		ActiveUrl:       "/login",
 		IsAuthenticated: data.IsAuthenticated,
 		IsSuperAdmin:    data.IsSuperAdmin,

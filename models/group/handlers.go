@@ -1126,7 +1126,7 @@ func (g *Group) usersPageData(c echo.Context, groupID string, values url.Values)
 		Query:           query,
 		Pager:           utils.BuildTablePagination(total, query),
 		GroupID:         groupID,
-		UsersTable:      utils.GroupUsersTableLayout(),
+		UsersTable:      GroupUsersTableLayout(),
 		Signals:         map[string]any{"mode": "table", "tableQuery": utils.TableQuerySignals(query)},
 		IsAuthenticated: true,
 		IsSuperAdmin:    middleware.IsSuperadmin(c),

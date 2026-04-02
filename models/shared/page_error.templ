@@ -1,6 +1,9 @@
 package shared
 
-import icons "bandcash/models/shared/icons"
+import (
+	"bandcash/internal/utils"
+	icons "bandcash/models/shared/icons"
+)
 
 type ErrorPageData struct {
 	Title      string
@@ -13,5 +16,12 @@ type ErrorPageData struct {
 }
 
 templ ErrorPage(data ErrorPageData) {
-	@ErrorLayout(data.Title, ErrorPageMain(data))
+	@BaseLayout(BaseLayoutProps{
+		Title:           data.Title,
+		Crumbs:          []utils.Crumb{},
+		Content:         ErrorPageMain(data),
+		ActiveUrl:       "",
+		IsAuthenticated: false,
+		IsSuperAdmin:    false,
+	})
 }

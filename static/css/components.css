@@ -54,6 +54,7 @@
   }
 
   .table {
+    --table-col-min-w: 8rem;
     font-variant-numeric: tabular-nums;
     font-feature-settings: "tnum" 1;
     width: 100%;
@@ -68,11 +69,17 @@
       height: calc(var(--space) * 5);
       padding: 0 var(--space);
       text-align: left;
-      min-width: 0;
+      min-width: var(--table-col-min-w, 0);
       white-space: nowrap;
       word-break: normal;
       overflow-wrap: normal;
       vertical-align: middle;
+    }
+
+    thead tr,
+    tbody tr {
+      display: var(--table-row-display, table-row);
+      grid-template-columns: var(--grid-template-columns);
     }
 
     th,

@@ -5,14 +5,15 @@ import (
 )
 
 templ AdminUsersPage(data DashboardData) {
-	@shared.AdminLayout(shared.AdminLayoutProps{
+	@shared.BaseLayout(shared.BaseLayoutProps{
 		Title:           data.Title,
 		Crumbs:          data.Breadcrumbs,
 		Signals:         data.Signals,
 		Content:         UsersTableSection(data),
-		ActiveTab:       "users",
 		ActiveUrl:       "/admin/users",
 		IsAuthenticated: data.IsAuthenticated,
 		IsSuperAdmin:    data.IsSuperAdmin,
+		TabSidebar:      shared.AdminTabs("users"),
+		TabToggleID:     "admin",
 	})
 }

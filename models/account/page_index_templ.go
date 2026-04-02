@@ -33,11 +33,11 @@ func AccountIndex(data AccountData) templ.Component {
 			templ_7745c5c3_Var1 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = shared.CommonLayout(shared.CommonLayoutProps{
+		templ_7745c5c3_Err = shared.BaseLayout(shared.BaseLayoutProps{
 			Title:           data.Title,
 			Crumbs:          data.Breadcrumbs,
 			Signals:         data.Signals,
-			Content:         AccountMain(data),
+			Content:         shared.CommonContent(AccountMain(data)),
 			ActiveUrl:       "/account",
 			IsAuthenticated: data.IsAuthenticated,
 			IsSuperAdmin:    data.IsSuperAdmin,

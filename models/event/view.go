@@ -53,16 +53,6 @@ type NewEventPageData struct {
 	IsSuperAdmin    bool
 }
 
-type EditEventPageData struct {
-	Title           string
-	Breadcrumbs     []utils.Crumb
-	GroupID         string
-	Event           *db.Event
-	Signals         map[string]any
-	IsAuthenticated bool
-	IsSuperAdmin    bool
-}
-
 type EventsData struct {
 	Title                  string
 	GroupName              string

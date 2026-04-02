@@ -5,11 +5,11 @@ import (
 )
 
 templ HomeIndex(data HomeData) {
-	@shared.CommonLayout(shared.CommonLayoutProps{
+	@shared.BaseLayout(shared.BaseLayoutProps{
 		Title:           data.Title,
 		Crumbs:          data.Breadcrumbs,
 		Signals:         nil,
-		Content:         HomeIndexMain(data),
+		Content:         shared.CommonContent(HomeIndexMain(data)),
 		ActiveUrl:       "/",
 		IsAuthenticated: data.IsAuthenticated,
 		IsSuperAdmin:    data.IsSuperAdmin,
