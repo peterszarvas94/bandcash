@@ -2,34 +2,7 @@ package shared
 
 import (
 	"bandcash/internal/utils"
-	icons "bandcash/models/shared/icons"
 )
-
-templ TabContent(tabID string, tabs, content templ.Component) {
-	{{ toggleID := tabID + "-toggle" }}
-	<div class="tab_layout">
-		<input id={ toggleID } class="nav-toggle" type="checkbox"/>
-		<label for={ toggleID } class="backdrop" aria-hidden="true"></label>
-		<aside>
-			<header class="actions">
-				<label for={ toggleID } class="close btn btn-sm btn-inverse btn-icon" aria-label="Close tabs" title="Close tabs">
-					@icons.PanelLeftClose(templ.Attributes{"class": "icon"})
-				</label>
-			</header>
-			@tabs
-		</aside>
-		<main>
-			<div class="open">
-				<label for={ toggleID } class="open btn btn-sm btn-primary btn-icon" aria-label="Open tabs" title="Open tabs">
-					@icons.PanelLeftOpen(templ.Attributes{"class": "icon"})
-				</label>
-			</div>
-			<section class="tab-content">
-				@content
-			</section>
-		</main>
-	</div>
-}
 
 type TabLayoutProps struct {
 	Title           string
@@ -49,7 +22,9 @@ templ TabLayout(props TabLayoutProps) {
 		Title:           props.Title,
 		Crumbs:          props.Crumbs,
 		Signals:         props.Signals,
-		Content:         TabContent(props.TabId, props.Tabs, props.Content),
+		Content:         props.Content,
+		TabSidebar:      props.Tabs,
+		TabToggleID:     props.TabId,
 		ActiveUrl:       props.ActiveUrl,
 		IsAuthenticated: props.IsAuthenticated,
 		IsSuperAdmin:    props.IsSuperAdmin,

@@ -24,10 +24,6 @@
         display: flex;
         align-items: center;
         gap: calc(var(--space) * 0.5);
-        flex-wrap: wrap;
-        line-height: 1.6;
-        height: fit-content;
-        min-height: 2.25rem;
 
         > a,
         > span {
@@ -670,6 +666,13 @@
   }
 
   .base_layout {
+    .nav-toggle,
+    .backdrop,
+    .actions,
+    .header-tab-toggle {
+      display: none;
+    }
+
     .content {
       min-height: calc(100vh - var(--header-height));
       min-height: calc(100lvh - var(--header-height));
@@ -699,112 +702,90 @@
         }
       }
     }
-  }
 
-  .tab_layout {
-    display: flex;
-    width: 100%;
-
-    .nav-toggle,
-    .backdrop,
-    .actions {
-      display: none;
-    }
-
-    aside {
-      width: var(--sidebar-width);
-      height: 100%;
-      background: var(--bg-dark);
-      padding: var(--space);
-
-      .tabs {
-        display: flex;
-        flex-direction: column;
-
-        .tab,
-        .tab:visited {
-          width: 100%;
-          text-decoration: none;
-          display: flex;
-          justify-content: start;
+    &.has-tab-sidebar {
+      .content {
+        .content_inner {
+          align-items: stretch;
         }
-      }
-    }
-
-    main {
-      padding: var(--space);
-      flex: 1 0 auto;
-    }
-
-    .open {
-      display: none;
-      padding-bottom: var(--space);
-      position: sticky;
-      top: calc(var(--header-height) + var(--space));
-      left: var(--space);
-
-      label {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-      }
-    }
-
-    @media (max-width: 1020px) {
-      display: block;
-      position: relative;
-
-      .nav-toggle {
-        display: none;
-      }
-
-      .open {
-        display: flex;
-      }
-
-      .open .icon,
-      .close .icon {
-        margin: 0;
-        transform: none;
-      }
-
-      .backdrop {
-        position: fixed;
-        inset: 0;
-        background: var(--bg-dark);
-        opacity: 0.75;
-        z-index: 20;
       }
 
       aside {
-        position: fixed;
-        top: var(--header-height);
-        left: 0;
-        bottom: 0;
-        width: min(18rem, 84vw);
+        width: var(--sidebar-width);
+        /* height: 100vh; */
         background: var(--bg-dark);
         padding: var(--space);
-        z-index: 30;
-        display: none;
 
-        .actions {
+        .tabs {
           display: flex;
-          justify-content: flex-start;
-          padding-bottom: var(--space);
+          flex-direction: column;
+
+          .tab,
+          .tab:visited {
+            width: 100%;
+            text-decoration: none;
+            display: flex;
+            justify-content: start;
+          }
         }
       }
 
-      .nav-toggle:checked ~ .backdrop {
-        display: block;
+      .content_main {
+        padding: var(--space);
+        flex: 1 0 auto;
       }
 
-      .nav-toggle:checked ~ aside {
-        display: block;
-      }
+      @media (max-width: 1020px) {
+        position: relative;
 
-      .nav-toggle:checked ~ main .open {
-        visibility: hidden;
-        pointer-events: none;
+        .header-tab-toggle {
+          display: inline-flex;
+        }
+
+        .header-tab-toggle .icon,
+        .close .icon {
+          margin: 0;
+          transform: none;
+        }
+
+        .backdrop {
+          position: fixed;
+          inset: 0;
+          background: var(--bg-dark);
+          opacity: 0.75;
+          z-index: 20;
+        }
+
+        aside {
+          position: fixed;
+          top: 0;
+          left: 0;
+          bottom: 0;
+          width: min(18rem, 84vw);
+          background: var(--bg-dark);
+          padding: var(--space);
+          z-index: 30;
+          display: none;
+
+          .actions {
+            display: flex;
+            justify-content: flex-start;
+            padding-bottom: var(--space);
+          }
+        }
+
+        .nav-toggle:checked ~ .backdrop {
+          display: block;
+        }
+
+        .nav-toggle:checked ~ .content .content_inner aside {
+          display: block;
+        }
+
+        .nav-toggle:checked ~ .header .header-tab-toggle {
+          visibility: hidden;
+          pointer-events: none;
+        }
       }
     }
   }

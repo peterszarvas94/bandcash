@@ -3,6 +3,8 @@ package shared
 import (
 	appi18n "bandcash/internal/i18n"
 	"bandcash/internal/utils"
+	icons "bandcash/models/shared/icons"
+	"strings"
 )
 
 type BaseLayoutProps struct {
@@ -10,6 +12,8 @@ type BaseLayoutProps struct {
 	Crumbs          []utils.Crumb
 	Signals         map[string]any
 	Content         templ.Component
+	TabSidebar      templ.Component
+	TabToggleID     string
 	ActiveUrl       string
 	IsAuthenticated bool
 	IsSuperAdmin    bool
@@ -19,6 +23,11 @@ templ BaseLayout(props BaseLayoutProps) {
 	{{
 		tabID := utils.EnsureTabIDFromContext(ctx)
 		csrfToken := utils.CSRFTokenFromContext(ctx)
+		hasTabSidebar := props.TabSidebar != nil
+		tabToggleID := strings.TrimSpace(props.TabToggleID)
+		if hasTabSidebar && tabToggleID == "" {
+			tabToggleID = tabID + "-toggle"
+		}
 		signals := props.Signals
 		if signals == nil {
 			signals = make(map[string]any)
@@ -33,11 +42,31 @@ templ BaseLayout(props BaseLayoutProps) {
 			<div data-signals={ templ.JSONString(signals) } data-init="@get('/sse')"></div>
 			@Notifications()
 			@SureDialog()
-			<div class="base_layout">
-				@Header(props.Crumbs, props.ActiveUrl, props.IsAuthenticated)
+			<div class={ "base_layout", templ.KV("has-tab-sidebar", hasTabSidebar) }>
+				if hasTabSidebar {
+					<input id={ tabToggleID } class="nav-toggle" type="checkbox"/>
+				}
+				@Header(props.Crumbs, props.ActiveUrl, props.IsAuthenticated, hasTabSidebar, tabToggleID)
+				if hasTabSidebar {
+					<label for={ tabToggleID } class="backdrop" aria-hidden="true"></label>
+				}
 				<div class="content">
 					<div class="content_inner">
-						@props.Content
+						if hasTabSidebar {
+							<aside>
+								<header class="actions">
+									<label for={ tabToggleID } class="close btn btn-sm btn-primary btn-icon" aria-label="Close tabs" title="Close tabs">
+										@icons.PanelLeftClose(templ.Attributes{"class": "icon"})
+									</label>
+								</header>
+								@props.TabSidebar
+							</aside>
+							<div class="content_main">
+								@props.Content
+							</div>
+						} else {
+							@props.Content
+						}
 					</div>
 					@Footer(props.IsSuperAdmin, props.ActiveUrl)
 				</div>

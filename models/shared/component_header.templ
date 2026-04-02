@@ -1,11 +1,21 @@
 package shared
 
-import "bandcash/internal/utils"
+import (
+	"bandcash/internal/utils"
+	icons "bandcash/models/shared/icons"
+)
 
-templ Header(crumbs []utils.Crumb, activeUrl string, isAuthenticated bool) {
+templ Header(crumbs []utils.Crumb, activeUrl string, isAuthenticated bool, hasTabSidebar bool, tabToggleID string) {
 	<header class="header">
 		<div class="header_inner">
-			@Breadcrumbs(crumbs)
+			<div class="row">
+				if hasTabSidebar {
+					<label for={ tabToggleID } class="header-tab-toggle btn btn-sm btn-primary btn-icon" aria-label="Open tabs" title="Open tabs">
+						@icons.PanelLeftOpen(templ.Attributes{"class": "icon"})
+					</label>
+				}
+				@Breadcrumbs(crumbs)
+			</div>
 			@PrimaryNav(activeUrl, isAuthenticated)
 		</div>
 	</header>
