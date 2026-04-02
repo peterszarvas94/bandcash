@@ -789,7 +789,7 @@ func MemberShowMain(data MemberData) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 51, " <span class=\"color-error\">*</span></label> <input id=\"member-show-name\" type=\"text\" data-bind=\"formData.name\" class=\"input w-details\"><div data-show=\"$errors && $errors.name\" class=\"color-error\" data-text=\"$errors.name\"></div></div><div class=\"field\"><label for=\"member-show-description\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 51, " <span class=\"fielderror\">*</span></label> <input id=\"member-show-name\" type=\"text\" data-bind=\"formData.name\" class=\"input w-details\"><div data-show=\"$errors && $errors.name\" class=\"fielderror\" data-text=\"$errors.name\"></div></div><div class=\"field\"><label for=\"member-show-description\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -802,7 +802,7 @@ func MemberShowMain(data MemberData) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 52, "</label> <textarea id=\"member-show-description\" data-bind=\"formData.description\" rows=\"3\" class=\"input w-details\"></textarea><div data-show=\"$errors && $errors.description\" class=\"color-error\" data-text=\"$errors.description\"></div></div><div class=\"row row-wrap\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 52, "</label> <textarea id=\"member-show-description\" data-bind=\"formData.description\" rows=\"3\" class=\"input w-details\"></textarea><div data-show=\"$errors && $errors.description\" class=\"fielderror\" data-text=\"$errors.description\"></div></div><div class=\"row row-wrap\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}

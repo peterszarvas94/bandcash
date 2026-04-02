@@ -11,29 +11,29 @@ templ EventNewForm(data NewEventPageData) {
 	<h1>{ ctxi18n.T(ctx, "events.add") }</h1>
 	<form class="form w-details" data-on:submit={ fmt.Sprintf("@post('/groups/%s/events')", data.GroupID) } data-indicator:_fetching>
 		<div class="field">
-			<label for="event-new-title" class="row">{ ctxi18n.T(ctx, "fields.title") } <span class="color-error">*</span></label>
+			<label for="event-new-title" class="row">{ ctxi18n.T(ctx, "fields.title") } <span class="fielderror">*</span></label>
 			<input id="event-new-title" type="text" data-bind="formData.title" class="input"/>
-			<div data-show="$errors && $errors.title" class="color-error" data-text="$errors.title"></div>
+			<div data-show="$errors && $errors.title" class="fielderror" data-text="$errors.title"></div>
 		</div>
 		<div class="field">
-			<label for="event-new-time" class="row">{ ctxi18n.T(ctx, "fields.time") } <span class="color-error">*</span></label>
+			<label for="event-new-time" class="row">{ ctxi18n.T(ctx, "fields.time") } <span class="fielderror">*</span></label>
 			<input id="event-new-time" type="datetime-local" data-bind="formData.time" class="input"/>
-			<div data-show="$errors && $errors.time" class="color-error" data-text="$errors.time"></div>
+			<div data-show="$errors && $errors.time" class="fielderror" data-text="$errors.time"></div>
 		</div>
 		<div class="field">
 			<label for="event-new-place">{ ctxi18n.T(ctx, "fields.place") }</label>
 			<input id="event-new-place" type="text" data-bind="formData.place" class="input"/>
-			<div data-show="$errors && $errors.place" class="color-error" data-text="$errors.place"></div>
+			<div data-show="$errors && $errors.place" class="fielderror" data-text="$errors.place"></div>
 		</div>
 		<div class="field">
 			<label for="event-new-description">{ ctxi18n.T(ctx, "fields.description") }</label>
 			<textarea id="event-new-description" data-bind="formData.description" rows="3" class="input"></textarea>
-			<div data-show="$errors && $errors.description" class="color-error" data-text="$errors.description"></div>
+			<div data-show="$errors && $errors.description" class="fielderror" data-text="$errors.description"></div>
 		</div>
 		<div class="field">
-			<label for="event-new-amount" class="row">{ ctxi18n.T(ctx, "fields.income") } <span class="color-error">*</span></label>
+			<label for="event-new-amount" class="row">{ ctxi18n.T(ctx, "fields.income") } <span class="fielderror">*</span></label>
 			<input id="event-new-amount" type="number" data-bind="formData.amount" step="1" min="1" class="input"/>
-			<div data-show="$errors && $errors.amount" class="color-error" data-text="$errors.amount"></div>
+			<div data-show="$errors && $errors.amount" class="fielderror" data-text="$errors.amount"></div>
 		</div>
 		<div class="field">
 			<label for="event-new-paid" class="row">{ ctxi18n.T(ctx, "table.paid") }</label>

@@ -20,7 +20,7 @@
       align-items: center;
       gap: var(--space);
 
-      nav.breadcrumbs {
+      .breadcrumbs {
         display: flex;
         align-items: center;
         gap: calc(var(--space) * 0.5);
@@ -46,6 +46,13 @@
             display: none;
           }
         }
+      }
+
+      .primary-nav {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: calc(var(--space) * 3);
       }
     }
   }
@@ -85,30 +92,27 @@
         );
     }
 
-    &.table-fixed {
-      width: 100%;
-      min-width: 100%;
+    min-width: 100%;
 
-      th,
-      td {
-        overflow: hidden;
-        text-overflow: ellipsis;
-      }
+    th,
+    td {
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
 
-      .col-w {
-        width: auto;
-        max-width: none;
-      }
+    .col-w {
+      width: auto;
+      max-width: none;
+    }
 
-      th[data-actions-col],
-      td[data-actions-col] {
-        width: calc(var(--actions-w-rem, 0) * 1rem);
-        min-width: calc(var(--actions-w-rem, 0) * 1rem);
-        max-width: calc(var(--actions-w-rem, 0) * 1rem);
-        border-left: var(--border) solid var(--bg-dark);
-        overflow: visible;
-        text-overflow: clip;
-      }
+    th[data-actions-col],
+    td[data-actions-col] {
+      width: calc(var(--actions-w-rem, 0) * 1rem);
+      min-width: calc(var(--actions-w-rem, 0) * 1rem);
+      max-width: calc(var(--actions-w-rem, 0) * 1rem);
+      border-left: var(--border) solid var(--bg-dark);
+      overflow: visible;
+      text-overflow: clip;
     }
   }
 
@@ -444,6 +448,17 @@
 
     &::placeholder {
       color: var(--text-muted);
+    }
+
+    &.input-primary,
+    &.input-primary:where(
+        :not(:disabled, [disabled], [aria-disabled="true"])
+      ):hover,
+    &.input-primary:where(
+        :not(:disabled, [disabled], [aria-disabled="true"])
+      ):active,
+    &.input-primary:focus-visible {
+      border-color: var(--bg-primary);
     }
   }
 
@@ -1162,7 +1177,7 @@
     padding-bottom: calc(var(--space) * 0.5);
   }
 
-  header.page-header {
+  .page-header {
     display: flex;
     align-items: center;
     gap: var(--space);
@@ -1178,17 +1193,14 @@
     }
   }
 
-  nav.nav {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    gap: calc(var(--space) * 3);
-  }
-
   .link.link-active,
   .link.link-active:visited {
     color: var(--text);
     font-weight: inherit;
     text-decoration: none;
+  }
+
+  .fielderror {
+    color: var(--bg-primary);
   }
 }

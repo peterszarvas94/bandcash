@@ -75,7 +75,7 @@ func ExpenseNewForm(data NewExpensePageData) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, " <span class=\"color-error\">*</span></label> <input id=\"expense-new-title\" type=\"text\" data-bind=\"formData.title\" class=\"input\"><div data-show=\"$errors && $errors.title\" class=\"color-error\" data-text=\"$errors.title\"></div></div><div class=\"field\"><label for=\"expense-new-description\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, " <span class=\"fielderror\">*</span></label> <input id=\"expense-new-title\" type=\"text\" data-bind=\"formData.title\" class=\"input\"><div data-show=\"$errors && $errors.title\" class=\"fielderror\" data-text=\"$errors.title\"></div></div><div class=\"field\"><label for=\"expense-new-description\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -88,7 +88,7 @@ func ExpenseNewForm(data NewExpensePageData) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 5, "</label> <textarea id=\"expense-new-description\" data-bind=\"formData.description\" rows=\"3\" class=\"input\"></textarea><div data-show=\"$errors && $errors.description\" class=\"color-error\" data-text=\"$errors.description\"></div></div><div class=\"field\"><label for=\"expense-new-amount\" class=\"row\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 5, "</label> <textarea id=\"expense-new-description\" data-bind=\"formData.description\" rows=\"3\" class=\"input\"></textarea><div data-show=\"$errors && $errors.description\" class=\"fielderror\" data-text=\"$errors.description\"></div></div><div class=\"field\"><label for=\"expense-new-amount\" class=\"row\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -101,7 +101,7 @@ func ExpenseNewForm(data NewExpensePageData) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 6, " <span class=\"color-error\">*</span></label> <input id=\"expense-new-amount\" type=\"number\" data-bind=\"formData.amount\" step=\"1\" min=\"1\" class=\"input\"><div data-show=\"$errors && $errors.amount\" class=\"color-error\" data-text=\"$errors.amount\"></div></div><div class=\"field\"><label for=\"expense-new-date\" class=\"row\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 6, " <span class=\"fielderror\">*</span></label> <input id=\"expense-new-amount\" type=\"number\" data-bind=\"formData.amount\" step=\"1\" min=\"1\" class=\"input\"><div data-show=\"$errors && $errors.amount\" class=\"fielderror\" data-text=\"$errors.amount\"></div></div><div class=\"field\"><label for=\"expense-new-date\" class=\"row\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -114,7 +114,7 @@ func ExpenseNewForm(data NewExpensePageData) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 7, " <span class=\"color-error\">*</span></label> <input id=\"expense-new-date\" type=\"date\" data-bind=\"formData.date\" class=\"input\"><div data-show=\"$errors && $errors.date\" class=\"color-error\" data-text=\"$errors.date\"></div></div><div class=\"field\"><label for=\"expense-new-paid\" class=\"row\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 7, " <span class=\"fielderror\">*</span></label> <input id=\"expense-new-date\" type=\"date\" data-bind=\"formData.date\" class=\"input\"><div data-show=\"$errors && $errors.date\" class=\"fielderror\" data-text=\"$errors.date\"></div></div><div class=\"field\"><label for=\"expense-new-paid\" class=\"row\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

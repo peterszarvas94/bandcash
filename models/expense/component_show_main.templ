@@ -50,24 +50,24 @@ templ ExpenseShowMain(data ExpenseData) {
 		<div data-show="$formState === 'edit'" style="display: none">
 			<form class="form" data-on:submit={ updateExpr } data-indicator:_fetching>
 				<div class="field">
-					<label for="expense-show-title" class="row">{ ctxi18n.T(ctx, "fields.title") } <span class="color-error">*</span></label>
+					<label for="expense-show-title" class="row">{ ctxi18n.T(ctx, "fields.title") } <span class="fielderror">*</span></label>
 					<input id="expense-show-title" type="text" data-bind="formData.title" class="input w-details"/>
-					<div data-show="$errors && $errors.title" class="color-error" data-text="$errors.title"></div>
+					<div data-show="$errors && $errors.title" class="fielderror" data-text="$errors.title"></div>
 				</div>
 				<div class="field">
 					<label for="expense-show-description">{ ctxi18n.T(ctx, "fields.description") }</label>
 					<input id="expense-show-description" type="text" data-bind="formData.description" class="input w-details"/>
-					<div data-show="$errors && $errors.description" class="color-error" data-text="$errors.description"></div>
+					<div data-show="$errors && $errors.description" class="fielderror" data-text="$errors.description"></div>
 				</div>
 				<div class="field">
-					<label for="expense-show-amount" class="row">{ ctxi18n.T(ctx, "fields.expense") } <span class="color-error">*</span></label>
+					<label for="expense-show-amount" class="row">{ ctxi18n.T(ctx, "fields.expense") } <span class="fielderror">*</span></label>
 					<input id="expense-show-amount" type="number" data-bind="formData.amount" step="1" class="input w-details"/>
-					<div data-show="$errors && $errors.amount" class="color-error" data-text="$errors.amount"></div>
+					<div data-show="$errors && $errors.amount" class="fielderror" data-text="$errors.amount"></div>
 				</div>
 				<div class="field">
-					<label for="expense-show-date" class="row">{ ctxi18n.T(ctx, "fields.date") } <span class="color-error">*</span></label>
+					<label for="expense-show-date" class="row">{ ctxi18n.T(ctx, "fields.date") } <span class="fielderror">*</span></label>
 					<input id="expense-show-date" type="date" data-bind="formData.date" class="input w-details"/>
-					<div data-show="$errors && $errors.date" class="color-error" data-text="$errors.date"></div>
+					<div data-show="$errors && $errors.date" class="fielderror" data-text="$errors.date"></div>
 				</div>
 				<div class="field">
 					<label for="expense-show-paid" class="row">{ ctxi18n.T(ctx, "table.paid") }</label>

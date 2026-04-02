@@ -93,20 +93,20 @@ func LoginMain(currentLang string, langAction string, signupEnabled bool) templ.
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 7, " <span class=\"color-error\">*</span></label><div class=\"row\"><input id=\"auth-login-email\" type=\"email\" data-bind=\"formData.email\" placeholder=\"")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 7, " <span class=\"fielderror\">*</span></label><div class=\"row\"><input id=\"auth-login-email\" type=\"email\" data-bind=\"formData.email\" placeholder=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var5 string
 		templ_7745c5c3_Var5, templ_7745c5c3_Err = templ.JoinStringErrs(ctxi18n.T(ctx, "auth.email_placeholder"))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/auth/component_login_main.templ`, Line: 23, Col: 130}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/auth/component_login_main.templ`, Line: 23, Col: 129}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var5))
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 8, "\" class=\"input\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 8, "\" class=\"input\" data-attr:class=\"(($authError !== '') || ($authServerError !== '')) ? 'input input-primary' : 'input'\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -118,7 +118,7 @@ func LoginMain(currentLang string, langAction string, signupEnabled bool) templ.
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 9, "</div><div data-show=\"$authError !== ''\" class=\"color-error\" data-text=\"$authError\"></div><div data-show=\"$authServerError !== ''\" class=\"color-error\" data-text=\"$authServerError\"></div></div></form></div><div data-show=\"$authState === 'sent'\" style=\"display: none\" class=\"form\"><div data-show=\"$authState === 'sent'\" data-on-interval__duration.1s=\"$resendRemaining = Math.max(0, $resendRemaining - 1)\" style=\"display: none\"></div><p><strong>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 9, "</div><div data-show=\"$authError !== ''\" class=\"fielderror\" data-text=\"$authError\"></div><div data-show=\"$authServerError !== ''\" class=\"fielderror\" data-text=\"$authServerError\"></div></div></form></div><div data-show=\"$authState === 'sent'\" style=\"display: none\" class=\"form\"><div data-show=\"$authState === 'sent'\" data-on-interval__duration.1s=\"$resendRemaining = Math.max(0, $resendRemaining - 1)\" style=\"display: none\"></div><p><strong>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

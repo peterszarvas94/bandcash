@@ -11,11 +11,11 @@ templ GroupUsersNewForm(data UsersNewPageData) {
 	<h1>{ ctxi18n.T(ctx, "groups.invite_user") }</h1>
 	<form class="form w-details" data-on:submit={ fmt.Sprintf("@post('/groups/%s/users')", data.GroupID) } data-indicator:_fetching>
 		<div class="field">
-			<label for="group-access-new-email" class="row">{ ctxi18n.T(ctx, "auth.email") } <span class="color-error">*</span></label>
+			<label for="group-access-new-email" class="row">{ ctxi18n.T(ctx, "auth.email") } <span class="fielderror">*</span></label>
 			<input id="group-access-new-email" type="email" data-bind="formData.email" placeholder={ ctxi18n.T(ctx, "groups.viewer_email_placeholder") } class="input"/>
 		</div>
 		<div class="field">
-			<label for="group-access-new-role" class="row">{ ctxi18n.T(ctx, "fields.role") } <span class="color-error">*</span></label>
+			<label for="group-access-new-role" class="row">{ ctxi18n.T(ctx, "fields.role") } <span class="fielderror">*</span></label>
 			<select id="group-access-new-role" data-bind="formData.role" class="input">
 				<option value="viewer">{ ctxi18n.T(ctx, "groups.role_viewer") }</option>
 				<option value="admin">{ ctxi18n.T(ctx, "groups.role_admin") }</option>

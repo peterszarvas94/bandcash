@@ -39,7 +39,7 @@ func Header(crumbs []utils.Crumb, activeUrl string, isAuthenticated bool) templ.
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = AppPrimaryNav(activeUrl, isAuthenticated).Render(ctx, templ_7745c5c3_Buffer)
+		templ_7745c5c3_Err = PrimaryNav(activeUrl, isAuthenticated).Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

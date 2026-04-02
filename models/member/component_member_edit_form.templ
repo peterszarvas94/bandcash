@@ -11,14 +11,14 @@ templ MemberEditForm(data EditMemberPageData) {
 	<h1>{ ctxi18n.T(ctx, "members.edit") }</h1>
 	<form class="form w-details" data-on:submit={ fmt.Sprintf("@put('/groups/%s/members/%s')", data.GroupID, data.Member.ID) } data-indicator:_fetching>
 		<div class="field">
-			<label for="member-edit-name" class="row">{ ctxi18n.T(ctx, "fields.name") } <span class="color-error">*</span></label>
+			<label for="member-edit-name" class="row">{ ctxi18n.T(ctx, "fields.name") } <span class="fielderror">*</span></label>
 			<input id="member-edit-name" type="text" data-bind="formData.name" class="input"/>
-			<div data-show="$errors && $errors.name" class="color-error" data-text="$errors.name"></div>
+			<div data-show="$errors && $errors.name" class="fielderror" data-text="$errors.name"></div>
 		</div>
 		<div class="field">
 			<label for="member-edit-description">{ ctxi18n.T(ctx, "fields.description") }</label>
 			<textarea id="member-edit-description" data-bind="formData.description" rows="3" class="input">{ data.Member.Description }</textarea>
-			<div data-show="$errors && $errors.description" class="color-error" data-text="$errors.description"></div>
+			<div data-show="$errors && $errors.description" class="fielderror" data-text="$errors.description"></div>
 		</div>
 		@shared.LoadingSubmitButton(shared.LoadingSubmitButtonProps{
 			ClassName: "btn btn-primary",

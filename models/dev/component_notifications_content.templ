@@ -10,7 +10,7 @@ templ NotificationsContent() {
 		<div class="field">
 			<label>Required field</label>
 			<div class="row">
-				<input type="text" data-bind="formData.name" placeholder="Required field" class="input"/>
+				<input type="text" data-bind="formData.name" placeholder="Required field" class="input" data-attr:class="($errors && $errors.name) ? 'input input-primary' : 'input'"/>
 				<button type="submit" class="btn btn-input" data-attr:disabled="$_notifyInline">
 					<span data-show="!$_notifyInline">
 						@icons.Save(templ.Attributes{"class": "icon"})
@@ -21,7 +21,7 @@ templ NotificationsContent() {
 					Inline validation
 				</button>
 			</div>
-			<div data-show="$errors && $errors.name" class="color-error" data-text="$errors.name"></div>
+			<div data-show="$errors && $errors.name" class="fielderror" data-text="$errors.name"></div>
 		</div>
 	</form>
 	<div class="row row-wrap">

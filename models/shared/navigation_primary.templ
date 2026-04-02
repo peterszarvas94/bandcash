@@ -1,11 +1,9 @@
 package shared
 
-import (
-	ctxi18n "github.com/invopop/ctxi18n/i18n"
-)
+import ctxi18n "github.com/invopop/ctxi18n/i18n"
 
-templ AppPrimaryNav(active string, isAuthenticated bool) {
-	<nav class="nav" aria-label={ ctxi18n.T(ctx, "nav.primary") }>
+templ PrimaryNav(active string, isAuthenticated bool) {
+	<nav class="primary-nav" aria-label={ ctxi18n.T(ctx, "nav.primary") }>
 		if isAuthenticated {
 			<a class={ "link", templ.KV("link-active", active == "/groups") } href="/groups">
 				{ ctxi18n.T(ctx, "groups.title") }

@@ -6,7 +6,7 @@ templ Header(crumbs []utils.Crumb, activeUrl string, isAuthenticated bool) {
 	<header class="header">
 		<div class="header_inner">
 			@Breadcrumbs(crumbs)
-			@AppPrimaryNav(activeUrl, isAuthenticated)
+			@PrimaryNav(activeUrl, isAuthenticated)
 		</div>
 	</header>
 }

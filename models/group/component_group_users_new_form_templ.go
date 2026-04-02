@@ -75,7 +75,7 @@ func GroupUsersNewForm(data UsersNewPageData) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, " <span class=\"color-error\">*</span></label> <input id=\"group-access-new-email\" type=\"email\" data-bind=\"formData.email\" placeholder=\"")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, " <span class=\"fielderror\">*</span></label> <input id=\"group-access-new-email\" type=\"email\" data-bind=\"formData.email\" placeholder=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -101,7 +101,7 @@ func GroupUsersNewForm(data UsersNewPageData) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 6, " <span class=\"color-error\">*</span></label> <select id=\"group-access-new-role\" data-bind=\"formData.role\" class=\"input\"><option value=\"viewer\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 6, " <span class=\"fielderror\">*</span></label> <select id=\"group-access-new-role\" data-bind=\"formData.role\" class=\"input\"><option value=\"viewer\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

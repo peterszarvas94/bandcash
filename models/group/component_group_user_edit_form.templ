@@ -15,7 +15,7 @@ templ GroupUserEditForm(data UserEditPageData) {
 			<input id="group-user-edit-email" class="input" type="text" value={ data.UserRow.Email } disabled/>
 		</div>
 		<div class="field">
-			<label for="group-user-edit-role" class="row">{ ctxi18n.T(ctx, "fields.role") } <span class="color-error">*</span></label>
+			<label for="group-user-edit-role" class="row">{ ctxi18n.T(ctx, "fields.role") } <span class="fielderror">*</span></label>
 			<select id="group-user-edit-role" data-bind="formData.role" class="input">
 				<option value="viewer">{ ctxi18n.T(ctx, "groups.role_viewer") }</option>
 				<option value="admin">{ ctxi18n.T(ctx, "groups.role_admin") }</option>

@@ -34,7 +34,7 @@ func NotificationsContent() templ.Component {
 			templ_7745c5c3_Var1 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<form class=\"form\" data-on:submit=\"@post('/dev/notifications/inline')\" data-indicator:_notifyInline><div class=\"field\"><label>Required field</label><div class=\"row\"><input type=\"text\" data-bind=\"formData.name\" placeholder=\"Required field\" class=\"input\"> <button type=\"submit\" class=\"btn btn-input\" data-attr:disabled=\"$_notifyInline\"><span data-show=\"!$_notifyInline\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<form class=\"form\" data-on:submit=\"@post('/dev/notifications/inline')\" data-indicator:_notifyInline><div class=\"field\"><label>Required field</label><div class=\"row\"><input type=\"text\" data-bind=\"formData.name\" placeholder=\"Required field\" class=\"input\" data-attr:class=\"($errors && $errors.name) ? 'input input-primary' : 'input'\"> <button type=\"submit\" class=\"btn btn-input\" data-attr:disabled=\"$_notifyInline\"><span data-show=\"!$_notifyInline\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -50,7 +50,7 @@ func NotificationsContent() templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "</span> Inline validation</button></div><div data-show=\"$errors && $errors.name\" class=\"color-error\" data-text=\"$errors.name\"></div></div></form><div class=\"row row-wrap\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "</span> Inline validation</button></div><div data-show=\"$errors && $errors.name\" class=\"fielderror\" data-text=\"$errors.name\"></div></div></form><div class=\"row row-wrap\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
