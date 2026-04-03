@@ -182,8 +182,8 @@ func (g *Group) CreateGroup(c echo.Context) error {
 	return c.NoContent(http.StatusOK)
 }
 
-// GroupsPage lists groups the user can access
-func (g *Group) GroupsPage(c echo.Context) error {
+// IndexPage lists groups the user can access.
+func (g *Group) IndexPage(c echo.Context) error {
 	utils.EnsureTabID(c)
 	userID := middleware.GetUserID(c)
 	if userID == "" {
@@ -204,11 +204,11 @@ func (g *Group) GroupsPage(c echo.Context) error {
 	data.IsAuthenticated = true
 	data.IsSuperAdmin = middleware.IsSuperadmin(c)
 
-	return utils.RenderPage(c, GroupsPage(data))
+	return utils.RenderPage(c, GroupIndexPage(data))
 }
 
-// GroupPage shows group details and admin actions.
-func (g *Group) GroupPage(c echo.Context) error {
+// RootPage redirects /groups/:groupId to the events tab.
+func (g *Group) RootPage(c echo.Context) error {
 	groupID := middleware.GetGroupID(c)
 	return c.Redirect(http.StatusFound, "/groups/"+groupID+"/events")
 }
@@ -223,7 +223,7 @@ func (g *Group) AboutPage(c echo.Context) error {
 		return c.NoContent(http.StatusInternalServerError)
 	}
 
-	return utils.RenderPage(c, GroupPage(data))
+	return utils.RenderPage(c, GroupAboutPage(data))
 }
 
 // UpdateGroup updates group name (admin only).
@@ -401,7 +401,7 @@ func (g *Group) DeleteGroup(c echo.Context) error {
 		data.IsAuthenticated = true
 		data.IsSuperAdmin = middleware.IsSuperadmin(c)
 
-		html, err := utils.RenderHTMLForRequest(c, GroupsPage(data))
+		html, err := utils.RenderHTMLForRequest(c, GroupIndexPage(data))
 		if err != nil {
 			slog.Error("group.delete: failed to render dashboard", "group_id", groupID, "err", err)
 			return c.NoContent(http.StatusInternalServerError)

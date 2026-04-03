@@ -10,13 +10,13 @@ func RegisterRoutes(e *echo.Echo) *Group {
 	grp := New()
 
 	// Group creation (requires auth)
-	e.GET("/groups", grp.GroupsPage, middleware.RequireAuth, middleware.WithDetailState)
+	e.GET("/groups", grp.IndexPage, middleware.RequireAuth, middleware.WithDetailState)
 	e.GET("/groups/new", grp.NewGroupPage, middleware.RequireAuth, middleware.WithDetailState)
 	e.POST("/groups", grp.CreateGroup, middleware.RequireAuth, middleware.WithDetailState)
 
 	// Group users pages for any group member
 	usersRoutes := e.Group("/groups/:groupId", middleware.RequireAuth, middleware.WithDetailState, middleware.RequireGroup)
-	usersRoutes.GET("", grp.GroupPage)
+	usersRoutes.GET("", grp.RootPage)
 	usersRoutes.GET("/about", grp.AboutPage)
 	usersRoutes.GET("/users", grp.UsersPage)
 	usersRoutes.GET("/users/:id", grp.UsersEntryPage)

@@ -78,7 +78,7 @@ WITH RECURSIVE seq(n) AS (
   UNION ALL
   SELECT n + 1 FROM seq WHERE n < 400
 )
-INSERT OR IGNORE INTO events (id, group_id, title, time, description, amount)
+INSERT OR IGNORE INTO events (id, group_id, title, time, place, description, amount, paid, paid_at)
 SELECT
   printf('evt_%020d', n),
   'grp_SeedDataLabGroup0001',
@@ -95,6 +95,15 @@ SELECT
     ELSE 'Weekend Headliner'
   END || ' #' || n,
   strftime('%Y-%m-%dT%H:%M', datetime('now', printf('-%d days', n % 365), printf('-%d hours', n % 24))),
+  CASE (n % 7)
+    WHEN 0 THEN 'A38 Ship'
+    WHEN 1 THEN 'Durer Kert'
+    WHEN 2 THEN 'Akvarium Klub'
+    WHEN 3 THEN 'Kobuci Kert'
+    WHEN 4 THEN 'Budapest Park'
+    WHEN 5 THEN ''
+    ELSE 'MOMKult'
+  END,
   CASE
     WHEN n % 6 = 0 THEN ''
     WHEN n % 6 = 1 THEN 'ticketed event with local support acts'
@@ -103,7 +112,16 @@ SELECT
     WHEN n % 6 = 4 THEN 'corporate set with custom playlist'
     ELSE 'bar show with reduced setup'
   END,
-  20000 + (ABS(RANDOM()) % 280000)
+  20000 + (ABS(RANDOM()) % 280000),
+  CASE
+    WHEN n % 4 = 0 THEN 1
+    WHEN n % 4 = 1 THEN 1
+    ELSE 0
+  END,
+  CASE
+    WHEN n % 4 IN (0, 1) THEN strftime('%Y-%m-%dT%H:%M:%SZ', datetime('now', printf('-%d days', (n % 300) + 1), printf('-%d hours', n % 12)))
+    ELSE NULL
+  END
 FROM seq;
 
 -- 300 expenses

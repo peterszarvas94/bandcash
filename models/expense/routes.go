@@ -10,8 +10,8 @@ func RegisterRoutes(e *echo.Echo) *Expenses {
 	expenses := New()
 
 	g := e.Group("/groups/:groupId", middleware.RequireAuth, middleware.WithDetailState, middleware.RequireGroup)
-	g.GET("/expenses", expenses.Index)
-	g.GET("/expenses/:id", expenses.Show)
+	g.GET("/expenses", expenses.IndexPage)
+	g.GET("/expenses/:id", expenses.ShowPage)
 
 	admin := g.Group("", middleware.RequireAdmin)
 	admin.GET("/expenses/new", expenses.NewExpensePage)

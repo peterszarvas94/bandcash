@@ -10,7 +10,7 @@ import templruntime "github.com/a-h/templ/runtime"
 
 import shared "bandcash/models/shared"
 
-func GroupsPage(data GroupsPageData) templ.Component {
+func GroupIndexPage(data GroupsPageData) templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
 		if templ_7745c5c3_CtxErr := ctx.Err(); templ_7745c5c3_CtxErr != nil {
@@ -35,7 +35,7 @@ func GroupsPage(data GroupsPageData) templ.Component {
 			Title:           data.Title,
 			Crumbs:          data.Breadcrumbs,
 			Signals:         data.Signals,
-			Content:         shared.CommonContent(GroupsMain(data)),
+			Content:         shared.CommonContent(GroupIndexMain(data)),
 			ActiveUrl:       "/groups",
 			IsAuthenticated: data.IsAuthenticated,
 			IsSuperAdmin:    data.IsSuperAdmin,

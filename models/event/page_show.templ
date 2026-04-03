@@ -4,7 +4,7 @@ import (
 	shared "bandcash/models/shared"
 )
 
-templ EventShow(data EventData) {
+templ EventShowPage(data EventData) {
 	@shared.BaseLayout(shared.BaseLayoutProps{
 		Title:           data.Title,
 		Crumbs:          data.Breadcrumbs,

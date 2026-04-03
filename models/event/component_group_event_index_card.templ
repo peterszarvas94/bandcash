@@ -1,0 +1,46 @@
+package event
+
+import (
+	ctxi18n "github.com/invopop/ctxi18n/i18n"
+)
+
+type GroupEventIndexCardProps struct {
+	Title    string
+	Income   string
+	Payout   string
+	Leftover string
+}
+
+type GroupEventIndexCardsProps struct {
+	Paid   GroupEventIndexCardProps
+	Unpaid GroupEventIndexCardProps
+	All    GroupEventIndexCardProps
+}
+
+templ GroupEventIndexCards(props GroupEventIndexCardsProps) {
+	<div class="group-event-index-cards pb">
+		@GroupEventIndexCard(props.Paid)
+		@GroupEventIndexCard(props.Unpaid)
+		@GroupEventIndexCard(props.All)
+	</div>
+}
+
+templ GroupEventIndexCard(props GroupEventIndexCardProps) {
+	<section class="group-event-index-card" aria-label={ props.Title }>
+		<h3>{ props.Title }</h3>
+		<dl aria-label={ props.Title }>
+			<div class="income">
+				<dt>{ ctxi18n.T(ctx, "groups.income") }</dt>
+				<dd>{ props.Income }</dd>
+			</div>
+			<div class="payout">
+				<dt>{ ctxi18n.T(ctx, "groups.payouts") }</dt>
+				<dd>{ props.Payout }</dd>
+			</div>
+			<div class="leftover">
+				<dt>{ ctxi18n.T(ctx, "groups.balance") }</dt>
+				<dd>{ props.Leftover }</dd>
+			</div>
+		</dl>
+	</section>
+}

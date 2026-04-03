@@ -181,7 +181,7 @@ func (e *Expenses) EditExpensePage(c echo.Context) error {
 	return utils.RenderPage(c, ExpenseEditPage(data))
 }
 
-func (e *Expenses) Index(c echo.Context) error {
+func (e *Expenses) IndexPage(c echo.Context) error {
 	utils.EnsureTabID(c)
 	groupID := middleware.GetGroupID(c)
 	query := utils.ParseTableQuery(c, e)
@@ -196,10 +196,10 @@ func (e *Expenses) Index(c echo.Context) error {
 	data.IsAuthenticated = true
 	data.IsSuperAdmin = middleware.IsSuperadmin(c)
 
-	return utils.RenderPage(c, ExpenseIndex(data))
+	return utils.RenderPage(c, ExpenseIndexPage(data))
 }
 
-func (e *Expenses) Show(c echo.Context) error {
+func (e *Expenses) ShowPage(c echo.Context) error {
 	utils.EnsureTabID(c)
 	groupID := middleware.GetGroupID(c)
 
@@ -219,7 +219,7 @@ func (e *Expenses) Show(c echo.Context) error {
 	data.IsAuthenticated = true
 	data.IsSuperAdmin = middleware.IsSuperadmin(c)
 
-	return utils.RenderPage(c, ExpenseShow(data))
+	return utils.RenderPage(c, ExpenseShowPage(data))
 }
 
 func (e *Expenses) Create(c echo.Context) error {
@@ -393,7 +393,7 @@ func (e *Expenses) Destroy(c echo.Context) error {
 	data.IsAuthenticated = true
 	data.IsSuperAdmin = middleware.IsSuperadmin(c)
 
-	html, err := utils.RenderHTMLForRequest(c, ExpenseIndex(data))
+	html, err := utils.RenderHTMLForRequest(c, ExpenseIndexPage(data))
 	if err != nil {
 		slog.Error("expense.destroy: failed to render", "err", err)
 		return c.NoContent(http.StatusInternalServerError)
@@ -453,7 +453,7 @@ func (e *Expenses) TogglePaid(c echo.Context) error {
 		data.Signals = expenseShowSignals(data)
 		data.IsAuthenticated = true
 		data.IsSuperAdmin = middleware.IsSuperadmin(c)
-		html, err := utils.RenderHTMLForRequest(c, ExpenseShow(data))
+		html, err := utils.RenderHTMLForRequest(c, ExpenseShowPage(data))
 		if err != nil {
 			slog.Error("expense.togglePaid: failed to render", "err", err)
 			return c.NoContent(http.StatusInternalServerError)
@@ -472,7 +472,7 @@ func (e *Expenses) TogglePaid(c echo.Context) error {
 	data.Signals = expenseIndexSignals(data.Query)
 	data.IsAuthenticated = true
 	data.IsSuperAdmin = middleware.IsSuperadmin(c)
-	html, err := utils.RenderHTMLForRequest(c, ExpenseIndex(data))
+	html, err := utils.RenderHTMLForRequest(c, ExpenseIndexPage(data))
 	if err != nil {
 		slog.Error("expense.togglePaid: failed to render", "err", err)
 		return c.NoContent(http.StatusInternalServerError)

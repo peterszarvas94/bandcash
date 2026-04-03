@@ -371,7 +371,7 @@ func (e *Events) patchEventShow(c echo.Context, groupID, eventID string, query u
 	if data.EditorMode == "edit" {
 		html, err = utils.RenderHTMLForRequest(c, EventEditPage(data))
 	} else {
-		html, err = utils.RenderHTMLForRequest(c, EventShow(data))
+		html, err = utils.RenderHTMLForRequest(c, EventShowPage(data))
 	}
 	if err != nil {
 		return err
@@ -382,7 +382,7 @@ func (e *Events) patchEventShow(c echo.Context, groupID, eventID string, query u
 	return nil
 }
 
-func (e *Events) Index(c echo.Context) error {
+func (e *Events) IndexPage(c echo.Context) error {
 	utils.EnsureTabID(c)
 	groupID := middleware.GetGroupID(c)
 	query := utils.ParseTableQuery(c, e)
@@ -398,10 +398,10 @@ func (e *Events) Index(c echo.Context) error {
 	data.IsSuperAdmin = middleware.IsSuperadmin(c)
 
 	slog.Debug("event.index", "event_count", len(data.Events))
-	return utils.RenderPage(c, EventIndex(data))
+	return utils.RenderPage(c, EventIndexPage(data))
 }
 
-func (e *Events) Show(c echo.Context) error {
+func (e *Events) ShowPage(c echo.Context) error {
 	utils.EnsureTabID(c)
 	groupID := middleware.GetGroupID(c)
 	query := parseParticipantTableQuery(c, e)
@@ -422,7 +422,7 @@ func (e *Events) Show(c echo.Context) error {
 	data.IsAuthenticated = true
 	data.IsSuperAdmin = middleware.IsSuperadmin(c)
 
-	return utils.RenderPage(c, EventShow(data))
+	return utils.RenderPage(c, EventShowPage(data))
 }
 
 func (e *Events) NewEventPage(c echo.Context) error {
@@ -678,7 +678,7 @@ func (e *Events) Destroy(c echo.Context) error {
 	data.Signals = eventIndexSignals(data.Query)
 	data.IsAuthenticated = true
 	data.IsSuperAdmin = middleware.IsSuperadmin(c)
-	html, err := utils.RenderHTMLForRequest(c, EventIndex(data))
+	html, err := utils.RenderHTMLForRequest(c, EventIndexPage(data))
 	if err != nil {
 		slog.Error("event.destroy: failed to render", "err", err)
 		return c.NoContent(http.StatusInternalServerError)
@@ -743,7 +743,7 @@ func (e *Events) ToggleParticipantPaid(c echo.Context) error {
 	data.Signals = eventShowSignals(data)
 	data.IsAuthenticated = true
 	data.IsSuperAdmin = middleware.IsSuperadmin(c)
-	html, err := utils.RenderHTMLForRequest(c, EventShow(data))
+	html, err := utils.RenderHTMLForRequest(c, EventShowPage(data))
 	if err != nil {
 		slog.Error("participant.togglePaid: failed to render", "err", err)
 		return c.NoContent(http.StatusInternalServerError)
@@ -1240,7 +1240,7 @@ func (e *Events) TogglePaid(c echo.Context) error {
 		data.Signals = eventShowSignals(data)
 		data.IsAuthenticated = true
 		data.IsSuperAdmin = middleware.IsSuperadmin(c)
-		html, err := utils.RenderHTMLForRequest(c, EventShow(data))
+		html, err := utils.RenderHTMLForRequest(c, EventShowPage(data))
 		if err != nil {
 			slog.Error("event.togglePaid: failed to render", "err", err)
 			return c.NoContent(http.StatusInternalServerError)
@@ -1259,7 +1259,7 @@ func (e *Events) TogglePaid(c echo.Context) error {
 	data.Signals = eventIndexSignals(data.Query)
 	data.IsAuthenticated = true
 	data.IsSuperAdmin = middleware.IsSuperadmin(c)
-	html, err := utils.RenderHTMLForRequest(c, EventIndex(data))
+	html, err := utils.RenderHTMLForRequest(c, EventIndexPage(data))
 	if err != nil {
 		slog.Error("event.togglePaid: failed to render", "err", err)
 		return c.NoContent(http.StatusInternalServerError)

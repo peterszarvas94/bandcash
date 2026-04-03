@@ -9,6 +9,19 @@ import (
 )
 
 templ EventIndexMain(data EventsData) {
+	{{
+		allIncome := data.FilteredTotal
+		allPayout := data.FilteredPayoutsPaid + data.FilteredPayoutsUnpaid + data.FilteredExpensesPaid + data.FilteredExpensesUnpaid
+		allLeftover := allIncome - allPayout
+
+		paidIncome := data.FilteredIncomePaid
+		paidPayout := data.FilteredPayoutsPaid + data.FilteredExpensesPaid
+		paidLeftover := paidIncome - paidPayout
+
+		unpaidIncome := data.FilteredIncomeUnpaid
+		unpaidPayout := data.FilteredPayoutsUnpaid + data.FilteredExpensesUnpaid
+		unpaidLeftover := unpaidIncome - unpaidPayout
+	}}
 	<h1>{ data.GroupName }</h1>
 	if data.IsAdmin {
 		<div class="row row-wrap pb">
@@ -18,7 +31,26 @@ templ EventIndexMain(data EventsData) {
 			</a>
 		</div>
 	}
-	@EventTotalsContent(data)
+	@GroupEventIndexCards(GroupEventIndexCardsProps{
+		Paid: GroupEventIndexCardProps{
+			Title:    ctxi18n.T(ctx, "table.paid"),
+			Income:   utils.FormatNumberLocalized(ctx, paidIncome),
+			Payout:   utils.FormatNumberLocalizedWithSign(ctx, paidPayout, false),
+			Leftover: utils.FormatNumberLocalized(ctx, paidLeftover),
+		},
+		Unpaid: GroupEventIndexCardProps{
+			Title:    ctxi18n.T(ctx, "table.unpaid"),
+			Income:   utils.FormatNumberLocalized(ctx, unpaidIncome),
+			Payout:   utils.FormatNumberLocalizedWithSign(ctx, unpaidPayout, false),
+			Leftover: utils.FormatNumberLocalized(ctx, unpaidLeftover),
+		},
+		All: GroupEventIndexCardProps{
+			Title:    ctxi18n.T(ctx, "table.all"),
+			Income:   utils.FormatNumberLocalized(ctx, allIncome),
+			Payout:   utils.FormatNumberLocalizedWithSign(ctx, allPayout, false),
+			Leftover: utils.FormatNumberLocalized(ctx, allLeftover),
+		},
+	})
 	@shared.TableSearchFormWithClass(fmt.Sprintf("/groups/%s/events", data.GroupID), data.Query, "table.search_placeholder_events", "pt")
 	<div class="row row-wrap justify-between pb">
 		<div class="radiogroup" role="radiogroup" aria-label={ ctxi18n.T(ctx, "table.date_filters") }>
