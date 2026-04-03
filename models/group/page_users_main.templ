@@ -9,14 +9,13 @@ import (
 )
 
 templ GroupUsersMain(data UsersPageData) {
-	<h1>{ ctxi18n.T(ctx, "groups.users") }</h1>
-	if data.IsAdmin {
-		<div class="row row-wrap pb">
+	@shared.PageHeader(shared.PageHeaderProps{Title: ctxi18n.T(ctx, "groups.users")}) {
+		if data.IsAdmin {
 			<a href={ fmt.Sprintf("/groups/%s/users/new", data.GroupID) } class="btn btn-sm btn-primary">
 				@icons.Plus(templ.Attributes{"class": "icon"})
 				{ ctxi18n.T(ctx, "groups.invite_user") }
 			</a>
-		</div>
+		}
 	}
 	@shared.TableSearchFormWithClass(usersTablePath(data.GroupID), data.Query, "table.search_placeholder_users", "")
 	@shared.TablePaginationRow(usersTablePath(data.GroupID), data.Query, data.Pager)

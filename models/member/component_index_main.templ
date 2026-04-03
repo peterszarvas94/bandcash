@@ -9,14 +9,13 @@ import (
 )
 
 templ MemberIndexMain(data MembersData) {
-	<h1>{ ctxi18n.T(ctx, "members.title") }</h1>
-	if data.IsAdmin {
-		<div class="row row-wrap pb">
+	@shared.PageHeader(shared.PageHeaderProps{Title: ctxi18n.T(ctx, "members.title")}) {
+		if data.IsAdmin {
 			<a href={ fmt.Sprintf("/groups/%s/members/new", data.GroupID) } class="btn btn-sm btn-primary">
 				@icons.Plus(templ.Attributes{"class": "icon"})
 				{ ctxi18n.T(ctx, "members.add") }
 			</a>
-		</div>
+		}
 	}
 	@shared.TableSearchFormWithClass(fmt.Sprintf("/groups/%s/members", data.GroupID), data.Query, "table.search_placeholder_members", "")
 	@shared.TablePaginationRow(fmt.Sprintf("/groups/%s/members", data.GroupID), data.Query, data.Pager)

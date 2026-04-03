@@ -8,11 +8,10 @@ import (
 )
 
 templ GroupUserInviteMain(data UserInvitePageData) {
-	<h1>{ data.UserRow.Email }</h1>
-	if data.IsAdmin {
-		<div class="row row-wrap pb">
+	@shared.PageHeader(shared.PageHeaderProps{Title: data.UserRow.Email}) {
+		if data.IsAdmin {
 			@GroupUserInviteDetailsActions(data)
-		</div>
+		}
 	}
 	<div class="pb">
 		@shared.DetailsCardWithClass(fmt.Sprintf("group_user_invite_%s", data.UserRow.InviteID), []shared.DetailsRow{

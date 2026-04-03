@@ -10,26 +10,42 @@ import (
 )
 
 templ EventShowMain(data EventData) {
-	{{ togglePaidExpr := fmt.Sprintf("@put('/groups/%s/events/%s/toggle-paid', {mode: 'single'})", data.GroupID, data.Event.ID) }}
-	<h1>{ data.Event.Title }</h1>
-	if data.IsAdmin {
-		<div class="row row-wrap pb" data-show="$participantEditorMode === 'read'">
-			@ReadModeActions(data)
+	{{
+		togglePaidExpr := fmt.Sprintf("@put('/groups/%s/events/%s/toggle-paid', {mode: 'single'})", data.GroupID, data.Event.ID)
+		eventPlace := strings.TrimSpace(data.Event.Place)
+		if eventPlace == "" {
+			eventPlace = "-"
+		}
+		eventDescription := strings.TrimSpace(data.Event.Description)
+		if eventDescription == "" {
+			eventDescription = "-"
+		}
+	}}
+	@shared.PageHeader(shared.PageHeaderProps{Title: data.Event.Title}) {
+		<div class="event-header-meta">
+			<p>
+				@icons.Icon(icons.IconCalendar, templ.Attributes{"class": "icon"})
+				<span>{ utils.FormatDateTimeLocalized(ctx, data.Event.Time) }</span>
+			</p>
+			<p>
+				@icons.Icon(icons.IconMapPin, templ.Attributes{"class": "icon"})
+				<span>{ eventPlace }</span>
+			</p>
+			<p>
+				@icons.Icon(icons.IconNotepadText, templ.Attributes{"class": "icon"})
+				<span>{ eventDescription }</span>
+			</p>
 		</div>
+		if data.IsAdmin {
+			<div data-show="$participantEditorMode === 'read'">
+				@ReadModeActions(data)
+			</div>
+		}
 	}
 	<div data-show="$participantEditorMode === 'read'">
 		<div class="pb">
 			@shared.DetailsCardWithClass(fmt.Sprintf("event_%s_overview", data.Event.ID), []shared.DetailsRow{
 				{Label: ctxi18n.T(ctx, "nav.overview"), LabelClass: "section-title", Value: ""},
-				{Label: ctxi18n.T(ctx, "fields.time"), Value: utils.FormatDateTimeLocalized(ctx, data.Event.Time)},
-				{Label: ctxi18n.T(ctx, "fields.place"), Value: func() string {
-					place := strings.TrimSpace(data.Event.Place)
-					if place == "" {
-						return "-"
-					}
-					return place
-				}()},
-				{Label: ctxi18n.T(ctx, "fields.description"), Value: data.Event.Description},
 				{Label: ctxi18n.T(ctx, "fields.income"), Value: utils.FormatNumberLocalized(ctx, data.Event.Amount), Action: shared.ToggleSwitch(shared.ToggleSwitchProps{
 					IsOn:         data.Event.Paid == 1,
 					OnClick:      togglePaidExpr,
@@ -64,34 +80,26 @@ templ EventShowMain(data EventData) {
 			unpaidPayout := data.FilteredUnpaid
 			unpaidLeftover := unpaidIncome - unpaidPayout
 		}}
-		<section class="pb">
-			@shared.CalculationsCards([]shared.CalculationCard{
-				{
-					Title: ctxi18n.T(ctx, "table.all"),
-					Rows: []shared.CalculationStatRow{
-						{Label: ctxi18n.T(ctx, "fields.income"), Value: utils.FormatNumberLocalized(ctx, allIncome)},
-						{Label: ctxi18n.T(ctx, "participants.payout_total"), Value: utils.FormatNumberLocalizedWithSign(ctx, allPayout, false)},
-						{Label: ctxi18n.T(ctx, "events.leftover"), Value: utils.FormatNumberLocalized(ctx, allLeftover)},
-					},
-				},
-				{
-					Title: ctxi18n.T(ctx, "table.paid"),
-					Rows: []shared.CalculationStatRow{
-						{Label: ctxi18n.T(ctx, "fields.income"), Value: utils.FormatNumberLocalized(ctx, paidIncome)},
-						{Label: ctxi18n.T(ctx, "participants.payout_total"), Value: utils.FormatNumberLocalizedWithSign(ctx, paidPayout, false)},
-						{Label: ctxi18n.T(ctx, "events.leftover"), Value: utils.FormatNumberLocalized(ctx, paidLeftover)},
-					},
-				},
-				{
-					Title: ctxi18n.T(ctx, "table.unpaid"),
-					Rows: []shared.CalculationStatRow{
-						{Label: ctxi18n.T(ctx, "fields.income"), Value: utils.FormatNumberLocalized(ctx, unpaidIncome)},
-						{Label: ctxi18n.T(ctx, "participants.payout_total"), Value: utils.FormatNumberLocalizedWithSign(ctx, unpaidPayout, false)},
-						{Label: ctxi18n.T(ctx, "events.leftover"), Value: utils.FormatNumberLocalized(ctx, unpaidLeftover)},
-					},
-				},
-			})
-		</section>
+		@EventBalanceCards(EventBalanceCardsProps{
+			Paid: EventBalanceCardProps{
+				Title:    ctxi18n.T(ctx, "table.paid"),
+				Income:   utils.FormatNumberLocalized(ctx, paidIncome),
+				Payout:   utils.FormatNumberLocalizedWithSign(ctx, paidPayout, false),
+				Leftover: utils.FormatNumberLocalized(ctx, paidLeftover),
+			},
+			Unpaid: EventBalanceCardProps{
+				Title:    ctxi18n.T(ctx, "table.unpaid"),
+				Income:   utils.FormatNumberLocalized(ctx, unpaidIncome),
+				Payout:   utils.FormatNumberLocalizedWithSign(ctx, unpaidPayout, false),
+				Leftover: utils.FormatNumberLocalized(ctx, unpaidLeftover),
+			},
+			All: EventBalanceCardProps{
+				Title:    ctxi18n.T(ctx, "table.all"),
+				Income:   utils.FormatNumberLocalized(ctx, allIncome),
+				Payout:   utils.FormatNumberLocalizedWithSign(ctx, allPayout, false),
+				Leftover: utils.FormatNumberLocalized(ctx, allLeftover),
+			},
+		})
 		@shared.TableSearchFormWithClass(fmt.Sprintf("/groups/%s/events/%s", data.GroupID, data.Event.ID), data.Query, "table.search_placeholder_members", "pt")
 		@shared.TablePaginationRow(fmt.Sprintf("/groups/%s/events/%s", data.GroupID, data.Event.ID), data.Query, data.Pager)
 		@shared.TableOpenFixed(data.ParticipantsTable, "") {

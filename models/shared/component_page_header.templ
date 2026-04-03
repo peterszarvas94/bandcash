@@ -1,0 +1,14 @@
+package shared
+
+type PageHeaderProps struct {
+	Title string
+}
+
+templ PageHeader(props PageHeaderProps) {
+	<header class="page-header">
+		<h1>{ props.Title }</h1>
+		<div class="content">
+			{ children... }
+		</div>
+	</header>
+}

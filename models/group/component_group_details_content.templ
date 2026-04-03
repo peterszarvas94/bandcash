@@ -8,11 +8,10 @@ import (
 )
 
 templ GroupDetailsContent(data GroupPageData) {
-	<h1>{ data.Group.Name }</h1>
-	if data.IsAdmin {
-		<div class="row row-wrap pb">
+	@shared.PageHeader(shared.PageHeaderProps{Title: data.Group.Name}) {
+		if data.IsAdmin {
 			@GroupDetailsActions(data)
-		</div>
+		}
 	}
 	<div class="pb">
 		@shared.DetailsCardWithClass(fmt.Sprintf("group_%s_overview", data.Group.ID), []shared.DetailsRow{

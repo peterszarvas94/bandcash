@@ -22,29 +22,28 @@ templ EventIndexMain(data EventsData) {
 		unpaidPayout := data.FilteredPayoutsUnpaid + data.FilteredExpensesUnpaid
 		unpaidLeftover := unpaidIncome - unpaidPayout
 	}}
-	<h1>{ data.GroupName }</h1>
-	if data.IsAdmin {
-		<div class="row row-wrap pb">
+	@shared.PageHeader(shared.PageHeaderProps{Title: data.GroupName}) {
+		if data.IsAdmin {
 			<a href={ fmt.Sprintf("/groups/%s/events/new", data.GroupID) } class="btn btn-sm btn-primary">
 				@icons.Icon(icons.IconPlus, templ.Attributes{"class": "icon"})
 				{ ctxi18n.T(ctx, "events.add") }
 			</a>
-		</div>
+		}
 	}
-	@GroupEventIndexCards(GroupEventIndexCardsProps{
-		Paid: GroupEventIndexCardProps{
+	@EventBalanceCards(EventBalanceCardsProps{
+		Paid: EventBalanceCardProps{
 			Title:    ctxi18n.T(ctx, "table.paid"),
 			Income:   utils.FormatNumberLocalized(ctx, paidIncome),
 			Payout:   utils.FormatNumberLocalizedWithSign(ctx, paidPayout, false),
 			Leftover: utils.FormatNumberLocalized(ctx, paidLeftover),
 		},
-		Unpaid: GroupEventIndexCardProps{
+		Unpaid: EventBalanceCardProps{
 			Title:    ctxi18n.T(ctx, "table.unpaid"),
 			Income:   utils.FormatNumberLocalized(ctx, unpaidIncome),
 			Payout:   utils.FormatNumberLocalizedWithSign(ctx, unpaidPayout, false),
 			Leftover: utils.FormatNumberLocalized(ctx, unpaidLeftover),
 		},
-		All: GroupEventIndexCardProps{
+		All: EventBalanceCardProps{
 			Title:    ctxi18n.T(ctx, "table.all"),
 			Income:   utils.FormatNumberLocalized(ctx, allIncome),
 			Payout:   utils.FormatNumberLocalizedWithSign(ctx, allPayout, false),

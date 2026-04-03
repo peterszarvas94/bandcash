@@ -12,20 +12,20 @@ import (
 	ctxi18n "github.com/invopop/ctxi18n/i18n"
 )
 
-type GroupEventIndexCardProps struct {
+type EventBalanceCardProps struct {
 	Title    string
 	Income   string
 	Payout   string
 	Leftover string
 }
 
-type GroupEventIndexCardsProps struct {
-	Paid   GroupEventIndexCardProps
-	Unpaid GroupEventIndexCardProps
-	All    GroupEventIndexCardProps
+type EventBalanceCardsProps struct {
+	Paid   EventBalanceCardProps
+	Unpaid EventBalanceCardProps
+	All    EventBalanceCardProps
 }
 
-func GroupEventIndexCards(props GroupEventIndexCardsProps) templ.Component {
+func EventBalanceCards(props EventBalanceCardsProps) templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
 		if templ_7745c5c3_CtxErr := ctx.Err(); templ_7745c5c3_CtxErr != nil {
@@ -46,19 +46,19 @@ func GroupEventIndexCards(props GroupEventIndexCardsProps) templ.Component {
 			templ_7745c5c3_Var1 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<div class=\"group-event-index-cards pb\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<div class=\"event-balance-cards pb\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = GroupEventIndexCard(props.Paid).Render(ctx, templ_7745c5c3_Buffer)
+		templ_7745c5c3_Err = EventBalanceCard(props.Paid).Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = GroupEventIndexCard(props.Unpaid).Render(ctx, templ_7745c5c3_Buffer)
+		templ_7745c5c3_Err = EventBalanceCard(props.Unpaid).Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = GroupEventIndexCard(props.All).Render(ctx, templ_7745c5c3_Buffer)
+		templ_7745c5c3_Err = EventBalanceCard(props.All).Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -70,7 +70,7 @@ func GroupEventIndexCards(props GroupEventIndexCardsProps) templ.Component {
 	})
 }
 
-func GroupEventIndexCard(props GroupEventIndexCardProps) templ.Component {
+func EventBalanceCard(props EventBalanceCardProps) templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
 		if templ_7745c5c3_CtxErr := ctx.Err(); templ_7745c5c3_CtxErr != nil {
@@ -91,14 +91,14 @@ func GroupEventIndexCard(props GroupEventIndexCardProps) templ.Component {
 			templ_7745c5c3_Var2 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "<section class=\"group-event-index-card\" aria-label=\"")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "<section class=\"event-balance-card\" aria-label=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var3 string
 		templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.JoinStringErrs(props.Title)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/event/component_group_event_index_card.templ`, Line: 29, Col: 65}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/event/component_group_event_index_card.templ`, Line: 29, Col: 61}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var3))
 		if templ_7745c5c3_Err != nil {

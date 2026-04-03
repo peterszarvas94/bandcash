@@ -4,29 +4,29 @@ import (
 	ctxi18n "github.com/invopop/ctxi18n/i18n"
 )
 
-type GroupEventIndexCardProps struct {
+type EventBalanceCardProps struct {
 	Title    string
 	Income   string
 	Payout   string
 	Leftover string
 }
 
-type GroupEventIndexCardsProps struct {
-	Paid   GroupEventIndexCardProps
-	Unpaid GroupEventIndexCardProps
-	All    GroupEventIndexCardProps
+type EventBalanceCardsProps struct {
+	Paid   EventBalanceCardProps
+	Unpaid EventBalanceCardProps
+	All    EventBalanceCardProps
 }
 
-templ GroupEventIndexCards(props GroupEventIndexCardsProps) {
-	<div class="group-event-index-cards pb">
-		@GroupEventIndexCard(props.Paid)
-		@GroupEventIndexCard(props.Unpaid)
-		@GroupEventIndexCard(props.All)
+templ EventBalanceCards(props EventBalanceCardsProps) {
+	<div class="event-balance-cards pb">
+		@EventBalanceCard(props.Paid)
+		@EventBalanceCard(props.Unpaid)
+		@EventBalanceCard(props.All)
 	</div>
 }
 
-templ GroupEventIndexCard(props GroupEventIndexCardProps) {
-	<section class="group-event-index-card" aria-label={ props.Title }>
+templ EventBalanceCard(props EventBalanceCardProps) {
+	<section class="event-balance-card" aria-label={ props.Title }>
 		<h3>{ props.Title }</h3>
 		<dl aria-label={ props.Title }>
 			<div class="income">

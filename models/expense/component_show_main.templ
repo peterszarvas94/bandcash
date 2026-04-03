@@ -19,11 +19,12 @@ templ ExpenseShowMain(data ExpenseData) {
 			return utils.FormatDateInput(data.Expense.PaidAt.String)
 		}()) + "}; $errors = {title: '', description: '', amount: '', date: ''}"
 	}}
-	<h1>{ data.Expense.Title }</h1>
-	if data.IsAdmin {
-		<div class="row row-wrap pb" data-show="$formState !== 'edit'">
-			@ExpenseShowDetailsActions(data)
-		</div>
+	@shared.PageHeader(shared.PageHeaderProps{Title: data.Expense.Title}) {
+		if data.IsAdmin {
+			<div data-show="$formState !== 'edit'">
+				@ExpenseShowDetailsActions(data)
+			</div>
+		}
 	}
 	<div data-show="$formState !== 'edit'">
 		<div class="pb">

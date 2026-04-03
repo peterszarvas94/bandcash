@@ -8,13 +8,12 @@ import (
 
 templ GroupIndexMain(data GroupsPageData) {
 	<section class="groups">
-		<header class="row row-wrap justify-between items-center pb">
-			<h1>{ ctxi18n.T(ctx, "groups.title") }</h1>
+		@shared.PageHeader(shared.PageHeaderProps{Title: ctxi18n.T(ctx, "groups.title")}) {
 			<a href="/groups/new" class="btn btn-sm btn-primary">
 				@icons.Plus(templ.Attributes{"class": "icon"})
 				{ ctxi18n.T(ctx, "groups.create") }
 			</a>
-		</header>
+		}
 		@shared.TableSearchFormWithClass("/groups", data.Query, "table.search_placeholder", "")
 		if len(data.AllGroups) == 0 {
 			<p class="text-muted">{ ctxi18n.T(ctx, "table.empty") }</p>
