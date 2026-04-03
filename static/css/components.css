@@ -1334,6 +1334,63 @@
     }
   }
 
+  .event-income-card {
+    display: grid;
+    gap: var(--space);
+    width: 100%;
+    max-width: var(--details-width);
+    padding: calc(var(--space) * 1.5);
+    border-radius: var(--radius-lg);
+    background: var(--bg-light);
+    box-shadow: var(--shadow);
+
+    > .amount {
+      margin: 0;
+      font-size: 1.9rem;
+      line-height: 1.1;
+      font-weight: 700;
+      font-variant-numeric: tabular-nums;
+      font-feature-settings: "tnum" 1;
+    }
+
+    > dl {
+      margin: 0;
+      display: grid;
+      gap: calc(var(--space) * 0.75);
+
+      > div {
+        display: grid;
+        grid-template-columns: 1fr auto;
+        align-items: center;
+        gap: var(--space);
+
+        > dt,
+        > dd {
+          margin: 0;
+          line-height: 1.2;
+        }
+
+        > dt {
+          color: var(--text-muted);
+          font-size: 0.95rem;
+          font-weight: 500;
+        }
+
+        > dd {
+          justify-self: end;
+          font-variant-numeric: tabular-nums;
+          font-feature-settings: "tnum" 1;
+        }
+
+        &.paid-at > dd {
+          font-size: 1rem;
+          font-weight: 600;
+          color: var(--text-muted);
+        }
+      }
+    }
+  }
+
   .page-header {
     display: grid;
     gap: var(--space);
@@ -1346,7 +1403,7 @@
     > .content {
       display: flex;
       align-items: flex-start;
-      gap: var(--space);
+      gap: var(--space-lg);
       flex-wrap: wrap;
 
       &:empty {
