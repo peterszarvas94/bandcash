@@ -161,8 +161,7 @@
   p {
     font: 400 1rem var(--font-sans);
     text-wrap: pretty;
-    padding-block: var(--space);
-    padding-inline: 0;
+    padding-bottom: var(--space);
     margin: 0;
   }
 

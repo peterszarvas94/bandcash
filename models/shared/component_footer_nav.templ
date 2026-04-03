@@ -9,28 +9,34 @@ import (
 templ Footer(isSuperAdmin bool, activeUrl string) {
 	<footer class="footer">
 		<nav aria-label={ ctxi18n.T(ctx, "nav.footer") }>
-			if isSuperAdmin {
-				<a class={ "link", templ.KV("link-active", strings.HasPrefix(activeUrl, "/admin")) } href="/admin/flags">
-					{ ctxi18n.T(ctx, "nav.admin") }
+			<div>
+				<p>{ ctxi18n.T(ctx, "app.title") }</p>
+				<p>© Szarvas Péter 2026</p>
+			</div>
+			<div>
+				<a class={ "link", templ.KV("link-active", activeUrl == "/pricing") } href="/pricing">
+					{ ctxi18n.T(ctx, "legal.pricing") }
 				</a>
-			}
-			if utils.Env().AppEnv == "development" {
-				<a class={ "link", templ.KV("link-active", activeUrl == "/dev") } href="/dev">
-					Dev
+				<a class={ "link", templ.KV("link-active", activeUrl == "/terms-and-conditions") } href="/terms-and-conditions">
+					{ ctxi18n.T(ctx, "legal.terms_and_conditions") }
 				</a>
-			}
-			<a class={ "link", templ.KV("link-active", activeUrl == "/pricing") } href="/pricing">
-				{ ctxi18n.T(ctx, "legal.pricing") }
-			</a>
-			<a class={ "link", templ.KV("link-active", activeUrl == "/terms-and-conditions") } href="/terms-and-conditions">
-				{ ctxi18n.T(ctx, "legal.terms_and_conditions") }
-			</a>
-			<a class={ "link", templ.KV("link-active", activeUrl == "/privacy-policy") } href="/privacy-policy">
-				{ ctxi18n.T(ctx, "legal.privacy_policy") }
-			</a>
-			<a class={ "link", templ.KV("link-active", activeUrl == "/refund-policy") } href="/refund-policy">
-				{ ctxi18n.T(ctx, "legal.refund_policy") }
-			</a>
+				<a class={ "link", templ.KV("link-active", activeUrl == "/privacy-policy") } href="/privacy-policy">
+					{ ctxi18n.T(ctx, "legal.privacy_policy") }
+				</a>
+				<a class={ "link", templ.KV("link-active", activeUrl == "/refund-policy") } href="/refund-policy">
+					{ ctxi18n.T(ctx, "legal.refund_policy") }
+				</a>
+				if isSuperAdmin {
+					<a class={ "link", templ.KV("link-active", strings.HasPrefix(activeUrl, "/admin")) } href="/admin/flags">
+						{ ctxi18n.T(ctx, "nav.admin") }
+					</a>
+				}
+				if utils.Env().AppEnv == "development" {
+					<a class={ "link", templ.KV("link-active", activeUrl == "/dev") } href="/dev">
+						Dev
+					</a>
+				}
+			</div>
 		</nav>
 	</footer>
 }

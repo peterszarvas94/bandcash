@@ -719,12 +719,12 @@
     }
 
     .content {
-      min-height: calc(100vh - var(--header-height));
-      min-height: calc(100lvh - var(--header-height));
       display: flex;
       flex-direction: column;
 
       .content_inner {
+        min-height: calc(100vh - var(--header-height));
+        min-height: calc(100lvh - var(--header-height));
         display: flex;
         flex-grow: 1;
         min-width: 0;
@@ -736,32 +736,54 @@
         align-items: center;
         justify-content: center;
         background: var(--bg);
+        padding: var(--space-lg);
 
         border-top: var(--border) solid
           light-dark(var(--bg-dark), var(--bg-light));
 
         nav {
-          padding: var(--space);
           width: 100%;
           display: flex;
-          align-items: center;
-          justify-content: center;
+          align-items: self-start;
+          justify-content: space-between;
           flex-wrap: wrap;
           gap: calc(var(--space) * 3);
+
+          div {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            gap: var(--space);
+
+            &:nth-of-type(1) {
+              align-items: flex-start;
+            }
+          }
+        }
+
+        @media (max-width: 680px) {
+          nav {
+            flex-direction: column;
+
+            div {
+              width: 100%;
+            }
+          }
         }
       }
     }
 
     &.has-tab-sidebar {
       aside {
-        position: fixed;
+        position: sticky;
         top: var(--header-height);
-        left: 0;
-        bottom: 0;
-        z-index: -1;
+        align-self: flex-start;
+        flex: 0 0 var(--sidebar-width);
         width: var(--sidebar-width);
         background: var(--bg-dark);
         padding: var(--space-lg);
+        min-height: calc(100vh - var(--header-height));
+        /* min-height: calc(100lvh - var(--header-height)); */
 
         .tabs {
           display: flex;
@@ -781,9 +803,8 @@
       .content_main {
         min-width: 0;
         overflow-x: hidden;
-        padding: var(--space-lg) var(--space-lg) var(--space-lg)
-          calc(var(--sidebar-width) + var(--space-lg));
-        flex: 1 1 auto;
+        padding: var(--space-lg);
+        min-height: calc(100vh - var(--header-height));
       }
 
       @media (max-width: 1020px) {
@@ -812,6 +833,7 @@
           top: 0;
           z-index: 30;
           display: none;
+          height: 100vh;
 
           .actions {
             display: flex;
