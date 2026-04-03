@@ -153,15 +153,7 @@ func ButtonVariantsContent(linkSelector string) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 16, "</button> <button class=\"btn btn-ghost btn-icon\" type=\"button\" aria-label=\"Ghost icon\" title=\"Ghost icon\">")
-		if templ_7745c5c3_Err != nil {
-			return templ_7745c5c3_Err
-		}
-		templ_7745c5c3_Err = icons.Ghost(templ.Attributes{"class": "icon"}).Render(ctx, templ_7745c5c3_Buffer)
-		if templ_7745c5c3_Err != nil {
-			return templ_7745c5c3_Err
-		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 17, "</button> <button class=\"btn btn-icon\" type=\"button\" aria-label=\"Disabled icon\" title=\"Disabled icon\" disabled>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 16, "</button> <button class=\"btn btn-icon\" type=\"button\" aria-label=\"Disabled icon\" title=\"Disabled icon\" disabled>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -169,7 +161,7 @@ func ButtonVariantsContent(linkSelector string) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 18, "</button></div><div class=\"row row-wrap\"><button class=\"btn btn-sm btn-icon\" type=\"button\" aria-label=\"Small default icon\" title=\"Small default icon\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 17, "</button></div><div class=\"row row-wrap\"><button class=\"btn btn-sm btn-icon\" type=\"button\" aria-label=\"Small default icon\" title=\"Small default icon\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -177,7 +169,7 @@ func ButtonVariantsContent(linkSelector string) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 19, "</button> <button class=\"btn btn-sm btn-primary btn-icon\" type=\"button\" aria-label=\"Small primary icon\" title=\"Small primary icon\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 18, "</button> <button class=\"btn btn-sm btn-primary btn-icon\" type=\"button\" aria-label=\"Small primary icon\" title=\"Small primary icon\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -185,7 +177,7 @@ func ButtonVariantsContent(linkSelector string) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 20, "</button> <button class=\"btn btn-sm btn-inverse btn-icon\" type=\"button\" aria-label=\"Small inverse icon\" title=\"Small inverse icon\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 19, "</button> <button class=\"btn btn-sm btn-inverse btn-icon\" type=\"button\" aria-label=\"Small inverse icon\" title=\"Small inverse icon\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -193,15 +185,7 @@ func ButtonVariantsContent(linkSelector string) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 21, "</button> <button class=\"btn btn-sm btn-ghost btn-icon\" type=\"button\" aria-label=\"Small ghost icon\" title=\"Small ghost icon\">")
-		if templ_7745c5c3_Err != nil {
-			return templ_7745c5c3_Err
-		}
-		templ_7745c5c3_Err = icons.Ghost(templ.Attributes{"class": "icon"}).Render(ctx, templ_7745c5c3_Buffer)
-		if templ_7745c5c3_Err != nil {
-			return templ_7745c5c3_Err
-		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 22, "</button> <button class=\"btn btn-sm btn-icon\" type=\"button\" aria-label=\"Small disabled icon\" title=\"Small disabled icon\" disabled>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 20, "</button> <button class=\"btn btn-sm btn-icon\" type=\"button\" aria-label=\"Small disabled icon\" title=\"Small disabled icon\" disabled>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -209,7 +193,7 @@ func ButtonVariantsContent(linkSelector string) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 23, "</button></div><div class=\"row row-wrap\"><button class=\"btn btn-xs btn-icon\" type=\"button\" aria-label=\"Extra small default icon\" title=\"Extra small default icon\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 21, "</button></div><div class=\"row row-wrap\"><button class=\"btn btn-xs btn-icon\" type=\"button\" aria-label=\"Extra small default icon\" title=\"Extra small default icon\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -217,7 +201,7 @@ func ButtonVariantsContent(linkSelector string) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 24, "</button> <button class=\"btn btn-xs btn-primary btn-icon\" type=\"button\" aria-label=\"Extra small primary icon\" title=\"Extra small primary icon\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 22, "</button> <button class=\"btn btn-xs btn-primary btn-icon\" type=\"button\" aria-label=\"Extra small primary icon\" title=\"Extra small primary icon\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -225,7 +209,7 @@ func ButtonVariantsContent(linkSelector string) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 25, "</button> <button class=\"btn btn-xs btn-inverse btn-icon\" type=\"button\" aria-label=\"Extra small inverse icon\" title=\"Extra small inverse icon\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 23, "</button> <button class=\"btn btn-xs btn-inverse btn-icon\" type=\"button\" aria-label=\"Extra small inverse icon\" title=\"Extra small inverse icon\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -233,15 +217,7 @@ func ButtonVariantsContent(linkSelector string) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 26, "</button> <button class=\"btn btn-xs btn-ghost btn-icon\" type=\"button\" aria-label=\"Extra small ghost icon\" title=\"Extra small ghost icon\">")
-		if templ_7745c5c3_Err != nil {
-			return templ_7745c5c3_Err
-		}
-		templ_7745c5c3_Err = icons.Ghost(templ.Attributes{"class": "icon"}).Render(ctx, templ_7745c5c3_Buffer)
-		if templ_7745c5c3_Err != nil {
-			return templ_7745c5c3_Err
-		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 27, "</button> <button class=\"btn btn-xs btn-icon\" type=\"button\" aria-label=\"Extra small disabled icon\" title=\"Extra small disabled icon\" disabled>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 24, "</button> <button class=\"btn btn-xs btn-icon\" type=\"button\" aria-label=\"Extra small disabled icon\" title=\"Extra small disabled icon\" disabled>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -249,7 +225,7 @@ func ButtonVariantsContent(linkSelector string) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 28, "</button></div><div class=\"row row-wrap\"><button class=\"btn\" type=\"button\"><span>Default</span></button> <button class=\"btn btn-primary\" type=\"button\"><span>Primary</span></button> <button class=\"btn btn-inverse\" type=\"button\"><span>Inverse</span></button> <button class=\"btn\" type=\"button\" disabled><span>Disabled</span></button></div><div class=\"row row-wrap\"><button class=\"btn btn-sm\" type=\"button\"><span>Default</span></button> <button class=\"btn btn-sm btn-primary\" type=\"button\"><span>Primary</span></button> <button class=\"btn btn-sm btn-inverse\" type=\"button\"><span>Inverse</span></button> <button class=\"btn btn-sm\" type=\"button\" disabled><span>Disabled</span></button></div><div class=\"row row-wrap\"><button class=\"btn btn-xs\" type=\"button\"><span>Default</span></button> <button class=\"btn btn-xs btn-primary\" type=\"button\"><span>Primary</span></button> <button class=\"btn btn-xs btn-inverse\" type=\"button\"><span>Inverse</span></button> <button class=\"btn btn-xs\" type=\"button\" disabled><span>Disabled</span></button></div>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 25, "</button></div><div class=\"row row-wrap\"><button class=\"btn\" type=\"button\"><span>Default</span></button> <button class=\"btn btn-primary\" type=\"button\"><span>Primary</span></button> <button class=\"btn btn-inverse\" type=\"button\"><span>Inverse</span></button> <button class=\"btn\" type=\"button\" disabled><span>Disabled</span></button></div><div class=\"row row-wrap\"><button class=\"btn btn-sm\" type=\"button\"><span>Default</span></button> <button class=\"btn btn-sm btn-primary\" type=\"button\"><span>Primary</span></button> <button class=\"btn btn-sm btn-inverse\" type=\"button\"><span>Inverse</span></button> <button class=\"btn btn-sm\" type=\"button\" disabled><span>Disabled</span></button></div><div class=\"row row-wrap\"><button class=\"btn btn-xs\" type=\"button\"><span>Default</span></button> <button class=\"btn btn-xs btn-primary\" type=\"button\"><span>Primary</span></button> <button class=\"btn btn-xs btn-inverse\" type=\"button\"><span>Inverse</span></button> <button class=\"btn btn-xs\" type=\"button\" disabled><span>Disabled</span></button></div>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

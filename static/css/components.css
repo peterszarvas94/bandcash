@@ -67,6 +67,7 @@
     overflow-x: auto;
     -webkit-overflow-scrolling: touch;
     border-radius: var(--radius);
+    box-shadow: var(--shadow-sm);
 
     .table {
       --table-col-min-w: 8rem;
@@ -182,11 +183,6 @@
     text-align: center;
     white-space: nowrap;
     cursor: pointer;
-    border: var(--border) solid;
-    border-color: light-dark(
-      color-mix(var(--text) 20%, transparent),
-      var(--bg-light)
-    );
     border-radius: var(--radius);
     background: var(--bg-dark);
     color: var(--text);
@@ -196,13 +192,11 @@
 
     &:where(:not(:disabled, [disabled], [aria-disabled="true"])):hover {
       background: var(--bg-light);
-      border-color: var(--text);
       color: var(--text);
     }
 
     &:where(:not(:disabled, [disabled], [aria-disabled="true"])):active {
       background: var(--bg-dark);
-      border-color: var(--text);
       color: var(--text);
     }
 
@@ -277,7 +271,6 @@
       &:where(:not(:disabled, [disabled], [aria-disabled="true"])):hover,
       &:where(:not(:disabled, [disabled], [aria-disabled="true"])):active {
         background: transparent;
-        border-color: transparent;
       }
 
       &:focus-visible {
@@ -288,51 +281,30 @@
     &.btn-primary {
       color: var(--text-primary);
       background: var(--bg-primary);
-      border-color: var(--bg-primary);
 
       &:where(:not(:disabled, [disabled], [aria-disabled="true"])):hover {
         color: var(--text-primary);
         background: var(--bg-primary);
-        border-color: var(--bg-primary);
       }
 
       &:where(:not(:disabled, [disabled], [aria-disabled="true"])):active {
         color: var(--text-primary);
         background: var(--bg-primary);
-        border-color: var(--bg-primary);
       }
     }
 
     &.btn-inverse {
       color: var(--bg-light);
       background: var(--text);
-      border-color: var(--bg);
 
       &:where(:not(:disabled, [disabled], [aria-disabled="true"])):hover {
         color: var(--bg-light);
         background: var(--text);
-        border-color: var(--bg);
       }
 
       &:where(:not(:disabled, [disabled], [aria-disabled="true"])):active {
         color: var(--bg-light);
         background: var(--text);
-        border-color: var(--bg);
-      }
-    }
-
-    &.btn-ghost {
-      background: transparent;
-      border-color: transparent;
-
-      &:where(:not(:disabled, [disabled], [aria-disabled="true"])):hover {
-        background: var(--bg-light);
-        border-color: var(--text-muted);
-      }
-
-      &:where(:not(:disabled, [disabled], [aria-disabled="true"])):active {
-        background: var(--bg-dark);
-        border-color: var(--text-muted);
       }
     }
 
@@ -385,7 +357,6 @@
     > .btn:where(:not(:disabled, [disabled], [aria-disabled="true"])):active {
       color: var(--text);
       background: transparent;
-      border-color: transparent;
     }
 
     > .btn.btn-inverse,
@@ -398,7 +369,6 @@
       ):active {
       color: var(--bg-light);
       background: var(--text);
-      border-color: var(--bg);
     }
   }
 
@@ -632,11 +602,11 @@
       padding: var(--space);
       min-height: 8rem;
       height: 8rem;
-      border: var(--border) solid var(--bg-dark);
       background: var(--bg-light);
       text-decoration: none;
       color: var(--text);
       border-radius: var(--radius-lg);
+      box-shadow: var(--shadow);
 
       h2 {
         margin: 0;
@@ -653,7 +623,7 @@
       }
 
       &:hover {
-        border-color: var(--text-muted);
+        background: var(--bg);
       }
 
       &:focus-visible {
@@ -788,9 +758,9 @@
         top: var(--header-height);
         left: 0;
         bottom: 0;
-        z-index: 30;
+        z-index: -1;
         width: var(--sidebar-width);
-        background: var(--bg);
+        background: var(--bg-dark);
         padding: var(--space-lg);
 
         .tabs {
@@ -840,6 +810,7 @@
         aside {
           position: fixed;
           top: 0;
+          z-index: 30;
           display: none;
 
           .actions {

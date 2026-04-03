@@ -733,7 +733,7 @@ func mapCreatedDescUserRows(rows []db.ListUsersByCreatedDescFilteredRow) []Recen
 func parseAdminUsersQuery(c echo.Context) utils.TableQuery {
 	return utils.TableQuery{
 		Page:     parseIntParam(c, "page", 1),
-		PageSize: parseIntParam(c, "pageSize", 50),
+		PageSize: parseIntParam(c, "pageSize", utils.DefaultTablePageSize),
 		Search:   strings.TrimSpace(c.QueryParam("q")),
 		Sort:     c.QueryParam("sort"),
 		Dir:      c.QueryParam("dir"),
@@ -744,7 +744,7 @@ func parseAdminUsersQuery(c echo.Context) utils.TableQuery {
 func parseAdminGroupsQuery(c echo.Context) utils.TableQuery {
 	return utils.TableQuery{
 		Page:     parseIntParam(c, "page", 1),
-		PageSize: parseIntParam(c, "pageSize", 50),
+		PageSize: parseIntParam(c, "pageSize", utils.DefaultTablePageSize),
 		Search:   strings.TrimSpace(c.QueryParam("q")),
 		Sort:     c.QueryParam("sort"),
 		Dir:      c.QueryParam("dir"),
@@ -755,7 +755,7 @@ func parseAdminGroupsQuery(c echo.Context) utils.TableQuery {
 func parseAdminSessionsQuery(c echo.Context) utils.TableQuery {
 	return utils.TableQuery{
 		Page:     parseIntParam(c, "page", 1),
-		PageSize: parseIntParam(c, "pageSize", 50),
+		PageSize: parseIntParam(c, "pageSize", utils.DefaultTablePageSize),
 		Search:   strings.TrimSpace(c.QueryParam("q")),
 		Sort:     c.QueryParam("sort"),
 		Dir:      c.QueryParam("dir"),
