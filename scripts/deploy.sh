@@ -52,15 +52,14 @@ fi
 echo "Deploying to $ENV from $CURRENT_BRANCH branch..."
 
 # Run kamal deploy
-KAMAL_BIN=kamal
-"$KAMAL_BIN" deploy $CONFIG_FLAG
+kamal deploy $CONFIG_FLAG
 
 # Boot BetterStack accessory after deployment
 echo "Starting BetterStack logging accessory..."
-if "$KAMAL_BIN" accessory details better-stack $CONFIG_FLAG >/dev/null 2>&1; then
-  "$KAMAL_BIN" accessory reboot better-stack $CONFIG_FLAG
+if kamal accessory details better-stack $CONFIG_FLAG >/dev/null 2>&1; then
+  kamal accessory reboot better-stack $CONFIG_FLAG
 else
-  "$KAMAL_BIN" accessory boot better-stack $CONFIG_FLAG
+  kamal accessory boot better-stack $CONFIG_FLAG
 fi
 
 # Cleanup Docker BuildKit cache after deployment
