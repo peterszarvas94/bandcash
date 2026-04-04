@@ -307,6 +307,9 @@ func patchWizardError(c echo.Context, wizard participantWizardSignals, message s
 			"leftover":    wizard.Leftover,
 			"error":       message,
 		},
+		"errors": map[string]any{
+			"memberId": message,
+		},
 	})
 }
 

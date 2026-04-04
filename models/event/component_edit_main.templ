@@ -139,6 +139,7 @@ templ EventEditMain(data EventData) {
 				</tbody>
 			</table>
 		</div>
+		<div data-show="$errors && $errors.memberId" class="fielderror" data-text="$errors.memberId"></div>
 		<div class="row row-wrap">
 			@shared.LoadingSubmitButton(shared.LoadingSubmitButtonProps{
 				ClassName: "btn btn-primary",

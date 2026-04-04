@@ -1338,7 +1338,7 @@
     display: grid;
     gap: var(--space);
     width: 100%;
-    max-width: var(--details-width);
+    max-width: 15rem;
     padding: calc(var(--space) * 1.5);
     border-radius: var(--radius-lg);
     background: var(--bg-light);
