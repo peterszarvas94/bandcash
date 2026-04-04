@@ -717,7 +717,7 @@ func (e *Events) ToggleParticipantPaid(c echo.Context) error {
 		return c.NoContent(http.StatusBadRequest)
 	}
 
-	result, err := db.Qry.ToggleParticipantPaid(c.Request().Context(), db.ToggleParticipantPaidParams{
+	_, err = db.Qry.ToggleParticipantPaid(c.Request().Context(), db.ToggleParticipantPaidParams{
 		EventID:  eventID,
 		MemberID: memberID,
 		GroupID:  groupID,
@@ -729,12 +729,6 @@ func (e *Events) ToggleParticipantPaid(c echo.Context) error {
 	}
 
 	slog.Debug("participant.togglePaid", "event_id", eventID, "member_id", memberID)
-
-	if result.Paid == 1 {
-		utils.Notify(c, ctxi18n.T(c.Request().Context(), "paid_status.marked_as_paid"))
-	} else {
-		utils.Notify(c, ctxi18n.T(c.Request().Context(), "paid_status.marked_as_unpaid"))
-	}
 
 	query := utils.NormalizeTableQuery(signals.TableQuery, e.ParticipantTableQuerySpec())
 	data, err := e.GetShowData(c.Request().Context(), groupID, eventID, query)
@@ -1211,7 +1205,7 @@ func (e *Events) TogglePaid(c echo.Context) error {
 		return c.NoContent(http.StatusBadRequest)
 	}
 
-	result, err := db.Qry.ToggleEventPaid(c.Request().Context(), db.ToggleEventPaidParams{
+	_, err = db.Qry.ToggleEventPaid(c.Request().Context(), db.ToggleEventPaidParams{
 		ID:      id,
 		GroupID: groupID,
 	})
@@ -1225,12 +1219,6 @@ func (e *Events) TogglePaid(c echo.Context) error {
 
 	// Clear cache to ensure fresh data on next load
 	utils.InvalidateGroupCaches(groupID)
-
-	if result.Paid == 1 {
-		utils.Notify(c, ctxi18n.T(c.Request().Context(), "paid_status.marked_as_paid"))
-	} else {
-		utils.Notify(c, ctxi18n.T(c.Request().Context(), "paid_status.marked_as_unpaid"))
-	}
 
 	if signals.Mode == "single" {
 		query := utils.NormalizeTableQuery(signals.TableQuery, e.ParticipantTableQuerySpec())

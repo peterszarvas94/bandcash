@@ -1,30 +1,23 @@
 package expense
 
 import (
-	shared "bandcash/models/shared"
 	ctxi18n "github.com/invopop/ctxi18n/i18n"
 	"bandcash/internal/utils"
 )
 
 templ ExpenseTotalsContent(data ExpensesData) {
-	@shared.CalculationsCards([]shared.CalculationCard{
-		{
-			Title: ctxi18n.T(ctx, "table.all"),
-			Rows: []shared.CalculationStatRow{
-				{Label: ctxi18n.T(ctx, "groups.expenses"), Value: utils.FormatNumberLocalizedWithSign(ctx, data.FilteredTotal, false)},
-			},
-		},
-		{
-			Title: ctxi18n.T(ctx, "table.paid"),
-			Rows: []shared.CalculationStatRow{
-				{Label: ctxi18n.T(ctx, "groups.expenses"), Value: utils.FormatNumberLocalizedWithSign(ctx, data.FilteredPaid, false)},
-			},
-		},
-		{
-			Title: ctxi18n.T(ctx, "table.unpaid"),
-			Rows: []shared.CalculationStatRow{
-				{Label: ctxi18n.T(ctx, "groups.expenses"), Value: utils.FormatNumberLocalizedWithSign(ctx, data.FilteredUnpaid, false)},
-			},
-		},
-	})
+	<div class="expense-total-cards pb">
+		<section class="expense-total-card" aria-label={ ctxi18n.T(ctx, "table.paid") }>
+			<h3>{ ctxi18n.T(ctx, "table.paid") }</h3>
+			<p>{ utils.FormatNumberLocalized(ctx, data.FilteredPaid) }</p>
+		</section>
+		<section class="expense-total-card" aria-label={ ctxi18n.T(ctx, "table.unpaid") }>
+			<h3>{ ctxi18n.T(ctx, "table.unpaid") }</h3>
+			<p>{ utils.FormatNumberLocalized(ctx, data.FilteredUnpaid) }</p>
+		</section>
+		<section class="expense-total-card" aria-label={ ctxi18n.T(ctx, "table.all") }>
+			<h3>{ ctxi18n.T(ctx, "table.all") }</h3>
+			<p>{ utils.FormatNumberLocalized(ctx, data.FilteredTotal) }</p>
+		</section>
+	</div>
 }

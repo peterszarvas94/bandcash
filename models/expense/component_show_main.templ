@@ -6,11 +6,20 @@ import (
 	icons "bandcash/models/shared/icons"
 	ctxi18n "github.com/invopop/ctxi18n/i18n"
 	"bandcash/internal/utils"
+	"strings"
 )
 
 templ ExpenseShowMain(data ExpenseData) {
 	{{
 		togglePaidExpr := fmt.Sprintf("@put('/groups/%s/expenses/%s/toggle-paid', {mode: 'single'})", data.GroupID, data.Expense.ID)
+		paidAt := "-"
+		if data.Expense.PaidAt.Valid {
+			paidAt = utils.FormatDateLocalized(ctx, utils.FormatDateInput(data.Expense.PaidAt.String))
+		}
+		expenseDescription := strings.TrimSpace(data.Expense.Description)
+		if expenseDescription == "" {
+			expenseDescription = "-"
+		}
 		updateExpr := fmt.Sprintf("@put('/groups/%s/expenses/%s')", data.GroupID, data.Expense.ID)
 		cancelExpr := "$formState = ''; $formData = {title: " + utils.JSONString(data.Expense.Title) + ", description: " + utils.JSONString(data.Expense.Description) + ", amount: " + fmt.Sprintf("%d", data.Expense.Amount) + ", date: " + utils.JSONString(data.Expense.Date) + ", paid: " + fmt.Sprintf("%t", data.Expense.Paid == 1) + ", paidAt: " + utils.JSONString(func() string {
 			if !data.Expense.PaidAt.Valid {
@@ -25,27 +34,24 @@ templ ExpenseShowMain(data ExpenseData) {
 				@ExpenseShowDetailsActions(data)
 			</div>
 		}
+		<div class="page-header-meta">
+			<p>
+				@icons.Icon(icons.IconCalendar, templ.Attributes{"class": "icon"})
+				<span>{ utils.FormatDateLocalized(ctx, data.Expense.Date) }</span>
+			</p>
+			<p>
+				@icons.Icon(icons.IconNotepadText, templ.Attributes{"class": "icon"})
+				<span>{ expenseDescription }</span>
+			</p>
+		</div>
 	}
 	<div data-show="$formState !== 'edit'">
-		<div class="pb">
-			@shared.DetailsCardWithClass(fmt.Sprintf("expense_%s_overview", data.Expense.ID), []shared.DetailsRow{
-				{Label: ctxi18n.T(ctx, "nav.overview"), LabelClass: "section-title", Value: ""},
-				{Label: ctxi18n.T(ctx, "fields.description"), Value: data.Expense.Description},
-				{Label: ctxi18n.T(ctx, "fields.date"), Value: utils.FormatDateLocalized(ctx, data.Expense.Date)},
-				{Label: ctxi18n.T(ctx, "fields.expense"), Value: utils.FormatNumberLocalizedWithSign(ctx, data.Expense.Amount, false), Action: shared.ToggleSwitch(shared.ToggleSwitchProps{
-					IsOn:         data.Expense.Paid == 1,
-					OnClick:      togglePaidExpr,
-					DisabledExpr: "false",
-					AriaLabel:    ctxi18n.T(ctx, "table.paid"),
-				})},
-				{Label: ctxi18n.T(ctx, "fields.paid_at"), Value: func() string {
-					if !data.Expense.PaidAt.Valid {
-						return "-"
-					}
-					return utils.FormatDateLocalized(ctx, utils.FormatDateInput(data.Expense.PaidAt.String))
-				}()},
-			}, "")
-		</div>
+		@ExpenseAmountCard(ExpenseAmountCardProps{
+			Amount:         utils.FormatNumberLocalized(ctx, data.Expense.Amount),
+			PaidAt:         paidAt,
+			IsPaid:         data.Expense.Paid == 1,
+			TogglePaidExpr: togglePaidExpr,
+		})
 	</div>
 	if data.IsAdmin {
 		<div data-show="$formState === 'edit'" style="display: none">

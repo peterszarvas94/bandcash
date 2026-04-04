@@ -368,7 +368,7 @@ func (p *Members) ToggleParticipantPaid(c echo.Context) error {
 		return c.NoContent(http.StatusBadRequest)
 	}
 
-	result, err := db.Qry.ToggleParticipantPaid(c.Request().Context(), db.ToggleParticipantPaidParams{
+	_, err = db.Qry.ToggleParticipantPaid(c.Request().Context(), db.ToggleParticipantPaidParams{
 		EventID:  eventID,
 		MemberID: memberID,
 		GroupID:  groupID,
@@ -377,12 +377,6 @@ func (p *Members) ToggleParticipantPaid(c echo.Context) error {
 		slog.Error("member.toggleParticipantPaid: failed to toggle paid status", "err", err)
 		utils.Notify(c, ctxi18n.T(c.Request().Context(), "participants.notifications.toggle_paid_failed"))
 		return c.NoContent(http.StatusInternalServerError)
-	}
-
-	if result.Paid == 1 {
-		utils.Notify(c, ctxi18n.T(c.Request().Context(), "paid_status.marked_as_paid"))
-	} else {
-		utils.Notify(c, ctxi18n.T(c.Request().Context(), "paid_status.marked_as_unpaid"))
 	}
 
 	query := utils.NormalizeTableQuery(signals.TableQuery, p.MemberEventsTableQuerySpec())

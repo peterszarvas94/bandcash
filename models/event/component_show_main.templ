@@ -31,7 +31,7 @@ templ EventShowMain(data EventData) {
 				@ReadModeActions(data)
 			</div>
 		}
-		<div class="event-header-meta">
+		<div class="page-header-meta">
 			<p>
 				@icons.Icon(icons.IconCalendar, templ.Attributes{"class": "icon"})
 				<span>{ utils.FormatDateTimeLocalized(ctx, data.Event.Time) }</span>

@@ -422,7 +422,7 @@ func (e *Expenses) TogglePaid(c echo.Context) error {
 		return c.NoContent(http.StatusBadRequest)
 	}
 
-	result, err := db.Qry.ToggleExpensePaid(c.Request().Context(), db.ToggleExpensePaidParams{
+	_, err = db.Qry.ToggleExpensePaid(c.Request().Context(), db.ToggleExpensePaidParams{
 		ID:      id,
 		GroupID: groupID,
 	})
@@ -436,12 +436,6 @@ func (e *Expenses) TogglePaid(c echo.Context) error {
 
 	// Clear cache to ensure fresh data on next load
 	utils.InvalidateGroupCaches(groupID)
-
-	if result.Paid == 1 {
-		utils.Notify(c, ctxi18n.T(c.Request().Context(), "paid_status.marked_as_paid"))
-	} else {
-		utils.Notify(c, ctxi18n.T(c.Request().Context(), "paid_status.marked_as_unpaid"))
-	}
 
 	if signals.Mode == "single" {
 		data, err := e.GetShowData(c.Request().Context(), groupID, id)

@@ -12,6 +12,11 @@ templ MemberShowMain(data MemberData) {
 	{{
 		updateExpr := fmt.Sprintf("@put('/groups/%s/members/%s')", data.GroupID, data.Member.ID)
 		cancelExpr := "$formState = ''; $formData = {name: " + utils.JSONString(data.Member.Name) + ", description: " + utils.JSONString(data.Member.Description) + "}; $errors = {name: '', description: ''}"
+		memberDescription := data.Member.Description
+		if memberDescription == "" {
+			memberDescription = "-"
+		}
+		totalEvents := utils.FormatNumberLocalized(ctx, int64(data.Pager.TotalItems))
 	}}
 	@shared.PageHeader(shared.PageHeaderProps{Title: data.Member.Name}) {
 		if data.IsAdmin {
@@ -19,42 +24,27 @@ templ MemberShowMain(data MemberData) {
 				@MemberShowDetailsActions(data)
 			</div>
 		}
+		<div class="page-header-meta">
+			<p>
+				@icons.Icon(icons.IconUser, templ.Attributes{"class": "icon"})
+				<span>{ data.Member.Name }</span>
+			</p>
+			<p>
+				@icons.Icon(icons.IconNotepadText, templ.Attributes{"class": "icon"})
+				<span>{ memberDescription }</span>
+			</p>
+			<p>
+				@icons.Icon(icons.IconCalendarDays, templ.Attributes{"class": "icon"})
+				<span>{ totalEvents }</span>
+			</p>
+		</div>
 	}
 	<div data-show="$formState !== 'edit'">
-		<div class="pb">
-			<section class="detail-box">
-				<dl>
-					<div><dt>{ ctxi18n.T(ctx, "fields.name") }</dt><dd>{ data.Member.Name }</dd></div>
-					<div><dt>{ ctxi18n.T(ctx, "fields.description") }</dt><dd>{ data.Member.Description }</dd></div>
-					<div><dt>{ ctxi18n.T(ctx, "members.total_events") }</dt><dd>{ utils.FormatNumberLocalized(ctx, int64(data.Pager.TotalItems)) }</dd></div>
-				</dl>
-			</section>
-		</div>
-		<section class="pb">
-			@shared.CalculationsCards([]shared.CalculationCard{
-				{
-					Title: ctxi18n.T(ctx, "table.all"),
-					Rows: []shared.CalculationStatRow{{
-						Label: ctxi18n.T(ctx, "members.total_payout"),
-						Value: utils.FormatNumberLocalizedWithSign(ctx, data.TotalPayout, false),
-					}},
-				},
-				{
-					Title: ctxi18n.T(ctx, "table.paid"),
-					Rows: []shared.CalculationStatRow{{
-						Label: ctxi18n.T(ctx, "members.total_payout"),
-						Value: utils.FormatNumberLocalizedWithSign(ctx, data.TotalPaid, false),
-					}},
-				},
-				{
-					Title: ctxi18n.T(ctx, "table.unpaid"),
-					Rows: []shared.CalculationStatRow{{
-						Label: ctxi18n.T(ctx, "members.total_payout"),
-						Value: utils.FormatNumberLocalizedWithSign(ctx, data.TotalUnpaid, false),
-					}},
-				},
-			})
-		</section>
+		@MemberPayoutCards(MemberPayoutCardsProps{
+			Paid:   utils.FormatNumberLocalized(ctx, data.TotalPaid),
+			Unpaid: utils.FormatNumberLocalized(ctx, data.TotalUnpaid),
+			All:    utils.FormatNumberLocalized(ctx, data.TotalPayout),
+		})
 		@shared.TableSearchFormWithClass(fmt.Sprintf("/groups/%s/members/%s", data.GroupID, data.Member.ID), data.Query, "table.search_placeholder_member_events", "pt")
 		<div class="row row-wrap justify-between pb">
 			<div class="radiogroup" role="radiogroup" aria-label={ ctxi18n.T(ctx, "table.date_filters") }>

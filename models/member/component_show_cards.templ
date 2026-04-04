@@ -1,0 +1,26 @@
+package member
+
+import ctxi18n "github.com/invopop/ctxi18n/i18n"
+
+type MemberPayoutCardsProps struct {
+	All    string
+	Paid   string
+	Unpaid string
+}
+
+templ MemberPayoutCards(props MemberPayoutCardsProps) {
+	<div class="member-payout-cards pb">
+		<section class="member-payout-card" aria-label={ ctxi18n.T(ctx, "table.paid") }>
+			<h3>{ ctxi18n.T(ctx, "table.paid") }</h3>
+			<p>{ props.Paid }</p>
+		</section>
+		<section class="member-payout-card" aria-label={ ctxi18n.T(ctx, "table.unpaid") }>
+			<h3>{ ctxi18n.T(ctx, "table.unpaid") }</h3>
+			<p>{ props.Unpaid }</p>
+		</section>
+		<section class="member-payout-card" aria-label={ ctxi18n.T(ctx, "table.all") }>
+			<h3>{ ctxi18n.T(ctx, "table.all") }</h3>
+			<p>{ props.All }</p>
+		</section>
+	</div>
+}

@@ -1,0 +1,36 @@
+package expense
+
+import (
+	shared "bandcash/models/shared"
+	ctxi18n "github.com/invopop/ctxi18n/i18n"
+)
+
+type ExpenseAmountCardProps struct {
+	Amount         string
+	PaidAt         string
+	IsPaid         bool
+	TogglePaidExpr string
+}
+
+templ ExpenseAmountCard(props ExpenseAmountCardProps) {
+	<section class="event-income-card pb">
+		<div class="amount">{ props.Amount }</div>
+		<dl>
+			<div class="paid">
+				<dt>{ ctxi18n.T(ctx, "table.paid_question") }</dt>
+				<dd>
+					@shared.ToggleSwitch(shared.ToggleSwitchProps{
+						IsOn:         props.IsPaid,
+						OnClick:      props.TogglePaidExpr,
+						DisabledExpr: "false",
+						AriaLabel:    ctxi18n.T(ctx, "table.paid"),
+					})
+				</dd>
+			</div>
+			<div class="paid-at">
+				<dt>{ ctxi18n.T(ctx, "fields.paid_at") }</dt>
+				<dd>{ props.PaidAt }</dd>
+			</div>
+		</dl>
+	</section>
+}

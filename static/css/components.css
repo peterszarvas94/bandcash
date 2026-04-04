@@ -1334,6 +1334,104 @@
     }
   }
 
+  .expense-total-cards {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: var(--space);
+
+    @media (max-width: 800px) {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+
+      > :last-child {
+        grid-column: 1 / -1;
+      }
+    }
+
+    @media (max-width: 600px) {
+      grid-template-columns: 1fr;
+
+      > :last-child {
+        grid-column: auto;
+      }
+    }
+
+    .expense-total-card {
+      display: grid;
+      gap: var(--space);
+      padding: calc(var(--space) * 1.5);
+      border-radius: var(--radius-lg);
+      background: var(--bg-light);
+      box-shadow: var(--shadow);
+
+      > h3 {
+        margin: 0;
+        font-size: 1.4rem;
+        line-height: 1.15;
+        font-weight: 700;
+      }
+
+      > p {
+        margin: 0;
+        text-align: right;
+        font-size: 1.25rem;
+        font-weight: 800;
+        line-height: 1.1;
+        color: var(--bg-primary);
+        font-variant-numeric: tabular-nums;
+        font-feature-settings: "tnum" 1;
+      }
+    }
+  }
+
+  .member-payout-cards {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: var(--space);
+
+    @media (max-width: 800px) {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+
+      > :last-child {
+        grid-column: 1 / -1;
+      }
+    }
+
+    @media (max-width: 600px) {
+      grid-template-columns: 1fr;
+
+      > :last-child {
+        grid-column: auto;
+      }
+    }
+
+    .member-payout-card {
+      display: grid;
+      gap: var(--space);
+      padding: calc(var(--space) * 1.5);
+      border-radius: var(--radius-lg);
+      background: var(--bg-light);
+      box-shadow: var(--shadow);
+
+      > h3 {
+        margin: 0;
+        font-size: 1.4rem;
+        line-height: 1.15;
+        font-weight: 700;
+      }
+
+      > p {
+        margin: 0;
+        text-align: right;
+        font-size: 1.25rem;
+        font-weight: 800;
+        line-height: 1.1;
+        color: var(--bg-primary);
+        font-variant-numeric: tabular-nums;
+        font-feature-settings: "tnum" 1;
+      }
+    }
+  }
+
   .event-income-card {
     display: grid;
     gap: var(--space);
@@ -1412,7 +1510,7 @@
     }
   }
 
-  .event-header-meta {
+  .page-header-meta {
     display: grid;
     gap: calc(var(--space) * 0.5);
     color: var(--text-muted);
