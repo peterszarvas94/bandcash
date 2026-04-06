@@ -16,22 +16,21 @@ import (
 )
 
 type eventInlineParams struct {
-	TabID         string           `json:"tab_id"`
-	FormData      eventData        `json:"formData"`
-	EventFormData eventData        `json:"eventFormData"`
-	TableQuery    utils.TableQuery `json:"tableQuery"`
-	Mode          string           `json:"mode"`
-	Action        string           `json:"action"`
-	PaidAtDialog  struct {
-		Value string `json:"value"`
-	} `json:"paidAtDialog"`
+	TabID                 string           `json:"tab_id"`
+	FormData              eventData        `json:"formData"`
+	EventFormData         eventData        `json:"eventFormData"`
+	TableQuery            utils.TableQuery `json:"tableQuery"`
+	Mode                  string           `json:"mode"`
+	ParticipantNoteDialog struct {
+		MemberID string `json:"memberId"`
+		Value    string `json:"value"`
+	} `json:"participantNoteDialog"`
 }
 
 type modeParams struct {
 	TabID      string           `json:"tab_id"`
 	Mode       string           `json:"mode"`
 	TableQuery utils.TableQuery `json:"tableQuery"`
-	Action     string           `json:"action"`
 }
 
 type paidAtParams struct {
@@ -41,6 +40,14 @@ type paidAtParams struct {
 	PaidAtDialog struct {
 		Value string `json:"value"`
 	} `json:"paidAtDialog"`
+}
+
+type participantNoteDialogParams struct {
+	TabID                 string           `json:"tab_id"`
+	TableQuery            utils.TableQuery `json:"tableQuery"`
+	ParticipantNoteDialog struct {
+		MemberID string `json:"memberId"`
+	} `json:"participantNoteDialog"`
 }
 
 type eventData struct {
@@ -587,16 +594,6 @@ func (e *Events) Update(c echo.Context) error {
 	if !utils.SetTabID(c, signals.TabID) {
 		return c.NoContent(http.StatusBadRequest)
 	}
-	action := strings.TrimSpace(signals.Action)
-	switch action {
-	case "togglePaid":
-		return e.patchTogglePaid(c, groupID, id, signals.Mode, signals.TableQuery)
-	case "openPaidAtDialog":
-		return e.openPaidAtDialog(c, groupID, id, signals.TableQuery)
-	case "updatePaidAt":
-		return e.patchUpdatePaidAt(c, groupID, id, signals.Mode, signals.TableQuery, signals.PaidAtDialog.Value)
-	}
-
 	signals.FormData.Title = strings.TrimSpace(signals.FormData.Title)
 	signals.FormData.Time = strings.TrimSpace(signals.FormData.Time)
 	signals.FormData.Place = strings.TrimSpace(signals.FormData.Place)
@@ -1236,7 +1233,7 @@ func (e *Events) openPaidAtDialog(c echo.Context, groupID, id string, tableQuery
 		}(),
 		SubmitLabel: ctxi18n.T(c.Request().Context(), "table.apply"),
 		CancelLabel: ctxi18n.T(c.Request().Context(), "actions.cancel"),
-		URL:         "/groups/" + groupID + "/events/" + id,
+		URL:         "/groups/" + groupID + "/events/" + id + "/paid_at",
 		TriggerID:   "event-income-paid-at-edit",
 	}
 	data.Signals = eventShowSignals(data)
@@ -1252,7 +1249,65 @@ func (e *Events) openPaidAtDialog(c echo.Context, groupID, id string, tableQuery
 	return c.NoContent(http.StatusOK)
 }
 
-func (e *Events) patchUpdatePaidAt(c echo.Context, groupID, id, mode string, tableQuery utils.TableQuery, value string) error {
+func (e *Events) openParticipantNoteDialog(c echo.Context, groupID, id, memberID string, tableQuery utils.TableQuery) error {
+	if !utils.IsValidID(memberID, utils.PrefixMember) {
+		slog.Info("event.openParticipantNoteDialog: invalid member id")
+		return c.NoContent(http.StatusBadRequest)
+	}
+
+	query := utils.NormalizeTableQuery(tableQuery, e.ParticipantTableQuerySpec())
+	data, err := e.GetShowData(c.Request().Context(), groupID, id, query)
+	if err != nil {
+		slog.Error("event.openParticipantNoteDialog: failed to get data", "err", err)
+		return c.NoContent(http.StatusInternalServerError)
+	}
+	applyEventShowTableByRole(&data, middleware.IsAdmin(c))
+	data.IsAuthenticated = true
+	data.IsSuperAdmin = middleware.IsSuperadmin(c)
+
+	participantName := ""
+	participantNote := ""
+	found := false
+	for _, participant := range data.Participants {
+		if participant.ID == memberID {
+			participantName = participant.Name
+			participantNote = strings.TrimSpace(participant.ParticipantNote)
+			found = true
+			break
+		}
+	}
+	if !found {
+		slog.Info("event.openParticipantNoteDialog: participant not found")
+		return c.NoContent(http.StatusBadRequest)
+	}
+
+	isAdmin := middleware.IsAdmin(c)
+	data.ParticipantNoteDialog = ParticipantNoteDialogState{
+		Open:        true,
+		ReadOnly:    !isAdmin,
+		Title:       ctxi18n.T(c.Request().Context(), "participants.note"),
+		Message:     participantName,
+		MemberID:    memberID,
+		Value:       participantNote,
+		SubmitLabel: ctxi18n.T(c.Request().Context(), "table.apply"),
+		CancelLabel: ctxi18n.T(c.Request().Context(), "actions.cancel"),
+		URL:         "/groups/" + groupID + "/events/" + id + "/note",
+		TriggerID:   "event-participant-note-dialog",
+	}
+	data.Signals = eventShowSignals(data)
+
+	html, err := utils.RenderHTMLForRequest(c, EventShowPage(data))
+	if err != nil {
+		slog.Error("event.openParticipantNoteDialog: failed to render", "err", err)
+		return c.NoContent(http.StatusInternalServerError)
+	}
+
+	utils.SSEHub.PatchHTML(c, html)
+	utils.SSEHub.PatchSignals(c, data.Signals)
+	return c.NoContent(http.StatusOK)
+}
+
+func (e *Events) patchUpdatePaidAt(c echo.Context, groupID, id, _ string, tableQuery utils.TableQuery, value string) error {
 	paidAt := normalizePaidAtInput(value)
 
 	_, err := db.Qry.UpdateEventPaidAt(c.Request().Context(), db.UpdateEventPaidAtParams{
@@ -1271,44 +1326,17 @@ func (e *Events) patchUpdatePaidAt(c echo.Context, groupID, id, mode string, tab
 	// Clear cache to ensure fresh data on next load
 	utils.InvalidateGroupCaches(groupID)
 
-	if mode == "single" {
-		query := utils.NormalizeTableQuery(tableQuery, e.ParticipantTableQuerySpec())
-		data, err := e.GetShowData(c.Request().Context(), groupID, id, query)
-		if err != nil {
-			slog.Error("event.updatePaidAt: failed to get data", "err", err)
-			return c.NoContent(http.StatusInternalServerError)
-		}
-		applyEventShowTableByRole(&data, middleware.IsAdmin(c))
-		data.Signals = eventShowSignals(data)
-		data.IsAuthenticated = true
-		data.IsSuperAdmin = middleware.IsSuperadmin(c)
-		html, err := utils.RenderHTMLForRequest(c, EventShowPage(data))
-		if err != nil {
-			slog.Error("event.updatePaidAt: failed to render", "err", err)
-			return c.NoContent(http.StatusInternalServerError)
-		}
-		utils.SSEHub.PatchHTML(c, html)
-		utils.SSEHub.PatchSignals(c, map[string]any{
-			"paidAtDialog": map[string]any{
-				"open":      false,
-				"fetching":  false,
-				"triggerID": "",
-			},
-		})
-		return c.NoContent(http.StatusOK)
-	}
-
-	query := utils.NormalizeTableQuery(tableQuery, e.TableQuerySpec())
-	data, err := e.GetIndexData(c.Request().Context(), groupID, query)
+	query := utils.NormalizeTableQuery(tableQuery, e.ParticipantTableQuerySpec())
+	data, err := e.GetShowData(c.Request().Context(), groupID, id, query)
 	if err != nil {
 		slog.Error("event.updatePaidAt: failed to get data", "err", err)
 		return c.NoContent(http.StatusInternalServerError)
 	}
-	applyEventIndexTableByRole(&data, middleware.IsAdmin(c))
-	data.Signals = eventIndexSignals(data.Query)
+	applyEventShowTableByRole(&data, middleware.IsAdmin(c))
+	data.Signals = eventShowSignals(data)
 	data.IsAuthenticated = true
 	data.IsSuperAdmin = middleware.IsSuperadmin(c)
-	html, err := utils.RenderHTMLForRequest(c, EventIndexPage(data))
+	html, err := utils.RenderHTMLForRequest(c, EventShowPage(data))
 	if err != nil {
 		slog.Error("event.updatePaidAt: failed to render", "err", err)
 		return c.NoContent(http.StatusInternalServerError)
@@ -1317,6 +1345,57 @@ func (e *Events) patchUpdatePaidAt(c echo.Context, groupID, id, mode string, tab
 	utils.SSEHub.PatchHTML(c, html)
 	utils.SSEHub.PatchSignals(c, map[string]any{
 		"paidAtDialog": map[string]any{
+			"open":      false,
+			"fetching":  false,
+			"triggerID": "",
+		},
+	})
+	return c.NoContent(http.StatusOK)
+}
+
+func (e *Events) patchUpdateParticipantNote(c echo.Context, groupID, id string, tableQuery utils.TableQuery, memberID, value string) error {
+	if !middleware.IsAdmin(c) {
+		return c.NoContent(http.StatusForbidden)
+	}
+	if !utils.IsValidID(memberID, utils.PrefixMember) {
+		slog.Info("event.updateParticipantNote: invalid member id")
+		return c.NoContent(http.StatusBadRequest)
+	}
+
+	err := db.Qry.UpdateParticipantNote(c.Request().Context(), db.UpdateParticipantNoteParams{
+		Note:     strings.TrimSpace(value),
+		EventID:  id,
+		MemberID: memberID,
+		GroupID:  groupID,
+	})
+	if err != nil {
+		slog.Error("event.updateParticipantNote: failed to update note", "err", err)
+		utils.Notify(c, ctxi18n.T(c.Request().Context(), "participants.notifications.update_failed"))
+		return c.NoContent(http.StatusInternalServerError)
+	}
+
+	utils.Notify(c, ctxi18n.T(c.Request().Context(), "participants.notifications.updated"))
+	utils.InvalidateGroupCaches(groupID)
+
+	query := utils.NormalizeTableQuery(tableQuery, e.ParticipantTableQuerySpec())
+	data, err := e.GetShowData(c.Request().Context(), groupID, id, query)
+	if err != nil {
+		slog.Error("event.updateParticipantNote: failed to get data", "err", err)
+		return c.NoContent(http.StatusInternalServerError)
+	}
+	applyEventShowTableByRole(&data, middleware.IsAdmin(c))
+	data.Signals = eventShowSignals(data)
+	data.IsAuthenticated = true
+	data.IsSuperAdmin = middleware.IsSuperadmin(c)
+	html, err := utils.RenderHTMLForRequest(c, EventShowPage(data))
+	if err != nil {
+		slog.Error("event.updateParticipantNote: failed to render", "err", err)
+		return c.NoContent(http.StatusInternalServerError)
+	}
+
+	utils.SSEHub.PatchHTML(c, html)
+	utils.SSEHub.PatchSignals(c, map[string]any{
+		"participantNoteDialog": map[string]any{
 			"open":      false,
 			"fetching":  false,
 			"triggerID": "",
@@ -1389,18 +1468,42 @@ func (e *Events) OpenPaidAtPrompt(c echo.Context) error {
 		slog.Info("event.openPaidAtPrompt: invalid id")
 		return c.NoContent(http.StatusBadRequest)
 	}
-
+	query := parseParticipantTableQuery(c, e)
 	var signals modeParams
-	err := datastar.ReadSignals(c.Request(), &signals)
-	if err != nil {
-		slog.Info("event.openPaidAtPrompt: failed to read signals", "err", err)
-		return c.NoContent(http.StatusBadRequest)
-	}
-	if !utils.SetTabID(c, signals.TabID) {
-		return c.NoContent(http.StatusBadRequest)
+	if err := datastar.ReadSignals(c.Request(), &signals); err == nil {
+		if utils.SetTabID(c, signals.TabID) {
+			query = utils.NormalizeTableQuery(signals.TableQuery, e.ParticipantTableQuerySpec())
+		}
+	} else if tabID := strings.TrimSpace(c.QueryParam("tab_id")); utils.IsValidID(tabID, "tab") {
+		_ = utils.SetTabID(c, tabID)
 	}
 
-	return e.openPaidAtDialog(c, groupID, id, signals.TableQuery)
+	return e.openPaidAtDialog(c, groupID, id, query)
+}
+
+func (e *Events) OpenParticipantNoteDialog(c echo.Context) error {
+	groupID := middleware.GetGroupID(c)
+
+	id := c.Param("id")
+	if !utils.IsValidID(id, utils.PrefixEvent) {
+		slog.Info("event.openParticipantNoteDialog: invalid id")
+		return c.NoContent(http.StatusBadRequest)
+	}
+	memberID := strings.TrimSpace(c.QueryParam("member_id"))
+	query := parseParticipantTableQuery(c, e)
+	var signals participantNoteDialogParams
+	if err := datastar.ReadSignals(c.Request(), &signals); err == nil {
+		if utils.SetTabID(c, signals.TabID) {
+			query = utils.NormalizeTableQuery(signals.TableQuery, e.ParticipantTableQuerySpec())
+		}
+		if memberID == "" {
+			memberID = strings.TrimSpace(signals.ParticipantNoteDialog.MemberID)
+		}
+	} else if tabID := strings.TrimSpace(c.QueryParam("tab_id")); utils.IsValidID(tabID, "tab") {
+		_ = utils.SetTabID(c, tabID)
+	}
+
+	return e.openParticipantNoteDialog(c, groupID, id, memberID, query)
 }
 
 func (e *Events) UpdatePaidAt(c echo.Context) error {
@@ -1423,6 +1526,28 @@ func (e *Events) UpdatePaidAt(c echo.Context) error {
 	}
 
 	return e.patchUpdatePaidAt(c, groupID, id, signals.Mode, signals.TableQuery, signals.PaidAtDialog.Value)
+}
+
+func (e *Events) UpdateParticipantNote(c echo.Context) error {
+	groupID := middleware.GetGroupID(c)
+
+	id := c.Param("id")
+	if !utils.IsValidID(id, utils.PrefixEvent) {
+		slog.Info("event.updateParticipantNote: invalid id")
+		return c.NoContent(http.StatusBadRequest)
+	}
+
+	var signals eventInlineParams
+	err := datastar.ReadSignals(c.Request(), &signals)
+	if err != nil {
+		slog.Info("event.updateParticipantNote: failed to read signals", "err", err)
+		return c.NoContent(http.StatusBadRequest)
+	}
+	if !utils.SetTabID(c, signals.TabID) {
+		return c.NoContent(http.StatusBadRequest)
+	}
+
+	return e.patchUpdateParticipantNote(c, groupID, id, signals.TableQuery, signals.ParticipantNoteDialog.MemberID, signals.ParticipantNoteDialog.Value)
 }
 
 func (e *Events) TogglePaid(c echo.Context) error {

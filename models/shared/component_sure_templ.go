@@ -116,7 +116,7 @@ func ConfirmDialog() templ.Component {
 				}()
 			}
 			ctx = templ.InitializeContext(ctx)
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "<h3 id=\"confirm-title\" data-text=\"$confirm.title\"></h3><p id=\"confirm-message\" data-show=\"$confirm.message !== ''\" style=\"display: none\" data-text=\"$confirm.message\"></p><div class=\"row row-right row-wrap\"><button id=\"confirm-cancel\" type=\"button\" class=\"btn\" autofocus data-attr:disabled=\"$confirm.fetching\" data-on:click=\"")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "<h3 id=\"confirm-title\" class=\"dialog-title\" data-text=\"$confirm.title\"></h3><p id=\"confirm-message\" class=\"dialog-message\" data-show=\"$confirm.message !== ''\" style=\"display: none\" data-text=\"$confirm.message\"></p><div class=\"row row-right row-wrap\"><button id=\"confirm-cancel\" type=\"button\" class=\"btn\" autofocus data-attr:disabled=\"$confirm.fetching\" data-on:click=\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}

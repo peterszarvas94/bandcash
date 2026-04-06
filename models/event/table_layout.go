@@ -21,6 +21,6 @@ func EventParticipantsTableLayout() utils.TableLayout {
 		{Key: "total"},
 		{Key: "paid"},
 		{Key: "paid_at", MaxWRem: 8},
-		{Key: "note", MaxWRem: 24},
+		{Key: "note", MaxWRem: 16},
 	}, 0)
 }

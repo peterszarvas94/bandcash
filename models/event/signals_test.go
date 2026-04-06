@@ -7,31 +7,30 @@ import (
 	"bandcash/internal/utils"
 )
 
-func TestEventShowSignalsInitializesNoteExpandedPerParticipant(t *testing.T) {
+func TestEventShowSignalsInitializesParticipantNoteDialogState(t *testing.T) {
 	data := EventData{
 		Event: &db.Event{ID: "evt_1", Title: "Event", Time: "2026-01-01T10:00", Amount: 100},
 		Query: utils.TableQuery{Summary: utils.SummaryModeAll},
-		Participants: []db.ListParticipantsByEventRow{
-			{ID: "mem_1"},
-			{ID: "mem_2"},
-		},
 	}
 
 	signals := eventShowSignals(data)
-	raw, ok := signals["noteExpanded"]
+	raw, ok := signals["participantNoteDialog"]
 	if !ok {
-		t.Fatalf("expected noteExpanded signal to be present")
+		t.Fatalf("expected participantNoteDialog signal to be present")
 	}
 
-	noteExpanded, ok := raw.(map[string]bool)
+	dialog, ok := raw.(map[string]any)
 	if !ok {
-		t.Fatalf("expected noteExpanded to be map[string]bool, got %T", raw)
+		t.Fatalf("expected participantNoteDialog to be map[string]any, got %T", raw)
 	}
 
-	if len(noteExpanded) != 2 {
-		t.Fatalf("expected 2 noteExpanded entries, got %d", len(noteExpanded))
+	if open, ok := dialog["open"].(bool); !ok || open {
+		t.Fatalf("expected open=false, got %#v", dialog["open"])
 	}
-	if noteExpanded["mem_1"] || noteExpanded["mem_2"] {
-		t.Fatalf("expected all noteExpanded values to default to false, got %+v", noteExpanded)
+	if readOnly, ok := dialog["readOnly"].(bool); !ok || readOnly {
+		t.Fatalf("expected readOnly=false, got %#v", dialog["readOnly"])
+	}
+	if memberID, ok := dialog["memberId"].(string); !ok || memberID != "" {
+		t.Fatalf("expected empty memberId, got %#v", dialog["memberId"])
 	}
 }

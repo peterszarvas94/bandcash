@@ -11,8 +11,8 @@ import (
 
 templ EventShowMain(data EventData) {
 	{{
-		togglePaidExpr := fmt.Sprintf("@patch('/groups/%s/events/%s', {mode: 'single', action: 'togglePaid'})", data.GroupID, data.Event.ID)
-		openPaidAtExpr := fmt.Sprintf("@post('/groups/%s/events/%s/paid-at/prompt', {mode: 'single', tableQuery: $tableQuery})", data.GroupID, data.Event.ID)
+		togglePaidExpr := fmt.Sprintf("@post('/groups/%s/events/%s/paid', {mode: 'single', tableQuery: $tableQuery})", data.GroupID, data.Event.ID)
+		openPaidAtExpr := fmt.Sprintf("@get('/groups/%s/events/%s/paid_at', {tab_id: $tab_id})", data.GroupID, data.Event.ID)
 		paidAt := "-"
 		if data.Event.PaidAt.Valid {
 			paidAt = utils.FormatDateLocalized(ctx, utils.FormatDateInput(data.Event.PaidAt.String))
@@ -121,9 +121,7 @@ templ EventShowMain(data EventData) {
 					{{
 						togglePaidExpr := fmt.Sprintf("@put('/groups/%s/events/%s/participants/%s/toggle-paid', {tableQuery: $tableQuery})", data.GroupID, data.Event.ID, participant.ID)
 						noteValue := strings.TrimSpace(participant.ParticipantNote)
-						noteExpandedExpr := fmt.Sprintf("$noteExpanded[%s] = !$noteExpanded[%s]", utils.JSONString(participant.ID), utils.JSONString(participant.ID))
-						noteCollapsedShowExpr := fmt.Sprintf("!$noteExpanded[%s]", utils.JSONString(participant.ID))
-						noteExpandedShowExpr := fmt.Sprintf("$noteExpanded[%s]", utils.JSONString(participant.ID))
+						openNoteExpr := fmt.Sprintf("@get('/groups/%s/events/%s/note?member_id=%s', {tab_id: $tab_id})", data.GroupID, data.Event.ID, participant.ID)
 						paidLabel := ctxi18n.T(ctx, "table.unpaid")
 						if participant.ParticipantPaid == 1 {
 							paidLabel = ctxi18n.T(ctx, "table.paid")
@@ -151,36 +149,33 @@ templ EventShowMain(data EventData) {
 							}
 						</td>
 						<td>{ paidAtLabel }</td>
-						<td class="pl-0">
-							if noteValue != "" {
-								<div class="row row-tight items-start">
-									<button
-										type="button"
-										class="btn btn-xs btn-icon"
-										data-show={ noteCollapsedShowExpr }
-										data-on:click={ noteExpandedExpr }
-										aria-label={ ctxi18n.T(ctx, "participants.note") }
-										title={ ctxi18n.T(ctx, "participants.note") }
-									>
-										@icons.Icon(icons.IconChevronDown, templ.Attributes{"class": "icon"})
-									</button>
-									<button
-										type="button"
-										class="btn btn-xs btn-icon"
-										data-show={ noteExpandedShowExpr }
-										style="display: none"
-										data-on:click={ noteExpandedExpr }
-										aria-label={ ctxi18n.T(ctx, "participants.note") }
-										title={ ctxi18n.T(ctx, "participants.note") }
-									>
-										@icons.Icon(icons.IconChevronUp, templ.Attributes{"class": "icon"})
-									</button>
-									<div style="min-width: 0;">
-										<div class="cell-ellipsis" data-show={ noteCollapsedShowExpr }>{ noteValue }</div>
-										<div data-show={ noteExpandedShowExpr } style="display: none; white-space: normal; word-break: break-word;">{ noteValue }</div>
-									</div>
-								</div>
-							}
+						<td style={ fmt.Sprintf("--max-w: %drem", data.ParticipantsTable.ColMaxWRem("note")) }>
+							<div class="row">
+								if noteValue != "" {
+									<span class="cell-ellipsis">{ noteValue }</span>
+								} else {
+									<span class="text-muted">-</span>
+								}
+								if data.IsAdmin {
+									@shared.IconActionButton(shared.IconActionButtonProps{
+										ClassName:    "btn btn-xs btn-text",
+										OnClick:      openNoteExpr,
+										DisabledExpr: "false",
+										AriaLabel:    ctxi18n.T(ctx, "actions.edit"),
+										Title:        ctxi18n.T(ctx, "actions.edit"),
+										IconName:     icons.IconPencil,
+									})
+								} else if noteValue != "" {
+									@shared.IconActionButton(shared.IconActionButtonProps{
+										ClassName:    "btn btn-xs btn-text",
+										OnClick:      openNoteExpr,
+										DisabledExpr: "false",
+										AriaLabel:    ctxi18n.T(ctx, "participants.note"),
+										Title:        ctxi18n.T(ctx, "participants.note"),
+										IconName:     icons.IconEye,
+									})
+								}
+							</div>
 						</td>
 					</tr>
 				}
@@ -193,4 +188,5 @@ templ EventShowMain(data EventData) {
 		}
 	</div>
 	@PaidAtDialog()
+	@ParticipantNoteDialog()
 }

@@ -49,8 +49,8 @@ templ ConfirmDialog() {
 			CloseExpr:        confirmDialogCloseExpr,
 			FetchDoneExpr:    confirmFetchDoneExpr,
 		}) {
-			<h3 id="confirm-title" data-text="$confirm.title"></h3>
-			<p id="confirm-message" data-show="$confirm.message !== ''" style="display: none" data-text="$confirm.message"></p>
+			<h3 id="confirm-title" class="dialog-title" data-text="$confirm.title"></h3>
+			<p id="confirm-message" class="dialog-message" data-show="$confirm.message !== ''" style="display: none" data-text="$confirm.message"></p>
 			<div class="row row-right row-wrap">
 				<button
 					id="confirm-cancel"

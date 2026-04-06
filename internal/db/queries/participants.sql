@@ -42,6 +42,13 @@ SET paid = CASE WHEN paid = 1 THEN 0 ELSE 1 END,
 WHERE event_id = ? AND member_id = ? AND group_id = ?
 RETURNING *;
 
+-- name: UpdateParticipantNote :exec
+UPDATE participants
+SET note = sqlc.arg(note)
+WHERE event_id = sqlc.arg(event_id)
+  AND member_id = sqlc.arg(member_id)
+  AND group_id = sqlc.arg(group_id);
+
 -- name: ListParticipantsByEvent :many
 SELECT members.*, participants.amount AS participant_amount, participants.expense AS participant_expense, participants.note AS participant_note, participants.paid AS participant_paid, participants.paid_at AS participant_paid_at
 FROM members

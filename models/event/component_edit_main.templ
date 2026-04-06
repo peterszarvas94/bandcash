@@ -104,7 +104,7 @@ templ EventEditMain(data EventData) {
 							<td style={ fmt.Sprintf("--max-w: %drem", data.ParticipantsTable.ColMaxWRem("paid_at")) }>
 								<input type="date" class="input input-table" data-bind={ fmt.Sprintf("wizard.paidAts.%s", row.RowID) } data-attr:disabled={ fmt.Sprintf("!$wizard.paids.%s || $_fetching", row.RowID) }/>
 							</td>
-							<td style={ fmt.Sprintf("--max-w: %drem", data.ParticipantsTable.ColMaxWRem("note")) }><textarea class="input input-table h-min-input" rows="1" style="resize: vertical;" data-bind={ fmt.Sprintf("wizard.notes.%s", row.RowID) }></textarea></td>
+							<td style={ fmt.Sprintf("--max-w: %drem", data.ParticipantsTable.ColMaxWRem("note")) }><textarea class="input input-table h-min-input" rows="1" style="resize: vertical; min-width: 14rem;" data-bind={ fmt.Sprintf("wizard.notes.%s", row.RowID) }></textarea></td>
 							<td class="text-right">
 								@shared.IconActionButton(shared.IconActionButtonProps{
 									ClassName:    "btn btn-sm btn-icon",

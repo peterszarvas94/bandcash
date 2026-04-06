@@ -52,11 +52,6 @@ func eventShowSignals(data EventData) map[string]any {
 		wizardTotal += row.Amount + row.Expense
 	}
 
-	noteExpanded := make(map[string]bool, len(data.Participants))
-	for _, participant := range data.Participants {
-		noteExpanded[participant.ID] = false
-	}
-
 	return map[string]any{
 		"mode":                  "single",
 		"draftRowsAction":       "",
@@ -91,12 +86,11 @@ func eventShowSignals(data EventData) map[string]any {
 				return utils.FormatDateInput(data.Event.PaidAt.String)
 			}(),
 		},
-		"formState":    "",
-		"editingId":    0,
-		"calcPercent":  0,
-		"summaryMode":  data.Query.Summary,
-		"_fetching":    false,
-		"noteExpanded": noteExpanded,
+		"formState":   "",
+		"editingId":   0,
+		"calcPercent": 0,
+		"summaryMode": data.Query.Summary,
+		"_fetching":   false,
 		"paidAtDialog": map[string]any{
 			"open":        data.PaidAtDialog.Open,
 			"fetching":    data.PaidAtDialog.Fetching,
@@ -108,6 +102,19 @@ func eventShowSignals(data EventData) map[string]any {
 			"cancelLabel": data.PaidAtDialog.CancelLabel,
 			"url":         data.PaidAtDialog.URL,
 			"triggerID":   data.PaidAtDialog.TriggerID,
+		},
+		"participantNoteDialog": map[string]any{
+			"open":        data.ParticipantNoteDialog.Open,
+			"fetching":    data.ParticipantNoteDialog.Fetching,
+			"readOnly":    data.ParticipantNoteDialog.ReadOnly,
+			"title":       data.ParticipantNoteDialog.Title,
+			"message":     data.ParticipantNoteDialog.Message,
+			"memberId":    data.ParticipantNoteDialog.MemberID,
+			"value":       data.ParticipantNoteDialog.Value,
+			"submitLabel": data.ParticipantNoteDialog.SubmitLabel,
+			"cancelLabel": data.ParticipantNoteDialog.CancelLabel,
+			"url":         data.ParticipantNoteDialog.URL,
+			"triggerID":   data.ParticipantNoteDialog.TriggerID,
 		},
 		"formData": map[string]any{
 			"memberId":   "",

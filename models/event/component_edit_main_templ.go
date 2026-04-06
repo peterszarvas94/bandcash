@@ -566,14 +566,14 @@ func EventEditMain(data EventData) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 43, "\"><textarea class=\"input input-table h-min-input\" rows=\"1\" style=\"resize: vertical;\" data-bind=\"")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 43, "\"><textarea class=\"input input-table h-min-input\" rows=\"1\" style=\"resize: vertical; min-width: 14rem;\" data-bind=\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			var templ_7745c5c3_Var39 string
 			templ_7745c5c3_Var39, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("wizard.notes.%s", row.RowID))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/event/component_edit_main.templ`, Line: 107, Col: 230}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/event/component_edit_main.templ`, Line: 107, Col: 248}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var39))
 			if templ_7745c5c3_Err != nil {

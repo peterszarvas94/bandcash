@@ -2011,3 +2011,28 @@ func (q *Queries) UpdateParticipant(ctx context.Context, arg UpdateParticipantPa
 	)
 	return err
 }
+
+const updateParticipantNote = `-- name: UpdateParticipantNote :exec
+UPDATE participants
+SET note = ?1
+WHERE event_id = ?2
+  AND member_id = ?3
+  AND group_id = ?4
+`
+
+type UpdateParticipantNoteParams struct {
+	Note     string `json:"note"`
+	EventID  string `json:"event_id"`
+	MemberID string `json:"member_id"`
+	GroupID  string `json:"group_id"`
+}
+
+func (q *Queries) UpdateParticipantNote(ctx context.Context, arg UpdateParticipantNoteParams) error {
+	_, err := q.db.ExecContext(ctx, updateParticipantNote,
+		arg.Note,
+		arg.EventID,
+		arg.MemberID,
+		arg.GroupID,
+	)
+	return err
+}

@@ -515,7 +515,7 @@ func EventIndexMain(data EventsData) templ.Component {
 				return templ_7745c5c3_Err
 			}
 			for _, event := range data.Events {
-				togglePaidExpr := fmt.Sprintf("@patch('/groups/%s/events/%s', {mode: 'table', tableQuery: $tableQuery, action: 'togglePaid'})", data.GroupID, event.ID)
+				togglePaidExpr := fmt.Sprintf("@post('/groups/%s/events/%s/paid', {mode: 'table', tableQuery: $tableQuery})", data.GroupID, event.ID)
 				paidLabel := ctxi18n.T(ctx, "table.unpaid")
 				if event.Paid == 1 {
 					paidLabel = ctxi18n.T(ctx, "table.paid")

@@ -12,7 +12,7 @@ import (
 	icons "bandcash/models/shared/icons"
 )
 
-func PaidAtDialog() templ.Component {
+func ParticipantNoteDialog() templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
 		if templ_7745c5c3_CtxErr := ctx.Err(); templ_7745c5c3_CtxErr != nil {
@@ -33,20 +33,20 @@ func PaidAtDialog() templ.Component {
 			templ_7745c5c3_Var1 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		closeExpr := `!$paidAtDialog.fetching && ($paidAtDialog.open = false, el.matches(':popover-open') && el.hidePopover())`
-		overlayCloseExpr := `evt.target === el && !$paidAtDialog.fetching && ($paidAtDialog.open = false, el.matches(':popover-open') && el.hidePopover())`
-		popoverEffect := `$paidAtDialog.open ? (!el.matches(':popover-open') && el.showPopover()) : (el.matches(':popover-open') && el.hidePopover())`
-		toggleExpr := `evt.newState === 'closed' && ($paidAtDialog.open = false, $paidAtDialog.fetching = false, $paidAtDialog.triggerID = '')`
-		submitExpr := `!$paidAtDialog.fetching && ($paidAtDialog.fetching = true, @post($paidAtDialog.url, {mode: 'single', tableQuery: $tableQuery}))`
-		fetchDoneExpr := `$paidAtDialog.fetching && (evt.detail.type === 'finished' || evt.detail.type === 'error' || evt.detail.type === 'retries-failed') && ($paidAtDialog.fetching = false, $paidAtDialog.open = false, $paidAtDialog.triggerID = '', el.matches(':popover-open') && el.hidePopover())`
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<div id=\"paid-at-popover\" popover=\"auto\" class=\"dialog-popover paid-at-popover\" data-effect=\"")
+		closeExpr := `!$participantNoteDialog.fetching && ($participantNoteDialog.open = false, el.matches(':popover-open') && el.hidePopover())`
+		overlayCloseExpr := `evt.target === el && !$participantNoteDialog.fetching && ($participantNoteDialog.open = false, el.matches(':popover-open') && el.hidePopover())`
+		popoverEffect := `$participantNoteDialog.open ? (!el.matches(':popover-open') && el.showPopover()) : (el.matches(':popover-open') && el.hidePopover())`
+		toggleExpr := `evt.newState === 'closed' && ($participantNoteDialog.open = false, $participantNoteDialog.fetching = false, $participantNoteDialog.triggerID = '')`
+		submitExpr := `!$participantNoteDialog.fetching && !$participantNoteDialog.readOnly && ($participantNoteDialog.fetching = true, @post($participantNoteDialog.url, {mode: 'single', tableQuery: $tableQuery}))`
+		fetchDoneExpr := `$participantNoteDialog.fetching && (evt.detail.type === 'finished' || evt.detail.type === 'error' || evt.detail.type === 'retries-failed') && ($participantNoteDialog.fetching = false, $participantNoteDialog.open = false, $participantNoteDialog.triggerID = '', el.matches(':popover-open') && el.hidePopover())`
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<div id=\"participant-note-popover\" popover=\"auto\" class=\"dialog-popover participant-note-popover\" data-effect=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var2 string
 		templ_7745c5c3_Var2, templ_7745c5c3_Err = templ.JoinStringErrs(popoverEffect)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/event/component_paid_at_dialog.templ`, Line: 20, Col: 29}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/event/component_participant_note_dialog.templ`, Line: 20, Col: 29}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var2))
 		if templ_7745c5c3_Err != nil {
@@ -59,7 +59,7 @@ func PaidAtDialog() templ.Component {
 		var templ_7745c5c3_Var3 string
 		templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.JoinStringErrs(overlayCloseExpr)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/event/component_paid_at_dialog.templ`, Line: 21, Col: 34}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/event/component_participant_note_dialog.templ`, Line: 21, Col: 34}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var3))
 		if templ_7745c5c3_Err != nil {
@@ -72,7 +72,7 @@ func PaidAtDialog() templ.Component {
 		var templ_7745c5c3_Var4 string
 		templ_7745c5c3_Var4, templ_7745c5c3_Err = templ.JoinStringErrs(toggleExpr)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/event/component_paid_at_dialog.templ`, Line: 22, Col: 29}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/event/component_participant_note_dialog.templ`, Line: 22, Col: 29}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var4))
 		if templ_7745c5c3_Err != nil {
@@ -85,39 +85,39 @@ func PaidAtDialog() templ.Component {
 		var templ_7745c5c3_Var5 string
 		templ_7745c5c3_Var5, templ_7745c5c3_Err = templ.JoinStringErrs(fetchDoneExpr)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/event/component_paid_at_dialog.templ`, Line: 23, Col: 40}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/event/component_participant_note_dialog.templ`, Line: 23, Col: 40}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var5))
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 5, "\"><section class=\"dialog paid-at-dialog\" role=\"dialog\" aria-modal=\"true\" aria-labelledby=\"paid-at-title\" aria-describedby=\"paid-at-message\"><h3 id=\"paid-at-title\" class=\"dialog-title\" data-text=\"$paidAtDialog.title\"></h3><p id=\"paid-at-message\" class=\"dialog-message\" data-show=\"$paidAtDialog.message !== ''\" style=\"display: none\" data-text=\"$paidAtDialog.message\"></p><input id=\"paid-at-input\" type=\"date\" class=\"input\" data-bind=\"paidAtDialog.value\" data-attr:placeholder=\"$paidAtDialog.placeholder || ''\"><div class=\"row row-right row-wrap\"><button id=\"paid-at-cancel\" type=\"button\" class=\"btn\" autofocus data-attr:disabled=\"$paidAtDialog.fetching\" data-on:click=\"")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 5, "\"><section class=\"dialog participant-note-dialog\" role=\"dialog\" aria-modal=\"true\" aria-labelledby=\"participant-note-title\" aria-describedby=\"participant-note-message\"><h3 id=\"participant-note-title\" class=\"dialog-title\" data-text=\"$participantNoteDialog.title\"></h3><p id=\"participant-note-message\" class=\"dialog-message\" data-show=\"$participantNoteDialog.message !== ''\" style=\"display: none\" data-text=\"$participantNoteDialog.message\"></p><textarea id=\"participant-note-input\" class=\"input\" rows=\"4\" data-show=\"!$participantNoteDialog.readOnly\" style=\"display: none\" data-bind=\"participantNoteDialog.value\"></textarea><div class=\"input dialog-readonly\" data-show=\"$participantNoteDialog.readOnly\" style=\"display: none;\" data-text=\"$participantNoteDialog.value\"></div><div class=\"row row-right row-wrap\"><button id=\"participant-note-cancel\" type=\"button\" class=\"btn\" autofocus data-attr:disabled=\"$participantNoteDialog.fetching\" data-on:click=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var6 string
 		templ_7745c5c3_Var6, templ_7745c5c3_Err = templ.JoinStringErrs(closeExpr)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/event/component_paid_at_dialog.templ`, Line: 30, Col: 137}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/event/component_participant_note_dialog.templ`, Line: 31, Col: 154}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var6))
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 6, "\"><span data-text=\"$paidAtDialog.cancelLabel\"></span></button> <button id=\"paid-at-submit\" type=\"button\" class=\"btn\" data-attr:disabled=\"$paidAtDialog.fetching\" data-on:click=\"")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 6, "\"><span data-text=\"$participantNoteDialog.cancelLabel\"></span></button> <button id=\"participant-note-submit\" type=\"button\" class=\"btn\" data-show=\"!$participantNoteDialog.readOnly\" data-attr:disabled=\"$participantNoteDialog.fetching\" data-on:click=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var7 string
 		templ_7745c5c3_Var7, templ_7745c5c3_Err = templ.JoinStringErrs(submitExpr)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/event/component_paid_at_dialog.templ`, Line: 33, Col: 128}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/event/component_participant_note_dialog.templ`, Line: 34, Col: 190}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var7))
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 7, "\"><span data-show=\"$paidAtDialog.fetching\" style=\"display: none\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 7, "\"><span data-show=\"$participantNoteDialog.fetching\" style=\"display: none\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -125,7 +125,7 @@ func PaidAtDialog() templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 8, "</span> <span data-text=\"$paidAtDialog.submitLabel\"></span></button></div></section></div>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 8, "</span> <span data-text=\"$participantNoteDialog.submitLabel\"></span></button></div></section></div>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
