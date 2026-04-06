@@ -350,15 +350,8 @@ func (g *Group) DeleteGroup(c echo.Context) error {
 		return c.NoContent(http.StatusBadRequest)
 	}
 	var err error
-	if userID == "" {
-		err = utils.SSEHub.Redirect(c, "/login")
-		if err != nil {
-			return c.NoContent(http.StatusInternalServerError)
-		}
-		return c.NoContent(http.StatusOK)
-	}
 
-	group, err := db.Qry.GetGroupByID(c.Request().Context(), groupID)
+	_, err = db.Qry.GetGroupByID(c.Request().Context(), groupID)
 	if err != nil {
 		utils.Notify(c, ctxi18n.T(c.Request().Context(), "groups.errors.group_not_found"))
 		err = utils.SSEHub.Redirect(c, "/groups")
@@ -367,15 +360,6 @@ func (g *Group) DeleteGroup(c echo.Context) error {
 		}
 		return c.NoContent(http.StatusOK)
 	}
-	if group.AdminUserID != userID && !middleware.IsSuperadmin(c) {
-		utils.Notify(c, ctxi18n.T(c.Request().Context(), "groups.errors.admin_required"))
-		err = utils.SSEHub.Redirect(c, "/groups")
-		if err != nil {
-			return c.NoContent(http.StatusInternalServerError)
-		}
-		return c.NoContent(http.StatusOK)
-	}
-
 	if err := db.Qry.DeleteGroup(c.Request().Context(), groupID); err != nil {
 		slog.Error("group: failed to delete", "err", err)
 		utils.Notify(c, ctxi18n.T(c.Request().Context(), "groups.errors.delete_failed"))
@@ -956,6 +940,7 @@ func (g *Group) DemoteAdminToViewer(c echo.Context) error {
 	if userID == "" {
 		userID = c.Param("id")
 	}
+	currentUserID := middleware.GetUserID(c)
 	ctx := c.Request().Context()
 	if !utils.IsValidID(userID, "usr") {
 		if signals.Mode == "table" {
@@ -989,6 +974,20 @@ func (g *Group) DemoteAdminToViewer(c echo.Context) error {
 				slog.Warn("group: failed to send role-change email", "group_id", groupID, "user_id", userID, "err", mailErr)
 			}
 		}
+	}
+
+	if currentUserID == userID {
+		utils.Notify(c, ctxi18n.T(c.Request().Context(), "groups.messages.admin_demoted"))
+		tabID := utils.TabIDFromContext(c.Request().Context())
+		redirectURL := "/groups/" + groupID + "/users"
+		if tabID != "" {
+			redirectURL += "?tab_id=" + tabID
+		}
+		err = utils.SSEHub.Redirect(c, redirectURL)
+		if err != nil {
+			return c.NoContent(http.StatusInternalServerError)
+		}
+		return c.NoContent(http.StatusOK)
 	}
 
 	if signals.Mode == "table" {
@@ -1026,10 +1025,6 @@ func (g *Group) TransferGroupOwnership(c echo.Context) error {
 		return g.redirectUsersPage(c, groupID, "", "groups.errors.group_not_found", http.StatusNotFound)
 	}
 
-	currentUserID := middleware.GetUserID(c)
-	if group.AdminUserID != currentUserID {
-		return g.redirectUsersPage(c, groupID, "", "groups.errors.owner_required", http.StatusForbidden)
-	}
 	if userID == group.AdminUserID {
 		return g.redirectUsersPage(c, groupID, "", "groups.errors.already_owner", http.StatusConflict)
 	}

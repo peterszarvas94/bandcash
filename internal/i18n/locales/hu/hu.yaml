@@ -358,6 +358,7 @@ hu:
     role_owner: "tulajdonos"
     role_admin: "admin"
     role_viewer: "néző"
+    you: "te"
     created: "Létrehozva"
     income: "Bevétel"
     payouts: "Kifizetések"

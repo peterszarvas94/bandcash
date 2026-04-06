@@ -83,7 +83,11 @@ func RequireGroup(next echo.HandlerFunc) echo.HandlerFunc {
 
 		if isSuperadmin {
 			c.Set(string(GroupIDKey), groupID)
-			c.Set(string(IsAdminKey), true)
+			role, err := db.Qry.GetGroupAccessRole(c.Request().Context(), db.GetGroupAccessRoleParams{
+				UserID:  userID,
+				GroupID: groupID,
+			})
+			c.Set(string(IsAdminKey), err == nil && (role == "owner" || role == "admin"))
 			return next(c)
 		}
 
@@ -110,6 +114,32 @@ func RequireAdmin(next echo.HandlerFunc) echo.HandlerFunc {
 			return c.String(http.StatusForbidden, "Admin access required")
 		}
 		return next(c)
+	}
+}
+
+// RequireOwner ensures user is owner of the group.
+func RequireOwner(next echo.HandlerFunc) echo.HandlerFunc {
+	return func(c echo.Context) error {
+		groupID := GetGroupID(c)
+		userID := GetUserID(c)
+		group, err := db.Qry.GetGroupByID(c.Request().Context(), groupID)
+		if err != nil {
+			return c.String(http.StatusForbidden, "Owner access required")
+		}
+		if group.AdminUserID != userID {
+			return c.String(http.StatusForbidden, "Owner access required")
+		}
+		return next(c)
+	}
+}
+
+// RequireOwnerOrSuperadmin ensures user is owner or superadmin.
+func RequireOwnerOrSuperadmin(next echo.HandlerFunc) echo.HandlerFunc {
+	return func(c echo.Context) error {
+		if IsSuperadmin(c) {
+			return next(c)
+		}
+		return RequireOwner(next)(c)
 	}
 }
 

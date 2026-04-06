@@ -4,9 +4,9 @@ import ctxi18n "github.com/invopop/ctxi18n/i18n"
 
 templ Badge(variant string) {
 	if variant == "owner" {
-		<span class="badge badge-inverse">{ ctxi18n.T(ctx, "groups.role_owner") }</span>
+		<span class="badge badge-primary">{ ctxi18n.T(ctx, "groups.role_owner") }</span>
 	} else if variant == "admin" {
-		<span class="badge badge-primary">{ ctxi18n.T(ctx, "groups.role_admin") }</span>
+		<span class="badge badge-inverse">{ ctxi18n.T(ctx, "groups.role_admin") }</span>
 	} else if variant == "viewer" {
 		<span class="badge badge-default">{ ctxi18n.T(ctx, "groups.role_viewer") }</span>
 	} else if variant == "primary" {

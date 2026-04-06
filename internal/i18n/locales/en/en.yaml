@@ -358,6 +358,7 @@ en:
     role_owner: "owner"
     role_admin: "admin"
     role_viewer: "viewer"
+    you: "you"
     created: "Created"
     income: "Income"
     payouts: "Payouts"

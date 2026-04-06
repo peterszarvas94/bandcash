@@ -45,6 +45,10 @@ func EnsureTabID(c echo.Context) string {
 	if tabID := TabIDFromContext(c.Request().Context()); tabID != "" {
 		return tabID
 	}
+	if requestedTabID := strings.TrimSpace(c.QueryParam("tab_id")); IsValidID(requestedTabID, "tab") {
+		c.SetRequest(c.Request().WithContext(WithTabID(c.Request().Context(), requestedTabID)))
+		return requestedTabID
+	}
 	tabID := GenerateID("tab")
 	c.SetRequest(c.Request().WithContext(WithTabID(c.Request().Context(), tabID)))
 	return tabID

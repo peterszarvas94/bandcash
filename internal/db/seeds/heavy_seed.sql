@@ -10,26 +10,27 @@ VALUES
   ('usr_AdminUserTriSeed0003', 'admin3@bandcash.local'),
   ('usr_ViewerSeedUser00001A', 'viewer01@bandcash.local'),
   ('usr_ViewerSeedUser00002A', 'viewer02@bandcash.local'),
-  ('usr_ViewerSeedUser00003A', 'viewer03@bandcash.local'),
-  ('usr_ViewerSeedUser00004A', 'viewer04@bandcash.local'),
-  ('usr_ViewerSeedUser00005A', 'viewer05@bandcash.local'),
-  ('usr_ViewerSeedUser00006A', 'viewer06@bandcash.local'),
-  ('usr_ViewerSeedUser00007A', 'viewer07@bandcash.local'),
-  ('usr_ViewerSeedUser00008A', 'viewer08@bandcash.local');
+  ('usr_ViewerSeedUser00003A', 'viewer03@bandcash.local');
 
 INSERT OR IGNORE INTO groups (id, name, admin_user_id)
-VALUES ('grp_SeedDataLabGroup0001', 'Seed Data Lab', 'usr_SuperAdminSeed000001');
-
-INSERT OR IGNORE INTO group_readers (id, user_id, group_id)
 VALUES
-  ('grr_SeedReaderLink00001A', 'usr_ViewerSeedUser00001A', 'grp_SeedDataLabGroup0001'),
-  ('grr_SeedReaderLink00002A', 'usr_ViewerSeedUser00002A', 'grp_SeedDataLabGroup0001'),
-  ('grr_SeedReaderLink00003A', 'usr_ViewerSeedUser00003A', 'grp_SeedDataLabGroup0001'),
-  ('grr_SeedReaderLink00004A', 'usr_ViewerSeedUser00004A', 'grp_SeedDataLabGroup0001'),
-  ('grr_SeedReaderLink00005A', 'usr_ViewerSeedUser00005A', 'grp_SeedDataLabGroup0001'),
-  ('grr_SeedReaderLink00006A', 'usr_ViewerSeedUser00006A', 'grp_SeedDataLabGroup0001'),
-  ('grr_SeedReaderLink00007A', 'usr_ViewerSeedUser00007A', 'grp_SeedDataLabGroup0001'),
-  ('grr_SeedReaderLink00008A', 'usr_ViewerSeedUser00008A', 'grp_SeedDataLabGroup0001');
+  ('grp_SeedDataLabGroup0001', 'Seed Data Lab', 'usr_SuperAdminSeed000001'),
+  ('grp_SeedRoadCrewGroup002', 'Seed Road Crew', 'usr_AdminUserOneSeed0001'),
+  ('grp_SeedAcousticGroup003', 'Seed Acoustic Duo', 'usr_AdminUserTwoSeed0002');
+
+INSERT OR IGNORE INTO group_access (id, user_id, group_id, role)
+VALUES
+  ('gac_SeedViewerLink00001A', 'usr_ViewerSeedUser00001A', 'grp_SeedDataLabGroup0001', 'viewer'),
+  ('gac_SeedViewerLink00002A', 'usr_ViewerSeedUser00002A', 'grp_SeedDataLabGroup0001', 'viewer'),
+  ('gac_SeedViewerLink00003A', 'usr_ViewerSeedUser00003A', 'grp_SeedDataLabGroup0001', 'viewer'),
+  ('gac_SeedViewerLink00004A', 'usr_SuperAdminSeed000001', 'grp_SeedAcousticGroup003', 'viewer');
+
+INSERT OR IGNORE INTO group_access (id, user_id, group_id, role)
+VALUES
+  ('gac_SeedAdminLink00001A', 'usr_AdminUserOneSeed0001', 'grp_SeedDataLabGroup0001', 'admin'),
+  ('gac_SeedAdminLink00002A', 'usr_AdminUserTwoSeed0002', 'grp_SeedDataLabGroup0001', 'admin'),
+  ('gac_SeedAdminLink00003A', 'usr_AdminUserTriSeed0003', 'grp_SeedDataLabGroup0001', 'admin'),
+  ('gac_SeedAdminLink00004A', 'usr_SuperAdminSeed000001', 'grp_SeedRoadCrewGroup002', 'admin');
 
 INSERT OR IGNORE INTO magic_links (id, token, email, action, group_id, expires_at)
 VALUES
@@ -43,11 +44,11 @@ VALUES
 INSERT OR REPLACE INTO app_flags (key, bool_value)
 VALUES ('enable_signup', 1);
 
--- 250 members
+-- 10 members
 WITH RECURSIVE seq(n) AS (
   SELECT 1
   UNION ALL
-  SELECT n + 1 FROM seq WHERE n < 250
+  SELECT n + 1 FROM seq WHERE n < 10
 )
 INSERT OR IGNORE INTO members (id, group_id, name, description)
 SELECT
@@ -165,7 +166,7 @@ INSERT OR IGNORE INTO participants (group_id, event_id, member_id, amount, expen
 SELECT
   'grp_SeedDataLabGroup0001',
   printf('evt_%020d', ((n - 1) % 400) + 1),
-  printf('mem_%020d', ((n * 7 - 1) % 250) + 1),
+  printf('mem_%020d', ((n * 7 - 1) % 10) + 1),
   500 + (ABS(RANDOM()) % 25000),
   ABS(RANDOM()) % 2000
 FROM seq;

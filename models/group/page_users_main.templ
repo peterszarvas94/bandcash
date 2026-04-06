@@ -37,6 +37,7 @@ templ GroupUsersMain(data UsersPageData) {
 			for _, row := range data.UserRows {
 				{{
 					rowPath := fmt.Sprintf("/groups/%s/users/%s", data.Group.ID, row.UserID)
+					youText := fmt.Sprintf(" (%s)", ctxi18n.T(ctx, "groups.you"))
 					if row.Kind == "invite" {
 						rowPath = fmt.Sprintf("/groups/%s/users/%s", data.Group.ID, row.InviteID)
 					}
@@ -49,7 +50,12 @@ templ GroupUsersMain(data UsersPageData) {
 					}
 				}}
 				<tr>
-					<td><a class="table-link" href={ rowPath }>{ row.Email }</a></td>
+					<td>
+						<a class="table-link" href={ rowPath }>{ row.Email }</a>
+						if row.UserID == data.CurrentUserID {
+							{ youText }
+						}
+					</td>
 					<td>
 						if row.Role == "owner" {
 							@shared.Badge("owner")
