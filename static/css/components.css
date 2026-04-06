@@ -1129,6 +1129,12 @@
     }
   }
 
+  .participant-paid-at-dialog {
+    .input {
+      width: 100%;
+    }
+  }
+
   .participant-note-dialog {
     .input {
       width: 100%;
@@ -1147,12 +1153,21 @@
 
   @media (max-width: 680px) {
     .dialog-popover {
+      inset: 0;
+      margin: 0;
       width: 100vw;
+      max-width: none;
+      height: 100vh;
+      max-height: none;
+      border-radius: 0;
     }
 
     .dialog {
+      width: 100vw;
+      max-width: none;
       min-height: 100vh;
       align-content: center;
+      border-radius: 0;
     }
   }
 

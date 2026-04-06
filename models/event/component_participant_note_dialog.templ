@@ -1,28 +1,32 @@
 package event
 
 import (
+	shared "bandcash/models/shared"
 	icons "bandcash/models/shared/icons"
 )
 
 templ ParticipantNoteDialog() {
 	{{
-		closeExpr := `!$participantNoteDialog.fetching && ($participantNoteDialog.open = false, el.matches(':popover-open') && el.hidePopover())`
-		overlayCloseExpr := `evt.target === el && !$participantNoteDialog.fetching && ($participantNoteDialog.open = false, el.matches(':popover-open') && el.hidePopover())`
-		popoverEffect := `$participantNoteDialog.open ? (!el.matches(':popover-open') && el.showPopover()) : (el.matches(':popover-open') && el.hidePopover())`
-		toggleExpr := `evt.newState === 'closed' && ($participantNoteDialog.open = false, $participantNoteDialog.fetching = false, $participantNoteDialog.triggerID = '')`
-		submitExpr := `!$participantNoteDialog.fetching && !$participantNoteDialog.readOnly && ($participantNoteDialog.fetching = true, @post($participantNoteDialog.url, {mode: 'single', tableQuery: $tableQuery}))`
-		fetchDoneExpr := `$participantNoteDialog.fetching && (evt.detail.type === 'finished' || evt.detail.type === 'error' || evt.detail.type === 'retries-failed') && ($participantNoteDialog.fetching = false, $participantNoteDialog.open = false, $participantNoteDialog.triggerID = '', el.matches(':popover-open') && el.hidePopover())`
+		closeExpr := `!$participantNoteDialog.fetching && ($participantNoteDialog.open = false)`
+		overlayCloseExpr := `evt.target === el && !$participantNoteDialog.fetching && ($participantNoteDialog.open = false)`
+		cancelExpr := `$participantNoteDialog.fetching && evt.preventDefault()`
+		dialogEffect := `$participantNoteDialog.open ? (!el.open && el.showModal()) : (el.open && el.close())`
+		dialogCloseExpr := `$participantNoteDialog.open = false; $participantNoteDialog.fetching = false`
+		submitExpr := `!$participantNoteDialog.fetching && !$participantNoteDialog.readOnly && (el.open && el.close(), $participantNoteDialog.fetching = true, @post($participantNoteDialog.url, {mode: 'single', tableQuery: $tableQuery}))`
+		fetchDoneExpr := `$participantNoteDialog.fetching && ['finished', 'error', 'retries-failed'].includes(evt.detail.type) && ($participantNoteDialog.fetching = false, $participantNoteDialog.open = false)`
 	}}
-	<div
-		id="participant-note-popover"
-		popover="auto"
-		class="dialog-popover participant-note-popover"
-		data-effect={ popoverEffect }
-		data-on:click={ overlayCloseExpr }
-		data-on:toggle={ toggleExpr }
-		data-on:datastar-fetch={ fetchDoneExpr }
-	>
-		<section class="dialog participant-note-dialog" role="dialog" aria-modal="true" aria-labelledby="participant-note-title" aria-describedby="participant-note-message">
+	@shared.DialogShell(shared.DialogProps{
+		ID:               "participant-note-popover",
+		PopoverClass:     "participant-note-popover",
+		DialogClass:      "participant-note-dialog",
+		LabelledBy:       "participant-note-title",
+		DescribedBy:      "participant-note-message",
+		EffectExpr:       dialogEffect,
+		OverlayCloseExpr: overlayCloseExpr,
+		CancelExpr:       cancelExpr,
+		CloseExpr:        dialogCloseExpr,
+		FetchDoneExpr:    fetchDoneExpr,
+	}) {
 		<h3 id="participant-note-title" class="dialog-title" data-text="$participantNoteDialog.title"></h3>
 		<p id="participant-note-message" class="dialog-message" data-show="$participantNoteDialog.message !== ''" style="display: none" data-text="$participantNoteDialog.message"></p>
 		<textarea id="participant-note-input" class="input" rows="4" data-show="!$participantNoteDialog.readOnly" style="display: none" data-bind="participantNoteDialog.value"></textarea>
@@ -38,6 +42,5 @@ templ ParticipantNoteDialog() {
 				<span data-text="$participantNoteDialog.submitLabel"></span>
 			</button>
 		</div>
-		</section>
-	</div>
+	}
 }

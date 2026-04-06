@@ -13,6 +13,7 @@ Use this for page layout, buttons, tables, and form changes.
 - Shared layout/components: `models/shared/*.templ`
 - Shared table components: `models/shared/table.templ`
 - Static assets: `static/css/*`, `static/js/*`
+- Modal guidelines: `doc/modals.md`
 
 ## Form conventions
 - Forms use `class="form"` and `data-on:submit` handlers.

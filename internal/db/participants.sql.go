@@ -2036,3 +2036,29 @@ func (q *Queries) UpdateParticipantNote(ctx context.Context, arg UpdateParticipa
 	)
 	return err
 }
+
+const updateParticipantPaidAt = `-- name: UpdateParticipantPaidAt :exec
+UPDATE participants
+SET paid = 1,
+    paid_at = NULLIF(?1, '')
+WHERE event_id = ?2
+  AND member_id = ?3
+  AND group_id = ?4
+`
+
+type UpdateParticipantPaidAtParams struct {
+	PaidAt   interface{} `json:"paid_at"`
+	EventID  string      `json:"event_id"`
+	MemberID string      `json:"member_id"`
+	GroupID  string      `json:"group_id"`
+}
+
+func (q *Queries) UpdateParticipantPaidAt(ctx context.Context, arg UpdateParticipantPaidAtParams) error {
+	_, err := q.db.ExecContext(ctx, updateParticipantPaidAt,
+		arg.PaidAt,
+		arg.EventID,
+		arg.MemberID,
+		arg.GroupID,
+	)
+	return err
+}

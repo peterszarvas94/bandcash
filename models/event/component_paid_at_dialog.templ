@@ -1,42 +1,45 @@
 package event
 
 import (
+	shared "bandcash/models/shared"
 	icons "bandcash/models/shared/icons"
 )
 
 templ PaidAtDialog() {
 	{{
-		closeExpr := `!$paidAtDialog.fetching && ($paidAtDialog.open = false, el.matches(':popover-open') && el.hidePopover())`
-		overlayCloseExpr := `evt.target === el && !$paidAtDialog.fetching && ($paidAtDialog.open = false, el.matches(':popover-open') && el.hidePopover())`
-		popoverEffect := `$paidAtDialog.open ? (!el.matches(':popover-open') && el.showPopover()) : (el.matches(':popover-open') && el.hidePopover())`
-		toggleExpr := `evt.newState === 'closed' && ($paidAtDialog.open = false, $paidAtDialog.fetching = false, $paidAtDialog.triggerID = '')`
-		submitExpr := `!$paidAtDialog.fetching && ($paidAtDialog.fetching = true, @post($paidAtDialog.url, {mode: 'single', tableQuery: $tableQuery}))`
-		fetchDoneExpr := `$paidAtDialog.fetching && (evt.detail.type === 'finished' || evt.detail.type === 'error' || evt.detail.type === 'retries-failed') && ($paidAtDialog.fetching = false, $paidAtDialog.open = false, $paidAtDialog.triggerID = '', el.matches(':popover-open') && el.hidePopover())`
+		closeExpr := `!$paidAtDialog.fetching && ($paidAtDialog.open = false)`
+		overlayCloseExpr := `evt.target === el && !$paidAtDialog.fetching && ($paidAtDialog.open = false)`
+		cancelExpr := `$paidAtDialog.fetching && evt.preventDefault()`
+		dialogEffect := `$paidAtDialog.open ? (!el.open && el.showModal()) : (el.open && el.close())`
+		dialogCloseExpr := `$paidAtDialog.open = false; $paidAtDialog.fetching = false`
+		submitExpr := `!$paidAtDialog.fetching && (el.open && el.close(), $paidAtDialog.fetching = true, @post($paidAtDialog.url, {mode: 'single', tableQuery: $tableQuery}))`
+		fetchDoneExpr := `$paidAtDialog.fetching && ['finished', 'error', 'retries-failed'].includes(evt.detail.type) && ($paidAtDialog.fetching = false, $paidAtDialog.open = false)`
 	}}
-	<div
-		id="paid-at-popover"
-		popover="auto"
-		class="dialog-popover paid-at-popover"
-		data-effect={ popoverEffect }
-		data-on:click={ overlayCloseExpr }
-		data-on:toggle={ toggleExpr }
-		data-on:datastar-fetch={ fetchDoneExpr }
-	>
-		<section class="dialog paid-at-dialog" role="dialog" aria-modal="true" aria-labelledby="paid-at-title" aria-describedby="paid-at-message">
-			<h3 id="paid-at-title" class="dialog-title" data-text="$paidAtDialog.title"></h3>
-			<p id="paid-at-message" class="dialog-message" data-show="$paidAtDialog.message !== ''" style="display: none" data-text="$paidAtDialog.message"></p>
-			<input id="paid-at-input" type="date" class="input" data-bind="paidAtDialog.value" data-attr:placeholder="$paidAtDialog.placeholder || ''"/>
-			<div class="row row-right row-wrap">
-				<button id="paid-at-cancel" type="button" class="btn" autofocus data-attr:disabled="$paidAtDialog.fetching" data-on:click={ closeExpr }>
-					<span data-text="$paidAtDialog.cancelLabel"></span>
-				</button>
-				<button id="paid-at-submit" type="button" class="btn" data-attr:disabled="$paidAtDialog.fetching" data-on:click={ submitExpr }>
-					<span data-show="$paidAtDialog.fetching" style="display: none">
-						@icons.LoaderCircle(templ.Attributes{"class": "icon icon-spin"})
-					</span>
-					<span data-text="$paidAtDialog.submitLabel"></span>
-				</button>
-			</div>
-		</section>
-	</div>
+	@shared.DialogShell(shared.DialogProps{
+		ID:               "paid-at-popover",
+		PopoverClass:     "paid-at-popover",
+		DialogClass:      "paid-at-dialog",
+		LabelledBy:       "paid-at-title",
+		DescribedBy:      "paid-at-message",
+		EffectExpr:       dialogEffect,
+		OverlayCloseExpr: overlayCloseExpr,
+		CancelExpr:       cancelExpr,
+		CloseExpr:        dialogCloseExpr,
+		FetchDoneExpr:    fetchDoneExpr,
+	}) {
+		<h3 id="paid-at-title" class="dialog-title" data-text="$paidAtDialog.title"></h3>
+		<p id="paid-at-message" class="dialog-message" data-show="$paidAtDialog.message !== ''" style="display: none" data-text="$paidAtDialog.message"></p>
+		<input id="paid-at-input" type="date" class="input" data-bind="paidAtDialog.value" data-attr:placeholder="$paidAtDialog.placeholder || ''"/>
+		<div class="row row-right row-wrap">
+			<button id="paid-at-cancel" type="button" class="btn" autofocus data-attr:disabled="$paidAtDialog.fetching" data-on:click={ closeExpr }>
+				<span data-text="$paidAtDialog.cancelLabel"></span>
+			</button>
+			<button id="paid-at-submit" type="button" class="btn" data-attr:disabled="$paidAtDialog.fetching" data-on:click={ submitExpr }>
+				<span data-show="$paidAtDialog.fetching" style="display: none">
+					@icons.LoaderCircle(templ.Attributes{"class": "icon icon-spin"})
+				</span>
+				<span data-text="$paidAtDialog.submitLabel"></span>
+			</button>
+		</div>
+	}
 }

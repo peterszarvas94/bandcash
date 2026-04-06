@@ -1,0 +1,45 @@
+package event
+
+import (
+	shared "bandcash/models/shared"
+	icons "bandcash/models/shared/icons"
+)
+
+templ ParticipantPaidAtDialog() {
+	{{
+		closeExpr := `!$participantPaidAtDialog.fetching && ($participantPaidAtDialog.open = false)`
+		overlayCloseExpr := `evt.target === el && !$participantPaidAtDialog.fetching && ($participantPaidAtDialog.open = false)`
+		cancelExpr := `$participantPaidAtDialog.fetching && evt.preventDefault()`
+		dialogEffect := `$participantPaidAtDialog.open ? (!el.open && el.showModal()) : (el.open && el.close())`
+		dialogCloseExpr := `$participantPaidAtDialog.open = false; $participantPaidAtDialog.fetching = false`
+		submitExpr := `!$participantPaidAtDialog.fetching && (el.open && el.close(), $participantPaidAtDialog.fetching = true, @post($participantPaidAtDialog.url, {mode: 'single', tableQuery: $tableQuery}))`
+		fetchDoneExpr := `$participantPaidAtDialog.fetching && ['finished', 'error', 'retries-failed'].includes(evt.detail.type) && ($participantPaidAtDialog.fetching = false, $participantPaidAtDialog.open = false)`
+	}}
+	@shared.DialogShell(shared.DialogProps{
+		ID:               "participant-paid-at-popover",
+		PopoverClass:     "participant-paid-at-popover",
+		DialogClass:      "participant-paid-at-dialog",
+		LabelledBy:       "participant-paid-at-title",
+		DescribedBy:      "participant-paid-at-message",
+		EffectExpr:       dialogEffect,
+		OverlayCloseExpr: overlayCloseExpr,
+		CancelExpr:       cancelExpr,
+		CloseExpr:        dialogCloseExpr,
+		FetchDoneExpr:    fetchDoneExpr,
+	}) {
+			<h3 id="participant-paid-at-title" class="dialog-title" data-text="$participantPaidAtDialog.title"></h3>
+			<p id="participant-paid-at-message" class="dialog-message" data-show="$participantPaidAtDialog.message !== ''" style="display: none" data-text="$participantPaidAtDialog.message"></p>
+			<input id="participant-paid-at-input" type="date" class="input" data-bind="participantPaidAtDialog.value"/>
+			<div class="row row-right row-wrap">
+				<button id="participant-paid-at-cancel" type="button" class="btn" autofocus data-attr:disabled="$participantPaidAtDialog.fetching" data-on:click={ closeExpr }>
+					<span data-text="$participantPaidAtDialog.cancelLabel"></span>
+				</button>
+				<button id="participant-paid-at-submit" type="button" class="btn" data-attr:disabled="$participantPaidAtDialog.fetching" data-on:click={ submitExpr }>
+					<span data-show="$participantPaidAtDialog.fetching" style="display: none">
+						@icons.LoaderCircle(templ.Attributes{"class": "icon icon-spin"})
+					</span>
+					<span data-text="$participantPaidAtDialog.submitLabel"></span>
+				</button>
+			</div>
+	}
+}

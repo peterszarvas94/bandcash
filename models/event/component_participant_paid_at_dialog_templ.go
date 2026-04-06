@@ -13,7 +13,7 @@ import (
 	icons "bandcash/models/shared/icons"
 )
 
-func ParticipantNoteDialog() templ.Component {
+func ParticipantPaidAtDialog() templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
 		if templ_7745c5c3_CtxErr := ctx.Err(); templ_7745c5c3_CtxErr != nil {
@@ -34,13 +34,13 @@ func ParticipantNoteDialog() templ.Component {
 			templ_7745c5c3_Var1 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		closeExpr := `!$participantNoteDialog.fetching && ($participantNoteDialog.open = false)`
-		overlayCloseExpr := `evt.target === el && !$participantNoteDialog.fetching && ($participantNoteDialog.open = false)`
-		cancelExpr := `$participantNoteDialog.fetching && evt.preventDefault()`
-		dialogEffect := `$participantNoteDialog.open ? (!el.open && el.showModal()) : (el.open && el.close())`
-		dialogCloseExpr := `$participantNoteDialog.open = false; $participantNoteDialog.fetching = false`
-		submitExpr := `!$participantNoteDialog.fetching && !$participantNoteDialog.readOnly && (el.open && el.close(), $participantNoteDialog.fetching = true, @post($participantNoteDialog.url, {mode: 'single', tableQuery: $tableQuery}))`
-		fetchDoneExpr := `$participantNoteDialog.fetching && ['finished', 'error', 'retries-failed'].includes(evt.detail.type) && ($participantNoteDialog.fetching = false, $participantNoteDialog.open = false)`
+		closeExpr := `!$participantPaidAtDialog.fetching && ($participantPaidAtDialog.open = false)`
+		overlayCloseExpr := `evt.target === el && !$participantPaidAtDialog.fetching && ($participantPaidAtDialog.open = false)`
+		cancelExpr := `$participantPaidAtDialog.fetching && evt.preventDefault()`
+		dialogEffect := `$participantPaidAtDialog.open ? (!el.open && el.showModal()) : (el.open && el.close())`
+		dialogCloseExpr := `$participantPaidAtDialog.open = false; $participantPaidAtDialog.fetching = false`
+		submitExpr := `!$participantPaidAtDialog.fetching && (el.open && el.close(), $participantPaidAtDialog.fetching = true, @post($participantPaidAtDialog.url, {mode: 'single', tableQuery: $tableQuery}))`
+		fetchDoneExpr := `$participantPaidAtDialog.fetching && ['finished', 'error', 'retries-failed'].includes(evt.detail.type) && ($participantPaidAtDialog.fetching = false, $participantPaidAtDialog.open = false)`
 		templ_7745c5c3_Var2 := templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 			templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
 			templ_7745c5c3_Buffer, templ_7745c5c3_IsBuffer := templruntime.GetBuffer(templ_7745c5c3_W)
@@ -53,33 +53,33 @@ func ParticipantNoteDialog() templ.Component {
 				}()
 			}
 			ctx = templ.InitializeContext(ctx)
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<h3 id=\"participant-note-title\" class=\"dialog-title\" data-text=\"$participantNoteDialog.title\"></h3><p id=\"participant-note-message\" class=\"dialog-message\" data-show=\"$participantNoteDialog.message !== ''\" style=\"display: none\" data-text=\"$participantNoteDialog.message\"></p><textarea id=\"participant-note-input\" class=\"input\" rows=\"4\" data-show=\"!$participantNoteDialog.readOnly\" style=\"display: none\" data-bind=\"participantNoteDialog.value\"></textarea><div class=\"input dialog-readonly\" data-show=\"$participantNoteDialog.readOnly\" style=\"display: none;\" data-text=\"$participantNoteDialog.value\"></div><div class=\"row row-right row-wrap\"><button id=\"participant-note-cancel\" type=\"button\" class=\"btn\" autofocus data-attr:disabled=\"$participantNoteDialog.fetching\" data-on:click=\"")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<h3 id=\"participant-paid-at-title\" class=\"dialog-title\" data-text=\"$participantPaidAtDialog.title\"></h3><p id=\"participant-paid-at-message\" class=\"dialog-message\" data-show=\"$participantPaidAtDialog.message !== ''\" style=\"display: none\" data-text=\"$participantPaidAtDialog.message\"></p><input id=\"participant-paid-at-input\" type=\"date\" class=\"input\" data-bind=\"participantPaidAtDialog.value\"><div class=\"row row-right row-wrap\"><button id=\"participant-paid-at-cancel\" type=\"button\" class=\"btn\" autofocus data-attr:disabled=\"$participantPaidAtDialog.fetching\" data-on:click=\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			var templ_7745c5c3_Var3 string
 			templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.JoinStringErrs(closeExpr)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/event/component_participant_note_dialog.templ`, Line: 35, Col: 154}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/event/component_participant_paid_at_dialog.templ`, Line: 34, Col: 160}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var3))
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "\"><span data-text=\"$participantNoteDialog.cancelLabel\"></span></button> <button id=\"participant-note-submit\" type=\"button\" class=\"btn\" data-show=\"!$participantNoteDialog.readOnly\" data-attr:disabled=\"$participantNoteDialog.fetching\" data-on:click=\"")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "\"><span data-text=\"$participantPaidAtDialog.cancelLabel\"></span></button> <button id=\"participant-paid-at-submit\" type=\"button\" class=\"btn\" data-attr:disabled=\"$participantPaidAtDialog.fetching\" data-on:click=\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			var templ_7745c5c3_Var4 string
 			templ_7745c5c3_Var4, templ_7745c5c3_Err = templ.JoinStringErrs(submitExpr)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/event/component_participant_note_dialog.templ`, Line: 38, Col: 190}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/event/component_participant_paid_at_dialog.templ`, Line: 37, Col: 151}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var4))
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "\"><span data-show=\"$participantNoteDialog.fetching\" style=\"display: none\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "\"><span data-show=\"$participantPaidAtDialog.fetching\" style=\"display: none\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -87,18 +87,18 @@ func ParticipantNoteDialog() templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, "</span> <span data-text=\"$participantNoteDialog.submitLabel\"></span></button></div>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, "</span> <span data-text=\"$participantPaidAtDialog.submitLabel\"></span></button></div>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			return nil
 		})
 		templ_7745c5c3_Err = shared.DialogShell(shared.DialogProps{
-			ID:               "participant-note-popover",
-			PopoverClass:     "participant-note-popover",
-			DialogClass:      "participant-note-dialog",
-			LabelledBy:       "participant-note-title",
-			DescribedBy:      "participant-note-message",
+			ID:               "participant-paid-at-popover",
+			PopoverClass:     "participant-paid-at-popover",
+			DialogClass:      "participant-paid-at-dialog",
+			LabelledBy:       "participant-paid-at-title",
+			DescribedBy:      "participant-paid-at-message",
 			EffectExpr:       dialogEffect,
 			OverlayCloseExpr: overlayCloseExpr,
 			CancelExpr:       cancelExpr,

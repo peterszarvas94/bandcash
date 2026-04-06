@@ -12,7 +12,7 @@ import (
 templ EventShowMain(data EventData) {
 	{{
 		togglePaidExpr := fmt.Sprintf("@post('/groups/%s/events/%s/paid', {mode: 'single', tableQuery: $tableQuery})", data.GroupID, data.Event.ID)
-		openPaidAtExpr := fmt.Sprintf("@get('/groups/%s/events/%s/paid_at', {tab_id: $tab_id})", data.GroupID, data.Event.ID)
+		openPaidAtExpr := fmt.Sprintf("@get('/groups/%s/events/%s/paid_at')", data.GroupID, data.Event.ID)
 		paidAt := "-"
 		if data.Event.PaidAt.Valid {
 			paidAt = utils.FormatDateLocalized(ctx, utils.FormatDateInput(data.Event.PaidAt.String))
@@ -119,9 +119,10 @@ templ EventShowMain(data EventData) {
 			<tbody>
 				for _, participant := range data.Participants {
 					{{
-						togglePaidExpr := fmt.Sprintf("@put('/groups/%s/events/%s/participants/%s/toggle-paid', {tableQuery: $tableQuery})", data.GroupID, data.Event.ID, participant.ID)
+						togglePaidExpr := fmt.Sprintf("@post('/groups/%s/events/%s/members/%s/paid', {tableQuery: $tableQuery})", data.GroupID, data.Event.ID, participant.ID)
 						noteValue := strings.TrimSpace(participant.ParticipantNote)
-						openNoteExpr := fmt.Sprintf("@get('/groups/%s/events/%s/note?member_id=%s', {tab_id: $tab_id})", data.GroupID, data.Event.ID, participant.ID)
+						openNoteExpr := fmt.Sprintf("@get('/groups/%s/events/%s/members/%s/note')", data.GroupID, data.Event.ID, participant.ID)
+						openParticipantPaidAtExpr := fmt.Sprintf("@get('/groups/%s/events/%s/members/%s/paid_at')", data.GroupID, data.Event.ID, participant.ID)
 						paidLabel := ctxi18n.T(ctx, "table.unpaid")
 						if participant.ParticipantPaid == 1 {
 							paidLabel = ctxi18n.T(ctx, "table.paid")
@@ -148,7 +149,27 @@ templ EventShowMain(data EventData) {
 								{ paidLabel }
 							}
 						</td>
-						<td>{ paidAtLabel }</td>
+						<td>
+							<div class="row">
+								<span>
+									if paidAtLabel != "" {
+										{ paidAtLabel }
+									} else {
+										-
+									}
+								</span>
+								if data.IsAdmin {
+									@shared.IconActionButton(shared.IconActionButtonProps{
+										ClassName:    "btn btn-xs btn-text",
+										OnClick:      openParticipantPaidAtExpr,
+										DisabledExpr: "false",
+										AriaLabel:    ctxi18n.T(ctx, "actions.edit"),
+										Title:        ctxi18n.T(ctx, "actions.edit"),
+										IconName:     icons.IconPencil,
+									})
+								}
+							</div>
+						</td>
 						<td style={ fmt.Sprintf("--max-w: %drem", data.ParticipantsTable.ColMaxWRem("note")) }>
 							<div class="row">
 								if noteValue != "" {
@@ -188,5 +209,6 @@ templ EventShowMain(data EventData) {
 		}
 	</div>
 	@PaidAtDialog()
+	@ParticipantPaidAtDialog()
 	@ParticipantNoteDialog()
 }

@@ -103,6 +103,18 @@ func eventShowSignals(data EventData) map[string]any {
 			"url":         data.PaidAtDialog.URL,
 			"triggerID":   data.PaidAtDialog.TriggerID,
 		},
+		"participantPaidAtDialog": map[string]any{
+			"open":        data.ParticipantPaidAtDialog.Open,
+			"fetching":    data.ParticipantPaidAtDialog.Fetching,
+			"title":       data.ParticipantPaidAtDialog.Title,
+			"message":     data.ParticipantPaidAtDialog.Message,
+			"memberId":    data.ParticipantPaidAtDialog.MemberID,
+			"value":       data.ParticipantPaidAtDialog.Value,
+			"submitLabel": data.ParticipantPaidAtDialog.SubmitLabel,
+			"cancelLabel": data.ParticipantPaidAtDialog.CancelLabel,
+			"url":         data.ParticipantPaidAtDialog.URL,
+			"triggerID":   data.ParticipantPaidAtDialog.TriggerID,
+		},
 		"participantNoteDialog": map[string]any{
 			"open":        data.ParticipantNoteDialog.Open,
 			"fetching":    data.ParticipantNoteDialog.Fetching,

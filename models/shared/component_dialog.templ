@@ -23,6 +23,7 @@ templ DialogShell(props DialogProps) {
 	<dialog
 		id={ props.ID }
 		class={ popoverClass }
+		data-ignore-morph
 		data-effect={ props.EffectExpr }
 		data-on:click={ props.OverlayCloseExpr }
 		data-on:cancel={ props.CancelExpr }
