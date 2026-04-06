@@ -551,7 +551,7 @@
   }
 
   .badge {
-    padding: var(--space-sm) var(--space);
+    padding: var(--space-xs) var(--space);
     border: var(--border) solid var(--bg-dark);
     background: var(--bg);
     color: var(--text);
@@ -643,12 +643,12 @@
 
   .form {
     display: grid;
-    gap: var(--space);
+    gap: var(--space-lg);
 
-    > div {
-      display: grid;
-      gap: calc(var(--space) * 0.5);
-    }
+    /* > div { */
+    /*   display: grid; */
+    /*   gap: calc(var(--space) * 0.5); */
+    /* } */
 
     input,
     select {
@@ -677,12 +677,12 @@
 
   .field {
     display: grid;
-    gap: calc(var(--space) * 0.5);
+    gap: var(--space);
     flex: 1 1 14rem;
 
     > label {
       color: var(--text-muted);
-      font-size: 0.8rem;
+      font-size: 0.875rem;
       text-transform: uppercase;
       font-weight: 600;
       letter-spacing: 0.05em;
@@ -1077,7 +1077,7 @@
     }
   }
 
-  .sure-popover {
+  .dialog-popover {
     width: min(32rem, calc(100vw - 2rem));
     max-width: 100%;
     padding: 0;
@@ -1093,7 +1093,7 @@
     }
   }
 
-  .sure-dialog {
+  .dialog {
     width: min(32rem, calc(100vw - 2rem));
     max-width: 100%;
     border: var(--border) solid var(--bg-dark);
@@ -1110,12 +1110,18 @@
     }
   }
 
+  .paid-at-dialog {
+    .input {
+      width: 100%;
+    }
+  }
+
   @media (max-width: 680px) {
-    .sure-popover {
+    .dialog-popover {
       width: 100vw;
     }
 
-    .sure-dialog {
+    .dialog {
       min-height: 100vh;
       align-content: center;
     }

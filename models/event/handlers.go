@@ -21,12 +21,26 @@ type eventInlineParams struct {
 	EventFormData eventData        `json:"eventFormData"`
 	TableQuery    utils.TableQuery `json:"tableQuery"`
 	Mode          string           `json:"mode"`
+	Action        string           `json:"action"`
+	PaidAtDialog  struct {
+		Value string `json:"value"`
+	} `json:"paidAtDialog"`
 }
 
 type modeParams struct {
 	TabID      string           `json:"tab_id"`
 	Mode       string           `json:"mode"`
 	TableQuery utils.TableQuery `json:"tableQuery"`
+	Action     string           `json:"action"`
+}
+
+type paidAtParams struct {
+	TabID        string           `json:"tab_id"`
+	Mode         string           `json:"mode"`
+	TableQuery   utils.TableQuery `json:"tableQuery"`
+	PaidAtDialog struct {
+		Value string `json:"value"`
+	} `json:"paidAtDialog"`
 }
 
 type eventData struct {
@@ -503,6 +517,7 @@ func (e *Events) Create(c echo.Context) error {
 	if !utils.SetTabID(c, signals.TabID) {
 		return c.NoContent(http.StatusBadRequest)
 	}
+
 	signals.FormData.Title = strings.TrimSpace(signals.FormData.Title)
 	signals.FormData.Time = strings.TrimSpace(signals.FormData.Time)
 	signals.FormData.Place = strings.TrimSpace(signals.FormData.Place)
@@ -572,6 +587,16 @@ func (e *Events) Update(c echo.Context) error {
 	if !utils.SetTabID(c, signals.TabID) {
 		return c.NoContent(http.StatusBadRequest)
 	}
+	action := strings.TrimSpace(signals.Action)
+	switch action {
+	case "togglePaid":
+		return e.patchTogglePaid(c, groupID, id, signals.Mode, signals.TableQuery)
+	case "openPaidAtDialog":
+		return e.openPaidAtDialog(c, groupID, id, signals.TableQuery)
+	case "updatePaidAt":
+		return e.patchUpdatePaidAt(c, groupID, id, signals.Mode, signals.TableQuery, signals.PaidAtDialog.Value)
+	}
+
 	signals.FormData.Title = strings.TrimSpace(signals.FormData.Title)
 	signals.FormData.Time = strings.TrimSpace(signals.FormData.Time)
 	signals.FormData.Place = strings.TrimSpace(signals.FormData.Place)
@@ -1190,6 +1215,216 @@ func (e *Events) SaveParticipantsBulk(c echo.Context) error {
 	return c.NoContent(http.StatusOK)
 }
 
+func (e *Events) openPaidAtDialog(c echo.Context, groupID, id string, tableQuery utils.TableQuery) error {
+	query := utils.NormalizeTableQuery(tableQuery, e.ParticipantTableQuerySpec())
+	data, err := e.GetShowData(c.Request().Context(), groupID, id, query)
+	if err != nil {
+		slog.Error("event.openPaidAtDialog: failed to get data", "err", err)
+		return c.NoContent(http.StatusInternalServerError)
+	}
+	applyEventShowTableByRole(&data, middleware.IsAdmin(c))
+	data.IsAuthenticated = true
+	data.IsSuperAdmin = middleware.IsSuperadmin(c)
+	data.PaidAtDialog = PaidAtDialogState{
+		Open:  true,
+		Title: ctxi18n.T(c.Request().Context(), "fields.paid_at"),
+		Value: func() string {
+			if data.Event.PaidAt.Valid {
+				return utils.FormatDateInput(data.Event.PaidAt.String)
+			}
+			return ""
+		}(),
+		SubmitLabel: ctxi18n.T(c.Request().Context(), "table.apply"),
+		CancelLabel: ctxi18n.T(c.Request().Context(), "actions.cancel"),
+		URL:         "/groups/" + groupID + "/events/" + id,
+		TriggerID:   "event-income-paid-at-edit",
+	}
+	data.Signals = eventShowSignals(data)
+
+	html, err := utils.RenderHTMLForRequest(c, EventShowPage(data))
+	if err != nil {
+		slog.Error("event.openPaidAtDialog: failed to render", "err", err)
+		return c.NoContent(http.StatusInternalServerError)
+	}
+
+	utils.SSEHub.PatchHTML(c, html)
+	utils.SSEHub.PatchSignals(c, data.Signals)
+	return c.NoContent(http.StatusOK)
+}
+
+func (e *Events) patchUpdatePaidAt(c echo.Context, groupID, id, mode string, tableQuery utils.TableQuery, value string) error {
+	paidAt := normalizePaidAtInput(value)
+
+	_, err := db.Qry.UpdateEventPaidAt(c.Request().Context(), db.UpdateEventPaidAtParams{
+		PaidAt:  paidAt,
+		ID:      id,
+		GroupID: groupID,
+	})
+	if err != nil {
+		slog.Error("event.updatePaidAt: failed to update paid_at", "err", err)
+		utils.Notify(c, ctxi18n.T(c.Request().Context(), "events.notifications.update_failed"))
+		return c.NoContent(http.StatusInternalServerError)
+	}
+
+	utils.Notify(c, ctxi18n.T(c.Request().Context(), "events.notifications.updated"))
+
+	// Clear cache to ensure fresh data on next load
+	utils.InvalidateGroupCaches(groupID)
+
+	if mode == "single" {
+		query := utils.NormalizeTableQuery(tableQuery, e.ParticipantTableQuerySpec())
+		data, err := e.GetShowData(c.Request().Context(), groupID, id, query)
+		if err != nil {
+			slog.Error("event.updatePaidAt: failed to get data", "err", err)
+			return c.NoContent(http.StatusInternalServerError)
+		}
+		applyEventShowTableByRole(&data, middleware.IsAdmin(c))
+		data.Signals = eventShowSignals(data)
+		data.IsAuthenticated = true
+		data.IsSuperAdmin = middleware.IsSuperadmin(c)
+		html, err := utils.RenderHTMLForRequest(c, EventShowPage(data))
+		if err != nil {
+			slog.Error("event.updatePaidAt: failed to render", "err", err)
+			return c.NoContent(http.StatusInternalServerError)
+		}
+		utils.SSEHub.PatchHTML(c, html)
+		utils.SSEHub.PatchSignals(c, map[string]any{
+			"paidAtDialog": map[string]any{
+				"open":      false,
+				"fetching":  false,
+				"triggerID": "",
+			},
+		})
+		return c.NoContent(http.StatusOK)
+	}
+
+	query := utils.NormalizeTableQuery(tableQuery, e.TableQuerySpec())
+	data, err := e.GetIndexData(c.Request().Context(), groupID, query)
+	if err != nil {
+		slog.Error("event.updatePaidAt: failed to get data", "err", err)
+		return c.NoContent(http.StatusInternalServerError)
+	}
+	applyEventIndexTableByRole(&data, middleware.IsAdmin(c))
+	data.Signals = eventIndexSignals(data.Query)
+	data.IsAuthenticated = true
+	data.IsSuperAdmin = middleware.IsSuperadmin(c)
+	html, err := utils.RenderHTMLForRequest(c, EventIndexPage(data))
+	if err != nil {
+		slog.Error("event.updatePaidAt: failed to render", "err", err)
+		return c.NoContent(http.StatusInternalServerError)
+	}
+
+	utils.SSEHub.PatchHTML(c, html)
+	utils.SSEHub.PatchSignals(c, map[string]any{
+		"paidAtDialog": map[string]any{
+			"open":      false,
+			"fetching":  false,
+			"triggerID": "",
+		},
+	})
+	return c.NoContent(http.StatusOK)
+}
+
+func (e *Events) patchTogglePaid(c echo.Context, groupID, id, mode string, tableQuery utils.TableQuery) error {
+	_, err := db.Qry.ToggleEventPaid(c.Request().Context(), db.ToggleEventPaidParams{
+		ID:      id,
+		GroupID: groupID,
+	})
+	if err != nil {
+		slog.Error("event.togglePaid: failed to toggle paid status", "err", err)
+		utils.Notify(c, ctxi18n.T(c.Request().Context(), "events.notifications.toggle_paid_failed"))
+		return c.NoContent(http.StatusInternalServerError)
+	}
+
+	slog.Debug("event.togglePaid", "id", id)
+
+	// Clear cache to ensure fresh data on next load
+	utils.InvalidateGroupCaches(groupID)
+
+	if mode == "single" {
+		query := utils.NormalizeTableQuery(tableQuery, e.ParticipantTableQuerySpec())
+		data, err := e.GetShowData(c.Request().Context(), groupID, id, query)
+		if err != nil {
+			slog.Error("event.togglePaid: failed to get data", "err", err)
+			return c.NoContent(http.StatusInternalServerError)
+		}
+		applyEventShowTableByRole(&data, middleware.IsAdmin(c))
+		data.Signals = eventShowSignals(data)
+		data.IsAuthenticated = true
+		data.IsSuperAdmin = middleware.IsSuperadmin(c)
+		html, err := utils.RenderHTMLForRequest(c, EventShowPage(data))
+		if err != nil {
+			slog.Error("event.togglePaid: failed to render", "err", err)
+			return c.NoContent(http.StatusInternalServerError)
+		}
+		utils.SSEHub.PatchHTML(c, html)
+		return c.NoContent(http.StatusOK)
+	}
+
+	query := utils.NormalizeTableQuery(tableQuery, e.TableQuerySpec())
+	data, err := e.GetIndexData(c.Request().Context(), groupID, query)
+	if err != nil {
+		slog.Error("event.togglePaid: failed to get data", "err", err)
+		return c.NoContent(http.StatusInternalServerError)
+	}
+	applyEventIndexTableByRole(&data, middleware.IsAdmin(c))
+	data.Signals = eventIndexSignals(data.Query)
+	data.IsAuthenticated = true
+	data.IsSuperAdmin = middleware.IsSuperadmin(c)
+	html, err := utils.RenderHTMLForRequest(c, EventIndexPage(data))
+	if err != nil {
+		slog.Error("event.togglePaid: failed to render", "err", err)
+		return c.NoContent(http.StatusInternalServerError)
+	}
+
+	utils.SSEHub.PatchHTML(c, html)
+	return c.NoContent(http.StatusOK)
+}
+
+func (e *Events) OpenPaidAtPrompt(c echo.Context) error {
+	groupID := middleware.GetGroupID(c)
+
+	id := c.Param("id")
+	if !utils.IsValidID(id, utils.PrefixEvent) {
+		slog.Info("event.openPaidAtPrompt: invalid id")
+		return c.NoContent(http.StatusBadRequest)
+	}
+
+	var signals modeParams
+	err := datastar.ReadSignals(c.Request(), &signals)
+	if err != nil {
+		slog.Info("event.openPaidAtPrompt: failed to read signals", "err", err)
+		return c.NoContent(http.StatusBadRequest)
+	}
+	if !utils.SetTabID(c, signals.TabID) {
+		return c.NoContent(http.StatusBadRequest)
+	}
+
+	return e.openPaidAtDialog(c, groupID, id, signals.TableQuery)
+}
+
+func (e *Events) UpdatePaidAt(c echo.Context) error {
+	groupID := middleware.GetGroupID(c)
+
+	id := c.Param("id")
+	if !utils.IsValidID(id, utils.PrefixEvent) {
+		slog.Info("event.updatePaidAt: invalid id")
+		return c.NoContent(http.StatusBadRequest)
+	}
+
+	var signals paidAtParams
+	err := datastar.ReadSignals(c.Request(), &signals)
+	if err != nil {
+		slog.Info("event.updatePaidAt: failed to read signals", "err", err)
+		return c.NoContent(http.StatusBadRequest)
+	}
+	if !utils.SetTabID(c, signals.TabID) {
+		return c.NoContent(http.StatusBadRequest)
+	}
+
+	return e.patchUpdatePaidAt(c, groupID, id, signals.Mode, signals.TableQuery, signals.PaidAtDialog.Value)
+}
+
 func (e *Events) TogglePaid(c echo.Context) error {
 	groupID := middleware.GetGroupID(c)
 
@@ -1209,57 +1444,5 @@ func (e *Events) TogglePaid(c echo.Context) error {
 		return c.NoContent(http.StatusBadRequest)
 	}
 
-	_, err = db.Qry.ToggleEventPaid(c.Request().Context(), db.ToggleEventPaidParams{
-		ID:      id,
-		GroupID: groupID,
-	})
-	if err != nil {
-		slog.Error("event.togglePaid: failed to toggle paid status", "err", err)
-		utils.Notify(c, ctxi18n.T(c.Request().Context(), "events.notifications.toggle_paid_failed"))
-		return c.NoContent(http.StatusInternalServerError)
-	}
-
-	slog.Debug("event.togglePaid", "id", id)
-
-	// Clear cache to ensure fresh data on next load
-	utils.InvalidateGroupCaches(groupID)
-
-	if signals.Mode == "single" {
-		query := utils.NormalizeTableQuery(signals.TableQuery, e.ParticipantTableQuerySpec())
-		data, err := e.GetShowData(c.Request().Context(), groupID, id, query)
-		if err != nil {
-			slog.Error("event.togglePaid: failed to get data", "err", err)
-			return c.NoContent(http.StatusInternalServerError)
-		}
-		applyEventShowTableByRole(&data, middleware.IsAdmin(c))
-		data.Signals = eventShowSignals(data)
-		data.IsAuthenticated = true
-		data.IsSuperAdmin = middleware.IsSuperadmin(c)
-		html, err := utils.RenderHTMLForRequest(c, EventShowPage(data))
-		if err != nil {
-			slog.Error("event.togglePaid: failed to render", "err", err)
-			return c.NoContent(http.StatusInternalServerError)
-		}
-		utils.SSEHub.PatchHTML(c, html)
-		return c.NoContent(http.StatusOK)
-	}
-
-	query := utils.NormalizeTableQuery(signals.TableQuery, e.TableQuerySpec())
-	data, err := e.GetIndexData(c.Request().Context(), groupID, query)
-	if err != nil {
-		slog.Error("event.togglePaid: failed to get data", "err", err)
-		return c.NoContent(http.StatusInternalServerError)
-	}
-	applyEventIndexTableByRole(&data, middleware.IsAdmin(c))
-	data.Signals = eventIndexSignals(data.Query)
-	data.IsAuthenticated = true
-	data.IsSuperAdmin = middleware.IsSuperadmin(c)
-	html, err := utils.RenderHTMLForRequest(c, EventIndexPage(data))
-	if err != nil {
-		slog.Error("event.togglePaid: failed to render", "err", err)
-		return c.NoContent(http.StatusInternalServerError)
-	}
-
-	utils.SSEHub.PatchHTML(c, html)
-	return c.NoContent(http.StatusOK)
+	return e.patchTogglePaid(c, groupID, id, signals.Mode, signals.TableQuery)
 }

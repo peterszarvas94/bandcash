@@ -7,7 +7,7 @@ import (
 	icons "bandcash/models/shared/icons"
 )
 
-type SureDialogProps struct {
+type ConfirmDialogProps struct {
 	Title       string
 	Message     string
 	SubmitLabel string
@@ -16,6 +16,8 @@ type SureDialogProps struct {
 	URL         string
 	TriggerID   string
 }
+
+type SureDialogProps = ConfirmDialogProps
 
 type LoadingSubmitButtonProps struct {
 	ClassName string
@@ -89,13 +91,15 @@ type RadioLinkProps struct {
 	InactiveClass string
 }
 
-type SureActionButtonProps struct {
+type ConfirmActionButtonProps struct {
 	ClassName    string
 	DisabledExpr string
 	Label        string
 	IconName     icons.IconName
-	Dialog       SureDialogProps
+	Dialog       ConfirmDialogProps
 }
+
+type SureActionButtonProps = ConfirmActionButtonProps
 
 type LoadingIconActionButtonProps struct {
 	ClassName    string
@@ -381,12 +385,12 @@ templ RadioLink(props RadioLinkProps) {
 	}
 }
 
-templ SureActionButton(props SureActionButtonProps) {
+templ ConfirmActionButton(props ConfirmActionButtonProps) {
 	{{
 		baseClass := strings.TrimSpace(props.ClassName)
-		disabledExpr := fmt.Sprintf("(%s) || $sure.triggerID === %q", props.DisabledExpr, props.Dialog.TriggerID)
+		disabledExpr := fmt.Sprintf("(%s) || $confirm.triggerID === %q", props.DisabledExpr, props.Dialog.TriggerID)
 		onClickExpr := fmt.Sprintf(
-			`$sure = {
+			`$confirm = {
 				title: %s,
 				message: %s,
 				submitLabel: %s,
@@ -405,8 +409,8 @@ templ SureActionButton(props SureActionButtonProps) {
 			utils.JSONString(props.Dialog.URL),
 			utils.JSONString(props.Dialog.TriggerID),
 		)
-		showIconExpr := fmt.Sprintf("$sure.triggerID !== %q", props.Dialog.TriggerID)
-		showSpinnerExpr := fmt.Sprintf("$sure.triggerID === %q", props.Dialog.TriggerID)
+		showIconExpr := fmt.Sprintf("$confirm.triggerID !== %q", props.Dialog.TriggerID)
+		showSpinnerExpr := fmt.Sprintf("$confirm.triggerID === %q", props.Dialog.TriggerID)
 	}}
 	<button
 		class={ baseClass }
@@ -422,6 +426,10 @@ templ SureActionButton(props SureActionButtonProps) {
 		</span>
 		<span>{ props.Label }</span>
 	</button>
+}
+
+templ SureActionButton(props SureActionButtonProps) {
+	@ConfirmActionButton(ConfirmActionButtonProps(props))
 }
 
 templ LoadingIconActionButton(props LoadingIconActionButtonProps) {

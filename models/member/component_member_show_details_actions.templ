@@ -17,12 +17,12 @@ templ MemberShowDetailsActions(data MemberData) {
 				Label:        ctxi18n.T(ctx, "actions.edit"),
 				IconName:     icons.IconPencil,
 			})
-			@shared.SureActionButton(shared.SureActionButtonProps{
+			@shared.ConfirmActionButton(shared.ConfirmActionButtonProps{
 				ClassName:    "btn btn-sm",
 				DisabledExpr: "$formState !== '' || $_fetching",
 				Label:        ctxi18n.T(ctx, "actions.delete"),
 				IconName:     icons.IconTrash2,
-				Dialog: shared.SureDialogProps{
+				Dialog: shared.ConfirmDialogProps{
 					Title:       ctxi18n.T(ctx, "members.delete_confirm"),
 					Message:     ctxi18n.T(ctx, "confirm.destructive_message"),
 					SubmitLabel: ctxi18n.T(ctx, "actions.delete"),

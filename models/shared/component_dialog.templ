@@ -1,0 +1,36 @@
+package shared
+
+import "strings"
+
+type DialogProps struct {
+	ID               string
+	PopoverClass     string
+	DialogClass      string
+	LabelledBy       string
+	DescribedBy      string
+	EffectExpr       string
+	OverlayCloseExpr string
+	CancelExpr       string
+	CloseExpr        string
+	FetchDoneExpr    string
+}
+
+templ DialogShell(props DialogProps) {
+	{{
+		popoverClass := strings.TrimSpace("dialog-popover " + props.PopoverClass)
+		dialogClass := strings.TrimSpace("dialog " + props.DialogClass)
+	}}
+	<dialog
+		id={ props.ID }
+		class={ popoverClass }
+		data-effect={ props.EffectExpr }
+		data-on:click={ props.OverlayCloseExpr }
+		data-on:cancel={ props.CancelExpr }
+		data-on:close={ props.CloseExpr }
+		data-on:datastar-fetch={ props.FetchDoneExpr }
+	>
+		<section class={ dialogClass } role="dialog" aria-modal="true" aria-labelledby={ props.LabelledBy } aria-describedby={ props.DescribedBy }>
+			{ children... }
+		</section>
+	</dialog>
+}

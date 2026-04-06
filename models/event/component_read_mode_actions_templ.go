@@ -40,7 +40,7 @@ func ReadModeActions(data EventData) templ.Component {
 		if data.IsAdmin {
 			editParticipantsExpr := fmt.Sprintf("@post('/groups/%s/events/%s/participants/draft')", data.GroupID, data.Event.ID)
 			deleteEventExpr := fmt.Sprintf(
-				"$sure = {title: %s, message: %s, submitLabel: %s, cancelLabel: %s, method: 'delete', url: '/groups/%s/events/%s', triggerID: 'event-show-delete', open: true, fetching: false}",
+				"$confirm = {title: %s, message: %s, submitLabel: %s, cancelLabel: %s, method: 'delete', url: '/groups/%s/events/%s', triggerID: 'event-show-delete', open: true, fetching: false}",
 				utils.JSONString(ctxi18n.T(ctx, "events.delete_confirm")),
 				utils.JSONString(ctxi18n.T(ctx, "confirm.destructive_message")),
 				utils.JSONString(ctxi18n.T(ctx, "actions.delete")),

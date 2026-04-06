@@ -97,6 +97,18 @@ func eventShowSignals(data EventData) map[string]any {
 		"summaryMode":  data.Query.Summary,
 		"_fetching":    false,
 		"noteExpanded": noteExpanded,
+		"paidAtDialog": map[string]any{
+			"open":        data.PaidAtDialog.Open,
+			"fetching":    data.PaidAtDialog.Fetching,
+			"title":       data.PaidAtDialog.Title,
+			"message":     data.PaidAtDialog.Message,
+			"value":       data.PaidAtDialog.Value,
+			"placeholder": data.PaidAtDialog.Placeholder,
+			"submitLabel": data.PaidAtDialog.SubmitLabel,
+			"cancelLabel": data.PaidAtDialog.CancelLabel,
+			"url":         data.PaidAtDialog.URL,
+			"triggerID":   data.PaidAtDialog.TriggerID,
+		},
 		"formData": map[string]any{
 			"memberId":   "",
 			"memberName": "",

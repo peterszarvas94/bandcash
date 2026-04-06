@@ -65,12 +65,12 @@ func AccountContent(data AccountData) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = shared.SureActionButton(shared.SureActionButtonProps{
+		templ_7745c5c3_Err = shared.ConfirmActionButton(shared.ConfirmActionButtonProps{
 			ClassName:    "btn",
 			DisabledExpr: "false",
 			Label:        ctxi18n.T(ctx, "auth.logout"),
 			IconName:     icons.IconLogOut,
-			Dialog: shared.SureDialogProps{
+			Dialog: shared.ConfirmDialogProps{
 				Title:       ctxi18n.T(ctx, "auth.logout"),
 				Message:     ctxi18n.T(ctx, "confirm.destructive_message"),
 				SubmitLabel: ctxi18n.T(ctx, "auth.logout"),
@@ -83,12 +83,12 @@ func AccountContent(data AccountData) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = shared.SureActionButton(shared.SureActionButtonProps{
+		templ_7745c5c3_Err = shared.ConfirmActionButton(shared.ConfirmActionButtonProps{
 			ClassName:    "btn",
 			DisabledExpr: "false",
 			Label:        ctxi18n.T(ctx, "account.logout_everywhere"),
 			IconName:     icons.IconLogOut,
-			Dialog: shared.SureDialogProps{
+			Dialog: shared.ConfirmDialogProps{
 				Title:       ctxi18n.T(ctx, "account.logout_everywhere"),
 				Message:     ctxi18n.T(ctx, "confirm.destructive_message"),
 				SubmitLabel: ctxi18n.T(ctx, "account.logout_everywhere"),

@@ -2,6 +2,7 @@ package event
 
 import (
 	shared "bandcash/models/shared"
+	icons "bandcash/models/shared/icons"
 	ctxi18n "github.com/invopop/ctxi18n/i18n"
 )
 
@@ -9,6 +10,8 @@ type EventIncomeCardProps struct {
 	Income         string
 	PaidAt         string
 	IsPaid         bool
+	CanEditPaidAt  bool
+	OpenPaidAtExpr string
 	TogglePaidExpr string
 }
 
@@ -30,7 +33,19 @@ templ EventIncomeCard(props EventIncomeCardProps) {
 			</div>
 			<div class="paid-at">
 				<dt>{ ctxi18n.T(ctx, "fields.paid_at") }</dt>
-				<dd>{ props.PaidAt }</dd>
+				<dd class="row">
+					<span>{ props.PaidAt }</span>
+					if props.CanEditPaidAt {
+						@shared.IconActionButton(shared.IconActionButtonProps{
+							ClassName:    "btn btn-xs btn-text",
+							OnClick:      props.OpenPaidAtExpr,
+							DisabledExpr: "false",
+							AriaLabel:    ctxi18n.T(ctx, "actions.edit"),
+							Title:        ctxi18n.T(ctx, "actions.edit"),
+							IconName:     icons.IconPencil,
+						})
+					}
+				</dd>
 			</div>
 		</dl>
 	</section>

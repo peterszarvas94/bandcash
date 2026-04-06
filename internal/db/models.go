@@ -63,20 +63,6 @@ type GroupAccess struct {
 	CreatedAt sql.NullTime `json:"created_at"`
 }
 
-type GroupAdmin struct {
-	ID        string       `json:"id"`
-	UserID    string       `json:"user_id"`
-	GroupID   string       `json:"group_id"`
-	CreatedAt sql.NullTime `json:"created_at"`
-}
-
-type GroupReader struct {
-	ID        string       `json:"id"`
-	UserID    string       `json:"user_id"`
-	GroupID   string       `json:"group_id"`
-	CreatedAt sql.NullTime `json:"created_at"`
-}
-
 type MagicLink struct {
 	ID         string         `json:"id"`
 	Token      string         `json:"token"`

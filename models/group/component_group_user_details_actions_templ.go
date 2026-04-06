@@ -41,12 +41,12 @@ func GroupUserDetailsActions(data UserPageData) templ.Component {
 			return templ_7745c5c3_Err
 		}
 		if data.CurrentUserID == data.Group.AdminUserID && data.UserRow.Role != "owner" {
-			templ_7745c5c3_Err = shared.SureActionButton(shared.SureActionButtonProps{
+			templ_7745c5c3_Err = shared.ConfirmActionButton(shared.ConfirmActionButtonProps{
 				ClassName:    "btn btn-sm",
 				DisabledExpr: "false",
 				Label:        ctxi18n.T(ctx, "groups.transfer_group"),
 				IconName:     icons.IconShieldUser,
-				Dialog: shared.SureDialogProps{
+				Dialog: shared.ConfirmDialogProps{
 					Title:       ctxi18n.T(ctx, "groups.transfer_group_confirm"),
 					Message:     ctxi18n.T(ctx, "confirm.destructive_message"),
 					SubmitLabel: ctxi18n.T(ctx, "groups.transfer_group"),
@@ -94,12 +94,12 @@ func GroupUserDetailsActions(data UserPageData) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = shared.SureActionButton(shared.SureActionButtonProps{
+		templ_7745c5c3_Err = shared.ConfirmActionButton(shared.ConfirmActionButtonProps{
 			ClassName:    "btn btn-sm",
 			DisabledExpr: "$_fetching",
 			Label:        ctxi18n.T(ctx, "actions.delete"),
 			IconName:     icons.IconTrash2,
-			Dialog: shared.SureDialogProps{
+			Dialog: shared.ConfirmDialogProps{
 				Title:       ctxi18n.T(ctx, "groups.remove_viewer_confirm"),
 				Message:     ctxi18n.T(ctx, "confirm.destructive_message"),
 				SubmitLabel: ctxi18n.T(ctx, "actions.delete"),

@@ -28,11 +28,11 @@ func RegisterRoutes(e *echo.Echo) *Events {
 	admin.POST("/events", events.Create)
 	admin.POST("/events/:id/participants/draft", events.OpenParticipantsDraft)
 	admin.POST("/events/:id/participants/draft/rows", events.UpdateParticipantsDraftRows)
-	admin.PUT("/events/:id", events.Update)
+	admin.POST("/events/:id/paid-at/prompt", events.OpenPaidAtPrompt)
+	admin.PATCH("/events/:id", events.Update)
 	admin.PUT("/events/:id/participants", events.SaveParticipantsBulk)
 	admin.DELETE("/events/:id/participants/draft", events.CancelParticipantsDraft)
 	admin.DELETE("/events/:id", events.Destroy)
-	admin.PUT("/events/:id/toggle-paid", events.TogglePaid)
 	admin.PUT("/events/:id/participants/:memberId/toggle-paid", events.ToggleParticipantPaid)
 
 	return events

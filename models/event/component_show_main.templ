@@ -11,7 +11,8 @@ import (
 
 templ EventShowMain(data EventData) {
 	{{
-		togglePaidExpr := fmt.Sprintf("@put('/groups/%s/events/%s/toggle-paid', {mode: 'single'})", data.GroupID, data.Event.ID)
+		togglePaidExpr := fmt.Sprintf("@patch('/groups/%s/events/%s', {mode: 'single', action: 'togglePaid'})", data.GroupID, data.Event.ID)
+		openPaidAtExpr := fmt.Sprintf("@post('/groups/%s/events/%s/paid-at/prompt', {mode: 'single', tableQuery: $tableQuery})", data.GroupID, data.Event.ID)
 		paidAt := "-"
 		if data.Event.PaidAt.Valid {
 			paidAt = utils.FormatDateLocalized(ctx, utils.FormatDateInput(data.Event.PaidAt.String))
@@ -72,6 +73,8 @@ templ EventShowMain(data EventData) {
 				Income:         utils.FormatNumberLocalized(ctx, data.Event.Amount),
 				PaidAt:         paidAt,
 				IsPaid:         data.Event.Paid == 1,
+				CanEditPaidAt:  data.IsAdmin,
+				OpenPaidAtExpr: openPaidAtExpr,
 				TogglePaidExpr: togglePaidExpr,
 			})
 			@EventBalanceByTypeCard(EventBalanceStatusCardProps{
@@ -189,4 +192,5 @@ templ EventShowMain(data EventData) {
 			</tbody>
 		}
 	</div>
+	@PaidAtDialog()
 }

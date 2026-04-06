@@ -27,9 +27,23 @@ type EventData struct {
 	EditorMode        string
 	GroupID           string
 	IsAdmin           bool
+	PaidAtDialog      PaidAtDialogState
 	IsAuthenticated   bool
 	IsSuperAdmin      bool
 	ParticipantsTable utils.TableLayout
+}
+
+type PaidAtDialogState struct {
+	Open        bool
+	Fetching    bool
+	Title       string
+	Message     string
+	Value       string
+	Placeholder string
+	SubmitLabel string
+	CancelLabel string
+	URL         string
+	TriggerID   string
 }
 
 type ParticipantWizardRow struct {

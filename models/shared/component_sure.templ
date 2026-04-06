@@ -5,70 +5,77 @@ import (
 )
 
 templ SureDialog() {
+	@ConfirmDialog()
+}
+
+templ ConfirmDialog() {
 	{{
-		sureCloseExpr := `!$sure.fetching && ($sure.open = false)`
-		sureOverlayCloseExpr := `evt.target === el && !$sure.fetching && ($sure.open = false)`
-		sureCancelExpr := `$sure.fetching && evt.preventDefault()`
-		sureDialogEffect := `$sure.open ? (!el.open && el.showModal()) : (el.open && el.close())`
-		sureDialogCloseExpr := `$sure.open = false; $sure.triggerID = ''`
-		sureSubmitExpr := `!$sure.fetching && (
-			$sure.fetching = true,
-			($sure.method === 'delete' ? @delete($sure.url) : ($sure.method === 'put' ? @put($sure.url) : @post($sure.url)))
+		confirmCloseExpr := `!$confirm.fetching && ($confirm.open = false)`
+		confirmOverlayCloseExpr := `evt.target === el && !$confirm.fetching && ($confirm.open = false)`
+		confirmCancelExpr := `$confirm.fetching && evt.preventDefault()`
+		confirmDialogEffect := `$confirm.open ? (!el.open && el.showModal()) : (el.open && el.close())`
+		confirmDialogCloseExpr := `$confirm.open = false; $confirm.triggerID = ''`
+		confirmSubmitExpr := `!$confirm.fetching && (
+			$confirm.fetching = true,
+			($confirm.method === 'delete' ? @delete($confirm.url) : ($confirm.method === 'put' ? @put($confirm.url) : @post($confirm.url)))
 		)`
-		sureFetchDoneExpr := `(evt.detail.type === 'finished' || evt.detail.type === 'error' || evt.detail.type === 'retries-failed') && (
-			$sure.fetching = false,
-			$sure.open = false
+		confirmFetchDoneExpr := `(evt.detail.type === 'finished' || evt.detail.type === 'error' || evt.detail.type === 'retries-failed') && (
+			$confirm.fetching = false,
+			$confirm.open = false
 		)`
 	}}
-	<dialog
-		id="sure-popover"
-		class="sure-popover"
-		data-signals={ templ.JSONString(map[string]any{
-			"sure": map[string]any{
-				"open":        false,
-				"fetching":    false,
-				"title":       "",
-				"message":     "",
-				"submitLabel": "",
-				"cancelLabel": "",
-				"method":      "post",
-				"url":         "",
-				"triggerID":   "",
-			},
-		}) }
-		data-effect={ sureDialogEffect }
-		data-on:click={ sureOverlayCloseExpr }
-		data-on:cancel={ sureCancelExpr }
-		data-on:close={ sureDialogCloseExpr }
-	>
-		<section class="sure-dialog" role="dialog" aria-modal="true" aria-labelledby="sure-title" aria-describedby="sure-message">
-			<h3 id="sure-title" data-text="$sure.title"></h3>
-			<p id="sure-message" data-show="$sure.message !== ''" style="display: none" data-text="$sure.message"></p>
+	<div data-signals={ templ.JSONString(map[string]any{
+		"confirm": map[string]any{
+			"open":        false,
+			"fetching":    false,
+			"title":       "",
+			"message":     "",
+			"submitLabel": "",
+			"cancelLabel": "",
+			"method":      "post",
+			"url":         "",
+			"triggerID":   "",
+		},
+	}) }>
+		@DialogShell(DialogProps{
+			ID:               "confirm-popover",
+			PopoverClass:     "confirm-popover",
+			DialogClass:      "confirm-dialog",
+			LabelledBy:       "confirm-title",
+			DescribedBy:      "confirm-message",
+			EffectExpr:       confirmDialogEffect,
+			OverlayCloseExpr: confirmOverlayCloseExpr,
+			CancelExpr:       confirmCancelExpr,
+			CloseExpr:        confirmDialogCloseExpr,
+			FetchDoneExpr:    confirmFetchDoneExpr,
+		}) {
+			<h3 id="confirm-title" data-text="$confirm.title"></h3>
+			<p id="confirm-message" data-show="$confirm.message !== ''" style="display: none" data-text="$confirm.message"></p>
 			<div class="row row-right row-wrap">
 				<button
-					id="sure-cancel"
+					id="confirm-cancel"
 					type="button"
 					class="btn"
 					autofocus
-					data-attr:disabled="$sure.fetching"
-					data-on:click={ sureCloseExpr }
+					data-attr:disabled="$confirm.fetching"
+					data-on:click={ confirmCloseExpr }
 				>
-					<span data-text="$sure.cancelLabel"></span>
+					<span data-text="$confirm.cancelLabel"></span>
 				</button>
 				<button
-					id="sure-submit"
+					id="confirm-submit"
 					type="button"
 					class="btn"
-					data-attr:disabled="$sure.fetching"
-					data-on:click={ sureSubmitExpr }
-					data-on:datastar-fetch={ sureFetchDoneExpr }
+					data-attr:disabled="$confirm.fetching"
+					data-on:click={ confirmSubmitExpr }
+					data-on:datastar-fetch={ confirmFetchDoneExpr }
 				>
-					<span data-show="$sure.fetching" style="display: none">
+					<span data-show="$confirm.fetching" style="display: none">
 						@icons.LoaderCircle(templ.Attributes{"class": "icon icon-spin"})
 					</span>
-					<span data-text="$sure.submitLabel"></span>
+					<span data-text="$confirm.submitLabel"></span>
 				</button>
 			</div>
-		</section>
-	</dialog>
+		}
+	</div>
 }

@@ -51,12 +51,12 @@ func MemberShowDetailsActions(data MemberData) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = shared.SureActionButton(shared.SureActionButtonProps{
+			templ_7745c5c3_Err = shared.ConfirmActionButton(shared.ConfirmActionButtonProps{
 				ClassName:    "btn btn-sm",
 				DisabledExpr: "$formState !== '' || $_fetching",
 				Label:        ctxi18n.T(ctx, "actions.delete"),
 				IconName:     icons.IconTrash2,
-				Dialog: shared.SureDialogProps{
+				Dialog: shared.ConfirmDialogProps{
 					Title:       ctxi18n.T(ctx, "members.delete_confirm"),
 					Message:     ctxi18n.T(ctx, "confirm.destructive_message"),
 					SubmitLabel: ctxi18n.T(ctx, "actions.delete"),

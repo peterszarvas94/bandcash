@@ -985,3 +985,36 @@ func (q *Queries) UpdateEvent(ctx context.Context, arg UpdateEventParams) (Event
 	)
 	return i, err
 }
+
+const updateEventPaidAt = `-- name: UpdateEventPaidAt :one
+UPDATE events
+SET paid = 1,
+    paid_at = NULLIF(?1, '')
+WHERE id = ?2 AND group_id = ?3
+RETURNING id, group_id, title, time, description, amount, created_at, updated_at, paid, paid_at, place
+`
+
+type UpdateEventPaidAtParams struct {
+	PaidAt  interface{} `json:"paid_at"`
+	ID      string      `json:"id"`
+	GroupID string      `json:"group_id"`
+}
+
+func (q *Queries) UpdateEventPaidAt(ctx context.Context, arg UpdateEventPaidAtParams) (Event, error) {
+	row := q.db.QueryRowContext(ctx, updateEventPaidAt, arg.PaidAt, arg.ID, arg.GroupID)
+	var i Event
+	err := row.Scan(
+		&i.ID,
+		&i.GroupID,
+		&i.Title,
+		&i.Time,
+		&i.Description,
+		&i.Amount,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+		&i.Paid,
+		&i.PaidAt,
+		&i.Place,
+	)
+	return i, err
+}

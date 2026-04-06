@@ -281,6 +281,13 @@ SET paid = CASE WHEN paid = 1 THEN 0 ELSE 1 END,
 WHERE id = ? AND group_id = ?
 RETURNING *;
 
+-- name: UpdateEventPaidAt :one
+UPDATE events
+SET paid = 1,
+    paid_at = NULLIF(sqlc.narg(paid_at), '')
+WHERE id = sqlc.arg(id) AND group_id = sqlc.arg(group_id)
+RETURNING *;
+
 -- name: DeleteEvent :exec
 DELETE FROM events
 WHERE id = ? AND group_id = ?;
