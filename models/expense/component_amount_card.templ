@@ -13,7 +13,8 @@ type ExpenseAmountCardProps struct {
 }
 
 templ ExpenseAmountCard(props ExpenseAmountCardProps) {
-	<section class="event-income-card pb">
+	<section class="event-income-card event-balance-card event-show-income-card" aria-label={ ctxi18n.T(ctx, "fields.expense") }>
+		<h3>{ ctxi18n.T(ctx, "fields.expense") }</h3>
 		<div class="amount">{ props.Amount }</div>
 		<dl>
 			<div class="paid">

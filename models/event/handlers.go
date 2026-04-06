@@ -97,7 +97,11 @@ func (s staticTableQueryable) TableQuerySpec() utils.TableQuerySpec {
 }
 
 func parseParticipantTableQuery(c echo.Context, e *Events) utils.TableQuery {
-	return utils.ParseTableQuery(c, staticTableQueryable{spec: e.ParticipantTableQuerySpec()})
+	query := utils.ParseTableQuery(c, staticTableQueryable{spec: e.ParticipantTableQuerySpec()})
+	query.Page = 1
+	query.Search = ""
+	query.PageSize = utils.DefaultTablePageSize
+	return query
 }
 
 func normalizePaidAtInput(value string) string {

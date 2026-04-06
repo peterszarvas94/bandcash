@@ -47,12 +47,6 @@ templ EventShowMain(data EventData) {
 		</div>
 	}
 	<div data-show="$participantEditorMode === 'read'">
-		@EventIncomeCard(EventIncomeCardProps{
-			Income:         utils.FormatNumberLocalized(ctx, data.Event.Amount),
-			PaidAt:         paidAt,
-			IsPaid:         data.Event.Paid == 1,
-			TogglePaidExpr: togglePaidExpr,
-		})
 		{{
 			incomePaid := int64(0)
 			incomeUnpaid := data.Event.Amount
@@ -73,28 +67,26 @@ templ EventShowMain(data EventData) {
 			unpaidPayout := data.TotalUnpaid
 			unpaidLeftover := unpaidIncome - unpaidPayout
 		}}
-		@EventBalanceCards(EventBalanceCardsProps{
-			Paid: EventBalanceCardProps{
-				Title:    ctxi18n.T(ctx, "table.paid"),
-				Income:   utils.FormatNumberLocalized(ctx, paidIncome),
-				Payout:   utils.FormatNumberLocalizedWithSign(ctx, paidPayout, false),
-				Leftover: utils.FormatNumberLocalized(ctx, paidLeftover),
-			},
-			Unpaid: EventBalanceCardProps{
-				Title:    ctxi18n.T(ctx, "table.unpaid"),
-				Income:   utils.FormatNumberLocalized(ctx, unpaidIncome),
-				Payout:   utils.FormatNumberLocalizedWithSign(ctx, unpaidPayout, false),
-				Leftover: utils.FormatNumberLocalized(ctx, unpaidLeftover),
-			},
-			All: EventBalanceCardProps{
-				Title:    ctxi18n.T(ctx, "table.all"),
-				Income:   utils.FormatNumberLocalized(ctx, allIncome),
-				Payout:   utils.FormatNumberLocalizedWithSign(ctx, allPayout, false),
-				Leftover: utils.FormatNumberLocalized(ctx, allLeftover),
-			},
-		})
-		@shared.TableSearchFormWithClass(fmt.Sprintf("/groups/%s/events/%s", data.GroupID, data.Event.ID), data.Query, "table.search_placeholder_members", "pt")
-		@shared.TablePaginationRow(fmt.Sprintf("/groups/%s/events/%s", data.GroupID, data.Event.ID), data.Query, data.Pager)
+		<div class="event-balance-cards pb">
+			@EventIncomeCard(EventIncomeCardProps{
+				Income:         utils.FormatNumberLocalized(ctx, data.Event.Amount),
+				PaidAt:         paidAt,
+				IsPaid:         data.Event.Paid == 1,
+				TogglePaidExpr: togglePaidExpr,
+			})
+			@EventBalanceByTypeCard(EventBalanceStatusCardProps{
+				Title:  ctxi18n.T(ctx, "groups.payouts"),
+				Paid:   utils.FormatNumberLocalized(ctx, paidPayout),
+				Unpaid: utils.FormatNumberLocalized(ctx, unpaidPayout),
+				All:    utils.FormatNumberLocalized(ctx, allPayout),
+			})
+			@EventBalanceByTypeCard(EventBalanceStatusCardProps{
+				Title:  ctxi18n.T(ctx, "groups.balance"),
+				Paid:   utils.FormatNumberLocalized(ctx, paidLeftover),
+				Unpaid: utils.FormatNumberLocalized(ctx, unpaidLeftover),
+				All:    utils.FormatNumberLocalized(ctx, allLeftover),
+			})
+		</div>
 		@shared.TableOpenFixed(data.ParticipantsTable, "") {
 			<thead>
 				<tr>

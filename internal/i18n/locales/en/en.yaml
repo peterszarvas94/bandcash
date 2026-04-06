@@ -194,7 +194,7 @@ en:
     date_filters: "Date filters"
     search: "Search"
     search_placeholder: "Search name, admin"
-    search_placeholder_events: "Search title"
+    search_placeholder_events: "Search title, place"
     search_placeholder_member_events: "Search title"
     search_placeholder_expenses: "Search title, description"
     search_placeholder_members: "Search name, description"
@@ -252,6 +252,10 @@ en:
     total_paid_amount: "Total Paid Amount"
     total_paid: "Paid"
     total_unpaid: "Unpaid"
+    summary:
+      current: "Paid"
+      pending: "Pending"
+      final: "All"
     notifications:
       created: "Event created."
       updated: "Event updated."
@@ -272,6 +276,10 @@ en:
     total_filtered: "Total Expense"
     total_paid: "Paid"
     total_unpaid: "Unpaid"
+    summary:
+      current: "Paid"
+      pending: "Pending"
+      final: "All"
     notifications:
       created: "Expense created."
       updated: "Expense updated."

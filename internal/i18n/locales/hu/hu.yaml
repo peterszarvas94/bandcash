@@ -194,7 +194,7 @@ hu:
     date_filters: "Dátumszűrők"
     search: "Keresés"
     search_placeholder: "Keresés: név, admin"
-    search_placeholder_events: "Keresés: cím"
+    search_placeholder_events: "Keresés: cím, helyszín"
     search_placeholder_member_events: "Keresés: cím"
     search_placeholder_expenses: "Keresés: cím, leírás"
     search_placeholder_members: "Keresés: név, leírás"
@@ -252,6 +252,10 @@ hu:
     total_paid_amount: "Összes fizetett bevétel"
     total_paid: "Fizetve"
     total_unpaid: "Nem fizetve"
+    summary:
+      current: "Fizetve"
+      pending: "Függőben"
+      final: "Összes"
     notifications:
       created: "Esemény létrehozva."
       updated: "Esemény frissítve."
@@ -272,6 +276,10 @@ hu:
     total_filtered: "Összes költség"
     total_paid: "Fizetve"
     total_unpaid: "Nem fizetve"
+    summary:
+      current: "Fizetve"
+      pending: "Függőben"
+      final: "Összes"
     notifications:
       created: "Költség létrehozva."
       updated: "Költség frissítve."

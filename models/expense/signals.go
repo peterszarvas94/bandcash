@@ -17,23 +17,8 @@ func expenseIndexSignals(query utils.TableQuery) map[string]any {
 	}
 }
 
-func expenseShowSignals(data ExpenseData) map[string]any {
+func expenseShowSignals(_ ExpenseData) map[string]any {
 	return map[string]any{
-		"mode":      "single",
-		"formState": "",
-		"formData": map[string]any{
-			"title":       data.Expense.Title,
-			"description": data.Expense.Description,
-			"amount":      data.Expense.Amount,
-			"date":        data.Expense.Date,
-			"paid":        data.Expense.Paid == 1,
-			"paidAt": func() string {
-				if !data.Expense.PaidAt.Valid {
-					return ""
-				}
-				return utils.FormatDateInput(data.Expense.PaidAt.String)
-			}(),
-		},
-		"errors": map[string]any{"title": "", "description": "", "amount": "", "date": ""},
+		"mode": "single",
 	}
 }

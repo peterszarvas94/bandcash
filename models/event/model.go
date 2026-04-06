@@ -99,16 +99,6 @@ func (e *Events) GetShowData(ctx context.Context, groupID, eventID string, query
 	}
 
 	participants := allParticipants
-	if query.Search != "" {
-		search := strings.ToLower(strings.TrimSpace(query.Search))
-		filtered := make([]db.ListParticipantsByEventRow, 0, len(allParticipants))
-		for _, participant := range allParticipants {
-			if strings.Contains(strings.ToLower(participant.Name), search) || strings.Contains(strings.ToLower(participant.ParticipantNote), search) {
-				filtered = append(filtered, participant)
-			}
-		}
-		participants = filtered
-	}
 
 	sort.SliceStable(participants, func(i, j int) bool {
 		left := participants[i]
@@ -191,19 +181,6 @@ func (e *Events) GetShowData(ctx context.Context, groupID, eventID string, query
 		return !less
 	})
 
-	totalItems := int64(len(participants))
-	query = utils.ClampPage(query, totalItems)
-
-	start := int(query.Offset())
-	if start > len(participants) {
-		start = len(participants)
-	}
-	end := start + query.PageSize
-	if end > len(participants) {
-		end = len(participants)
-	}
-	displayParticipants := participants[start:end]
-
 	// Calculate paid/unpaid amounts and leftover
 	// If event is unpaid: leftover = -totalPaid (we paid out but haven't received)
 	// If event is paid: leftover = event.Amount - totalPaid (received minus paid out)
@@ -235,10 +212,9 @@ func (e *Events) GetShowData(ctx context.Context, groupID, eventID string, query
 	return EventData{
 		Title:             "Bandcash - " + event.Title,
 		Event:             &event,
-		Participants:      displayParticipants,
+		Participants:      participants,
 		WizardRows:        wizardRows,
 		Query:             query,
-		Pager:             utils.BuildTablePagination(totalItems, query),
 		Members:           filteredMembers,
 		AllMembers:        members,
 		Leftover:          leftover,
@@ -353,8 +329,7 @@ func matchesFilters(event db.Event, query utils.TableQuery) bool {
 	if query.Search != "" {
 		searchLower := strings.ToLower(query.Search)
 		if !strings.Contains(strings.ToLower(event.Title), searchLower) &&
-			!strings.Contains(strings.ToLower(event.Place), searchLower) &&
-			!strings.Contains(strings.ToLower(event.Description), searchLower) {
+			!strings.Contains(strings.ToLower(event.Place), searchLower) {
 			return false
 		}
 	}

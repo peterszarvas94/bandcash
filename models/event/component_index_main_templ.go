@@ -102,24 +102,24 @@ func EventIndexMain(data EventsData) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = EventBalanceCards(EventBalanceCardsProps{
-			Paid: EventBalanceCardProps{
-				Title:    ctxi18n.T(ctx, "table.paid"),
-				Income:   utils.FormatNumberLocalized(ctx, paidIncome),
-				Payout:   utils.FormatNumberLocalizedWithSign(ctx, paidPayout, false),
-				Leftover: utils.FormatNumberLocalized(ctx, paidLeftover),
+		templ_7745c5c3_Err = EventBalanceByTypeCards(EventBalanceByTypeCardsProps{
+			Income: EventBalanceStatusCardProps{
+				Title:  ctxi18n.T(ctx, "groups.income"),
+				Paid:   utils.FormatNumberLocalized(ctx, paidIncome),
+				Unpaid: utils.FormatNumberLocalized(ctx, unpaidIncome),
+				All:    utils.FormatNumberLocalized(ctx, allIncome),
 			},
-			Unpaid: EventBalanceCardProps{
-				Title:    ctxi18n.T(ctx, "table.unpaid"),
-				Income:   utils.FormatNumberLocalized(ctx, unpaidIncome),
-				Payout:   utils.FormatNumberLocalizedWithSign(ctx, unpaidPayout, false),
-				Leftover: utils.FormatNumberLocalized(ctx, unpaidLeftover),
+			Payouts: EventBalanceStatusCardProps{
+				Title:  ctxi18n.T(ctx, "groups.payouts"),
+				Paid:   utils.FormatNumberLocalized(ctx, paidPayout),
+				Unpaid: utils.FormatNumberLocalized(ctx, unpaidPayout),
+				All:    utils.FormatNumberLocalized(ctx, allPayout),
 			},
-			All: EventBalanceCardProps{
-				Title:    ctxi18n.T(ctx, "table.all"),
-				Income:   utils.FormatNumberLocalized(ctx, allIncome),
-				Payout:   utils.FormatNumberLocalizedWithSign(ctx, allPayout, false),
-				Leftover: utils.FormatNumberLocalized(ctx, allLeftover),
+			Balance: EventBalanceStatusCardProps{
+				Title:  ctxi18n.T(ctx, "groups.balance"),
+				Paid:   utils.FormatNumberLocalized(ctx, paidLeftover),
+				Unpaid: utils.FormatNumberLocalized(ctx, unpaidLeftover),
+				All:    utils.FormatNumberLocalized(ctx, allLeftover),
 			},
 		}).Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {

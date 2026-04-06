@@ -6,18 +6,23 @@ import (
 )
 
 templ ExpenseTotalsContent(data ExpensesData) {
-	<div class="expense-total-cards pb">
-		<section class="expense-total-card" aria-label={ ctxi18n.T(ctx, "table.paid") }>
-			<h3>{ ctxi18n.T(ctx, "table.paid") }</h3>
-			<p>{ utils.FormatNumberLocalized(ctx, data.FilteredPaid) }</p>
-		</section>
-		<section class="expense-total-card" aria-label={ ctxi18n.T(ctx, "table.unpaid") }>
-			<h3>{ ctxi18n.T(ctx, "table.unpaid") }</h3>
-			<p>{ utils.FormatNumberLocalized(ctx, data.FilteredUnpaid) }</p>
-		</section>
-		<section class="expense-total-card" aria-label={ ctxi18n.T(ctx, "table.all") }>
-			<h3>{ ctxi18n.T(ctx, "table.all") }</h3>
-			<p>{ utils.FormatNumberLocalized(ctx, data.FilteredTotal) }</p>
+	<div class="event-balance-cards single-card pb">
+		<section class="event-balance-card" aria-label={ ctxi18n.T(ctx, "expenses.title") }>
+			<h3>{ ctxi18n.T(ctx, "expenses.title") }</h3>
+			<dl aria-label={ ctxi18n.T(ctx, "expenses.title") }>
+				<div class="paid">
+					<dt>{ ctxi18n.T(ctx, "expenses.summary.current") }</dt>
+					<dd>{ utils.FormatNumberLocalized(ctx, data.FilteredPaid) }</dd>
+				</div>
+				<div class="unpaid">
+					<dt>{ ctxi18n.T(ctx, "expenses.summary.pending") }</dt>
+					<dd>{ utils.FormatNumberLocalized(ctx, data.FilteredUnpaid) }</dd>
+				</div>
+				<div class="all">
+					<dt></dt>
+					<dd>{ utils.FormatNumberLocalized(ctx, data.FilteredTotal) }</dd>
+				</div>
+			</dl>
 		</section>
 	</div>
 }

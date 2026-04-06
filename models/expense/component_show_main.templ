@@ -4,7 +4,6 @@ import (
 	"fmt"
 	shared "bandcash/models/shared"
 	icons "bandcash/models/shared/icons"
-	ctxi18n "github.com/invopop/ctxi18n/i18n"
 	"bandcash/internal/utils"
 	"strings"
 )
@@ -20,19 +19,10 @@ templ ExpenseShowMain(data ExpenseData) {
 		if expenseDescription == "" {
 			expenseDescription = "-"
 		}
-		updateExpr := fmt.Sprintf("@put('/groups/%s/expenses/%s')", data.GroupID, data.Expense.ID)
-		cancelExpr := "$formState = ''; $formData = {title: " + utils.JSONString(data.Expense.Title) + ", description: " + utils.JSONString(data.Expense.Description) + ", amount: " + fmt.Sprintf("%d", data.Expense.Amount) + ", date: " + utils.JSONString(data.Expense.Date) + ", paid: " + fmt.Sprintf("%t", data.Expense.Paid == 1) + ", paidAt: " + utils.JSONString(func() string {
-			if !data.Expense.PaidAt.Valid {
-				return ""
-			}
-			return utils.FormatDateInput(data.Expense.PaidAt.String)
-		}()) + "}; $errors = {title: '', description: '', amount: '', date: ''}"
 	}}
 	@shared.PageHeader(shared.PageHeaderProps{Title: data.Expense.Title}) {
 		if data.IsAdmin {
-			<div data-show="$formState !== 'edit'">
-				@ExpenseShowDetailsActions(data)
-			</div>
+			@ExpenseShowDetailsActions(data)
 		}
 		<div class="page-header-meta">
 			<p>
@@ -45,7 +35,7 @@ templ ExpenseShowMain(data ExpenseData) {
 			</p>
 		</div>
 	}
-	<div data-show="$formState !== 'edit'">
+	<div class="event-balance-cards single-card pb">
 		@ExpenseAmountCard(ExpenseAmountCardProps{
 			Amount:         utils.FormatNumberLocalized(ctx, data.Expense.Amount),
 			PaidAt:         paidAt,
@@ -53,56 +43,4 @@ templ ExpenseShowMain(data ExpenseData) {
 			TogglePaidExpr: togglePaidExpr,
 		})
 	</div>
-	if data.IsAdmin {
-		<div data-show="$formState === 'edit'" style="display: none">
-			<form class="form" data-on:submit={ updateExpr } data-indicator:_fetching>
-				<div class="field">
-					<label for="expense-show-title" class="row">{ ctxi18n.T(ctx, "fields.title") } <span class="fielderror">*</span></label>
-					<input id="expense-show-title" type="text" data-bind="formData.title" class="input w-details"/>
-					<div data-show="$errors && $errors.title" class="fielderror" data-text="$errors.title"></div>
-				</div>
-				<div class="field">
-					<label for="expense-show-description">{ ctxi18n.T(ctx, "fields.description") }</label>
-					<input id="expense-show-description" type="text" data-bind="formData.description" class="input w-details"/>
-					<div data-show="$errors && $errors.description" class="fielderror" data-text="$errors.description"></div>
-				</div>
-				<div class="field">
-					<label for="expense-show-amount" class="row">{ ctxi18n.T(ctx, "fields.expense") } <span class="fielderror">*</span></label>
-					<input id="expense-show-amount" type="number" data-bind="formData.amount" step="1" class="input w-details"/>
-					<div data-show="$errors && $errors.amount" class="fielderror" data-text="$errors.amount"></div>
-				</div>
-				<div class="field">
-					<label for="expense-show-date" class="row">{ ctxi18n.T(ctx, "fields.date") } <span class="fielderror">*</span></label>
-					<input id="expense-show-date" type="date" data-bind="formData.date" class="input w-details"/>
-					<div data-show="$errors && $errors.date" class="fielderror" data-text="$errors.date"></div>
-				</div>
-				<div class="field">
-					<label for="expense-show-paid" class="row">{ ctxi18n.T(ctx, "table.paid") }</label>
-					@shared.ToggleSwitch(shared.ToggleSwitchProps{
-						Bind:         "formData.paid",
-						DisabledExpr: "$_fetching",
-						AriaLabel:    ctxi18n.T(ctx, "table.paid"),
-					})
-				</div>
-				<div class="field" data-show="$formData.paid" style="display: none">
-					<label for="expense-show-paid-at" class="row">{ ctxi18n.T(ctx, "fields.paid_at") }</label>
-					<input id="expense-show-paid-at" type="date" data-bind="formData.paidAt" class="input w-details"/>
-				</div>
-				<div class="row row-wrap">
-					@shared.LoadingSubmitButton(shared.LoadingSubmitButtonProps{
-						ClassName: "btn btn-primary",
-						Label:     ctxi18n.T(ctx, "expenses.update"),
-						IconName:  icons.IconSave,
-					})
-					@shared.ActionButton(shared.ActionButtonProps{
-						ClassName:    "btn",
-						OnClick:      cancelExpr,
-						DisabledExpr: "$_fetching",
-						Label:        ctxi18n.T(ctx, "actions.cancel"),
-						IconName:     icons.IconX,
-					})
-				</div>
-			</form>
-		</div>
-	}
 }

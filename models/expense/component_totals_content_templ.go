@@ -34,14 +34,14 @@ func ExpenseTotalsContent(data ExpensesData) templ.Component {
 			templ_7745c5c3_Var1 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<div class=\"expense-total-cards pb\"><section class=\"expense-total-card\" aria-label=\"")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<div class=\"event-balance-cards single-card pb\"><section class=\"event-balance-card\" aria-label=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var2 string
-		templ_7745c5c3_Var2, templ_7745c5c3_Err = templ.JoinStringErrs(ctxi18n.T(ctx, "table.paid"))
+		templ_7745c5c3_Var2, templ_7745c5c3_Err = templ.JoinStringErrs(ctxi18n.T(ctx, "expenses.title"))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/expense/component_totals_content.templ`, Line: 10, Col: 79}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/expense/component_totals_content.templ`, Line: 10, Col: 83}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var2))
 		if templ_7745c5c3_Err != nil {
@@ -52,106 +52,93 @@ func ExpenseTotalsContent(data ExpensesData) templ.Component {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var3 string
-		templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.JoinStringErrs(ctxi18n.T(ctx, "table.paid"))
+		templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.JoinStringErrs(ctxi18n.T(ctx, "expenses.title"))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/expense/component_totals_content.templ`, Line: 11, Col: 37}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/expense/component_totals_content.templ`, Line: 11, Col: 41}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var3))
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "</h3><p>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "</h3><dl aria-label=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var4 string
-		templ_7745c5c3_Var4, templ_7745c5c3_Err = templ.JoinStringErrs(utils.FormatNumberLocalized(ctx, data.FilteredPaid))
+		templ_7745c5c3_Var4, templ_7745c5c3_Err = templ.JoinStringErrs(ctxi18n.T(ctx, "expenses.title"))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/expense/component_totals_content.templ`, Line: 12, Col: 59}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/expense/component_totals_content.templ`, Line: 12, Col: 52}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var4))
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, "</p></section><section class=\"expense-total-card\" aria-label=\"")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, "\"><div class=\"paid\"><dt>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var5 string
-		templ_7745c5c3_Var5, templ_7745c5c3_Err = templ.JoinStringErrs(ctxi18n.T(ctx, "table.unpaid"))
+		templ_7745c5c3_Var5, templ_7745c5c3_Err = templ.JoinStringErrs(ctxi18n.T(ctx, "expenses.summary.current"))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/expense/component_totals_content.templ`, Line: 14, Col: 81}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/expense/component_totals_content.templ`, Line: 14, Col: 53}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var5))
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 5, "\"><h3>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 5, "</dt><dd>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var6 string
-		templ_7745c5c3_Var6, templ_7745c5c3_Err = templ.JoinStringErrs(ctxi18n.T(ctx, "table.unpaid"))
+		templ_7745c5c3_Var6, templ_7745c5c3_Err = templ.JoinStringErrs(utils.FormatNumberLocalized(ctx, data.FilteredPaid))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/expense/component_totals_content.templ`, Line: 15, Col: 39}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/expense/component_totals_content.templ`, Line: 15, Col: 62}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var6))
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 6, "</h3><p>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 6, "</dd></div><div class=\"unpaid\"><dt>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var7 string
-		templ_7745c5c3_Var7, templ_7745c5c3_Err = templ.JoinStringErrs(utils.FormatNumberLocalized(ctx, data.FilteredUnpaid))
+		templ_7745c5c3_Var7, templ_7745c5c3_Err = templ.JoinStringErrs(ctxi18n.T(ctx, "expenses.summary.pending"))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/expense/component_totals_content.templ`, Line: 16, Col: 61}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/expense/component_totals_content.templ`, Line: 18, Col: 53}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var7))
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 7, "</p></section><section class=\"expense-total-card\" aria-label=\"")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 7, "</dt><dd>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var8 string
-		templ_7745c5c3_Var8, templ_7745c5c3_Err = templ.JoinStringErrs(ctxi18n.T(ctx, "table.all"))
+		templ_7745c5c3_Var8, templ_7745c5c3_Err = templ.JoinStringErrs(utils.FormatNumberLocalized(ctx, data.FilteredUnpaid))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/expense/component_totals_content.templ`, Line: 18, Col: 78}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/expense/component_totals_content.templ`, Line: 19, Col: 64}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var8))
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 8, "\"><h3>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 8, "</dd></div><div class=\"all\"><dt></dt><dd>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var9 string
-		templ_7745c5c3_Var9, templ_7745c5c3_Err = templ.JoinStringErrs(ctxi18n.T(ctx, "table.all"))
+		templ_7745c5c3_Var9, templ_7745c5c3_Err = templ.JoinStringErrs(utils.FormatNumberLocalized(ctx, data.FilteredTotal))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/expense/component_totals_content.templ`, Line: 19, Col: 36}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/expense/component_totals_content.templ`, Line: 23, Col: 63}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var9))
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 9, "</h3><p>")
-		if templ_7745c5c3_Err != nil {
-			return templ_7745c5c3_Err
-		}
-		var templ_7745c5c3_Var10 string
-		templ_7745c5c3_Var10, templ_7745c5c3_Err = templ.JoinStringErrs(utils.FormatNumberLocalized(ctx, data.FilteredTotal))
-		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/expense/component_totals_content.templ`, Line: 20, Col: 60}
-		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var10))
-		if templ_7745c5c3_Err != nil {
-			return templ_7745c5c3_Err
-		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 10, "</p></section></div>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 9, "</dd></div></dl></section></div>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

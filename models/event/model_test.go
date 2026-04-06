@@ -41,11 +41,14 @@ func TestMatchesFilters(t *testing.T) {
 	if matchesFilters(event, utils.TableQuery{Search: "missing"}) {
 		t.Fatal("expected missing search to fail")
 	}
-	if !matchesFilters(event, utils.TableQuery{Search: "weekly"}) {
-		t.Fatal("expected description search to match")
+	if !matchesFilters(event, utils.TableQuery{Search: "rehearsal"}) {
+		t.Fatal("expected title search to match")
 	}
 	if !matchesFilters(event, utils.TableQuery{Search: "bud"}) {
 		t.Fatal("expected place search to match")
+	}
+	if matchesFilters(event, utils.TableQuery{Search: "weekly"}) {
+		t.Fatal("expected description search to fail")
 	}
 	if matchesFilters(event, utils.TableQuery{Year: "2025"}) {
 		t.Fatal("expected wrong year to fail")
