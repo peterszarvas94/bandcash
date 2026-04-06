@@ -34,8 +34,8 @@ var errAtLeastOneAdmin = errors.New("at least one admin required")
 
 func (u *UsersModel) TableQuerySpec() utils.TableQuerySpec {
 	return utils.StandardTableQuerySpec(utils.StandardTableQuerySpecParams{
-		DefaultSort:  "createdAt",
-		DefaultDir:   "desc",
+		DefaultSort:  "email",
+		DefaultDir:   "asc",
 		AllowedSorts: []string{"email", "role", "status", "createdAt"},
 	})
 }

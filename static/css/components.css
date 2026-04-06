@@ -1028,7 +1028,7 @@
     border: 0;
     background: transparent;
     color: inherit;
-    max-width: min(26rem, calc(100vw - 2rem));
+    /* width: min(16rem, 100vw); */
 
     > ul {
       list-style: none;
@@ -1037,40 +1037,42 @@
       gap: calc(var(--space) * 0.5);
       margin: 0;
       padding: 0;
+    }
+  }
 
-      > li {
-        display: grid;
-        grid-template-columns: minmax(0, 1fr) auto;
-        align-items: center;
-        gap: calc(var(--space) * 0.5);
-        border: var(--border) solid var(--bg-dark);
-        border-left-width: calc(var(--border) * 3);
-        border-left-color: var(--bg-primary);
-        border-radius: var(--radius);
-        background: var(--bg-dark);
-        padding: calc(var(--space) * 0.75) var(--space);
+  .notification-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: calc(var(--space) * 0.5);
+    border: var(--border) solid var(--bg-primary);
+    border-radius: var(--radius);
+    background: var(--bg-dark);
+    padding: calc(var(--space) * 0.75) var(--space);
+    width: fit-content;
+    max-width: min(16rem, calc(100vw - 2rem));
 
-        > p {
-          margin: 0;
-        }
+    p {
+      margin: 0;
+      padding: 0;
+      flex: 1;
+    }
 
-        > button {
-          all: unset;
-          cursor: pointer;
-          display: inline-flex;
-          align-items: center;
-          justify-content: center;
-          color: var(--text-muted);
+    button {
+      all: unset;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--text-muted);
 
-          &:hover {
-            color: var(--text);
-          }
+      &:hover {
+        color: var(--text);
+      }
 
-          &:focus-visible {
-            outline: var(--focus-ring);
-            outline-offset: var(--focus-ring-offset);
-          }
-        }
+      &:focus-visible {
+        outline: var(--focus-ring);
+        outline-offset: var(--focus-ring-offset);
       }
     }
   }
@@ -1347,104 +1349,6 @@
         @media (max-width: 640px) {
           gap: var(--space);
         }
-      }
-    }
-  }
-
-  .expense-total-cards {
-    display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: var(--space);
-
-    @media (max-width: 800px) {
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-
-      > :last-child {
-        grid-column: 1 / -1;
-      }
-    }
-
-    @media (max-width: 600px) {
-      grid-template-columns: 1fr;
-
-      > :last-child {
-        grid-column: auto;
-      }
-    }
-
-    .expense-total-card {
-      display: grid;
-      gap: var(--space);
-      padding: calc(var(--space) * 1.5);
-      border-radius: var(--radius-lg);
-      background: var(--bg-light);
-      box-shadow: var(--shadow);
-
-      > h3 {
-        margin: 0;
-        font-size: 1.4rem;
-        line-height: 1.15;
-        font-weight: 700;
-      }
-
-      > p {
-        margin: 0;
-        text-align: right;
-        font-size: 1.25rem;
-        font-weight: 800;
-        line-height: 1.1;
-        color: var(--bg-primary);
-        font-variant-numeric: tabular-nums;
-        font-feature-settings: "tnum" 1;
-      }
-    }
-  }
-
-  .member-payout-cards {
-    display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: var(--space);
-
-    @media (max-width: 800px) {
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-
-      > :last-child {
-        grid-column: 1 / -1;
-      }
-    }
-
-    @media (max-width: 600px) {
-      grid-template-columns: 1fr;
-
-      > :last-child {
-        grid-column: auto;
-      }
-    }
-
-    .member-payout-card {
-      display: grid;
-      gap: var(--space);
-      padding: calc(var(--space) * 1.5);
-      border-radius: var(--radius-lg);
-      background: var(--bg-light);
-      box-shadow: var(--shadow);
-
-      > h3 {
-        margin: 0;
-        font-size: 1.4rem;
-        line-height: 1.15;
-        font-weight: 700;
-      }
-
-      > p {
-        margin: 0;
-        text-align: right;
-        font-size: 1.25rem;
-        font-weight: 800;
-        line-height: 1.1;
-        color: var(--bg-primary);
-        font-variant-numeric: tabular-nums;
-        font-feature-settings: "tnum" 1;
       }
     }
   }

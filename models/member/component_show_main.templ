@@ -16,7 +16,6 @@ templ MemberShowMain(data MemberData) {
 		if memberDescription == "" {
 			memberDescription = "-"
 		}
-		totalEvents := utils.FormatNumberLocalized(ctx, int64(data.Pager.TotalItems))
 	}}
 	@shared.PageHeader(shared.PageHeaderProps{Title: data.Member.Name}) {
 		if data.IsAdmin {
@@ -32,10 +31,6 @@ templ MemberShowMain(data MemberData) {
 			<p>
 				@icons.Icon(icons.IconNotepadText, templ.Attributes{"class": "icon"})
 				<span>{ memberDescription }</span>
-			</p>
-			<p>
-				@icons.Icon(icons.IconCalendarDays, templ.Attributes{"class": "icon"})
-				<span>{ totalEvents }</span>
 			</p>
 		</div>
 	}

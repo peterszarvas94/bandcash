@@ -9,24 +9,26 @@ import (
 
 templ GroupDetailsActions(data GroupPageData) {
 	if data.IsAdmin {
-		<a href={ "/groups/" + data.Group.ID + "/edit" } class="btn btn-sm">
-			@icons.Icon(icons.IconPencil, templ.Attributes{"class": "icon"})
-			{ ctxi18n.T(ctx, "actions.edit") }
-		</a>
-		@shared.SureActionButton(shared.SureActionButtonProps{
-			ClassName:    "btn btn-sm",
-			DisabledExpr: "$_fetching",
-			Label:        ctxi18n.T(ctx, "groups.delete"),
-			IconName:     icons.IconTrash2,
-			Dialog: shared.SureDialogProps{
-				Title:       ctxi18n.T(ctx, "groups.delete_confirm"),
-				Message:     ctxi18n.T(ctx, "confirm.destructive_message"),
-				SubmitLabel: ctxi18n.T(ctx, "groups.delete"),
-				CancelLabel: ctxi18n.T(ctx, "actions.cancel"),
-				Method:      "delete",
-				URL:         fmt.Sprintf("/groups/%s", data.Group.ID),
-				TriggerID:   "group-show-delete",
-			},
-		})
+		<div class="row">
+			<a href={ "/groups/" + data.Group.ID + "/edit" } class="btn btn-sm">
+				@icons.Icon(icons.IconPencil, templ.Attributes{"class": "icon"})
+				{ ctxi18n.T(ctx, "actions.edit") }
+			</a>
+			@shared.SureActionButton(shared.SureActionButtonProps{
+				ClassName:    "btn btn-sm",
+				DisabledExpr: "$_fetching",
+				Label:        ctxi18n.T(ctx, "groups.delete"),
+				IconName:     icons.IconTrash2,
+				Dialog: shared.SureDialogProps{
+					Title:       ctxi18n.T(ctx, "groups.delete_confirm"),
+					Message:     ctxi18n.T(ctx, "confirm.destructive_message"),
+					SubmitLabel: ctxi18n.T(ctx, "groups.delete"),
+					CancelLabel: ctxi18n.T(ctx, "actions.cancel"),
+					Method:      "delete",
+					URL:         fmt.Sprintf("/groups/%s", data.Group.ID),
+					TriggerID:   "group-show-delete",
+				},
+			})
+		</div>
 	}
 }

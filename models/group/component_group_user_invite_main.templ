@@ -1,28 +1,36 @@
 package group
 
 import (
-	"fmt"
+	"bandcash/internal/utils"
+	icons "bandcash/models/shared/icons"
 	ctxi18n "github.com/invopop/ctxi18n/i18n"
 	shared "bandcash/models/shared"
-	"bandcash/internal/utils"
 )
 
 templ GroupUserInviteMain(data UserInvitePageData) {
+	{{
+		roleLabel := ctxi18n.T(ctx, "groups.role_viewer")
+		if data.UserRow.Role == "admin" {
+			roleLabel = ctxi18n.T(ctx, "groups.role_admin")
+		}
+	}}
 	@shared.PageHeader(shared.PageHeaderProps{Title: data.UserRow.Email}) {
 		if data.IsAdmin {
 			@GroupUserInviteDetailsActions(data)
 		}
+		<div class="page-header-meta">
+			<p>
+				@icons.Icon(icons.IconCalendar, templ.Attributes{"class": "icon"})
+				<span>{ utils.FormatTimeLocalized(ctx, data.UserRow.CreatedAt) }</span>
+			</p>
+			<p>
+				@icons.Icon(icons.IconContact, templ.Attributes{"class": "icon"})
+				<span>{ roleLabel }</span>
+			</p>
+			<p>
+				@icons.Icon(icons.IconUsers, templ.Attributes{"class": "icon"})
+				<span>{ ctxi18n.T(ctx, "groups.pending") }</span>
+			</p>
+		</div>
 	}
-	<div class="pb">
-		@shared.DetailsCardWithClass(fmt.Sprintf("group_user_invite_%s", data.UserRow.InviteID), []shared.DetailsRow{
-			{Label: ctxi18n.T(ctx, "fields.role"), Value: func() string {
-				if data.UserRow.Role == "admin" {
-					return ctxi18n.T(ctx, "groups.role_admin")
-				}
-				return ctxi18n.T(ctx, "groups.role_viewer")
-			}()},
-			{Label: ctxi18n.T(ctx, "fields.status"), Value: ctxi18n.T(ctx, "groups.pending")},
-			{Label: ctxi18n.T(ctx, "groups.created"), Value: utils.FormatTimeLocalized(ctx, data.UserRow.CreatedAt)},
-		}, "")
-	</div>
 }

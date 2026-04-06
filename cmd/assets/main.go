@@ -29,11 +29,7 @@ var coreAssetSpecs = []assetSpec{
 	{Logical: "js/main.js", Source: "static/js/main.js"},
 }
 
-var devOnlyAssetSpecs = []assetSpec{
-	{Logical: "js/rate_limit_tester.js", Source: "static/js/rate_limit_tester.js"},
-	{Logical: "js/body_limit_tester.js", Source: "static/js/body_limit_tester.js"},
-	{Logical: "js/table_query_tester.js", Source: "static/js/table_query_tester.js"},
-}
+var devOnlyAssetSpecs = []assetSpec{}
 
 func main() {
 	appEnv := normalizedAppEnv()

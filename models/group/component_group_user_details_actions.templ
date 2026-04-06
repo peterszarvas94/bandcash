@@ -8,40 +8,42 @@ import (
 )
 
 templ GroupUserDetailsActions(data UserPageData) {
-	if data.CurrentUserID == data.Group.AdminUserID && data.UserRow.Role != "owner" {
+	<div class="row">
+		if data.CurrentUserID == data.Group.AdminUserID && data.UserRow.Role != "owner" {
+			@shared.SureActionButton(shared.SureActionButtonProps{
+				ClassName:    "btn btn-sm",
+				DisabledExpr: "false",
+				Label:        ctxi18n.T(ctx, "groups.transfer_group"),
+				IconName:     icons.IconShieldUser,
+				Dialog: shared.SureDialogProps{
+					Title:       ctxi18n.T(ctx, "groups.transfer_group_confirm"),
+					Message:     ctxi18n.T(ctx, "confirm.destructive_message"),
+					SubmitLabel: ctxi18n.T(ctx, "groups.transfer_group"),
+					CancelLabel: ctxi18n.T(ctx, "actions.cancel"),
+					Method:      "put",
+					URL:         fmt.Sprintf("/groups/%s/users/%s/transfer-owner", data.GroupID, data.UserRow.UserID),
+					TriggerID:   "group-user-transfer-owner",
+				},
+			})
+		}
+		<a class="btn btn-sm" href={ fmt.Sprintf("/groups/%s/users/%s/edit", data.GroupID, data.UserRow.UserID) }>
+			@icons.Pencil(templ.Attributes{"class": "icon"})
+			{ ctxi18n.T(ctx, "actions.edit") }
+		</a>
 		@shared.SureActionButton(shared.SureActionButtonProps{
 			ClassName:    "btn btn-sm",
-			DisabledExpr: "false",
-			Label:        ctxi18n.T(ctx, "groups.transfer_group"),
-			IconName:     icons.IconShieldUser,
+			DisabledExpr: "$_fetching",
+			Label:        ctxi18n.T(ctx, "actions.delete"),
+			IconName:     icons.IconTrash2,
 			Dialog: shared.SureDialogProps{
-				Title:       ctxi18n.T(ctx, "groups.transfer_group_confirm"),
+				Title:       ctxi18n.T(ctx, "groups.remove_viewer_confirm"),
 				Message:     ctxi18n.T(ctx, "confirm.destructive_message"),
-				SubmitLabel: ctxi18n.T(ctx, "groups.transfer_group"),
+				SubmitLabel: ctxi18n.T(ctx, "actions.delete"),
 				CancelLabel: ctxi18n.T(ctx, "actions.cancel"),
-				Method:      "put",
-				URL:         fmt.Sprintf("/groups/%s/users/%s/transfer-owner", data.GroupID, data.UserRow.UserID),
-				TriggerID:   "group-user-transfer-owner",
+				Method:      "delete",
+				URL:         fmt.Sprintf("/groups/%s/users/%s", data.GroupID, data.UserRow.UserID),
+				TriggerID:   "group-user-delete",
 			},
 		})
-	}
-	<a class="btn btn-sm" href={ fmt.Sprintf("/groups/%s/users/%s/edit", data.GroupID, data.UserRow.UserID) }>
-		@icons.Pencil(templ.Attributes{"class": "icon"})
-		{ ctxi18n.T(ctx, "actions.edit") }
-	</a>
-	@shared.SureActionButton(shared.SureActionButtonProps{
-		ClassName:    "btn btn-sm",
-		DisabledExpr: "$_fetching",
-		Label:        ctxi18n.T(ctx, "actions.delete"),
-		IconName:     icons.IconTrash2,
-		Dialog: shared.SureDialogProps{
-			Title:       ctxi18n.T(ctx, "groups.remove_viewer_confirm"),
-			Message:     ctxi18n.T(ctx, "confirm.destructive_message"),
-			SubmitLabel: ctxi18n.T(ctx, "actions.delete"),
-			CancelLabel: ctxi18n.T(ctx, "actions.cancel"),
-			Method:      "delete",
-			URL:         fmt.Sprintf("/groups/%s/users/%s", data.GroupID, data.UserRow.UserID),
-			TriggerID:   "group-user-delete",
-		},
-	})
+	</div>
 }

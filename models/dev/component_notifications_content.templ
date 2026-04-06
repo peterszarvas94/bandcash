@@ -34,4 +34,12 @@ templ NotificationsContent() {
 			LoadingSignal: "_notifyTest",
 		})
 	</div>
+	<div class="pt" style="max-width: min(26rem, calc(100vw - 2rem));">
+		<div class="notification-item">
+			<p>Notification preview without trigger</p>
+			<button type="button" aria-label="Close notification" title="Close notification">
+				@icons.X(templ.Attributes{"class": "icon"})
+			</button>
+		</div>
+	</div>
 }

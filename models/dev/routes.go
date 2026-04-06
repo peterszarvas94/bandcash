@@ -3,7 +3,6 @@ package dev
 import (
 	"github.com/labstack/echo/v4"
 
-	"bandcash/internal/middleware"
 	"bandcash/internal/utils"
 )
 
@@ -15,8 +14,6 @@ func RegisterRoutes(e *echo.Echo) {
 	h := &DevNotifications{}
 	g := e.Group("/dev")
 	g.GET("", h.DevPageHandler)
-	g.POST("/body-limit/global", h.TestBodyLimitGlobal)
-	g.POST("/body-limit/auth", h.TestBodyLimitAuth, middleware.AuthBodyLimit)
 	g.POST("/spinner", h.TestSpinner)
 	g.POST("/multi-action/:action", h.TestMultiAction)
 	g.POST("/notifications/inline", h.TestInline)
@@ -32,7 +29,5 @@ func RegisterRoutes(e *echo.Echo) {
 	g.GET("/errors/400", h.PreviewBadRequestErrorPage)
 	g.GET("/errors/403", h.PreviewForbiddenErrorPage)
 	g.GET("/errors/404", h.PreviewNotFoundErrorPage)
-	g.GET("/errors/429", h.PreviewRateLimitErrorPage)
 	g.GET("/errors/500", h.PreviewInternalErrorPage)
-	g.GET("/query-test/:model", h.TestTableQuery)
 }

@@ -1,0 +1,42 @@
+package shared
+
+type StatusSummaryCardsProps struct {
+	Single    bool
+	ClassName string
+}
+
+type StatusSummaryCardProps struct {
+	Title        string
+	PaidLabel    string
+	PendingLabel string
+	AllLabel     string
+	PaidValue    string
+	PendingValue string
+	AllValue     string
+}
+
+templ StatusSummaryCards(props StatusSummaryCardsProps) {
+	<div class={ "event-balance-cards", templ.KV("single-card", props.Single), props.ClassName }>
+		{ children... }
+	</div>
+}
+
+templ StatusSummaryCard(props StatusSummaryCardProps) {
+	<section class="event-balance-card" aria-label={ props.Title }>
+		<h3>{ props.Title }</h3>
+		<dl aria-label={ props.Title }>
+			<div class="paid">
+				<dt>{ props.PaidLabel }</dt>
+				<dd>{ props.PaidValue }</dd>
+			</div>
+			<div class="unpaid">
+				<dt>{ props.PendingLabel }</dt>
+				<dd>{ props.PendingValue }</dd>
+			</div>
+			<div class="all">
+				<dt>{ props.AllLabel }</dt>
+				<dd>{ props.AllValue }</dd>
+			</div>
+		</dl>
+	</section>
+}

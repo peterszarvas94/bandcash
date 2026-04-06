@@ -1,9 +1,6 @@
 package dev
 
-import (
-	"bandcash/internal/assets"
-	shared "bandcash/models/shared"
-)
+import shared "bandcash/models/shared"
 
 templ DevPage(data DevPageData) {
 	@shared.BaseLayout(shared.BaseLayoutProps{
@@ -15,7 +12,4 @@ templ DevPage(data DevPageData) {
 		IsAuthenticated: data.IsAuthenticated,
 		IsSuperAdmin:    false,
 	})
-	<script type="module" src={ assets.AssetPath("js/rate_limit_tester.js") }></script>
-	<script type="module" src={ assets.AssetPath("js/body_limit_tester.js") }></script>
-	<script type="module" src={ assets.AssetPath("js/table_query_tester.js") }></script>
 }

@@ -48,6 +48,10 @@ func ReadModeActions(data EventData) templ.Component {
 				data.GroupID,
 				data.Event.ID,
 			)
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<div class=\"row\">")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
 			templ_7745c5c3_Err = shared.ActionButton(shared.ActionButtonProps{
 				ClassName:    "btn btn-sm",
 				OnClick:      editParticipantsExpr,
@@ -58,10 +62,6 @@ func ReadModeActions(data EventData) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, " ")
-			if templ_7745c5c3_Err != nil {
-				return templ_7745c5c3_Err
-			}
 			templ_7745c5c3_Err = shared.ActionButton(shared.ActionButtonProps{
 				ClassName:    "btn btn-sm",
 				OnClick:      deleteEventExpr,
@@ -69,6 +69,10 @@ func ReadModeActions(data EventData) templ.Component {
 				Label:        ctxi18n.T(ctx, "actions.delete"),
 				IconName:     icons.IconTrash2,
 			}).Render(ctx, templ_7745c5c3_Buffer)
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "</div>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}

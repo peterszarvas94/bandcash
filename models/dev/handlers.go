@@ -1,7 +1,6 @@
 package dev
 
 import (
-	"database/sql"
 	"fmt"
 	"net/http"
 	"strconv"
@@ -16,9 +15,6 @@ import (
 	"bandcash/internal/email"
 	appi18n "bandcash/internal/i18n"
 	"bandcash/internal/utils"
-	"bandcash/models/event"
-	"bandcash/models/expense"
-	"bandcash/models/member"
 	shared "bandcash/models/shared"
 	icons "bandcash/models/shared/icons"
 )
@@ -112,14 +108,6 @@ func (h *DevNotifications) Test(c echo.Context) error {
 	if err := h.patchNotifications(c); err != nil {
 		return c.NoContent(http.StatusInternalServerError)
 	}
-	return c.NoContent(http.StatusOK)
-}
-
-func (h *DevNotifications) TestBodyLimitGlobal(c echo.Context) error {
-	return c.NoContent(http.StatusOK)
-}
-
-func (h *DevNotifications) TestBodyLimitAuth(c echo.Context) error {
 	return c.NoContent(http.StatusOK)
 }
 
@@ -274,10 +262,6 @@ func (h *DevNotifications) PreviewNotFoundErrorPage(c echo.Context) error {
 	return echo.NewHTTPError(http.StatusNotFound)
 }
 
-func (h *DevNotifications) PreviewRateLimitErrorPage(c echo.Context) error {
-	return echo.NewHTTPError(http.StatusTooManyRequests)
-}
-
 func (h *DevNotifications) PreviewInternalErrorPage(c echo.Context) error {
 	return echo.NewHTTPError(http.StatusInternalServerError)
 }
@@ -297,208 +281,6 @@ func renderDevErrorPage(c echo.Context, status int, iconName icons.IconName, tit
 		HomeLabel:  ctxi18n.T(ctx, "error_pages.home_action"),
 		HomeHref:   appi18n.LocalizedHomePath(ctx),
 	}))
-}
-
-func (h *DevNotifications) TestTableQuery(c echo.Context) error {
-	model := c.Param("model")
-	groupID, err := h.resolveTableQueryGroupID(c, model)
-	if err != nil {
-		return c.JSON(http.StatusBadRequest, map[string]any{
-			"error": err.Error(),
-		})
-	}
-
-	var queryable utils.Queryable
-	var data any
-	var pager utils.TablePagination
-	var errData error
-	raw := rawTableQuery(c)
-	strict := c.QueryParam("strict") == "1"
-
-	switch model {
-	case "events":
-		eventsModel := event.New()
-		queryable = eventsModel
-		parsedResult := utils.ParseTableQueryWithResult(c, queryable)
-		parsed := parsedResult.Query
-		if strict && len(parsedResult.Rejected) > 0 {
-			return c.JSON(http.StatusUnprocessableEntity, map[string]any{
-				"model":    model,
-				"groupId":  groupID,
-				"raw":      raw,
-				"parsed":   parsed,
-				"rejected": parsedResult.Rejected,
-				"error":    "invalid query params",
-			})
-		}
-		indexData, getErr := eventsModel.GetIndexData(c.Request().Context(), groupID, parsed)
-		if getErr != nil {
-			errData = getErr
-			break
-		}
-		data = indexData.Events
-		pager = indexData.Pager
-		return c.JSON(http.StatusOK, map[string]any{
-			"model":    model,
-			"groupId":  groupID,
-			"raw":      raw,
-			"parsed":   parsed,
-			"rejected": parsedResult.Rejected,
-			"offset":   parsed.Offset(),
-			"pager":    pager,
-			"rowCount": len(indexData.Events),
-			"data":     data,
-		})
-	case "members":
-		membersModel := member.New()
-		queryable = membersModel
-		parsedResult := utils.ParseTableQueryWithResult(c, queryable)
-		parsed := parsedResult.Query
-		if strict && len(parsedResult.Rejected) > 0 {
-			return c.JSON(http.StatusUnprocessableEntity, map[string]any{
-				"model":    model,
-				"groupId":  groupID,
-				"raw":      raw,
-				"parsed":   parsed,
-				"rejected": parsedResult.Rejected,
-				"error":    "invalid query params",
-			})
-		}
-		indexData, getErr := membersModel.GetIndexData(c.Request().Context(), groupID, parsed)
-		if getErr != nil {
-			errData = getErr
-			break
-		}
-		data = indexData.Members
-		pager = indexData.Pager
-		return c.JSON(http.StatusOK, map[string]any{
-			"model":    model,
-			"groupId":  groupID,
-			"raw":      raw,
-			"parsed":   parsed,
-			"rejected": parsedResult.Rejected,
-			"offset":   parsed.Offset(),
-			"pager":    pager,
-			"rowCount": len(indexData.Members),
-			"data":     data,
-		})
-	case "expenses":
-		expensesModel := expense.New()
-		queryable = expensesModel
-		parsedResult := utils.ParseTableQueryWithResult(c, queryable)
-		parsed := parsedResult.Query
-		if strict && len(parsedResult.Rejected) > 0 {
-			return c.JSON(http.StatusUnprocessableEntity, map[string]any{
-				"model":    model,
-				"groupId":  groupID,
-				"raw":      raw,
-				"parsed":   parsed,
-				"rejected": parsedResult.Rejected,
-				"error":    "invalid query params",
-			})
-		}
-		indexData, getErr := expensesModel.GetIndexData(c.Request().Context(), groupID, parsed)
-		if getErr != nil {
-			errData = getErr
-			break
-		}
-		data = indexData.Expenses
-		pager = indexData.Pager
-		return c.JSON(http.StatusOK, map[string]any{
-			"model":    model,
-			"groupId":  groupID,
-			"raw":      raw,
-			"parsed":   parsed,
-			"rejected": parsedResult.Rejected,
-			"offset":   parsed.Offset(),
-			"pager":    pager,
-			"rowCount": len(indexData.Expenses),
-			"data":     data,
-		})
-	default:
-		return c.JSON(http.StatusBadRequest, map[string]any{
-			"error": "unknown model",
-		})
-	}
-
-	if errData != nil {
-		return c.JSON(http.StatusInternalServerError, map[string]any{
-			"error":   errData.Error(),
-			"model":   model,
-			"groupId": groupID,
-		})
-	}
-
-	return c.JSON(http.StatusInternalServerError, map[string]any{
-		"error": "unknown table query failure",
-	})
-}
-
-func rawTableQuery(c echo.Context) map[string]any {
-	return map[string]any{
-		"q":        c.QueryParam("q"),
-		"sort":     c.QueryParam("sort"),
-		"dir":      c.QueryParam("dir"),
-		"page":     c.QueryParam("page"),
-		"pageSize": c.QueryParam("pageSize"),
-		"groupId":  c.QueryParam("groupId"),
-	}
-}
-
-func (h *DevNotifications) resolveTableQueryGroupID(c echo.Context, model string) (string, error) {
-	if groupID := strings.TrimSpace(c.QueryParam("groupId")); groupID != "" {
-		if !utils.IsValidID(groupID, "grp") {
-			return "", fmt.Errorf("invalid groupId")
-		}
-		_, err := db.Qry.GetGroupByID(c.Request().Context(), groupID)
-		if err != nil {
-			if err == sql.ErrNoRows {
-				return "", fmt.Errorf("group not found")
-			}
-			return "", err
-		}
-		return groupID, nil
-	}
-
-	groups, err := db.Qry.ListRecentGroups(c.Request().Context(), 50)
-	if err != nil {
-		return "", err
-	}
-	if len(groups) == 0 {
-		return "", fmt.Errorf("no groups found; add ?groupId=grp_xxx")
-	}
-
-	ctx := c.Request().Context()
-	for _, group := range groups {
-		var count int64
-		switch model {
-		case "events":
-			count, err = db.Qry.CountEventsFiltered(ctx, db.CountEventsFilteredParams{
-				GroupID: group.ID,
-				Search:  "",
-			})
-		case "members":
-			count, err = db.Qry.CountMembersFiltered(ctx, db.CountMembersFilteredParams{
-				GroupID: group.ID,
-				Search:  "",
-			})
-		case "expenses":
-			count, err = db.Qry.CountExpensesFiltered(ctx, db.CountExpensesFilteredParams{
-				GroupID: group.ID,
-				Search:  "",
-			})
-		default:
-			return "", fmt.Errorf("unknown model")
-		}
-		if err != nil {
-			return "", err
-		}
-		if count > 0 {
-			return group.ID, nil
-		}
-	}
-
-	return groups[0].ID, nil
 }
 
 func devBaseURL(c echo.Context) string {

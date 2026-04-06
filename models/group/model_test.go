@@ -14,7 +14,7 @@ func TestGroupTableSpecs(t *testing.T) {
 	}
 
 	usersSpec := (&UsersModel{}).TableQuerySpec()
-	if usersSpec.DefaultSort != "createdAt" || usersSpec.DefaultDir != "desc" {
+	if usersSpec.DefaultSort != "email" || usersSpec.DefaultDir != "asc" {
 		t.Fatalf("unexpected users model defaults: %+v", usersSpec)
 	}
 	for _, key := range []string{"email", "role", "status", "createdAt"} {

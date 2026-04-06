@@ -8,7 +8,7 @@ import (
 )
 
 templ MemberNewForm(data NewMemberPageData) {
-	<h1>{ ctxi18n.T(ctx, "members.add") }</h1>
+	@shared.PageHeader(shared.PageHeaderProps{Title: ctxi18n.T(ctx, "members.add")}) {}
 	<form class="form w-details" data-on:submit={ fmt.Sprintf("@post('/groups/%s/members')", data.GroupID) } data-indicator:_fetching>
 		<div class="field">
 			<label for="member-new-name" class="row">{ ctxi18n.T(ctx, "fields.name") } <span class="fielderror">*</span></label>

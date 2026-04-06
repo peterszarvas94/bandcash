@@ -7,7 +7,7 @@ import (
 )
 
 templ GroupNewMain() {
-	<h1>{ ctxi18n.T(ctx, "groups.new") }</h1>
+	@shared.PageHeader(shared.PageHeaderProps{Title: ctxi18n.T(ctx, "groups.new")}) {}
 	<form class="form w-details" data-on:submit="@post('/groups')" data-indicator:_fetching>
 		<div class="field">
 			<label for="group-new-name" class="row">{ ctxi18n.T(ctx, "groups.name") } <span class="fielderror">*</span></label>

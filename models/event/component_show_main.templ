@@ -67,7 +67,7 @@ templ EventShowMain(data EventData) {
 			unpaidPayout := data.TotalUnpaid
 			unpaidLeftover := unpaidIncome - unpaidPayout
 		}}
-		<div class="event-balance-cards pb">
+		@shared.StatusSummaryCards(shared.StatusSummaryCardsProps{ClassName: "pb"}) {
 			@EventIncomeCard(EventIncomeCardProps{
 				Income:         utils.FormatNumberLocalized(ctx, data.Event.Amount),
 				PaidAt:         paidAt,
@@ -86,7 +86,7 @@ templ EventShowMain(data EventData) {
 				Unpaid: utils.FormatNumberLocalized(ctx, unpaidLeftover),
 				All:    utils.FormatNumberLocalized(ctx, allLeftover),
 			})
-		</div>
+		}
 		@shared.TableOpenFixed(data.ParticipantsTable, "") {
 			<thead>
 				<tr>

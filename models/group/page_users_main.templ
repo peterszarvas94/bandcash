@@ -52,10 +52,7 @@ templ GroupUsersMain(data UsersPageData) {
 					<td><a class="table-link" href={ rowPath }>{ row.Email }</a></td>
 					<td>
 						if row.Role == "owner" {
-							<button class="btn btn-xs" type="button" disabled>
-								@icons.ShieldUser(templ.Attributes{"class": "icon"})
-								{ ctxi18n.T(ctx, "groups.role_owner") }
-							</button>
+							@shared.Badge("owner")
 						} else if data.IsAdmin {
 							@shared.ToggleSwitch(shared.ToggleSwitchProps{
 								IsOn:         row.Role == "admin",

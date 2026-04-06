@@ -8,7 +8,7 @@ import (
 )
 
 templ GroupUsersNewForm(data UsersNewPageData) {
-	<h1>{ ctxi18n.T(ctx, "groups.invite_user") }</h1>
+	@shared.PageHeader(shared.PageHeaderProps{Title: ctxi18n.T(ctx, "groups.invite_user")}) {}
 	<form class="form w-details" data-on:submit={ fmt.Sprintf("@post('/groups/%s/users')", data.GroupID) } data-indicator:_fetching>
 		<div class="field">
 			<label for="group-access-new-email" class="row">{ ctxi18n.T(ctx, "auth.email") } <span class="fielderror">*</span></label>
