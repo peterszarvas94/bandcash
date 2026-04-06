@@ -123,6 +123,7 @@ templ MemberShowMain(data MemberData) {
 				for _, event := range data.Events {
 					{{
 						togglePaidExpr := fmt.Sprintf("@put('/groups/%s/members/%s/events/%s/toggle-paid', {tableQuery: $tableQuery})", data.GroupID, data.Member.ID, event.ID)
+						openPaidAtExpr := fmt.Sprintf("@get('/groups/%s/members/%s/events/%s/paid_at')", data.GroupID, data.Member.ID, event.ID)
 						paidLabel := ctxi18n.T(ctx, "table.unpaid")
 						if event.ParticipantPaid == 1 {
 							paidLabel = ctxi18n.T(ctx, "table.paid")
@@ -150,7 +151,27 @@ templ MemberShowMain(data MemberData) {
 								{ paidLabel }
 							}
 						</td>
-						<td>{ paidAtLabel }</td>
+						<td>
+							<div class="row">
+								<span>
+									if paidAtLabel != "" {
+										{ paidAtLabel }
+									} else {
+										-
+									}
+								</span>
+								if data.IsAdmin {
+									@shared.IconActionButton(shared.IconActionButtonProps{
+										ClassName:    "btn btn-xs btn-text",
+										OnClick:      openPaidAtExpr,
+										DisabledExpr: "false",
+										AriaLabel:    ctxi18n.T(ctx, "actions.edit"),
+										Title:        ctxi18n.T(ctx, "actions.edit"),
+										IconName:     icons.IconPencil,
+									})
+								}
+							</div>
+						</td>
 					</tr>
 				}
 				if len(data.Events) == 0 {
@@ -161,6 +182,7 @@ templ MemberShowMain(data MemberData) {
 			</tbody>
 		}
 	</div>
+	@ParticipantPaidAtDialog()
 	if data.IsAdmin {
 		<div data-show="$formState === 'edit'" style="display: none">
 			<form class="form" data-on:submit={ updateExpr } data-indicator:_fetching>

@@ -14,7 +14,20 @@ func eventIndexSignals(query utils.TableQuery) map[string]any {
 		"eventFormState":  "",
 		"summaryMode":     query.Summary,
 		"_fetching":       false,
-		"errors":          map[string]any{"title": "", "time": "", "place": "", "description": "", "amount": "", "memberId": "", "expense": ""},
+		"paidAtDialog": map[string]any{
+			"open":        false,
+			"fetching":    false,
+			"mode":        "table",
+			"title":       "",
+			"message":     "",
+			"value":       "",
+			"placeholder": "",
+			"submitLabel": "",
+			"cancelLabel": "",
+			"url":         "",
+			"triggerID":   "",
+		},
+		"errors": map[string]any{"title": "", "time": "", "place": "", "description": "", "amount": "", "memberId": "", "expense": ""},
 	}
 }
 
@@ -94,6 +107,7 @@ func eventShowSignals(data EventData) map[string]any {
 		"paidAtDialog": map[string]any{
 			"open":        data.PaidAtDialog.Open,
 			"fetching":    data.PaidAtDialog.Fetching,
+			"mode":        data.PaidAtDialog.Mode,
 			"title":       data.PaidAtDialog.Title,
 			"message":     data.PaidAtDialog.Message,
 			"value":       data.PaidAtDialog.Value,

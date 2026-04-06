@@ -1237,6 +1237,7 @@ func (e *Events) openPaidAtDialog(c echo.Context, groupID, id string, tableQuery
 	data.IsSuperAdmin = middleware.IsSuperadmin(c)
 	data.PaidAtDialog = PaidAtDialogState{
 		Open:  true,
+		Mode:  "single",
 		Title: ctxi18n.T(c.Request().Context(), "fields.paid_at"),
 		Value: func() string {
 			if data.Event.PaidAt.Valid {
@@ -1254,6 +1255,71 @@ func (e *Events) openPaidAtDialog(c echo.Context, groupID, id string, tableQuery
 	html, err := utils.RenderHTMLForRequest(c, EventShowPage(data))
 	if err != nil {
 		slog.Error("event.openPaidAtDialog: failed to render", "err", err)
+		return c.NoContent(http.StatusInternalServerError)
+	}
+
+	utils.SSEHub.PatchHTML(c, html)
+	utils.SSEHub.PatchSignals(c, data.Signals)
+	return c.NoContent(http.StatusOK)
+}
+
+func (e *Events) openPaidAtDialogInIndex(c echo.Context, groupID, id string, tableQuery utils.TableQuery) error {
+	query := utils.NormalizeTableQuery(tableQuery, e.TableQuerySpec())
+	data, err := e.GetIndexData(c.Request().Context(), groupID, query)
+	if err != nil {
+		slog.Error("event.openPaidAtDialogInIndex: failed to get data", "err", err)
+		return c.NoContent(http.StatusInternalServerError)
+	}
+	applyEventIndexTableByRole(&data, middleware.IsAdmin(c))
+	data.IsAuthenticated = true
+	data.IsSuperAdmin = middleware.IsSuperadmin(c)
+
+	paidAtValue := ""
+	eventTitle := ""
+	found := false
+	for _, event := range data.Events {
+		if event.ID != id {
+			continue
+		}
+		found = true
+		eventTitle = strings.TrimSpace(event.Title)
+		if event.PaidAt.Valid {
+			paidAtValue = utils.FormatDateInput(event.PaidAt.String)
+		}
+		break
+	}
+	if !found {
+		slog.Info("event.openPaidAtDialogInIndex: event not found in page data", "event_id", id)
+	}
+
+	data.PaidAtDialog = PaidAtDialogState{
+		Open:        true,
+		Mode:        "table",
+		Title:       ctxi18n.T(c.Request().Context(), "fields.paid_at"),
+		Message:     eventTitle,
+		Value:       paidAtValue,
+		SubmitLabel: ctxi18n.T(c.Request().Context(), "table.apply"),
+		CancelLabel: ctxi18n.T(c.Request().Context(), "actions.cancel"),
+		URL:         "/groups/" + groupID + "/events/" + id + "/paid_at",
+		TriggerID:   "event-index-paid-at-edit",
+	}
+	data.Signals = eventIndexSignals(data.Query)
+	if paidAtDialog, ok := data.Signals["paidAtDialog"].(map[string]any); ok {
+		paidAtDialog["open"] = data.PaidAtDialog.Open
+		paidAtDialog["fetching"] = data.PaidAtDialog.Fetching
+		paidAtDialog["mode"] = data.PaidAtDialog.Mode
+		paidAtDialog["title"] = data.PaidAtDialog.Title
+		paidAtDialog["message"] = data.PaidAtDialog.Message
+		paidAtDialog["value"] = data.PaidAtDialog.Value
+		paidAtDialog["submitLabel"] = data.PaidAtDialog.SubmitLabel
+		paidAtDialog["cancelLabel"] = data.PaidAtDialog.CancelLabel
+		paidAtDialog["url"] = data.PaidAtDialog.URL
+		paidAtDialog["triggerID"] = data.PaidAtDialog.TriggerID
+	}
+
+	html, err := utils.RenderHTMLForRequest(c, EventIndexPage(data))
+	if err != nil {
+		slog.Error("event.openPaidAtDialogInIndex: failed to render", "err", err)
 		return c.NoContent(http.StatusInternalServerError)
 	}
 
@@ -1378,7 +1444,7 @@ func (e *Events) openParticipantPaidAtDialog(c echo.Context, groupID, id, member
 	return c.NoContent(http.StatusOK)
 }
 
-func (e *Events) patchUpdatePaidAt(c echo.Context, groupID, id, _ string, tableQuery utils.TableQuery, value string) error {
+func (e *Events) patchUpdatePaidAt(c echo.Context, groupID, id, mode string, tableQuery utils.TableQuery, value string) error {
 	paidAt := normalizePaidAtInput(value)
 
 	_, err := db.Qry.UpdateEventPaidAt(c.Request().Context(), db.UpdateEventPaidAtParams{
@@ -1396,6 +1462,34 @@ func (e *Events) patchUpdatePaidAt(c echo.Context, groupID, id, _ string, tableQ
 
 	// Clear cache to ensure fresh data on next load
 	utils.InvalidateGroupCaches(groupID)
+
+	if mode == "table" {
+		query := utils.NormalizeTableQuery(tableQuery, e.TableQuerySpec())
+		data, err := e.GetIndexData(c.Request().Context(), groupID, query)
+		if err != nil {
+			slog.Error("event.updatePaidAt: failed to get index data", "err", err)
+			return c.NoContent(http.StatusInternalServerError)
+		}
+		applyEventIndexTableByRole(&data, middleware.IsAdmin(c))
+		data.Signals = eventIndexSignals(data.Query)
+		data.IsAuthenticated = true
+		data.IsSuperAdmin = middleware.IsSuperadmin(c)
+		html, err := utils.RenderHTMLForRequest(c, EventIndexPage(data))
+		if err != nil {
+			slog.Error("event.updatePaidAt: failed to render index", "err", err)
+			return c.NoContent(http.StatusInternalServerError)
+		}
+
+		utils.SSEHub.PatchHTML(c, html)
+		utils.SSEHub.PatchSignals(c, map[string]any{
+			"paidAtDialog": map[string]any{
+				"open":      false,
+				"fetching":  false,
+				"triggerID": "",
+			},
+		})
+		return c.NoContent(http.StatusOK)
+	}
 
 	query := utils.NormalizeTableQuery(tableQuery, e.ParticipantTableQuerySpec())
 	data, err := e.GetShowData(c.Request().Context(), groupID, id, query)
@@ -1591,11 +1685,20 @@ func (e *Events) OpenPaidAtPrompt(c echo.Context) error {
 		return c.NoContent(http.StatusBadRequest)
 	}
 	query := parseParticipantTableQuery(c, e)
+	mode := "single"
 	var signals modeParams
 	if err := datastar.ReadSignals(c.Request(), &signals); err == nil {
 		if utils.SetTabID(c, signals.TabID) {
-			query = utils.NormalizeTableQuery(signals.TableQuery, e.ParticipantTableQuerySpec())
+			if signals.Mode == "table" {
+				query = utils.NormalizeTableQuery(signals.TableQuery, e.TableQuerySpec())
+			} else {
+				query = utils.NormalizeTableQuery(signals.TableQuery, e.ParticipantTableQuerySpec())
+			}
+			mode = strings.TrimSpace(signals.Mode)
 		}
+	}
+	if mode == "table" {
+		return e.openPaidAtDialogInIndex(c, groupID, id, query)
 	}
 
 	return e.openPaidAtDialog(c, groupID, id, query)

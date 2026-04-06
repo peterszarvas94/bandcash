@@ -29,5 +29,17 @@ func memberShowSignals(data MemberData) map[string]any {
 			"name":        "",
 			"description": "",
 		},
+		"participantPaidAtDialog": map[string]any{
+			"open":        data.PaidAtDialog.Open,
+			"fetching":    data.PaidAtDialog.Fetching,
+			"title":       data.PaidAtDialog.Title,
+			"message":     data.PaidAtDialog.Message,
+			"eventId":     data.PaidAtDialog.EventID,
+			"value":       data.PaidAtDialog.Value,
+			"submitLabel": data.PaidAtDialog.SubmitLabel,
+			"cancelLabel": data.PaidAtDialog.CancelLabel,
+			"url":         data.PaidAtDialog.URL,
+			"triggerID":   data.PaidAtDialog.TriggerID,
+		},
 	}
 }

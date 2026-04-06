@@ -38,6 +38,7 @@ type EventData struct {
 type PaidAtDialogState struct {
 	Open        bool
 	Fetching    bool
+	Mode        string
 	Title       string
 	Message     string
 	Value       string
@@ -122,4 +123,5 @@ type EventsData struct {
 	FilteredExpensesPaid   int64
 	FilteredExpensesUnpaid int64
 	EventsTable            utils.TableLayout
+	PaidAtDialog           PaidAtDialogState
 }

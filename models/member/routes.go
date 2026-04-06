@@ -21,6 +21,8 @@ func RegisterRoutes(e *echo.Echo) *Members {
 	admin.GET("/members/:id/edit", members.EditMemberPage)
 	admin.POST("/members", members.Create)
 	admin.PUT("/members/:id", members.Update)
+	admin.GET("/members/:id/events/:eventId/paid_at", members.OpenParticipantPaidAtDialog)
+	admin.POST("/members/:id/events/:eventId/paid_at", members.UpdateParticipantPaidAt)
 	admin.PUT("/members/:id/events/:eventId/toggle-paid", members.ToggleParticipantPaid)
 	admin.DELETE("/members/:id", members.Destroy)
 

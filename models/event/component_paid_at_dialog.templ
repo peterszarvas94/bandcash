@@ -12,7 +12,7 @@ templ PaidAtDialog() {
 		cancelExpr := `$paidAtDialog.fetching && evt.preventDefault()`
 		dialogEffect := `$paidAtDialog.open ? (!el.open && el.showModal()) : (el.open && el.close())`
 		dialogCloseExpr := `$paidAtDialog.open = false; $paidAtDialog.fetching = false`
-		submitExpr := `!$paidAtDialog.fetching && (el.open && el.close(), $paidAtDialog.fetching = true, @post($paidAtDialog.url, {mode: 'single', tableQuery: $tableQuery}))`
+		submitExpr := `!$paidAtDialog.fetching && (el.open && el.close(), $paidAtDialog.fetching = true, @post($paidAtDialog.url, {mode: $paidAtDialog.mode || 'single', tableQuery: $tableQuery}))`
 		fetchDoneExpr := `$paidAtDialog.fetching && ['finished', 'error', 'retries-failed'].includes(evt.detail.type) && ($paidAtDialog.fetching = false, $paidAtDialog.open = false)`
 	}}
 	@shared.DialogShell(shared.DialogProps{

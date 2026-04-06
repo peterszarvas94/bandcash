@@ -39,6 +39,20 @@ type MemberData struct {
 	TotalPaid       int64
 	TotalUnpaid     int64
 	EventsTable     utils.TableLayout
+	PaidAtDialog    ParticipantPaidAtDialogState
+}
+
+type ParticipantPaidAtDialogState struct {
+	Open        bool
+	Fetching    bool
+	Title       string
+	Message     string
+	EventID     string
+	Value       string
+	SubmitLabel string
+	CancelLabel string
+	URL         string
+	TriggerID   string
 }
 
 type MembersData struct {
