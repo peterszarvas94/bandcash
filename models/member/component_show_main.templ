@@ -157,6 +157,13 @@ templ MemberShowMain(data MemberData) {
 						</td>
 						<td class="text-right">
 							<div class="row row-right">
+								<span>
+									if paidAtLabel != "" {
+										{ paidAtLabel }
+									} else {
+										-
+									}
+								</span>
 								if data.IsAdmin {
 									@shared.IconActionButton(shared.IconActionButtonProps{
 										ClassName:    "btn btn-xs btn-text",
@@ -167,13 +174,6 @@ templ MemberShowMain(data MemberData) {
 										IconName:     icons.IconPencil,
 									})
 								}
-								<span>
-									if paidAtLabel != "" {
-										{ paidAtLabel }
-									} else {
-										-
-									}
-								</span>
 							</div>
 						</td>
 					</tr>

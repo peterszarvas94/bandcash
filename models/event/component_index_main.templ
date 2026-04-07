@@ -163,6 +163,13 @@ templ EventIndexMain(data EventsData) {
 					</td>
 					<td class="text-right">
 						<div class="row row-right">
+							<span>
+								if paidAtLabel != "" {
+									{ paidAtLabel }
+								} else {
+									-
+								}
+							</span>
 							if data.IsAdmin {
 								@shared.IconActionButton(shared.IconActionButtonProps{
 									ClassName:    "btn btn-xs btn-text",
@@ -173,13 +180,6 @@ templ EventIndexMain(data EventsData) {
 									IconName:     icons.IconPencil,
 								})
 							}
-							<span>
-								if paidAtLabel != "" {
-									{ paidAtLabel }
-								} else {
-									-
-								}
-							</span>
 						</div>
 					</td>
 				</tr>

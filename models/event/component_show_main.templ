@@ -141,8 +141,13 @@ templ EventShowMain(data EventData) {
 						<td class="text-right">{ utils.FormatNumberLocalized(ctx, participant.ParticipantAmount) }</td>
 						<td class="text-right">{ utils.FormatNumberLocalized(ctx, participant.ParticipantExpense) }</td>
 						<td class="text-right">{ utils.FormatNumberLocalized(ctx, participant.ParticipantAmount+participant.ParticipantExpense) }</td>
-						<td style={ fmt.Sprintf("--max-w: %drem", data.ParticipantsTable.ColMaxWRem("note")) }>
-							<div class="row">
+						<td class="text-right" style={ fmt.Sprintf("--max-w: %drem", data.ParticipantsTable.ColMaxWRem("note")) }>
+							<div class="row row-right">
+								if noteValue != "" {
+									<span class="cell-ellipsis" title={ noteValue }>{ noteValue }</span>
+								} else {
+									<span class="text-muted">-</span>
+								}
 								if data.IsAdmin {
 									@shared.IconActionButton(shared.IconActionButtonProps{
 										ClassName:    "btn btn-xs btn-text",
@@ -162,11 +167,6 @@ templ EventShowMain(data EventData) {
 										IconName:     icons.IconEye,
 									})
 								}
-								if noteValue != "" {
-									<span class="cell-ellipsis" title={ noteValue }>{ noteValue }</span>
-								} else {
-									<span class="text-muted">-</span>
-								}
 							</div>
 						</td>
 						<td class="text-right">
@@ -183,6 +183,13 @@ templ EventShowMain(data EventData) {
 						</td>
 						<td class="text-right">
 							<div class="row row-right">
+								<span>
+									if paidAtLabel != "" {
+										{ paidAtLabel }
+									} else {
+										-
+									}
+								</span>
 								if data.IsAdmin {
 									@shared.IconActionButton(shared.IconActionButtonProps{
 										ClassName:    "btn btn-xs btn-text",
@@ -193,13 +200,6 @@ templ EventShowMain(data EventData) {
 										IconName:     icons.IconPencil,
 									})
 								}
-								<span>
-									if paidAtLabel != "" {
-										{ paidAtLabel }
-									} else {
-										-
-									}
-								</span>
 							</div>
 						</td>
 					</tr>

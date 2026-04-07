@@ -12,6 +12,9 @@ templ Footer(isSuperAdmin bool, activeUrl string) {
 			<div>
 				<p>{ ctxi18n.T(ctx, "app.title") }</p>
 				<p>© Szarvas Péter 2026</p>
+				<a class="link" href="https://peterszarvas.hu" target="_blank" rel="noopener noreferrer">
+					peterszarvas.hu
+				</a>
 			</div>
 			<div>
 				<a class={ "link", templ.KV("link-active", activeUrl == "/pricing") } href="/pricing">
