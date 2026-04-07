@@ -34,7 +34,7 @@ templ MemberIndexMain(data MembersData) {
 			for _, member := range data.Members {
 				<tr>
 					<td><a class="table-link" href={ fmt.Sprintf("/groups/%s/members/%s", data.GroupID, member.ID) }>{ member.Name }</a></td>
-					<td><span class="cell-ellipsis">{ member.Description }</span></td>
+					<td><span class="cell-ellipsis" title={ member.Description }>{ member.Description }</span></td>
 				</tr>
 			}
 			if len(data.Members) == 0 {

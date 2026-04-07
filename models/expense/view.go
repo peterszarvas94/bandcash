@@ -25,6 +25,7 @@ type ExpensesData struct {
 	FilteredPaid       int64
 	FilteredUnpaid     int64
 	ExpensesTable      utils.TableLayout
+	PaidAtDialog       PaidAtDialogState
 }
 
 type ExpenseData struct {
@@ -34,8 +35,23 @@ type ExpenseData struct {
 	Signals         map[string]any
 	GroupID         string
 	IsAdmin         bool
+	PaidAtDialog    PaidAtDialogState
 	IsAuthenticated bool
 	IsSuperAdmin    bool
+}
+
+type PaidAtDialogState struct {
+	Open        bool
+	Fetching    bool
+	Mode        string
+	Title       string
+	Message     string
+	Value       string
+	Placeholder string
+	SubmitLabel string
+	CancelLabel string
+	URL         string
+	TriggerID   string
 }
 
 type NewExpensePageData struct {

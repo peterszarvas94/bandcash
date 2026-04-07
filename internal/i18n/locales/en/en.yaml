@@ -419,6 +419,7 @@ en:
       owner_required: "Only the owner can transfer group ownership"
       already_owner: "User is already owner"
       at_least_one_admin: "Groups should have at least one admin"
+      transfer_group_before_removing_owner: "Transfer group ownership before removing yourself"
       leave_failed: "Failed to leave group"
       delete_failed: "Failed to delete group"
   admin:

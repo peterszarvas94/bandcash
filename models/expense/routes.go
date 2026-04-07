@@ -20,6 +20,8 @@ func RegisterRoutes(e *echo.Echo) *Expenses {
 	admin.PUT("/expenses/:id", expenses.Update)
 	admin.DELETE("/expenses/:id", expenses.Destroy)
 	admin.PUT("/expenses/:id/toggle-paid", expenses.TogglePaid)
+	admin.GET("/expenses/:id/paid_at", expenses.OpenPaidAtPrompt)
+	admin.POST("/expenses/:id/paid_at", expenses.UpdatePaidAt)
 
 	return expenses
 }

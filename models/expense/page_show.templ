@@ -13,7 +13,7 @@ templ ExpenseShowPage(data ExpenseData) {
 		ActiveUrl:       "/groups",
 		IsAuthenticated: data.IsAuthenticated,
 		IsSuperAdmin:    data.IsSuperAdmin,
-		TabSidebar:      shared.GroupTabs(data.GroupID, "expenses"),
+		TabSidebar:      shared.GroupSidebar(data.GroupID, "expenses"),
 		TabToggleID:     data.GroupID,
 	})
 }

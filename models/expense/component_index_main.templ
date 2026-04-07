@@ -95,6 +95,7 @@ templ ExpenseIndexMain(data ExpensesData) {
 			for _, expense := range data.Expenses {
 				{{
 					togglePaidExpr := fmt.Sprintf("@put('/groups/%s/expenses/%s/toggle-paid', {mode: 'table', tableQuery: $tableQuery})", data.GroupID, expense.ID)
+					openPaidAtExpr := fmt.Sprintf("@get('/groups/%s/expenses/%s/paid_at', {mode: 'table', tableQuery: $tableQuery})", data.GroupID, expense.ID)
 					paidLabel := ctxi18n.T(ctx, "table.unpaid")
 					if expense.Paid == 1 {
 						paidLabel = ctxi18n.T(ctx, "table.paid")
@@ -105,7 +106,7 @@ templ ExpenseIndexMain(data ExpensesData) {
 					}
 				}}
 				<tr>
-					<td><a class="table-link cell-ellipsis" href={ fmt.Sprintf("/groups/%s/expenses/%s", data.GroupID, expense.ID) }>{ expense.Title }</a></td>
+					<td><a class="table-link cell-ellipsis" href={ fmt.Sprintf("/groups/%s/expenses/%s", data.GroupID, expense.ID) } title={ expense.Title }>{ expense.Title }</a></td>
 					<td>{ utils.FormatDateLocalized(ctx, expense.Date) }</td>
 					<td class="text-right">{ utils.FormatNumberLocalized(ctx, expense.Amount) }</td>
 					<td>
@@ -120,7 +121,27 @@ templ ExpenseIndexMain(data ExpensesData) {
 							{ paidLabel }
 						}
 					</td>
-					<td>{ paidAtLabel }</td>
+					<td>
+						<div class="row">
+							if data.IsAdmin {
+								@shared.IconActionButton(shared.IconActionButtonProps{
+									ClassName:    "btn btn-xs btn-text",
+									OnClick:      openPaidAtExpr,
+									DisabledExpr: "false",
+									AriaLabel:    ctxi18n.T(ctx, "actions.edit"),
+									Title:        ctxi18n.T(ctx, "actions.edit"),
+									IconName:     icons.IconPencil,
+								})
+							}
+							<span>
+								if paidAtLabel != "" {
+									{ paidAtLabel }
+								} else {
+									-
+								}
+							</span>
+						</div>
+					</td>
 				</tr>
 			}
 			if len(data.Expenses) == 0 {
@@ -130,4 +151,5 @@ templ ExpenseIndexMain(data ExpensesData) {
 			}
 		</tbody>
 	}
+	@PaidAtDialog()
 }

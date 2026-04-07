@@ -37,6 +37,15 @@ type modeParams struct {
 	TableQuery utils.TableQuery `json:"tableQuery"`
 }
 
+type paidAtParams struct {
+	TabID        string           `json:"tab_id"`
+	Mode         string           `json:"mode"`
+	TableQuery   utils.TableQuery `json:"tableQuery"`
+	PaidAtDialog struct {
+		Value string `json:"value"`
+	} `json:"paidAtDialog"`
+}
+
 var (
 	defaultExpenseSignals = map[string]any{
 		"mode":      "table",
@@ -401,6 +410,246 @@ func (e *Expenses) Destroy(c echo.Context) error {
 	utils.SSEHub.PatchHTML(c, html)
 
 	return c.NoContent(http.StatusOK)
+}
+
+func (e *Expenses) openPaidAtDialog(c echo.Context, groupID, id string, _ utils.TableQuery) error {
+	data, err := e.GetShowData(c.Request().Context(), groupID, id)
+	if err != nil {
+		slog.Error("expense.openPaidAtDialog: failed to get data", "err", err)
+		return c.NoContent(http.StatusInternalServerError)
+	}
+	data.IsAdmin = middleware.IsAdmin(c)
+	data.IsAuthenticated = true
+	data.IsSuperAdmin = middleware.IsSuperadmin(c)
+	data.PaidAtDialog = PaidAtDialogState{
+		Open:  true,
+		Mode:  "single",
+		Title: ctxi18n.T(c.Request().Context(), "fields.paid_at"),
+		Value: func() string {
+			if data.Expense.PaidAt.Valid {
+				return utils.FormatDateInput(data.Expense.PaidAt.String)
+			}
+			return ""
+		}(),
+		SubmitLabel: ctxi18n.T(c.Request().Context(), "table.apply"),
+		CancelLabel: ctxi18n.T(c.Request().Context(), "actions.cancel"),
+		URL:         "/groups/" + groupID + "/expenses/" + id + "/paid_at",
+		TriggerID:   "expense-amount-paid-at-edit",
+	}
+	data.Signals = expenseShowSignals(data)
+
+	html, err := utils.RenderHTMLForRequest(c, ExpenseShowPage(data))
+	if err != nil {
+		slog.Error("expense.openPaidAtDialog: failed to render", "err", err)
+		return c.NoContent(http.StatusInternalServerError)
+	}
+
+	utils.SSEHub.PatchHTML(c, html)
+	utils.SSEHub.PatchSignals(c, data.Signals)
+	return c.NoContent(http.StatusOK)
+}
+
+func (e *Expenses) openPaidAtDialogInIndex(c echo.Context, groupID, id string, tableQuery utils.TableQuery) error {
+	query := utils.NormalizeTableQuery(tableQuery, e.TableQuerySpec())
+	data, err := e.GetIndexData(c.Request().Context(), groupID, query)
+	if err != nil {
+		slog.Error("expense.openPaidAtDialogInIndex: failed to get data", "err", err)
+		return c.NoContent(http.StatusInternalServerError)
+	}
+	applyExpenseTableByRole(&data, middleware.IsAdmin(c))
+	data.IsAuthenticated = true
+	data.IsSuperAdmin = middleware.IsSuperadmin(c)
+
+	paidAtValue := ""
+	expenseTitle := ""
+	found := false
+	for _, expense := range data.Expenses {
+		if expense.ID != id {
+			continue
+		}
+		found = true
+		expenseTitle = strings.TrimSpace(expense.Title)
+		if expense.PaidAt.Valid {
+			paidAtValue = utils.FormatDateInput(expense.PaidAt.String)
+		}
+		break
+	}
+	if !found {
+		slog.Info("expense.openPaidAtDialogInIndex: expense not found in page data", "expense_id", id)
+	}
+
+	data.PaidAtDialog = PaidAtDialogState{
+		Open:        true,
+		Mode:        "table",
+		Title:       ctxi18n.T(c.Request().Context(), "fields.paid_at"),
+		Message:     expenseTitle,
+		Value:       paidAtValue,
+		SubmitLabel: ctxi18n.T(c.Request().Context(), "table.apply"),
+		CancelLabel: ctxi18n.T(c.Request().Context(), "actions.cancel"),
+		URL:         "/groups/" + groupID + "/expenses/" + id + "/paid_at",
+		TriggerID:   "expense-index-paid-at-edit",
+	}
+	data.Signals = expenseIndexSignals(data.Query)
+	if paidAtDialog, ok := data.Signals["paidAtDialog"].(map[string]any); ok {
+		paidAtDialog["open"] = data.PaidAtDialog.Open
+		paidAtDialog["fetching"] = data.PaidAtDialog.Fetching
+		paidAtDialog["mode"] = data.PaidAtDialog.Mode
+		paidAtDialog["title"] = data.PaidAtDialog.Title
+		paidAtDialog["message"] = data.PaidAtDialog.Message
+		paidAtDialog["value"] = data.PaidAtDialog.Value
+		paidAtDialog["submitLabel"] = data.PaidAtDialog.SubmitLabel
+		paidAtDialog["cancelLabel"] = data.PaidAtDialog.CancelLabel
+		paidAtDialog["url"] = data.PaidAtDialog.URL
+		paidAtDialog["triggerID"] = data.PaidAtDialog.TriggerID
+	}
+
+	html, err := utils.RenderHTMLForRequest(c, ExpenseIndexPage(data))
+	if err != nil {
+		slog.Error("expense.openPaidAtDialogInIndex: failed to render", "err", err)
+		return c.NoContent(http.StatusInternalServerError)
+	}
+
+	utils.SSEHub.PatchHTML(c, html)
+	utils.SSEHub.PatchSignals(c, data.Signals)
+	return c.NoContent(http.StatusOK)
+}
+
+func (e *Expenses) patchUpdatePaidAt(c echo.Context, groupID, id, mode string, tableQuery utils.TableQuery, value string) error {
+	paidAt := normalizePaidAtInput(value)
+
+	expense, err := db.Qry.GetExpense(c.Request().Context(), db.GetExpenseParams{
+		ID:      id,
+		GroupID: groupID,
+	})
+	if err != nil {
+		slog.Error("expense.updatePaidAt: failed to get expense", "err", err)
+		utils.Notify(c, ctxi18n.T(c.Request().Context(), "expenses.notifications.update_failed"))
+		return c.NoContent(http.StatusInternalServerError)
+	}
+
+	paid := expense.Paid
+	if paid == 0 && paidAt != "" {
+		paid = 1
+	}
+
+	_, err = db.Qry.UpdateExpense(c.Request().Context(), db.UpdateExpenseParams{
+		Title:       expense.Title,
+		Description: expense.Description,
+		Amount:      expense.Amount,
+		Date:        expense.Date,
+		Paid:        paid,
+		PaidAt:      paidAt,
+		ID:          id,
+		GroupID:     groupID,
+	})
+	if err != nil {
+		slog.Error("expense.updatePaidAt: failed to update paid_at", "err", err)
+		utils.Notify(c, ctxi18n.T(c.Request().Context(), "expenses.notifications.update_failed"))
+		return c.NoContent(http.StatusInternalServerError)
+	}
+
+	utils.Notify(c, ctxi18n.T(c.Request().Context(), "expenses.notifications.updated"))
+	utils.InvalidateGroupCaches(groupID)
+
+	if mode == "table" {
+		query := utils.NormalizeTableQuery(tableQuery, e.TableQuerySpec())
+		data, err := e.GetIndexData(c.Request().Context(), groupID, query)
+		if err != nil {
+			slog.Error("expense.updatePaidAt: failed to get index data", "err", err)
+			return c.NoContent(http.StatusInternalServerError)
+		}
+		applyExpenseTableByRole(&data, middleware.IsAdmin(c))
+		data.Signals = expenseIndexSignals(data.Query)
+		data.IsAuthenticated = true
+		data.IsSuperAdmin = middleware.IsSuperadmin(c)
+		html, err := utils.RenderHTMLForRequest(c, ExpenseIndexPage(data))
+		if err != nil {
+			slog.Error("expense.updatePaidAt: failed to render index", "err", err)
+			return c.NoContent(http.StatusInternalServerError)
+		}
+
+		utils.SSEHub.PatchHTML(c, html)
+		utils.SSEHub.PatchSignals(c, map[string]any{
+			"paidAtDialog": map[string]any{
+				"open":      false,
+				"fetching":  false,
+				"triggerID": "",
+			},
+		})
+		return c.NoContent(http.StatusOK)
+	}
+
+	data, err := e.GetShowData(c.Request().Context(), groupID, id)
+	if err != nil {
+		slog.Error("expense.updatePaidAt: failed to get data", "err", err)
+		return c.NoContent(http.StatusInternalServerError)
+	}
+	data.IsAdmin = middleware.IsAdmin(c)
+	data.Signals = expenseShowSignals(data)
+	data.IsAuthenticated = true
+	data.IsSuperAdmin = middleware.IsSuperadmin(c)
+	html, err := utils.RenderHTMLForRequest(c, ExpenseShowPage(data))
+	if err != nil {
+		slog.Error("expense.updatePaidAt: failed to render", "err", err)
+		return c.NoContent(http.StatusInternalServerError)
+	}
+
+	utils.SSEHub.PatchHTML(c, html)
+	utils.SSEHub.PatchSignals(c, map[string]any{
+		"paidAtDialog": map[string]any{
+			"open":      false,
+			"fetching":  false,
+			"triggerID": "",
+		},
+	})
+	return c.NoContent(http.StatusOK)
+}
+
+func (e *Expenses) OpenPaidAtPrompt(c echo.Context) error {
+	groupID := middleware.GetGroupID(c)
+
+	id := c.Param("id")
+	if !utils.IsValidID(id, utils.PrefixExpense) {
+		slog.Info("expense.openPaidAtPrompt: invalid id")
+		return c.NoContent(http.StatusBadRequest)
+	}
+
+	query := utils.ParseTableQuery(c, e)
+	mode := "single"
+	var signals modeParams
+	if err := datastar.ReadSignals(c.Request(), &signals); err == nil {
+		if utils.SetTabID(c, signals.TabID) {
+			query = utils.NormalizeTableQuery(signals.TableQuery, e.TableQuerySpec())
+			mode = strings.TrimSpace(signals.Mode)
+		}
+	}
+	if mode == "table" {
+		return e.openPaidAtDialogInIndex(c, groupID, id, query)
+	}
+
+	return e.openPaidAtDialog(c, groupID, id, query)
+}
+
+func (e *Expenses) UpdatePaidAt(c echo.Context) error {
+	groupID := middleware.GetGroupID(c)
+
+	id := c.Param("id")
+	if !utils.IsValidID(id, utils.PrefixExpense) {
+		slog.Info("expense.updatePaidAt: invalid id")
+		return c.NoContent(http.StatusBadRequest)
+	}
+
+	var signals paidAtParams
+	err := datastar.ReadSignals(c.Request(), &signals)
+	if err != nil {
+		slog.Info("expense.updatePaidAt: failed to read signals", "err", err)
+		return c.NoContent(http.StatusBadRequest)
+	}
+	if !utils.SetTabID(c, signals.TabID) {
+		return c.NoContent(http.StatusBadRequest)
+	}
+
+	return e.patchUpdatePaidAt(c, groupID, id, signals.Mode, signals.TableQuery, signals.PaidAtDialog.Value)
 }
 
 func (e *Expenses) TogglePaid(c echo.Context) error {

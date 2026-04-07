@@ -13,7 +13,7 @@ templ EventEditPage(data EventData) {
 		ActiveUrl:       "/groups",
 		IsAuthenticated: data.IsAuthenticated,
 		IsSuperAdmin:    data.IsSuperAdmin,
-		TabSidebar:      shared.GroupTabs(data.GroupID, "events"),
+		TabSidebar:      shared.GroupSidebar(data.GroupID, "events"),
 		TabToggleID:     data.GroupID,
 	})
 }

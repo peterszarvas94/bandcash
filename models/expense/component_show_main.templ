@@ -11,6 +11,7 @@ import (
 templ ExpenseShowMain(data ExpenseData) {
 	{{
 		togglePaidExpr := fmt.Sprintf("@put('/groups/%s/expenses/%s/toggle-paid', {mode: 'single'})", data.GroupID, data.Expense.ID)
+		openPaidAtExpr := fmt.Sprintf("@get('/groups/%s/expenses/%s/paid_at')", data.GroupID, data.Expense.ID)
 		paidAt := "-"
 		if data.Expense.PaidAt.Valid {
 			paidAt = utils.FormatDateLocalized(ctx, utils.FormatDateInput(data.Expense.PaidAt.String))
@@ -40,7 +41,10 @@ templ ExpenseShowMain(data ExpenseData) {
 			Amount:         utils.FormatNumberLocalized(ctx, data.Expense.Amount),
 			PaidAt:         paidAt,
 			IsPaid:         data.Expense.Paid == 1,
+			CanEditPaidAt:  data.IsAdmin,
+			OpenPaidAtExpr: openPaidAtExpr,
 			TogglePaidExpr: togglePaidExpr,
 		})
 	</div>
+	@PaidAtDialog()
 }

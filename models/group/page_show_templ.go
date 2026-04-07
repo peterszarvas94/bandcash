@@ -41,7 +41,7 @@ func GroupAboutPage(data GroupPageData) templ.Component {
 			ActiveUrl:       "/groups",
 			IsAuthenticated: data.IsAuthenticated,
 			IsSuperAdmin:    data.IsSuperAdmin,
-			TabSidebar:      shared.GroupTabs(data.Group.ID, "about"),
+			TabSidebar:      shared.GroupSidebar(data.Group.ID, "about"),
 			TabToggleID:     data.Group.ID,
 		}).Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {

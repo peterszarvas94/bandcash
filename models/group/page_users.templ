@@ -17,7 +17,7 @@ templ GroupUsersPage(data UsersPageData) {
 		ActiveUrl:       "/groups",
 		IsAuthenticated: data.IsAuthenticated,
 		IsSuperAdmin:    data.IsSuperAdmin,
-		TabSidebar:      shared.GroupTabs(data.GroupID, "users"),
+		TabSidebar:      shared.GroupSidebar(data.GroupID, "users"),
 		TabToggleID:     data.GroupID,
 	})
 }

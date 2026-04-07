@@ -151,13 +151,6 @@ templ EventShowMain(data EventData) {
 						</td>
 						<td>
 							<div class="row">
-								<span>
-									if paidAtLabel != "" {
-										{ paidAtLabel }
-									} else {
-										-
-									}
-								</span>
 								if data.IsAdmin {
 									@shared.IconActionButton(shared.IconActionButtonProps{
 										ClassName:    "btn btn-xs btn-text",
@@ -168,15 +161,17 @@ templ EventShowMain(data EventData) {
 										IconName:     icons.IconPencil,
 									})
 								}
+								<span>
+									if paidAtLabel != "" {
+										{ paidAtLabel }
+									} else {
+										-
+									}
+								</span>
 							</div>
 						</td>
 						<td style={ fmt.Sprintf("--max-w: %drem", data.ParticipantsTable.ColMaxWRem("note")) }>
 							<div class="row">
-								if noteValue != "" {
-									<span class="cell-ellipsis">{ noteValue }</span>
-								} else {
-									<span class="text-muted">-</span>
-								}
 								if data.IsAdmin {
 									@shared.IconActionButton(shared.IconActionButtonProps{
 										ClassName:    "btn btn-xs btn-text",
@@ -195,6 +190,11 @@ templ EventShowMain(data EventData) {
 										Title:        ctxi18n.T(ctx, "participants.note"),
 										IconName:     icons.IconEye,
 									})
+								}
+								if noteValue != "" {
+									<span class="cell-ellipsis" title={ noteValue }>{ noteValue }</span>
+								} else {
+									<span class="text-muted">-</span>
 								}
 							</div>
 						</td>

@@ -90,27 +90,29 @@ func GroupUserDetailsActions(data UserPageData) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, "</a>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, "</a> ")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = shared.ConfirmActionButton(shared.ConfirmActionButtonProps{
-			ClassName:    "btn btn-sm",
-			DisabledExpr: "$_fetching",
-			Label:        ctxi18n.T(ctx, "actions.delete"),
-			IconName:     icons.IconTrash2,
-			Dialog: shared.ConfirmDialogProps{
-				Title:       ctxi18n.T(ctx, "groups.remove_viewer_confirm"),
-				Message:     ctxi18n.T(ctx, "confirm.destructive_message"),
-				SubmitLabel: ctxi18n.T(ctx, "actions.delete"),
-				CancelLabel: ctxi18n.T(ctx, "actions.cancel"),
-				Method:      "delete",
-				URL:         fmt.Sprintf("/groups/%s/users/%s", data.GroupID, data.UserRow.UserID),
-				TriggerID:   "group-user-delete",
-			},
-		}).Render(ctx, templ_7745c5c3_Buffer)
-		if templ_7745c5c3_Err != nil {
-			return templ_7745c5c3_Err
+		if !(data.CurrentUserID == data.UserRow.UserID && data.UserRow.Role == "owner") {
+			templ_7745c5c3_Err = shared.ConfirmActionButton(shared.ConfirmActionButtonProps{
+				ClassName:    "btn btn-sm",
+				DisabledExpr: "$_fetching",
+				Label:        ctxi18n.T(ctx, "actions.delete"),
+				IconName:     icons.IconTrash2,
+				Dialog: shared.ConfirmDialogProps{
+					Title:       ctxi18n.T(ctx, "groups.remove_viewer_confirm"),
+					Message:     ctxi18n.T(ctx, "confirm.destructive_message"),
+					SubmitLabel: ctxi18n.T(ctx, "actions.delete"),
+					CancelLabel: ctxi18n.T(ctx, "actions.cancel"),
+					Method:      "delete",
+					URL:         fmt.Sprintf("/groups/%s/users/%s", data.GroupID, data.UserRow.UserID),
+					TriggerID:   "group-user-delete",
+				},
+			}).Render(ctx, templ_7745c5c3_Buffer)
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
 		}
 		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 5, "</div>")
 		if templ_7745c5c3_Err != nil {

@@ -39,7 +39,7 @@ func GroupEditPage(data EditGroupPageData) templ.Component {
 			ActiveUrl:       "/groups",
 			IsAuthenticated: data.IsAuthenticated,
 			IsSuperAdmin:    data.IsSuperAdmin,
-			TabSidebar:      shared.GroupTabs(data.GroupID, "events"),
+			TabSidebar:      shared.GroupSidebar(data.GroupID, "events"),
 			TabToggleID:     data.GroupID,
 		}).Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {

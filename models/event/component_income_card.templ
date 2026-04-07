@@ -34,7 +34,6 @@ templ EventIncomeCard(props EventIncomeCardProps) {
 			<div class="paid-at">
 				<dt>{ ctxi18n.T(ctx, "fields.paid_at") }</dt>
 				<dd class="row">
-					<span>{ props.PaidAt }</span>
 					if props.CanEditPaidAt {
 						@shared.IconActionButton(shared.IconActionButtonProps{
 							ClassName:    "btn btn-xs btn-text",
@@ -45,6 +44,7 @@ templ EventIncomeCard(props EventIncomeCardProps) {
 							IconName:     icons.IconPencil,
 						})
 					}
+					<span>{ props.PaidAt }</span>
 				</dd>
 			</div>
 		</dl>

@@ -820,6 +820,16 @@ func (g *Group) RemoveViewer(c echo.Context) error {
 		return g.redirectUsersPage(c, groupID, "", "groups.errors.invalid_user", http.StatusBadRequest)
 	}
 	ctx := c.Request().Context()
+	currentUserID := middleware.GetUserID(c)
+	if currentUserID == userID {
+		role, roleErr := getGroupAccessRole(ctx, groupID, currentUserID)
+		if roleErr != nil {
+			return g.redirectUsersPage(c, groupID, "", "groups.errors.invalid_user", http.StatusBadRequest)
+		}
+		if role == "owner" {
+			return g.redirectUsersPage(c, groupID, "", "groups.errors.transfer_group_before_removing_owner", http.StatusConflict)
+		}
+	}
 	if isAdminUser(ctx, groupID, userID) {
 		if err := g.removeAdminAccess(ctx, groupID, userID); err != nil {
 			if err == errAtLeastOneAdmin {

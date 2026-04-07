@@ -419,6 +419,7 @@ hu:
       owner_required: "Csak a tulajdonos adhatja át a csoportot"
       already_owner: "A felhasználó már tulajdonos"
       at_least_one_admin: "A csoportban legalább egy adminnak kell lennie"
+      transfer_group_before_removing_owner: "Előbb add át a csoport tulajdonjogát, és csak utána távolíthatod el magad"
       leave_failed: "Kilépés sikertelen"
       delete_failed: "A csoport törlése sikertelen"
   admin:

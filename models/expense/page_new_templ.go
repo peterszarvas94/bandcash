@@ -41,7 +41,7 @@ func ExpenseNewPage(data NewExpensePageData) templ.Component {
 			ActiveUrl:       "/groups",
 			IsAuthenticated: data.IsAuthenticated,
 			IsSuperAdmin:    data.IsSuperAdmin,
-			TabSidebar:      shared.GroupTabs(data.GroupID, "expenses"),
+			TabSidebar:      shared.GroupSidebar(data.GroupID, "expenses"),
 			TabToggleID:     data.GroupID,
 		}).Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
