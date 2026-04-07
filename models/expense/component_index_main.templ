@@ -83,11 +83,15 @@ templ ExpenseIndexMain(data ExpensesData) {
 				@shared.THCol(data.ExpensesTable.ColMaxWRem("amount")) {
 					@shared.TableSortHeader(ctxi18n.T(ctx, "fields.expense"), "amount", data.Query, utils.BuildTableSortURL(fmt.Sprintf("/groups/%s/expenses", data.GroupID), data.Query, "amount"))
 				}
-			@shared.THCol(data.ExpensesTable.ColMaxWRem("paid")) {
-				@shared.TableSortHeader(ctxi18n.T(ctx, "table.paid_question"), "paid", data.Query, utils.BuildTableSortURL(fmt.Sprintf("/groups/%s/expenses", data.GroupID), data.Query, "paid"))
-			}
-				@shared.THCol(data.ExpensesTable.ColMaxWRem("paid_at")) {
-					@shared.TableSortHeader(ctxi18n.T(ctx, "fields.paid_at"), "paid_at", data.Query, utils.BuildTableSortURL(fmt.Sprintf("/groups/%s/expenses", data.GroupID), data.Query, "paid_at"))
+				@shared.THColFixed(data.ExpensesTable.ColMaxWRem("paid"), data.ExpensesTable.ColWRem("paid")) {
+					<div class="text-right">
+						@shared.TableSortHeader(ctxi18n.T(ctx, "table.paid_question"), "paid", data.Query, utils.BuildTableSortURL(fmt.Sprintf("/groups/%s/expenses", data.GroupID), data.Query, "paid"))
+					</div>
+				}
+				@shared.THColFixed(data.ExpensesTable.ColMaxWRem("paid_at"), data.ExpensesTable.ColWRem("paid_at")) {
+					<div class="text-right">
+						@shared.TableSortHeader(ctxi18n.T(ctx, "fields.paid_at"), "paid_at", data.Query, utils.BuildTableSortURL(fmt.Sprintf("/groups/%s/expenses", data.GroupID), data.Query, "paid_at"))
+					</div>
 				}
 			</tr>
 		</thead>
@@ -109,7 +113,7 @@ templ ExpenseIndexMain(data ExpensesData) {
 					<td><a class="table-link cell-ellipsis" href={ fmt.Sprintf("/groups/%s/expenses/%s", data.GroupID, expense.ID) } title={ expense.Title }>{ expense.Title }</a></td>
 					<td>{ utils.FormatDateLocalized(ctx, expense.Date) }</td>
 					<td class="text-right">{ utils.FormatNumberLocalized(ctx, expense.Amount) }</td>
-					<td>
+					<td class="text-right">
 						if data.IsAdmin {
 							@shared.ToggleSwitch(shared.ToggleSwitchProps{
 								IsOn:         expense.Paid == 1,
@@ -121,8 +125,8 @@ templ ExpenseIndexMain(data ExpensesData) {
 							{ paidLabel }
 						}
 					</td>
-					<td>
-						<div class="row">
+					<td class="text-right">
+						<div class="row row-right">
 							if data.IsAdmin {
 								@shared.IconActionButton(shared.IconActionButtonProps{
 									ClassName:    "btn btn-xs btn-text",

@@ -105,6 +105,12 @@
         max-width: var(--max-w, 24rem);
       }
 
+      th {
+        width: var(--w, auto);
+        min-width: var(--w, var(--table-col-min-w, 0));
+        max-width: var(--w, var(--max-w, 24rem));
+      }
+
       th:first-child,
       td:first-child {
         max-width: none;

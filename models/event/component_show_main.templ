@@ -105,14 +105,18 @@ templ EventShowMain(data EventData) {
 					@shared.THCol(data.ParticipantsTable.ColMaxWRem("total")) {
 						@shared.TableSortHeader(ctxi18n.T(ctx, "participants.total"), "total", data.Query, utils.BuildTableSortURL(fmt.Sprintf("/groups/%s/events/%s", data.GroupID, data.Event.ID), data.Query, "total"))
 					}
-					@shared.THCol(data.ParticipantsTable.ColMaxWRem("paid")) {
-						@shared.TableSortHeader(ctxi18n.T(ctx, "table.paid_question"), "paid", data.Query, utils.BuildTableSortURL(fmt.Sprintf("/groups/%s/events/%s", data.GroupID, data.Event.ID), data.Query, "paid"))
-					}
-					@shared.THCol(data.ParticipantsTable.ColMaxWRem("paid_at")) {
-						@shared.TableSortHeader(ctxi18n.T(ctx, "fields.paid_at"), "paid_at", data.Query, utils.BuildTableSortURL(fmt.Sprintf("/groups/%s/events/%s", data.GroupID, data.Event.ID), data.Query, "paid_at"))
-					}
 					@shared.THCol(data.ParticipantsTable.ColMaxWRem("note")) {
 						{ ctxi18n.T(ctx, "participants.note") }
+					}
+					@shared.THColFixed(data.ParticipantsTable.ColMaxWRem("paid"), data.ParticipantsTable.ColWRem("paid")) {
+						<div class="text-right">
+							@shared.TableSortHeader(ctxi18n.T(ctx, "table.paid_question"), "paid", data.Query, utils.BuildTableSortURL(fmt.Sprintf("/groups/%s/events/%s", data.GroupID, data.Event.ID), data.Query, "paid"))
+						</div>
+					}
+					@shared.THColFixed(data.ParticipantsTable.ColMaxWRem("paid_at"), data.ParticipantsTable.ColWRem("paid_at")) {
+						<div class="text-right">
+							@shared.TableSortHeader(ctxi18n.T(ctx, "fields.paid_at"), "paid_at", data.Query, utils.BuildTableSortURL(fmt.Sprintf("/groups/%s/events/%s", data.GroupID, data.Event.ID), data.Query, "paid_at"))
+						</div>
 					}
 				</tr>
 			</thead>
@@ -137,39 +141,6 @@ templ EventShowMain(data EventData) {
 						<td class="text-right">{ utils.FormatNumberLocalized(ctx, participant.ParticipantAmount) }</td>
 						<td class="text-right">{ utils.FormatNumberLocalized(ctx, participant.ParticipantExpense) }</td>
 						<td class="text-right">{ utils.FormatNumberLocalized(ctx, participant.ParticipantAmount+participant.ParticipantExpense) }</td>
-						<td>
-							if data.IsAdmin {
-								@shared.ToggleSwitch(shared.ToggleSwitchProps{
-									IsOn:         participant.ParticipantPaid == 1,
-									OnClick:      togglePaidExpr,
-									DisabledExpr: "false",
-									AriaLabel:    ctxi18n.T(ctx, "table.paid"),
-								})
-							} else {
-								{ paidLabel }
-							}
-						</td>
-						<td>
-							<div class="row">
-								if data.IsAdmin {
-									@shared.IconActionButton(shared.IconActionButtonProps{
-										ClassName:    "btn btn-xs btn-text",
-										OnClick:      openParticipantPaidAtExpr,
-										DisabledExpr: "false",
-										AriaLabel:    ctxi18n.T(ctx, "actions.edit"),
-										Title:        ctxi18n.T(ctx, "actions.edit"),
-										IconName:     icons.IconPencil,
-									})
-								}
-								<span>
-									if paidAtLabel != "" {
-										{ paidAtLabel }
-									} else {
-										-
-									}
-								</span>
-							</div>
-						</td>
 						<td style={ fmt.Sprintf("--max-w: %drem", data.ParticipantsTable.ColMaxWRem("note")) }>
 							<div class="row">
 								if data.IsAdmin {
@@ -196,6 +167,39 @@ templ EventShowMain(data EventData) {
 								} else {
 									<span class="text-muted">-</span>
 								}
+							</div>
+						</td>
+						<td class="text-right">
+							if data.IsAdmin {
+								@shared.ToggleSwitch(shared.ToggleSwitchProps{
+									IsOn:         participant.ParticipantPaid == 1,
+									OnClick:      togglePaidExpr,
+									DisabledExpr: "false",
+									AriaLabel:    ctxi18n.T(ctx, "table.paid"),
+								})
+							} else {
+								{ paidLabel }
+							}
+						</td>
+						<td class="text-right">
+							<div class="row row-right">
+								if data.IsAdmin {
+									@shared.IconActionButton(shared.IconActionButtonProps{
+										ClassName:    "btn btn-xs btn-text",
+										OnClick:      openParticipantPaidAtExpr,
+										DisabledExpr: "false",
+										AriaLabel:    ctxi18n.T(ctx, "actions.edit"),
+										Title:        ctxi18n.T(ctx, "actions.edit"),
+										IconName:     icons.IconPencil,
+									})
+								}
+								<span>
+									if paidAtLabel != "" {
+										{ paidAtLabel }
+									} else {
+										-
+									}
+								</span>
 							</div>
 						</td>
 					</tr>

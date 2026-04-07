@@ -8,8 +8,8 @@ func EventsIndexTableLayout() utils.TableLayout {
 		{Key: "time"},
 		{Key: "place"},
 		{Key: "amount"},
-		{Key: "paid"},
-		{Key: "paid_at"},
+		{Key: "paid", MaxWRem: 7, WRem: 7},
+		{Key: "paid_at", MaxWRem: 12, WRem: 12},
 	}, 0)
 }
 
@@ -19,8 +19,8 @@ func EventParticipantsTableLayout() utils.TableLayout {
 		{Key: "amount", MaxWRem: 8},
 		{Key: "expense", MaxWRem: 8},
 		{Key: "total"},
-		{Key: "paid"},
-		{Key: "paid_at", MaxWRem: 8},
 		{Key: "note", MaxWRem: 16},
+		{Key: "paid", MaxWRem: 7, WRem: 7},
+		{Key: "paid_at", MaxWRem: 12, WRem: 12},
 	}, 0)
 }

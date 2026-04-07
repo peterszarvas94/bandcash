@@ -38,8 +38,8 @@ func GroupSidebar(groupID string, activeTab string) templ.Component {
 			{Label: ctxi18n.T(ctx, "events.title"), Href: "/groups/" + groupID + "/events", IsActive: activeTab == "events", IconName: icons.IconCalendarDays},
 			{Label: ctxi18n.T(ctx, "members.title"), Href: "/groups/" + groupID + "/members", IsActive: activeTab == "members", IconName: icons.IconUsers},
 			{Label: ctxi18n.T(ctx, "expenses.title"), Href: "/groups/" + groupID + "/expenses", IsActive: activeTab == "expenses", IconName: icons.IconReceiptText},
-			{Label: ctxi18n.T(ctx, "groups.to_pay"), Href: "/groups/" + groupID + "/pay", IsActive: activeTab == "payments", IconName: icons.IconWallet},
-			{Label: ctxi18n.T(ctx, "groups.recently_paid"), Href: "/groups/" + groupID + "/recent", IsActive: activeTab == "payments_recent", IconName: icons.IconWalletCards},
+			{Label: ctxi18n.T(ctx, "groups.to_pay"), Href: "/groups/" + groupID + "/pending", IsActive: activeTab == "payments", IconName: icons.IconHandCoins},
+			{Label: ctxi18n.T(ctx, "groups.recently_paid"), Href: "/groups/" + groupID + "/recent", IsActive: activeTab == "payments_recent", IconName: icons.IconHistory},
 			{Label: ctxi18n.T(ctx, "groups.users"), Href: "/groups/" + groupID + "/users", IsActive: activeTab == "users", IconName: icons.IconContact},
 			{Label: ctxi18n.T(ctx, "groups.about"), Href: "/groups/" + groupID + "/about", IsActive: activeTab == "about", IconName: icons.IconInfo},
 		}).Render(ctx, templ_7745c5c3_Buffer)

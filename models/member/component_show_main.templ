@@ -111,11 +111,15 @@ templ MemberShowMain(data MemberData) {
 					@shared.THCol(data.EventsTable.ColMaxWRem("total")) {
 						{ ctxi18n.T(ctx, "participants.total") }
 					}
-					@shared.THCol(data.EventsTable.ColMaxWRem("paid")) {
-						@shared.TableSortHeader(ctxi18n.T(ctx, "table.paid_question"), "paid", data.Query, utils.BuildTableSortURL(fmt.Sprintf("/groups/%s/members/%s", data.GroupID, data.Member.ID), data.Query, "paid"))
+					@shared.THColFixed(data.EventsTable.ColMaxWRem("paid"), data.EventsTable.ColWRem("paid")) {
+						<div class="text-right">
+							@shared.TableSortHeader(ctxi18n.T(ctx, "table.paid_question"), "paid", data.Query, utils.BuildTableSortURL(fmt.Sprintf("/groups/%s/members/%s", data.GroupID, data.Member.ID), data.Query, "paid"))
+						</div>
 					}
-					@shared.THCol(data.EventsTable.ColMaxWRem("paid_at")) {
-						@shared.TableSortHeader(ctxi18n.T(ctx, "fields.paid_at"), "paid_at", data.Query, utils.BuildTableSortURL(fmt.Sprintf("/groups/%s/members/%s", data.GroupID, data.Member.ID), data.Query, "paid_at"))
+					@shared.THColFixed(data.EventsTable.ColMaxWRem("paid_at"), data.EventsTable.ColWRem("paid_at")) {
+						<div class="text-right">
+							@shared.TableSortHeader(ctxi18n.T(ctx, "fields.paid_at"), "paid_at", data.Query, utils.BuildTableSortURL(fmt.Sprintf("/groups/%s/members/%s", data.GroupID, data.Member.ID), data.Query, "paid_at"))
+						</div>
 					}
 				</tr>
 			</thead>
@@ -139,7 +143,7 @@ templ MemberShowMain(data MemberData) {
 						<td class="text-right">{ utils.FormatNumberLocalized(ctx, event.ParticipantAmount) }</td>
 						<td class="text-right">{ utils.FormatNumberLocalized(ctx, event.ParticipantExpense) }</td>
 						<td class="text-right">{ utils.FormatNumberLocalized(ctx, event.ParticipantAmount+event.ParticipantExpense) }</td>
-						<td>
+						<td class="text-right">
 							if data.IsAdmin {
 								@shared.ToggleSwitch(shared.ToggleSwitchProps{
 									IsOn:         event.ParticipantPaid == 1,
@@ -151,8 +155,8 @@ templ MemberShowMain(data MemberData) {
 								{ paidLabel }
 							}
 						</td>
-						<td>
-							<div class="row">
+						<td class="text-right">
+							<div class="row row-right">
 								if data.IsAdmin {
 									@shared.IconActionButton(shared.IconActionButtonProps{
 										ClassName:    "btn btn-xs btn-text",

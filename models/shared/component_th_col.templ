@@ -9,3 +9,9 @@ templ THCol(maxWRem int) {
 		{ children... }
 	</th>
 }
+
+templ THColFixed(maxWRem int, wRem int) {
+	<th style={ fmt.Sprintf("--w: %drem", wRem) }>
+		{ children... }
+	</th>
+}

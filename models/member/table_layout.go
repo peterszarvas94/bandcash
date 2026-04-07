@@ -16,7 +16,7 @@ func MemberEventsTableLayout() utils.TableLayout {
 		{Key: "participant_amount"},
 		{Key: "participant_expense"},
 		{Key: "total"},
-		{Key: "paid"},
-		{Key: "paid_at"},
+		{Key: "paid", MaxWRem: 7, WRem: 7},
+		{Key: "paid_at", MaxWRem: 12, WRem: 12},
 	}, 0)
 }

@@ -1799,6 +1799,7 @@ func (g *Group) paymentsPageData(c echo.Context, groupID string) (GroupPaymentsP
 				MemberID:     member.ID,
 				MemberName:   member.Name,
 				EventID:      row.ID,
+				EventTitle:   row.Title,
 				PayoutAmount: row.ParticipantAmount + row.ParticipantExpense,
 				PaidAt:       "",
 			})
@@ -1895,6 +1896,14 @@ func (g *Group) recentPaymentsPageData(c echo.Context, groupID string) (GroupPay
 	if err != nil {
 		return GroupPaymentsPageData{}, err
 	}
+	allEvents, err := db.Qry.ListEvents(ctx, groupID)
+	if err != nil {
+		return GroupPaymentsPageData{}, err
+	}
+	eventTitles := make(map[string]string, len(allEvents))
+	for _, event := range allEvents {
+		eventTitles[event.ID] = event.Title
+	}
 	unpaidParticipants := make([]GroupPaymentParticipantRow, 0, len(participants))
 	for _, row := range participants {
 		paidAt := ""
@@ -1905,6 +1914,7 @@ func (g *Group) recentPaymentsPageData(c echo.Context, groupID string) (GroupPay
 			MemberID:     row.MemberID,
 			MemberName:   row.MemberName,
 			EventID:      row.EventID,
+			EventTitle:   eventTitles[row.EventID],
 			PayoutAmount: row.ParticipantAmount + row.ParticipantExpense,
 			PaidAt:       paidAt,
 		})

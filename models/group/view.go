@@ -171,6 +171,7 @@ type GroupPaymentParticipantRow struct {
 	MemberID      string
 	MemberName    string
 	EventID       string
+	EventTitle    string
 	PayoutAmount  int64
 	PaidAt        string
 }

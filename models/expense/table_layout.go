@@ -7,7 +7,7 @@ func ExpensesIndexTableLayout() utils.TableLayout {
 		{Key: "title"},
 		{Key: "date"},
 		{Key: "amount"},
-		{Key: "paid"},
-		{Key: "paid_at"},
+		{Key: "paid", MaxWRem: 7, WRem: 7},
+		{Key: "paid_at", MaxWRem: 12, WRem: 12},
 	}, 0)
 }
