@@ -822,11 +822,7 @@ func (g *Group) RemoveViewer(c echo.Context) error {
 	ctx := c.Request().Context()
 	currentUserID := middleware.GetUserID(c)
 	if currentUserID == userID {
-		role, roleErr := getGroupAccessRole(ctx, groupID, currentUserID)
-		if roleErr != nil {
-			return g.redirectUsersPage(c, groupID, "", "groups.errors.invalid_user", http.StatusBadRequest)
-		}
-		if role == "owner" {
+		if middleware.IsOwner(c) {
 			return g.redirectUsersPage(c, groupID, "", "groups.errors.transfer_group_before_removing_owner", http.StatusConflict)
 		}
 	}

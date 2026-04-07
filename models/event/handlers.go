@@ -1519,9 +1519,6 @@ func (e *Events) patchUpdatePaidAt(c echo.Context, groupID, id, mode string, tab
 }
 
 func (e *Events) patchUpdateParticipantNote(c echo.Context, groupID, id string, tableQuery utils.TableQuery, memberID, value string) error {
-	if !middleware.IsAdmin(c) {
-		return c.NoContent(http.StatusForbidden)
-	}
 	if !utils.IsValidID(memberID, utils.PrefixMember) {
 		slog.Info("event.updateParticipantNote: invalid member id")
 		return c.NoContent(http.StatusBadRequest)
@@ -1570,9 +1567,6 @@ func (e *Events) patchUpdateParticipantNote(c echo.Context, groupID, id string, 
 }
 
 func (e *Events) patchUpdateParticipantPaidAt(c echo.Context, groupID, id string, tableQuery utils.TableQuery, memberID, value string) error {
-	if !middleware.IsAdmin(c) {
-		return c.NoContent(http.StatusForbidden)
-	}
 	if !utils.IsValidID(memberID, utils.PrefixMember) {
 		slog.Info("event.updateParticipantPaidAt: invalid member id")
 		return c.NoContent(http.StatusBadRequest)

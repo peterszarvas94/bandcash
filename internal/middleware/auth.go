@@ -17,7 +17,7 @@ import (
 const (
 	UserIDKey       contextKey = "user_id"
 	GroupIDKey      contextKey = "group_id"
-	IsAdminKey      contextKey = "is_admin"
+	GroupRoleKey    contextKey = "group_role"
 	IsSuperadminKey contextKey = "is_superadmin"
 )
 
@@ -83,11 +83,8 @@ func RequireGroup(next echo.HandlerFunc) echo.HandlerFunc {
 
 		if isSuperadmin {
 			c.Set(string(GroupIDKey), groupID)
-			role, err := db.Qry.GetGroupAccessRole(c.Request().Context(), db.GetGroupAccessRoleParams{
-				UserID:  userID,
-				GroupID: groupID,
-			})
-			c.Set(string(IsAdminKey), err == nil && (role == "owner" || role == "admin"))
+			// Superadmin is treated as admin across all groups.
+			c.Set(string(GroupRoleKey), "admin")
 			return next(c)
 		}
 
@@ -101,7 +98,7 @@ func RequireGroup(next echo.HandlerFunc) echo.HandlerFunc {
 		}
 
 		c.Set(string(GroupIDKey), groupID)
-		c.Set(string(IsAdminKey), role == "owner" || role == "admin")
+		c.Set(string(GroupRoleKey), role)
 		return next(c)
 	}
 }
@@ -109,9 +106,9 @@ func RequireGroup(next echo.HandlerFunc) echo.HandlerFunc {
 // RequireAdmin ensures user is admin of the group.
 func RequireAdmin(next echo.HandlerFunc) echo.HandlerFunc {
 	return func(c echo.Context) error {
-		isAdmin, ok := c.Get(string(IsAdminKey)).(bool)
-		if !ok || !isAdmin {
-			return c.String(http.StatusForbidden, "Admin access required")
+		if !IsAdmin(c) {
+			utils.Notify(c, ctxi18n.T(c.Request().Context(), "groups.errors.admin_required"))
+			return c.Redirect(http.StatusFound, "/groups")
 		}
 		return next(c)
 	}
@@ -120,14 +117,9 @@ func RequireAdmin(next echo.HandlerFunc) echo.HandlerFunc {
 // RequireOwner ensures user is owner of the group.
 func RequireOwner(next echo.HandlerFunc) echo.HandlerFunc {
 	return func(c echo.Context) error {
-		groupID := GetGroupID(c)
-		userID := GetUserID(c)
-		group, err := db.Qry.GetGroupByID(c.Request().Context(), groupID)
-		if err != nil {
-			return c.String(http.StatusForbidden, "Owner access required")
-		}
-		if group.AdminUserID != userID {
-			return c.String(http.StatusForbidden, "Owner access required")
+		if !IsOwner(c) {
+			utils.Notify(c, ctxi18n.T(c.Request().Context(), "groups.errors.owner_required"))
+			return c.Redirect(http.StatusFound, "/groups")
 		}
 		return next(c)
 	}
@@ -161,10 +153,21 @@ func GetGroupID(c echo.Context) string {
 
 // IsAdmin checks if user is admin
 func IsAdmin(c echo.Context) bool {
-	if isAdmin, ok := c.Get(string(IsAdminKey)).(bool); ok {
-		return isAdmin
+	role := GetGroupRole(c)
+	return role == "owner" || role == "admin"
+}
+
+// GetGroupRole retrieves current user's role in active group from context.
+func GetGroupRole(c echo.Context) string {
+	if role, ok := c.Get(string(GroupRoleKey)).(string); ok {
+		return role
 	}
-	return false
+	return ""
+}
+
+// IsOwner checks if current user is owner in active group.
+func IsOwner(c echo.Context) bool {
+	return GetGroupRole(c) == "owner"
 }
 
 func IsSuperadmin(c echo.Context) bool {
