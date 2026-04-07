@@ -1771,6 +1771,69 @@ func (q *Queries) ListParticipantsByMemberByTitleDescFiltered(ctx context.Contex
 	return items, nil
 }
 
+const listRecentPaidParticipantsByGroup = `-- name: ListRecentPaidParticipantsByGroup :many
+SELECT
+  participants.event_id,
+  participants.member_id,
+  participants.amount AS participant_amount,
+  participants.expense AS participant_expense,
+  participants.paid_at AS participant_paid_at,
+  participants.updated_at AS participant_updated_at,
+  members.name AS member_name
+FROM participants
+JOIN members ON members.id = participants.member_id AND members.group_id = participants.group_id
+WHERE participants.group_id = ?1
+  AND participants.paid = 1
+ORDER BY participants.updated_at DESC
+LIMIT ?2
+`
+
+type ListRecentPaidParticipantsByGroupParams struct {
+	GroupID string `json:"group_id"`
+	Limit   int64  `json:"limit"`
+}
+
+type ListRecentPaidParticipantsByGroupRow struct {
+	EventID              string         `json:"event_id"`
+	MemberID             string         `json:"member_id"`
+	ParticipantAmount    int64          `json:"participant_amount"`
+	ParticipantExpense   int64          `json:"participant_expense"`
+	ParticipantPaidAt    sql.NullString `json:"participant_paid_at"`
+	ParticipantUpdatedAt sql.NullTime   `json:"participant_updated_at"`
+	MemberName           string         `json:"member_name"`
+}
+
+func (q *Queries) ListRecentPaidParticipantsByGroup(ctx context.Context, arg ListRecentPaidParticipantsByGroupParams) ([]ListRecentPaidParticipantsByGroupRow, error) {
+	rows, err := q.db.QueryContext(ctx, listRecentPaidParticipantsByGroup, arg.GroupID, arg.Limit)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []ListRecentPaidParticipantsByGroupRow{}
+	for rows.Next() {
+		var i ListRecentPaidParticipantsByGroupRow
+		if err := rows.Scan(
+			&i.EventID,
+			&i.MemberID,
+			&i.ParticipantAmount,
+			&i.ParticipantExpense,
+			&i.ParticipantPaidAt,
+			&i.ParticipantUpdatedAt,
+			&i.MemberName,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const removeParticipant = `-- name: RemoveParticipant :exec
 DELETE FROM participants
 WHERE event_id = ? AND member_id = ? AND group_id = ?

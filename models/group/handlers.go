@@ -84,6 +84,13 @@ type tabSignals struct {
 	TableQuery utils.TableQuery `json:"tableQuery"`
 }
 
+type paymentPaidAtSignals struct {
+	TabID        string `json:"tab_id"`
+	PaidAtDialog struct {
+		Value string `json:"value"`
+	} `json:"paidAtDialog"`
+}
+
 // NewGroupPage shows the form to create a new group
 func (g *Group) NewGroupPage(c echo.Context) error {
 	utils.EnsureTabID(c)
@@ -224,6 +231,228 @@ func (g *Group) AboutPage(c echo.Context) error {
 	}
 
 	return utils.RenderPage(c, GroupAboutPage(data))
+}
+
+func (g *Group) PaymentsPage(c echo.Context) error {
+	utils.EnsureTabID(c)
+	groupID := middleware.GetGroupID(c)
+
+	data, err := g.paymentsPageData(c, groupID)
+	if err != nil {
+		slog.Error("group.payments: failed to load data", "group_id", groupID, "err", err)
+		return c.NoContent(http.StatusInternalServerError)
+	}
+
+	return utils.RenderPage(c, GroupPaymentsPage(data))
+}
+
+func (g *Group) RecentPaymentsPage(c echo.Context) error {
+	utils.EnsureTabID(c)
+	groupID := middleware.GetGroupID(c)
+
+	data, err := g.recentPaymentsPageData(c, groupID)
+	if err != nil {
+		slog.Error("group.recent_payments: failed to load data", "group_id", groupID, "err", err)
+		return c.NoContent(http.StatusInternalServerError)
+	}
+
+	return utils.RenderPage(c, GroupRecentPaymentsPage(data))
+}
+
+func (g *Group) TogglePaymentEventPaid(c echo.Context) error {
+	signals := tabSignals{}
+	if err := datastar.ReadSignals(c.Request(), &signals); err == nil && signals.TabID != "" {
+		if !utils.SetTabID(c, signals.TabID) {
+			return c.NoContent(http.StatusBadRequest)
+		}
+	} else {
+		utils.EnsureTabID(c)
+	}
+	groupID := middleware.GetGroupID(c)
+	eventID := c.Param("id")
+	if !utils.IsValidID(eventID, utils.PrefixEvent) {
+		return c.NoContent(http.StatusBadRequest)
+	}
+	updatedEvent, err := db.Qry.ToggleEventPaid(c.Request().Context(), db.ToggleEventPaidParams{ID: eventID, GroupID: groupID})
+	if err != nil {
+		slog.Error("group.payments.toggle_event_paid: failed", "group_id", groupID, "event_id", eventID, "err", err)
+		utils.Notify(c, ctxi18n.T(c.Request().Context(), "events.notifications.toggle_paid_failed"))
+		return c.NoContent(http.StatusInternalServerError)
+	}
+	notifyPaidToggleResult(c, updatedEvent.Paid)
+	utils.InvalidateGroupCaches(groupID)
+	if err := g.patchCurrentPaymentsPage(c, groupID); err != nil {
+		return err
+	}
+	return c.NoContent(http.StatusOK)
+}
+
+func (g *Group) UpdatePaymentEventPaidAt(c echo.Context) error {
+	signals := paymentPaidAtSignals{}
+	if err := datastar.ReadSignals(c.Request(), &signals); err != nil {
+		return c.NoContent(http.StatusBadRequest)
+	}
+	if !utils.SetTabID(c, signals.TabID) {
+		return c.NoContent(http.StatusBadRequest)
+	}
+	groupID := middleware.GetGroupID(c)
+	eventID := c.Param("id")
+	if !utils.IsValidID(eventID, utils.PrefixEvent) {
+		return c.NoContent(http.StatusBadRequest)
+	}
+	if _, err := db.Qry.UpdateEventPaidAt(c.Request().Context(), db.UpdateEventPaidAtParams{
+		PaidAt:  normalizePaymentsPaidAtInput(signals.PaidAtDialog.Value),
+		ID:      eventID,
+		GroupID: groupID,
+	}); err != nil {
+		slog.Error("group.payments.update_event_paid_at: failed", "group_id", groupID, "event_id", eventID, "err", err)
+		utils.Notify(c, ctxi18n.T(c.Request().Context(), "events.notifications.update_failed"))
+		return c.NoContent(http.StatusInternalServerError)
+	}
+	utils.Notify(c, ctxi18n.T(c.Request().Context(), "events.notifications.updated"))
+	utils.InvalidateGroupCaches(groupID)
+	if err := g.patchCurrentPaymentsPage(c, groupID); err != nil {
+		return err
+	}
+	patchPaymentsPaidAtDialogClosed(c)
+	return c.NoContent(http.StatusOK)
+}
+
+func (g *Group) TogglePaymentParticipantPaid(c echo.Context) error {
+	signals := tabSignals{}
+	if err := datastar.ReadSignals(c.Request(), &signals); err == nil && signals.TabID != "" {
+		if !utils.SetTabID(c, signals.TabID) {
+			return c.NoContent(http.StatusBadRequest)
+		}
+	} else {
+		utils.EnsureTabID(c)
+	}
+	groupID := middleware.GetGroupID(c)
+	eventID := c.Param("eventId")
+	memberID := c.Param("memberId")
+	if !utils.IsValidID(eventID, utils.PrefixEvent) || !utils.IsValidID(memberID, utils.PrefixMember) {
+		return c.NoContent(http.StatusBadRequest)
+	}
+	updatedParticipant, err := db.Qry.ToggleParticipantPaid(c.Request().Context(), db.ToggleParticipantPaidParams{
+		EventID:  eventID,
+		MemberID: memberID,
+		GroupID:  groupID,
+	})
+	if err != nil {
+		slog.Error("group.payments.toggle_participant_paid: failed", "group_id", groupID, "event_id", eventID, "member_id", memberID, "err", err)
+		utils.Notify(c, ctxi18n.T(c.Request().Context(), "participants.notifications.toggle_paid_failed"))
+		return c.NoContent(http.StatusInternalServerError)
+	}
+	notifyPaidToggleResult(c, updatedParticipant.Paid)
+	utils.InvalidateGroupCaches(groupID)
+	if err := g.patchCurrentPaymentsPage(c, groupID); err != nil {
+		return err
+	}
+	return c.NoContent(http.StatusOK)
+}
+
+func (g *Group) UpdatePaymentParticipantPaidAt(c echo.Context) error {
+	signals := paymentPaidAtSignals{}
+	if err := datastar.ReadSignals(c.Request(), &signals); err != nil {
+		return c.NoContent(http.StatusBadRequest)
+	}
+	if !utils.SetTabID(c, signals.TabID) {
+		return c.NoContent(http.StatusBadRequest)
+	}
+	groupID := middleware.GetGroupID(c)
+	eventID := c.Param("eventId")
+	memberID := c.Param("memberId")
+	if !utils.IsValidID(eventID, utils.PrefixEvent) || !utils.IsValidID(memberID, utils.PrefixMember) {
+		return c.NoContent(http.StatusBadRequest)
+	}
+	if err := db.Qry.UpdateParticipantPaidAt(c.Request().Context(), db.UpdateParticipantPaidAtParams{
+		PaidAt:   normalizePaymentsPaidAtInput(signals.PaidAtDialog.Value),
+		EventID:  eventID,
+		MemberID: memberID,
+		GroupID:  groupID,
+	}); err != nil {
+		slog.Error("group.payments.update_participant_paid_at: failed", "group_id", groupID, "event_id", eventID, "member_id", memberID, "err", err)
+		utils.Notify(c, ctxi18n.T(c.Request().Context(), "participants.notifications.update_failed"))
+		return c.NoContent(http.StatusInternalServerError)
+	}
+	utils.Notify(c, ctxi18n.T(c.Request().Context(), "participants.notifications.updated"))
+	utils.InvalidateGroupCaches(groupID)
+	if err := g.patchCurrentPaymentsPage(c, groupID); err != nil {
+		return err
+	}
+	patchPaymentsPaidAtDialogClosed(c)
+	return c.NoContent(http.StatusOK)
+}
+
+func (g *Group) TogglePaymentExpensePaid(c echo.Context) error {
+	signals := tabSignals{}
+	if err := datastar.ReadSignals(c.Request(), &signals); err == nil && signals.TabID != "" {
+		if !utils.SetTabID(c, signals.TabID) {
+			return c.NoContent(http.StatusBadRequest)
+		}
+	} else {
+		utils.EnsureTabID(c)
+	}
+	groupID := middleware.GetGroupID(c)
+	expenseID := c.Param("id")
+	if !utils.IsValidID(expenseID, utils.PrefixExpense) {
+		return c.NoContent(http.StatusBadRequest)
+	}
+	updatedExpense, err := db.Qry.ToggleExpensePaid(c.Request().Context(), db.ToggleExpensePaidParams{ID: expenseID, GroupID: groupID})
+	if err != nil {
+		slog.Error("group.payments.toggle_expense_paid: failed", "group_id", groupID, "expense_id", expenseID, "err", err)
+		utils.Notify(c, ctxi18n.T(c.Request().Context(), "expenses.notifications.toggle_paid_failed"))
+		return c.NoContent(http.StatusInternalServerError)
+	}
+	notifyPaidToggleResult(c, updatedExpense.Paid)
+	utils.InvalidateGroupCaches(groupID)
+	if err := g.patchCurrentPaymentsPage(c, groupID); err != nil {
+		return err
+	}
+	return c.NoContent(http.StatusOK)
+}
+
+func (g *Group) UpdatePaymentExpensePaidAt(c echo.Context) error {
+	signals := paymentPaidAtSignals{}
+	if err := datastar.ReadSignals(c.Request(), &signals); err != nil {
+		return c.NoContent(http.StatusBadRequest)
+	}
+	if !utils.SetTabID(c, signals.TabID) {
+		return c.NoContent(http.StatusBadRequest)
+	}
+	groupID := middleware.GetGroupID(c)
+	expenseID := c.Param("id")
+	if !utils.IsValidID(expenseID, utils.PrefixExpense) {
+		return c.NoContent(http.StatusBadRequest)
+	}
+	expense, err := db.Qry.GetExpense(c.Request().Context(), db.GetExpenseParams{
+		ID:      expenseID,
+		GroupID: groupID,
+	})
+	if err != nil {
+		return c.NoContent(http.StatusBadRequest)
+	}
+	if _, err := db.Qry.UpdateExpense(c.Request().Context(), db.UpdateExpenseParams{
+		Title:       expense.Title,
+		Description: expense.Description,
+		Amount:      expense.Amount,
+		Date:        expense.Date,
+		Paid:        1,
+		PaidAt:      normalizePaymentsPaidAtInput(signals.PaidAtDialog.Value),
+		ID:          expenseID,
+		GroupID:     groupID,
+	}); err != nil {
+		slog.Error("group.payments.update_expense_paid_at: failed", "group_id", groupID, "expense_id", expenseID, "err", err)
+		utils.Notify(c, ctxi18n.T(c.Request().Context(), "expenses.notifications.update_failed"))
+		return c.NoContent(http.StatusInternalServerError)
+	}
+	utils.Notify(c, ctxi18n.T(c.Request().Context(), "expenses.notifications.updated"))
+	utils.InvalidateGroupCaches(groupID)
+	if err := g.patchCurrentPaymentsPage(c, groupID); err != nil {
+		return err
+	}
+	patchPaymentsPaidAtDialogClosed(c)
+	return c.NoContent(http.StatusOK)
 }
 
 // UpdateGroup updates group name (admin only).
@@ -1399,6 +1628,60 @@ func normalizeInviteRole(role string) string {
 	return "viewer"
 }
 
+func isRecentPaymentsReferer(c echo.Context, groupID string) bool {
+	referer := c.Request().Referer()
+	return strings.Contains(referer, "/groups/"+groupID+"/recent") || strings.Contains(referer, "/groups/"+groupID+"/payments/recent")
+}
+
+func (g *Group) patchCurrentPaymentsPage(c echo.Context, groupID string) error {
+	var (
+		html string
+		err  error
+	)
+	if isRecentPaymentsReferer(c, groupID) {
+		data, dataErr := g.recentPaymentsPageData(c, groupID)
+		if dataErr != nil {
+			return c.NoContent(http.StatusInternalServerError)
+		}
+		html, err = utils.RenderHTMLForRequest(c, GroupRecentPaymentsPage(data))
+	} else {
+		data, dataErr := g.paymentsPageData(c, groupID)
+		if dataErr != nil {
+			return c.NoContent(http.StatusInternalServerError)
+		}
+		html, err = utils.RenderHTMLForRequest(c, GroupPaymentsPage(data))
+	}
+	if err != nil {
+		return c.NoContent(http.StatusInternalServerError)
+	}
+	utils.SSEHub.PatchHTML(c, html)
+	return nil
+}
+
+func patchPaymentsPaidAtDialogClosed(c echo.Context) {
+	utils.SSEHub.PatchSignals(c, map[string]any{"paidAtDialog": map[string]any{"open": false, "fetching": false}})
+}
+
+func notifyPaidToggleResult(c echo.Context, paid int64) {
+	if paid == 1 {
+		utils.Notify(c, ctxi18n.T(c.Request().Context(), "paid_status.marked_as_paid"))
+		return
+	}
+	utils.Notify(c, ctxi18n.T(c.Request().Context(), "paid_status.marked_as_unpaid"))
+}
+
+func normalizePaymentsPaidAtInput(value string) interface{} {
+	trimmed := strings.TrimSpace(value)
+	if trimmed == "" {
+		return nil
+	}
+	formatted := utils.FormatDateInput(trimmed)
+	if formatted == "" {
+		return nil
+	}
+	return formatted
+}
+
 func getUserEmail(c echo.Context) string {
 	userID := middleware.GetUserID(c)
 	if userID == "" {
@@ -1449,3 +1732,214 @@ func (g *Group) groupPageData(c echo.Context, groupID string) (GroupPageData, er
 		IsAdmin:         middleware.IsAdmin(c),
 	}, nil
 }
+
+func (g *Group) paymentsPageData(c echo.Context, groupID string) (GroupPaymentsPageData, error) {
+	ctx := c.Request().Context()
+
+	group, err := db.Qry.GetGroupByID(ctx, groupID)
+	if err != nil {
+		return GroupPaymentsPageData{}, err
+	}
+
+	events, err := db.Qry.ListEvents(ctx, groupID)
+	if err != nil {
+		return GroupPaymentsPageData{}, err
+	}
+
+	expenses, err := db.Qry.ListExpenses(ctx, groupID)
+	if err != nil {
+		return GroupPaymentsPageData{}, err
+	}
+
+	members, err := db.Qry.ListMembers(ctx, groupID)
+	if err != nil {
+		return GroupPaymentsPageData{}, err
+	}
+
+	unpaidEvents := make([]GroupPaymentEventRow, 0)
+	for _, event := range events {
+		if event.Paid == 1 {
+			continue
+		}
+		unpaidEvents = append(unpaidEvents, GroupPaymentEventRow{
+			ID:     event.ID,
+			Title:  event.Title,
+			Amount: event.Amount,
+			PaidAt: "",
+		})
+	}
+
+	unpaidExpenses := make([]GroupPaymentExpenseRow, 0)
+	for _, expense := range expenses {
+		if expense.Paid == 1 {
+			continue
+		}
+		unpaidExpenses = append(unpaidExpenses, GroupPaymentExpenseRow{
+			ID:     expense.ID,
+			Title:  expense.Title,
+			Amount: expense.Amount,
+			PaidAt: "",
+		})
+	}
+
+	unpaidParticipants := make([]GroupPaymentParticipantRow, 0)
+	for _, member := range members {
+		memberRows, memberErr := db.Qry.ListParticipantsByMember(ctx, db.ListParticipantsByMemberParams{
+			MemberID: member.ID,
+			GroupID:  groupID,
+		})
+		if memberErr != nil {
+			return GroupPaymentsPageData{}, memberErr
+		}
+		for _, row := range memberRows {
+			if row.ParticipantPaid == 1 {
+				continue
+			}
+			unpaidParticipants = append(unpaidParticipants, GroupPaymentParticipantRow{
+				MemberID:     member.ID,
+				MemberName:   member.Name,
+				EventID:      row.ID,
+				PayoutAmount: row.ParticipantAmount + row.ParticipantExpense,
+				PaidAt:       "",
+			})
+		}
+	}
+
+	return GroupPaymentsPageData{
+		Title: ctxi18n.T(ctx, "groups.to_pay_page_title"),
+		Breadcrumbs: []utils.Crumb{
+			{Label: ctxi18n.T(ctx, "groups.title"), Href: "/groups"},
+			{Label: group.Name, Href: "/groups/" + groupID + "/events"},
+			{Label: ctxi18n.T(ctx, "groups.to_pay")},
+		},
+		Signals: map[string]any{
+			"paidAtDialog": map[string]any{
+				"open":        false,
+				"fetching":    false,
+				"title":       ctxi18n.T(ctx, "fields.paid_at"),
+				"message":     "",
+				"value":       "",
+				"url":         "",
+				"submitLabel": ctxi18n.T(ctx, "table.apply"),
+				"cancelLabel": ctxi18n.T(ctx, "actions.cancel"),
+			},
+		},
+		IsAuthenticated:    true,
+		IsSuperAdmin:       middleware.IsSuperadmin(c),
+		IsAdmin:            middleware.IsAdmin(c),
+		GroupID:            groupID,
+		Group:              group,
+		UnpaidEvents:       unpaidEvents,
+		UnpaidParticipants: unpaidParticipants,
+		UnpaidExpenses:     unpaidExpenses,
+		EventsTable:        GroupPaymentsEventsTableLayout(),
+		ParticipantsTable:  GroupPaymentsParticipantsTableLayout(),
+		ExpensesTable:      GroupPaymentsExpensesTableLayout(),
+	}, nil
+}
+
+func (g *Group) recentPaymentsPageData(c echo.Context, groupID string) (GroupPaymentsPageData, error) {
+	ctx := c.Request().Context()
+
+	group, err := db.Qry.GetGroupByID(ctx, groupID)
+	if err != nil {
+		return GroupPaymentsPageData{}, err
+	}
+
+	events, err := db.Qry.ListRecentPaidEventsByGroup(ctx, db.ListRecentPaidEventsByGroupParams{
+		GroupID: groupID,
+		Limit:   10,
+	})
+	if err != nil {
+		return GroupPaymentsPageData{}, err
+	}
+	unpaidEvents := make([]GroupPaymentEventRow, 0, len(events))
+	for _, event := range events {
+		paidAt := ""
+		if event.PaidAt.Valid {
+			paidAt = utils.FormatDateInput(event.PaidAt.String)
+		}
+		unpaidEvents = append(unpaidEvents, GroupPaymentEventRow{
+			ID:     event.ID,
+			Title:  event.Title,
+			Amount: event.Amount,
+			PaidAt: paidAt,
+		})
+	}
+
+	expenses, err := db.Qry.ListRecentPaidExpensesByGroup(ctx, db.ListRecentPaidExpensesByGroupParams{
+		GroupID: groupID,
+		Limit:   10,
+	})
+	if err != nil {
+		return GroupPaymentsPageData{}, err
+	}
+	unpaidExpenses := make([]GroupPaymentExpenseRow, 0, len(expenses))
+	for _, expense := range expenses {
+		paidAt := ""
+		if expense.PaidAt.Valid {
+			paidAt = utils.FormatDateInput(expense.PaidAt.String)
+		}
+		unpaidExpenses = append(unpaidExpenses, GroupPaymentExpenseRow{
+			ID:     expense.ID,
+			Title:  expense.Title,
+			Amount: expense.Amount,
+			PaidAt: paidAt,
+		})
+	}
+
+	participants, err := db.Qry.ListRecentPaidParticipantsByGroup(ctx, db.ListRecentPaidParticipantsByGroupParams{
+		GroupID: groupID,
+		Limit:   10,
+	})
+	if err != nil {
+		return GroupPaymentsPageData{}, err
+	}
+	unpaidParticipants := make([]GroupPaymentParticipantRow, 0, len(participants))
+	for _, row := range participants {
+		paidAt := ""
+		if row.ParticipantPaidAt.Valid {
+			paidAt = utils.FormatDateInput(row.ParticipantPaidAt.String)
+		}
+		unpaidParticipants = append(unpaidParticipants, GroupPaymentParticipantRow{
+			MemberID:     row.MemberID,
+			MemberName:   row.MemberName,
+			EventID:      row.EventID,
+			PayoutAmount: row.ParticipantAmount + row.ParticipantExpense,
+			PaidAt:       paidAt,
+		})
+	}
+
+	return GroupPaymentsPageData{
+		Title: ctxi18n.T(ctx, "groups.recently_paid_page_title"),
+		Breadcrumbs: []utils.Crumb{
+			{Label: ctxi18n.T(ctx, "groups.title"), Href: "/groups"},
+			{Label: group.Name, Href: "/groups/" + groupID + "/events"},
+			{Label: ctxi18n.T(ctx, "groups.recently_paid")},
+		},
+		Signals: map[string]any{
+			"paidAtDialog": map[string]any{
+				"open":        false,
+				"fetching":    false,
+				"title":       ctxi18n.T(ctx, "fields.paid_at"),
+				"message":     "",
+				"value":       "",
+				"url":         "",
+				"submitLabel": ctxi18n.T(ctx, "table.apply"),
+				"cancelLabel": ctxi18n.T(ctx, "actions.cancel"),
+			},
+		},
+		IsAuthenticated:    true,
+		IsSuperAdmin:       middleware.IsSuperadmin(c),
+		IsAdmin:            middleware.IsAdmin(c),
+		GroupID:            groupID,
+		Group:              group,
+		UnpaidEvents:       unpaidEvents,
+		UnpaidParticipants: unpaidParticipants,
+		UnpaidExpenses:     unpaidExpenses,
+		EventsTable:        GroupPaymentsEventsTableLayout(),
+		ParticipantsTable:  GroupPaymentsParticipantsTableLayout(),
+		ExpensesTable:      GroupPaymentsExpensesTableLayout(),
+	}, nil
+}
+

@@ -142,3 +142,42 @@ type GroupPageData struct {
 	Leftover        int64
 	IsAdmin         bool
 }
+
+type GroupPaymentsPageData struct {
+	Title               string
+	Breadcrumbs         []utils.Crumb
+	Signals             map[string]any
+	IsAuthenticated     bool
+	IsSuperAdmin        bool
+	IsAdmin             bool
+	GroupID             string
+	Group               db.Group
+	UnpaidEvents        []GroupPaymentEventRow
+	UnpaidParticipants  []GroupPaymentParticipantRow
+	UnpaidExpenses      []GroupPaymentExpenseRow
+	EventsTable         utils.TableLayout
+	ParticipantsTable   utils.TableLayout
+	ExpensesTable       utils.TableLayout
+}
+
+type GroupPaymentEventRow struct {
+	ID     string
+	Title  string
+	Amount int64
+	PaidAt string
+}
+
+type GroupPaymentParticipantRow struct {
+	MemberID      string
+	MemberName    string
+	EventID       string
+	PayoutAmount  int64
+	PaidAt        string
+}
+
+type GroupPaymentExpenseRow struct {
+	ID     string
+	Title  string
+	Amount int64
+	PaidAt string
+}

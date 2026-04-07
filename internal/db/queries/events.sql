@@ -25,6 +25,13 @@ SELECT * FROM events
 WHERE group_id = ?
 ORDER BY time ASC;
 
+-- name: ListRecentPaidEventsByGroup :many
+SELECT * FROM events
+WHERE group_id = sqlc.arg(group_id)
+  AND paid = 1
+ORDER BY updated_at DESC
+LIMIT sqlc.arg(limit);
+
 -- name: CountEventsFiltered :one
 SELECT COUNT(*) FROM events
 WHERE group_id = sqlc.arg(group_id)

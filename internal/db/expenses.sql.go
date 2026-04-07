@@ -826,6 +826,53 @@ func (q *Queries) ListExpensesByTitleDescFiltered(ctx context.Context, arg ListE
 	return items, nil
 }
 
+const listRecentPaidExpensesByGroup = `-- name: ListRecentPaidExpensesByGroup :many
+SELECT id, group_id, title, description, amount, date, created_at, updated_at, paid, paid_at FROM expenses
+WHERE group_id = ?1
+  AND paid = 1
+ORDER BY updated_at DESC
+LIMIT ?2
+`
+
+type ListRecentPaidExpensesByGroupParams struct {
+	GroupID string `json:"group_id"`
+	Limit   int64  `json:"limit"`
+}
+
+func (q *Queries) ListRecentPaidExpensesByGroup(ctx context.Context, arg ListRecentPaidExpensesByGroupParams) ([]Expense, error) {
+	rows, err := q.db.QueryContext(ctx, listRecentPaidExpensesByGroup, arg.GroupID, arg.Limit)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []Expense{}
+	for rows.Next() {
+		var i Expense
+		if err := rows.Scan(
+			&i.ID,
+			&i.GroupID,
+			&i.Title,
+			&i.Description,
+			&i.Amount,
+			&i.Date,
+			&i.CreatedAt,
+			&i.UpdatedAt,
+			&i.Paid,
+			&i.PaidAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const sumExpenseTotalsFiltered = `-- name: SumExpenseTotalsFiltered :one
 SELECT
   CAST(COALESCE(SUM(CASE WHEN paid = 1 THEN amount ELSE 0 END), 0) AS INTEGER) AS total_paid,

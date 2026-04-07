@@ -71,6 +71,22 @@ JOIN participants ON participants.event_id = events.id
 WHERE participants.member_id = ? AND participants.group_id = ?
 ORDER BY events.created_at DESC;
 
+-- name: ListRecentPaidParticipantsByGroup :many
+SELECT
+  participants.event_id,
+  participants.member_id,
+  participants.amount AS participant_amount,
+  participants.expense AS participant_expense,
+  participants.paid_at AS participant_paid_at,
+  participants.updated_at AS participant_updated_at,
+  members.name AS member_name
+FROM participants
+JOIN members ON members.id = participants.member_id AND members.group_id = participants.group_id
+WHERE participants.group_id = sqlc.arg(group_id)
+  AND participants.paid = 1
+ORDER BY participants.updated_at DESC
+LIMIT sqlc.arg(limit);
+
 -- name: SumParticipantAmountsByGroup :one
 SELECT CAST(COALESCE(SUM(amount), 0) AS INTEGER) FROM participants
 WHERE group_id = ?;

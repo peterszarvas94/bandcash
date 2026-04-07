@@ -171,4 +171,199 @@ SELECT
   ABS(RANDOM()) % 2000
 FROM seq;
 
+-- Seed Road Crew: 5 members, 10 events, lightweight participant set
+WITH RECURSIVE seq(n) AS (
+  SELECT 1
+  UNION ALL
+  SELECT n + 1 FROM seq WHERE n < 5
+)
+INSERT OR IGNORE INTO members (id, group_id, name, description)
+SELECT
+  printf('mem_rc%018d', n),
+  'grp_SeedRoadCrewGroup002',
+  CASE n
+    WHEN 1 THEN 'Mia Turner'
+    WHEN 2 THEN 'Noah Bishop'
+    WHEN 3 THEN 'Luca Simo'
+    WHEN 4 THEN 'Ella Ward'
+    ELSE 'Ben Novak'
+  END,
+  CASE n
+    WHEN 1 THEN 'lead vocals'
+    WHEN 2 THEN 'guitar'
+    WHEN 3 THEN 'bass'
+    WHEN 4 THEN 'drums'
+    ELSE 'keys'
+  END
+FROM seq;
+
+WITH RECURSIVE seq(n) AS (
+  SELECT 1
+  UNION ALL
+  SELECT n + 1 FROM seq WHERE n < 10
+)
+INSERT OR IGNORE INTO events (id, group_id, title, time, place, description, amount, paid, paid_at)
+SELECT
+  printf('evt_rc%018d', n),
+  'grp_SeedRoadCrewGroup002',
+  CASE (n % 5)
+    WHEN 0 THEN 'Road Crew City Gig'
+    WHEN 1 THEN 'Road Crew Club Night'
+    WHEN 2 THEN 'Road Crew Backyard Session'
+    WHEN 3 THEN 'Road Crew Campus Show'
+    ELSE 'Road Crew Weekend Set'
+  END || ' #' || n,
+  strftime('%Y-%m-%dT%H:%M', datetime('now', printf('-%d days', n * 7))),
+  CASE (n % 4)
+    WHEN 0 THEN 'Durer Kert'
+    WHEN 1 THEN 'A38 Ship'
+    WHEN 2 THEN 'Kobuci Kert'
+    ELSE 'MOMKult'
+  END,
+  CASE
+    WHEN n % 3 = 0 THEN 'short local set'
+    WHEN n % 3 = 1 THEN 'ticketed club show'
+    ELSE 'community event booking'
+  END,
+  60000 + (n * 7000),
+  CASE WHEN n % 3 = 0 THEN 1 ELSE 0 END,
+  CASE
+    WHEN n % 3 = 0 THEN strftime('%Y-%m-%dT%H:%M:%SZ', datetime('now', printf('-%d days', n * 7 - 1)))
+    ELSE NULL
+  END
+FROM seq;
+
+WITH RECURSIVE seq(n) AS (
+  SELECT 1
+  UNION ALL
+  SELECT n + 1 FROM seq WHERE n < 30
+)
+INSERT OR IGNORE INTO participants (group_id, event_id, member_id, amount, expense)
+SELECT
+  'grp_SeedRoadCrewGroup002',
+  printf('evt_rc%018d', ((n - 1) % 10) + 1),
+  printf('mem_rc%018d', ((n - 1) % 5) + 1),
+  8000 + (ABS(RANDOM()) % 12000),
+  ABS(RANDOM()) % 1500
+FROM seq;
+
+WITH RECURSIVE seq(n) AS (
+  SELECT 1
+  UNION ALL
+  SELECT n + 1 FROM seq WHERE n < 6
+)
+INSERT OR IGNORE INTO expenses (id, group_id, title, description, amount, date)
+SELECT
+  printf('exp_rc%018d', n),
+  'grp_SeedRoadCrewGroup002',
+  CASE (n % 4)
+    WHEN 0 THEN 'Van fuel'
+    WHEN 1 THEN 'Practice room'
+    WHEN 2 THEN 'Strings and sticks'
+    ELSE 'Posters'
+  END || ' #' || n,
+  CASE
+    WHEN n % 2 = 0 THEN 'shared road crew operating cost'
+    ELSE 'small recurring group expense'
+  END,
+  6000 + (n * 3000),
+  date('now', printf('-%d days', n * 6))
+FROM seq;
+
+-- Seed Acoustic Duo: 4 members, 10 events, lightweight participant set
+WITH RECURSIVE seq(n) AS (
+  SELECT 1
+  UNION ALL
+  SELECT n + 1 FROM seq WHERE n < 4
+)
+INSERT OR IGNORE INTO members (id, group_id, name, description)
+SELECT
+  printf('mem_ac%018d', n),
+  'grp_SeedAcousticGroup003',
+  CASE n
+    WHEN 1 THEN 'Anna Foldi'
+    WHEN 2 THEN 'Peter Farkas'
+    WHEN 3 THEN 'Kata Varga'
+    ELSE 'Geri Simon'
+  END,
+  CASE n
+    WHEN 1 THEN 'vocal and guitar'
+    WHEN 2 THEN 'cajon and backing vocal'
+    WHEN 3 THEN 'bass ukulele'
+    ELSE 'violin'
+  END
+FROM seq;
+
+WITH RECURSIVE seq(n) AS (
+  SELECT 1
+  UNION ALL
+  SELECT n + 1 FROM seq WHERE n < 10
+)
+INSERT OR IGNORE INTO events (id, group_id, title, time, place, description, amount, paid, paid_at)
+SELECT
+  printf('evt_ac%018d', n),
+  'grp_SeedAcousticGroup003',
+  CASE (n % 5)
+    WHEN 0 THEN 'Acoustic Cafe Night'
+    WHEN 1 THEN 'Acoustic Terrace Session'
+    WHEN 2 THEN 'Acoustic Wedding Slot'
+    WHEN 3 THEN 'Acoustic Sunday Brunch'
+    ELSE 'Acoustic Private Event'
+  END || ' #' || n,
+  strftime('%Y-%m-%dT%H:%M', datetime('now', printf('-%d days', n * 9))),
+  CASE (n % 4)
+    WHEN 0 THEN 'Garden Bistro'
+    WHEN 1 THEN 'Jazz Cafe'
+    WHEN 2 THEN 'Riverside Stage'
+    ELSE 'Community Hall'
+  END,
+  CASE
+    WHEN n % 2 = 0 THEN 'small acoustic booking'
+    ELSE 'private celebration set'
+  END,
+  45000 + (n * 5000),
+  CASE WHEN n % 4 = 0 THEN 1 ELSE 0 END,
+  CASE
+    WHEN n % 4 = 0 THEN strftime('%Y-%m-%dT%H:%M:%SZ', datetime('now', printf('-%d days', n * 9 - 1)))
+    ELSE NULL
+  END
+FROM seq;
+
+WITH RECURSIVE seq(n) AS (
+  SELECT 1
+  UNION ALL
+  SELECT n + 1 FROM seq WHERE n < 24
+)
+INSERT OR IGNORE INTO participants (group_id, event_id, member_id, amount, expense)
+SELECT
+  'grp_SeedAcousticGroup003',
+  printf('evt_ac%018d', ((n - 1) % 10) + 1),
+  printf('mem_ac%018d', ((n - 1) % 4) + 1),
+  7000 + (ABS(RANDOM()) % 9000),
+  ABS(RANDOM()) % 1000
+FROM seq;
+
+WITH RECURSIVE seq(n) AS (
+  SELECT 1
+  UNION ALL
+  SELECT n + 1 FROM seq WHERE n < 5
+)
+INSERT OR IGNORE INTO expenses (id, group_id, title, description, amount, date)
+SELECT
+  printf('exp_ac%018d', n),
+  'grp_SeedAcousticGroup003',
+  CASE (n % 4)
+    WHEN 0 THEN 'Cable replacement'
+    WHEN 1 THEN 'Travel tickets'
+    WHEN 2 THEN 'Social media ads'
+    ELSE 'Instrument setup'
+  END || ' #' || n,
+  CASE
+    WHEN n % 2 = 0 THEN 'small acoustic setup cost'
+    ELSE 'event-related miscellaneous'
+  END,
+  4500 + (n * 2500),
+  date('now', printf('-%d days', n * 8))
+FROM seq;
+
 COMMIT;

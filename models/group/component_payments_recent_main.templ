@@ -1,0 +1,216 @@
+package group
+
+import (
+	"fmt"
+
+	"bandcash/internal/utils"
+	shared "bandcash/models/shared"
+	icons "bandcash/models/shared/icons"
+	ctxi18n "github.com/invopop/ctxi18n/i18n"
+)
+
+templ GroupRecentPaymentsMain(data GroupPaymentsPageData) {
+	@shared.PageHeader(shared.PageHeaderProps{Title: ctxi18n.T(ctx, "groups.recently_paid")}) {}
+
+	<section class="pt">
+		<h2>{ ctxi18n.T(ctx, "groups.recently_paid_events") }</h2>
+		@shared.TableOpenFixed(data.EventsTable, "") {
+			<thead>
+				<tr>
+					@shared.THCol(data.EventsTable.ColMaxWRem("title")) {
+						{ ctxi18n.T(ctx, "fields.title") }
+					}
+					@shared.THCol(data.EventsTable.ColMaxWRem("amount")) {
+						<div class="text-right">{ ctxi18n.T(ctx, "fields.amount") }</div>
+					}
+					<th>{ ctxi18n.T(ctx, "table.paid_question") }</th>
+					<th>{ ctxi18n.T(ctx, "fields.paid_at") }</th>
+				</tr>
+			</thead>
+			<tbody>
+				if len(data.UnpaidEvents) == 0 {
+					<tr><td colspan="4">{ ctxi18n.T(ctx, "groups.recently_paid_empty_events") }</td></tr>
+				} else {
+					for _, row := range data.UnpaidEvents {
+						{{
+							togglePaidExpr := fmt.Sprintf("@put('/groups/%s/pay/events/%s/toggle-paid', {tab_id: $tab_id, mode: 'single'})", data.GroupID, row.ID)
+							openPaidAtExpr := fmt.Sprintf("$paidAtDialog.open = true; $paidAtDialog.url = '/groups/%s/pay/events/%s/paid_at'; $paidAtDialog.value = '%s'", data.GroupID, row.ID, row.PaidAt)
+						}}
+						<tr>
+							<td><a class="table-link" href={ fmt.Sprintf("/groups/%s/events/%s", data.GroupID, row.ID) }>{ row.Title }</a></td>
+							<td class="text-right">{ utils.FormatNumberLocalized(ctx, row.Amount) }</td>
+							<td>
+								if data.IsAdmin {
+									@shared.ToggleSwitch(shared.ToggleSwitchProps{
+										IsOn:         true,
+										OnClick:      togglePaidExpr,
+										DisabledExpr: "false",
+										AriaLabel:    ctxi18n.T(ctx, "table.paid"),
+									})
+								} else {
+									{ ctxi18n.T(ctx, "table.paid") }
+								}
+							</td>
+							<td>
+								<div class="row">
+									if data.IsAdmin {
+										@shared.IconActionButton(shared.IconActionButtonProps{
+											ClassName:    "btn btn-xs btn-text",
+											OnClick:      openPaidAtExpr,
+											DisabledExpr: "false",
+											AriaLabel:    ctxi18n.T(ctx, "actions.edit"),
+											Title:        ctxi18n.T(ctx, "actions.edit"),
+											IconName:     icons.IconPencil,
+										})
+									}
+									<span>
+										if row.PaidAt != "" {
+											{ utils.FormatDateLocalized(ctx, row.PaidAt) }
+										} else {
+											-
+										}
+									</span>
+								</div>
+							</td>
+						</tr>
+					}
+				}
+			</tbody>
+		}
+	</section>
+
+	<section class="pt">
+		<h2>{ ctxi18n.T(ctx, "groups.recently_paid_participants") }</h2>
+		@shared.TableOpenFixed(data.ParticipantsTable, "") {
+			<thead>
+				<tr>
+					@shared.THCol(data.ParticipantsTable.ColMaxWRem("member")) {
+						{ ctxi18n.T(ctx, "members.title") }
+					}
+					@shared.THCol(data.ParticipantsTable.ColMaxWRem("amount")) {
+						<div class="text-right">{ ctxi18n.T(ctx, "fields.amount") }</div>
+					}
+					<th>{ ctxi18n.T(ctx, "table.paid_question") }</th>
+					<th>{ ctxi18n.T(ctx, "fields.paid_at") }</th>
+				</tr>
+			</thead>
+			<tbody>
+				if len(data.UnpaidParticipants) == 0 {
+					<tr><td colspan="4">{ ctxi18n.T(ctx, "groups.recently_paid_empty_participants") }</td></tr>
+				} else {
+					for _, row := range data.UnpaidParticipants {
+						{{
+							togglePaidExpr := fmt.Sprintf("@put('/groups/%s/pay/participants/%s/%s/toggle-paid', {tab_id: $tab_id, mode: 'single'})", data.GroupID, row.EventID, row.MemberID)
+							openPaidAtExpr := fmt.Sprintf("$paidAtDialog.open = true; $paidAtDialog.url = '/groups/%s/pay/participants/%s/%s/paid_at'; $paidAtDialog.value = '%s'", data.GroupID, row.EventID, row.MemberID, row.PaidAt)
+						}}
+						<tr>
+							<td><a class="table-link" href={ fmt.Sprintf("/groups/%s/members/%s", data.GroupID, row.MemberID) }>{ row.MemberName }</a></td>
+							<td class="text-right">{ utils.FormatNumberLocalized(ctx, row.PayoutAmount) }</td>
+							<td>
+								if data.IsAdmin {
+									@shared.ToggleSwitch(shared.ToggleSwitchProps{
+										IsOn:         true,
+										OnClick:      togglePaidExpr,
+										DisabledExpr: "false",
+										AriaLabel:    ctxi18n.T(ctx, "table.paid"),
+									})
+								} else {
+									{ ctxi18n.T(ctx, "table.paid") }
+								}
+							</td>
+							<td>
+								<div class="row">
+									if data.IsAdmin {
+										@shared.IconActionButton(shared.IconActionButtonProps{
+											ClassName:    "btn btn-xs btn-text",
+											OnClick:      openPaidAtExpr,
+											DisabledExpr: "false",
+											AriaLabel:    ctxi18n.T(ctx, "actions.edit"),
+											Title:        ctxi18n.T(ctx, "actions.edit"),
+											IconName:     icons.IconPencil,
+										})
+									}
+									<span>
+										if row.PaidAt != "" {
+											{ utils.FormatDateLocalized(ctx, row.PaidAt) }
+										} else {
+											-
+										}
+									</span>
+								</div>
+							</td>
+						</tr>
+					}
+				}
+			</tbody>
+		}
+	</section>
+
+	<section class="pt">
+		<h2>{ ctxi18n.T(ctx, "groups.recently_paid_expenses") }</h2>
+		@shared.TableOpenFixed(data.ExpensesTable, "") {
+			<thead>
+				<tr>
+					@shared.THCol(data.ExpensesTable.ColMaxWRem("title")) {
+						{ ctxi18n.T(ctx, "fields.title") }
+					}
+					@shared.THCol(data.ExpensesTable.ColMaxWRem("amount")) {
+						<div class="text-right">{ ctxi18n.T(ctx, "fields.amount") }</div>
+					}
+					<th>{ ctxi18n.T(ctx, "table.paid_question") }</th>
+					<th>{ ctxi18n.T(ctx, "fields.paid_at") }</th>
+				</tr>
+			</thead>
+			<tbody>
+				if len(data.UnpaidExpenses) == 0 {
+					<tr><td colspan="4">{ ctxi18n.T(ctx, "groups.recently_paid_empty_expenses") }</td></tr>
+				} else {
+					for _, row := range data.UnpaidExpenses {
+						{{
+							togglePaidExpr := fmt.Sprintf("@put('/groups/%s/pay/expenses/%s/toggle-paid', {tab_id: $tab_id, mode: 'single'})", data.GroupID, row.ID)
+							openPaidAtExpr := fmt.Sprintf("$paidAtDialog.open = true; $paidAtDialog.url = '/groups/%s/pay/expenses/%s/paid_at'; $paidAtDialog.value = '%s'", data.GroupID, row.ID, row.PaidAt)
+						}}
+						<tr>
+							<td><a class="table-link" href={ fmt.Sprintf("/groups/%s/expenses/%s", data.GroupID, row.ID) }>{ row.Title }</a></td>
+							<td class="text-right">{ utils.FormatNumberLocalized(ctx, row.Amount) }</td>
+							<td>
+								if data.IsAdmin {
+									@shared.ToggleSwitch(shared.ToggleSwitchProps{
+										IsOn:         true,
+										OnClick:      togglePaidExpr,
+										DisabledExpr: "false",
+										AriaLabel:    ctxi18n.T(ctx, "table.paid"),
+									})
+								} else {
+									{ ctxi18n.T(ctx, "table.paid") }
+								}
+							</td>
+							<td>
+								<div class="row">
+									if data.IsAdmin {
+										@shared.IconActionButton(shared.IconActionButtonProps{
+											ClassName:    "btn btn-xs btn-text",
+											OnClick:      openPaidAtExpr,
+											DisabledExpr: "false",
+											AriaLabel:    ctxi18n.T(ctx, "actions.edit"),
+											Title:        ctxi18n.T(ctx, "actions.edit"),
+											IconName:     icons.IconPencil,
+										})
+									}
+									<span>
+										if row.PaidAt != "" {
+											{ utils.FormatDateLocalized(ctx, row.PaidAt) }
+										} else {
+											-
+										}
+									</span>
+								</div>
+							</td>
+						</tr>
+					}
+				}
+			</tbody>
+		}
+	</section>
+	@GroupPaymentsPaidAtDialog()
+}

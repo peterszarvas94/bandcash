@@ -849,6 +849,54 @@ func (q *Queries) ListEventsByTitleDescFiltered(ctx context.Context, arg ListEve
 	return items, nil
 }
 
+const listRecentPaidEventsByGroup = `-- name: ListRecentPaidEventsByGroup :many
+SELECT id, group_id, title, time, description, amount, created_at, updated_at, paid, paid_at, place FROM events
+WHERE group_id = ?1
+  AND paid = 1
+ORDER BY updated_at DESC
+LIMIT ?2
+`
+
+type ListRecentPaidEventsByGroupParams struct {
+	GroupID string `json:"group_id"`
+	Limit   int64  `json:"limit"`
+}
+
+func (q *Queries) ListRecentPaidEventsByGroup(ctx context.Context, arg ListRecentPaidEventsByGroupParams) ([]Event, error) {
+	rows, err := q.db.QueryContext(ctx, listRecentPaidEventsByGroup, arg.GroupID, arg.Limit)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []Event{}
+	for rows.Next() {
+		var i Event
+		if err := rows.Scan(
+			&i.ID,
+			&i.GroupID,
+			&i.Title,
+			&i.Time,
+			&i.Description,
+			&i.Amount,
+			&i.CreatedAt,
+			&i.UpdatedAt,
+			&i.Paid,
+			&i.PaidAt,
+			&i.Place,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const sumEventsFiltered = `-- name: SumEventsFiltered :one
 SELECT CAST(COALESCE(SUM(amount), 0) AS INTEGER) FROM events
 WHERE group_id = ?1

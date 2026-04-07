@@ -24,6 +24,13 @@ SELECT * FROM expenses
 WHERE group_id = ?
 ORDER BY date DESC, created_at DESC;
 
+-- name: ListRecentPaidExpensesByGroup :many
+SELECT * FROM expenses
+WHERE group_id = sqlc.arg(group_id)
+  AND paid = 1
+ORDER BY updated_at DESC
+LIMIT sqlc.arg(limit);
+
 -- name: CountExpensesFiltered :one
 SELECT COUNT(*) FROM expenses
 WHERE group_id = sqlc.arg(group_id)
