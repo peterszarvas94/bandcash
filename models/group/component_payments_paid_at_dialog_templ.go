@@ -39,7 +39,7 @@ func GroupPaymentsPaidAtDialog() templ.Component {
 		cancelExpr := `$paidAtDialog.fetching && evt.preventDefault()`
 		dialogEffect := `$paidAtDialog.open ? (((!$paidAtDialog.value || $paidAtDialog.value === '') && ($paidAtDialog.value = new Date(Date.now() - new Date().getTimezoneOffset() * 60000).toISOString().slice(0, 10))), (!el.open && el.showModal())) : (el.open && el.close())`
 		dialogCloseExpr := `$paidAtDialog.open = false; $paidAtDialog.fetching = false`
-		submitExpr := `!$paidAtDialog.fetching && (el.open && el.close(), $paidAtDialog.fetching = true, @post($paidAtDialog.url, {tab_id: $tab_id, mode: 'single'}))`
+		submitExpr := `!$paidAtDialog.fetching && (el.open && el.close(), $paidAtDialog.fetching = true, @post($paidAtDialog.url))`
 		fetchDoneExpr := `$paidAtDialog.fetching && ['finished', 'error', 'retries-failed'].includes(evt.detail.type) && ($paidAtDialog.fetching = false, $paidAtDialog.open = false)`
 		templ_7745c5c3_Var2 := templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 			templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context

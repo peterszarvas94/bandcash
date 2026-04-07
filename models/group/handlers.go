@@ -81,13 +81,15 @@ type deleteGroupSignals struct {
 type tabSignals struct {
 	TabID      string           `json:"tab_id"`
 	Mode       string           `json:"mode"`
+	FadeRowIdx int              `json:"fadeRowIndex"`
 	TableQuery utils.TableQuery `json:"tableQuery"`
 }
 
 type paymentPaidAtSignals struct {
 	TabID        string `json:"tab_id"`
 	PaidAtDialog struct {
-		Value string `json:"value"`
+		Value      string `json:"value"`
+		TriggerIdx int    `json:"triggerIndex"`
 	} `json:"paidAtDialog"`
 }
 
@@ -281,7 +283,16 @@ func (g *Group) TogglePaymentEventPaid(c echo.Context) error {
 	}
 	notifyPaidToggleResult(c, updatedEvent.Paid)
 	utils.InvalidateGroupCaches(groupID)
-	if err := g.patchCurrentPaymentsPage(c, groupID); err != nil {
+	if err := g.patchCurrentPaymentsPageWithFade(c, groupID, func(data *GroupPaymentsPageData) {
+		rowID := "payment-event-row-" + updatedEvent.ID
+		setPaymentsFadeRowSignal(data, rowID)
+		appendPaymentEventRowIfMissing(data, GroupPaymentEventRow{
+			ID:     updatedEvent.ID,
+			Title:  updatedEvent.Title,
+			Amount: updatedEvent.Amount,
+			PaidAt: paymentsPaidAtFromNullString(updatedEvent.PaidAt),
+		}, signals.FadeRowIdx)
+	}); err != nil {
 		return err
 	}
 	return c.NoContent(http.StatusOK)
@@ -300,18 +311,37 @@ func (g *Group) UpdatePaymentEventPaidAt(c echo.Context) error {
 	if !utils.IsValidID(eventID, utils.PrefixEvent) {
 		return c.NoContent(http.StatusBadRequest)
 	}
-	if _, err := db.Qry.UpdateEventPaidAt(c.Request().Context(), db.UpdateEventPaidAtParams{
+	eventBefore, err := db.Qry.GetEvent(c.Request().Context(), db.GetEventParams{ID: eventID, GroupID: groupID})
+	if err != nil {
+		return c.NoContent(http.StatusBadRequest)
+	}
+	updatedEvent, err := db.Qry.UpdateEventPaidAt(c.Request().Context(), db.UpdateEventPaidAtParams{
 		PaidAt:  normalizePaymentsPaidAtInput(signals.PaidAtDialog.Value),
 		ID:      eventID,
 		GroupID: groupID,
-	}); err != nil {
+	})
+	if err != nil {
 		slog.Error("group.payments.update_event_paid_at: failed", "group_id", groupID, "event_id", eventID, "err", err)
 		utils.Notify(c, ctxi18n.T(c.Request().Context(), "events.notifications.update_failed"))
 		return c.NoContent(http.StatusInternalServerError)
 	}
 	utils.Notify(c, ctxi18n.T(c.Request().Context(), "events.notifications.updated"))
 	utils.InvalidateGroupCaches(groupID)
-	if err := g.patchCurrentPaymentsPage(c, groupID); err != nil {
+	paidChanged := eventBefore.Paid != updatedEvent.Paid
+	if paidChanged {
+		if err := g.patchCurrentPaymentsPageWithFade(c, groupID, func(data *GroupPaymentsPageData) {
+			rowID := "payment-event-row-" + updatedEvent.ID
+			setPaymentsFadeRowSignal(data, rowID)
+			appendPaymentEventRowIfMissing(data, GroupPaymentEventRow{
+				ID:     updatedEvent.ID,
+				Title:  updatedEvent.Title,
+				Amount: updatedEvent.Amount,
+				PaidAt: paymentsPaidAtFromNullString(updatedEvent.PaidAt),
+			}, signals.PaidAtDialog.TriggerIdx)
+		}); err != nil {
+			return err
+		}
+	} else if err := g.patchCurrentPaymentsPage(c, groupID, nil); err != nil {
 		return err
 	}
 	patchPaymentsPaidAtDialogClosed(c)
@@ -345,7 +375,15 @@ func (g *Group) TogglePaymentParticipantPaid(c echo.Context) error {
 	}
 	notifyPaidToggleResult(c, updatedParticipant.Paid)
 	utils.InvalidateGroupCaches(groupID)
-	if err := g.patchCurrentPaymentsPage(c, groupID); err != nil {
+	if err := g.patchCurrentPaymentsPageWithFade(c, groupID, func(data *GroupPaymentsPageData) {
+		fadeRowID := "payment-participant-row-" + updatedParticipant.EventID + "-" + updatedParticipant.MemberID
+		setPaymentsFadeRowSignal(data, fadeRowID)
+		row, err := buildPaymentParticipantFadeRow(c.Request().Context(), groupID, updatedParticipant.EventID, updatedParticipant.MemberID)
+		if err != nil {
+			return
+		}
+		appendPaymentParticipantRowIfMissing(data, row, signals.FadeRowIdx)
+	}); err != nil {
 		return err
 	}
 	return c.NoContent(http.StatusOK)
@@ -365,6 +403,10 @@ func (g *Group) UpdatePaymentParticipantPaidAt(c echo.Context) error {
 	if !utils.IsValidID(eventID, utils.PrefixEvent) || !utils.IsValidID(memberID, utils.PrefixMember) {
 		return c.NoContent(http.StatusBadRequest)
 	}
+	participantBefore, err := getParticipantByEventAndMember(c.Request().Context(), groupID, eventID, memberID)
+	if err != nil {
+		return c.NoContent(http.StatusBadRequest)
+	}
 	if err := db.Qry.UpdateParticipantPaidAt(c.Request().Context(), db.UpdateParticipantPaidAtParams{
 		PaidAt:   normalizePaymentsPaidAtInput(signals.PaidAtDialog.Value),
 		EventID:  eventID,
@@ -377,7 +419,24 @@ func (g *Group) UpdatePaymentParticipantPaidAt(c echo.Context) error {
 	}
 	utils.Notify(c, ctxi18n.T(c.Request().Context(), "participants.notifications.updated"))
 	utils.InvalidateGroupCaches(groupID)
-	if err := g.patchCurrentPaymentsPage(c, groupID); err != nil {
+	participantAfter, err := getParticipantByEventAndMember(c.Request().Context(), groupID, eventID, memberID)
+	if err != nil {
+		return c.NoContent(http.StatusInternalServerError)
+	}
+	paidChanged := participantBefore.ParticipantPaid != participantAfter.ParticipantPaid
+	if paidChanged {
+		if err := g.patchCurrentPaymentsPageWithFade(c, groupID, func(data *GroupPaymentsPageData) {
+			fadeRowID := "payment-participant-row-" + eventID + "-" + memberID
+			setPaymentsFadeRowSignal(data, fadeRowID)
+			row, rowErr := buildPaymentParticipantFadeRow(c.Request().Context(), groupID, eventID, memberID)
+			if rowErr != nil {
+				return
+			}
+			appendPaymentParticipantRowIfMissing(data, row, signals.PaidAtDialog.TriggerIdx)
+		}); err != nil {
+			return err
+		}
+	} else if err := g.patchCurrentPaymentsPage(c, groupID, nil); err != nil {
 		return err
 	}
 	patchPaymentsPaidAtDialogClosed(c)
@@ -406,7 +465,16 @@ func (g *Group) TogglePaymentExpensePaid(c echo.Context) error {
 	}
 	notifyPaidToggleResult(c, updatedExpense.Paid)
 	utils.InvalidateGroupCaches(groupID)
-	if err := g.patchCurrentPaymentsPage(c, groupID); err != nil {
+	if err := g.patchCurrentPaymentsPageWithFade(c, groupID, func(data *GroupPaymentsPageData) {
+		rowID := "payment-expense-row-" + updatedExpense.ID
+		setPaymentsFadeRowSignal(data, rowID)
+		appendPaymentExpenseRowIfMissing(data, GroupPaymentExpenseRow{
+			ID:     updatedExpense.ID,
+			Title:  updatedExpense.Title,
+			Amount: updatedExpense.Amount,
+			PaidAt: paymentsPaidAtFromNullString(updatedExpense.PaidAt),
+		}, signals.FadeRowIdx)
+	}); err != nil {
 		return err
 	}
 	return c.NoContent(http.StatusOK)
@@ -432,7 +500,7 @@ func (g *Group) UpdatePaymentExpensePaidAt(c echo.Context) error {
 	if err != nil {
 		return c.NoContent(http.StatusBadRequest)
 	}
-	if _, err := db.Qry.UpdateExpense(c.Request().Context(), db.UpdateExpenseParams{
+	updatedExpense, err := db.Qry.UpdateExpense(c.Request().Context(), db.UpdateExpenseParams{
 		Title:       expense.Title,
 		Description: expense.Description,
 		Amount:      expense.Amount,
@@ -441,14 +509,29 @@ func (g *Group) UpdatePaymentExpensePaidAt(c echo.Context) error {
 		PaidAt:      normalizePaymentsPaidAtInput(signals.PaidAtDialog.Value),
 		ID:          expenseID,
 		GroupID:     groupID,
-	}); err != nil {
+	})
+	if err != nil {
 		slog.Error("group.payments.update_expense_paid_at: failed", "group_id", groupID, "expense_id", expenseID, "err", err)
 		utils.Notify(c, ctxi18n.T(c.Request().Context(), "expenses.notifications.update_failed"))
 		return c.NoContent(http.StatusInternalServerError)
 	}
 	utils.Notify(c, ctxi18n.T(c.Request().Context(), "expenses.notifications.updated"))
 	utils.InvalidateGroupCaches(groupID)
-	if err := g.patchCurrentPaymentsPage(c, groupID); err != nil {
+	paidChanged := expense.Paid != updatedExpense.Paid
+	if paidChanged {
+		if err := g.patchCurrentPaymentsPageWithFade(c, groupID, func(data *GroupPaymentsPageData) {
+			rowID := "payment-expense-row-" + updatedExpense.ID
+			setPaymentsFadeRowSignal(data, rowID)
+			appendPaymentExpenseRowIfMissing(data, GroupPaymentExpenseRow{
+				ID:     updatedExpense.ID,
+				Title:  updatedExpense.Title,
+				Amount: updatedExpense.Amount,
+				PaidAt: paymentsPaidAtFromNullString(updatedExpense.PaidAt),
+			}, signals.PaidAtDialog.TriggerIdx)
+		}); err != nil {
+			return err
+		}
+	} else if err := g.patchCurrentPaymentsPage(c, groupID, nil); err != nil {
 		return err
 	}
 	patchPaymentsPaidAtDialogClosed(c)
@@ -1633,28 +1716,62 @@ func isRecentPaymentsReferer(c echo.Context, groupID string) bool {
 	return strings.Contains(referer, "/groups/"+groupID+"/recent") || strings.Contains(referer, "/groups/"+groupID+"/payments/recent")
 }
 
-func (g *Group) patchCurrentPaymentsPage(c echo.Context, groupID string) error {
-	var (
-		html string
-		err  error
-	)
+func (g *Group) renderCurrentPaymentsPageHTML(c echo.Context, groupID string, mutate func(*GroupPaymentsPageData)) (string, error) {
 	if isRecentPaymentsReferer(c, groupID) {
 		data, dataErr := g.recentPaymentsPageData(c, groupID)
 		if dataErr != nil {
-			return c.NoContent(http.StatusInternalServerError)
+			return "", dataErr
 		}
-		html, err = utils.RenderHTMLForRequest(c, GroupRecentPaymentsPage(data))
-	} else {
-		data, dataErr := g.paymentsPageData(c, groupID)
-		if dataErr != nil {
-			return c.NoContent(http.StatusInternalServerError)
+		if mutate != nil {
+			mutate(&data)
 		}
-		html, err = utils.RenderHTMLForRequest(c, GroupPaymentsPage(data))
+		return utils.RenderHTMLForRequest(c, GroupRecentPaymentsPage(data))
 	}
+	data, dataErr := g.paymentsPageData(c, groupID)
+	if dataErr != nil {
+		return "", dataErr
+	}
+	if mutate != nil {
+		mutate(&data)
+	}
+	return utils.RenderHTMLForRequest(c, GroupPaymentsPage(data))
+}
+
+func (g *Group) patchCurrentPaymentsPage(c echo.Context, groupID string, mutate func(*GroupPaymentsPageData)) error {
+	html, err := g.renderCurrentPaymentsPageHTML(c, groupID, mutate)
 	if err != nil {
 		return c.NoContent(http.StatusInternalServerError)
 	}
 	utils.SSEHub.PatchHTML(c, html)
+	return nil
+}
+
+func (g *Group) patchCurrentPaymentsPageWithFade(c echo.Context, groupID string, mutate func(*GroupPaymentsPageData)) error {
+	firstHTML, err := g.renderCurrentPaymentsPageHTML(c, groupID, mutate)
+	if err != nil {
+		return c.NoContent(http.StatusInternalServerError)
+	}
+	secondHTML, err := g.renderCurrentPaymentsPageHTML(c, groupID, nil)
+	if err != nil {
+		return c.NoContent(http.StatusInternalServerError)
+	}
+	if err := utils.SSEHub.PatchHTML(c, firstHTML); err != nil {
+		return c.NoContent(http.StatusInternalServerError)
+	}
+	tabID := utils.TabIDFromContext(c.Request().Context())
+	if tabID == "" {
+		return c.NoContent(http.StatusInternalServerError)
+	}
+	go func(id string, html string) {
+		time.Sleep(220 * time.Millisecond)
+		client, getErr := utils.SSEHub.GetClient(id)
+		if getErr != nil {
+			return
+		}
+		if patchErr := client.SSE.PatchElements(html); patchErr != nil {
+			slog.Warn("group.payments.fade_followup_patch: failed", "tab_id", id, "err", patchErr)
+		}
+	}(tabID, secondHTML)
 	return nil
 }
 
@@ -1668,6 +1785,113 @@ func notifyPaidToggleResult(c echo.Context, paid int64) {
 		return
 	}
 	utils.Notify(c, ctxi18n.T(c.Request().Context(), "paid_status.marked_as_unpaid"))
+}
+
+func paymentsPaidAtFromNullString(value sql.NullString) string {
+	if !value.Valid {
+		return ""
+	}
+	return utils.FormatDateInput(value.String)
+}
+
+func setPaymentsFadeRowSignal(data *GroupPaymentsPageData, rowID string) {
+	if data.Signals == nil {
+		data.Signals = map[string]any{}
+	}
+	data.Signals["fadeRowID"] = rowID
+}
+
+func appendPaymentEventRowIfMissing(data *GroupPaymentsPageData, row GroupPaymentEventRow, index int) {
+	for _, existing := range data.UnpaidEvents {
+		if existing.ID == row.ID {
+			return
+		}
+	}
+	if index < 0 {
+		index = 0
+	}
+	if index >= len(data.UnpaidEvents) {
+		data.UnpaidEvents = append(data.UnpaidEvents, row)
+		return
+	}
+	data.UnpaidEvents = append(data.UnpaidEvents[:index], append([]GroupPaymentEventRow{row}, data.UnpaidEvents[index:]...)...)
+}
+
+func appendPaymentParticipantRowIfMissing(data *GroupPaymentsPageData, row GroupPaymentParticipantRow, index int) {
+	for _, existing := range data.UnpaidParticipants {
+		if existing.EventID == row.EventID && existing.MemberID == row.MemberID {
+			return
+		}
+	}
+	if index < 0 {
+		index = 0
+	}
+	if index >= len(data.UnpaidParticipants) {
+		data.UnpaidParticipants = append(data.UnpaidParticipants, row)
+		return
+	}
+	data.UnpaidParticipants = append(data.UnpaidParticipants[:index], append([]GroupPaymentParticipantRow{row}, data.UnpaidParticipants[index:]...)...)
+}
+
+func appendPaymentExpenseRowIfMissing(data *GroupPaymentsPageData, row GroupPaymentExpenseRow, index int) {
+	for _, existing := range data.UnpaidExpenses {
+		if existing.ID == row.ID {
+			return
+		}
+	}
+	if index < 0 {
+		index = 0
+	}
+	if index >= len(data.UnpaidExpenses) {
+		data.UnpaidExpenses = append(data.UnpaidExpenses, row)
+		return
+	}
+	data.UnpaidExpenses = append(data.UnpaidExpenses[:index], append([]GroupPaymentExpenseRow{row}, data.UnpaidExpenses[index:]...)...)
+}
+
+func buildPaymentParticipantFadeRow(ctx context.Context, groupID, eventID, memberID string) (GroupPaymentParticipantRow, error) {
+	event, err := db.Qry.GetEvent(ctx, db.GetEventParams{ID: eventID, GroupID: groupID})
+	if err != nil {
+		return GroupPaymentParticipantRow{}, err
+	}
+	member, err := db.Qry.GetMember(ctx, db.GetMemberParams{ID: memberID, GroupID: groupID})
+	if err != nil {
+		return GroupPaymentParticipantRow{}, err
+	}
+	participants, err := db.Qry.ListParticipantsByEvent(ctx, db.ListParticipantsByEventParams{EventID: eventID, GroupID: groupID})
+	if err != nil {
+		return GroupPaymentParticipantRow{}, err
+	}
+	for _, participant := range participants {
+		if participant.ID != memberID {
+			continue
+		}
+		return GroupPaymentParticipantRow{
+			MemberID:     member.ID,
+			MemberName:   member.Name,
+			EventID:      event.ID,
+			EventTitle:   event.Title,
+			PayoutAmount: participant.ParticipantAmount + participant.ParticipantExpense,
+			PaidAt:       paymentsPaidAtFromNullString(participant.ParticipantPaidAt),
+		}, nil
+	}
+	return GroupPaymentParticipantRow{}, errors.New("participant not found")
+}
+
+func getParticipantByEventAndMember(ctx context.Context, groupID, eventID, memberID string) (db.ListParticipantsByEventRow, error) {
+	participants, err := db.Qry.ListParticipantsByEvent(ctx, db.ListParticipantsByEventParams{
+		EventID: eventID,
+		GroupID: groupID,
+	})
+	if err != nil {
+		return db.ListParticipantsByEventRow{}, err
+	}
+	for _, participant := range participants {
+		if participant.ID == memberID {
+			return participant, nil
+		}
+	}
+	return db.ListParticipantsByEventRow{}, errors.New("participant not found")
 }
 
 func normalizePaymentsPaidAtInput(value string) interface{} {
@@ -1814,6 +2038,8 @@ func (g *Group) paymentsPageData(c echo.Context, groupID string) (GroupPaymentsP
 			{Label: ctxi18n.T(ctx, "groups.to_pay")},
 		},
 		Signals: map[string]any{
+			"fadeRowID": "",
+			"fadeRowIndex": 0,
 			"paidAtDialog": map[string]any{
 				"open":        false,
 				"fetching":    false,
@@ -1928,6 +2154,8 @@ func (g *Group) recentPaymentsPageData(c echo.Context, groupID string) (GroupPay
 			{Label: ctxi18n.T(ctx, "groups.recently_paid")},
 		},
 		Signals: map[string]any{
+			"fadeRowID": "",
+			"fadeRowIndex": 0,
 			"paidAtDialog": map[string]any{
 				"open":        false,
 				"fetching":    false,

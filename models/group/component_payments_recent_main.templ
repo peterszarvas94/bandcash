@@ -35,12 +35,13 @@ templ GroupRecentPaymentsMain(data GroupPaymentsPageData) {
 				if len(data.UnpaidEvents) == 0 {
 					<tr><td colspan="4">{ ctxi18n.T(ctx, "groups.recently_paid_empty_events") }</td></tr>
 				} else {
-					for _, row := range data.UnpaidEvents {
+					for i, row := range data.UnpaidEvents {
 						{{
-							togglePaidExpr := fmt.Sprintf("@put('/groups/%s/pending/events/%s/toggle-paid', {tab_id: $tab_id, mode: 'single'})", data.GroupID, row.ID)
-							openPaidAtExpr := fmt.Sprintf("$paidAtDialog.open = true; $paidAtDialog.url = '/groups/%s/pending/events/%s/paid_at'; $paidAtDialog.value = '%s'", data.GroupID, row.ID, row.PaidAt)
+							rowID := fmt.Sprintf("payment-event-row-%s", row.ID)
+							togglePaidExpr := fmt.Sprintf("($fadeRowID = '%s', $fadeRowIndex = %d, @put('/groups/%s/pending/events/%s/toggle-paid'))", rowID, i, data.GroupID, row.ID)
+							openPaidAtExpr := fmt.Sprintf("$paidAtDialog.open = true; $paidAtDialog.url = '/groups/%s/pending/events/%s/paid_at'; $paidAtDialog.value = '%s'; $paidAtDialog.triggerID = '%s'; $paidAtDialog.triggerIndex = %d", data.GroupID, row.ID, row.PaidAt, rowID, i)
 						}}
-						<tr>
+						<tr id={ rowID } data-class:row-fade-out={ fmt.Sprintf("$fadeRowID === '%s'", rowID) }>
 							<td><a class="table-link" href={ fmt.Sprintf("/groups/%s/events/%s", data.GroupID, row.ID) }>{ row.Title }</a></td>
 							<td class="text-right">{ utils.FormatNumberLocalized(ctx, row.Amount) }</td>
 							<td class="text-right">
@@ -109,12 +110,13 @@ templ GroupRecentPaymentsMain(data GroupPaymentsPageData) {
 				if len(data.UnpaidParticipants) == 0 {
 					<tr><td colspan="5">{ ctxi18n.T(ctx, "groups.recently_paid_empty_participants") }</td></tr>
 				} else {
-					for _, row := range data.UnpaidParticipants {
+					for i, row := range data.UnpaidParticipants {
 						{{
-							togglePaidExpr := fmt.Sprintf("@put('/groups/%s/pending/participants/%s/%s/toggle-paid', {tab_id: $tab_id, mode: 'single'})", data.GroupID, row.EventID, row.MemberID)
-							openPaidAtExpr := fmt.Sprintf("$paidAtDialog.open = true; $paidAtDialog.url = '/groups/%s/pending/participants/%s/%s/paid_at'; $paidAtDialog.value = '%s'", data.GroupID, row.EventID, row.MemberID, row.PaidAt)
+							rowID := fmt.Sprintf("payment-participant-row-%s-%s", row.EventID, row.MemberID)
+							togglePaidExpr := fmt.Sprintf("($fadeRowID = '%s', $fadeRowIndex = %d, @put('/groups/%s/pending/participants/%s/%s/toggle-paid'))", rowID, i, data.GroupID, row.EventID, row.MemberID)
+							openPaidAtExpr := fmt.Sprintf("$paidAtDialog.open = true; $paidAtDialog.url = '/groups/%s/pending/participants/%s/%s/paid_at'; $paidAtDialog.value = '%s'; $paidAtDialog.triggerID = '%s'; $paidAtDialog.triggerIndex = %d", data.GroupID, row.EventID, row.MemberID, row.PaidAt, rowID, i)
 						}}
-						<tr>
+						<tr id={ rowID } data-class:row-fade-out={ fmt.Sprintf("$fadeRowID === '%s'", rowID) }>
 							<td><a class="table-link" href={ fmt.Sprintf("/groups/%s/members/%s", data.GroupID, row.MemberID) }>{ row.MemberName }</a></td>
 							<td><a class="table-link" href={ fmt.Sprintf("/groups/%s/events/%s", data.GroupID, row.EventID) }>{ row.EventTitle }</a></td>
 							<td class="text-right">{ utils.FormatNumberLocalized(ctx, row.PayoutAmount) }</td>
@@ -181,12 +183,13 @@ templ GroupRecentPaymentsMain(data GroupPaymentsPageData) {
 				if len(data.UnpaidExpenses) == 0 {
 					<tr><td colspan="4">{ ctxi18n.T(ctx, "groups.recently_paid_empty_expenses") }</td></tr>
 				} else {
-					for _, row := range data.UnpaidExpenses {
+					for i, row := range data.UnpaidExpenses {
 						{{
-							togglePaidExpr := fmt.Sprintf("@put('/groups/%s/pending/expenses/%s/toggle-paid', {tab_id: $tab_id, mode: 'single'})", data.GroupID, row.ID)
-							openPaidAtExpr := fmt.Sprintf("$paidAtDialog.open = true; $paidAtDialog.url = '/groups/%s/pending/expenses/%s/paid_at'; $paidAtDialog.value = '%s'", data.GroupID, row.ID, row.PaidAt)
+							rowID := fmt.Sprintf("payment-expense-row-%s", row.ID)
+							togglePaidExpr := fmt.Sprintf("($fadeRowID = '%s', $fadeRowIndex = %d, @put('/groups/%s/pending/expenses/%s/toggle-paid'))", rowID, i, data.GroupID, row.ID)
+							openPaidAtExpr := fmt.Sprintf("$paidAtDialog.open = true; $paidAtDialog.url = '/groups/%s/pending/expenses/%s/paid_at'; $paidAtDialog.value = '%s'; $paidAtDialog.triggerID = '%s'; $paidAtDialog.triggerIndex = %d", data.GroupID, row.ID, row.PaidAt, rowID, i)
 						}}
-						<tr>
+						<tr id={ rowID } data-class:row-fade-out={ fmt.Sprintf("$fadeRowID === '%s'", rowID) }>
 							<td><a class="table-link" href={ fmt.Sprintf("/groups/%s/expenses/%s", data.GroupID, row.ID) }>{ row.Title }</a></td>
 							<td class="text-right">{ utils.FormatNumberLocalized(ctx, row.Amount) }</td>
 							<td class="text-right">

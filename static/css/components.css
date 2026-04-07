@@ -131,6 +131,11 @@
           );
       }
 
+      tr.row-fade-out > td {
+        transition: opacity 200ms ease;
+        opacity: 0;
+      }
+
       min-width: 100%;
 
       th,
