@@ -407,6 +407,9 @@ hu:
     recently_paid_empty_events: "Nincs nemrég fizetett esemény."
     recently_paid_empty_participants: "Nincs nemrég fizetett résztvevői kifizetés."
     recently_paid_empty_expenses: "Nincs nemrég fizetett költség."
+    recent_payments_events_title: "Események (utolsó %d)"
+    recent_payments_participants_title: "Résztvevők (utolsó %d)"
+    recent_payments_expenses_title: "Költségek (utolsó %d)"
     messages:
       created: "Csoport létrehozva"
       updated: "Csoport frissítve"

@@ -32,6 +32,9 @@ type UsersModel struct{}
 
 var errAtLeastOneAdmin = errors.New("at least one admin required")
 
+// recentPaymentsPerSectionLimit caps each Recent Payments table (events, participants, expenses).
+const recentPaymentsPerSectionLimit int64 = 100
+
 func (u *UsersModel) TableQuerySpec() utils.TableQuerySpec {
 	return utils.StandardTableQuerySpec(utils.StandardTableQuerySpecParams{
 		DefaultSort:  "email",
@@ -2075,7 +2078,7 @@ func (g *Group) recentPaymentsPageData(c echo.Context, groupID string) (GroupPay
 
 	events, err := db.Qry.ListRecentPaidEventsByGroup(ctx, db.ListRecentPaidEventsByGroupParams{
 		GroupID: groupID,
-		Limit:   10,
+		Limit:   recentPaymentsPerSectionLimit,
 	})
 	if err != nil {
 		return GroupPaymentsPageData{}, err
@@ -2096,7 +2099,7 @@ func (g *Group) recentPaymentsPageData(c echo.Context, groupID string) (GroupPay
 
 	expenses, err := db.Qry.ListRecentPaidExpensesByGroup(ctx, db.ListRecentPaidExpensesByGroupParams{
 		GroupID: groupID,
-		Limit:   10,
+		Limit:   recentPaymentsPerSectionLimit,
 	})
 	if err != nil {
 		return GroupPaymentsPageData{}, err
@@ -2117,7 +2120,7 @@ func (g *Group) recentPaymentsPageData(c echo.Context, groupID string) (GroupPay
 
 	participants, err := db.Qry.ListRecentPaidParticipantsByGroup(ctx, db.ListRecentPaidParticipantsByGroupParams{
 		GroupID: groupID,
-		Limit:   10,
+		Limit:   recentPaymentsPerSectionLimit,
 	})
 	if err != nil {
 		return GroupPaymentsPageData{}, err
@@ -2178,6 +2181,7 @@ func (g *Group) recentPaymentsPageData(c echo.Context, groupID string) (GroupPay
 		EventsTable:        GroupPaymentsEventsTableLayout(),
 		ParticipantsTable:  GroupPaymentsParticipantsTableLayout(),
 		ExpensesTable:      GroupPaymentsExpensesTableLayout(),
+		RecentPaymentsTableLimit: int(recentPaymentsPerSectionLimit),
 	}, nil
 }
 

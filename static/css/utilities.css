@@ -122,6 +122,11 @@
     min-height: 2.5rem;
   }
 
+  .max-h-table > .table-scroll {
+    max-height: 20rem;
+    overflow-y: auto;
+  }
+
   .w-details {
     max-width: var(--details-width);
   }

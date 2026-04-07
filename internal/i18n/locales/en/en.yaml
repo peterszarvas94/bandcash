@@ -407,6 +407,9 @@ en:
     recently_paid_empty_events: "No recently paid events."
     recently_paid_empty_participants: "No recently paid participant payouts."
     recently_paid_empty_expenses: "No recently paid expenses."
+    recent_payments_events_title: "Events (last %d)"
+    recent_payments_participants_title: "Participants (last %d)"
+    recent_payments_expenses_title: "Expenses (last %d)"
     messages:
       created: "Group created"
       updated: "Group updated"

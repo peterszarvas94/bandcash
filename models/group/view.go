@@ -158,6 +158,8 @@ type GroupPaymentsPageData struct {
 	EventsTable         utils.TableLayout
 	ParticipantsTable   utils.TableLayout
 	ExpensesTable       utils.TableLayout
+	// Recent Payments page only: max rows per section (SQL limit); 0 on Pending.
+	RecentPaymentsTableLimit int
 }
 
 type GroupPaymentEventRow struct {
