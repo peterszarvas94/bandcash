@@ -17,12 +17,12 @@ func sessionUser(c echo.Context) (bool, string) {
 		return false, ""
 	}
 
-	session, err := db.Qry.GetUserSessionByToken(c.Request().Context(), cookie.Value)
+	session, err := db.GetUserSessionByToken(c.Request().Context(), cookie.Value)
 	if err != nil {
 		return false, ""
 	}
 
-	user, err := db.Qry.GetUserByID(c.Request().Context(), session.UserID)
+	user, err := db.GetUserByID(c.Request().Context(), session.UserID)
 	if err != nil {
 		return false, ""
 	}
@@ -42,7 +42,7 @@ func syncPreferredLangFromQuery(c echo.Context, userID string, currentPreferredL
 		return
 	}
 
-	_ = db.Qry.UpdateUserPreferredLang(c.Request().Context(), db.UpdateUserPreferredLangParams{
+	_ = db.UpdateUserPreferredLang(c.Request().Context(), db.UpdateUserPreferredLangParams{
 		ID:            userID,
 		PreferredLang: lang,
 	})

@@ -30,14 +30,14 @@ func RequireAuth(next echo.HandlerFunc) echo.HandlerFunc {
 		}
 
 		// Verify user exists
-		user, err := db.Qry.GetUserByID(c.Request().Context(), userID)
+		user, err := db.GetUserByID(c.Request().Context(), userID)
 		if err != nil {
 			slog.Warn("auth: invalid session user", "user_id", userID)
 			clearSession(c)
 			return c.Redirect(http.StatusFound, "/login")
 		}
 
-		bannedCount, err := db.Qry.IsUserBanned(c.Request().Context(), user.ID)
+		bannedCount, err := db.IsUserBanned(c.Request().Context(), user.ID)
 		if err != nil {
 			slog.Warn("auth: failed to check user ban", "user_id", user.ID, "err", err)
 			clearSession(c)
@@ -88,7 +88,7 @@ func RequireGroup(next echo.HandlerFunc) echo.HandlerFunc {
 			return next(c)
 		}
 
-		role, err := db.Qry.GetGroupAccessRole(c.Request().Context(), db.GetGroupAccessRoleParams{
+		role, err := db.GetGroupAccessRole(c.Request().Context(), db.GetGroupAccessRoleParams{
 			UserID:  userID,
 			GroupID: groupID,
 		})
@@ -183,7 +183,7 @@ func getSessionUserID(c echo.Context) string {
 		return ""
 	}
 
-	session, err := db.Qry.GetUserSessionByToken(c.Request().Context(), cookie.Value)
+	session, err := db.GetUserSessionByToken(c.Request().Context(), cookie.Value)
 	if err != nil {
 		return ""
 	}
@@ -195,11 +195,11 @@ func clearSession(c echo.Context) {
 	cookie, err := c.Cookie(utils.SessionCookieName)
 	if err == nil {
 		// Try to get session and delete it from DB
-		session, err := db.Qry.GetUserSessionByToken(c.Request().Context(), cookie.Value)
+		session, err := db.GetUserSessionByToken(c.Request().Context(), cookie.Value)
 		if err == nil {
 			userID := GetUserID(c)
 			if userID != "" {
-				_ = db.Qry.DeleteUserSession(c.Request().Context(), db.DeleteUserSessionParams{
+				_ = db.DeleteUserSession(c.Request().Context(), db.DeleteUserSessionParams{
 					ID:     session.ID,
 					UserID: userID,
 				})

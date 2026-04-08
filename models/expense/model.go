@@ -26,61 +26,56 @@ func New() *Expenses {
 }
 
 func (e *Expenses) GetIndexData(ctx context.Context, groupID string, query utils.TableQuery) (ExpensesData, error) {
-	group, err := db.Qry.GetGroupByID(ctx, groupID)
+	group, err := db.GetGroupByID(ctx, groupID)
 	if err != nil {
 		return ExpensesData{}, err
 	}
 
-	// Check cache first
-	cacheKey := ExpensesFilterKey(groupID, query.Search, query.Year, query.From, query.To, query.Sort, query.Dir)
-	if cached, ok := utils.CalcCacheInstance.Get(cacheKey); ok {
-		if result, valid := cached.(expenseCalcTotals); valid {
-			return e.buildExpensesData(ctx, groupID, group, query, result)
-		}
+	filters := db.ExpenseTableFilter{
+		GroupID: groupID,
+		Search:  query.Search,
+		Year:    query.Year,
+		From:    query.From,
+		To:      query.To,
 	}
 
-	// Get all expenses for the group to calculate in-memory
-	allExpenses, err := db.Qry.ListExpenses(ctx, groupID)
+	totalItems, err := db.CountExpensesTable(ctx, filters)
+	if err != nil {
+		return ExpensesData{}, err
+	}
+	query = utils.ClampPage(query, totalItems)
+
+	expenses, err := db.ListExpensesTable(ctx, db.ExpenseTableListParams{
+		ExpenseTableFilter: filters,
+		Sort:               query.Sort,
+		Dir:                query.Dir,
+		Limit:              query.PageSize,
+		Offset:             int(query.Offset()),
+	})
 	if err != nil {
 		return ExpensesData{}, err
 	}
 
-	// Filter and calculate totals in-memory
-	filteredExpenses := make([]db.Expense, 0, len(allExpenses))
-	var filteredTotal, totalPaid, totalUnpaid int64
-
-	for _, expense := range allExpenses {
-		if matchesExpenseFilters(expense, query) {
-			filteredExpenses = append(filteredExpenses, expense)
-			filteredTotal += expense.Amount
-			if expense.Paid == 1 {
-				totalPaid += expense.Amount
-			} else {
-				totalUnpaid += expense.Amount
-			}
-		}
+	totalRows, err := db.SumExpenseTotalsTable(ctx, filters)
+	if err != nil {
+		return ExpensesData{}, err
 	}
 
-	// Sort filtered expenses
-	sortExpenses(filteredExpenses, query.Sort, query.Dir)
-
-	// Store in cache
 	totals := expenseCalcTotals{
-		Filtered: filteredExpenses,
-		Total:    filteredTotal,
-		Paid:     totalPaid,
-		Unpaid:   totalUnpaid,
+		TotalItems: totalItems,
+		Total:      totalRows.Total,
+		Paid:       totalRows.Paid,
+		Unpaid:     totalRows.Total - totalRows.Paid,
 	}
-	utils.CalcCacheInstance.Set(cacheKey, totals)
 
-	return e.buildExpensesData(ctx, groupID, group, query, totals)
+	return e.buildExpensesData(ctx, groupID, group, query, expenses, totals)
 }
 
 type expenseCalcTotals struct {
-	Filtered []db.Expense
-	Total    int64
-	Paid     int64
-	Unpaid   int64
+	TotalItems int64
+	Total      int64
+	Paid       int64
+	Unpaid     int64
 }
 
 func matchesExpenseFilters(expense db.Expense, query utils.TableQuery) bool {
@@ -151,23 +146,8 @@ func sortExpenses(expenses []db.Expense, sortField, dir string) {
 	sort.Slice(expenses, less)
 }
 
-func (e *Expenses) buildExpensesData(ctx context.Context, groupID string, group db.Group, query utils.TableQuery, totals expenseCalcTotals) (ExpensesData, error) {
-	totalItems := int64(len(totals.Filtered))
-	query = utils.ClampPage(query, totalItems)
-
-	start := query.Offset()
-	end := start + int64(query.PageSize)
-	if end > totalItems {
-		end = totalItems
-	}
-	if start > totalItems {
-		start = totalItems
-	}
-
-	var paginatedExpenses []db.Expense
-	if start < totalItems {
-		paginatedExpenses = totals.Filtered[start:end]
-	}
+func (e *Expenses) buildExpensesData(ctx context.Context, groupID string, group db.Group, query utils.TableQuery, expenses []db.Expense, totals expenseCalcTotals) (ExpensesData, error) {
+	query = utils.ClampPage(query, totals.TotalItems)
 
 	// Calculate group totals for display
 	groupTotals, err := utils.CalculateGroupTotals(ctx, groupID)
@@ -178,10 +158,10 @@ func (e *Expenses) buildExpensesData(ctx context.Context, groupID string, group 
 	return ExpensesData{
 		Title:              ctxi18n.T(ctx, "expenses.page_title"),
 		GroupName:          group.Name,
-		Expenses:           paginatedExpenses,
+		Expenses:           expenses,
 		RecentYears:        utils.RecentYears(3),
 		Query:              query,
-		Pager:              utils.BuildTablePagination(totalItems, query),
+		Pager:              utils.BuildTablePagination(totals.TotalItems, query),
 		GroupID:            groupID,
 		TotalExpenseAmount: groupTotals.TotalExpenseAmount,
 		TotalPaid:          groupTotals.ExpensePaid,
@@ -199,12 +179,12 @@ func (e *Expenses) buildExpensesData(ctx context.Context, groupID string, group 
 }
 
 func (e *Expenses) GetShowData(ctx context.Context, groupID, expenseID string) (ExpenseData, error) {
-	group, err := db.Qry.GetGroupByID(ctx, groupID)
+	group, err := db.GetGroupByID(ctx, groupID)
 	if err != nil {
 		return ExpenseData{}, err
 	}
 
-	expense, err := db.Qry.GetExpense(ctx, db.GetExpenseParams{
+	expense, err := db.GetExpense(ctx, db.GetExpenseParams{
 		ID:      expenseID,
 		GroupID: groupID,
 	})

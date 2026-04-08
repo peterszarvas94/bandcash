@@ -62,7 +62,7 @@ func getUserEmail(c echo.Context) string {
 	if userID == "" {
 		return ""
 	}
-	user, err := db.Qry.GetUserByID(c.Request().Context(), userID)
+	user, err := db.GetUserByID(c.Request().Context(), userID)
 	if err != nil {
 		return ""
 	}
@@ -107,7 +107,7 @@ func (e *Expenses) NewExpensePage(c echo.Context) error {
 	utils.EnsureTabID(c)
 	groupID := middleware.GetGroupID(c)
 
-	group, err := db.Qry.GetGroupByID(c.Request().Context(), groupID)
+	group, err := db.GetGroupByID(c.Request().Context(), groupID)
 	if err != nil {
 		slog.Error("expense.new_page: failed to get group", "group_id", groupID, "err", err)
 		return c.NoContent(http.StatusInternalServerError)
@@ -142,13 +142,13 @@ func (e *Expenses) EditExpensePage(c echo.Context) error {
 		return c.NoContent(http.StatusBadRequest)
 	}
 
-	group, err := db.Qry.GetGroupByID(c.Request().Context(), groupID)
+	group, err := db.GetGroupByID(c.Request().Context(), groupID)
 	if err != nil {
 		slog.Error("expense.edit_page: failed to get group", "group_id", groupID, "err", err)
 		return c.NoContent(http.StatusInternalServerError)
 	}
 
-	expense, err := db.Qry.GetExpense(c.Request().Context(), db.GetExpenseParams{
+	expense, err := db.GetExpense(c.Request().Context(), db.GetExpenseParams{
 		ID:      id,
 		GroupID: groupID,
 	})
@@ -253,7 +253,7 @@ func (e *Expenses) Create(c echo.Context) error {
 		return c.NoContent(http.StatusUnprocessableEntity)
 	}
 
-	_, err = db.Qry.CreateExpense(c.Request().Context(), db.CreateExpenseParams{
+	_, err = db.CreateExpense(c.Request().Context(), db.CreateExpenseParams{
 		ID:          utils.GenerateID(utils.PrefixExpense),
 		GroupID:     groupID,
 		Title:       signals.FormData.Title,
@@ -314,7 +314,7 @@ func (e *Expenses) Update(c echo.Context) error {
 		return c.NoContent(http.StatusUnprocessableEntity)
 	}
 
-	_, err = db.Qry.UpdateExpense(c.Request().Context(), db.UpdateExpenseParams{
+	_, err = db.UpdateExpense(c.Request().Context(), db.UpdateExpenseParams{
 		Title:       signals.FormData.Title,
 		Description: signals.FormData.Description,
 		Amount:      signals.FormData.Amount,
@@ -366,7 +366,7 @@ func (e *Expenses) Destroy(c echo.Context) error {
 		return c.NoContent(http.StatusBadRequest)
 	}
 
-	err = db.Qry.DeleteExpense(c.Request().Context(), db.DeleteExpenseParams{
+	err = db.DeleteExpense(c.Request().Context(), db.DeleteExpenseParams{
 		ID:      id,
 		GroupID: groupID,
 	})
@@ -517,7 +517,7 @@ func (e *Expenses) openPaidAtDialogInIndex(c echo.Context, groupID, id string, t
 func (e *Expenses) patchUpdatePaidAt(c echo.Context, groupID, id, mode string, tableQuery utils.TableQuery, value string) error {
 	paidAt := normalizePaidAtInput(value)
 
-	expense, err := db.Qry.GetExpense(c.Request().Context(), db.GetExpenseParams{
+	expense, err := db.GetExpense(c.Request().Context(), db.GetExpenseParams{
 		ID:      id,
 		GroupID: groupID,
 	})
@@ -532,7 +532,7 @@ func (e *Expenses) patchUpdatePaidAt(c echo.Context, groupID, id, mode string, t
 		paid = 1
 	}
 
-	_, err = db.Qry.UpdateExpense(c.Request().Context(), db.UpdateExpenseParams{
+	_, err = db.UpdateExpense(c.Request().Context(), db.UpdateExpenseParams{
 		Title:       expense.Title,
 		Description: expense.Description,
 		Amount:      expense.Amount,
@@ -671,7 +671,7 @@ func (e *Expenses) TogglePaid(c echo.Context) error {
 		return c.NoContent(http.StatusBadRequest)
 	}
 
-	_, err = db.Qry.ToggleExpensePaid(c.Request().Context(), db.ToggleExpensePaidParams{
+	_, err = db.ToggleExpensePaid(c.Request().Context(), db.ToggleExpensePaidParams{
 		ID:      id,
 		GroupID: groupID,
 	})

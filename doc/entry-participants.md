@@ -11,7 +11,7 @@ Use this when adding participant UI or wiring add/remove participant actions.
 ## Key paths
 - Event detail template: `models/event/page_show.templ` and `models/event/component_show_*.templ`
 - Event handlers: `models/event/handlers.go`
-- Participant queries: `internal/db/queries/participants.sql`
+- Participant data access: `internal/db/bun_queries.go`, `internal/db/bun_api.go`
 - SSE hub: `internal/utils/hub.go`
 
 ## UI conventions

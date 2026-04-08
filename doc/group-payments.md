@@ -33,8 +33,8 @@ Use this when changing group payment tabs, payment table behavior, or paid/unpai
 ## Data/query sources
 - Outgoing (to pay / recent outgoing): `ListUnpaidOutgoingPaymentsByGroup`, `ListPaidOutgoingPaymentsByGroup`
 - Event income (to receive / recent income): `ListUnpaidEventsByGroup`, `ListPaidEventsByGroup`
-- Query definitions: `internal/db/queries/participants.sql`, `internal/db/queries/events.sql`, `internal/db/queries/expenses.sql`
-- Supporting SQL view migration: `internal/db/migrations/033_create_group_outgoing_payments_view.sql`
+- Data access layer: `internal/db/bun_queries.go`, `internal/db/bun_api.go`, `internal/db/events_bun.go`, `internal/db/expenses_bun.go`
+- Supporting SQL view migration: `internal/db/bunmigrations/20260408120000_baseline_schema.up.sql`
 
 ## Shared UI and table behavior
 - Sidebar tabs are defined in `models/shared/component_group_tabs.templ`.
@@ -55,4 +55,4 @@ Use this when changing group payment tabs, payment table behavior, or paid/unpai
 ## Notes
 - Keep payment pages as separate route-based views; do not merge them back into a single payments route.
 - For payment mutations, preserve referer query state so the current tab and table state are patched correctly.
-- Do not hand-edit generated files (`*_templ.go`, `internal/db/*.sql.go`).
+- Do not hand-edit generated files (`*_templ.go`).

@@ -184,7 +184,7 @@ func getUserEmail(c echo.Context) string {
 	if userID == "" {
 		return ""
 	}
-	user, err := db.Qry.GetUserByID(c.Request().Context(), userID)
+	user, err := db.GetUserByID(c.Request().Context(), userID)
 	if err != nil {
 		return ""
 	}
@@ -473,7 +473,7 @@ func (e *Events) NewEventPage(c echo.Context) error {
 	utils.EnsureTabID(c)
 	groupID := middleware.GetGroupID(c)
 
-	group, err := db.Qry.GetGroupByID(c.Request().Context(), groupID)
+	group, err := db.GetGroupByID(c.Request().Context(), groupID)
 	if err != nil {
 		slog.Error("event.new_page: failed to get group", "group_id", groupID, "err", err)
 		return c.NoContent(http.StatusInternalServerError)
@@ -557,7 +557,7 @@ func (e *Events) Create(c echo.Context) error {
 		return c.NoContent(http.StatusUnprocessableEntity)
 	}
 
-	event, err := db.Qry.CreateEvent(c.Request().Context(), db.CreateEventParams{
+	event, err := db.CreateEvent(c.Request().Context(), db.CreateEventParams{
 		ID:          utils.GenerateID(utils.PrefixEvent),
 		GroupID:     groupID,
 		Title:       signals.FormData.Title,
@@ -636,7 +636,7 @@ func (e *Events) Update(c echo.Context) error {
 		return c.NoContent(http.StatusUnprocessableEntity)
 	}
 
-	_, err = db.Qry.UpdateEvent(c.Request().Context(), db.UpdateEventParams{
+	_, err = db.UpdateEvent(c.Request().Context(), db.UpdateEventParams{
 		Title:       eventForm.Title,
 		Date:        eventForm.Date,
 		EventTime:   eventForm.Time,
@@ -692,7 +692,7 @@ func (e *Events) Destroy(c echo.Context) error {
 		return c.NoContent(http.StatusBadRequest)
 	}
 
-	err = db.Qry.DeleteEvent(c.Request().Context(), db.DeleteEventParams{
+	err = db.DeleteEvent(c.Request().Context(), db.DeleteEventParams{
 		ID:      id,
 		GroupID: groupID,
 	})
@@ -764,7 +764,7 @@ func (e *Events) ToggleParticipantPaid(c echo.Context) error {
 		return c.NoContent(http.StatusBadRequest)
 	}
 
-	_, err = db.Qry.ToggleParticipantPaid(c.Request().Context(), db.ToggleParticipantPaidParams{
+	_, err = db.ToggleParticipantPaid(c.Request().Context(), db.ToggleParticipantPaidParams{
 		EventID:  eventID,
 		MemberID: memberID,
 		GroupID:  groupID,
@@ -1022,7 +1022,7 @@ func (e *Events) SaveParticipantsBulk(c echo.Context) error {
 		return c.NoContent(http.StatusUnprocessableEntity)
 	}
 
-	members, err := db.Qry.ListMembers(c.Request().Context(), groupID)
+	members, err := db.ListMembers(c.Request().Context(), groupID)
 	if err != nil {
 		slog.Error("participant.bulk: failed to list members", "err", err)
 		utils.Notify(c, ctxi18n.T(c.Request().Context(), "participants.notifications.update_failed"))
@@ -1458,7 +1458,7 @@ func (e *Events) openParticipantPaidAtDialog(c echo.Context, groupID, id, member
 func (e *Events) patchUpdatePaidAt(c echo.Context, groupID, id, mode string, tableQuery utils.TableQuery, value string) error {
 	paidAt := normalizePaidAtInput(value)
 
-	_, err := db.Qry.UpdateEventPaidAt(c.Request().Context(), db.UpdateEventPaidAtParams{
+	_, err := db.UpdateEventPaidAt(c.Request().Context(), db.UpdateEventPaidAtParams{
 		PaidAt:  paidAt,
 		ID:      id,
 		GroupID: groupID,
@@ -1535,7 +1535,7 @@ func (e *Events) patchUpdateParticipantNote(c echo.Context, groupID, id string, 
 		return c.NoContent(http.StatusBadRequest)
 	}
 
-	err := db.Qry.UpdateParticipantNote(c.Request().Context(), db.UpdateParticipantNoteParams{
+	err := db.UpdateParticipantNote(c.Request().Context(), db.UpdateParticipantNoteParams{
 		Note:     strings.TrimSpace(value),
 		EventID:  id,
 		MemberID: memberID,
@@ -1583,7 +1583,7 @@ func (e *Events) patchUpdateParticipantPaidAt(c echo.Context, groupID, id string
 		return c.NoContent(http.StatusBadRequest)
 	}
 
-	_, err := db.Qry.UpdateParticipantPaidAt(c.Request().Context(), db.UpdateParticipantPaidAtParams{
+	_, err := db.UpdateParticipantPaidAt(c.Request().Context(), db.UpdateParticipantPaidAtParams{
 		PaidAt:   normalizePaidAtInput(value),
 		EventID:  id,
 		MemberID: memberID,
@@ -1626,7 +1626,7 @@ func (e *Events) patchUpdateParticipantPaidAt(c echo.Context, groupID, id string
 }
 
 func (e *Events) patchTogglePaid(c echo.Context, groupID, id, mode string, tableQuery utils.TableQuery) error {
-	_, err := db.Qry.ToggleEventPaid(c.Request().Context(), db.ToggleEventPaidParams{
+	_, err := db.ToggleEventPaid(c.Request().Context(), db.ToggleEventPaidParams{
 		ID:      id,
 		GroupID: groupID,
 	})

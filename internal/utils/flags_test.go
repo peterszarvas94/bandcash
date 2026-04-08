@@ -22,7 +22,7 @@ func setupFlagsTestDB(t *testing.T) {
 	t.Cleanup(func() {
 		_ = db.Close()
 		db.DB = nil
-		db.Qry = nil
+		db.BunDB = nil
 	})
 }
 

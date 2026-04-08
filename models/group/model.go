@@ -24,10 +24,7 @@ func (m *GroupModel) TableQuerySpec() utils.TableQuerySpec {
 }
 
 func (m *GroupModel) GetGroupsPageData(ctx context.Context, userID string, query utils.TableQuery) (GroupsPageData, error) {
-	total, err := db.Qry.CountUserGroupsFiltered(ctx, db.CountUserGroupsFilteredParams{
-		UserID: userID,
-		Search: query.Search,
-	})
+	total, err := db.CountUserGroupsTable(ctx, userID, query.Search)
 	if err != nil {
 		slog.Error("group.model: failed to count groups", "err", err)
 		return GroupsPageData{}, err
@@ -35,17 +32,12 @@ func (m *GroupModel) GetGroupsPageData(ctx context.Context, userID string, query
 
 	allGroups := make([]GroupWithRole, 0)
 	if total > 0 {
-		rows, err := db.Qry.ListUserGroupsByNameAscFiltered(ctx, db.ListUserGroupsByNameAscFilteredParams{
-			UserID: userID,
-			Search: query.Search,
-			Limit:  total,
-			Offset: 0,
-		})
+		rows, err := db.ListUserGroupsTable(ctx, userID, query.Search, int(total), 0)
 		if err != nil {
 			slog.Error("group.model: failed to list groups", "err", err)
 			return GroupsPageData{}, err
 		}
-		allGroups = convertNameAscRowsToGroupWithRole(rows)
+		allGroups = convertUserGroupRowsToGroupWithRole(rows)
 		if err := m.enrichBalances(ctx, allGroups); err != nil {
 			return GroupsPageData{}, err
 		}
@@ -57,7 +49,7 @@ func (m *GroupModel) GetGroupsPageData(ctx context.Context, userID string, query
 	}, nil
 }
 
-func convertNameAscRowsToGroupWithRole(rows []db.ListUserGroupsByNameAscFilteredRow) []GroupWithRole {
+func convertUserGroupRowsToGroupWithRole(rows []db.UserGroupRow) []GroupWithRole {
 	result := make([]GroupWithRole, len(rows))
 	for i, r := range rows {
 		result[i] = GroupWithRole{

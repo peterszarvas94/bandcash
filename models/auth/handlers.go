@@ -70,12 +70,12 @@ func authSessionUser(c echo.Context) (bool, string) {
 		return false, ""
 	}
 
-	session, err := db.Qry.GetUserSessionByToken(c.Request().Context(), cookie.Value)
+	session, err := db.GetUserSessionByToken(c.Request().Context(), cookie.Value)
 	if err != nil {
 		return false, ""
 	}
 
-	user, err := db.Qry.GetUserByID(c.Request().Context(), session.UserID)
+	user, err := db.GetUserByID(c.Request().Context(), session.UserID)
 	if err != nil {
 		return true, ""
 	}
@@ -95,7 +95,7 @@ func syncPreferredLangFromQuery(c echo.Context, userID string, currentPreferredL
 		return
 	}
 
-	_ = db.Qry.UpdateUserPreferredLang(c.Request().Context(), db.UpdateUserPreferredLangParams{
+	_ = db.UpdateUserPreferredLang(c.Request().Context(), db.UpdateUserPreferredLangParams{
 		ID:            userID,
 		PreferredLang: lang,
 	})
@@ -169,7 +169,7 @@ func (a *Auth) LoginRequest(c echo.Context) error {
 	}
 	emailAddress := signals.FormData.Email
 
-	loginUser, err := db.Qry.GetUserByEmail(c.Request().Context(), emailAddress)
+	loginUser, err := db.GetUserByEmail(c.Request().Context(), emailAddress)
 	if err != nil {
 		if !errors.Is(err, sql.ErrNoRows) {
 			slog.Error("auth.login: failed to load user by email", "err", err)
@@ -192,7 +192,7 @@ func (a *Auth) LoginRequest(c echo.Context) error {
 			return c.NoContent(http.StatusOK)
 		}
 
-		loginUser, err = db.Qry.CreateUser(c.Request().Context(), db.CreateUserParams{
+		loginUser, err = db.CreateUser(c.Request().Context(), db.CreateUserParams{
 			ID:            utils.GenerateID("usr"),
 			Email:         emailAddress,
 			PreferredLang: appi18n.LocaleCode(c.Request().Context()),
@@ -204,7 +204,7 @@ func (a *Auth) LoginRequest(c echo.Context) error {
 		}
 	}
 
-	bannedCount, err := db.Qry.IsUserBanned(c.Request().Context(), loginUser.ID)
+	bannedCount, err := db.IsUserBanned(c.Request().Context(), loginUser.ID)
 	if err != nil {
 		slog.Error("auth.login: failed to check user ban", "err", err)
 		a.patchLoginSentState(c, emailAddress)
@@ -218,7 +218,7 @@ func (a *Auth) LoginRequest(c echo.Context) error {
 	token := utils.GenerateID("tok")
 	expiresAt := time.Now().Add(1 * time.Hour)
 
-	_, err = db.Qry.CreateMagicLink(c.Request().Context(), db.CreateMagicLinkParams{
+	_, err = db.CreateMagicLink(c.Request().Context(), db.CreateMagicLinkParams{
 		ID:        utils.GenerateID("mag"),
 		Token:     token,
 		Email:     emailAddress,
@@ -261,7 +261,7 @@ func (a *Auth) VerifyMagicLink(c echo.Context) error {
 	locale := appi18n.NormalizeLocale(c.QueryParam("lang"))
 
 	// Get magic link
-	magicLink, err := db.Qry.GetMagicLinkByToken(c.Request().Context(), token)
+	magicLink, err := db.GetMagicLinkByToken(c.Request().Context(), token)
 	if err != nil {
 		return a.renderVerifyLinkError(c, http.StatusBadRequest)
 	}
@@ -277,17 +277,17 @@ func (a *Auth) VerifyMagicLink(c echo.Context) error {
 	}
 
 	// Mark as used
-	err = db.Qry.UseMagicLink(c.Request().Context(), magicLink.ID)
+	err = db.UseMagicLink(c.Request().Context(), magicLink.ID)
 	if err != nil {
 		slog.Error("auth: failed to mark magic link used", "err", err)
 		return a.renderVerifyLinkError(c, http.StatusBadRequest)
 	}
 
 	// Get user
-	user, err := db.Qry.GetUserByEmail(c.Request().Context(), magicLink.Email)
+	user, err := db.GetUserByEmail(c.Request().Context(), magicLink.Email)
 	if err != nil {
 		// Create user on invite accept
-		user, err = db.Qry.CreateUser(c.Request().Context(), db.CreateUserParams{
+		user, err = db.CreateUser(c.Request().Context(), db.CreateUserParams{
 			ID:            utils.GenerateID("usr"),
 			Email:         magicLink.Email,
 			PreferredLang: locale,
@@ -297,14 +297,14 @@ func (a *Auth) VerifyMagicLink(c echo.Context) error {
 			return a.renderVerifyLinkError(c, http.StatusBadRequest)
 		}
 	} else if user.PreferredLang != locale {
-		if err := db.Qry.UpdateUserPreferredLang(c.Request().Context(), db.UpdateUserPreferredLangParams{PreferredLang: locale, ID: user.ID}); err != nil {
+		if err := db.UpdateUserPreferredLang(c.Request().Context(), db.UpdateUserPreferredLangParams{PreferredLang: locale, ID: user.ID}); err != nil {
 			slog.Warn("auth.verify: failed to update user preferred language", "user_id", user.ID, "err", err)
 		} else {
 			user.PreferredLang = locale
 		}
 	}
 
-	bannedCount, err := db.Qry.IsUserBanned(c.Request().Context(), user.ID)
+	bannedCount, err := db.IsUserBanned(c.Request().Context(), user.ID)
 	if err != nil {
 		slog.Error("auth.verify: failed to check user ban", "user_id", user.ID, "err", err)
 		return a.renderVerifyLinkError(c, http.StatusBadRequest)
@@ -316,7 +316,7 @@ func (a *Auth) VerifyMagicLink(c echo.Context) error {
 
 	// Create session
 	expiresAt := time.Now().Add(30 * 24 * time.Hour)
-	session, err := db.Qry.CreateUserSession(c.Request().Context(), db.CreateUserSessionParams{
+	session, err := db.CreateUserSession(c.Request().Context(), db.CreateUserSessionParams{
 		ID:        utils.GenerateID("ses"),
 		UserID:    user.ID,
 		Token:     utils.GenerateID("tok"),
@@ -340,13 +340,13 @@ func (a *Auth) VerifyMagicLink(c echo.Context) error {
 			inviteRole = "viewer"
 		}
 		groupName := groupID
-		group, groupErr := db.Qry.GetGroupByID(c.Request().Context(), groupID)
+		group, groupErr := db.GetGroupByID(c.Request().Context(), groupID)
 		if groupErr == nil {
 			groupName = group.Name
 			if group.AdminUserID != user.ID {
 				if inviteRole == "admin" {
-					_ = db.Qry.RemoveGroupReader(c.Request().Context(), db.RemoveGroupReaderParams{UserID: user.ID, GroupID: groupID})
-					_, err = db.Qry.CreateGroupAdmin(c.Request().Context(), db.CreateGroupAdminParams{
+					_ = db.RemoveGroupReader(c.Request().Context(), db.RemoveGroupReaderParams{UserID: user.ID, GroupID: groupID})
+					_, err = db.CreateGroupAdmin(c.Request().Context(), db.CreateGroupAdminParams{
 						ID:      utils.GenerateID("gad"),
 						UserID:  user.ID,
 						GroupID: groupID,
@@ -355,8 +355,8 @@ func (a *Auth) VerifyMagicLink(c echo.Context) error {
 						slog.Warn("auth: failed to add group admin", "group_id", groupID, "user_id", user.ID, "err", err)
 					}
 				} else {
-					_ = db.Qry.RemoveGroupAdmin(c.Request().Context(), db.RemoveGroupAdminParams{UserID: user.ID, GroupID: groupID})
-					_, err = db.Qry.CreateGroupReader(c.Request().Context(), db.CreateGroupReaderParams{
+					_ = db.RemoveGroupAdmin(c.Request().Context(), db.RemoveGroupAdminParams{UserID: user.ID, GroupID: groupID})
+					_, err = db.CreateGroupReader(c.Request().Context(), db.CreateGroupReaderParams{
 						ID:      utils.GenerateID("grd"),
 						UserID:  user.ID,
 						GroupID: groupID,
@@ -369,8 +369,8 @@ func (a *Auth) VerifyMagicLink(c echo.Context) error {
 		} else {
 			slog.Warn("auth.verify: failed to load group for invite", "group_id", groupID, "err", groupErr)
 			if inviteRole == "admin" {
-				_ = db.Qry.RemoveGroupReader(c.Request().Context(), db.RemoveGroupReaderParams{UserID: user.ID, GroupID: groupID})
-				_, err = db.Qry.CreateGroupAdmin(c.Request().Context(), db.CreateGroupAdminParams{
+				_ = db.RemoveGroupReader(c.Request().Context(), db.RemoveGroupReaderParams{UserID: user.ID, GroupID: groupID})
+				_, err = db.CreateGroupAdmin(c.Request().Context(), db.CreateGroupAdminParams{
 					ID:      utils.GenerateID("gad"),
 					UserID:  user.ID,
 					GroupID: groupID,
@@ -379,8 +379,8 @@ func (a *Auth) VerifyMagicLink(c echo.Context) error {
 					slog.Warn("auth: failed to add group admin", "group_id", groupID, "user_id", user.ID, "err", err)
 				}
 			} else {
-				_ = db.Qry.RemoveGroupAdmin(c.Request().Context(), db.RemoveGroupAdminParams{UserID: user.ID, GroupID: groupID})
-				_, err = db.Qry.CreateGroupReader(c.Request().Context(), db.CreateGroupReaderParams{
+				_ = db.RemoveGroupAdmin(c.Request().Context(), db.RemoveGroupAdminParams{UserID: user.ID, GroupID: groupID})
+				_, err = db.CreateGroupReader(c.Request().Context(), db.CreateGroupReaderParams{
 					ID:      utils.GenerateID("grd"),
 					UserID:  user.ID,
 					GroupID: groupID,
@@ -426,11 +426,11 @@ func (a *Auth) Logout(c echo.Context) error {
 	// Delete session from DB
 	cookie, err := c.Cookie(utils.SessionCookieName)
 	if err == nil {
-		session, err := db.Qry.GetUserSessionByToken(c.Request().Context(), cookie.Value)
+		session, err := db.GetUserSessionByToken(c.Request().Context(), cookie.Value)
 		if err == nil {
 			userID := middleware.GetUserID(c)
 			if userID != "" {
-				_ = db.Qry.DeleteUserSession(c.Request().Context(), db.DeleteUserSessionParams{
+				_ = db.DeleteUserSession(c.Request().Context(), db.DeleteUserSessionParams{
 					ID:     session.ID,
 					UserID: userID,
 				})
@@ -452,13 +452,13 @@ func (a *Auth) Logout(c echo.Context) error {
 func (a *Auth) Dashboard(c echo.Context) error {
 	userID := middleware.GetUserID(c)
 
-	adminGroups, err := db.Qry.ListGroupsByAdmin(c.Request().Context(), userID)
+	adminGroups, err := db.ListGroupsByAdmin(c.Request().Context(), userID)
 	if err != nil {
 		slog.Error("auth: failed to load admin groups", "err", err)
 		return c.Redirect(http.StatusFound, "/groups/new")
 	}
 
-	readerGroups, err := db.Qry.ListGroupsByReader(c.Request().Context(), userID)
+	readerGroups, err := db.ListGroupsByReader(c.Request().Context(), userID)
 	if err != nil {
 		slog.Error("auth: failed to load reader groups", "err", err)
 		return c.Redirect(http.StatusFound, "/groups/new")

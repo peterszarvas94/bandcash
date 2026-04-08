@@ -36,6 +36,9 @@ Quick rules:
 - Go tests run by package, not by file path.
 - After query/schema changes, run affected package tests and a compile check.
 
-## DB and SQL Codegen
+## DB Migrations
 
-See `doc/sqlc-goose.md` for migration and sqlc workflows.
+- `mise run db-up` - apply pending Bun SQL migrations.
+- `mise run db-down` - rollback last Bun migration group.
+- `mise run db-status` - show migration status.
+- `mise run db-create name=add_new_column` - create new SQL migration files.

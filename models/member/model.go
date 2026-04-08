@@ -221,12 +221,12 @@ func convertToMemberEvent(row interface{}) MemberEvent {
 }
 
 func (p *Members) GetShowData(ctx context.Context, groupID, memberID string, query utils.TableQuery) (MemberData, error) {
-	group, err := db.Qry.GetGroupByID(ctx, groupID)
+	group, err := db.GetGroupByID(ctx, groupID)
 	if err != nil {
 		return MemberData{}, err
 	}
 
-	member, err := db.Qry.GetMember(ctx, db.GetMemberParams{
+	member, err := db.GetMember(ctx, db.GetMemberParams{
 		ID:      memberID,
 		GroupID: groupID,
 	})
@@ -234,7 +234,7 @@ func (p *Members) GetShowData(ctx context.Context, groupID, memberID string, que
 		return MemberData{}, err
 	}
 
-	totalItems, err := db.Qry.CountParticipantsByMemberFiltered(ctx, db.CountParticipantsByMemberFilteredParams{
+	totalItems, err := db.CountParticipantsByMemberFiltered(ctx, db.CountParticipantsByMemberFilteredParams{
 		MemberID: memberID,
 		GroupID:  groupID,
 		Search:   query.Search,
@@ -246,7 +246,7 @@ func (p *Members) GetShowData(ctx context.Context, groupID, memberID string, que
 		return MemberData{}, err
 	}
 
-	totals, err := db.Qry.SumParticipantTotalsByMemberFiltered(ctx, db.SumParticipantTotalsByMemberFilteredParams{
+	totals, err := db.SumParticipantTotalsByMemberFiltered(ctx, db.SumParticipantTotalsByMemberFilteredParams{
 		MemberID: memberID,
 		GroupID:  groupID,
 		Search:   query.Search,
@@ -275,7 +275,7 @@ func (p *Members) GetShowData(ctx context.Context, groupID, memberID string, que
 	switch query.Sort {
 	case "title":
 		if query.Dir == "desc" {
-			rows, err := db.Qry.ListParticipantsByMemberByTitleDescFiltered(ctx, db.ListParticipantsByMemberByTitleDescFilteredParams(params))
+			rows, err := db.ListParticipantsByMemberByTitleDescFiltered(ctx, db.ListParticipantsByMemberByTitleDescFilteredParams(params))
 			if err != nil {
 				return MemberData{}, err
 			}
@@ -283,7 +283,7 @@ func (p *Members) GetShowData(ctx context.Context, groupID, memberID string, que
 				events = append(events, convertToMemberEvent(r))
 			}
 		} else {
-			rows, err := db.Qry.ListParticipantsByMemberByTitleAscFiltered(ctx, db.ListParticipantsByMemberByTitleAscFilteredParams(params))
+			rows, err := db.ListParticipantsByMemberByTitleAscFiltered(ctx, db.ListParticipantsByMemberByTitleAscFilteredParams(params))
 			if err != nil {
 				return MemberData{}, err
 			}
@@ -293,7 +293,7 @@ func (p *Members) GetShowData(ctx context.Context, groupID, memberID string, que
 		}
 	case "participant_amount":
 		if query.Dir == "desc" {
-			rows, err := db.Qry.ListParticipantsByMemberByCutDescFiltered(ctx, db.ListParticipantsByMemberByCutDescFilteredParams(params))
+			rows, err := db.ListParticipantsByMemberByCutDescFiltered(ctx, db.ListParticipantsByMemberByCutDescFilteredParams(params))
 			if err != nil {
 				return MemberData{}, err
 			}
@@ -301,7 +301,7 @@ func (p *Members) GetShowData(ctx context.Context, groupID, memberID string, que
 				events = append(events, convertToMemberEvent(r))
 			}
 		} else {
-			rows, err := db.Qry.ListParticipantsByMemberByCutAscFiltered(ctx, db.ListParticipantsByMemberByCutAscFilteredParams(params))
+			rows, err := db.ListParticipantsByMemberByCutAscFiltered(ctx, db.ListParticipantsByMemberByCutAscFilteredParams(params))
 			if err != nil {
 				return MemberData{}, err
 			}
@@ -311,7 +311,7 @@ func (p *Members) GetShowData(ctx context.Context, groupID, memberID string, que
 		}
 	case "participant_expense":
 		if query.Dir == "desc" {
-			rows, err := db.Qry.ListParticipantsByMemberByExpenseDescFiltered(ctx, db.ListParticipantsByMemberByExpenseDescFilteredParams(params))
+			rows, err := db.ListParticipantsByMemberByExpenseDescFiltered(ctx, db.ListParticipantsByMemberByExpenseDescFilteredParams(params))
 			if err != nil {
 				return MemberData{}, err
 			}
@@ -319,7 +319,7 @@ func (p *Members) GetShowData(ctx context.Context, groupID, memberID string, que
 				events = append(events, convertToMemberEvent(r))
 			}
 		} else {
-			rows, err := db.Qry.ListParticipantsByMemberByExpenseAscFiltered(ctx, db.ListParticipantsByMemberByExpenseAscFilteredParams(params))
+			rows, err := db.ListParticipantsByMemberByExpenseAscFiltered(ctx, db.ListParticipantsByMemberByExpenseAscFilteredParams(params))
 			if err != nil {
 				return MemberData{}, err
 			}
@@ -329,7 +329,7 @@ func (p *Members) GetShowData(ctx context.Context, groupID, memberID string, que
 		}
 	case "paid":
 		if query.Dir == "desc" {
-			rows, err := db.Qry.ListParticipantsByMemberByPaidDescFiltered(ctx, db.ListParticipantsByMemberByPaidDescFilteredParams(params))
+			rows, err := db.ListParticipantsByMemberByPaidDescFiltered(ctx, db.ListParticipantsByMemberByPaidDescFilteredParams(params))
 			if err != nil {
 				return MemberData{}, err
 			}
@@ -337,7 +337,7 @@ func (p *Members) GetShowData(ctx context.Context, groupID, memberID string, que
 				events = append(events, convertToMemberEvent(r))
 			}
 		} else {
-			rows, err := db.Qry.ListParticipantsByMemberByPaidAscFiltered(ctx, db.ListParticipantsByMemberByPaidAscFilteredParams(params))
+			rows, err := db.ListParticipantsByMemberByPaidAscFiltered(ctx, db.ListParticipantsByMemberByPaidAscFilteredParams(params))
 			if err != nil {
 				return MemberData{}, err
 			}
@@ -347,7 +347,7 @@ func (p *Members) GetShowData(ctx context.Context, groupID, memberID string, que
 		}
 	case "paid_at":
 		if query.Dir == "desc" {
-			rows, err := db.Qry.ListParticipantsByMemberByPaidAtDescFiltered(ctx, db.ListParticipantsByMemberByPaidAtDescFilteredParams(params))
+			rows, err := db.ListParticipantsByMemberByPaidAtDescFiltered(ctx, db.ListParticipantsByMemberByPaidAtDescFilteredParams(params))
 			if err != nil {
 				return MemberData{}, err
 			}
@@ -355,7 +355,7 @@ func (p *Members) GetShowData(ctx context.Context, groupID, memberID string, que
 				events = append(events, convertToMemberEvent(r))
 			}
 		} else {
-			rows, err := db.Qry.ListParticipantsByMemberByPaidAtAscFiltered(ctx, db.ListParticipantsByMemberByPaidAtAscFilteredParams(params))
+			rows, err := db.ListParticipantsByMemberByPaidAtAscFiltered(ctx, db.ListParticipantsByMemberByPaidAtAscFilteredParams(params))
 			if err != nil {
 				return MemberData{}, err
 			}
@@ -365,7 +365,7 @@ func (p *Members) GetShowData(ctx context.Context, groupID, memberID string, que
 		}
 	default:
 		if query.Dir == "asc" {
-			rows, err := db.Qry.ListParticipantsByMemberByTimeAscFiltered(ctx, db.ListParticipantsByMemberByTimeAscFilteredParams(params))
+			rows, err := db.ListParticipantsByMemberByTimeAscFiltered(ctx, db.ListParticipantsByMemberByTimeAscFilteredParams(params))
 			if err != nil {
 				return MemberData{}, err
 			}
@@ -373,7 +373,7 @@ func (p *Members) GetShowData(ctx context.Context, groupID, memberID string, que
 				events = append(events, convertToMemberEvent(r))
 			}
 		} else {
-			rows, err := db.Qry.ListParticipantsByMemberByTimeDescFiltered(ctx, params)
+			rows, err := db.ListParticipantsByMemberByTimeDescFiltered(ctx, params)
 			if err != nil {
 				return MemberData{}, err
 			}
@@ -407,49 +407,26 @@ func (p *Members) GetShowData(ctx context.Context, groupID, memberID string, que
 }
 
 func (p *Members) GetIndexData(ctx context.Context, groupID string, query utils.TableQuery) (MembersData, error) {
-	group, err := db.Qry.GetGroupByID(ctx, groupID)
+	group, err := db.GetGroupByID(ctx, groupID)
 	if err != nil {
 		return MembersData{}, err
 	}
 
-	totalItems, err := db.Qry.CountMembersFiltered(ctx, db.CountMembersFilteredParams{
-		GroupID: groupID,
-		Search:  query.Search,
-	})
+	totalItems, err := db.CountMembersTable(ctx, groupID, query.Search)
 	if err != nil {
 		return MembersData{}, err
 	}
 
 	query = utils.ClampPage(query, totalItems)
 
-	params := db.ListMembersByNameAscFilteredParams{
+	members, err := db.ListMembersTable(ctx, db.MemberTableListParams{
 		GroupID: groupID,
 		Search:  query.Search,
-		Limit:   int64(query.PageSize),
-		Offset:  query.Offset(),
-	}
-
-	var members []db.Member
-	switch query.Sort {
-	case "name":
-		if query.Dir == "desc" {
-			members, err = db.Qry.ListMembersByNameDescFiltered(ctx, db.ListMembersByNameDescFilteredParams(params))
-		} else {
-			members, err = db.Qry.ListMembersByNameAscFiltered(ctx, params)
-		}
-	case "description":
-		if query.Dir == "desc" {
-			members, err = db.Qry.ListMembersByDescriptionDescFiltered(ctx, db.ListMembersByDescriptionDescFilteredParams(params))
-		} else {
-			members, err = db.Qry.ListMembersByDescriptionAscFiltered(ctx, db.ListMembersByDescriptionAscFilteredParams(params))
-		}
-	default:
-		if query.Dir == "asc" {
-			members, err = db.Qry.ListMembersByCreatedAtAscFiltered(ctx, db.ListMembersByCreatedAtAscFilteredParams(params))
-		} else {
-			members, err = db.Qry.ListMembersByCreatedAtDescFiltered(ctx, db.ListMembersByCreatedAtDescFilteredParams(params))
-		}
-	}
+		Sort:    query.Sort,
+		Dir:     query.Dir,
+		Limit:   query.PageSize,
+		Offset:  int(query.Offset()),
+	})
 	if err != nil {
 		return MembersData{}, err
 	}

@@ -25,7 +25,7 @@ func RequireSuperadmin(next echo.HandlerFunc) echo.HandlerFunc {
 			return c.Redirect(http.StatusFound, "/login")
 		}
 
-		user, err := db.Qry.GetUserByID(c.Request().Context(), userID)
+		user, err := db.GetUserByID(c.Request().Context(), userID)
 		if err != nil {
 			return c.Redirect(http.StatusFound, "/login")
 		}

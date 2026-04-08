@@ -6,14 +6,14 @@ Bandcash is a Go web app for managing shared group expenses.
 
 - Go, Echo
 - Datastar, templ
-- SQLite, sqlc, goose
+- SQLite, Bun ORM + Bun migrations
 
 ## Quick Start
 
 ```bash
 mise trust
 mise install
-mise run goose-up
+mise run db-up
 mise run dev
 ```
 
@@ -42,9 +42,10 @@ mise run vet          # go vet ./...
 mise run check        # format + vet + test
 mise run lint         # golangci-lint run
 mise run templ        # regenerate *_templ.go
-mise run sqlc         # regenerate sqlc output
-mise run goose-up     # apply migrations
-mise run goose-status # migration status
+mise run db-up        # apply migrations
+mise run db-down      # rollback last migration group
+mise run db-status    # migration status
+mise run db-create name=add_new_column # create migration files
 mise run seed         # seed local data
 ```
 
@@ -72,8 +73,8 @@ mise run kamal app details
 │   └── seed/                  # local/dev seed command
 ├── internal/
 │   ├── db/
-│   │   ├── migrations/        # goose migrations
-│   │   └── queries/           # sqlc query sources
+│   │   ├── bunmigrations/     # Bun SQL migrations
+│   │   └── (Bun query code)   # typed + dynamic DB layer
 │   ├── middleware/            # auth/guard middleware
 │   ├── utils/                 # shared helpers
 │   ├── i18n/                  # localization
@@ -95,7 +96,7 @@ mise run kamal app details
 
 - Generated files are not edited manually:
   - `*_templ.go` (run `mise run templ`)
-  - `internal/db/*.sql.go` (run `mise run sqlc`)
+  - Keep typed DB access in `internal/db/*.go` and Bun migrations in `internal/db/bunmigrations/*.sql`.
 
 ## License
 

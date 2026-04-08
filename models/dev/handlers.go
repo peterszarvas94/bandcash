@@ -34,8 +34,8 @@ var devErrorFields = []string{"name"}
 
 func devSessionUser(c echo.Context) (bool, string) {
 	if cookie, err := c.Cookie(utils.SessionCookieName); err == nil && cookie.Value != "" {
-		if session, err := db.Qry.GetUserSessionByToken(c.Request().Context(), cookie.Value); err == nil {
-			if user, err := db.Qry.GetUserByID(c.Request().Context(), session.UserID); err == nil {
+		if session, err := db.GetUserSessionByToken(c.Request().Context(), cookie.Value); err == nil {
+			if user, err := db.GetUserByID(c.Request().Context(), session.UserID); err == nil {
 				return true, user.Email
 			}
 

@@ -21,7 +21,7 @@ func CalculateGroupTotals(ctx context.Context, groupID string) (GroupTotals, err
 	totals := GroupTotals{}
 
 	// Calculate from events
-	events, err := db.Qry.ListEvents(ctx, groupID)
+	events, err := db.ListEvents(ctx, groupID)
 	if err != nil {
 		slog.Error("failed to list events for totals", "group_id", groupID, "err", err)
 		return totals, err
@@ -36,7 +36,7 @@ func CalculateGroupTotals(ctx context.Context, groupID string) (GroupTotals, err
 	}
 
 	// Calculate from expenses
-	expenses, err := db.Qry.ListExpenses(ctx, groupID)
+	expenses, err := db.ListExpenses(ctx, groupID)
 	if err != nil {
 		slog.Error("failed to list expenses for totals", "group_id", groupID, "err", err)
 		return totals, err
@@ -51,7 +51,7 @@ func CalculateGroupTotals(ctx context.Context, groupID string) (GroupTotals, err
 	}
 
 	// Calculate from participants
-	payoutTotals, err := db.Qry.SumParticipantPaidAmountsByGroup(ctx, groupID)
+	payoutTotals, err := db.SumParticipantPaidAmountsByGroup(ctx, groupID)
 	if err != nil {
 		slog.Error("failed to sum participants for totals", "group_id", groupID, "err", err)
 		return totals, err

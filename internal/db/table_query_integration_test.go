@@ -6,8 +6,12 @@ import (
 	"path/filepath"
 	"testing"
 
+	"bandcash/internal/db/bunmigrations"
+
 	_ "github.com/mattn/go-sqlite3"
-	"github.com/pressly/goose/v3"
+	"github.com/uptrace/bun"
+	"github.com/uptrace/bun/dialect/sqlitedialect"
+	"github.com/uptrace/bun/migrate"
 )
 
 func setupQueryTestDB(t *testing.T) (*Queries, func()) {
@@ -23,12 +27,13 @@ func setupQueryTestDB(t *testing.T) (*Queries, func()) {
 		t.Fatalf("enable foreign keys: %v", err)
 	}
 
-	if err := goose.SetDialect("sqlite3"); err != nil {
-		t.Fatalf("set goose dialect: %v", err)
+	bunDB := bun.NewDB(sqlDB, sqlitedialect.New())
+	migrator := migrate.NewMigrator(bunDB, bunmigrations.Migrations)
+	if err := migrator.Init(context.Background()); err != nil {
+		t.Fatalf("init bun migrations: %v", err)
 	}
-	goose.SetBaseFS(migrationsFS)
-	if err := goose.Up(sqlDB, "migrations"); err != nil {
-		t.Fatalf("run migrations: %v", err)
+	if _, err := migrator.Migrate(context.Background()); err != nil {
+		t.Fatalf("run bun migrations: %v", err)
 	}
 
 	cleanup := func() {

@@ -11,7 +11,7 @@ import (
 const EnableSignupFlagKey = "enable_signup"
 
 func IsSignupEnabled(ctx context.Context) (bool, error) {
-	value, err := db.Qry.GetAppFlagBool(ctx, EnableSignupFlagKey)
+	value, err := db.GetAppFlagBool(ctx, EnableSignupFlagKey)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
 			return false, nil
@@ -26,7 +26,7 @@ func SetSignupEnabled(ctx context.Context, enabled bool) error {
 	if enabled {
 		boolValue = 1
 	}
-	return db.Qry.UpsertAppFlagBool(ctx, db.UpsertAppFlagBoolParams{
+	return db.UpsertAppFlagBool(ctx, db.UpsertAppFlagBoolParams{
 		Key:       EnableSignupFlagKey,
 		BoolValue: boolValue,
 	})

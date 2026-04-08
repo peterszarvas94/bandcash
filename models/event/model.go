@@ -36,12 +36,12 @@ func (e *Events) ParticipantTableQuerySpec() utils.TableQuerySpec {
 }
 
 func (e *Events) GetShowData(ctx context.Context, groupID, eventID string, query utils.TableQuery) (EventData, error) {
-	group, err := db.Qry.GetGroupByID(ctx, groupID)
+	group, err := db.GetGroupByID(ctx, groupID)
 	if err != nil {
 		return EventData{}, err
 	}
 
-	event, err := db.Qry.GetEvent(ctx, db.GetEventParams{
+	event, err := db.GetEvent(ctx, db.GetEventParams{
 		ID:      eventID,
 		GroupID: groupID,
 	})
@@ -49,7 +49,7 @@ func (e *Events) GetShowData(ctx context.Context, groupID, eventID string, query
 		return EventData{}, err
 	}
 
-	allParticipants, err := db.Qry.ListParticipantsByEvent(ctx, db.ListParticipantsByEventParams{
+	allParticipants, err := db.ListParticipantsByEvent(ctx, db.ListParticipantsByEventParams{
 		EventID: eventID,
 		GroupID: groupID,
 	})
@@ -57,7 +57,7 @@ func (e *Events) GetShowData(ctx context.Context, groupID, eventID string, query
 		return EventData{}, err
 	}
 
-	members, err := db.Qry.ListMembers(ctx, groupID)
+	members, err := db.ListMembers(ctx, groupID)
 	if err != nil {
 		return EventData{}, err
 	}
@@ -238,41 +238,42 @@ func (e *Events) GetShowData(ctx context.Context, groupID, eventID string, query
 }
 
 func (e *Events) GetIndexData(ctx context.Context, groupID string, query utils.TableQuery) (EventsData, error) {
-	group, err := db.Qry.GetGroupByID(ctx, groupID)
+	group, err := db.GetGroupByID(ctx, groupID)
 	if err != nil {
 		return EventsData{}, err
 	}
 
-	// Check cache first
-	cacheKey := EventsFilterKey(groupID, query.Search, query.Year, query.From, query.To, query.Sort, query.Dir)
-	if cached, ok := utils.CalcCacheInstance.Get(cacheKey); ok {
-		if result, valid := cached.(eventCalcTotals); valid {
-			return e.buildEventsData(ctx, groupID, group, query, result)
-		}
+	filters := db.EventTableFilter{
+		GroupID: groupID,
+		Search:  query.Search,
+		Year:    query.Year,
+		From:    query.From,
+		To:      query.To,
 	}
 
-	// Get all events for the group to calculate in-memory
-	allEvents, err := db.Qry.ListEvents(ctx, groupID)
+	totalItems, err := db.CountEventsTable(ctx, filters)
+	if err != nil {
+		return EventsData{}, err
+	}
+	query = utils.ClampPage(query, totalItems)
+
+	events, err := db.ListEventsTable(ctx, db.EventTableListParams{
+		EventTableFilter: filters,
+		Sort:             query.Sort,
+		Dir:              query.Dir,
+		Limit:            query.PageSize,
+		Offset:           int(query.Offset()),
+	})
 	if err != nil {
 		return EventsData{}, err
 	}
 
-	// Filter and calculate totals in-memory
-	filteredEvents := make([]db.Event, 0, len(allEvents))
-	var filteredTotal, filteredIncomePaid int64
-
-	for _, event := range allEvents {
-		// Apply filters
-		if matchesFilters(event, query) {
-			filteredEvents = append(filteredEvents, event)
-			filteredTotal += event.Amount
-			if event.Paid == 1 {
-				filteredIncomePaid += event.Amount
-			}
-		}
+	incomeTotals, err := db.SumEventIncomeTotalsTable(ctx, filters)
+	if err != nil {
+		return EventsData{}, err
 	}
 
-	participantTotals, err := db.Qry.SumParticipantTotalsByGroupFiltered(ctx, db.SumParticipantTotalsByGroupFilteredParams{
+	participantTotals, err := db.SumParticipantTotalsByGroupFiltered(ctx, db.SumParticipantTotalsByGroupFilteredParams{
 		GroupID: groupID,
 		Search:  query.Search,
 		Year:    query.Year,
@@ -283,7 +284,7 @@ func (e *Events) GetIndexData(ctx context.Context, groupID string, query utils.T
 		return EventsData{}, err
 	}
 
-	expenseTotals, err := db.Qry.SumExpenseTotalsFiltered(ctx, db.SumExpenseTotalsFilteredParams{
+	expenseTotals, err := db.SumExpenseTotalsFiltered(ctx, db.SumExpenseTotalsFilteredParams{
 		GroupID:    groupID,
 		Search:     query.Search,
 		YearFilter: query.Year,
@@ -294,27 +295,22 @@ func (e *Events) GetIndexData(ctx context.Context, groupID string, query utils.T
 		return EventsData{}, err
 	}
 
-	// Sort filtered events
-	sortEvents(filteredEvents, query.Sort, query.Dir)
-
-	// Store in cache
 	totals := eventCalcTotals{
-		Filtered:      filteredEvents,
-		Total:         filteredTotal,
-		IncomePaid:    filteredIncomePaid,
-		IncomeUnpaid:  filteredTotal - filteredIncomePaid,
+		TotalItems:    totalItems,
+		Total:         incomeTotals.Total,
+		IncomePaid:    incomeTotals.Paid,
+		IncomeUnpaid:  incomeTotals.Total - incomeTotals.Paid,
 		Paid:          participantTotals.TotalPaid,
 		Unpaid:        participantTotals.TotalUnpaid,
 		ExpensePaid:   expenseTotals.TotalPaid,
 		ExpenseUnpaid: expenseTotals.TotalUnpaid,
 	}
-	utils.CalcCacheInstance.Set(cacheKey, totals)
 
-	return e.buildEventsData(ctx, groupID, group, query, totals)
+	return e.buildEventsData(ctx, groupID, group, query, events, totals)
 }
 
 type eventCalcTotals struct {
-	Filtered      []db.Event
+	TotalItems    int64
 	Total         int64
 	IncomePaid    int64
 	IncomeUnpaid  int64
@@ -418,24 +414,8 @@ func sortEvents(events []db.Event, sortField, dir string) {
 	sort.Slice(events, less)
 }
 
-func (e *Events) buildEventsData(ctx context.Context, groupID string, group db.Group, query utils.TableQuery, totals eventCalcTotals) (EventsData, error) {
-	totalItems := int64(len(totals.Filtered))
-	query = utils.ClampPage(query, totalItems)
-
-	// Paginate
-	start := query.Offset()
-	end := start + int64(query.PageSize)
-	if end > totalItems {
-		end = totalItems
-	}
-	if start > totalItems {
-		start = totalItems
-	}
-
-	var paginatedEvents []db.Event
-	if start < totalItems {
-		paginatedEvents = totals.Filtered[start:end]
-	}
+func (e *Events) buildEventsData(ctx context.Context, groupID string, group db.Group, query utils.TableQuery, events []db.Event, totals eventCalcTotals) (EventsData, error) {
+	query = utils.ClampPage(query, totals.TotalItems)
 
 	// Calculate group totals for display
 	groupTotals, err := utils.CalculateGroupTotals(ctx, groupID)
@@ -443,7 +423,7 @@ func (e *Events) buildEventsData(ctx context.Context, groupID string, group db.G
 		return EventsData{}, err
 	}
 
-	admin, err := db.Qry.GetUserByID(ctx, group.AdminUserID)
+	admin, err := db.GetUserByID(ctx, group.AdminUserID)
 	if err != nil {
 		return EventsData{}, err
 	}
@@ -458,10 +438,10 @@ func (e *Events) buildEventsData(ctx context.Context, groupID string, group db.G
 		GroupName:              group.Name,
 		GroupAdminEmail:        admin.Email,
 		GroupCreatedAt:         groupCreatedAt,
-		Events:                 paginatedEvents,
+		Events:                 events,
 		RecentYears:            utils.RecentYears(3),
 		Query:                  query,
-		Pager:                  utils.BuildTablePagination(totalItems, query),
+		Pager:                  utils.BuildTablePagination(totals.TotalItems, query),
 		GroupID:                groupID,
 		TotalEventAmount:       groupTotals.TotalEventAmount,
 		TotalPaid:              groupTotals.EventPaid,

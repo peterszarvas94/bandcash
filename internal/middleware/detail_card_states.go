@@ -20,7 +20,7 @@ func WithDetailState(next echo.HandlerFunc) echo.HandlerFunc {
 }
 
 func loadDetailCardStates(c echo.Context, userID string) {
-	states, err := db.Qry.ListUserDetailCardStates(c.Request().Context(), userID)
+	states, err := db.ListUserDetailCardStates(c.Request().Context(), userID)
 	if err != nil {
 		slog.Warn("middleware.detail_card_states: failed to load", "user_id", userID, "err", err)
 		return

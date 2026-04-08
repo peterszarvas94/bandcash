@@ -71,7 +71,7 @@ func getUserEmail(c echo.Context) string {
 	if userID == "" {
 		return ""
 	}
-	user, err := db.Qry.GetUserByID(c.Request().Context(), userID)
+	user, err := db.GetUserByID(c.Request().Context(), userID)
 	if err != nil {
 		return ""
 	}
@@ -89,7 +89,7 @@ func (p *Members) NewMemberPage(c echo.Context) error {
 	utils.EnsureTabID(c)
 	groupID := middleware.GetGroupID(c)
 
-	group, err := db.Qry.GetGroupByID(c.Request().Context(), groupID)
+	group, err := db.GetGroupByID(c.Request().Context(), groupID)
 	if err != nil {
 		slog.Error("member.new_page: failed to get group", "group_id", groupID, "err", err)
 		return c.NoContent(http.StatusInternalServerError)
@@ -124,13 +124,13 @@ func (p *Members) EditMemberPage(c echo.Context) error {
 		return c.NoContent(http.StatusBadRequest)
 	}
 
-	group, err := db.Qry.GetGroupByID(c.Request().Context(), groupID)
+	group, err := db.GetGroupByID(c.Request().Context(), groupID)
 	if err != nil {
 		slog.Error("member.edit_page: failed to get group", "group_id", groupID, "err", err)
 		return c.NoContent(http.StatusInternalServerError)
 	}
 
-	member, err := db.Qry.GetMember(c.Request().Context(), db.GetMemberParams{
+	member, err := db.GetMember(c.Request().Context(), db.GetMemberParams{
 		ID:      id,
 		GroupID: groupID,
 	})
@@ -232,7 +232,7 @@ func (p *Members) Create(c echo.Context) error {
 		return c.NoContent(http.StatusUnprocessableEntity)
 	}
 
-	member, err := db.Qry.CreateMember(c.Request().Context(), db.CreateMemberParams{
+	member, err := db.CreateMember(c.Request().Context(), db.CreateMemberParams{
 		ID:          utils.GenerateID(utils.PrefixMember),
 		GroupID:     groupID,
 		Name:        signals.FormData.Name,
@@ -281,7 +281,7 @@ func (p *Members) Update(c echo.Context) error {
 		return c.NoContent(http.StatusUnprocessableEntity)
 	}
 
-	_, err = db.Qry.UpdateMember(c.Request().Context(), db.UpdateMemberParams{
+	_, err = db.UpdateMember(c.Request().Context(), db.UpdateMemberParams{
 		Name:        signals.FormData.Name,
 		Description: signals.FormData.Description,
 		ID:          id,
@@ -322,7 +322,7 @@ func (p *Members) Destroy(c echo.Context) error {
 		return c.NoContent(http.StatusBadRequest)
 	}
 
-	err = db.Qry.DeleteMember(c.Request().Context(), db.DeleteMemberParams{
+	err = db.DeleteMember(c.Request().Context(), db.DeleteMemberParams{
 		ID:      id,
 		GroupID: groupID,
 	})
@@ -390,7 +390,7 @@ func (p *Members) ToggleParticipantPaid(c echo.Context) error {
 		return c.NoContent(http.StatusBadRequest)
 	}
 
-	_, err = db.Qry.ToggleParticipantPaid(c.Request().Context(), db.ToggleParticipantPaidParams{
+	_, err = db.ToggleParticipantPaid(c.Request().Context(), db.ToggleParticipantPaidParams{
 		EventID:  eventID,
 		MemberID: memberID,
 		GroupID:  groupID,
@@ -522,7 +522,7 @@ func (p *Members) UpdateParticipantPaidAt(c echo.Context) error {
 		return c.NoContent(http.StatusBadRequest)
 	}
 
-	_, err = db.Qry.UpdateParticipantPaidAt(c.Request().Context(), db.UpdateParticipantPaidAtParams{
+	_, err = db.UpdateParticipantPaidAt(c.Request().Context(), db.UpdateParticipantPaidAtParams{
 		PaidAt:   normalizePaidAtInput(signals.ParticipantPaidAtDialog.Value),
 		EventID:  eventID,
 		MemberID: memberID,

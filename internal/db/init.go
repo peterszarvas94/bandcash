@@ -1,6 +1,7 @@
 package db
 
 import (
+	"context"
 	"database/sql"
 	"embed"
 	"fmt"
@@ -8,17 +9,19 @@ import (
 	"os"
 	"path/filepath"
 
+	"bandcash/internal/db/bunmigrations"
+
+	"github.com/uptrace/bun"
+	"github.com/uptrace/bun/dialect/sqlitedialect"
+	"github.com/uptrace/bun/migrate"
+
 	_ "github.com/mattn/go-sqlite3"
-	"github.com/pressly/goose/v3"
 )
 
 var (
-	DB  *sql.DB
-	Qry *Queries
+	DB    *sql.DB
+	BunDB *bun.DB
 )
-
-//go:embed migrations/*.sql
-var migrationsFS embed.FS
 
 //go:embed seeds/*.sql
 var seedsFS embed.FS
@@ -55,14 +58,18 @@ func Init(dbPath string) error {
 		}
 	}
 
-	// Initialize queries
-	Qry = New(DB)
+	BunDB = bun.NewDB(DB, sqlitedialect.New())
 
 	slog.Info("database connected", "path", dbPath)
 	return nil
 }
 
 func Close() error {
+	if BunDB != nil {
+		if err := BunDB.Close(); err != nil {
+			return err
+		}
+	}
 	if DB != nil {
 		return DB.Close()
 	}
@@ -70,18 +77,18 @@ func Close() error {
 }
 
 func Migrate() error {
-	err := goose.SetDialect("sqlite3")
-	if err != nil {
-		return fmt.Errorf("failed to set goose dialect: %w", err)
+	ctx := context.Background()
+	migrator := migrate.NewMigrator(BunDB, bunmigrations.Migrations)
+	if err := migrator.Init(ctx); err != nil {
+		return fmt.Errorf("failed to initialize bun migrations: %w", err)
 	}
-
-	goose.SetBaseFS(migrationsFS)
-
-	err = goose.Up(DB, "migrations")
+	group, err := migrator.Migrate(ctx)
 	if err != nil {
-		return fmt.Errorf("failed to run migrations: %w", err)
+		return fmt.Errorf("failed to run bun migrations: %w", err)
 	}
-
+	if group != nil {
+		slog.Info("bun migrations applied", "group_id", group.ID, "migrations", len(group.Migrations))
+	}
 	return nil
 }
 
