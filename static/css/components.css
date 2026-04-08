@@ -162,7 +162,7 @@
     gap: var(--space);
     padding-bottom: var(--space);
     width: 100%;
-    max-width: 72rem;
+    max-width: var(--content-width);
   }
 
   .table-pagination {
@@ -173,7 +173,7 @@
     gap: var(--space);
     padding-bottom: var(--space);
     width: 100%;
-    max-width: 72rem;
+    max-width: var(--content-width);
   }
 
   .table-pagination-controls {
@@ -590,15 +590,15 @@
     color: var(--bg-light);
   }
 
-  .groups {
-    > form {
-      width: min(100%, calc((16rem * 3) + (var(--space) * 2)));
+  .group-form {
+    width: min(100%, calc((16rem * 3) + (var(--space) * 2)));
 
-      input {
-        width: 100%;
-      }
+    input {
+      width: 100%;
     }
+  }
 
+  .groups {
     ul {
       list-style: none;
       margin: 0;
@@ -610,7 +610,7 @@
       display: grid;
       grid-template-rows: 1fr auto;
       gap: calc(var(--space) * 0.75);
-      padding: var(--space);
+      padding: calc(var(--space) * 2);
       min-height: 8rem;
       height: 8rem;
       background: var(--bg-light);
@@ -619,15 +619,23 @@
       border-radius: var(--radius-lg);
       box-shadow: var(--shadow);
 
+      .group-card-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: start;
+        gap: calc(var(--space) * 0.5);
+      }
+
       h2 {
         margin: 0;
-        font: var(--type-h2);
+        font-size: 1.4rem;
+        line-height: 1.15;
+        font-weight: 700;
         overflow: hidden;
         display: -webkit-box;
         -webkit-box-orient: vertical;
         -webkit-line-clamp: 3;
         line-clamp: 3;
-        line-height: 1.35;
         padding-bottom: 0.08em;
         overflow: hidden;
         text-overflow: ellipsis;
@@ -644,10 +652,41 @@
 
       .group-card-footer {
         display: flex;
-        justify-content: flex-end;
+        justify-content: flex-start;
         align-items: end;
-        width: auto;
+        width: 100%;
         padding: 0;
+      }
+
+      .group-card-balance {
+        display: grid;
+        gap: calc(var(--space) * 0.35);
+        width: 100%;
+
+        .group-card-balance-row {
+          display: grid;
+          grid-template-columns: 1fr auto;
+          align-items: baseline;
+          gap: var(--space);
+        }
+
+        .group-card-balance-label {
+          margin: 0;
+          font-size: 0.95rem;
+          font-weight: 500;
+          color: var(--text-muted);
+        }
+
+        .group-card-balance-value {
+          margin: 0;
+          font-size: 1.25rem;
+          font-weight: 700;
+          color: var(--text);
+          text-align: right;
+          white-space: nowrap;
+          font-variant-numeric: tabular-nums;
+          font-feature-settings: "tnum" 1;
+        }
       }
     }
   }

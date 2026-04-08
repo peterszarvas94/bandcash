@@ -2395,13 +2395,14 @@ func (q *Queries) UpdateParticipantNote(ctx context.Context, arg UpdateParticipa
 	return err
 }
 
-const updateParticipantPaidAt = `-- name: UpdateParticipantPaidAt :exec
+const updateParticipantPaidAt = `-- name: UpdateParticipantPaidAt :one
 UPDATE participants
-SET paid = 1,
+SET paid = CASE WHEN NULLIF(?1, '') IS NULL THEN 0 ELSE 1 END,
     paid_at = NULLIF(?1, '')
 WHERE event_id = ?2
   AND member_id = ?3
   AND group_id = ?4
+RETURNING group_id, event_id, member_id, amount, expense, created_at, updated_at, paid, paid_at, note
 `
 
 type UpdateParticipantPaidAtParams struct {
@@ -2411,12 +2412,25 @@ type UpdateParticipantPaidAtParams struct {
 	GroupID  string      `json:"group_id"`
 }
 
-func (q *Queries) UpdateParticipantPaidAt(ctx context.Context, arg UpdateParticipantPaidAtParams) error {
-	_, err := q.db.ExecContext(ctx, updateParticipantPaidAt,
+func (q *Queries) UpdateParticipantPaidAt(ctx context.Context, arg UpdateParticipantPaidAtParams) (Participant, error) {
+	row := q.db.QueryRowContext(ctx, updateParticipantPaidAt,
 		arg.PaidAt,
 		arg.EventID,
 		arg.MemberID,
 		arg.GroupID,
 	)
-	return err
+	var i Participant
+	err := row.Scan(
+		&i.GroupID,
+		&i.EventID,
+		&i.MemberID,
+		&i.Amount,
+		&i.Expense,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+		&i.Paid,
+		&i.PaidAt,
+		&i.Note,
+	)
+	return i, err
 }

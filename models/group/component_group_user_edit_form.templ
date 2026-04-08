@@ -9,7 +9,7 @@ import (
 
 templ GroupUserEditForm(data UserEditPageData) {
 	@shared.PageHeader(shared.PageHeaderProps{Title: ctxi18n.T(ctx, "actions.edit")}) {}
-	<form class="form w-details" data-on:submit={ fmt.Sprintf("($formData.role === 'admin' ? @put('/groups/%s/users/%s/admin') : @put('/groups/%s/users/%s/viewer'))", data.GroupID, data.UserRow.UserID, data.GroupID, data.UserRow.UserID) } data-indicator:_fetching>
+	<form class="form w-details group-form" data-on:submit={ fmt.Sprintf("($formData.role === 'admin' ? @put('/groups/%s/users/%s/admin') : @put('/groups/%s/users/%s/viewer'))", data.GroupID, data.UserRow.UserID, data.GroupID, data.UserRow.UserID) } data-indicator:_fetching>
 		<div class="field">
 			<label for="group-user-edit-email">{ ctxi18n.T(ctx, "auth.email") }</label>
 			<input id="group-user-edit-email" class="input" type="text" value={ data.UserRow.Email } disabled/>

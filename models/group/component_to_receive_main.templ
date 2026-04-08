@@ -10,38 +10,43 @@ import (
 )
 
 templ GroupToReceiveMain(data GroupToReceivePageData) {
-	@shared.PageHeader(shared.PageHeaderProps{Title: ctxi18n.T(ctx, "groups.to_receive")}) {}
-	@shared.TableSearchFormWithClass(fmt.Sprintf("/groups/%s/to-receive", data.GroupID), data.Query, "table.search_placeholder_events", "pt")
+	@shared.PageHeader(shared.PageHeaderProps{Title: ctxi18n.T(ctx, "groups.pending_incomes")}) {}
+	@shared.TableSearchFormWithClass(fmt.Sprintf("/groups/%s/pending-incomes", data.GroupID), data.Query, "table.search_placeholder_events", "pt")
 	<div class="row row-wrap justify-between pb">
 		<div class="radiogroup" role="radiogroup" aria-label={ ctxi18n.T(ctx, "table.date_filters") }>
-			@shared.RadioLink(shared.RadioLinkProps{Href: utils.BuildTableDateClearURL(fmt.Sprintf("/groups/%s/to-receive", data.GroupID), data.Query), Label: ctxi18n.T(ctx, "table.all"), IsSelected: utils.DateFilterAllActive(data.Query), NoIcon: true, ClassName: "btn btn-xs"})
+			@shared.RadioLink(shared.RadioLinkProps{Href: utils.BuildTableDateClearURL(fmt.Sprintf("/groups/%s/pending-incomes", data.GroupID), data.Query), Label: ctxi18n.T(ctx, "table.all"), IsSelected: utils.DateFilterAllActive(data.Query), NoIcon: true, ClassName: "btn btn-xs"})
 			for _, year := range data.RecentYears {
-				@shared.RadioLink(shared.RadioLinkProps{Href: utils.BuildTableDateYearURL(fmt.Sprintf("/groups/%s/to-receive", data.GroupID), data.Query, fmt.Sprintf("%d", year)), Label: fmt.Sprintf("%d", year), IsSelected: utils.DateFilterYearActive(data.Query, fmt.Sprintf("%d", year)), NoIcon: true, ClassName: "btn btn-xs"})
+				@shared.RadioLink(shared.RadioLinkProps{Href: utils.BuildTableDateYearURL(fmt.Sprintf("/groups/%s/pending-incomes", data.GroupID), data.Query, fmt.Sprintf("%d", year)), Label: fmt.Sprintf("%d", year), IsSelected: utils.DateFilterYearActive(data.Query, fmt.Sprintf("%d", year)), NoIcon: true, ClassName: "btn btn-xs"})
 			}
-			@shared.RadioLink(shared.RadioLinkProps{Href: utils.BuildTableDateCustomURL(fmt.Sprintf("/groups/%s/to-receive", data.GroupID), data.Query), Label: ctxi18n.T(ctx, "table.custom"), IsSelected: utils.DateFilterCustomActive(data.Query), NoIcon: true, ClassName: "btn btn-xs"})
+			@shared.RadioLink(shared.RadioLinkProps{Href: utils.BuildTableDateCustomURL(fmt.Sprintf("/groups/%s/pending-incomes", data.GroupID), data.Query), Label: ctxi18n.T(ctx, "table.custom"), IsSelected: utils.DateFilterCustomActive(data.Query), NoIcon: true, ClassName: "btn btn-xs"})
 		</div>
 	</div>
-	@shared.TablePaginationRow(fmt.Sprintf("/groups/%s/to-receive", data.GroupID), data.Query, data.Pager)
+	@shared.TablePaginationRow(fmt.Sprintf("/groups/%s/pending-incomes", data.GroupID), data.Query, data.Pager)
 	<section class="section">
 		@shared.TableOpenFixed(data.EventsTable, "") {
 				<thead>
 					<tr>
-						@shared.THCol(data.EventsTable.ColMaxWRem("title")) { @shared.TableSortHeader(ctxi18n.T(ctx, "fields.title"), "title", data.Query, utils.BuildTableSortURL(fmt.Sprintf("/groups/%s/to-receive", data.GroupID), data.Query, "title")) }
-						@shared.THCol(data.EventsTable.ColMaxWRem("amount")) { <div class="text-right">@shared.TableSortHeader(ctxi18n.T(ctx, "fields.amount"), "amount", data.Query, utils.BuildTableSortURL(fmt.Sprintf("/groups/%s/to-receive", data.GroupID), data.Query, "amount"))</div> }
-						@shared.THColFixed(data.EventsTable.ColMaxWRem("paid"), data.EventsTable.ColWRem("paid")) { <div class="text-right">@shared.TableSortHeader(ctxi18n.T(ctx, "table.paid_question"), "paid", data.Query, utils.BuildTableSortURL(fmt.Sprintf("/groups/%s/to-receive", data.GroupID), data.Query, "paid"))</div> }
-						@shared.THColFixed(data.EventsTable.ColMaxWRem("paid_at"), data.EventsTable.ColWRem("paid_at")) { <div class="text-right">@shared.TableSortHeader(ctxi18n.T(ctx, "fields.paid_at"), "paid_at", data.Query, utils.BuildTableSortURL(fmt.Sprintf("/groups/%s/to-receive", data.GroupID), data.Query, "paid_at"))</div> }
+						@shared.THCol(data.EventsTable.ColMaxWRem("title")) { @shared.TableSortHeader(ctxi18n.T(ctx, "fields.title"), "title", data.Query, utils.BuildTableSortURL(fmt.Sprintf("/groups/%s/pending-incomes", data.GroupID), data.Query, "title")) }
+						@shared.THCol(data.EventsTable.ColMaxWRem("amount")) { <div class="text-right">@shared.TableSortHeader(ctxi18n.T(ctx, "fields.amount"), "amount", data.Query, utils.BuildTableSortURL(fmt.Sprintf("/groups/%s/pending-incomes", data.GroupID), data.Query, "amount"))</div> }
+						@shared.THColFixed(data.EventsTable.ColMaxWRem("paid"), data.EventsTable.ColWRem("paid")) { <div class="text-right">@shared.TableSortHeader(ctxi18n.T(ctx, "table.paid_question"), "paid", data.Query, utils.BuildTableSortURL(fmt.Sprintf("/groups/%s/pending-incomes", data.GroupID), data.Query, "paid"))</div> }
+						@shared.THColFixed(data.EventsTable.ColMaxWRem("paid_at"), data.EventsTable.ColWRem("paid_at")) { <div class="text-right">@shared.TableSortHeader(ctxi18n.T(ctx, "fields.paid_at"), "paid_at", data.Query, utils.BuildTableSortURL(fmt.Sprintf("/groups/%s/pending-incomes", data.GroupID), data.Query, "paid_at"))</div> }
 					</tr>
 				</thead>
 				<tbody>
 					if len(data.Rows) == 0 {
-						<tr><td colspan="4">{ ctxi18n.T(ctx, "groups.to_receive_empty_events") }</td></tr>
+						<tr><td colspan="4">{ ctxi18n.T(ctx, "groups.pending_incomes_empty_events") }</td></tr>
 					} else {
 						for _, row := range data.Rows {
 							{{
+								rowKey := fmt.Sprintf("event:%s", row.ID)
 								togglePaidExpr := fmt.Sprintf("@put('/groups/%s/payments/events/%s/toggle-paid', {mode: 'table', tableQuery: $tableQuery})", data.GroupID, row.ID)
 								openPaidAtExpr := fmt.Sprintf("$paidAtDialog.open = true; $paidAtDialog.url = '/groups/%s/payments/events/%s/paid_at'; $paidAtDialog.value = ''", data.GroupID, row.ID)
+								rowClass := ""
+								if data.FadeRowKey != "" && data.FadeRowKey == rowKey {
+									rowClass = "row-fade-out"
+								}
 							}}
-							<tr>
+							<tr class={ rowClass }>
 								<td><a class="table-link" href={ fmt.Sprintf("/groups/%s/events/%s", data.GroupID, row.ID) }>{ row.Title }</a></td>
 								<td class="text-right">{ utils.FormatNumberLocalized(ctx, row.Amount) }</td>
 								<td class="text-right">

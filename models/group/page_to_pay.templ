@@ -11,7 +11,7 @@ templ GroupToPayPage(data GroupToPayPageData) {
 		ActiveUrl:       "/groups",
 		IsAuthenticated: data.IsAuthenticated,
 		IsSuperAdmin:    data.IsSuperAdmin,
-		TabSidebar:      shared.GroupSidebar(data.GroupID, "to_pay"),
+		TabSidebar:      shared.GroupSidebar(data.GroupID, "pending_payouts"),
 		TabToggleID:     data.GroupID,
 	})
 }

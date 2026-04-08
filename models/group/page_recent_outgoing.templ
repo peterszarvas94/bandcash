@@ -11,7 +11,7 @@ templ GroupRecentOutgoingPage(data GroupRecentOutgoingPageData) {
 		ActiveUrl:       "/groups",
 		IsAuthenticated: data.IsAuthenticated,
 		IsSuperAdmin:    data.IsSuperAdmin,
-		TabSidebar:      shared.GroupSidebar(data.GroupID, "recent_outgoing"),
+		TabSidebar:      shared.GroupSidebar(data.GroupID, "recent_payouts"),
 		TabToggleID:     data.GroupID,
 	})
 }

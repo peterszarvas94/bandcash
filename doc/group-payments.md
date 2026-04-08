@@ -9,10 +9,10 @@
 Use this when changing group payment tabs, payment table behavior, or paid/unpaid payment flows.
 
 ## Pages and routes
-- `To Pay`: `GET /groups/:groupId/to-pay`
-- `To Receive`: `GET /groups/:groupId/to-receive`
-- `Recent Outgoing`: `GET /groups/:groupId/recent-outgoing`
-- `Recent Income`: `GET /groups/:groupId/recent-income`
+- `Pending Payouts`: `GET /groups/:groupId/pending-payouts`
+- `Pending Incomes`: `GET /groups/:groupId/pending-incomes`
+- `Recent Payouts`: `GET /groups/:groupId/recent-payouts`
+- `Recent Incomes`: `GET /groups/:groupId/recent-incomes`
 
 ## Route and handler entry points
 - Route registration: `models/group/routes.go`

@@ -38,11 +38,11 @@ func GroupRecentIncomeMain(data GroupRecentIncomePageData) templ.Component {
 			templ_7745c5c3_Var1 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = shared.PageHeader(shared.PageHeaderProps{Title: ctxi18n.T(ctx, "groups.recent_income")}).Render(ctx, templ_7745c5c3_Buffer)
+		templ_7745c5c3_Err = shared.PageHeader(shared.PageHeaderProps{Title: ctxi18n.T(ctx, "groups.recent_incomes")}).Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = shared.TableSearchFormWithClass(fmt.Sprintf("/groups/%s/recent-income", data.GroupID), data.Query, "table.search_placeholder_events", "pt").Render(ctx, templ_7745c5c3_Buffer)
+		templ_7745c5c3_Err = shared.TableSearchFormWithClass(fmt.Sprintf("/groups/%s/recent-incomes", data.GroupID), data.Query, "table.search_placeholder_events", "pt").Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -63,17 +63,17 @@ func GroupRecentIncomeMain(data GroupRecentIncomePageData) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = shared.RadioLink(shared.RadioLinkProps{Href: utils.BuildTableDateClearURL(fmt.Sprintf("/groups/%s/recent-income", data.GroupID), data.Query), Label: ctxi18n.T(ctx, "table.all"), IsSelected: utils.DateFilterAllActive(data.Query), NoIcon: true, ClassName: "btn btn-xs"}).Render(ctx, templ_7745c5c3_Buffer)
+		templ_7745c5c3_Err = shared.RadioLink(shared.RadioLinkProps{Href: utils.BuildTableDateClearURL(fmt.Sprintf("/groups/%s/recent-incomes", data.GroupID), data.Query), Label: ctxi18n.T(ctx, "table.all"), IsSelected: utils.DateFilterAllActive(data.Query), NoIcon: true, ClassName: "btn btn-xs"}).Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		for _, year := range data.RecentYears {
-			templ_7745c5c3_Err = shared.RadioLink(shared.RadioLinkProps{Href: utils.BuildTableDateYearURL(fmt.Sprintf("/groups/%s/recent-income", data.GroupID), data.Query, fmt.Sprintf("%d", year)), Label: fmt.Sprintf("%d", year), IsSelected: utils.DateFilterYearActive(data.Query, fmt.Sprintf("%d", year)), NoIcon: true, ClassName: "btn btn-xs"}).Render(ctx, templ_7745c5c3_Buffer)
+			templ_7745c5c3_Err = shared.RadioLink(shared.RadioLinkProps{Href: utils.BuildTableDateYearURL(fmt.Sprintf("/groups/%s/recent-incomes", data.GroupID), data.Query, fmt.Sprintf("%d", year)), Label: fmt.Sprintf("%d", year), IsSelected: utils.DateFilterYearActive(data.Query, fmt.Sprintf("%d", year)), NoIcon: true, ClassName: "btn btn-xs"}).Render(ctx, templ_7745c5c3_Buffer)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 		}
-		templ_7745c5c3_Err = shared.RadioLink(shared.RadioLinkProps{Href: utils.BuildTableDateCustomURL(fmt.Sprintf("/groups/%s/recent-income", data.GroupID), data.Query), Label: ctxi18n.T(ctx, "table.custom"), IsSelected: utils.DateFilterCustomActive(data.Query), NoIcon: true, ClassName: "btn btn-xs"}).Render(ctx, templ_7745c5c3_Buffer)
+		templ_7745c5c3_Err = shared.RadioLink(shared.RadioLinkProps{Href: utils.BuildTableDateCustomURL(fmt.Sprintf("/groups/%s/recent-incomes", data.GroupID), data.Query), Label: ctxi18n.T(ctx, "table.custom"), IsSelected: utils.DateFilterCustomActive(data.Query), NoIcon: true, ClassName: "btn btn-xs"}).Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -81,7 +81,7 @@ func GroupRecentIncomeMain(data GroupRecentIncomePageData) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = shared.TablePaginationRow(fmt.Sprintf("/groups/%s/recent-income", data.GroupID), data.Query, data.Pager).Render(ctx, templ_7745c5c3_Buffer)
+		templ_7745c5c3_Err = shared.TablePaginationRow(fmt.Sprintf("/groups/%s/recent-incomes", data.GroupID), data.Query, data.Pager).Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -117,7 +117,7 @@ func GroupRecentIncomeMain(data GroupRecentIncomePageData) templ.Component {
 					}()
 				}
 				ctx = templ.InitializeContext(ctx)
-				templ_7745c5c3_Err = shared.TableSortHeader(ctxi18n.T(ctx, "fields.title"), "title", data.Query, utils.BuildTableSortURL(fmt.Sprintf("/groups/%s/recent-income", data.GroupID), data.Query, "title")).Render(ctx, templ_7745c5c3_Buffer)
+				templ_7745c5c3_Err = shared.TableSortHeader(ctxi18n.T(ctx, "fields.title"), "title", data.Query, utils.BuildTableSortURL(fmt.Sprintf("/groups/%s/recent-incomes", data.GroupID), data.Query, "title")).Render(ctx, templ_7745c5c3_Buffer)
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
@@ -143,7 +143,7 @@ func GroupRecentIncomeMain(data GroupRecentIncomePageData) templ.Component {
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				templ_7745c5c3_Err = shared.TableSortHeader(ctxi18n.T(ctx, "fields.amount"), "amount", data.Query, utils.BuildTableSortURL(fmt.Sprintf("/groups/%s/recent-income", data.GroupID), data.Query, "amount")).Render(ctx, templ_7745c5c3_Buffer)
+				templ_7745c5c3_Err = shared.TableSortHeader(ctxi18n.T(ctx, "fields.amount"), "amount", data.Query, utils.BuildTableSortURL(fmt.Sprintf("/groups/%s/recent-incomes", data.GroupID), data.Query, "amount")).Render(ctx, templ_7745c5c3_Buffer)
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
@@ -173,7 +173,7 @@ func GroupRecentIncomeMain(data GroupRecentIncomePageData) templ.Component {
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				templ_7745c5c3_Err = shared.TableSortHeader(ctxi18n.T(ctx, "table.paid_question"), "paid", data.Query, utils.BuildTableSortURL(fmt.Sprintf("/groups/%s/recent-income", data.GroupID), data.Query, "paid")).Render(ctx, templ_7745c5c3_Buffer)
+				templ_7745c5c3_Err = shared.TableSortHeader(ctxi18n.T(ctx, "table.paid_question"), "paid", data.Query, utils.BuildTableSortURL(fmt.Sprintf("/groups/%s/recent-incomes", data.GroupID), data.Query, "paid")).Render(ctx, templ_7745c5c3_Buffer)
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
@@ -203,7 +203,7 @@ func GroupRecentIncomeMain(data GroupRecentIncomePageData) templ.Component {
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				templ_7745c5c3_Err = shared.TableSortHeader(ctxi18n.T(ctx, "fields.paid_at"), "paid_at", data.Query, utils.BuildTableSortURL(fmt.Sprintf("/groups/%s/recent-income", data.GroupID), data.Query, "paid_at")).Render(ctx, templ_7745c5c3_Buffer)
+				templ_7745c5c3_Err = shared.TableSortHeader(ctxi18n.T(ctx, "fields.paid_at"), "paid_at", data.Query, utils.BuildTableSortURL(fmt.Sprintf("/groups/%s/recent-incomes", data.GroupID), data.Query, "paid_at")).Render(ctx, templ_7745c5c3_Buffer)
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
@@ -227,9 +227,9 @@ func GroupRecentIncomeMain(data GroupRecentIncomePageData) templ.Component {
 					return templ_7745c5c3_Err
 				}
 				var templ_7745c5c3_Var8 string
-				templ_7745c5c3_Var8, templ_7745c5c3_Err = templ.JoinStringErrs(ctxi18n.T(ctx, "groups.recent_income_empty_events"))
+				templ_7745c5c3_Var8, templ_7745c5c3_Err = templ.JoinStringErrs(ctxi18n.T(ctx, "groups.recent_incomes_empty_events"))
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/group/component_recent_income_main.templ`, Line: 35, Col: 79}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/group/component_recent_income_main.templ`, Line: 35, Col: 80}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var8))
 				if templ_7745c5c3_Err != nil {
@@ -241,48 +241,71 @@ func GroupRecentIncomeMain(data GroupRecentIncomePageData) templ.Component {
 				}
 			} else {
 				for _, row := range data.Rows {
+					rowKey := fmt.Sprintf("event:%s", row.ID)
 					togglePaidExpr := fmt.Sprintf("@put('/groups/%s/payments/events/%s/toggle-paid', {mode: 'table', tableQuery: $tableQuery})", data.GroupID, row.ID)
 					openPaidAtExpr := fmt.Sprintf("$paidAtDialog.open = true; $paidAtDialog.url = '/groups/%s/payments/events/%s/paid_at'; $paidAtDialog.value = '%s'", data.GroupID, row.ID, row.PaidAt)
-					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 15, "<tr><td><a class=\"table-link\" href=\"")
+					rowClass := ""
+					if data.FadeRowKey != "" && data.FadeRowKey == rowKey {
+						rowClass = "row-fade-out"
+					}
+					var templ_7745c5c3_Var9 = []any{rowClass}
+					templ_7745c5c3_Err = templ.RenderCSSItems(ctx, templ_7745c5c3_Buffer, templ_7745c5c3_Var9...)
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
-					var templ_7745c5c3_Var9 templ.SafeURL
-					templ_7745c5c3_Var9, templ_7745c5c3_Err = templ.JoinURLErrs(fmt.Sprintf("/groups/%s/events/%s", data.GroupID, row.ID))
-					if templ_7745c5c3_Err != nil {
-						return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/group/component_recent_income_main.templ`, Line: 43, Col: 98}
-					}
-					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var9))
-					if templ_7745c5c3_Err != nil {
-						return templ_7745c5c3_Err
-					}
-					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 16, "\">")
+					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 15, "<tr class=\"")
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
 					var templ_7745c5c3_Var10 string
-					templ_7745c5c3_Var10, templ_7745c5c3_Err = templ.JoinStringErrs(row.Title)
+					templ_7745c5c3_Var10, templ_7745c5c3_Err = templ.JoinStringErrs(templ.CSSClasses(templ_7745c5c3_Var9).String())
 					if templ_7745c5c3_Err != nil {
-						return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/group/component_recent_income_main.templ`, Line: 43, Col: 112}
+						return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/group/component_recent_income_main.templ`, Line: 1, Col: 0}
 					}
 					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var10))
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
-					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 17, "</a></td><td class=\"text-right\">")
+					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 16, "\"><td><a class=\"table-link\" href=\"")
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
-					var templ_7745c5c3_Var11 string
-					templ_7745c5c3_Var11, templ_7745c5c3_Err = templ.JoinStringErrs(utils.FormatNumberLocalized(ctx, row.Amount))
+					var templ_7745c5c3_Var11 templ.SafeURL
+					templ_7745c5c3_Var11, templ_7745c5c3_Err = templ.JoinURLErrs(fmt.Sprintf("/groups/%s/events/%s", data.GroupID, row.ID))
 					if templ_7745c5c3_Err != nil {
-						return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/group/component_recent_income_main.templ`, Line: 44, Col: 77}
+						return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/group/component_recent_income_main.templ`, Line: 48, Col: 98}
 					}
 					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var11))
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
-					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 18, "</td><td class=\"text-right\">")
+					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 17, "\">")
+					if templ_7745c5c3_Err != nil {
+						return templ_7745c5c3_Err
+					}
+					var templ_7745c5c3_Var12 string
+					templ_7745c5c3_Var12, templ_7745c5c3_Err = templ.JoinStringErrs(row.Title)
+					if templ_7745c5c3_Err != nil {
+						return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/group/component_recent_income_main.templ`, Line: 48, Col: 112}
+					}
+					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var12))
+					if templ_7745c5c3_Err != nil {
+						return templ_7745c5c3_Err
+					}
+					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 18, "</a></td><td class=\"text-right\">")
+					if templ_7745c5c3_Err != nil {
+						return templ_7745c5c3_Err
+					}
+					var templ_7745c5c3_Var13 string
+					templ_7745c5c3_Var13, templ_7745c5c3_Err = templ.JoinStringErrs(utils.FormatNumberLocalized(ctx, row.Amount))
+					if templ_7745c5c3_Err != nil {
+						return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/group/component_recent_income_main.templ`, Line: 49, Col: 77}
+					}
+					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var13))
+					if templ_7745c5c3_Err != nil {
+						return templ_7745c5c3_Err
+					}
+					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 19, "</td><td class=\"text-right\">")
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
@@ -292,37 +315,37 @@ func GroupRecentIncomeMain(data GroupRecentIncomePageData) templ.Component {
 							return templ_7745c5c3_Err
 						}
 					} else {
-						var templ_7745c5c3_Var12 string
-						templ_7745c5c3_Var12, templ_7745c5c3_Err = templ.JoinStringErrs(ctxi18n.T(ctx, "table.paid"))
+						var templ_7745c5c3_Var14 string
+						templ_7745c5c3_Var14, templ_7745c5c3_Err = templ.JoinStringErrs(ctxi18n.T(ctx, "table.paid"))
 						if templ_7745c5c3_Err != nil {
-							return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/group/component_recent_income_main.templ`, Line: 49, Col: 40}
+							return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/group/component_recent_income_main.templ`, Line: 54, Col: 40}
 						}
-						_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var12))
+						_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var14))
 						if templ_7745c5c3_Err != nil {
 							return templ_7745c5c3_Err
 						}
 					}
-					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 19, "</td><td class=\"text-right\"><div class=\"row row-right\"><span>")
+					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 20, "</td><td class=\"text-right\"><div class=\"row row-right\"><span>")
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
 					if row.PaidAt != "" {
-						var templ_7745c5c3_Var13 string
-						templ_7745c5c3_Var13, templ_7745c5c3_Err = templ.JoinStringErrs(utils.FormatDateLocalized(ctx, row.PaidAt))
+						var templ_7745c5c3_Var15 string
+						templ_7745c5c3_Var15, templ_7745c5c3_Err = templ.JoinStringErrs(utils.FormatDateLocalized(ctx, row.PaidAt))
 						if templ_7745c5c3_Err != nil {
-							return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/group/component_recent_income_main.templ`, Line: 56, Col: 56}
+							return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/group/component_recent_income_main.templ`, Line: 61, Col: 56}
 						}
-						_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var13))
+						_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var15))
 						if templ_7745c5c3_Err != nil {
 							return templ_7745c5c3_Err
 						}
 					} else {
-						templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 20, "-")
+						templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 21, "-")
 						if templ_7745c5c3_Err != nil {
 							return templ_7745c5c3_Err
 						}
 					}
-					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 21, "</span> ")
+					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 22, "</span> ")
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
@@ -332,13 +355,13 @@ func GroupRecentIncomeMain(data GroupRecentIncomePageData) templ.Component {
 							return templ_7745c5c3_Err
 						}
 					}
-					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 22, "</div></td></tr>")
+					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 23, "</div></td></tr>")
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
 				}
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 23, "</tbody>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 24, "</tbody>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -348,7 +371,7 @@ func GroupRecentIncomeMain(data GroupRecentIncomePageData) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 24, "</section>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 25, "</section>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

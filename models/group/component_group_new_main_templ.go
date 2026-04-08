@@ -39,7 +39,7 @@ func GroupNewMain() templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<form class=\"form w-details\" data-on:submit=\"@post('/groups')\" data-indicator:_fetching><div class=\"field\"><label for=\"group-new-name\" class=\"row\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<form class=\"form w-details group-form\" data-on:submit=\"@post('/groups')\" data-indicator:_fetching><div class=\"field\"><label for=\"group-new-name\" class=\"row\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

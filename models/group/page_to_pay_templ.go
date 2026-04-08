@@ -39,7 +39,7 @@ func GroupToPayPage(data GroupToPayPageData) templ.Component {
 			ActiveUrl:       "/groups",
 			IsAuthenticated: data.IsAuthenticated,
 			IsSuperAdmin:    data.IsSuperAdmin,
-			TabSidebar:      shared.GroupSidebar(data.GroupID, "to_pay"),
+			TabSidebar:      shared.GroupSidebar(data.GroupID, "pending_payouts"),
 			TabToggleID:     data.GroupID,
 		}).Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {

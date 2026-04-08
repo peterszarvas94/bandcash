@@ -9,7 +9,7 @@ import (
 
 templ GroupUsersNewForm(data UsersNewPageData) {
 	@shared.PageHeader(shared.PageHeaderProps{Title: ctxi18n.T(ctx, "groups.invite_user")}) {}
-	<form class="form w-details" data-on:submit={ fmt.Sprintf("@post('/groups/%s/users')", data.GroupID) } data-indicator:_fetching>
+	<form class="form w-details group-form" data-on:submit={ fmt.Sprintf("@post('/groups/%s/users')", data.GroupID) } data-indicator:_fetching>
 		<div class="field">
 			<label for="group-access-new-email" class="row">{ ctxi18n.T(ctx, "auth.email") } <span class="fielderror">*</span></label>
 			<input id="group-access-new-email" type="email" data-bind="formData.email" placeholder={ ctxi18n.T(ctx, "groups.viewer_email_placeholder") } class="input"/>

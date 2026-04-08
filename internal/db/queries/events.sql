@@ -306,7 +306,7 @@ RETURNING *;
 
 -- name: UpdateEventPaidAt :one
 UPDATE events
-SET paid = 1,
+SET paid = CASE WHEN NULLIF(sqlc.narg(paid_at), '') IS NULL THEN 0 ELSE 1 END,
     paid_at = NULLIF(sqlc.narg(paid_at), '')
 WHERE id = sqlc.arg(id) AND group_id = sqlc.arg(group_id)
 RETURNING *;

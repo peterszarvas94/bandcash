@@ -1160,7 +1160,7 @@ func (q *Queries) UpdateEvent(ctx context.Context, arg UpdateEventParams) (Event
 
 const updateEventPaidAt = `-- name: UpdateEventPaidAt :one
 UPDATE events
-SET paid = 1,
+SET paid = CASE WHEN NULLIF(?1, '') IS NULL THEN 0 ELSE 1 END,
     paid_at = NULLIF(?1, '')
 WHERE id = ?2 AND group_id = ?3
 RETURNING id, group_id, title, time, description, amount, created_at, updated_at, paid, paid_at, place, date, event_time

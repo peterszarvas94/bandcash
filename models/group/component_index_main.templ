@@ -2,6 +2,7 @@ package group
 
 import (
 	ctxi18n "github.com/invopop/ctxi18n/i18n"
+	"bandcash/internal/utils"
 	shared "bandcash/models/shared"
 	icons "bandcash/models/shared/icons"
 )
@@ -22,11 +23,19 @@ templ GroupIndexMain(data GroupsPageData) {
 				for _, group := range data.AllGroups {
 					<li>
 						<a class="group-card" href={ "/groups/" + group.Group.ID + "/events" }>
-							<h2>
-								{ group.Group.Name }
-							</h2>
-							<div class="group-card-footer">
+							<div class="group-card-header">
+								<h2>
+									{ group.Group.Name }
+								</h2>
 								@shared.Badge(group.Role)
+							</div>
+							<div class="group-card-footer">
+								<div class="group-card-balance">
+									<div class="group-card-balance-row">
+										<span class="group-card-balance-label">{ ctxi18n.T(ctx, "groups.current_balance") }</span>
+										<span class="group-card-balance-value">{ utils.FormatNumberLocalized(ctx, group.Balance) }</span>
+									</div>
+								</div>
 							</div>
 						</a>
 					</li>

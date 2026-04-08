@@ -46,6 +46,9 @@ func (m *GroupModel) GetGroupsPageData(ctx context.Context, userID string, query
 			return GroupsPageData{}, err
 		}
 		allGroups = convertNameAscRowsToGroupWithRole(rows)
+		if err := m.enrichBalances(ctx, allGroups); err != nil {
+			return GroupsPageData{}, err
+		}
 	}
 
 	return GroupsPageData{
@@ -68,4 +71,18 @@ func convertNameAscRowsToGroupWithRole(rows []db.ListUserGroupsByNameAscFiltered
 		}
 	}
 	return result
+}
+
+func (m *GroupModel) enrichBalances(ctx context.Context, groups []GroupWithRole) error {
+	for i := range groups {
+		totals, err := utils.CalculateGroupTotals(ctx, groups[i].Group.ID)
+		if err != nil {
+			slog.Error("group.model: failed to calculate balance", "group_id", groups[i].Group.ID, "err", err)
+			return err
+		}
+
+		// Paid balance mirrors the first number on the balance summary card.
+		groups[i].Balance = totals.EventPaid - totals.PayoutPaid - totals.ExpensePaid
+	}
+	return nil
 }

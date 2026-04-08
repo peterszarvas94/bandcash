@@ -1583,7 +1583,7 @@ func (e *Events) patchUpdateParticipantPaidAt(c echo.Context, groupID, id string
 		return c.NoContent(http.StatusBadRequest)
 	}
 
-	err := db.Qry.UpdateParticipantPaidAt(c.Request().Context(), db.UpdateParticipantPaidAtParams{
+	_, err := db.Qry.UpdateParticipantPaidAt(c.Request().Context(), db.UpdateParticipantPaidAtParams{
 		PaidAt:   normalizePaidAtInput(value),
 		EventID:  id,
 		MemberID: memberID,

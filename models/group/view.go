@@ -26,8 +26,9 @@ type EditGroupPageData struct {
 }
 
 type GroupWithRole struct {
-	Group db.Group
-	Role  string
+	Group   db.Group
+	Role    string
+	Balance int64
 }
 
 type GroupsPageData struct {
@@ -157,6 +158,7 @@ type GroupToReceivePageData struct {
 	Query           utils.TableQuery
 	Pager           utils.TablePagination
 	RecentYears     []int
+	FadeRowKey      string
 }
 
 type GroupToPayPageData struct {
@@ -173,6 +175,7 @@ type GroupToPayPageData struct {
 	Query           utils.TableQuery
 	Pager           utils.TablePagination
 	RecentYears     []int
+	FadeRowKey      string
 }
 
 type GroupRecentIncomePageData struct {
@@ -189,6 +192,7 @@ type GroupRecentIncomePageData struct {
 	Query           utils.TableQuery
 	Pager           utils.TablePagination
 	RecentYears     []int
+	FadeRowKey      string
 }
 
 type GroupRecentOutgoingPageData struct {
@@ -205,6 +209,7 @@ type GroupRecentOutgoingPageData struct {
 	Query           utils.TableQuery
 	Pager           utils.TablePagination
 	RecentYears     []int
+	FadeRowKey      string
 }
 
 type GroupOutgoingPaymentRow struct {

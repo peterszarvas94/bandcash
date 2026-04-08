@@ -38,11 +38,11 @@ func GroupRecentOutgoingMain(data GroupRecentOutgoingPageData) templ.Component {
 			templ_7745c5c3_Var1 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = shared.PageHeader(shared.PageHeaderProps{Title: ctxi18n.T(ctx, "groups.recent_outgoing")}).Render(ctx, templ_7745c5c3_Buffer)
+		templ_7745c5c3_Err = shared.PageHeader(shared.PageHeaderProps{Title: ctxi18n.T(ctx, "groups.recent_payouts")}).Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = shared.TableSearchFormWithClass(fmt.Sprintf("/groups/%s/recent-outgoing", data.GroupID), data.Query, "table.search_placeholder_expenses", "pt").Render(ctx, templ_7745c5c3_Buffer)
+		templ_7745c5c3_Err = shared.TableSearchFormWithClass(fmt.Sprintf("/groups/%s/recent-payouts", data.GroupID), data.Query, "table.search_placeholder_expenses", "pt").Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -63,17 +63,17 @@ func GroupRecentOutgoingMain(data GroupRecentOutgoingPageData) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = shared.RadioLink(shared.RadioLinkProps{Href: utils.BuildTableDateClearURL(fmt.Sprintf("/groups/%s/recent-outgoing", data.GroupID), data.Query), Label: ctxi18n.T(ctx, "table.all"), IsSelected: utils.DateFilterAllActive(data.Query), NoIcon: true, ClassName: "btn btn-xs"}).Render(ctx, templ_7745c5c3_Buffer)
+		templ_7745c5c3_Err = shared.RadioLink(shared.RadioLinkProps{Href: utils.BuildTableDateClearURL(fmt.Sprintf("/groups/%s/recent-payouts", data.GroupID), data.Query), Label: ctxi18n.T(ctx, "table.all"), IsSelected: utils.DateFilterAllActive(data.Query), NoIcon: true, ClassName: "btn btn-xs"}).Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		for _, year := range data.RecentYears {
-			templ_7745c5c3_Err = shared.RadioLink(shared.RadioLinkProps{Href: utils.BuildTableDateYearURL(fmt.Sprintf("/groups/%s/recent-outgoing", data.GroupID), data.Query, fmt.Sprintf("%d", year)), Label: fmt.Sprintf("%d", year), IsSelected: utils.DateFilterYearActive(data.Query, fmt.Sprintf("%d", year)), NoIcon: true, ClassName: "btn btn-xs"}).Render(ctx, templ_7745c5c3_Buffer)
+			templ_7745c5c3_Err = shared.RadioLink(shared.RadioLinkProps{Href: utils.BuildTableDateYearURL(fmt.Sprintf("/groups/%s/recent-payouts", data.GroupID), data.Query, fmt.Sprintf("%d", year)), Label: fmt.Sprintf("%d", year), IsSelected: utils.DateFilterYearActive(data.Query, fmt.Sprintf("%d", year)), NoIcon: true, ClassName: "btn btn-xs"}).Render(ctx, templ_7745c5c3_Buffer)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 		}
-		templ_7745c5c3_Err = shared.RadioLink(shared.RadioLinkProps{Href: utils.BuildTableDateCustomURL(fmt.Sprintf("/groups/%s/recent-outgoing", data.GroupID), data.Query), Label: ctxi18n.T(ctx, "table.custom"), IsSelected: utils.DateFilterCustomActive(data.Query), NoIcon: true, ClassName: "btn btn-xs"}).Render(ctx, templ_7745c5c3_Buffer)
+		templ_7745c5c3_Err = shared.RadioLink(shared.RadioLinkProps{Href: utils.BuildTableDateCustomURL(fmt.Sprintf("/groups/%s/recent-payouts", data.GroupID), data.Query), Label: ctxi18n.T(ctx, "table.custom"), IsSelected: utils.DateFilterCustomActive(data.Query), NoIcon: true, ClassName: "btn btn-xs"}).Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -81,7 +81,7 @@ func GroupRecentOutgoingMain(data GroupRecentOutgoingPageData) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = shared.TablePaginationRow(fmt.Sprintf("/groups/%s/recent-outgoing", data.GroupID), data.Query, data.Pager).Render(ctx, templ_7745c5c3_Buffer)
+		templ_7745c5c3_Err = shared.TablePaginationRow(fmt.Sprintf("/groups/%s/recent-payouts", data.GroupID), data.Query, data.Pager).Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -130,7 +130,7 @@ func GroupRecentOutgoingMain(data GroupRecentOutgoingPageData) templ.Component {
 					}()
 				}
 				ctx = templ.InitializeContext(ctx)
-				templ_7745c5c3_Err = shared.TableSortHeader(ctxi18n.T(ctx, "fields.type"), "type", data.Query, utils.BuildTableSortURL(fmt.Sprintf("/groups/%s/recent-outgoing", data.GroupID), data.Query, "type")).Render(ctx, templ_7745c5c3_Buffer)
+				templ_7745c5c3_Err = shared.TableSortHeader(ctxi18n.T(ctx, "fields.type"), "type", data.Query, utils.BuildTableSortURL(fmt.Sprintf("/groups/%s/recent-payouts", data.GroupID), data.Query, "type")).Render(ctx, templ_7745c5c3_Buffer)
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
@@ -152,7 +152,7 @@ func GroupRecentOutgoingMain(data GroupRecentOutgoingPageData) templ.Component {
 					}()
 				}
 				ctx = templ.InitializeContext(ctx)
-				templ_7745c5c3_Err = shared.TableSortHeader(ctxi18n.T(ctx, "fields.title"), "title", data.Query, utils.BuildTableSortURL(fmt.Sprintf("/groups/%s/recent-outgoing", data.GroupID), data.Query, "title")).Render(ctx, templ_7745c5c3_Buffer)
+				templ_7745c5c3_Err = shared.TableSortHeader(ctxi18n.T(ctx, "fields.title"), "title", data.Query, utils.BuildTableSortURL(fmt.Sprintf("/groups/%s/recent-payouts", data.GroupID), data.Query, "title")).Render(ctx, templ_7745c5c3_Buffer)
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
@@ -178,7 +178,7 @@ func GroupRecentOutgoingMain(data GroupRecentOutgoingPageData) templ.Component {
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				templ_7745c5c3_Err = shared.TableSortHeader(ctxi18n.T(ctx, "fields.amount"), "amount", data.Query, utils.BuildTableSortURL(fmt.Sprintf("/groups/%s/recent-outgoing", data.GroupID), data.Query, "amount")).Render(ctx, templ_7745c5c3_Buffer)
+				templ_7745c5c3_Err = shared.TableSortHeader(ctxi18n.T(ctx, "fields.amount"), "amount", data.Query, utils.BuildTableSortURL(fmt.Sprintf("/groups/%s/recent-payouts", data.GroupID), data.Query, "amount")).Render(ctx, templ_7745c5c3_Buffer)
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
@@ -208,7 +208,7 @@ func GroupRecentOutgoingMain(data GroupRecentOutgoingPageData) templ.Component {
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				templ_7745c5c3_Err = shared.TableSortHeader(ctxi18n.T(ctx, "table.paid_question"), "paid", data.Query, utils.BuildTableSortURL(fmt.Sprintf("/groups/%s/recent-outgoing", data.GroupID), data.Query, "paid")).Render(ctx, templ_7745c5c3_Buffer)
+				templ_7745c5c3_Err = shared.TableSortHeader(ctxi18n.T(ctx, "table.paid_question"), "paid", data.Query, utils.BuildTableSortURL(fmt.Sprintf("/groups/%s/recent-payouts", data.GroupID), data.Query, "paid")).Render(ctx, templ_7745c5c3_Buffer)
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
@@ -238,7 +238,7 @@ func GroupRecentOutgoingMain(data GroupRecentOutgoingPageData) templ.Component {
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				templ_7745c5c3_Err = shared.TableSortHeader(ctxi18n.T(ctx, "fields.paid_at"), "paid_at", data.Query, utils.BuildTableSortURL(fmt.Sprintf("/groups/%s/recent-outgoing", data.GroupID), data.Query, "paid_at")).Render(ctx, templ_7745c5c3_Buffer)
+				templ_7745c5c3_Err = shared.TableSortHeader(ctxi18n.T(ctx, "fields.paid_at"), "paid_at", data.Query, utils.BuildTableSortURL(fmt.Sprintf("/groups/%s/recent-payouts", data.GroupID), data.Query, "paid_at")).Render(ctx, templ_7745c5c3_Buffer)
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
@@ -262,9 +262,9 @@ func GroupRecentOutgoingMain(data GroupRecentOutgoingPageData) templ.Component {
 					return templ_7745c5c3_Err
 				}
 				var templ_7745c5c3_Var10 string
-				templ_7745c5c3_Var10, templ_7745c5c3_Err = templ.JoinStringErrs(ctxi18n.T(ctx, "groups.recent_outgoing_empty_outgoing"))
+				templ_7745c5c3_Var10, templ_7745c5c3_Err = templ.JoinStringErrs(ctxi18n.T(ctx, "groups.recent_payouts_empty_outgoing"))
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/group/component_recent_outgoing_main.templ`, Line: 37, Col: 83}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/group/component_recent_outgoing_main.templ`, Line: 37, Col: 82}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var10))
 				if templ_7745c5c3_Err != nil {
@@ -276,134 +276,158 @@ func GroupRecentOutgoingMain(data GroupRecentOutgoingPageData) templ.Component {
 				}
 			} else {
 				for _, row := range data.Rows {
+					rowKey := fmt.Sprintf("expense:%s", row.PaymentID)
 					togglePaidExpr := fmt.Sprintf("@put('/groups/%s/payments/expenses/%s/toggle-paid', {mode: 'table', tableQuery: $tableQuery})", data.GroupID, row.PaymentID)
 					openPaidAtExpr := fmt.Sprintf("$paidAtDialog.open = true; $paidAtDialog.url = '/groups/%s/payments/expenses/%s/paid_at'; $paidAtDialog.value = '%s'", data.GroupID, row.PaymentID, row.PaidAt)
 					kindLabel := ctxi18n.T(ctx, "groups.payment_type_expense")
+					rowClass := ""
 					if row.Kind == "participant" {
+						rowKey = fmt.Sprintf("participant:%s:%s", row.EventID, row.MemberID)
 						kindLabel = ctxi18n.T(ctx, "groups.payment_type_participant")
 						togglePaidExpr = fmt.Sprintf("@put('/groups/%s/payments/participants/%s/%s/toggle-paid', {mode: 'table', tableQuery: $tableQuery})", data.GroupID, row.EventID, row.MemberID)
 						openPaidAtExpr = fmt.Sprintf("$paidAtDialog.open = true; $paidAtDialog.url = '/groups/%s/payments/participants/%s/%s/paid_at'; $paidAtDialog.value = '%s'", data.GroupID, row.EventID, row.MemberID, row.PaidAt)
 					}
-					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 16, "<tr><td>")
+					if data.FadeRowKey != "" && data.FadeRowKey == rowKey {
+						rowClass = "row-fade-out"
+					}
+					var templ_7745c5c3_Var11 = []any{rowClass}
+					templ_7745c5c3_Err = templ.RenderCSSItems(ctx, templ_7745c5c3_Buffer, templ_7745c5c3_Var11...)
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
-					var templ_7745c5c3_Var11 string
-					templ_7745c5c3_Var11, templ_7745c5c3_Err = templ.JoinStringErrs(kindLabel)
-					if templ_7745c5c3_Err != nil {
-						return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/group/component_recent_outgoing_main.templ`, Line: 51, Col: 23}
-					}
-					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var11))
+					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 16, "<tr class=\"")
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
-					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 17, "</td><td>")
+					var templ_7745c5c3_Var12 string
+					templ_7745c5c3_Var12, templ_7745c5c3_Err = templ.JoinStringErrs(templ.CSSClasses(templ_7745c5c3_Var11).String())
+					if templ_7745c5c3_Err != nil {
+						return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/group/component_recent_outgoing_main.templ`, Line: 1, Col: 0}
+					}
+					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var12))
+					if templ_7745c5c3_Err != nil {
+						return templ_7745c5c3_Err
+					}
+					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 17, "\"><td>")
+					if templ_7745c5c3_Err != nil {
+						return templ_7745c5c3_Err
+					}
+					var templ_7745c5c3_Var13 string
+					templ_7745c5c3_Var13, templ_7745c5c3_Err = templ.JoinStringErrs(kindLabel)
+					if templ_7745c5c3_Err != nil {
+						return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/group/component_recent_outgoing_main.templ`, Line: 57, Col: 23}
+					}
+					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var13))
+					if templ_7745c5c3_Err != nil {
+						return templ_7745c5c3_Err
+					}
+					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 18, "</td><td>")
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
 					if row.Kind == "participant" {
-						templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 18, "<a class=\"table-link\" href=\"")
-						if templ_7745c5c3_Err != nil {
-							return templ_7745c5c3_Err
-						}
-						var templ_7745c5c3_Var12 templ.SafeURL
-						templ_7745c5c3_Var12, templ_7745c5c3_Err = templ.JoinURLErrs(fmt.Sprintf("/groups/%s/events/%s", data.GroupID, row.EventID))
-						if templ_7745c5c3_Err != nil {
-							return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/group/component_recent_outgoing_main.templ`, Line: 54, Col: 101}
-						}
-						_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var12))
-						if templ_7745c5c3_Err != nil {
-							return templ_7745c5c3_Err
-						}
-						templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 19, "\">")
-						if templ_7745c5c3_Err != nil {
-							return templ_7745c5c3_Err
-						}
-						var templ_7745c5c3_Var13 string
-						templ_7745c5c3_Var13, templ_7745c5c3_Err = templ.JoinStringErrs(row.EventTitle)
-						if templ_7745c5c3_Err != nil {
-							return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/group/component_recent_outgoing_main.templ`, Line: 54, Col: 120}
-						}
-						_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var13))
-						if templ_7745c5c3_Err != nil {
-							return templ_7745c5c3_Err
-						}
-						templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 20, "</a> <span>- </span> <a class=\"table-link\" href=\"")
+						templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 19, "<a class=\"table-link\" href=\"")
 						if templ_7745c5c3_Err != nil {
 							return templ_7745c5c3_Err
 						}
 						var templ_7745c5c3_Var14 templ.SafeURL
-						templ_7745c5c3_Var14, templ_7745c5c3_Err = templ.JoinURLErrs(fmt.Sprintf("/groups/%s/members/%s", data.GroupID, row.MemberID))
+						templ_7745c5c3_Var14, templ_7745c5c3_Err = templ.JoinURLErrs(fmt.Sprintf("/groups/%s/events/%s", data.GroupID, row.EventID))
 						if templ_7745c5c3_Err != nil {
-							return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/group/component_recent_outgoing_main.templ`, Line: 56, Col: 103}
+							return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/group/component_recent_outgoing_main.templ`, Line: 60, Col: 101}
 						}
 						_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var14))
 						if templ_7745c5c3_Err != nil {
 							return templ_7745c5c3_Err
 						}
-						templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 21, "\">")
+						templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 20, "\">")
 						if templ_7745c5c3_Err != nil {
 							return templ_7745c5c3_Err
 						}
 						var templ_7745c5c3_Var15 string
-						templ_7745c5c3_Var15, templ_7745c5c3_Err = templ.JoinStringErrs(row.MemberName)
+						templ_7745c5c3_Var15, templ_7745c5c3_Err = templ.JoinStringErrs(row.EventTitle)
 						if templ_7745c5c3_Err != nil {
-							return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/group/component_recent_outgoing_main.templ`, Line: 56, Col: 122}
+							return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/group/component_recent_outgoing_main.templ`, Line: 60, Col: 120}
 						}
 						_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var15))
 						if templ_7745c5c3_Err != nil {
 							return templ_7745c5c3_Err
 						}
-						templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 22, "</a>")
-						if templ_7745c5c3_Err != nil {
-							return templ_7745c5c3_Err
-						}
-					} else {
-						templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 23, "<a class=\"table-link\" href=\"")
+						templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 21, "</a> <span>- </span> <a class=\"table-link\" href=\"")
 						if templ_7745c5c3_Err != nil {
 							return templ_7745c5c3_Err
 						}
 						var templ_7745c5c3_Var16 templ.SafeURL
-						templ_7745c5c3_Var16, templ_7745c5c3_Err = templ.JoinURLErrs(fmt.Sprintf("/groups/%s/expenses/%s", data.GroupID, row.PaymentID))
+						templ_7745c5c3_Var16, templ_7745c5c3_Err = templ.JoinURLErrs(fmt.Sprintf("/groups/%s/members/%s", data.GroupID, row.MemberID))
 						if templ_7745c5c3_Err != nil {
-							return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/group/component_recent_outgoing_main.templ`, Line: 58, Col: 105}
+							return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/group/component_recent_outgoing_main.templ`, Line: 62, Col: 103}
 						}
 						_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var16))
 						if templ_7745c5c3_Err != nil {
 							return templ_7745c5c3_Err
 						}
-						templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 24, "\">")
+						templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 22, "\">")
 						if templ_7745c5c3_Err != nil {
 							return templ_7745c5c3_Err
 						}
 						var templ_7745c5c3_Var17 string
-						templ_7745c5c3_Var17, templ_7745c5c3_Err = templ.JoinStringErrs(row.Title)
+						templ_7745c5c3_Var17, templ_7745c5c3_Err = templ.JoinStringErrs(row.MemberName)
 						if templ_7745c5c3_Err != nil {
-							return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/group/component_recent_outgoing_main.templ`, Line: 58, Col: 119}
+							return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/group/component_recent_outgoing_main.templ`, Line: 62, Col: 122}
 						}
 						_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var17))
 						if templ_7745c5c3_Err != nil {
 							return templ_7745c5c3_Err
 						}
-						templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 25, "</a>")
+						templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 23, "</a>")
+						if templ_7745c5c3_Err != nil {
+							return templ_7745c5c3_Err
+						}
+					} else {
+						templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 24, "<a class=\"table-link\" href=\"")
+						if templ_7745c5c3_Err != nil {
+							return templ_7745c5c3_Err
+						}
+						var templ_7745c5c3_Var18 templ.SafeURL
+						templ_7745c5c3_Var18, templ_7745c5c3_Err = templ.JoinURLErrs(fmt.Sprintf("/groups/%s/expenses/%s", data.GroupID, row.PaymentID))
+						if templ_7745c5c3_Err != nil {
+							return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/group/component_recent_outgoing_main.templ`, Line: 64, Col: 105}
+						}
+						_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var18))
+						if templ_7745c5c3_Err != nil {
+							return templ_7745c5c3_Err
+						}
+						templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 25, "\">")
+						if templ_7745c5c3_Err != nil {
+							return templ_7745c5c3_Err
+						}
+						var templ_7745c5c3_Var19 string
+						templ_7745c5c3_Var19, templ_7745c5c3_Err = templ.JoinStringErrs(row.Title)
+						if templ_7745c5c3_Err != nil {
+							return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/group/component_recent_outgoing_main.templ`, Line: 64, Col: 119}
+						}
+						_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var19))
+						if templ_7745c5c3_Err != nil {
+							return templ_7745c5c3_Err
+						}
+						templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 26, "</a>")
 						if templ_7745c5c3_Err != nil {
 							return templ_7745c5c3_Err
 						}
 					}
-					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 26, "</td><td class=\"text-right\">")
-					if templ_7745c5c3_Err != nil {
-						return templ_7745c5c3_Err
-					}
-					var templ_7745c5c3_Var18 string
-					templ_7745c5c3_Var18, templ_7745c5c3_Err = templ.JoinStringErrs(utils.FormatNumberLocalized(ctx, row.Amount))
-					if templ_7745c5c3_Err != nil {
-						return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/group/component_recent_outgoing_main.templ`, Line: 61, Col: 77}
-					}
-					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var18))
-					if templ_7745c5c3_Err != nil {
-						return templ_7745c5c3_Err
-					}
 					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 27, "</td><td class=\"text-right\">")
+					if templ_7745c5c3_Err != nil {
+						return templ_7745c5c3_Err
+					}
+					var templ_7745c5c3_Var20 string
+					templ_7745c5c3_Var20, templ_7745c5c3_Err = templ.JoinStringErrs(utils.FormatNumberLocalized(ctx, row.Amount))
+					if templ_7745c5c3_Err != nil {
+						return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/group/component_recent_outgoing_main.templ`, Line: 67, Col: 77}
+					}
+					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var20))
+					if templ_7745c5c3_Err != nil {
+						return templ_7745c5c3_Err
+					}
+					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 28, "</td><td class=\"text-right\">")
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
@@ -413,37 +437,37 @@ func GroupRecentOutgoingMain(data GroupRecentOutgoingPageData) templ.Component {
 							return templ_7745c5c3_Err
 						}
 					} else {
-						var templ_7745c5c3_Var19 string
-						templ_7745c5c3_Var19, templ_7745c5c3_Err = templ.JoinStringErrs(ctxi18n.T(ctx, "table.paid"))
+						var templ_7745c5c3_Var21 string
+						templ_7745c5c3_Var21, templ_7745c5c3_Err = templ.JoinStringErrs(ctxi18n.T(ctx, "table.paid"))
 						if templ_7745c5c3_Err != nil {
-							return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/group/component_recent_outgoing_main.templ`, Line: 66, Col: 40}
+							return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/group/component_recent_outgoing_main.templ`, Line: 72, Col: 40}
 						}
-						_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var19))
+						_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var21))
 						if templ_7745c5c3_Err != nil {
 							return templ_7745c5c3_Err
 						}
 					}
-					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 28, "</td><td class=\"text-right\"><div class=\"row row-right\"><span>")
+					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 29, "</td><td class=\"text-right\"><div class=\"row row-right\"><span>")
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
 					if row.PaidAt != "" {
-						var templ_7745c5c3_Var20 string
-						templ_7745c5c3_Var20, templ_7745c5c3_Err = templ.JoinStringErrs(utils.FormatDateLocalized(ctx, row.PaidAt))
+						var templ_7745c5c3_Var22 string
+						templ_7745c5c3_Var22, templ_7745c5c3_Err = templ.JoinStringErrs(utils.FormatDateLocalized(ctx, row.PaidAt))
 						if templ_7745c5c3_Err != nil {
-							return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/group/component_recent_outgoing_main.templ`, Line: 73, Col: 56}
+							return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/group/component_recent_outgoing_main.templ`, Line: 79, Col: 56}
 						}
-						_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var20))
+						_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var22))
 						if templ_7745c5c3_Err != nil {
 							return templ_7745c5c3_Err
 						}
 					} else {
-						templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 29, "-")
+						templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 30, "-")
 						if templ_7745c5c3_Err != nil {
 							return templ_7745c5c3_Err
 						}
 					}
-					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 30, "</span> ")
+					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 31, "</span> ")
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
@@ -453,13 +477,13 @@ func GroupRecentOutgoingMain(data GroupRecentOutgoingPageData) templ.Component {
 							return templ_7745c5c3_Err
 						}
 					}
-					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 31, "</div></td></tr>")
+					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 32, "</div></td></tr>")
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
 				}
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 32, "</tbody>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 33, "</tbody>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -469,7 +493,7 @@ func GroupRecentOutgoingMain(data GroupRecentOutgoingPageData) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 33, "</section>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 34, "</section>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

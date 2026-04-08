@@ -8,7 +8,7 @@ import (
 
 templ GroupNewMain() {
 	@shared.PageHeader(shared.PageHeaderProps{Title: ctxi18n.T(ctx, "groups.new")}) {}
-	<form class="form w-details" data-on:submit="@post('/groups')" data-indicator:_fetching>
+	<form class="form w-details group-form" data-on:submit="@post('/groups')" data-indicator:_fetching>
 		<div class="field">
 			<label for="group-new-name" class="row">{ ctxi18n.T(ctx, "groups.name") } <span class="fielderror">*</span></label>
 			<input id="group-new-name" type="text" data-bind="formData.name" placeholder={ ctxi18n.T(ctx, "groups.name_placeholder") } class="input"/>

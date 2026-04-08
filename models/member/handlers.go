@@ -522,7 +522,7 @@ func (p *Members) UpdateParticipantPaidAt(c echo.Context) error {
 		return c.NoContent(http.StatusBadRequest)
 	}
 
-	err = db.Qry.UpdateParticipantPaidAt(c.Request().Context(), db.UpdateParticipantPaidAtParams{
+	_, err = db.Qry.UpdateParticipantPaidAt(c.Request().Context(), db.UpdateParticipantPaidAtParams{
 		PaidAt:   normalizePaidAtInput(signals.ParticipantPaidAtDialog.Value),
 		EventID:  eventID,
 		MemberID: memberID,

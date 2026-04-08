@@ -49,13 +49,14 @@ WHERE event_id = sqlc.arg(event_id)
   AND member_id = sqlc.arg(member_id)
   AND group_id = sqlc.arg(group_id);
 
--- name: UpdateParticipantPaidAt :exec
+-- name: UpdateParticipantPaidAt :one
 UPDATE participants
-SET paid = 1,
+SET paid = CASE WHEN NULLIF(sqlc.narg(paid_at), '') IS NULL THEN 0 ELSE 1 END,
     paid_at = NULLIF(sqlc.narg(paid_at), '')
 WHERE event_id = sqlc.arg(event_id)
   AND member_id = sqlc.arg(member_id)
-  AND group_id = sqlc.arg(group_id);
+  AND group_id = sqlc.arg(group_id)
+RETURNING *;
 
 -- name: ListParticipantsByEvent :many
 SELECT members.*, participants.amount AS participant_amount, participants.expense AS participant_expense, participants.note AS participant_note, participants.paid AS participant_paid, participants.paid_at AS participant_paid_at
