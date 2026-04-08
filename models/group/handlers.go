@@ -24,11 +24,13 @@ import (
 )
 
 type Group struct {
-	model      *GroupModel
-	usersModel *UsersModel
+	model         *GroupModel
+	usersModel    *UsersModel
+	paymentsModel *PendingPaymentsModel
 }
 
 type UsersModel struct{}
+type PendingPaymentsModel struct{}
 
 var errAtLeastOneAdmin = errors.New("at least one admin required")
 
@@ -43,10 +45,19 @@ func (u *UsersModel) TableQuerySpec() utils.TableQuerySpec {
 	})
 }
 
+func (p *PendingPaymentsModel) TableQuerySpec() utils.TableQuerySpec {
+	return utils.StandardTableQuerySpec(utils.StandardTableQuerySpecParams{
+		DefaultSort:  "date",
+		DefaultDir:   "desc",
+		AllowedSorts: []string{"date", "name", "amount"},
+	})
+}
+
 func New() *Group {
 	return &Group{
-		model:      NewModel(),
-		usersModel: &UsersModel{},
+		model:         NewModel(),
+		usersModel:    &UsersModel{},
+		paymentsModel: &PendingPaymentsModel{},
 	}
 }
 
@@ -242,7 +253,7 @@ func (g *Group) PaymentsPage(c echo.Context) error {
 	utils.EnsureTabID(c)
 	groupID := middleware.GetGroupID(c)
 
-	data, err := g.paymentsPageData(c, groupID)
+	data, err := g.paymentsPageData(c, groupID, c.QueryParams())
 	if err != nil {
 		slog.Error("group.payments: failed to load data", "group_id", groupID, "err", err)
 		return c.NoContent(http.StatusInternalServerError)
@@ -289,12 +300,7 @@ func (g *Group) TogglePaymentEventPaid(c echo.Context) error {
 	if err := g.patchCurrentPaymentsPageWithFade(c, groupID, func(data *GroupPaymentsPageData) {
 		rowID := "payment-event-row-" + updatedEvent.ID
 		setPaymentsFadeRowSignal(data, rowID)
-		appendPaymentEventRowIfMissing(data, GroupPaymentEventRow{
-			ID:     updatedEvent.ID,
-			Title:  updatedEvent.Title,
-			Amount: updatedEvent.Amount,
-			PaidAt: paymentsPaidAtFromNullString(updatedEvent.PaidAt),
-		}, signals.FadeRowIdx)
+		appendPendingPaymentRowIfMissing(data, buildPendingPaymentEventFadeRow(groupID, updatedEvent), signals.FadeRowIdx)
 	}); err != nil {
 		return err
 	}
@@ -335,12 +341,7 @@ func (g *Group) UpdatePaymentEventPaidAt(c echo.Context) error {
 		if err := g.patchCurrentPaymentsPageWithFade(c, groupID, func(data *GroupPaymentsPageData) {
 			rowID := "payment-event-row-" + updatedEvent.ID
 			setPaymentsFadeRowSignal(data, rowID)
-			appendPaymentEventRowIfMissing(data, GroupPaymentEventRow{
-				ID:     updatedEvent.ID,
-				Title:  updatedEvent.Title,
-				Amount: updatedEvent.Amount,
-				PaidAt: paymentsPaidAtFromNullString(updatedEvent.PaidAt),
-			}, signals.PaidAtDialog.TriggerIdx)
+			appendPendingPaymentRowIfMissing(data, buildPendingPaymentEventFadeRow(groupID, updatedEvent), signals.PaidAtDialog.TriggerIdx)
 		}); err != nil {
 			return err
 		}
@@ -385,7 +386,7 @@ func (g *Group) TogglePaymentParticipantPaid(c echo.Context) error {
 		if err != nil {
 			return
 		}
-		appendPaymentParticipantRowIfMissing(data, row, signals.FadeRowIdx)
+		appendPendingPaymentRowIfMissing(data, buildPendingPaymentParticipantFadeRow(groupID, row), signals.FadeRowIdx)
 	}); err != nil {
 		return err
 	}
@@ -435,7 +436,7 @@ func (g *Group) UpdatePaymentParticipantPaidAt(c echo.Context) error {
 			if rowErr != nil {
 				return
 			}
-			appendPaymentParticipantRowIfMissing(data, row, signals.PaidAtDialog.TriggerIdx)
+			appendPendingPaymentRowIfMissing(data, buildPendingPaymentParticipantFadeRow(groupID, row), signals.PaidAtDialog.TriggerIdx)
 		}); err != nil {
 			return err
 		}
@@ -471,12 +472,7 @@ func (g *Group) TogglePaymentExpensePaid(c echo.Context) error {
 	if err := g.patchCurrentPaymentsPageWithFade(c, groupID, func(data *GroupPaymentsPageData) {
 		rowID := "payment-expense-row-" + updatedExpense.ID
 		setPaymentsFadeRowSignal(data, rowID)
-		appendPaymentExpenseRowIfMissing(data, GroupPaymentExpenseRow{
-			ID:     updatedExpense.ID,
-			Title:  updatedExpense.Title,
-			Amount: updatedExpense.Amount,
-			PaidAt: paymentsPaidAtFromNullString(updatedExpense.PaidAt),
-		}, signals.FadeRowIdx)
+		appendPendingPaymentRowIfMissing(data, buildPendingPaymentExpenseFadeRow(groupID, updatedExpense), signals.FadeRowIdx)
 	}); err != nil {
 		return err
 	}
@@ -525,12 +521,7 @@ func (g *Group) UpdatePaymentExpensePaidAt(c echo.Context) error {
 		if err := g.patchCurrentPaymentsPageWithFade(c, groupID, func(data *GroupPaymentsPageData) {
 			rowID := "payment-expense-row-" + updatedExpense.ID
 			setPaymentsFadeRowSignal(data, rowID)
-			appendPaymentExpenseRowIfMissing(data, GroupPaymentExpenseRow{
-				ID:     updatedExpense.ID,
-				Title:  updatedExpense.Title,
-				Amount: updatedExpense.Amount,
-				PaidAt: paymentsPaidAtFromNullString(updatedExpense.PaidAt),
-			}, signals.PaidAtDialog.TriggerIdx)
+			appendPendingPaymentRowIfMissing(data, buildPendingPaymentExpenseFadeRow(groupID, updatedExpense), signals.PaidAtDialog.TriggerIdx)
 		}); err != nil {
 			return err
 		}
@@ -1691,6 +1682,11 @@ func parseTableQueryFromValues(values url.Values, queryable utils.Queryable) uti
 		Sort:     values.Get("sort"),
 		Dir:      values.Get("dir"),
 		SortSet:  values.Get("sort") != "",
+		Summary:  values.Get("summary"),
+		DateMode: values.Get("dateMode"),
+		Year:     values.Get("year"),
+		From:     values.Get("from"),
+		To:       values.Get("to"),
 	}
 
 	return utils.NormalizeTableQuery(query, queryable.TableQuerySpec())
@@ -1730,7 +1726,7 @@ func (g *Group) renderCurrentPaymentsPageHTML(c echo.Context, groupID string, mu
 		}
 		return utils.RenderHTMLForRequest(c, GroupRecentPaymentsPage(data))
 	}
-	data, dataErr := g.paymentsPageData(c, groupID)
+	data, dataErr := g.paymentsPageData(c, groupID, queryValuesFromReferer(c))
 	if dataErr != nil {
 		return "", dataErr
 	}
@@ -1804,52 +1800,20 @@ func setPaymentsFadeRowSignal(data *GroupPaymentsPageData, rowID string) {
 	data.Signals["fadeRowID"] = rowID
 }
 
-func appendPaymentEventRowIfMissing(data *GroupPaymentsPageData, row GroupPaymentEventRow, index int) {
-	for _, existing := range data.UnpaidEvents {
-		if existing.ID == row.ID {
+func appendPendingPaymentRowIfMissing(data *GroupPaymentsPageData, row GroupPendingPaymentRow, index int) {
+	for _, existing := range data.PendingRows {
+		if existing.RowID == row.RowID {
 			return
 		}
 	}
 	if index < 0 {
 		index = 0
 	}
-	if index >= len(data.UnpaidEvents) {
-		data.UnpaidEvents = append(data.UnpaidEvents, row)
+	if index >= len(data.PendingRows) {
+		data.PendingRows = append(data.PendingRows, row)
 		return
 	}
-	data.UnpaidEvents = append(data.UnpaidEvents[:index], append([]GroupPaymentEventRow{row}, data.UnpaidEvents[index:]...)...)
-}
-
-func appendPaymentParticipantRowIfMissing(data *GroupPaymentsPageData, row GroupPaymentParticipantRow, index int) {
-	for _, existing := range data.UnpaidParticipants {
-		if existing.EventID == row.EventID && existing.MemberID == row.MemberID {
-			return
-		}
-	}
-	if index < 0 {
-		index = 0
-	}
-	if index >= len(data.UnpaidParticipants) {
-		data.UnpaidParticipants = append(data.UnpaidParticipants, row)
-		return
-	}
-	data.UnpaidParticipants = append(data.UnpaidParticipants[:index], append([]GroupPaymentParticipantRow{row}, data.UnpaidParticipants[index:]...)...)
-}
-
-func appendPaymentExpenseRowIfMissing(data *GroupPaymentsPageData, row GroupPaymentExpenseRow, index int) {
-	for _, existing := range data.UnpaidExpenses {
-		if existing.ID == row.ID {
-			return
-		}
-	}
-	if index < 0 {
-		index = 0
-	}
-	if index >= len(data.UnpaidExpenses) {
-		data.UnpaidExpenses = append(data.UnpaidExpenses, row)
-		return
-	}
-	data.UnpaidExpenses = append(data.UnpaidExpenses[:index], append([]GroupPaymentExpenseRow{row}, data.UnpaidExpenses[index:]...)...)
+	data.PendingRows = append(data.PendingRows[:index], append([]GroupPendingPaymentRow{row}, data.PendingRows[index:]...)...)
 }
 
 func buildPaymentParticipantFadeRow(ctx context.Context, groupID, eventID, memberID string) (GroupPaymentParticipantRow, error) {
@@ -1874,6 +1838,7 @@ func buildPaymentParticipantFadeRow(ctx context.Context, groupID, eventID, membe
 			MemberName:   member.Name,
 			EventID:      event.ID,
 			EventTitle:   event.Title,
+			EventTime:    event.Time,
 			PayoutAmount: participant.ParticipantAmount + participant.ParticipantExpense,
 			PaidAt:       paymentsPaidAtFromNullString(participant.ParticipantPaidAt),
 		}, nil
@@ -1960,77 +1925,147 @@ func (g *Group) groupPageData(c echo.Context, groupID string) (GroupPageData, er
 	}, nil
 }
 
-func (g *Group) paymentsPageData(c echo.Context, groupID string) (GroupPaymentsPageData, error) {
+func paymentsTablePath(groupID string) string {
+	return "/groups/" + groupID + "/pending"
+}
+
+func buildPendingPaymentRow(groupID string, row db.GroupPaymentRow) GroupPendingPaymentRow {
+	result := GroupPendingPaymentRow{
+		Kind:      row.Kind,
+		EntityID:  row.EntityID,
+		Name:      row.Name,
+		DateValue: row.DateValue,
+		Amount:    row.Amount,
+		Paid:      row.Paid == 1,
+		PaidAt:    paymentsPaidAtFromNullString(row.PaidAt),
+		EventID:   row.EventID,
+		MemberID:  row.MemberID,
+	}
+	switch row.Kind {
+	case "event":
+		result.RowID = "payment-event-row-" + row.EntityID
+		result.Href = "/groups/" + groupID + "/events/" + row.EntityID
+		result.TogglePaidURL = "/groups/" + groupID + "/pending/events/" + row.EntityID + "/toggle-paid"
+		result.PaidAtURL = "/groups/" + groupID + "/pending/events/" + row.EntityID + "/paid_at"
+	case "participant":
+		result.RowID = "payment-participant-row-" + result.EventID + "-" + result.MemberID
+		result.Href = "/groups/" + groupID + "/members/" + result.MemberID
+		result.TogglePaidURL = "/groups/" + groupID + "/pending/participants/" + result.EventID + "/" + result.MemberID + "/toggle-paid"
+		result.PaidAtURL = "/groups/" + groupID + "/pending/participants/" + result.EventID + "/" + result.MemberID + "/paid_at"
+	case "expense":
+		result.RowID = "payment-expense-row-" + row.EntityID
+		result.Href = "/groups/" + groupID + "/expenses/" + row.EntityID
+		result.TogglePaidURL = "/groups/" + groupID + "/pending/expenses/" + row.EntityID + "/toggle-paid"
+		result.PaidAtURL = "/groups/" + groupID + "/pending/expenses/" + row.EntityID + "/paid_at"
+	}
+	return result
+}
+
+func buildPendingPaymentEventFadeRow(groupID string, event db.Event) GroupPendingPaymentRow {
+	return GroupPendingPaymentRow{
+		Kind:          "event",
+		EntityID:      event.ID,
+		Name:          event.Title,
+		DateValue:     event.Date,
+		Amount:        event.Amount,
+		Paid:          event.Paid == 1,
+		PaidAt:        paymentsPaidAtFromNullString(event.PaidAt),
+		Href:          "/groups/" + groupID + "/events/" + event.ID,
+		TogglePaidURL: "/groups/" + groupID + "/pending/events/" + event.ID + "/toggle-paid",
+		PaidAtURL:     "/groups/" + groupID + "/pending/events/" + event.ID + "/paid_at",
+		RowID:         "payment-event-row-" + event.ID,
+	}
+}
+
+func buildPendingPaymentParticipantFadeRow(groupID string, row GroupPaymentParticipantRow) GroupPendingPaymentRow {
+	return GroupPendingPaymentRow{
+		Kind:          "participant",
+		EntityID:      row.EventID + ":" + row.MemberID,
+		EventID:       row.EventID,
+		MemberID:      row.MemberID,
+		Name:          row.MemberName + " (" + row.EventTitle + ")",
+		DateValue:     row.EventTime,
+		Amount:        row.PayoutAmount,
+		Paid:          row.PaidAt != "",
+		PaidAt:        row.PaidAt,
+		Href:          "/groups/" + groupID + "/members/" + row.MemberID,
+		TogglePaidURL: "/groups/" + groupID + "/pending/participants/" + row.EventID + "/" + row.MemberID + "/toggle-paid",
+		PaidAtURL:     "/groups/" + groupID + "/pending/participants/" + row.EventID + "/" + row.MemberID + "/paid_at",
+		RowID:         "payment-participant-row-" + row.EventID + "-" + row.MemberID,
+	}
+}
+
+func buildPendingPaymentExpenseFadeRow(groupID string, expense db.Expense) GroupPendingPaymentRow {
+	return GroupPendingPaymentRow{
+		Kind:          "expense",
+		EntityID:      expense.ID,
+		Name:          expense.Title,
+		DateValue:     expense.Date,
+		Amount:        expense.Amount,
+		Paid:          expense.Paid == 1,
+		PaidAt:        paymentsPaidAtFromNullString(expense.PaidAt),
+		Href:          "/groups/" + groupID + "/expenses/" + expense.ID,
+		TogglePaidURL: "/groups/" + groupID + "/pending/expenses/" + expense.ID + "/toggle-paid",
+		PaidAtURL:     "/groups/" + groupID + "/pending/expenses/" + expense.ID + "/paid_at",
+		RowID:         "payment-expense-row-" + expense.ID,
+	}
+}
+
+func (g *Group) listPendingPaymentRows(ctx context.Context, groupID string, query utils.TableQuery) ([]db.GroupPaymentRow, error) {
+	params := db.ListGroupPendingPaymentRowsByDateDescFilteredParams{
+		GroupID:    groupID,
+		Search:     query.Search,
+		YearFilter: query.Year,
+		FromDate:   query.From,
+		ToDate:     query.To,
+		Limit:      int64(query.PageSize),
+		Offset:     query.Offset(),
+	}
+	switch query.Sort {
+	case "name":
+		if query.Dir == "asc" {
+			return db.Qry.ListGroupPendingPaymentRowsByNameAscFiltered(ctx, db.ListGroupPendingPaymentRowsByNameAscFilteredParams(params))
+		}
+		return db.Qry.ListGroupPendingPaymentRowsByNameDescFiltered(ctx, db.ListGroupPendingPaymentRowsByNameDescFilteredParams(params))
+	case "amount":
+		if query.Dir == "asc" {
+			return db.Qry.ListGroupPendingPaymentRowsByAmountAscFiltered(ctx, db.ListGroupPendingPaymentRowsByAmountAscFilteredParams(params))
+		}
+		return db.Qry.ListGroupPendingPaymentRowsByAmountDescFiltered(ctx, db.ListGroupPendingPaymentRowsByAmountDescFilteredParams(params))
+	default:
+		if query.Dir == "asc" {
+			return db.Qry.ListGroupPendingPaymentRowsByDateAscFiltered(ctx, db.ListGroupPendingPaymentRowsByDateAscFilteredParams(params))
+		}
+		return db.Qry.ListGroupPendingPaymentRowsByDateDescFiltered(ctx, params)
+	}
+}
+
+func (g *Group) paymentsPageData(c echo.Context, groupID string, values url.Values) (GroupPaymentsPageData, error) {
 	ctx := c.Request().Context()
 
 	group, err := db.Qry.GetGroupByID(ctx, groupID)
 	if err != nil {
 		return GroupPaymentsPageData{}, err
 	}
-
-	events, err := db.Qry.ListEvents(ctx, groupID)
+	query := parseTableQueryFromValues(values, g.paymentsModel)
+	total, err := db.Qry.CountGroupPendingPaymentRowsFiltered(ctx, db.CountGroupPendingPaymentRowsFilteredParams{
+		GroupID:    groupID,
+		Search:     query.Search,
+		YearFilter: query.Year,
+		FromDate:   query.From,
+		ToDate:     query.To,
+	})
 	if err != nil {
 		return GroupPaymentsPageData{}, err
 	}
-
-	expenses, err := db.Qry.ListExpenses(ctx, groupID)
+	query = utils.ClampPage(query, total)
+	rows, err := g.listPendingPaymentRows(ctx, groupID, query)
 	if err != nil {
 		return GroupPaymentsPageData{}, err
 	}
-
-	members, err := db.Qry.ListMembers(ctx, groupID)
-	if err != nil {
-		return GroupPaymentsPageData{}, err
-	}
-
-	unpaidEvents := make([]GroupPaymentEventRow, 0)
-	for _, event := range events {
-		if event.Paid == 1 {
-			continue
-		}
-		unpaidEvents = append(unpaidEvents, GroupPaymentEventRow{
-			ID:     event.ID,
-			Title:  event.Title,
-			Amount: event.Amount,
-			PaidAt: "",
-		})
-	}
-
-	unpaidExpenses := make([]GroupPaymentExpenseRow, 0)
-	for _, expense := range expenses {
-		if expense.Paid == 1 {
-			continue
-		}
-		unpaidExpenses = append(unpaidExpenses, GroupPaymentExpenseRow{
-			ID:     expense.ID,
-			Title:  expense.Title,
-			Amount: expense.Amount,
-			PaidAt: "",
-		})
-	}
-
-	unpaidParticipants := make([]GroupPaymentParticipantRow, 0)
-	for _, member := range members {
-		memberRows, memberErr := db.Qry.ListParticipantsByMember(ctx, db.ListParticipantsByMemberParams{
-			MemberID: member.ID,
-			GroupID:  groupID,
-		})
-		if memberErr != nil {
-			return GroupPaymentsPageData{}, memberErr
-		}
-		for _, row := range memberRows {
-			if row.ParticipantPaid == 1 {
-				continue
-			}
-			unpaidParticipants = append(unpaidParticipants, GroupPaymentParticipantRow{
-				MemberID:     member.ID,
-				MemberName:   member.Name,
-				EventID:      row.ID,
-				EventTitle:   row.Title,
-				PayoutAmount: row.ParticipantAmount + row.ParticipantExpense,
-				PaidAt:       "",
-			})
-		}
+	pendingRows := make([]GroupPendingPaymentRow, 0, len(rows))
+	for _, row := range rows {
+		pendingRows = append(pendingRows, buildPendingPaymentRow(groupID, row))
 	}
 
 	return GroupPaymentsPageData{
@@ -2041,8 +2076,9 @@ func (g *Group) paymentsPageData(c echo.Context, groupID string) (GroupPaymentsP
 			{Label: ctxi18n.T(ctx, "groups.to_pay")},
 		},
 		Signals: map[string]any{
-			"fadeRowID": "",
+			"fadeRowID":    "",
 			"fadeRowIndex": 0,
+			"tableQuery":   utils.TableQuerySignals(query),
 			"paidAtDialog": map[string]any{
 				"open":        false,
 				"fetching":    false,
@@ -2054,17 +2090,16 @@ func (g *Group) paymentsPageData(c echo.Context, groupID string) (GroupPaymentsP
 				"cancelLabel": ctxi18n.T(ctx, "actions.cancel"),
 			},
 		},
-		IsAuthenticated:    true,
-		IsSuperAdmin:       middleware.IsSuperadmin(c),
-		IsAdmin:            middleware.IsAdmin(c),
-		GroupID:            groupID,
-		Group:              group,
-		UnpaidEvents:       unpaidEvents,
-		UnpaidParticipants: unpaidParticipants,
-		UnpaidExpenses:     unpaidExpenses,
-		EventsTable:        GroupPaymentsEventsTableLayout(),
-		ParticipantsTable:  GroupPaymentsParticipantsTableLayout(),
-		ExpensesTable:      GroupPaymentsExpensesTableLayout(),
+		IsAuthenticated: true,
+		IsSuperAdmin:    middleware.IsSuperadmin(c),
+		IsAdmin:         middleware.IsAdmin(c),
+		GroupID:         groupID,
+		Group:           group,
+		PendingRows:     pendingRows,
+		Query:           query,
+		Pager:           utils.BuildTablePagination(total, query),
+		RecentYears:     utils.RecentYears(3),
+		PaymentsTable:   GroupPaymentsTableLayout(),
 	}, nil
 }
 
@@ -2157,7 +2192,7 @@ func (g *Group) recentPaymentsPageData(c echo.Context, groupID string) (GroupPay
 			{Label: ctxi18n.T(ctx, "groups.recently_paid")},
 		},
 		Signals: map[string]any{
-			"fadeRowID": "",
+			"fadeRowID":    "",
 			"fadeRowIndex": 0,
 			"paidAtDialog": map[string]any{
 				"open":        false,
@@ -2170,18 +2205,17 @@ func (g *Group) recentPaymentsPageData(c echo.Context, groupID string) (GroupPay
 				"cancelLabel": ctxi18n.T(ctx, "actions.cancel"),
 			},
 		},
-		IsAuthenticated:    true,
-		IsSuperAdmin:       middleware.IsSuperadmin(c),
-		IsAdmin:            middleware.IsAdmin(c),
-		GroupID:            groupID,
-		Group:              group,
-		UnpaidEvents:       unpaidEvents,
-		UnpaidParticipants: unpaidParticipants,
-		UnpaidExpenses:     unpaidExpenses,
-		EventsTable:        GroupPaymentsEventsTableLayout(),
-		ParticipantsTable:  GroupPaymentsParticipantsTableLayout(),
-		ExpensesTable:      GroupPaymentsExpensesTableLayout(),
+		IsAuthenticated:          true,
+		IsSuperAdmin:             middleware.IsSuperadmin(c),
+		IsAdmin:                  middleware.IsAdmin(c),
+		GroupID:                  groupID,
+		Group:                    group,
+		UnpaidEvents:             unpaidEvents,
+		UnpaidParticipants:       unpaidParticipants,
+		UnpaidExpenses:           unpaidExpenses,
+		EventsTable:              GroupPaymentsEventsTableLayout(),
+		ParticipantsTable:        GroupPaymentsParticipantsTableLayout(),
+		ExpensesTable:            GroupPaymentsExpensesTableLayout(),
 		RecentPaymentsTableLimit: int(recentPaymentsPerSectionLimit),
 	}, nil
 }
-

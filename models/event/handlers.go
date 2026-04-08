@@ -65,12 +65,22 @@ type participantPaidAtDialogParams struct {
 
 type eventData struct {
 	Title       string `json:"title" validate:"required,min=1,max=255"`
+	Date        string `json:"date" validate:"required"`
 	Time        string `json:"time" validate:"required"`
 	Place       string `json:"place" validate:"max=255"`
 	Description string `json:"description" validate:"max=1000"`
 	Amount      int64  `json:"amount" validate:"required,gt=0"`
 	Paid        bool   `json:"paid"`
 	PaidAt      string `json:"paidAt"`
+}
+
+func combineEventDateTime(dateValue, timeValue string) string {
+	dateValue = strings.TrimSpace(dateValue)
+	timeValue = strings.TrimSpace(timeValue)
+	if dateValue == "" || timeValue == "" {
+		return ""
+	}
+	return dateValue + "T" + timeValue
 }
 
 type participantBulkRowData struct {
@@ -171,11 +181,11 @@ var (
 		"mode":      "table",
 		"formState": "",
 		"editingId": "",
-		"formData":  map[string]any{"title": "", "time": "", "place": "", "description": "", "amount": 0, "paid": false, "paidAt": ""},
-		"errors":    map[string]any{"title": "", "time": "", "place": "", "description": "", "amount": ""},
+		"formData":  map[string]any{"title": "", "date": "", "time": "", "place": "", "description": "", "amount": 0, "paid": false, "paidAt": ""},
+		"errors":    map[string]any{"title": "", "date": "", "time": "", "place": "", "description": "", "amount": ""},
 	}
 	// Error field lists for validation
-	eventErrorFields = []string{"title", "time", "place", "description", "amount"}
+	eventErrorFields = []string{"title", "date", "time", "place", "description", "amount"}
 )
 
 func getUserEmail(c echo.Context) string {
@@ -371,9 +381,11 @@ func (e *Events) patchEventShow(c echo.Context, groupID, eventID string, query u
 		data.Breadcrumbs = append(data.Breadcrumbs, utils.Crumb{Label: ctxi18n.T(c.Request().Context(), "events.edit")})
 	}
 
-	if eventForm.Title != "" || eventForm.Time != "" || eventForm.Place != "" || eventForm.Amount > 0 {
+	if eventForm.Title != "" || eventForm.Date != "" || eventForm.Time != "" || eventForm.Place != "" || eventForm.Amount > 0 {
 		data.Event.Title = eventForm.Title
-		data.Event.Time = eventForm.Time
+		data.Event.Date = eventForm.Date
+		data.Event.StartTime = eventForm.Time
+		data.Event.Time = combineEventDateTime(eventForm.Date, eventForm.Time)
 		data.Event.Place = eventForm.Place
 		data.Event.Description = eventForm.Description
 		data.Event.Amount = eventForm.Amount
@@ -486,8 +498,8 @@ func (e *Events) NewEventPage(c echo.Context) error {
 		},
 		GroupID: groupID,
 		Signals: map[string]any{
-			"formData": map[string]any{"title": "", "time": "", "place": "", "description": "", "amount": 0, "paid": false, "paidAt": ""},
-			"errors":   map[string]any{"title": "", "time": "", "place": "", "description": "", "amount": ""},
+			"formData": map[string]any{"title": "", "date": "", "time": "", "place": "", "description": "", "amount": 0, "paid": false, "paidAt": ""},
+			"errors":   map[string]any{"title": "", "date": "", "time": "", "place": "", "description": "", "amount": ""},
 		},
 		IsAuthenticated: true,
 		IsSuperAdmin:    middleware.IsSuperadmin(c),
@@ -539,6 +551,7 @@ func (e *Events) Create(c echo.Context) error {
 	}
 
 	signals.FormData.Title = strings.TrimSpace(signals.FormData.Title)
+	signals.FormData.Date = strings.TrimSpace(signals.FormData.Date)
 	signals.FormData.Time = strings.TrimSpace(signals.FormData.Time)
 	signals.FormData.Place = strings.TrimSpace(signals.FormData.Place)
 	signals.FormData.Description = strings.TrimSpace(signals.FormData.Description)
@@ -557,7 +570,9 @@ func (e *Events) Create(c echo.Context) error {
 		ID:          utils.GenerateID(utils.PrefixEvent),
 		GroupID:     groupID,
 		Title:       signals.FormData.Title,
-		Time:        signals.FormData.Time,
+		Time:        combineEventDateTime(signals.FormData.Date, signals.FormData.Time),
+		Date:        signals.FormData.Date,
+		StartTime:   signals.FormData.Time,
 		Place:       signals.FormData.Place,
 		Description: signals.FormData.Description,
 		Amount:      signals.FormData.Amount,
@@ -608,18 +623,20 @@ func (e *Events) Update(c echo.Context) error {
 		return c.NoContent(http.StatusBadRequest)
 	}
 	signals.FormData.Title = strings.TrimSpace(signals.FormData.Title)
+	signals.FormData.Date = strings.TrimSpace(signals.FormData.Date)
 	signals.FormData.Time = strings.TrimSpace(signals.FormData.Time)
 	signals.FormData.Place = strings.TrimSpace(signals.FormData.Place)
 	signals.FormData.Description = strings.TrimSpace(signals.FormData.Description)
 	signals.FormData.PaidAt = normalizePaidAtInput(signals.FormData.PaidAt)
 	signals.EventFormData.Title = strings.TrimSpace(signals.EventFormData.Title)
+	signals.EventFormData.Date = strings.TrimSpace(signals.EventFormData.Date)
 	signals.EventFormData.Time = strings.TrimSpace(signals.EventFormData.Time)
 	signals.EventFormData.Place = strings.TrimSpace(signals.EventFormData.Place)
 	signals.EventFormData.Description = strings.TrimSpace(signals.EventFormData.Description)
 	signals.EventFormData.PaidAt = normalizePaidAtInput(signals.EventFormData.PaidAt)
 
 	eventForm := signals.FormData
-	if signals.EventFormData.Title != "" || signals.EventFormData.Time != "" || signals.EventFormData.Place != "" || signals.EventFormData.Amount != 0 {
+	if signals.EventFormData.Title != "" || signals.EventFormData.Date != "" || signals.EventFormData.Time != "" || signals.EventFormData.Place != "" || signals.EventFormData.Amount != 0 {
 		eventForm = signals.EventFormData
 	}
 
@@ -631,7 +648,9 @@ func (e *Events) Update(c echo.Context) error {
 
 	_, err = db.Qry.UpdateEvent(c.Request().Context(), db.UpdateEventParams{
 		Title:       eventForm.Title,
-		Time:        eventForm.Time,
+		Time:        combineEventDateTime(eventForm.Date, eventForm.Time),
+		Date:        eventForm.Date,
+		StartTime:   eventForm.Time,
 		Place:       eventForm.Place,
 		Description: eventForm.Description,
 		Amount:      eventForm.Amount,
@@ -856,6 +875,7 @@ func (e *Events) UpdateParticipantsDraftRows(c echo.Context) error {
 	}
 
 	signals.EventFormData.Title = strings.TrimSpace(signals.EventFormData.Title)
+	signals.EventFormData.Date = strings.TrimSpace(signals.EventFormData.Date)
 	signals.EventFormData.Time = strings.TrimSpace(signals.EventFormData.Time)
 	signals.EventFormData.Place = strings.TrimSpace(signals.EventFormData.Place)
 	signals.EventFormData.Description = strings.TrimSpace(signals.EventFormData.Description)
@@ -1001,6 +1021,7 @@ func (e *Events) SaveParticipantsBulk(c echo.Context) error {
 	}
 
 	signals.EventFormData.Title = strings.TrimSpace(signals.EventFormData.Title)
+	signals.EventFormData.Date = strings.TrimSpace(signals.EventFormData.Date)
 	signals.EventFormData.Time = strings.TrimSpace(signals.EventFormData.Time)
 	signals.EventFormData.Place = strings.TrimSpace(signals.EventFormData.Place)
 	signals.EventFormData.Description = strings.TrimSpace(signals.EventFormData.Description)
@@ -1107,7 +1128,9 @@ func (e *Events) SaveParticipantsBulk(c echo.Context) error {
 
 	_, err = qtx.UpdateEvent(c.Request().Context(), db.UpdateEventParams{
 		Title:       signals.EventFormData.Title,
-		Time:        signals.EventFormData.Time,
+		Time:        combineEventDateTime(signals.EventFormData.Date, signals.EventFormData.Time),
+		Date:        signals.EventFormData.Date,
+		StartTime:   signals.EventFormData.Time,
 		Place:       signals.EventFormData.Place,
 		Description: signals.EventFormData.Description,
 		Amount:      signals.EventFormData.Amount,

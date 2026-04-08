@@ -11,6 +11,7 @@ type MemberEvent struct {
 	ID                 string
 	GroupID            string
 	Title              string
+	Date               string
 	Time               string
 	Description        string
 	Amount             int64

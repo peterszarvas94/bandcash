@@ -144,22 +144,43 @@ type GroupPageData struct {
 }
 
 type GroupPaymentsPageData struct {
-	Title               string
-	Breadcrumbs         []utils.Crumb
-	Signals             map[string]any
-	IsAuthenticated     bool
-	IsSuperAdmin        bool
-	IsAdmin             bool
-	GroupID             string
-	Group               db.Group
-	UnpaidEvents        []GroupPaymentEventRow
-	UnpaidParticipants  []GroupPaymentParticipantRow
-	UnpaidExpenses      []GroupPaymentExpenseRow
-	EventsTable         utils.TableLayout
-	ParticipantsTable   utils.TableLayout
-	ExpensesTable       utils.TableLayout
+	Title              string
+	Breadcrumbs        []utils.Crumb
+	Signals            map[string]any
+	IsAuthenticated    bool
+	IsSuperAdmin       bool
+	IsAdmin            bool
+	GroupID            string
+	Group              db.Group
+	PendingRows        []GroupPendingPaymentRow
+	Query              utils.TableQuery
+	Pager              utils.TablePagination
+	RecentYears        []int
+	PaymentsTable      utils.TableLayout
+	UnpaidEvents       []GroupPaymentEventRow
+	UnpaidParticipants []GroupPaymentParticipantRow
+	UnpaidExpenses     []GroupPaymentExpenseRow
+	EventsTable        utils.TableLayout
+	ParticipantsTable  utils.TableLayout
+	ExpensesTable      utils.TableLayout
 	// Recent Payments page only: max rows per section (SQL limit); 0 on Pending.
 	RecentPaymentsTableLimit int
+}
+
+type GroupPendingPaymentRow struct {
+	Kind          string
+	EntityID      string
+	EventID       string
+	MemberID      string
+	Name          string
+	DateValue     string
+	Amount        int64
+	Paid          bool
+	PaidAt        string
+	Href          string
+	TogglePaidURL string
+	PaidAtURL     string
+	RowID         string
 }
 
 type GroupPaymentEventRow struct {
@@ -170,12 +191,13 @@ type GroupPaymentEventRow struct {
 }
 
 type GroupPaymentParticipantRow struct {
-	MemberID      string
-	MemberName    string
-	EventID       string
-	EventTitle    string
-	PayoutAmount  int64
-	PaidAt        string
+	MemberID     string
+	MemberName   string
+	EventID      string
+	EventTitle   string
+	EventTime    string
+	PayoutAmount int64
+	PaidAt       string
 }
 
 type GroupPaymentExpenseRow struct {

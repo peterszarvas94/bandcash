@@ -2,6 +2,7 @@ package utils
 
 import (
 	"context"
+	"strings"
 	"time"
 
 	appi18n "bandcash/internal/i18n"
@@ -48,6 +49,26 @@ func FormatTimeLocalized(ctx context.Context, t time.Time) string {
 		return ""
 	}
 	return formatDateTimeByLocale(ctx, t)
+}
+
+func FormatClockLocalized(ctx context.Context, value string) string {
+	trimmed := strings.TrimSpace(value)
+	if trimmed == "" {
+		return ""
+	}
+	for _, layout := range []string{"15:04", "15:04:05"} {
+		t, err := time.Parse(layout, trimmed)
+		if err != nil {
+			continue
+		}
+		switch appi18n.LocaleCode(ctx) {
+		case "hu":
+			return t.Format("15:04")
+		default:
+			return t.Format("3:04 PM")
+		}
+	}
+	return trimmed
 }
 
 func formatDateTimeByLocale(ctx context.Context, t time.Time) string {

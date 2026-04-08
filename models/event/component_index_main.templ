@@ -109,8 +109,11 @@ templ EventIndexMain(data EventsData) {
 				@shared.THCol(data.EventsTable.ColMaxWRem("title")) {
 					@shared.TableSortHeader(ctxi18n.T(ctx, "fields.title"), "title", data.Query, utils.BuildTableSortURL(fmt.Sprintf("/groups/%s/events", data.GroupID), data.Query, "title"))
 				}
+				@shared.THCol(data.EventsTable.ColMaxWRem("date")) {
+					@shared.TableSortHeader(ctxi18n.T(ctx, "fields.date"), "time", data.Query, utils.BuildTableSortURL(fmt.Sprintf("/groups/%s/events", data.GroupID), data.Query, "time"))
+				}
 				@shared.THCol(data.EventsTable.ColMaxWRem("time")) {
-					@shared.TableSortHeader(ctxi18n.T(ctx, "fields.time"), "time", data.Query, utils.BuildTableSortURL(fmt.Sprintf("/groups/%s/events", data.GroupID), data.Query, "time"))
+					{ ctxi18n.T(ctx, "fields.time") }
 				}
 				@shared.THCol(data.EventsTable.ColMaxWRem("place")) {
 					@shared.TableSortHeader(ctxi18n.T(ctx, "fields.place"), "place", data.Query, utils.BuildTableSortURL(fmt.Sprintf("/groups/%s/events", data.GroupID), data.Query, "place"))
@@ -146,7 +149,8 @@ templ EventIndexMain(data EventsData) {
 				}}
 				<tr>
 					<td><a class="table-link" href={ fmt.Sprintf("/groups/%s/events/%s", data.GroupID, event.ID) }>{ event.Title }</a></td>
-					<td>{ utils.FormatDateTimeLocalized(ctx, event.Time) }</td>
+					<td>{ utils.FormatDateLocalized(ctx, event.Date) }</td>
+					<td>{ utils.FormatClockLocalized(ctx, event.StartTime) }</td>
 					<td>{ event.Place }</td>
 					<td class="text-right">{ utils.FormatNumberLocalized(ctx, event.Amount) }</td>
 					<td class="text-right">
@@ -186,7 +190,7 @@ templ EventIndexMain(data EventsData) {
 			}
 			if len(data.Events) == 0 {
 				<tr>
-					<td colspan="6">{ ctxi18n.T(ctx, "table.empty") }</td>
+					<td colspan="7">{ ctxi18n.T(ctx, "table.empty") }</td>
 				</tr>
 			}
 		</tbody>

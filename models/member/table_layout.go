@@ -12,6 +12,7 @@ func MembersIndexTableLayout() utils.TableLayout {
 func MemberEventsTableLayout() utils.TableLayout {
 	return utils.NewTableLayout([]utils.TableColumn{
 		{Key: "title"},
+		{Key: "date"},
 		{Key: "time"},
 		{Key: "participant_amount"},
 		{Key: "participant_expense"},
