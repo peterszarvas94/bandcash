@@ -66,12 +66,12 @@ func EventNewForm(data NewEventPageData) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, " <span class=\"fielderror\">*</span></label> <input id=\"event-new-title\" type=\"text\" data-bind=\"formData.title\" class=\"input\"><div data-show=\"$errors && $errors.title\" class=\"fielderror\" data-text=\"$errors.title\"></div></div><div class=\"field\"><label for=\"event-new-date\" class=\"row\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, " <span class=\"fielderror\">*</span></label> <input id=\"event-new-title\" type=\"text\" data-bind=\"formData.title\" class=\"input\"><div data-show=\"$errors && $errors.title\" class=\"fielderror\" data-text=\"$errors.title\"></div></div><div class=\"field\"><label for=\"event-new-time\" class=\"row\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var4 string
-		templ_7745c5c3_Var4, templ_7745c5c3_Err = templ.JoinStringErrs(ctxi18n.T(ctx, "fields.date"))
+		templ_7745c5c3_Var4, templ_7745c5c3_Err = templ.JoinStringErrs(ctxi18n.T(ctx, "fields.time"))
 		if templ_7745c5c3_Err != nil {
 			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/event/component_event_new_form.templ`, Line: 19, Col: 74}
 		}
@@ -79,72 +79,59 @@ func EventNewForm(data NewEventPageData) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, " <span class=\"fielderror\">*</span></label> <input id=\"event-new-date\" type=\"date\" data-bind=\"formData.date\" class=\"input\"><div data-show=\"$errors && $errors.date\" class=\"fielderror\" data-text=\"$errors.date\"></div></div><div class=\"field\"><label for=\"event-new-time\" class=\"row\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, " <span class=\"fielderror\">*</span></label> <input id=\"event-new-time\" type=\"datetime-local\" data-bind=\"formData.time\" class=\"input\"><div data-show=\"$errors && $errors.time\" class=\"fielderror\" data-text=\"$errors.time\"></div></div><div class=\"field\"><label for=\"event-new-place\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var5 string
-		templ_7745c5c3_Var5, templ_7745c5c3_Err = templ.JoinStringErrs(ctxi18n.T(ctx, "fields.time"))
+		templ_7745c5c3_Var5, templ_7745c5c3_Err = templ.JoinStringErrs(ctxi18n.T(ctx, "fields.place"))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/event/component_event_new_form.templ`, Line: 24, Col: 74}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/event/component_event_new_form.templ`, Line: 24, Col: 64}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var5))
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 5, " <span class=\"fielderror\">*</span></label> <input id=\"event-new-time\" type=\"time\" data-bind=\"formData.time\" class=\"input\"><div data-show=\"$errors && $errors.time\" class=\"fielderror\" data-text=\"$errors.time\"></div></div><div class=\"field\"><label for=\"event-new-place\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 5, "</label> <input id=\"event-new-place\" type=\"text\" data-bind=\"formData.place\" class=\"input\"><div data-show=\"$errors && $errors.place\" class=\"fielderror\" data-text=\"$errors.place\"></div></div><div class=\"field\"><label for=\"event-new-description\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var6 string
-		templ_7745c5c3_Var6, templ_7745c5c3_Err = templ.JoinStringErrs(ctxi18n.T(ctx, "fields.place"))
+		templ_7745c5c3_Var6, templ_7745c5c3_Err = templ.JoinStringErrs(ctxi18n.T(ctx, "fields.description"))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/event/component_event_new_form.templ`, Line: 29, Col: 64}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/event/component_event_new_form.templ`, Line: 29, Col: 76}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var6))
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 6, "</label> <input id=\"event-new-place\" type=\"text\" data-bind=\"formData.place\" class=\"input\"><div data-show=\"$errors && $errors.place\" class=\"fielderror\" data-text=\"$errors.place\"></div></div><div class=\"field\"><label for=\"event-new-description\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 6, "</label> <textarea id=\"event-new-description\" data-bind=\"formData.description\" rows=\"3\" class=\"input\"></textarea><div data-show=\"$errors && $errors.description\" class=\"fielderror\" data-text=\"$errors.description\"></div></div><div class=\"field\"><label for=\"event-new-amount\" class=\"row\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var7 string
-		templ_7745c5c3_Var7, templ_7745c5c3_Err = templ.JoinStringErrs(ctxi18n.T(ctx, "fields.description"))
+		templ_7745c5c3_Var7, templ_7745c5c3_Err = templ.JoinStringErrs(ctxi18n.T(ctx, "fields.income"))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/event/component_event_new_form.templ`, Line: 34, Col: 76}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/event/component_event_new_form.templ`, Line: 34, Col: 78}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var7))
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 7, "</label> <textarea id=\"event-new-description\" data-bind=\"formData.description\" rows=\"3\" class=\"input\"></textarea><div data-show=\"$errors && $errors.description\" class=\"fielderror\" data-text=\"$errors.description\"></div></div><div class=\"field\"><label for=\"event-new-amount\" class=\"row\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 7, " <span class=\"fielderror\">*</span></label> <input id=\"event-new-amount\" type=\"number\" data-bind=\"formData.amount\" step=\"1\" min=\"1\" class=\"input\"><div data-show=\"$errors && $errors.amount\" class=\"fielderror\" data-text=\"$errors.amount\"></div></div><div class=\"field\"><label for=\"event-new-paid\" class=\"row\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var8 string
-		templ_7745c5c3_Var8, templ_7745c5c3_Err = templ.JoinStringErrs(ctxi18n.T(ctx, "fields.income"))
+		templ_7745c5c3_Var8, templ_7745c5c3_Err = templ.JoinStringErrs(ctxi18n.T(ctx, "table.paid"))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/event/component_event_new_form.templ`, Line: 39, Col: 78}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/event/component_event_new_form.templ`, Line: 39, Col: 73}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var8))
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 8, " <span class=\"fielderror\">*</span></label> <input id=\"event-new-amount\" type=\"number\" data-bind=\"formData.amount\" step=\"1\" min=\"1\" class=\"input\"><div data-show=\"$errors && $errors.amount\" class=\"fielderror\" data-text=\"$errors.amount\"></div></div><div class=\"field\"><label for=\"event-new-paid\" class=\"row\">")
-		if templ_7745c5c3_Err != nil {
-			return templ_7745c5c3_Err
-		}
-		var templ_7745c5c3_Var9 string
-		templ_7745c5c3_Var9, templ_7745c5c3_Err = templ.JoinStringErrs(ctxi18n.T(ctx, "table.paid"))
-		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/event/component_event_new_form.templ`, Line: 44, Col: 73}
-		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var9))
-		if templ_7745c5c3_Err != nil {
-			return templ_7745c5c3_Err
-		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 9, "</label>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 8, "</label>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -156,20 +143,20 @@ func EventNewForm(data NewEventPageData) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 10, "</div><div class=\"field\" data-show=\"$formData.paid\" style=\"display: none\"><label for=\"event-new-paid-at\" class=\"row\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 9, "</div><div class=\"field\" data-show=\"$formData.paid\" style=\"display: none\"><label for=\"event-new-paid-at\" class=\"row\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		var templ_7745c5c3_Var10 string
-		templ_7745c5c3_Var10, templ_7745c5c3_Err = templ.JoinStringErrs(ctxi18n.T(ctx, "fields.paid_at"))
+		var templ_7745c5c3_Var9 string
+		templ_7745c5c3_Var9, templ_7745c5c3_Err = templ.JoinStringErrs(ctxi18n.T(ctx, "fields.paid_at"))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/event/component_event_new_form.templ`, Line: 52, Col: 80}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/event/component_event_new_form.templ`, Line: 47, Col: 80}
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var10))
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var9))
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 11, "</label> <input id=\"event-new-paid-at\" type=\"date\" data-bind=\"formData.paidAt\" class=\"input\"></div>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 10, "</label> <input id=\"event-new-paid-at\" type=\"date\" data-bind=\"formData.paidAt\" class=\"input\"></div>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -181,7 +168,7 @@ func EventNewForm(data NewEventPageData) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 12, "</form>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 11, "</form>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

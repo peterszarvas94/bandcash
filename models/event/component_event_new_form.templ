@@ -16,13 +16,8 @@ templ EventNewForm(data NewEventPageData) {
 			<div data-show="$errors && $errors.title" class="fielderror" data-text="$errors.title"></div>
 		</div>
 		<div class="field">
-			<label for="event-new-date" class="row">{ ctxi18n.T(ctx, "fields.date") } <span class="fielderror">*</span></label>
-			<input id="event-new-date" type="date" data-bind="formData.date" class="input"/>
-			<div data-show="$errors && $errors.date" class="fielderror" data-text="$errors.date"></div>
-		</div>
-		<div class="field">
 			<label for="event-new-time" class="row">{ ctxi18n.T(ctx, "fields.time") } <span class="fielderror">*</span></label>
-			<input id="event-new-time" type="time" data-bind="formData.time" class="input"/>
+			<input id="event-new-time" type="datetime-local" data-bind="formData.time" class="input"/>
 			<div data-show="$errors && $errors.time" class="fielderror" data-text="$errors.time"></div>
 		</div>
 		<div class="field">

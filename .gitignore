@@ -12,4 +12,3 @@ sqlite.db-*
 static/gen/
 .env.local
 .env.*.local
-.opencode

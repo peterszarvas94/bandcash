@@ -33,8 +33,6 @@ type Event struct {
 	Paid        int64          `json:"paid"`
 	PaidAt      sql.NullString `json:"paid_at"`
 	Place       string         `json:"place"`
-	Date        string         `json:"date"`
-	StartTime   string         `json:"start_time"`
 }
 
 type Expense struct {
@@ -63,19 +61,6 @@ type GroupAccess struct {
 	GroupID   string       `json:"group_id"`
 	Role      string       `json:"role"`
 	CreatedAt sql.NullTime `json:"created_at"`
-}
-
-type GroupPaymentRow struct {
-	GroupID   string         `json:"group_id"`
-	Kind      string         `json:"kind"`
-	EntityID  string         `json:"entity_id"`
-	EventID   string         `json:"event_id"`
-	MemberID  string         `json:"member_id"`
-	Name      string         `json:"name"`
-	DateValue string         `json:"date_value"`
-	Amount    int64          `json:"amount"`
-	Paid      int64          `json:"paid"`
-	PaidAt    sql.NullString `json:"paid_at"`
 }
 
 type MagicLink struct {

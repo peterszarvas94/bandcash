@@ -11,141 +11,213 @@ import (
 
 templ GroupPaymentsMain(data GroupPaymentsPageData) {
 	@shared.PageHeader(shared.PageHeaderProps{Title: ctxi18n.T(ctx, "groups.to_pay")}) {}
-	@shared.TableSearchFormWithClass(paymentsTablePath(data.GroupID), data.Query, "table.search_placeholder_pending_payments", "pt")
-	<div class="row row-wrap justify-between pb">
-		<div class="radiogroup" role="radiogroup" aria-label={ ctxi18n.T(ctx, "table.date_filters") }>
-			@shared.RadioLink(shared.RadioLinkProps{
-				Href:       utils.BuildTableDateClearURL(paymentsTablePath(data.GroupID), data.Query),
-				Label:      ctxi18n.T(ctx, "table.all"),
-				IsSelected: utils.DateFilterAllActive(data.Query),
-				NoIcon:     true,
-				ClassName:  "btn btn-xs",
-			})
-			for _, year := range data.RecentYears {
-				@shared.RadioLink(shared.RadioLinkProps{
-					Href:       utils.BuildTableDateYearURL(paymentsTablePath(data.GroupID), data.Query, fmt.Sprintf("%d", year)),
-					Label:      fmt.Sprintf("%d", year),
-					IsSelected: utils.DateFilterYearActive(data.Query, fmt.Sprintf("%d", year)),
-					NoIcon:     true,
-					ClassName:  "btn btn-xs",
-				})
-			}
-			@shared.RadioLink(shared.RadioLinkProps{
-				Href:       utils.BuildTableDateCustomURL(paymentsTablePath(data.GroupID), data.Query),
-				Label:      ctxi18n.T(ctx, "table.custom"),
-				IsSelected: utils.DateFilterCustomActive(data.Query),
-				NoIcon:     true,
-				ClassName:  "btn btn-xs",
-			})
-		</div>
-		if utils.DateFilterCustomActive(data.Query) {
-			<form class="row" method="get" action={ paymentsTablePath(data.GroupID) }>
-				if data.Query.Search != "" {
-					<input type="hidden" name="q" value={ data.Query.Search }/>
-				}
-				if data.Query.SortSet {
-					<input type="hidden" name="sort" value={ data.Query.Sort }/>
-					<input type="hidden" name="dir" value={ data.Query.Dir }/>
-				}
-				if data.Query.PageSize != utils.DefaultTablePageSize {
-					<input type="hidden" name="pageSize" value={ fmt.Sprintf("%d", data.Query.PageSize) }/>
-				}
-				if data.Query.Summary != utils.SummaryModeAll {
-					<input type="hidden" name="summary" value={ data.Query.Summary }/>
-				}
-				<input type="hidden" name="dateMode" value="custom"/>
-				<input type="date" class="input input-xs" name="from" value={ data.Query.From }/>
-				<span class="text-sm pr pl">-</span>
-				<input type="date" class="input input-xs" name="to" value={ data.Query.To }/>
-				<button class="btn btn-xs btn-icon" type="submit" aria-label={ ctxi18n.T(ctx, "table.apply") } title={ ctxi18n.T(ctx, "table.apply") }>
-					@icons.CalendarSearch(templ.Attributes{"class": "icon"})
-				</button>
-			</form>
-		}
-	</div>
-	@shared.TablePaginationRow(paymentsTablePath(data.GroupID), data.Query, data.Pager)
-	@shared.TableOpenFixed(data.PaymentsTable, "") {
-		<thead>
-			<tr>
-				@shared.THCol(data.PaymentsTable.ColMaxWRem("name")) {
-					@shared.TableSortHeader(ctxi18n.T(ctx, "fields.name"), "name", data.Query, utils.BuildTableSortURL(paymentsTablePath(data.GroupID), data.Query, "name"))
-				}
-				@shared.THCol(data.PaymentsTable.ColMaxWRem("type")) {
-					{ ctxi18n.T(ctx, "fields.type") }
-				}
-				@shared.THCol(data.PaymentsTable.ColMaxWRem("date")) {
-					@shared.TableSortHeader(ctxi18n.T(ctx, "fields.date"), "date", data.Query, utils.BuildTableSortURL(paymentsTablePath(data.GroupID), data.Query, "date"))
-				}
-				@shared.THCol(data.PaymentsTable.ColMaxWRem("amount")) {
-					<div class="text-right">
-						@shared.TableSortHeader(ctxi18n.T(ctx, "fields.amount"), "amount", data.Query, utils.BuildTableSortURL(paymentsTablePath(data.GroupID), data.Query, "amount"))
-					</div>
-				}
-				@shared.THColFixed(data.PaymentsTable.ColMaxWRem("paid"), data.PaymentsTable.ColWRem("paid")) {
-					<div class="text-right">{ ctxi18n.T(ctx, "table.paid_question") }</div>
-				}
-				@shared.THColFixed(data.PaymentsTable.ColMaxWRem("paid_at"), data.PaymentsTable.ColWRem("paid_at")) {
-					<div class="text-right">{ ctxi18n.T(ctx, "fields.paid_at") }</div>
-				}
-			</tr>
-		</thead>
-		<tbody>
-			for i, row := range data.PendingRows {
-				{{
-					togglePaidExpr := fmt.Sprintf("($fadeRowID = '%s', $fadeRowIndex = %d, @put('%s', {tableQuery: $tableQuery, fadeRowIndex: %d}))", row.RowID, i, row.TogglePaidURL, i)
-					openPaidAtExpr := fmt.Sprintf("$paidAtDialog.open = true; $paidAtDialog.url = '%s'; $paidAtDialog.value = '%s'; $paidAtDialog.triggerID = '%s'; $paidAtDialog.triggerIndex = %d", row.PaidAtURL, row.PaidAt, row.RowID, i)
-					dateLabel := utils.FormatDateLocalized(ctx, row.DateValue)
-					typeLabel := ctxi18n.T(ctx, "groups.payment_type_event")
-					if row.Kind == "participant" {
-						typeLabel = ctxi18n.T(ctx, "groups.payment_type_participant")
-					} else if row.Kind == "expense" {
-						typeLabel = ctxi18n.T(ctx, "groups.payment_type_expense")
-					}
-					paidAtLabel := "-"
-					if row.PaidAt != "" {
-						paidAtLabel = utils.FormatDateLocalized(ctx, row.PaidAt)
-					}
-				}}
-				<tr id={ row.RowID } data-class:row-fade-out={ fmt.Sprintf("$fadeRowID === '%s'", row.RowID) }>
-					<td><a class="table-link cell-ellipsis" href={ row.Href } title={ row.Name }>{ row.Name }</a></td>
-					<td>{ typeLabel }</td>
-					<td>{ dateLabel }</td>
-					<td class="text-right">{ utils.FormatNumberLocalized(ctx, row.Amount) }</td>
-					<td class="text-right">
-						if data.IsAdmin {
-							@shared.ToggleSwitch(shared.ToggleSwitchProps{
-								IsOn:         row.Paid,
-								OnClick:      togglePaidExpr,
-								DisabledExpr: "false",
-								AriaLabel:    ctxi18n.T(ctx, "table.paid"),
-							})
-						} else if row.Paid {
-							{ ctxi18n.T(ctx, "table.paid") }
-						} else {
-							{ ctxi18n.T(ctx, "table.unpaid") }
+
+	<section class="section">
+		<h2>{ ctxi18n.T(ctx, "events.title") }</h2>
+		<div class="max-h-table">
+		@shared.TableOpenFixed(data.EventsTable, "") {
+				<thead>
+					<tr>
+						@shared.THCol(data.EventsTable.ColMaxWRem("title")) {
+							{ ctxi18n.T(ctx, "fields.title") }
 						}
-					</td>
-					<td class="text-right">
-						<div class="row row-right">
-							<span>{ paidAtLabel }</span>
-							if data.IsAdmin {
-								@shared.IconActionButton(shared.IconActionButtonProps{
-									ClassName:    "btn btn-xs btn-text",
-									OnClick:      openPaidAtExpr,
-									DisabledExpr: "false",
-									AriaLabel:    ctxi18n.T(ctx, "actions.edit"),
-									Title:        ctxi18n.T(ctx, "actions.edit"),
-									IconName:     icons.IconPencil,
-								})
-							}
-						</div>
-					</td>
+						@shared.THCol(data.EventsTable.ColMaxWRem("amount")) {
+							<div class="text-right">{ ctxi18n.T(ctx, "fields.amount") }</div>
+						}
+						@shared.THColFixed(data.EventsTable.ColMaxWRem("paid"), data.EventsTable.ColWRem("paid")) {
+							<div class="text-right">{ ctxi18n.T(ctx, "table.paid_question") }</div>
+						}
+						@shared.THColFixed(data.EventsTable.ColMaxWRem("paid_at"), data.EventsTable.ColWRem("paid_at")) {
+							<div class="text-right">{ ctxi18n.T(ctx, "fields.paid_at") }</div>
+						}
+					</tr>
+				</thead>
+				<tbody>
+					if len(data.UnpaidEvents) == 0 {
+						<tr><td colspan="4">{ ctxi18n.T(ctx, "groups.payments_empty_events") }</td></tr>
+					} else {
+						for i, row := range data.UnpaidEvents {
+							{{
+								rowID := fmt.Sprintf("payment-event-row-%s", row.ID)
+								togglePaidExpr := fmt.Sprintf("($fadeRowID = '%s', $fadeRowIndex = %d, @put('/groups/%s/pending/events/%s/toggle-paid'))", rowID, i, data.GroupID, row.ID)
+								openPaidAtExpr := fmt.Sprintf("$paidAtDialog.open = true; $paidAtDialog.url = '/groups/%s/pending/events/%s/paid_at'; $paidAtDialog.value = ''; $paidAtDialog.triggerID = '%s'; $paidAtDialog.triggerIndex = %d", data.GroupID, row.ID, rowID, i)
+							}}
+							<tr id={ rowID } data-class:row-fade-out={ fmt.Sprintf("$fadeRowID === '%s'", rowID) }>
+								<td><a class="table-link" href={ fmt.Sprintf("/groups/%s/events/%s", data.GroupID, row.ID) }>{ row.Title }</a></td>
+								<td class="text-right">{ utils.FormatNumberLocalized(ctx, row.Amount) }</td>
+								<td class="text-right">
+									if data.IsAdmin {
+										@shared.ToggleSwitch(shared.ToggleSwitchProps{
+											IsOn:         false,
+											OnClick:      togglePaidExpr,
+											DisabledExpr: "false",
+											AriaLabel:    ctxi18n.T(ctx, "table.paid"),
+										})
+									} else {
+										{ ctxi18n.T(ctx, "table.unpaid") }
+									}
+								</td>
+								<td class="text-right">
+									<div class="row row-right">
+										<span>-</span>
+										if data.IsAdmin {
+											@shared.IconActionButton(shared.IconActionButtonProps{
+												ClassName:    "btn btn-xs btn-text",
+												OnClick:      openPaidAtExpr,
+												DisabledExpr: "false",
+												AriaLabel:    ctxi18n.T(ctx, "actions.edit"),
+												Title:        ctxi18n.T(ctx, "actions.edit"),
+												IconName:     icons.IconPencil,
+											})
+										}
+									</div>
+								</td>
+							</tr>
+						}
+					}
+				</tbody>
+			}
+		</div>
+	</section>
+
+	<section class="section">
+		<h2>{ ctxi18n.T(ctx, "participants.title") }</h2>
+		<div class="max-h-table">
+		@shared.TableOpenFixed(data.ParticipantsTable, "") {
+			<thead>
+				<tr>
+					@shared.THCol(data.ParticipantsTable.ColMaxWRem("member")) {
+						{ ctxi18n.T(ctx, "fields.name") }
+					}
+					@shared.THCol(data.ParticipantsTable.ColMaxWRem("event")) {
+						{ ctxi18n.T(ctx, "fields.event_title") }
+					}
+					@shared.THCol(data.ParticipantsTable.ColMaxWRem("amount")) {
+						<div class="text-right">{ ctxi18n.T(ctx, "fields.amount") }</div>
+					}
+					@shared.THColFixed(data.ParticipantsTable.ColMaxWRem("paid"), data.ParticipantsTable.ColWRem("paid")) {
+						<div class="text-right">{ ctxi18n.T(ctx, "table.paid_question") }</div>
+					}
+					@shared.THColFixed(data.ParticipantsTable.ColMaxWRem("paid_at"), data.ParticipantsTable.ColWRem("paid_at")) {
+						<div class="text-right">{ ctxi18n.T(ctx, "fields.paid_at") }</div>
+					}
 				</tr>
-			}
-			if len(data.PendingRows) == 0 {
-				<tr><td colspan="6">{ ctxi18n.T(ctx, "table.empty") }</td></tr>
-			}
-		</tbody>
-	}
+			</thead>
+			<tbody>
+				if len(data.UnpaidParticipants) == 0 {
+					<tr><td colspan="5">{ ctxi18n.T(ctx, "groups.payments_empty_participants") }</td></tr>
+				} else {
+					for i, row := range data.UnpaidParticipants {
+						{{
+							rowID := fmt.Sprintf("payment-participant-row-%s-%s", row.EventID, row.MemberID)
+							togglePaidExpr := fmt.Sprintf("($fadeRowID = '%s', $fadeRowIndex = %d, @put('/groups/%s/pending/participants/%s/%s/toggle-paid'))", rowID, i, data.GroupID, row.EventID, row.MemberID)
+							openPaidAtExpr := fmt.Sprintf("$paidAtDialog.open = true; $paidAtDialog.url = '/groups/%s/pending/participants/%s/%s/paid_at'; $paidAtDialog.value = ''; $paidAtDialog.triggerID = '%s'; $paidAtDialog.triggerIndex = %d", data.GroupID, row.EventID, row.MemberID, rowID, i)
+						}}
+						<tr id={ rowID } data-class:row-fade-out={ fmt.Sprintf("$fadeRowID === '%s'", rowID) }>
+							<td><a class="table-link" href={ fmt.Sprintf("/groups/%s/members/%s", data.GroupID, row.MemberID) }>{ row.MemberName }</a></td>
+							<td><a class="table-link" href={ fmt.Sprintf("/groups/%s/events/%s", data.GroupID, row.EventID) }>{ row.EventTitle }</a></td>
+							<td class="text-right">{ utils.FormatNumberLocalized(ctx, row.PayoutAmount) }</td>
+							<td class="text-right">
+								if data.IsAdmin {
+									@shared.ToggleSwitch(shared.ToggleSwitchProps{
+										IsOn:         false,
+										OnClick:      togglePaidExpr,
+										DisabledExpr: "false",
+										AriaLabel:    ctxi18n.T(ctx, "table.paid"),
+									})
+								} else {
+									{ ctxi18n.T(ctx, "table.unpaid") }
+								}
+							</td>
+							<td class="text-right">
+								<div class="row row-right">
+									<span>-</span>
+									if data.IsAdmin {
+										@shared.IconActionButton(shared.IconActionButtonProps{
+											ClassName:    "btn btn-xs btn-text",
+											OnClick:      openPaidAtExpr,
+											DisabledExpr: "false",
+											AriaLabel:    ctxi18n.T(ctx, "actions.edit"),
+											Title:        ctxi18n.T(ctx, "actions.edit"),
+											IconName:     icons.IconPencil,
+										})
+									}
+								</div>
+							</td>
+						</tr>
+					}
+				}
+			</tbody>
+		}
+		</div>
+	</section>
+
+	<section class="section">
+		<h2>{ ctxi18n.T(ctx, "expenses.title") }</h2>
+		<div class="max-h-table">
+		@shared.TableOpenFixed(data.ExpensesTable, "") {
+			<thead>
+				<tr>
+					@shared.THCol(data.ExpensesTable.ColMaxWRem("title")) {
+						{ ctxi18n.T(ctx, "fields.title") }
+					}
+					@shared.THCol(data.ExpensesTable.ColMaxWRem("amount")) {
+						<div class="text-right">{ ctxi18n.T(ctx, "fields.amount") }</div>
+					}
+					@shared.THColFixed(data.ExpensesTable.ColMaxWRem("paid"), data.ExpensesTable.ColWRem("paid")) {
+						<div class="text-right">{ ctxi18n.T(ctx, "table.paid_question") }</div>
+					}
+					@shared.THColFixed(data.ExpensesTable.ColMaxWRem("paid_at"), data.ExpensesTable.ColWRem("paid_at")) {
+						<div class="text-right">{ ctxi18n.T(ctx, "fields.paid_at") }</div>
+					}
+				</tr>
+			</thead>
+			<tbody>
+				if len(data.UnpaidExpenses) == 0 {
+					<tr><td colspan="4">{ ctxi18n.T(ctx, "groups.payments_empty_expenses") }</td></tr>
+				} else {
+					for i, row := range data.UnpaidExpenses {
+						{{
+							rowID := fmt.Sprintf("payment-expense-row-%s", row.ID)
+							togglePaidExpr := fmt.Sprintf("($fadeRowID = '%s', $fadeRowIndex = %d, @put('/groups/%s/pending/expenses/%s/toggle-paid'))", rowID, i, data.GroupID, row.ID)
+							openPaidAtExpr := fmt.Sprintf("$paidAtDialog.open = true; $paidAtDialog.url = '/groups/%s/pending/expenses/%s/paid_at'; $paidAtDialog.value = ''; $paidAtDialog.triggerID = '%s'; $paidAtDialog.triggerIndex = %d", data.GroupID, row.ID, rowID, i)
+						}}
+						<tr id={ rowID } data-class:row-fade-out={ fmt.Sprintf("$fadeRowID === '%s'", rowID) }>
+							<td><a class="table-link" href={ fmt.Sprintf("/groups/%s/expenses/%s", data.GroupID, row.ID) }>{ row.Title }</a></td>
+							<td class="text-right">{ utils.FormatNumberLocalized(ctx, row.Amount) }</td>
+							<td class="text-right">
+								if data.IsAdmin {
+									@shared.ToggleSwitch(shared.ToggleSwitchProps{
+										IsOn:         false,
+										OnClick:      togglePaidExpr,
+										DisabledExpr: "false",
+										AriaLabel:    ctxi18n.T(ctx, "table.paid"),
+									})
+								} else {
+									{ ctxi18n.T(ctx, "table.unpaid") }
+								}
+							</td>
+							<td class="text-right">
+								<div class="row row-right">
+									<span>-</span>
+									if data.IsAdmin {
+										@shared.IconActionButton(shared.IconActionButtonProps{
+											ClassName:    "btn btn-xs btn-text",
+											OnClick:      openPaidAtExpr,
+											DisabledExpr: "false",
+											AriaLabel:    ctxi18n.T(ctx, "actions.edit"),
+											Title:        ctxi18n.T(ctx, "actions.edit"),
+											IconName:     icons.IconPencil,
+										})
+									}
+								</div>
+							</td>
+						</tr>
+					}
+				}
+			</tbody>
+		}
+		</div>
+	</section>
 	@GroupPaymentsPaidAtDialog()
 }

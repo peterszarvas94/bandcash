@@ -10,7 +10,7 @@ func eventIndexSignals(query utils.TableQuery) map[string]any {
 		"mode":            "table",
 		"formState":       "",
 		"editingId":       0,
-		"formData":        map[string]any{"title": "", "date": "", "time": "", "place": "", "description": "", "amount": 0, "paid": false, "paidAt": ""},
+		"formData":        map[string]any{"title": "", "time": "", "place": "", "description": "", "amount": 0, "paid": false, "paidAt": ""},
 		"eventFormState":  "",
 		"summaryMode":     query.Summary,
 		"_fetching":       false,
@@ -27,7 +27,7 @@ func eventIndexSignals(query utils.TableQuery) map[string]any {
 			"url":         "",
 			"triggerID":   "",
 		},
-		"errors": map[string]any{"title": "", "date": "", "time": "", "place": "", "description": "", "amount": "", "memberId": "", "expense": ""},
+		"errors": map[string]any{"title": "", "time": "", "place": "", "description": "", "amount": "", "memberId": "", "expense": ""},
 	}
 }
 
@@ -87,8 +87,7 @@ func eventShowSignals(data EventData) map[string]any {
 		},
 		"eventFormData": map[string]any{
 			"title":       data.Event.Title,
-			"date":        data.Event.Date,
-			"time":        data.Event.StartTime,
+			"time":        data.Event.Time,
 			"place":       data.Event.Place,
 			"description": data.Event.Description,
 			"amount":      data.Event.Amount,
@@ -151,7 +150,6 @@ func eventShowSignals(data EventData) map[string]any {
 		},
 		"errors": map[string]any{
 			"title":       "",
-			"date":        "",
 			"time":        "",
 			"place":       "",
 			"description": "",

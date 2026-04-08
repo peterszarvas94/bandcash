@@ -5,7 +5,6 @@ import "bandcash/internal/utils"
 func EventsIndexTableLayout() utils.TableLayout {
 	return utils.NewTableLayout([]utils.TableColumn{
 		{Key: "title"},
-		{Key: "date"},
 		{Key: "time"},
 		{Key: "place"},
 		{Key: "amount"},
