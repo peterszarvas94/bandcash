@@ -27,26 +27,6 @@ type ExpenseTotals struct {
 	Paid  int64
 }
 
-type expenseResource struct{}
-
-func (expenseResource) BaseCountQuery() *bun.SelectQuery {
-	return BunDB.NewSelect().TableExpr("expenses")
-}
-
-func (expenseResource) BaseListQuery(rows *[]Expense) *bun.SelectQuery {
-	return BunDB.NewSelect().Model(rows)
-}
-
-func (expenseResource) ApplyFilter(q *bun.SelectQuery, filter ExpenseTableFilter) *bun.SelectQuery {
-	return applyExpenseTableFilters(q, filter)
-}
-
-func (expenseResource) OrderSpec() BunTableOrderSpec {
-	return expenseTableOrderSpec
-}
-
-var expensesRes expenseResource
-
 func applyExpenseTableFilters(q *bun.SelectQuery, filter ExpenseTableFilter) *bun.SelectQuery {
 	q = q.Where("group_id = ?", filter.GroupID)
 
@@ -87,11 +67,20 @@ var expenseTableOrderSpec = BunTableOrderSpec{
 }
 
 func CountExpensesTable(ctx context.Context, filter ExpenseTableFilter) (int64, error) {
-	return Count[Expense, ExpenseTableFilter](ctx, expensesRes, filter)
+	q := BunDB.NewSelect().TableExpr("expenses")
+	q = applyExpenseTableFilters(q, filter)
+	count, err := q.Count(ctx)
+	return int64(count), err
 }
 
 func ListExpensesTable(ctx context.Context, params ExpenseTableListParams) ([]Expense, error) {
-	return List[Expense, ExpenseTableFilter](ctx, expensesRes, params.ExpenseTableFilter, params.Sort, params.Dir, params.Limit, params.Offset)
+	rows := make([]Expense, 0)
+	q := BunDB.NewSelect().Model(&rows)
+	q = applyExpenseTableFilters(q, params.ExpenseTableFilter)
+	q = applyTableOrdering(q, expenseTableOrderSpec, params.Sort, params.Dir)
+	q = applyTablePagination(q, params.Limit, params.Offset)
+	err := q.Scan(ctx)
+	return rows, err
 }
 
 func SumExpenseTotalsTable(ctx context.Context, filter ExpenseTableFilter) (ExpenseTotals, error) {

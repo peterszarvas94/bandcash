@@ -1,41 +1,10 @@
 package db
 
 import (
-	"context"
 	"strings"
 
 	"github.com/uptrace/bun"
 )
-
-type Resource[T any, F any] interface {
-	BaseCountQuery() *bun.SelectQuery
-	BaseListQuery(rows *[]T) *bun.SelectQuery
-	ApplyFilter(q *bun.SelectQuery, filter F) *bun.SelectQuery
-	OrderSpec() BunTableOrderSpec
-}
-
-func Count[T any, F any](ctx context.Context, r Resource[T, F], filter F) (int64, error) {
-	q := r.BaseCountQuery()
-	q = r.ApplyFilter(q, filter)
-	count, err := q.Count(ctx)
-	return int64(count), err
-}
-
-func List[T any, F any](
-	ctx context.Context,
-	r Resource[T, F],
-	filter F,
-	sort, dir string,
-	limit, offset int,
-) ([]T, error) {
-	rows := make([]T, 0)
-	q := r.BaseListQuery(&rows)
-	q = r.ApplyFilter(q, filter)
-	q = applyTableOrdering(q, r.OrderSpec(), sort, dir)
-	q = applyTablePagination(q, limit, offset)
-	err := q.Scan(ctx)
-	return rows, err
-}
 
 type BunTableOrderSpec struct {
 	DefaultSort  string

@@ -20,26 +20,6 @@ type memberFilter struct {
 	Search  string
 }
 
-type memberResource struct{}
-
-func (memberResource) BaseCountQuery() *bun.SelectQuery {
-	return BunDB.NewSelect().TableExpr("members")
-}
-
-func (memberResource) BaseListQuery(rows *[]Member) *bun.SelectQuery {
-	return BunDB.NewSelect().Model(rows)
-}
-
-func (memberResource) ApplyFilter(q *bun.SelectQuery, filter memberFilter) *bun.SelectQuery {
-	return applyMemberTableFilters(q, filter.GroupID, filter.Search)
-}
-
-func (memberResource) OrderSpec() BunTableOrderSpec {
-	return memberTableOrderSpec
-}
-
-var membersRes memberResource
-
 func applyMemberTableFilters(q *bun.SelectQuery, groupID, search string) *bun.SelectQuery {
 	q = q.Where("group_id = ?", groupID)
 	return applyOptionalSearch(q, search, func(sq *bun.SelectQuery, search string) *bun.SelectQuery {
@@ -62,17 +42,18 @@ var memberTableOrderSpec = BunTableOrderSpec{
 }
 
 func CountMembersTable(ctx context.Context, groupID, search string) (int64, error) {
-	return Count[Member, memberFilter](ctx, membersRes, memberFilter{GroupID: groupID, Search: search})
+	q := BunDB.NewSelect().TableExpr("members")
+	q = applyMemberTableFilters(q, groupID, search)
+	count, err := q.Count(ctx)
+	return int64(count), err
 }
 
 func ListMembersTable(ctx context.Context, params MemberTableListParams) ([]Member, error) {
-	return List[Member, memberFilter](
-		ctx,
-		membersRes,
-		memberFilter{GroupID: params.GroupID, Search: params.Search},
-		params.Sort,
-		params.Dir,
-		params.Limit,
-		params.Offset,
-	)
+	rows := make([]Member, 0)
+	q := BunDB.NewSelect().Model(&rows)
+	q = applyMemberTableFilters(q, params.GroupID, params.Search)
+	q = applyTableOrdering(q, memberTableOrderSpec, params.Sort, params.Dir)
+	q = applyTablePagination(q, params.Limit, params.Offset)
+	err := q.Scan(ctx)
+	return rows, err
 }
