@@ -17,9 +17,9 @@ type Events struct {
 
 func (e *Events) TableQuerySpec() utils.TableQuerySpec {
 	return utils.StandardTableQuerySpec(utils.StandardTableQuerySpecParams{
-		DefaultSort:  "time",
+		DefaultSort:  "date",
 		DefaultDir:   "desc",
-		AllowedSorts: []string{"time", "title", "place", "amount", "description", "paid", "paid_at"},
+		AllowedSorts: []string{"date", "time", "title", "place", "amount", "description", "paid", "paid_at"},
 	})
 }
 
@@ -335,15 +335,17 @@ func matchesFilters(event db.Event, query utils.TableQuery) bool {
 	}
 
 	// Year filter
-	if query.Year != "" && !strings.HasPrefix(event.Time, query.Year) {
+	eventDate := eventDateValue(event)
+
+	if query.Year != "" && !strings.HasPrefix(eventDate, query.Year) {
 		return false
 	}
 
 	// Date range filters
-	if query.From != "" && event.Time < query.From {
+	if query.From != "" && eventDate < query.From {
 		return false
 	}
-	if query.To != "" && event.Time > query.To {
+	if query.To != "" && eventDate > query.To {
 		return false
 	}
 
@@ -391,15 +393,26 @@ func sortEvents(events []db.Event, sortField, dir string) {
 				}
 				return events[i].PaidAt.Valid
 			}
+			leftDateTime := eventDateTimeValue(events[i])
+			rightDateTime := eventDateTimeValue(events[j])
 			if dir == "desc" {
-				return events[i].Time > events[j].Time
+				return leftDateTime > rightDateTime
 			}
-			return events[i].Time < events[j].Time
-		default: // time
+			return leftDateTime < rightDateTime
+		case "time":
+			leftTime := eventTimeValue(events[i])
+			rightTime := eventTimeValue(events[j])
 			if dir == "desc" {
-				return events[i].Time > events[j].Time
+				return leftTime > rightTime
 			}
-			return events[i].Time < events[j].Time
+			return leftTime < rightTime
+		default: // date
+			leftDate := eventDateValue(events[i])
+			rightDate := eventDateValue(events[j])
+			if dir == "desc" {
+				return leftDate > rightDate
+			}
+			return leftDate < rightDate
 		}
 	}
 	sort.Slice(events, less)

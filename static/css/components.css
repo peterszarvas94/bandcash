@@ -721,7 +721,6 @@
     }
   }
 
-
   .base_layout {
     .nav-toggle,
     .backdrop,
@@ -812,7 +811,7 @@
       }
     }
 
-    &.has-tab-sidebar {
+    &:has(.content_inner > aside) {
       aside {
         position: sticky;
         top: var(--header-height);
@@ -842,7 +841,7 @@
       .content_main {
         flex: 1 1 auto;
         width: 100%;
-        max-width: 72rem;
+        max-width: var(--content-width);
         min-width: 0;
         overflow-x: hidden;
         padding: var(--space-lg);
@@ -901,30 +900,6 @@
           pointer-events: none;
         }
       }
-    }
-  }
-
-  .wide_layout {
-    display: flex;
-    justify-content: center;
-    width: 100%;
-
-    main {
-      padding: var(--space);
-      max-width: var(--wide-width);
-      width: 100%;
-    }
-  }
-
-  .common_layout {
-    display: flex;
-    justify-content: center;
-    width: 100%;
-
-    main {
-      padding: var(--space);
-      max-width: var(--content-width);
-      width: 100%;
     }
   }
 

@@ -12,10 +12,10 @@ func TestEventTableSpecs(t *testing.T) {
 	e := New()
 
 	mainSpec := e.TableQuerySpec()
-	if mainSpec.DefaultSort != "time" || mainSpec.DefaultDir != "desc" {
+	if mainSpec.DefaultSort != "date" || mainSpec.DefaultDir != "desc" {
 		t.Fatalf("unexpected events table defaults: %+v", mainSpec)
 	}
-	for _, key := range []string{"time", "title", "place", "amount", "description", "paid", "paid_at"} {
+	for _, key := range []string{"date", "time", "title", "place", "amount", "description", "paid", "paid_at"} {
 		if _, ok := mainSpec.AllowedSorts[key]; !ok {
 			t.Fatalf("expected allowed sort %q in events spec", key)
 		}
@@ -33,7 +33,7 @@ func TestEventTableSpecs(t *testing.T) {
 }
 
 func TestMatchesFilters(t *testing.T) {
-	event := db.Event{Title: "Band Rehearsal", Place: "Budapest", Description: "Weekly practice", Time: "2026-03-12T19:00"}
+	event := db.Event{Title: "Band Rehearsal", Place: "Budapest", Description: "Weekly practice", Date: "2026-03-12", EventTime: "19:00"}
 
 	if !matchesFilters(event, utils.TableQuery{}) {
 		t.Fatal("expected empty query to match")
@@ -63,9 +63,9 @@ func TestMatchesFilters(t *testing.T) {
 
 func TestSortEventsByPaidAt(t *testing.T) {
 	events := []db.Event{
-		{ID: "evt_1", Time: "2026-01-01T10:00", PaidAt: sql.NullString{String: "2026-02-02", Valid: true}},
-		{ID: "evt_2", Time: "2026-01-02T10:00", PaidAt: sql.NullString{}},
-		{ID: "evt_3", Time: "2026-01-03T10:00", PaidAt: sql.NullString{String: "2026-01-01", Valid: true}},
+		{ID: "evt_1", Date: "2026-01-01", EventTime: "10:00", PaidAt: sql.NullString{String: "2026-02-02", Valid: true}},
+		{ID: "evt_2", Date: "2026-01-02", EventTime: "10:00", PaidAt: sql.NullString{}},
+		{ID: "evt_3", Date: "2026-01-03", EventTime: "10:00", PaidAt: sql.NullString{String: "2026-01-01", Valid: true}},
 	}
 
 	sortEvents(events, "paid_at", "asc")

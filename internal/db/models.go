@@ -33,6 +33,8 @@ type Event struct {
 	Paid        int64          `json:"paid"`
 	PaidAt      sql.NullString `json:"paid_at"`
 	Place       string         `json:"place"`
+	Date        string         `json:"date"`
+	EventTime   string         `json:"event_time"`
 }
 
 type Expense struct {

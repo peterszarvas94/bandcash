@@ -42,7 +42,7 @@ templ BaseLayout(props BaseLayoutProps) {
 			<div data-signals={ templ.JSONString(signals) } data-init="@get('/sse')"></div>
 			@Notifications()
 			@ConfirmDialog()
-			<div class={ "base_layout", templ.KV("has-tab-sidebar", hasTabSidebar) }>
+			<div class="base_layout">
 				if hasTabSidebar {
 					<input id={ tabToggleID } class="nav-toggle" type="checkbox"/>
 				}

@@ -66,10 +66,10 @@ func TestEventsFilteredQueries(t *testing.T) {
 	groupID := seedBaseGroup(t, q)
 
 	rows := []CreateEventParams{
-		{ID: "evt_alpha", GroupID: groupID, Title: "Alpha", Time: "2026-01-01T10:00", Description: "", Amount: 100},
-		{ID: "evt_beta", GroupID: groupID, Title: "Beta Party", Time: "2026-01-02T10:00", Description: "Has notes", Amount: 700},
-		{ID: "evt_gamma", GroupID: groupID, Title: "Gamma", Time: "2026-01-03T10:00", Description: "contains test", Amount: 300},
-		{ID: "evt_other", GroupID: "grp_other", Title: "Other test", Time: "2026-01-04T10:00", Description: "other", Amount: 999},
+		{ID: "evt_alpha", GroupID: groupID, Title: "Alpha", Date: "2026-01-01", EventTime: "10:00", Description: "", Amount: 100},
+		{ID: "evt_beta", GroupID: groupID, Title: "Beta Party", Date: "2026-01-02", EventTime: "10:00", Description: "Has notes", Amount: 700},
+		{ID: "evt_gamma", GroupID: groupID, Title: "Gamma", Date: "2026-01-03", EventTime: "10:00", Description: "contains test", Amount: 300},
+		{ID: "evt_other", GroupID: "grp_other", Title: "Other test", Date: "2026-01-04", EventTime: "10:00", Description: "other", Amount: 999},
 	}
 	for _, row := range rows {
 		if _, err := q.CreateEvent(ctx, row); err != nil {
@@ -240,7 +240,8 @@ func TestEventPaidAtCanBeClearedWhenPaid(t *testing.T) {
 		ID:          "evt_paid_clear",
 		GroupID:     groupID,
 		Title:       "Paid event",
-		Time:        "2026-02-01T10:00",
+		Date:        "2026-02-01",
+		EventTime:   "10:00",
 		Description: "",
 		Amount:      500,
 		Paid:        1,
@@ -257,7 +258,8 @@ func TestEventPaidAtCanBeClearedWhenPaid(t *testing.T) {
 		ID:          created.ID,
 		GroupID:     groupID,
 		Title:       created.Title,
-		Time:        created.Time,
+		Date:        created.Date,
+		EventTime:   created.EventTime,
 		Description: created.Description,
 		Amount:      created.Amount,
 		Paid:        1,
@@ -281,7 +283,7 @@ func TestParticipantNoteRoundTrip(t *testing.T) {
 	if _, err := q.CreateMember(ctx, CreateMemberParams{ID: "mem_note", GroupID: groupID, Name: "Note Member", Description: ""}); err != nil {
 		t.Fatalf("create member: %v", err)
 	}
-	if _, err := q.CreateEvent(ctx, CreateEventParams{ID: "evt_note", GroupID: groupID, Title: "Note Event", Time: "2026-03-01T10:00", Description: "", Amount: 250}); err != nil {
+	if _, err := q.CreateEvent(ctx, CreateEventParams{ID: "evt_note", GroupID: groupID, Title: "Note Event", Date: "2026-03-01", EventTime: "10:00", Description: "", Amount: 250}); err != nil {
 		t.Fatalf("create event: %v", err)
 	}
 
@@ -357,7 +359,8 @@ func TestCreateEventPaidWithEmptyPaidAtDefaultsTimestamp(t *testing.T) {
 		ID:          "evt_paid_default_ts",
 		GroupID:     groupID,
 		Title:       "Paid with default timestamp",
-		Time:        "2026-02-11T10:00",
+		Date:        "2026-02-11",
+		EventTime:   "10:00",
 		Description: "",
 		Amount:      220,
 		Paid:        1,
@@ -421,7 +424,8 @@ func TestUpdateEventUnpaidAlwaysClearsPaidAt(t *testing.T) {
 		ID:          "evt_unpaid_clears",
 		GroupID:     groupID,
 		Title:       "Initially paid",
-		Time:        "2026-02-12T10:00",
+		Date:        "2026-02-12",
+		EventTime:   "10:00",
 		Description: "",
 		Amount:      180,
 		Paid:        1,
@@ -435,7 +439,8 @@ func TestUpdateEventUnpaidAlwaysClearsPaidAt(t *testing.T) {
 		ID:          created.ID,
 		GroupID:     groupID,
 		Title:       created.Title,
-		Time:        created.Time,
+		Date:        created.Date,
+		EventTime:   created.EventTime,
 		Description: created.Description,
 		Amount:      created.Amount,
 		Paid:        0,

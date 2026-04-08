@@ -14,6 +14,7 @@ Use this when you need to locate where to make changes without scanning the whol
 - SSE + helpers: `internal/utils/hub.go`, `models/sse/**`
 - Middleware: `internal/middleware/*.go`
 - Templates: `models/**/*.templ` (+ generated `*_templ.go`)
+- Group payment tabs (split pages): `doc/group-payments.md`, `models/group/page_{to_pay,to_receive,recent_income,recent_outgoing}.templ`, `models/group/component_{to_pay_main,to_receive_main,recent_income_main,recent_outgoing_main}.templ`
 - Shared tables: `models/shared/table.templ`, `internal/utils/table_query.go`, `static/js/table_query.js`
 - Database: `internal/db/queries/*.sql`, `internal/db/migrations/*.sql`, generated `internal/db/*.sql.go`
 - Assets: `static/css/*.css`, `static/js/*.js`

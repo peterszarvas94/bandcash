@@ -101,7 +101,7 @@
     --text-muted: light-dark(hsl(0 0% 30%), hsl(0 0% 70%));
     --text-primary: light-dark(hsl(0 0% 100%), hsl(0 0% 5%));
 
-    --content-width: 80ch;
+    --content-width: 80rem;
     --wide-width: 120ch;
     --sidebar-width: 18rem;
     --details-width: 40rem;

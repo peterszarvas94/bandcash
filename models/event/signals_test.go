@@ -9,7 +9,7 @@ import (
 
 func TestEventShowSignalsInitializesParticipantNoteDialogState(t *testing.T) {
 	data := EventData{
-		Event: &db.Event{ID: "evt_1", Title: "Event", Time: "2026-01-01T10:00", Amount: 100},
+		Event: &db.Event{ID: "evt_1", Title: "Event", Date: "2026-01-01", EventTime: "10:00", Amount: 100},
 		Query: utils.TableQuery{Summary: utils.SummaryModeAll},
 	}
 
