@@ -9,10 +9,7 @@ import (
 	"bandcash/internal/utils"
 )
 
-type Members struct {
-}
-
-func (p *Members) TableQuerySpec() utils.TableQuerySpec {
+func TableQuerySpec() utils.TableQuerySpec {
 	return utils.StandardTableQuerySpec(utils.StandardTableQuerySpecParams{
 		DefaultSort:  "createdAt",
 		DefaultDir:   "desc",
@@ -20,11 +17,7 @@ func (p *Members) TableQuerySpec() utils.TableQuerySpec {
 	})
 }
 
-func New() *Members {
-	return &Members{}
-}
-
-func (p *Members) MemberEventsTableQuerySpec() utils.TableQuerySpec {
+func MemberEventsTableQuerySpec() utils.TableQuerySpec {
 	return utils.StandardTableQuerySpec(utils.StandardTableQuerySpecParams{
 		DefaultSort:  "time",
 		DefaultDir:   "desc",
@@ -220,7 +213,7 @@ func convertToMemberEvent(row interface{}) MemberEvent {
 	return MemberEvent{}
 }
 
-func (p *Members) GetShowData(ctx context.Context, groupID, memberID string, query utils.TableQuery) (MemberData, error) {
+func GetShowData(ctx context.Context, groupID, memberID string, query utils.TableQuery) (MemberData, error) {
 	group, err := db.GetGroupByID(ctx, groupID)
 	if err != nil {
 		return MemberData{}, err
@@ -406,7 +399,7 @@ func (p *Members) GetShowData(ctx context.Context, groupID, memberID string, que
 	}, nil
 }
 
-func (p *Members) GetIndexData(ctx context.Context, groupID string, query utils.TableQuery) (MembersData, error) {
+func GetIndexData(ctx context.Context, groupID string, query utils.TableQuery) (MembersData, error) {
 	group, err := db.GetGroupByID(ctx, groupID)
 	if err != nil {
 		return MembersData{}, err

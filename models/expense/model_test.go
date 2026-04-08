@@ -9,8 +9,7 @@ import (
 )
 
 func TestExpenseTableSpec(t *testing.T) {
-	e := New()
-	spec := e.TableQuerySpec()
+	spec := TableQuerySpec()
 
 	if spec.DefaultSort != "date" || spec.DefaultDir != "desc" {
 		t.Fatalf("unexpected expense spec defaults: %+v", spec)

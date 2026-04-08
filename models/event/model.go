@@ -12,10 +12,7 @@ import (
 	"bandcash/internal/utils"
 )
 
-type Events struct {
-}
-
-func (e *Events) TableQuerySpec() utils.TableQuerySpec {
+func TableQuerySpec() utils.TableQuerySpec {
 	return utils.StandardTableQuerySpec(utils.StandardTableQuerySpecParams{
 		DefaultSort:  "date",
 		DefaultDir:   "desc",
@@ -23,11 +20,7 @@ func (e *Events) TableQuerySpec() utils.TableQuerySpec {
 	})
 }
 
-func New() *Events {
-	return &Events{}
-}
-
-func (e *Events) ParticipantTableQuerySpec() utils.TableQuerySpec {
+func ParticipantTableQuerySpec() utils.TableQuerySpec {
 	return utils.StandardTableQuerySpec(utils.StandardTableQuerySpecParams{
 		DefaultSort:  "name",
 		DefaultDir:   "asc",
@@ -35,7 +28,7 @@ func (e *Events) ParticipantTableQuerySpec() utils.TableQuerySpec {
 	})
 }
 
-func (e *Events) GetShowData(ctx context.Context, groupID, eventID string, query utils.TableQuery) (EventData, error) {
+func GetShowData(ctx context.Context, groupID, eventID string, query utils.TableQuery) (EventData, error) {
 	group, err := db.GetGroupByID(ctx, groupID)
 	if err != nil {
 		return EventData{}, err
@@ -237,7 +230,7 @@ func (e *Events) GetShowData(ctx context.Context, groupID, eventID string, query
 	}, nil
 }
 
-func (e *Events) GetIndexData(ctx context.Context, groupID string, query utils.TableQuery) (EventsData, error) {
+func GetIndexData(ctx context.Context, groupID string, query utils.TableQuery) (EventsData, error) {
 	group, err := db.GetGroupByID(ctx, groupID)
 	if err != nil {
 		return EventsData{}, err
@@ -306,7 +299,7 @@ func (e *Events) GetIndexData(ctx context.Context, groupID string, query utils.T
 		ExpenseUnpaid: expenseTotals.TotalUnpaid,
 	}
 
-	return e.buildEventsData(ctx, groupID, group, query, events, totals)
+	return buildEventsData(ctx, groupID, group, query, events, totals)
 }
 
 type eventCalcTotals struct {
@@ -414,7 +407,7 @@ func sortEvents(events []db.Event, sortField, dir string) {
 	sort.Slice(events, less)
 }
 
-func (e *Events) buildEventsData(ctx context.Context, groupID string, group db.Group, query utils.TableQuery, events []db.Event, totals eventCalcTotals) (EventsData, error) {
+func buildEventsData(ctx context.Context, groupID string, group db.Group, query utils.TableQuery, events []db.Event, totals eventCalcTotals) (EventsData, error) {
 	query = utils.ClampPage(query, totals.TotalItems)
 
 	// Calculate group totals for display

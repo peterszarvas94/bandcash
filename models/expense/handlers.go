@@ -1,7 +1,6 @@
 package expense
 
 import (
-	"database/sql"
 	"log/slog"
 	"net/http"
 	"strings"
@@ -57,53 +56,7 @@ var (
 	expenseErrorFields = []string{"title", "description", "amount", "date"}
 )
 
-func getUserEmail(c echo.Context) string {
-	userID := middleware.GetUserID(c)
-	if userID == "" {
-		return ""
-	}
-	user, err := db.GetUserByID(c.Request().Context(), userID)
-	if err != nil {
-		return ""
-	}
-	return user.Email
-}
-
-func applyExpenseTableByRole(data *ExpensesData, isAdmin bool) {
-	data.IsAdmin = isAdmin
-	if !isAdmin {
-		data.ExpensesTable.ActionsWidthRem = 0
-	}
-}
-
-func normalizePaidAtInput(value string) string {
-	trimmed := strings.TrimSpace(value)
-	if trimmed == "" {
-		return ""
-	}
-
-	formatted := utils.FormatDateInput(trimmed)
-	if formatted != "" {
-		return formatted
-	}
-
-	return trimmed
-}
-
-func paidAtArg(isPaid bool, paidAt string) sql.NullString {
-	if !isPaid {
-		return sql.NullString{}
-	}
-
-	normalized := normalizePaidAtInput(paidAt)
-	if normalized == "" {
-		return sql.NullString{String: "", Valid: true}
-	}
-
-	return sql.NullString{String: normalized, Valid: true}
-}
-
-func (e *Expenses) NewExpensePage(c echo.Context) error {
+func NewExpensePage(c echo.Context) error {
 	utils.EnsureTabID(c)
 	groupID := middleware.GetGroupID(c)
 
@@ -132,7 +85,7 @@ func (e *Expenses) NewExpensePage(c echo.Context) error {
 	return utils.RenderPage(c, ExpenseNewPage(data))
 }
 
-func (e *Expenses) EditExpensePage(c echo.Context) error {
+func EditExpensePage(c echo.Context) error {
 	utils.EnsureTabID(c)
 	groupID := middleware.GetGroupID(c)
 
@@ -190,12 +143,12 @@ func (e *Expenses) EditExpensePage(c echo.Context) error {
 	return utils.RenderPage(c, ExpenseEditPage(data))
 }
 
-func (e *Expenses) IndexPage(c echo.Context) error {
+func IndexPage(c echo.Context) error {
 	utils.EnsureTabID(c)
 	groupID := middleware.GetGroupID(c)
-	query := utils.ParseTableQuery(c, e)
+	query := utils.ParseTableQuery(c, staticTableQueryable{spec: TableQuerySpec()})
 
-	data, err := e.GetIndexData(c.Request().Context(), groupID, query)
+	data, err := GetIndexData(c.Request().Context(), groupID, query)
 	if err != nil {
 		slog.Error("expense.list: failed to get data", "err", err)
 		return c.NoContent(http.StatusInternalServerError)
@@ -208,7 +161,7 @@ func (e *Expenses) IndexPage(c echo.Context) error {
 	return utils.RenderPage(c, ExpenseIndexPage(data))
 }
 
-func (e *Expenses) ShowPage(c echo.Context) error {
+func ShowPage(c echo.Context) error {
 	utils.EnsureTabID(c)
 	groupID := middleware.GetGroupID(c)
 
@@ -218,7 +171,7 @@ func (e *Expenses) ShowPage(c echo.Context) error {
 		return c.NoContent(http.StatusBadRequest)
 	}
 
-	data, err := e.GetShowData(c.Request().Context(), groupID, id)
+	data, err := GetShowData(c.Request().Context(), groupID, id)
 	if err != nil {
 		slog.Error("expense.show: failed to get data", "err", err)
 		return c.NoContent(http.StatusInternalServerError)
@@ -231,7 +184,7 @@ func (e *Expenses) ShowPage(c echo.Context) error {
 	return utils.RenderPage(c, ExpenseShowPage(data))
 }
 
-func (e *Expenses) Create(c echo.Context) error {
+func Create(c echo.Context) error {
 	groupID := middleware.GetGroupID(c)
 
 	var signals expenseTableParams
@@ -286,7 +239,7 @@ func (e *Expenses) Create(c echo.Context) error {
 	return c.NoContent(http.StatusOK)
 }
 
-func (e *Expenses) Update(c echo.Context) error {
+func Update(c echo.Context) error {
 	groupID := middleware.GetGroupID(c)
 
 	id := c.Param("id")
@@ -347,7 +300,7 @@ func (e *Expenses) Update(c echo.Context) error {
 	return c.NoContent(http.StatusOK)
 }
 
-func (e *Expenses) Destroy(c echo.Context) error {
+func Destroy(c echo.Context) error {
 	groupID := middleware.GetGroupID(c)
 
 	id := c.Param("id")
@@ -391,8 +344,8 @@ func (e *Expenses) Destroy(c echo.Context) error {
 	// Clear cache to ensure fresh data on next load
 	utils.InvalidateGroupCaches(groupID)
 
-	query := utils.NormalizeTableQuery(signals.TableQuery, e.TableQuerySpec())
-	data, err := e.GetIndexData(c.Request().Context(), groupID, query)
+	query := utils.NormalizeTableQuery(signals.TableQuery, TableQuerySpec())
+	data, err := GetIndexData(c.Request().Context(), groupID, query)
 	if err != nil {
 		slog.Error("expense.destroy: failed to get data", "err", err)
 		return c.NoContent(http.StatusInternalServerError)
@@ -412,8 +365,8 @@ func (e *Expenses) Destroy(c echo.Context) error {
 	return c.NoContent(http.StatusOK)
 }
 
-func (e *Expenses) openPaidAtDialog(c echo.Context, groupID, id string, _ utils.TableQuery) error {
-	data, err := e.GetShowData(c.Request().Context(), groupID, id)
+func openPaidAtDialog(c echo.Context, groupID, id string, _ utils.TableQuery) error {
+	data, err := GetShowData(c.Request().Context(), groupID, id)
 	if err != nil {
 		slog.Error("expense.openPaidAtDialog: failed to get data", "err", err)
 		return c.NoContent(http.StatusInternalServerError)
@@ -449,9 +402,9 @@ func (e *Expenses) openPaidAtDialog(c echo.Context, groupID, id string, _ utils.
 	return c.NoContent(http.StatusOK)
 }
 
-func (e *Expenses) openPaidAtDialogInIndex(c echo.Context, groupID, id string, tableQuery utils.TableQuery) error {
-	query := utils.NormalizeTableQuery(tableQuery, e.TableQuerySpec())
-	data, err := e.GetIndexData(c.Request().Context(), groupID, query)
+func openPaidAtDialogInIndex(c echo.Context, groupID, id string, tableQuery utils.TableQuery) error {
+	query := utils.NormalizeTableQuery(tableQuery, TableQuerySpec())
+	data, err := GetIndexData(c.Request().Context(), groupID, query)
 	if err != nil {
 		slog.Error("expense.openPaidAtDialogInIndex: failed to get data", "err", err)
 		return c.NoContent(http.StatusInternalServerError)
@@ -514,7 +467,7 @@ func (e *Expenses) openPaidAtDialogInIndex(c echo.Context, groupID, id string, t
 	return c.NoContent(http.StatusOK)
 }
 
-func (e *Expenses) patchUpdatePaidAt(c echo.Context, groupID, id, mode string, tableQuery utils.TableQuery, value string) error {
+func patchUpdatePaidAt(c echo.Context, groupID, id, mode string, tableQuery utils.TableQuery, value string) error {
 	paidAt := normalizePaidAtInput(value)
 
 	expense, err := db.GetExpense(c.Request().Context(), db.GetExpenseParams{
@@ -552,8 +505,8 @@ func (e *Expenses) patchUpdatePaidAt(c echo.Context, groupID, id, mode string, t
 	utils.InvalidateGroupCaches(groupID)
 
 	if mode == "table" {
-		query := utils.NormalizeTableQuery(tableQuery, e.TableQuerySpec())
-		data, err := e.GetIndexData(c.Request().Context(), groupID, query)
+		query := utils.NormalizeTableQuery(tableQuery, TableQuerySpec())
+		data, err := GetIndexData(c.Request().Context(), groupID, query)
 		if err != nil {
 			slog.Error("expense.updatePaidAt: failed to get index data", "err", err)
 			return c.NoContent(http.StatusInternalServerError)
@@ -579,7 +532,7 @@ func (e *Expenses) patchUpdatePaidAt(c echo.Context, groupID, id, mode string, t
 		return c.NoContent(http.StatusOK)
 	}
 
-	data, err := e.GetShowData(c.Request().Context(), groupID, id)
+	data, err := GetShowData(c.Request().Context(), groupID, id)
 	if err != nil {
 		slog.Error("expense.updatePaidAt: failed to get data", "err", err)
 		return c.NoContent(http.StatusInternalServerError)
@@ -605,7 +558,7 @@ func (e *Expenses) patchUpdatePaidAt(c echo.Context, groupID, id, mode string, t
 	return c.NoContent(http.StatusOK)
 }
 
-func (e *Expenses) OpenPaidAtPrompt(c echo.Context) error {
+func OpenPaidAtPrompt(c echo.Context) error {
 	groupID := middleware.GetGroupID(c)
 
 	id := c.Param("id")
@@ -614,23 +567,23 @@ func (e *Expenses) OpenPaidAtPrompt(c echo.Context) error {
 		return c.NoContent(http.StatusBadRequest)
 	}
 
-	query := utils.ParseTableQuery(c, e)
+	query := utils.ParseTableQuery(c, staticTableQueryable{spec: TableQuerySpec()})
 	mode := "single"
 	var signals modeParams
 	if err := datastar.ReadSignals(c.Request(), &signals); err == nil {
 		if utils.SetTabID(c, signals.TabID) {
-			query = utils.NormalizeTableQuery(signals.TableQuery, e.TableQuerySpec())
+			query = utils.NormalizeTableQuery(signals.TableQuery, TableQuerySpec())
 			mode = strings.TrimSpace(signals.Mode)
 		}
 	}
 	if mode == "table" {
-		return e.openPaidAtDialogInIndex(c, groupID, id, query)
+		return openPaidAtDialogInIndex(c, groupID, id, query)
 	}
 
-	return e.openPaidAtDialog(c, groupID, id, query)
+	return openPaidAtDialog(c, groupID, id, query)
 }
 
-func (e *Expenses) UpdatePaidAt(c echo.Context) error {
+func UpdatePaidAt(c echo.Context) error {
 	groupID := middleware.GetGroupID(c)
 
 	id := c.Param("id")
@@ -649,10 +602,10 @@ func (e *Expenses) UpdatePaidAt(c echo.Context) error {
 		return c.NoContent(http.StatusBadRequest)
 	}
 
-	return e.patchUpdatePaidAt(c, groupID, id, signals.Mode, signals.TableQuery, signals.PaidAtDialog.Value)
+	return patchUpdatePaidAt(c, groupID, id, signals.Mode, signals.TableQuery, signals.PaidAtDialog.Value)
 }
 
-func (e *Expenses) TogglePaid(c echo.Context) error {
+func TogglePaid(c echo.Context) error {
 	groupID := middleware.GetGroupID(c)
 
 	id := c.Param("id")
@@ -687,7 +640,7 @@ func (e *Expenses) TogglePaid(c echo.Context) error {
 	utils.InvalidateGroupCaches(groupID)
 
 	if signals.Mode == "single" {
-		data, err := e.GetShowData(c.Request().Context(), groupID, id)
+		data, err := GetShowData(c.Request().Context(), groupID, id)
 		if err != nil {
 			slog.Error("expense.togglePaid: failed to get data", "err", err)
 			return c.NoContent(http.StatusInternalServerError)
@@ -705,8 +658,8 @@ func (e *Expenses) TogglePaid(c echo.Context) error {
 		return c.NoContent(http.StatusOK)
 	}
 
-	query := utils.NormalizeTableQuery(signals.TableQuery, e.TableQuerySpec())
-	data, err := e.GetIndexData(c.Request().Context(), groupID, query)
+	query := utils.NormalizeTableQuery(signals.TableQuery, TableQuerySpec())
+	data, err := GetIndexData(c.Request().Context(), groupID, query)
 	if err != nil {
 		slog.Error("expense.togglePaid: failed to get data", "err", err)
 		return c.NoContent(http.StatusInternalServerError)

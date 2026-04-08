@@ -9,9 +9,7 @@ import (
 )
 
 func TestEventTableSpecs(t *testing.T) {
-	e := New()
-
-	mainSpec := e.TableQuerySpec()
+	mainSpec := TableQuerySpec()
 	if mainSpec.DefaultSort != "date" || mainSpec.DefaultDir != "desc" {
 		t.Fatalf("unexpected events table defaults: %+v", mainSpec)
 	}
@@ -21,7 +19,7 @@ func TestEventTableSpecs(t *testing.T) {
 		}
 	}
 
-	participantsSpec := e.ParticipantTableQuerySpec()
+	participantsSpec := ParticipantTableQuerySpec()
 	if participantsSpec.DefaultSort != "name" || participantsSpec.DefaultDir != "asc" {
 		t.Fatalf("unexpected participant table defaults: %+v", participantsSpec)
 	}

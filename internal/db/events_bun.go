@@ -27,6 +27,26 @@ type EventIncomeTotals struct {
 	Paid  int64
 }
 
+type eventResource struct{}
+
+func (eventResource) BaseCountQuery() *bun.SelectQuery {
+	return BunDB.NewSelect().TableExpr("events")
+}
+
+func (eventResource) BaseListQuery(rows *[]Event) *bun.SelectQuery {
+	return BunDB.NewSelect().Model(rows)
+}
+
+func (eventResource) ApplyFilter(q *bun.SelectQuery, filter EventTableFilter) *bun.SelectQuery {
+	return applyEventTableFilters(q, filter)
+}
+
+func (eventResource) OrderSpec() BunTableOrderSpec {
+	return eventTableOrderSpec
+}
+
+var eventsRes eventResource
+
 func applyEventTableFilters(q *bun.SelectQuery, filter EventTableFilter) *bun.SelectQuery {
 	q = q.Where("group_id = ?", filter.GroupID)
 
@@ -76,22 +96,11 @@ var eventTableOrderSpec = BunTableOrderSpec{
 }
 
 func CountEventsTable(ctx context.Context, filter EventTableFilter) (int64, error) {
-	q := BunDB.NewSelect().TableExpr("events")
-	q = applyEventTableFilters(q, filter)
-
-	count, err := q.Count(ctx)
-	return int64(count), err
+	return Count[Event, EventTableFilter](ctx, eventsRes, filter)
 }
 
 func ListEventsTable(ctx context.Context, params EventTableListParams) ([]Event, error) {
-	rows := make([]Event, 0)
-	q := BunDB.NewSelect().Model(&rows)
-	q = applyEventTableFilters(q, params.EventTableFilter)
-	q = applyTableOrdering(q, eventTableOrderSpec, params.Sort, params.Dir)
-	q = applyTablePagination(q, params.Limit, params.Offset)
-
-	err := q.Scan(ctx)
-	return rows, err
+	return List[Event, EventTableFilter](ctx, eventsRes, params.EventTableFilter, params.Sort, params.Dir, params.Limit, params.Offset)
 }
 
 func SumEventIncomeTotalsTable(ctx context.Context, filter EventTableFilter) (EventIncomeTotals, error) {

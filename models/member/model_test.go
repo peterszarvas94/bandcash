@@ -8,9 +8,7 @@ import (
 )
 
 func TestMemberTableSpecs(t *testing.T) {
-	m := New()
-
-	mainSpec := m.TableQuerySpec()
+	mainSpec := TableQuerySpec()
 	if mainSpec.DefaultSort != "createdAt" || mainSpec.DefaultDir != "desc" {
 		t.Fatalf("unexpected members spec defaults: %+v", mainSpec)
 	}
@@ -20,7 +18,7 @@ func TestMemberTableSpecs(t *testing.T) {
 		}
 	}
 
-	eventsSpec := m.MemberEventsTableQuerySpec()
+	eventsSpec := MemberEventsTableQuerySpec()
 	if eventsSpec.DefaultSort != "time" || eventsSpec.DefaultDir != "desc" {
 		t.Fatalf("unexpected member events spec defaults: %+v", eventsSpec)
 	}

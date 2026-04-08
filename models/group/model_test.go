@@ -13,7 +13,7 @@ func TestGroupTableSpecs(t *testing.T) {
 		t.Fatalf("expected name to be allowlisted in group model spec")
 	}
 
-	usersSpec := (&UsersModel{}).TableQuerySpec()
+	usersSpec := usersTableQuerySpec()
 	if usersSpec.DefaultSort != "email" || usersSpec.DefaultDir != "asc" {
 		t.Fatalf("unexpected users model defaults: %+v", usersSpec)
 	}

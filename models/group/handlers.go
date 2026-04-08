@@ -24,22 +24,22 @@ import (
 )
 
 type Group struct {
-	model      *GroupModel
-	usersModel *UsersModel
+	model *GroupModel
 }
 
-type UsersModel struct{}
+type staticTableQueryable struct {
+	spec utils.TableQuerySpec
+}
 
-type toReceivePaymentsModel struct{}
-type toPayPaymentsModel struct{}
-type recentIncomePaymentsModel struct{}
-type recentOutgoingPaymentsModel struct{}
+func (s staticTableQueryable) TableQuerySpec() utils.TableQuerySpec {
+	return s.spec
+}
 
 var errAtLeastOneAdmin = errors.New("at least one admin required")
 
 const paymentsFadeDuration = 200 * time.Millisecond
 
-func (u *UsersModel) TableQuerySpec() utils.TableQuerySpec {
+func usersTableQuerySpec() utils.TableQuerySpec {
 	return utils.StandardTableQuerySpec(utils.StandardTableQuerySpecParams{
 		DefaultSort:  "email",
 		DefaultDir:   "asc",
@@ -47,7 +47,7 @@ func (u *UsersModel) TableQuerySpec() utils.TableQuerySpec {
 	})
 }
 
-func (m *toReceivePaymentsModel) TableQuerySpec() utils.TableQuerySpec {
+func toReceivePaymentsTableQuerySpec() utils.TableQuerySpec {
 	return utils.StandardTableQuerySpec(utils.StandardTableQuerySpecParams{
 		DefaultSort:  "date",
 		DefaultDir:   "asc",
@@ -55,7 +55,7 @@ func (m *toReceivePaymentsModel) TableQuerySpec() utils.TableQuerySpec {
 	})
 }
 
-func (m *toPayPaymentsModel) TableQuerySpec() utils.TableQuerySpec {
+func toPayPaymentsTableQuerySpec() utils.TableQuerySpec {
 	return utils.StandardTableQuerySpec(utils.StandardTableQuerySpecParams{
 		DefaultSort:  "date",
 		DefaultDir:   "asc",
@@ -63,7 +63,7 @@ func (m *toPayPaymentsModel) TableQuerySpec() utils.TableQuerySpec {
 	})
 }
 
-func (m *recentIncomePaymentsModel) TableQuerySpec() utils.TableQuerySpec {
+func recentIncomePaymentsTableQuerySpec() utils.TableQuerySpec {
 	return utils.StandardTableQuerySpec(utils.StandardTableQuerySpecParams{
 		DefaultSort:  "paid_at",
 		DefaultDir:   "desc",
@@ -71,7 +71,7 @@ func (m *recentIncomePaymentsModel) TableQuerySpec() utils.TableQuerySpec {
 	})
 }
 
-func (m *recentOutgoingPaymentsModel) TableQuerySpec() utils.TableQuerySpec {
+func recentOutgoingPaymentsTableQuerySpec() utils.TableQuerySpec {
 	return utils.StandardTableQuerySpec(utils.StandardTableQuerySpecParams{
 		DefaultSort:  "paid_at",
 		DefaultDir:   "desc",
@@ -81,8 +81,7 @@ func (m *recentOutgoingPaymentsModel) TableQuerySpec() utils.TableQuerySpec {
 
 func New() *Group {
 	return &Group{
-		model:      NewModel(),
-		usersModel: &UsersModel{},
+		model: NewModel(),
 	}
 }
 
@@ -275,7 +274,7 @@ func (g *Group) AboutPage(c echo.Context) error {
 func (g *Group) ToPayPage(c echo.Context) error {
 	utils.EnsureTabID(c)
 	groupID := middleware.GetGroupID(c)
-	query := utils.ParseTableQuery(c, &toPayPaymentsModel{})
+	query := utils.ParseTableQuery(c, staticTableQueryable{spec: toPayPaymentsTableQuerySpec()})
 
 	data, err := g.toPayPageData(c, groupID, query)
 	if err != nil {
@@ -289,7 +288,7 @@ func (g *Group) ToPayPage(c echo.Context) error {
 func (g *Group) ToReceivePage(c echo.Context) error {
 	utils.EnsureTabID(c)
 	groupID := middleware.GetGroupID(c)
-	query := utils.ParseTableQuery(c, &toReceivePaymentsModel{})
+	query := utils.ParseTableQuery(c, staticTableQueryable{spec: toReceivePaymentsTableQuerySpec()})
 
 	data, err := g.toReceivePageData(c, groupID, query)
 	if err != nil {
@@ -303,7 +302,7 @@ func (g *Group) ToReceivePage(c echo.Context) error {
 func (g *Group) RecentIncomePage(c echo.Context) error {
 	utils.EnsureTabID(c)
 	groupID := middleware.GetGroupID(c)
-	query := utils.ParseTableQuery(c, &recentIncomePaymentsModel{})
+	query := utils.ParseTableQuery(c, staticTableQueryable{spec: recentIncomePaymentsTableQuerySpec()})
 
 	data, err := g.recentIncomePageData(c, groupID, query)
 	if err != nil {
@@ -317,7 +316,7 @@ func (g *Group) RecentIncomePage(c echo.Context) error {
 func (g *Group) RecentOutgoingPage(c echo.Context) error {
 	utils.EnsureTabID(c)
 	groupID := middleware.GetGroupID(c)
-	query := utils.ParseTableQuery(c, &recentOutgoingPaymentsModel{})
+	query := utils.ParseTableQuery(c, staticTableQueryable{spec: recentOutgoingPaymentsTableQuerySpec()})
 
 	data, err := g.recentOutgoingPageData(c, groupID, query)
 	if err != nil {
@@ -1473,7 +1472,7 @@ func (g *Group) usersPageData(c echo.Context, groupID string, values url.Values)
 	if err != nil {
 		return UsersPageData{}, err
 	}
-	query := parseTableQueryFromValues(values, g.usersModel)
+	query := parseTableQueryFromValues(values, usersTableQuerySpec())
 
 	rows, err := g.buildUserRows(ctx, groupID)
 	if err != nil {
@@ -1741,7 +1740,7 @@ func notifyAccessRemoved(ctx context.Context, groupID, userID string) {
 	}
 }
 
-func parseTableQueryFromValues(values url.Values, queryable utils.Queryable) utils.TableQuery {
+func parseTableQueryFromValues(values url.Values, spec utils.TableQuerySpec) utils.TableQuery {
 	query := utils.TableQuery{
 		Page:     parsePositiveInt(values.Get("page"), 1),
 		PageSize: parsePositiveInt(values.Get("pageSize"), utils.DefaultTablePageSize),
@@ -1751,7 +1750,7 @@ func parseTableQueryFromValues(values url.Values, queryable utils.Queryable) uti
 		SortSet:  values.Get("sort") != "",
 	}
 
-	return utils.NormalizeTableQuery(query, queryable.TableQuerySpec())
+	return utils.NormalizeTableQuery(query, spec)
 }
 
 func parsePositiveInt(value string, fallback int) int {
@@ -1940,7 +1939,7 @@ func (g *Group) renderPaymentsPageHTML(c echo.Context, groupID string, pageKind 
 	values := queryValuesFromReferer(c)
 	switch pageKind {
 	case paymentsPageToReceive:
-		query := parseTableQueryFromValues(values, &toReceivePaymentsModel{})
+		query := parseTableQueryFromValues(values, toReceivePaymentsTableQuerySpec())
 		data, err := g.toReceivePageData(c, groupID, query)
 		if err != nil {
 			return "", err
@@ -1948,7 +1947,7 @@ func (g *Group) renderPaymentsPageHTML(c echo.Context, groupID string, pageKind 
 		data.FadeRowKey = fadeRowKey
 		return utils.RenderHTMLForRequest(c, GroupToReceivePage(data))
 	case paymentsPageRecentIncome:
-		query := parseTableQueryFromValues(values, &recentIncomePaymentsModel{})
+		query := parseTableQueryFromValues(values, recentIncomePaymentsTableQuerySpec())
 		data, err := g.recentIncomePageData(c, groupID, query)
 		if err != nil {
 			return "", err
@@ -1956,7 +1955,7 @@ func (g *Group) renderPaymentsPageHTML(c echo.Context, groupID string, pageKind 
 		data.FadeRowKey = fadeRowKey
 		return utils.RenderHTMLForRequest(c, GroupRecentIncomePage(data))
 	case paymentsPageRecentOutgoing:
-		query := parseTableQueryFromValues(values, &recentOutgoingPaymentsModel{})
+		query := parseTableQueryFromValues(values, recentOutgoingPaymentsTableQuerySpec())
 		data, err := g.recentOutgoingPageData(c, groupID, query)
 		if err != nil {
 			return "", err
@@ -1964,7 +1963,7 @@ func (g *Group) renderPaymentsPageHTML(c echo.Context, groupID string, pageKind 
 		data.FadeRowKey = fadeRowKey
 		return utils.RenderHTMLForRequest(c, GroupRecentOutgoingPage(data))
 	default:
-		query := parseTableQueryFromValues(values, &toPayPaymentsModel{})
+		query := parseTableQueryFromValues(values, toPayPaymentsTableQuerySpec())
 		data, err := g.toPayPageData(c, groupID, query)
 		if err != nil {
 			return "", err

@@ -40,20 +40,6 @@ type participantPaidAtParams struct {
 	} `json:"participantPaidAtDialog"`
 }
 
-func normalizePaidAtInput(value string) string {
-	trimmed := strings.TrimSpace(value)
-	if trimmed == "" {
-		return ""
-	}
-
-	formatted := utils.FormatDateInput(trimmed)
-	if formatted != "" {
-		return formatted
-	}
-
-	return trimmed
-}
-
 // Default signal state for resetting member forms on success
 var (
 	defaultMemberSignals = map[string]any{
@@ -66,26 +52,7 @@ var (
 	memberErrorFields = []string{"name", "description"}
 )
 
-func getUserEmail(c echo.Context) string {
-	userID := middleware.GetUserID(c)
-	if userID == "" {
-		return ""
-	}
-	user, err := db.GetUserByID(c.Request().Context(), userID)
-	if err != nil {
-		return ""
-	}
-	return user.Email
-}
-
-func applyMemberShowTableByRole(data *MemberData, isAdmin bool) {
-	data.IsAdmin = isAdmin
-	if !isAdmin {
-		data.EventsTable.ActionsWidthRem = 0
-	}
-}
-
-func (p *Members) NewMemberPage(c echo.Context) error {
+func NewMemberPage(c echo.Context) error {
 	utils.EnsureTabID(c)
 	groupID := middleware.GetGroupID(c)
 
@@ -114,7 +81,7 @@ func (p *Members) NewMemberPage(c echo.Context) error {
 	return utils.RenderPage(c, MemberNewPage(data))
 }
 
-func (p *Members) EditMemberPage(c echo.Context) error {
+func EditMemberPage(c echo.Context) error {
 	utils.EnsureTabID(c)
 	groupID := middleware.GetGroupID(c)
 
@@ -160,12 +127,12 @@ func (p *Members) EditMemberPage(c echo.Context) error {
 	return utils.RenderPage(c, MemberEditPage(data))
 }
 
-func (p *Members) Index(c echo.Context) error {
+func Index(c echo.Context) error {
 	utils.EnsureTabID(c)
 	groupID := middleware.GetGroupID(c)
-	query := utils.ParseTableQuery(c, p)
+	query := utils.ParseTableQuery(c, staticTableQueryable{spec: TableQuerySpec()})
 
-	data, err := p.GetIndexData(c.Request().Context(), groupID, query)
+	data, err := GetIndexData(c.Request().Context(), groupID, query)
 	if err != nil {
 		slog.Error("member.list: failed to get data", "err", err)
 		return c.NoContent(http.StatusInternalServerError)
@@ -179,18 +146,10 @@ func (p *Members) Index(c echo.Context) error {
 	return utils.RenderPage(c, MemberIndex(data))
 }
 
-type staticTableQueryable struct {
-	spec utils.TableQuerySpec
-}
-
-func (s staticTableQueryable) TableQuerySpec() utils.TableQuerySpec {
-	return s.spec
-}
-
-func (p *Members) Show(c echo.Context) error {
+func Show(c echo.Context) error {
 	utils.EnsureTabID(c)
 	groupID := middleware.GetGroupID(c)
-	query := utils.ParseTableQuery(c, staticTableQueryable{spec: p.MemberEventsTableQuerySpec()})
+	query := utils.ParseTableQuery(c, staticTableQueryable{spec: MemberEventsTableQuerySpec()})
 
 	id := c.Param("id")
 	if !utils.IsValidID(id, utils.PrefixMember) {
@@ -198,7 +157,7 @@ func (p *Members) Show(c echo.Context) error {
 		return c.NoContent(http.StatusBadRequest)
 	}
 
-	data, err := p.GetShowData(c.Request().Context(), groupID, id, query)
+	data, err := GetShowData(c.Request().Context(), groupID, id, query)
 	if err != nil {
 		slog.Error("member.show: failed to get data", "err", err)
 		return c.NoContent(http.StatusInternalServerError)
@@ -211,7 +170,7 @@ func (p *Members) Show(c echo.Context) error {
 	return utils.RenderPage(c, MemberShow(data))
 }
 
-func (p *Members) Create(c echo.Context) error {
+func Create(c echo.Context) error {
 	groupID := middleware.GetGroupID(c)
 
 	var signals memberTableParams
@@ -254,7 +213,7 @@ func (p *Members) Create(c echo.Context) error {
 	return c.NoContent(http.StatusOK)
 }
 
-func (p *Members) Update(c echo.Context) error {
+func Update(c echo.Context) error {
 	groupID := middleware.GetGroupID(c)
 
 	id := c.Param("id")
@@ -303,7 +262,7 @@ func (p *Members) Update(c echo.Context) error {
 	return c.NoContent(http.StatusOK)
 }
 
-func (p *Members) Destroy(c echo.Context) error {
+func Destroy(c echo.Context) error {
 	groupID := middleware.GetGroupID(c)
 
 	id := c.Param("id")
@@ -344,8 +303,8 @@ func (p *Members) Destroy(c echo.Context) error {
 	}
 
 	utils.SSEHub.PatchSignals(c, defaultMemberSignals)
-	query := utils.NormalizeTableQuery(signals.TableQuery, p.TableQuerySpec())
-	data, err := p.GetIndexData(c.Request().Context(), groupID, query)
+	query := utils.NormalizeTableQuery(signals.TableQuery, TableQuerySpec())
+	data, err := GetIndexData(c.Request().Context(), groupID, query)
 	if err != nil {
 		slog.Error("member.destroy: failed to get data", "err", err)
 		return c.NoContent(http.StatusInternalServerError)
@@ -365,7 +324,7 @@ func (p *Members) Destroy(c echo.Context) error {
 	return c.NoContent(http.StatusOK)
 }
 
-func (p *Members) ToggleParticipantPaid(c echo.Context) error {
+func ToggleParticipantPaid(c echo.Context) error {
 	groupID := middleware.GetGroupID(c)
 
 	memberID := c.Param("id")
@@ -401,8 +360,8 @@ func (p *Members) ToggleParticipantPaid(c echo.Context) error {
 		return c.NoContent(http.StatusInternalServerError)
 	}
 
-	query := utils.NormalizeTableQuery(signals.TableQuery, p.MemberEventsTableQuerySpec())
-	data, err := p.GetShowData(c.Request().Context(), groupID, memberID, query)
+	query := utils.NormalizeTableQuery(signals.TableQuery, MemberEventsTableQuerySpec())
+	data, err := GetShowData(c.Request().Context(), groupID, memberID, query)
 	if err != nil {
 		slog.Error("member.toggleParticipantPaid: failed to get data", "err", err)
 		return c.NoContent(http.StatusInternalServerError)
@@ -422,7 +381,7 @@ func (p *Members) ToggleParticipantPaid(c echo.Context) error {
 	return c.NoContent(http.StatusOK)
 }
 
-func (p *Members) OpenParticipantPaidAtDialog(c echo.Context) error {
+func OpenParticipantPaidAtDialog(c echo.Context) error {
 	groupID := middleware.GetGroupID(c)
 
 	memberID := c.Param("id")
@@ -437,15 +396,15 @@ func (p *Members) OpenParticipantPaidAtDialog(c echo.Context) error {
 		return c.NoContent(http.StatusBadRequest)
 	}
 
-	query := utils.ParseTableQuery(c, staticTableQueryable{spec: p.MemberEventsTableQuerySpec()})
+	query := utils.ParseTableQuery(c, staticTableQueryable{spec: MemberEventsTableQuerySpec()})
 	var signals modeParams
 	if err := datastar.ReadSignals(c.Request(), &signals); err == nil {
 		if utils.SetTabID(c, signals.TabID) {
-			query = utils.NormalizeTableQuery(signals.TableQuery, p.MemberEventsTableQuerySpec())
+			query = utils.NormalizeTableQuery(signals.TableQuery, MemberEventsTableQuerySpec())
 		}
 	}
 
-	data, err := p.GetShowData(c.Request().Context(), groupID, memberID, query)
+	data, err := GetShowData(c.Request().Context(), groupID, memberID, query)
 	if err != nil {
 		slog.Error("member.openParticipantPaidAtDialog: failed to get data", "err", err)
 		return c.NoContent(http.StatusInternalServerError)
@@ -497,7 +456,7 @@ func (p *Members) OpenParticipantPaidAtDialog(c echo.Context) error {
 	return c.NoContent(http.StatusOK)
 }
 
-func (p *Members) UpdateParticipantPaidAt(c echo.Context) error {
+func UpdateParticipantPaidAt(c echo.Context) error {
 	groupID := middleware.GetGroupID(c)
 
 	memberID := c.Param("id")
@@ -537,8 +496,8 @@ func (p *Members) UpdateParticipantPaidAt(c echo.Context) error {
 	utils.Notify(c, ctxi18n.T(c.Request().Context(), "participants.notifications.updated"))
 	utils.InvalidateGroupCaches(groupID)
 
-	query := utils.NormalizeTableQuery(signals.TableQuery, p.MemberEventsTableQuerySpec())
-	data, err := p.GetShowData(c.Request().Context(), groupID, memberID, query)
+	query := utils.NormalizeTableQuery(signals.TableQuery, MemberEventsTableQuerySpec())
+	data, err := GetShowData(c.Request().Context(), groupID, memberID, query)
 	if err != nil {
 		slog.Error("member.updateParticipantPaidAt: failed to get data", "err", err)
 		return c.NoContent(http.StatusInternalServerError)

@@ -31,15 +31,33 @@ func GetEvent(ctx context.Context, arg GetEventParams) (Event, error) {
 	return row, err
 }
 
+func GetEventByID(ctx context.Context, id string) (Event, error) {
+	var row Event
+	err := BunDB.NewSelect().Model(&row).Where("id = ?", id).Scan(ctx)
+	return row, err
+}
+
 func GetExpense(ctx context.Context, arg GetExpenseParams) (Expense, error) {
 	var row Expense
 	err := BunDB.NewSelect().Model(&row).Where("id = ?", arg.ID).Where("group_id = ?", arg.GroupID).Scan(ctx)
 	return row, err
 }
 
+func GetExpenseByID(ctx context.Context, id string) (Expense, error) {
+	var row Expense
+	err := BunDB.NewSelect().Model(&row).Where("id = ?", id).Scan(ctx)
+	return row, err
+}
+
 func GetMember(ctx context.Context, arg GetMemberParams) (Member, error) {
 	var row Member
 	err := BunDB.NewSelect().Model(&row).Where("id = ?", arg.ID).Where("group_id = ?", arg.GroupID).Scan(ctx)
+	return row, err
+}
+
+func GetMemberByID(ctx context.Context, id string) (Member, error) {
+	var row Member
+	err := BunDB.NewSelect().Model(&row).Where("id = ?", id).Scan(ctx)
 	return row, err
 }
 
@@ -60,6 +78,17 @@ func paidAtNullable(v interface{}) sql.NullString {
 		return t
 	default:
 		return sql.NullString{}
+	}
+}
+
+func isPaidAtClearRequest(v interface{}) bool {
+	switch t := v.(type) {
+	case string:
+		return strings.TrimSpace(t) == ""
+	case sql.NullString:
+		return t.Valid && strings.TrimSpace(t.String) == ""
+	default:
+		return false
 	}
 }
 
@@ -117,7 +146,7 @@ func UpdateEvent(ctx context.Context, arg UpdateEventParams) (Event, error) {
 
 	paidAtInput := paidAtNullable(arg.PaidAt)
 	finalPaidAt := current.PaidAt
-	if arg.Paid == 0 {
+	if arg.Paid == 0 || isPaidAtClearRequest(arg.PaidAt) {
 		finalPaidAt = sql.NullString{}
 	} else if paidAtInput.Valid {
 		finalPaidAt = paidAtInput
@@ -146,6 +175,11 @@ func UpdateEvent(ctx context.Context, arg UpdateEventParams) (Event, error) {
 
 func DeleteEvent(ctx context.Context, arg DeleteEventParams) error {
 	_, err := BunDB.NewDelete().Model((*Event)(nil)).Where("id = ?", arg.ID).Where("group_id = ?", arg.GroupID).Exec(ctx)
+	return err
+}
+
+func DeleteEventByID(ctx context.Context, id string) error {
+	_, err := BunDB.NewDelete().Model((*Event)(nil)).Where("id = ?", id).Exec(ctx)
 	return err
 }
 
@@ -224,7 +258,7 @@ func UpdateExpense(ctx context.Context, arg UpdateExpenseParams) (Expense, error
 
 	paidAtInput := paidAtNullable(arg.PaidAt)
 	finalPaidAt := current.PaidAt
-	if arg.Paid == 0 {
+	if arg.Paid == 0 || isPaidAtClearRequest(arg.PaidAt) {
 		finalPaidAt = sql.NullString{}
 	} else if paidAtInput.Valid {
 		finalPaidAt = paidAtInput
@@ -250,6 +284,11 @@ func UpdateExpense(ctx context.Context, arg UpdateExpenseParams) (Expense, error
 
 func DeleteExpense(ctx context.Context, arg DeleteExpenseParams) error {
 	_, err := BunDB.NewDelete().Model((*Expense)(nil)).Where("id = ?", arg.ID).Where("group_id = ?", arg.GroupID).Exec(ctx)
+	return err
+}
+
+func DeleteExpenseByID(ctx context.Context, id string) error {
+	_, err := BunDB.NewDelete().Model((*Expense)(nil)).Where("id = ?", id).Exec(ctx)
 	return err
 }
 
@@ -301,6 +340,11 @@ func UpdateMember(ctx context.Context, arg UpdateMemberParams) (Member, error) {
 
 func DeleteMember(ctx context.Context, arg DeleteMemberParams) error {
 	_, err := BunDB.NewDelete().Model((*Member)(nil)).Where("id = ?", arg.ID).Where("group_id = ?", arg.GroupID).Exec(ctx)
+	return err
+}
+
+func DeleteMemberByID(ctx context.Context, id string) error {
+	_, err := BunDB.NewDelete().Model((*Member)(nil)).Where("id = ?", id).Exec(ctx)
 	return err
 }
 

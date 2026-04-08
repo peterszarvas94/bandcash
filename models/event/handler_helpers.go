@@ -1,0 +1,302 @@
+package event
+
+import (
+	"database/sql"
+	"strings"
+
+	ctxi18n "github.com/invopop/ctxi18n/i18n"
+	"github.com/labstack/echo/v4"
+
+	"bandcash/internal/db"
+	"bandcash/internal/middleware"
+	"bandcash/internal/utils"
+)
+
+type staticTableQueryable struct {
+	spec utils.TableQuerySpec
+}
+
+func (s staticTableQueryable) TableQuerySpec() utils.TableQuerySpec {
+	return s.spec
+}
+
+func parseParticipantTableQuery(c echo.Context) utils.TableQuery {
+	query := utils.ParseTableQuery(c, staticTableQueryable{spec: ParticipantTableQuerySpec()})
+	query.Page = 1
+	query.Search = ""
+	query.PageSize = utils.DefaultTablePageSize
+	return query
+}
+
+func normalizePaidAtInput(value string) string {
+	trimmed := strings.TrimSpace(value)
+	if trimmed == "" {
+		return ""
+	}
+
+	formatted := utils.FormatDateInput(trimmed)
+	if formatted != "" {
+		return formatted
+	}
+
+	return trimmed
+}
+
+func paidAtArg(isPaid bool, paidAt string) sql.NullString {
+	if !isPaid {
+		return sql.NullString{}
+	}
+
+	normalized := normalizePaidAtInput(paidAt)
+	if normalized == "" {
+		return sql.NullString{String: "", Valid: true}
+	}
+
+	return sql.NullString{String: normalized, Valid: true}
+}
+
+func getUserEmail(c echo.Context) string {
+	userID := middleware.GetUserID(c)
+	if userID == "" {
+		return ""
+	}
+	user, err := db.GetUserByID(c.Request().Context(), userID)
+	if err != nil {
+		return ""
+	}
+	return user.Email
+}
+
+func applyEventIndexTableByRole(data *EventsData, isAdmin bool) {
+	data.IsAdmin = isAdmin
+	if !isAdmin {
+		data.EventsTable.ActionsWidthRem = 0
+	}
+}
+
+func applyEventShowTableByRole(data *EventData, isAdmin bool) {
+	data.IsAdmin = isAdmin
+	if !isAdmin {
+		data.ParticipantsTable.ActionsWidthRem = 0
+	}
+}
+
+func mergeWizardRows(base []ParticipantWizardRow, allMembers []db.Member, incoming []participantBulkRowData, wizardMemberIDs map[string]string, wizardAmounts map[string]int64, wizardExpenses map[string]int64, wizardNotes map[string]string, wizardPaids map[string]bool, wizardPaidAts map[string]string) []ParticipantWizardRow {
+	if len(incoming) == 0 {
+		for i := range base {
+			if wizardMemberIDs != nil {
+				if memberID, ok := wizardMemberIDs[base[i].RowID]; ok {
+					base[i].MemberID = strings.TrimSpace(memberID)
+				}
+			}
+			if wizardAmounts != nil {
+				if amount, ok := wizardAmounts[base[i].RowID]; ok {
+					base[i].Amount = amount
+				}
+			}
+			if wizardExpenses != nil {
+				if expense, ok := wizardExpenses[base[i].RowID]; ok {
+					base[i].Expense = expense
+				}
+			}
+			if wizardNotes != nil {
+				if note, ok := wizardNotes[base[i].RowID]; ok {
+					base[i].Note = strings.TrimSpace(note)
+				}
+			}
+			if wizardPaids != nil {
+				if paid, ok := wizardPaids[base[i].RowID]; ok {
+					base[i].Paid = paid
+				}
+			}
+			if wizardPaidAts != nil {
+				if paidAt, ok := wizardPaidAts[base[i].RowID]; ok {
+					base[i].PaidAt = normalizePaidAtInput(paidAt)
+				}
+			}
+		}
+
+		memberNameByID := make(map[string]string, len(allMembers))
+		for _, member := range allMembers {
+			memberNameByID[member.ID] = member.Name
+		}
+		for i := range base {
+			if base[i].MemberID == "" {
+				base[i].MemberName = ""
+				continue
+			}
+			base[i].MemberName = memberNameByID[base[i].MemberID]
+		}
+
+		return base
+	}
+
+	memberNameByID := make(map[string]string, len(allMembers))
+	for _, member := range allMembers {
+		memberNameByID[member.ID] = member.Name
+	}
+
+	merged := make([]ParticipantWizardRow, 0, len(incoming))
+	for _, incomingRow := range incoming {
+		rowID := strings.TrimSpace(incomingRow.RowID)
+		if rowID == "" {
+			rowID = utils.GenerateID(utils.PrefixParticipant)
+		}
+
+		memberID := strings.TrimSpace(incomingRow.MemberID)
+		if wizardMemberIDs != nil {
+			if value, ok := wizardMemberIDs[rowID]; ok {
+				memberID = strings.TrimSpace(value)
+			}
+		}
+
+		amount := incomingRow.Amount
+		if wizardAmounts != nil {
+			if value, ok := wizardAmounts[rowID]; ok {
+				amount = value
+			}
+		}
+
+		expense := incomingRow.Expense
+		if wizardExpenses != nil {
+			if value, ok := wizardExpenses[rowID]; ok {
+				expense = value
+			}
+		}
+
+		note := strings.TrimSpace(incomingRow.Note)
+		if wizardNotes != nil {
+			if value, ok := wizardNotes[rowID]; ok {
+				note = strings.TrimSpace(value)
+			}
+		}
+
+		paid := incomingRow.Paid
+		if wizardPaids != nil {
+			if value, ok := wizardPaids[rowID]; ok {
+				paid = value
+			}
+		}
+
+		paidAt := normalizePaidAtInput(incomingRow.PaidAt)
+		if wizardPaidAts != nil {
+			if value, ok := wizardPaidAts[rowID]; ok {
+				paidAt = normalizePaidAtInput(value)
+			}
+		}
+
+		memberName := ""
+		if memberID != "" {
+			memberName = memberNameByID[memberID]
+		}
+
+		merged = append(merged, ParticipantWizardRow{
+			RowID:      rowID,
+			MemberID:   memberID,
+			MemberName: memberName,
+			Included:   incomingRow.Included,
+			Amount:     amount,
+			Expense:    expense,
+			Note:       note,
+			Paid:       paid,
+			PaidAt:     paidAt,
+		})
+	}
+
+	return merged
+}
+
+func patchWizardError(c echo.Context, wizard participantWizardSignals, message string) {
+	utils.SSEHub.PatchSignals(c, map[string]any{
+		"wizard": map[string]any{
+			"eventAmount": wizard.EventAmount,
+			"rows":        wizard.Rows,
+			"memberIds":   wizard.MemberIDs,
+			"amounts":     wizard.Amounts,
+			"expenses":    wizard.Expenses,
+			"notes":       wizard.Notes,
+			"paids":       wizard.Paids,
+			"paidAts":     wizard.PaidAts,
+			"total":       wizard.Total,
+			"leftover":    wizard.Leftover,
+			"error":       message,
+		},
+		"errors": map[string]any{
+			"memberId": message,
+		},
+	})
+}
+
+func patchEventShow(c echo.Context, groupID, eventID string, query utils.TableQuery, editorMode string, eventForm eventData, wizardEventAmount int64, wizardRows []participantBulkRowData, wizardMemberIDs map[string]string, wizardAmounts map[string]int64, wizardExpenses map[string]int64, wizardNotes map[string]string, wizardPaids map[string]bool, wizardPaidAts map[string]string, wizardError string) error {
+	data, err := GetShowData(c.Request().Context(), groupID, eventID, query)
+	if err != nil {
+		return err
+	}
+
+	applyEventShowTableByRole(&data, middleware.IsAdmin(c))
+	data.IsAuthenticated = true
+	data.IsSuperAdmin = middleware.IsSuperadmin(c)
+
+	if editorMode != "" {
+		data.EditorMode = editorMode
+	}
+	if data.EditorMode == "edit" {
+		if len(data.Breadcrumbs) > 0 {
+			data.Breadcrumbs[len(data.Breadcrumbs)-1].Href = "/groups/" + groupID + "/events/" + eventID
+		}
+		data.Breadcrumbs = append(data.Breadcrumbs, utils.Crumb{Label: ctxi18n.T(c.Request().Context(), "events.edit")})
+	}
+
+	if eventForm.Title != "" || eventForm.Date != "" || eventForm.Time != "" || eventForm.Place != "" || eventForm.Amount > 0 {
+		data.Event.Title = eventForm.Title
+		data.Event.Date = eventForm.Date
+		data.Event.EventTime = eventForm.Time
+		data.Event.Time = eventForm.Date + "T" + eventForm.Time
+		data.Event.Place = eventForm.Place
+		data.Event.Description = eventForm.Description
+		data.Event.Amount = eventForm.Amount
+		if eventForm.Paid {
+			data.Event.Paid = 1
+		} else {
+			data.Event.Paid = 0
+		}
+		if eventForm.Paid {
+			if eventForm.PaidAt != "" {
+				data.Event.PaidAt = sql.NullString{String: eventForm.PaidAt, Valid: true}
+			}
+		} else {
+			data.Event.PaidAt = sql.NullString{}
+		}
+	}
+
+	if wizardEventAmount > 0 {
+		data.WizardEventAmount = wizardEventAmount
+	}
+
+	if wizardRows != nil {
+		if len(wizardRows) == 0 {
+			data.WizardRows = []ParticipantWizardRow{}
+		} else {
+			data.WizardRows = mergeWizardRows(data.WizardRows, data.AllMembers, wizardRows, wizardMemberIDs, wizardAmounts, wizardExpenses, wizardNotes, wizardPaids, wizardPaidAts)
+		}
+	} else if wizardMemberIDs != nil || wizardAmounts != nil || wizardExpenses != nil || wizardNotes != nil || wizardPaids != nil || wizardPaidAts != nil {
+		data.WizardRows = mergeWizardRows(data.WizardRows, data.AllMembers, nil, wizardMemberIDs, wizardAmounts, wizardExpenses, wizardNotes, wizardPaids, wizardPaidAts)
+	}
+
+	data.WizardError = wizardError
+	data.Signals = eventShowSignals(data)
+
+	var html string
+	if data.EditorMode == "edit" {
+		html, err = utils.RenderHTMLForRequest(c, EventEditPage(data))
+	} else {
+		html, err = utils.RenderHTMLForRequest(c, EventShowPage(data))
+	}
+	if err != nil {
+		return err
+	}
+
+	utils.SSEHub.PatchHTML(c, html)
+	utils.SSEHub.PatchSignals(c, eventShowSignals(data))
+	return nil
+}

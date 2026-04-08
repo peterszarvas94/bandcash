@@ -123,49 +123,6 @@ type participantDraftRowParams struct {
 	TableQuery      utils.TableQuery         `json:"tableQuery"`
 }
 
-type staticTableQueryable struct {
-	spec utils.TableQuerySpec
-}
-
-func (s staticTableQueryable) TableQuerySpec() utils.TableQuerySpec {
-	return s.spec
-}
-
-func parseParticipantTableQuery(c echo.Context, e *Events) utils.TableQuery {
-	query := utils.ParseTableQuery(c, staticTableQueryable{spec: e.ParticipantTableQuerySpec()})
-	query.Page = 1
-	query.Search = ""
-	query.PageSize = utils.DefaultTablePageSize
-	return query
-}
-
-func normalizePaidAtInput(value string) string {
-	trimmed := strings.TrimSpace(value)
-	if trimmed == "" {
-		return ""
-	}
-
-	formatted := utils.FormatDateInput(trimmed)
-	if formatted != "" {
-		return formatted
-	}
-
-	return trimmed
-}
-
-func paidAtArg(isPaid bool, paidAt string) sql.NullString {
-	if !isPaid {
-		return sql.NullString{}
-	}
-
-	normalized := normalizePaidAtInput(paidAt)
-	if normalized == "" {
-		return sql.NullString{String: "", Valid: true}
-	}
-
-	return sql.NullString{String: normalized, Valid: true}
-}
-
 // Default signal states for resetting forms on success
 var (
 	defaultEventSignals = map[string]any{
@@ -179,259 +136,12 @@ var (
 	eventErrorFields = []string{"title", "date", "time", "place", "description", "amount"}
 )
 
-func getUserEmail(c echo.Context) string {
-	userID := middleware.GetUserID(c)
-	if userID == "" {
-		return ""
-	}
-	user, err := db.GetUserByID(c.Request().Context(), userID)
-	if err != nil {
-		return ""
-	}
-	return user.Email
-}
-
-func applyEventIndexTableByRole(data *EventsData, isAdmin bool) {
-	data.IsAdmin = isAdmin
-	if !isAdmin {
-		data.EventsTable.ActionsWidthRem = 0
-	}
-}
-
-func applyEventShowTableByRole(data *EventData, isAdmin bool) {
-	data.IsAdmin = isAdmin
-	if !isAdmin {
-		data.ParticipantsTable.ActionsWidthRem = 0
-	}
-}
-
-func mergeWizardRows(base []ParticipantWizardRow, allMembers []db.Member, incoming []participantBulkRowData, wizardMemberIDs map[string]string, wizardAmounts map[string]int64, wizardExpenses map[string]int64, wizardNotes map[string]string, wizardPaids map[string]bool, wizardPaidAts map[string]string) []ParticipantWizardRow {
-	if len(incoming) == 0 {
-		for i := range base {
-			if wizardMemberIDs != nil {
-				if memberID, ok := wizardMemberIDs[base[i].RowID]; ok {
-					base[i].MemberID = strings.TrimSpace(memberID)
-				}
-			}
-			if wizardAmounts != nil {
-				if amount, ok := wizardAmounts[base[i].RowID]; ok {
-					base[i].Amount = amount
-				}
-			}
-			if wizardExpenses != nil {
-				if expense, ok := wizardExpenses[base[i].RowID]; ok {
-					base[i].Expense = expense
-				}
-			}
-			if wizardNotes != nil {
-				if note, ok := wizardNotes[base[i].RowID]; ok {
-					base[i].Note = strings.TrimSpace(note)
-				}
-			}
-			if wizardPaids != nil {
-				if paid, ok := wizardPaids[base[i].RowID]; ok {
-					base[i].Paid = paid
-				}
-			}
-			if wizardPaidAts != nil {
-				if paidAt, ok := wizardPaidAts[base[i].RowID]; ok {
-					base[i].PaidAt = normalizePaidAtInput(paidAt)
-				}
-			}
-		}
-
-		memberNameByID := make(map[string]string, len(allMembers))
-		for _, member := range allMembers {
-			memberNameByID[member.ID] = member.Name
-		}
-		for i := range base {
-			if base[i].MemberID == "" {
-				base[i].MemberName = ""
-				continue
-			}
-			base[i].MemberName = memberNameByID[base[i].MemberID]
-		}
-
-		return base
-	}
-
-	memberNameByID := make(map[string]string, len(allMembers))
-	for _, member := range allMembers {
-		memberNameByID[member.ID] = member.Name
-	}
-
-	merged := make([]ParticipantWizardRow, 0, len(incoming))
-	for _, incomingRow := range incoming {
-		rowID := strings.TrimSpace(incomingRow.RowID)
-		if rowID == "" {
-			rowID = utils.GenerateID(utils.PrefixParticipant)
-		}
-
-		memberID := strings.TrimSpace(incomingRow.MemberID)
-		if wizardMemberIDs != nil {
-			if value, ok := wizardMemberIDs[rowID]; ok {
-				memberID = strings.TrimSpace(value)
-			}
-		}
-
-		amount := incomingRow.Amount
-		if wizardAmounts != nil {
-			if value, ok := wizardAmounts[rowID]; ok {
-				amount = value
-			}
-		}
-
-		expense := incomingRow.Expense
-		if wizardExpenses != nil {
-			if value, ok := wizardExpenses[rowID]; ok {
-				expense = value
-			}
-		}
-
-		note := strings.TrimSpace(incomingRow.Note)
-		if wizardNotes != nil {
-			if value, ok := wizardNotes[rowID]; ok {
-				note = strings.TrimSpace(value)
-			}
-		}
-
-		paid := incomingRow.Paid
-		if wizardPaids != nil {
-			if value, ok := wizardPaids[rowID]; ok {
-				paid = value
-			}
-		}
-
-		paidAt := normalizePaidAtInput(incomingRow.PaidAt)
-		if wizardPaidAts != nil {
-			if value, ok := wizardPaidAts[rowID]; ok {
-				paidAt = normalizePaidAtInput(value)
-			}
-		}
-
-		memberName := ""
-		if memberID == "" {
-		} else {
-			memberName = memberNameByID[memberID]
-		}
-
-		merged = append(merged, ParticipantWizardRow{
-			RowID:      rowID,
-			MemberID:   memberID,
-			MemberName: memberName,
-			Included:   incomingRow.Included,
-			Amount:     amount,
-			Expense:    expense,
-			Note:       note,
-			Paid:       paid,
-			PaidAt:     paidAt,
-		})
-	}
-
-	return merged
-}
-
-func patchWizardError(c echo.Context, wizard participantWizardSignals, message string) {
-	utils.SSEHub.PatchSignals(c, map[string]any{
-		"wizard": map[string]any{
-			"eventAmount": wizard.EventAmount,
-			"rows":        wizard.Rows,
-			"memberIds":   wizard.MemberIDs,
-			"amounts":     wizard.Amounts,
-			"expenses":    wizard.Expenses,
-			"notes":       wizard.Notes,
-			"paids":       wizard.Paids,
-			"paidAts":     wizard.PaidAts,
-			"total":       wizard.Total,
-			"leftover":    wizard.Leftover,
-			"error":       message,
-		},
-		"errors": map[string]any{
-			"memberId": message,
-		},
-	})
-}
-
-func (e *Events) patchEventShow(c echo.Context, groupID, eventID string, query utils.TableQuery, editorMode string, eventForm eventData, wizardEventAmount int64, wizardRows []participantBulkRowData, wizardMemberIDs map[string]string, wizardAmounts map[string]int64, wizardExpenses map[string]int64, wizardNotes map[string]string, wizardPaids map[string]bool, wizardPaidAts map[string]string, wizardError string) error {
-	data, err := e.GetShowData(c.Request().Context(), groupID, eventID, query)
-	if err != nil {
-		return err
-	}
-
-	applyEventShowTableByRole(&data, middleware.IsAdmin(c))
-	data.IsAuthenticated = true
-	data.IsSuperAdmin = middleware.IsSuperadmin(c)
-
-	if editorMode != "" {
-		data.EditorMode = editorMode
-	}
-	if data.EditorMode == "edit" {
-		if len(data.Breadcrumbs) > 0 {
-			data.Breadcrumbs[len(data.Breadcrumbs)-1].Href = "/groups/" + groupID + "/events/" + eventID
-		}
-		data.Breadcrumbs = append(data.Breadcrumbs, utils.Crumb{Label: ctxi18n.T(c.Request().Context(), "events.edit")})
-	}
-
-	if eventForm.Title != "" || eventForm.Date != "" || eventForm.Time != "" || eventForm.Place != "" || eventForm.Amount > 0 {
-		data.Event.Title = eventForm.Title
-		data.Event.Date = eventForm.Date
-		data.Event.EventTime = eventForm.Time
-		data.Event.Time = eventForm.Date + "T" + eventForm.Time
-		data.Event.Place = eventForm.Place
-		data.Event.Description = eventForm.Description
-		data.Event.Amount = eventForm.Amount
-		if eventForm.Paid {
-			data.Event.Paid = 1
-		} else {
-			data.Event.Paid = 0
-		}
-		if eventForm.Paid {
-			if eventForm.PaidAt != "" {
-				data.Event.PaidAt = sql.NullString{String: eventForm.PaidAt, Valid: true}
-			}
-		} else {
-			data.Event.PaidAt = sql.NullString{}
-		}
-	}
-
-	if wizardEventAmount > 0 {
-		data.WizardEventAmount = wizardEventAmount
-	}
-
-	if wizardRows != nil {
-		if len(wizardRows) == 0 {
-			data.WizardRows = []ParticipantWizardRow{}
-		} else {
-			data.WizardRows = mergeWizardRows(data.WizardRows, data.AllMembers, wizardRows, wizardMemberIDs, wizardAmounts, wizardExpenses, wizardNotes, wizardPaids, wizardPaidAts)
-		}
-	} else if wizardMemberIDs != nil || wizardAmounts != nil || wizardExpenses != nil || wizardNotes != nil || wizardPaids != nil || wizardPaidAts != nil {
-		data.WizardRows = mergeWizardRows(data.WizardRows, data.AllMembers, nil, wizardMemberIDs, wizardAmounts, wizardExpenses, wizardNotes, wizardPaids, wizardPaidAts)
-	}
-
-	data.WizardError = wizardError
-	data.Signals = eventShowSignals(data)
-
-	var html string
-	if data.EditorMode == "edit" {
-		html, err = utils.RenderHTMLForRequest(c, EventEditPage(data))
-	} else {
-		html, err = utils.RenderHTMLForRequest(c, EventShowPage(data))
-	}
-	if err != nil {
-		return err
-	}
-
-	utils.SSEHub.PatchHTML(c, html)
-	utils.SSEHub.PatchSignals(c, eventShowSignals(data))
-	return nil
-}
-
-func (e *Events) IndexPage(c echo.Context) error {
+func IndexPage(c echo.Context) error {
 	utils.EnsureTabID(c)
 	groupID := middleware.GetGroupID(c)
-	query := utils.ParseTableQuery(c, e)
+	query := utils.ParseTableQuery(c, staticTableQueryable{spec: TableQuerySpec()})
 
-	data, err := e.GetIndexData(c.Request().Context(), groupID, query)
+	data, err := GetIndexData(c.Request().Context(), groupID, query)
 	if err != nil {
 		slog.Error("event.list: failed to get data", "err", err)
 		return c.NoContent(http.StatusInternalServerError)
@@ -445,10 +155,10 @@ func (e *Events) IndexPage(c echo.Context) error {
 	return utils.RenderPage(c, EventIndexPage(data))
 }
 
-func (e *Events) ShowPage(c echo.Context) error {
+func ShowPage(c echo.Context) error {
 	utils.EnsureTabID(c)
 	groupID := middleware.GetGroupID(c)
-	query := parseParticipantTableQuery(c, e)
+	query := parseParticipantTableQuery(c)
 
 	id := c.Param("id")
 	if !utils.IsValidID(id, utils.PrefixEvent) {
@@ -456,7 +166,7 @@ func (e *Events) ShowPage(c echo.Context) error {
 		return c.NoContent(http.StatusBadRequest)
 	}
 
-	data, err := e.GetShowData(c.Request().Context(), groupID, id, query)
+	data, err := GetShowData(c.Request().Context(), groupID, id, query)
 	if err != nil {
 		slog.Error("event.show: failed to get data", "err", err)
 		return c.NoContent(http.StatusInternalServerError)
@@ -469,7 +179,7 @@ func (e *Events) ShowPage(c echo.Context) error {
 	return utils.RenderPage(c, EventShowPage(data))
 }
 
-func (e *Events) NewEventPage(c echo.Context) error {
+func NewEventPage(c echo.Context) error {
 	utils.EnsureTabID(c)
 	groupID := middleware.GetGroupID(c)
 
@@ -498,10 +208,10 @@ func (e *Events) NewEventPage(c echo.Context) error {
 	return utils.RenderPage(c, EventNewPage(data))
 }
 
-func (e *Events) EditEventPage(c echo.Context) error {
+func EditEventPage(c echo.Context) error {
 	utils.EnsureTabID(c)
 	groupID := middleware.GetGroupID(c)
-	query := parseParticipantTableQuery(c, e)
+	query := parseParticipantTableQuery(c)
 
 	id := c.Param("id")
 	if !utils.IsValidID(id, utils.PrefixEvent) {
@@ -509,7 +219,7 @@ func (e *Events) EditEventPage(c echo.Context) error {
 		return c.NoContent(http.StatusBadRequest)
 	}
 
-	data, err := e.GetShowData(c.Request().Context(), groupID, id, query)
+	data, err := GetShowData(c.Request().Context(), groupID, id, query)
 	if err != nil {
 		slog.Error("event.edit_page: failed to get data", "group_id", groupID, "event_id", id, "err", err)
 		return c.NoContent(http.StatusInternalServerError)
@@ -528,7 +238,7 @@ func (e *Events) EditEventPage(c echo.Context) error {
 	return utils.RenderPage(c, EventEditPage(data))
 }
 
-func (e *Events) Create(c echo.Context) error {
+func Create(c echo.Context) error {
 	groupID := middleware.GetGroupID(c)
 
 	var signals eventInlineParams
@@ -594,7 +304,7 @@ func (e *Events) Create(c echo.Context) error {
 	return c.NoContent(http.StatusOK)
 }
 
-func (e *Events) Update(c echo.Context) error {
+func Update(c echo.Context) error {
 	groupID := middleware.GetGroupID(c)
 
 	id := c.Param("id")
@@ -673,7 +383,7 @@ func (e *Events) Update(c echo.Context) error {
 	return c.NoContent(http.StatusOK)
 }
 
-func (e *Events) Destroy(c echo.Context) error {
+func Destroy(c echo.Context) error {
 	groupID := middleware.GetGroupID(c)
 
 	id := c.Param("id")
@@ -718,8 +428,8 @@ func (e *Events) Destroy(c echo.Context) error {
 	// Clear cache to ensure fresh data on next load
 	utils.InvalidateGroupCaches(groupID)
 
-	query := utils.NormalizeTableQuery(signals.TableQuery, e.TableQuerySpec())
-	data, err := e.GetIndexData(c.Request().Context(), groupID, query)
+	query := utils.NormalizeTableQuery(signals.TableQuery, TableQuerySpec())
+	data, err := GetIndexData(c.Request().Context(), groupID, query)
 	if err != nil {
 		slog.Error("event.destroy: failed to get data", "err", err)
 		return c.NoContent(http.StatusInternalServerError)
@@ -739,7 +449,7 @@ func (e *Events) Destroy(c echo.Context) error {
 	return c.NoContent(http.StatusOK)
 }
 
-func (e *Events) ToggleParticipantPaid(c echo.Context) error {
+func ToggleParticipantPaid(c echo.Context) error {
 	groupID := middleware.GetGroupID(c)
 
 	eventID := c.Param("id")
@@ -777,8 +487,8 @@ func (e *Events) ToggleParticipantPaid(c echo.Context) error {
 
 	slog.Debug("participant.togglePaid", "event_id", eventID, "member_id", memberID)
 
-	query := utils.NormalizeTableQuery(signals.TableQuery, e.ParticipantTableQuerySpec())
-	data, err := e.GetShowData(c.Request().Context(), groupID, eventID, query)
+	query := utils.NormalizeTableQuery(signals.TableQuery, ParticipantTableQuerySpec())
+	data, err := GetShowData(c.Request().Context(), groupID, eventID, query)
 	if err != nil {
 		slog.Error("participant.togglePaid: failed to get data", "err", err)
 		return c.NoContent(http.StatusInternalServerError)
@@ -797,7 +507,7 @@ func (e *Events) ToggleParticipantPaid(c echo.Context) error {
 	return c.NoContent(http.StatusOK)
 }
 
-func (e *Events) OpenParticipantsDraft(c echo.Context) error {
+func OpenParticipantsDraft(c echo.Context) error {
 	groupID := middleware.GetGroupID(c)
 
 	eventID := c.Param("id")
@@ -821,7 +531,7 @@ func (e *Events) OpenParticipantsDraft(c echo.Context) error {
 	return c.NoContent(http.StatusOK)
 }
 
-func (e *Events) CancelParticipantsDraft(c echo.Context) error {
+func CancelParticipantsDraft(c echo.Context) error {
 	groupID := middleware.GetGroupID(c)
 
 	eventID := c.Param("id")
@@ -845,7 +555,7 @@ func (e *Events) CancelParticipantsDraft(c echo.Context) error {
 	return c.NoContent(http.StatusOK)
 }
 
-func (e *Events) UpdateParticipantsDraftRows(c echo.Context) error {
+func UpdateParticipantsDraftRows(c echo.Context) error {
 	groupID := middleware.GetGroupID(c)
 
 	eventID := c.Param("id")
@@ -982,8 +692,8 @@ func (e *Events) UpdateParticipantsDraftRows(c echo.Context) error {
 		return c.NoContent(http.StatusBadRequest)
 	}
 
-	query := utils.NormalizeTableQuery(signals.TableQuery, e.ParticipantTableQuerySpec())
-	if err := e.patchEventShow(c, groupID, eventID, query, "edit", signals.EventFormData, signals.Wizard.EventAmount, rows, signals.Wizard.MemberIDs, signals.Wizard.Amounts, signals.Wizard.Expenses, signals.Wizard.Notes, signals.Wizard.Paids, signals.Wizard.PaidAts, ""); err != nil {
+	query := utils.NormalizeTableQuery(signals.TableQuery, ParticipantTableQuerySpec())
+	if err := patchEventShow(c, groupID, eventID, query, "edit", signals.EventFormData, signals.Wizard.EventAmount, rows, signals.Wizard.MemberIDs, signals.Wizard.Amounts, signals.Wizard.Expenses, signals.Wizard.Notes, signals.Wizard.Paids, signals.Wizard.PaidAts, ""); err != nil {
 		slog.Error("participant.draft.rows: failed to render", "err", err)
 		return c.NoContent(http.StatusInternalServerError)
 	}
@@ -991,7 +701,7 @@ func (e *Events) UpdateParticipantsDraftRows(c echo.Context) error {
 	return c.NoContent(http.StatusOK)
 }
 
-func (e *Events) SaveParticipantsBulk(c echo.Context) error {
+func SaveParticipantsBulk(c echo.Context) error {
 	groupID := middleware.GetGroupID(c)
 
 	eventID := c.Param("id")
@@ -1236,9 +946,9 @@ func (e *Events) SaveParticipantsBulk(c echo.Context) error {
 	return c.NoContent(http.StatusOK)
 }
 
-func (e *Events) openPaidAtDialog(c echo.Context, groupID, id string, tableQuery utils.TableQuery) error {
-	query := utils.NormalizeTableQuery(tableQuery, e.ParticipantTableQuerySpec())
-	data, err := e.GetShowData(c.Request().Context(), groupID, id, query)
+func openPaidAtDialog(c echo.Context, groupID, id string, tableQuery utils.TableQuery) error {
+	query := utils.NormalizeTableQuery(tableQuery, ParticipantTableQuerySpec())
+	data, err := GetShowData(c.Request().Context(), groupID, id, query)
 	if err != nil {
 		slog.Error("event.openPaidAtDialog: failed to get data", "err", err)
 		return c.NoContent(http.StatusInternalServerError)
@@ -1274,9 +984,9 @@ func (e *Events) openPaidAtDialog(c echo.Context, groupID, id string, tableQuery
 	return c.NoContent(http.StatusOK)
 }
 
-func (e *Events) openPaidAtDialogInIndex(c echo.Context, groupID, id string, tableQuery utils.TableQuery) error {
-	query := utils.NormalizeTableQuery(tableQuery, e.TableQuerySpec())
-	data, err := e.GetIndexData(c.Request().Context(), groupID, query)
+func openPaidAtDialogInIndex(c echo.Context, groupID, id string, tableQuery utils.TableQuery) error {
+	query := utils.NormalizeTableQuery(tableQuery, TableQuerySpec())
+	data, err := GetIndexData(c.Request().Context(), groupID, query)
 	if err != nil {
 		slog.Error("event.openPaidAtDialogInIndex: failed to get data", "err", err)
 		return c.NoContent(http.StatusInternalServerError)
@@ -1339,14 +1049,14 @@ func (e *Events) openPaidAtDialogInIndex(c echo.Context, groupID, id string, tab
 	return c.NoContent(http.StatusOK)
 }
 
-func (e *Events) openParticipantNoteDialog(c echo.Context, groupID, id, memberID string, tableQuery utils.TableQuery) error {
+func openParticipantNoteDialog(c echo.Context, groupID, id, memberID string, tableQuery utils.TableQuery) error {
 	if !utils.IsValidID(memberID, utils.PrefixMember) {
 		slog.Info("event.openParticipantNoteDialog: invalid member id")
 		return c.NoContent(http.StatusBadRequest)
 	}
 
-	query := utils.NormalizeTableQuery(tableQuery, e.ParticipantTableQuerySpec())
-	data, err := e.GetShowData(c.Request().Context(), groupID, id, query)
+	query := utils.NormalizeTableQuery(tableQuery, ParticipantTableQuerySpec())
+	data, err := GetShowData(c.Request().Context(), groupID, id, query)
 	if err != nil {
 		slog.Error("event.openParticipantNoteDialog: failed to get data", "err", err)
 		return c.NoContent(http.StatusInternalServerError)
@@ -1397,14 +1107,14 @@ func (e *Events) openParticipantNoteDialog(c echo.Context, groupID, id, memberID
 	return c.NoContent(http.StatusOK)
 }
 
-func (e *Events) openParticipantPaidAtDialog(c echo.Context, groupID, id, memberID string, tableQuery utils.TableQuery) error {
+func openParticipantPaidAtDialog(c echo.Context, groupID, id, memberID string, tableQuery utils.TableQuery) error {
 	if !utils.IsValidID(memberID, utils.PrefixMember) {
 		slog.Info("event.openParticipantPaidAtDialog: invalid member id")
 		return c.NoContent(http.StatusBadRequest)
 	}
 
-	query := utils.NormalizeTableQuery(tableQuery, e.ParticipantTableQuerySpec())
-	data, err := e.GetShowData(c.Request().Context(), groupID, id, query)
+	query := utils.NormalizeTableQuery(tableQuery, ParticipantTableQuerySpec())
+	data, err := GetShowData(c.Request().Context(), groupID, id, query)
 	if err != nil {
 		slog.Error("event.openParticipantPaidAtDialog: failed to get data", "err", err)
 		return c.NoContent(http.StatusInternalServerError)
@@ -1455,7 +1165,7 @@ func (e *Events) openParticipantPaidAtDialog(c echo.Context, groupID, id, member
 	return c.NoContent(http.StatusOK)
 }
 
-func (e *Events) patchUpdatePaidAt(c echo.Context, groupID, id, mode string, tableQuery utils.TableQuery, value string) error {
+func patchUpdatePaidAt(c echo.Context, groupID, id, mode string, tableQuery utils.TableQuery, value string) error {
 	paidAt := normalizePaidAtInput(value)
 
 	_, err := db.UpdateEventPaidAt(c.Request().Context(), db.UpdateEventPaidAtParams{
@@ -1475,8 +1185,8 @@ func (e *Events) patchUpdatePaidAt(c echo.Context, groupID, id, mode string, tab
 	utils.InvalidateGroupCaches(groupID)
 
 	if mode == "table" {
-		query := utils.NormalizeTableQuery(tableQuery, e.TableQuerySpec())
-		data, err := e.GetIndexData(c.Request().Context(), groupID, query)
+		query := utils.NormalizeTableQuery(tableQuery, TableQuerySpec())
+		data, err := GetIndexData(c.Request().Context(), groupID, query)
 		if err != nil {
 			slog.Error("event.updatePaidAt: failed to get index data", "err", err)
 			return c.NoContent(http.StatusInternalServerError)
@@ -1502,8 +1212,8 @@ func (e *Events) patchUpdatePaidAt(c echo.Context, groupID, id, mode string, tab
 		return c.NoContent(http.StatusOK)
 	}
 
-	query := utils.NormalizeTableQuery(tableQuery, e.ParticipantTableQuerySpec())
-	data, err := e.GetShowData(c.Request().Context(), groupID, id, query)
+	query := utils.NormalizeTableQuery(tableQuery, ParticipantTableQuerySpec())
+	data, err := GetShowData(c.Request().Context(), groupID, id, query)
 	if err != nil {
 		slog.Error("event.updatePaidAt: failed to get data", "err", err)
 		return c.NoContent(http.StatusInternalServerError)
@@ -1529,7 +1239,7 @@ func (e *Events) patchUpdatePaidAt(c echo.Context, groupID, id, mode string, tab
 	return c.NoContent(http.StatusOK)
 }
 
-func (e *Events) patchUpdateParticipantNote(c echo.Context, groupID, id string, tableQuery utils.TableQuery, memberID, value string) error {
+func patchUpdateParticipantNote(c echo.Context, groupID, id string, tableQuery utils.TableQuery, memberID, value string) error {
 	if !utils.IsValidID(memberID, utils.PrefixMember) {
 		slog.Info("event.updateParticipantNote: invalid member id")
 		return c.NoContent(http.StatusBadRequest)
@@ -1550,8 +1260,8 @@ func (e *Events) patchUpdateParticipantNote(c echo.Context, groupID, id string, 
 	utils.Notify(c, ctxi18n.T(c.Request().Context(), "participants.notifications.updated"))
 	utils.InvalidateGroupCaches(groupID)
 
-	query := utils.NormalizeTableQuery(tableQuery, e.ParticipantTableQuerySpec())
-	data, err := e.GetShowData(c.Request().Context(), groupID, id, query)
+	query := utils.NormalizeTableQuery(tableQuery, ParticipantTableQuerySpec())
+	data, err := GetShowData(c.Request().Context(), groupID, id, query)
 	if err != nil {
 		slog.Error("event.updateParticipantNote: failed to get data", "err", err)
 		return c.NoContent(http.StatusInternalServerError)
@@ -1577,7 +1287,7 @@ func (e *Events) patchUpdateParticipantNote(c echo.Context, groupID, id string, 
 	return c.NoContent(http.StatusOK)
 }
 
-func (e *Events) patchUpdateParticipantPaidAt(c echo.Context, groupID, id string, tableQuery utils.TableQuery, memberID, value string) error {
+func patchUpdateParticipantPaidAt(c echo.Context, groupID, id string, tableQuery utils.TableQuery, memberID, value string) error {
 	if !utils.IsValidID(memberID, utils.PrefixMember) {
 		slog.Info("event.updateParticipantPaidAt: invalid member id")
 		return c.NoContent(http.StatusBadRequest)
@@ -1598,8 +1308,8 @@ func (e *Events) patchUpdateParticipantPaidAt(c echo.Context, groupID, id string
 	utils.Notify(c, ctxi18n.T(c.Request().Context(), "participants.notifications.updated"))
 	utils.InvalidateGroupCaches(groupID)
 
-	query := utils.NormalizeTableQuery(tableQuery, e.ParticipantTableQuerySpec())
-	data, err := e.GetShowData(c.Request().Context(), groupID, id, query)
+	query := utils.NormalizeTableQuery(tableQuery, ParticipantTableQuerySpec())
+	data, err := GetShowData(c.Request().Context(), groupID, id, query)
 	if err != nil {
 		slog.Error("event.updateParticipantPaidAt: failed to get data", "err", err)
 		return c.NoContent(http.StatusInternalServerError)
@@ -1625,7 +1335,7 @@ func (e *Events) patchUpdateParticipantPaidAt(c echo.Context, groupID, id string
 	return c.NoContent(http.StatusOK)
 }
 
-func (e *Events) patchTogglePaid(c echo.Context, groupID, id, mode string, tableQuery utils.TableQuery) error {
+func patchTogglePaid(c echo.Context, groupID, id, mode string, tableQuery utils.TableQuery) error {
 	_, err := db.ToggleEventPaid(c.Request().Context(), db.ToggleEventPaidParams{
 		ID:      id,
 		GroupID: groupID,
@@ -1642,8 +1352,8 @@ func (e *Events) patchTogglePaid(c echo.Context, groupID, id, mode string, table
 	utils.InvalidateGroupCaches(groupID)
 
 	if mode == "single" {
-		query := utils.NormalizeTableQuery(tableQuery, e.ParticipantTableQuerySpec())
-		data, err := e.GetShowData(c.Request().Context(), groupID, id, query)
+		query := utils.NormalizeTableQuery(tableQuery, ParticipantTableQuerySpec())
+		data, err := GetShowData(c.Request().Context(), groupID, id, query)
 		if err != nil {
 			slog.Error("event.togglePaid: failed to get data", "err", err)
 			return c.NoContent(http.StatusInternalServerError)
@@ -1661,8 +1371,8 @@ func (e *Events) patchTogglePaid(c echo.Context, groupID, id, mode string, table
 		return c.NoContent(http.StatusOK)
 	}
 
-	query := utils.NormalizeTableQuery(tableQuery, e.TableQuerySpec())
-	data, err := e.GetIndexData(c.Request().Context(), groupID, query)
+	query := utils.NormalizeTableQuery(tableQuery, TableQuerySpec())
+	data, err := GetIndexData(c.Request().Context(), groupID, query)
 	if err != nil {
 		slog.Error("event.togglePaid: failed to get data", "err", err)
 		return c.NoContent(http.StatusInternalServerError)
@@ -1681,7 +1391,7 @@ func (e *Events) patchTogglePaid(c echo.Context, groupID, id, mode string, table
 	return c.NoContent(http.StatusOK)
 }
 
-func (e *Events) OpenPaidAtPrompt(c echo.Context) error {
+func OpenPaidAtPrompt(c echo.Context) error {
 	groupID := middleware.GetGroupID(c)
 
 	id := c.Param("id")
@@ -1689,27 +1399,27 @@ func (e *Events) OpenPaidAtPrompt(c echo.Context) error {
 		slog.Info("event.openPaidAtPrompt: invalid id")
 		return c.NoContent(http.StatusBadRequest)
 	}
-	query := parseParticipantTableQuery(c, e)
+	query := parseParticipantTableQuery(c)
 	mode := "single"
 	var signals modeParams
 	if err := datastar.ReadSignals(c.Request(), &signals); err == nil {
 		if utils.SetTabID(c, signals.TabID) {
 			if signals.Mode == "table" {
-				query = utils.NormalizeTableQuery(signals.TableQuery, e.TableQuerySpec())
+				query = utils.NormalizeTableQuery(signals.TableQuery, TableQuerySpec())
 			} else {
-				query = utils.NormalizeTableQuery(signals.TableQuery, e.ParticipantTableQuerySpec())
+				query = utils.NormalizeTableQuery(signals.TableQuery, ParticipantTableQuerySpec())
 			}
 			mode = strings.TrimSpace(signals.Mode)
 		}
 	}
 	if mode == "table" {
-		return e.openPaidAtDialogInIndex(c, groupID, id, query)
+		return openPaidAtDialogInIndex(c, groupID, id, query)
 	}
 
-	return e.openPaidAtDialog(c, groupID, id, query)
+	return openPaidAtDialog(c, groupID, id, query)
 }
 
-func (e *Events) OpenParticipantNoteDialog(c echo.Context) error {
+func OpenParticipantNoteDialog(c echo.Context) error {
 	groupID := middleware.GetGroupID(c)
 
 	id := c.Param("id")
@@ -1722,18 +1432,18 @@ func (e *Events) OpenParticipantNoteDialog(c echo.Context) error {
 		slog.Info("event.openParticipantNoteDialog: invalid member id")
 		return c.NoContent(http.StatusBadRequest)
 	}
-	query := parseParticipantTableQuery(c, e)
+	query := parseParticipantTableQuery(c)
 	var signals participantNoteDialogParams
 	if err := datastar.ReadSignals(c.Request(), &signals); err == nil {
 		if utils.SetTabID(c, signals.TabID) {
-			query = utils.NormalizeTableQuery(signals.TableQuery, e.ParticipantTableQuerySpec())
+			query = utils.NormalizeTableQuery(signals.TableQuery, ParticipantTableQuerySpec())
 		}
 	}
 
-	return e.openParticipantNoteDialog(c, groupID, id, memberID, query)
+	return openParticipantNoteDialog(c, groupID, id, memberID, query)
 }
 
-func (e *Events) OpenParticipantPaidAtDialog(c echo.Context) error {
+func OpenParticipantPaidAtDialog(c echo.Context) error {
 	groupID := middleware.GetGroupID(c)
 
 	id := c.Param("id")
@@ -1746,18 +1456,18 @@ func (e *Events) OpenParticipantPaidAtDialog(c echo.Context) error {
 		slog.Info("event.openParticipantPaidAtDialog: invalid member id")
 		return c.NoContent(http.StatusBadRequest)
 	}
-	query := parseParticipantTableQuery(c, e)
+	query := parseParticipantTableQuery(c)
 	var signals participantPaidAtDialogParams
 	if err := datastar.ReadSignals(c.Request(), &signals); err == nil {
 		if utils.SetTabID(c, signals.TabID) {
-			query = utils.NormalizeTableQuery(signals.TableQuery, e.ParticipantTableQuerySpec())
+			query = utils.NormalizeTableQuery(signals.TableQuery, ParticipantTableQuerySpec())
 		}
 	}
 
-	return e.openParticipantPaidAtDialog(c, groupID, id, memberID, query)
+	return openParticipantPaidAtDialog(c, groupID, id, memberID, query)
 }
 
-func (e *Events) UpdatePaidAt(c echo.Context) error {
+func UpdatePaidAt(c echo.Context) error {
 	groupID := middleware.GetGroupID(c)
 
 	id := c.Param("id")
@@ -1776,10 +1486,10 @@ func (e *Events) UpdatePaidAt(c echo.Context) error {
 		return c.NoContent(http.StatusBadRequest)
 	}
 
-	return e.patchUpdatePaidAt(c, groupID, id, signals.Mode, signals.TableQuery, signals.PaidAtDialog.Value)
+	return patchUpdatePaidAt(c, groupID, id, signals.Mode, signals.TableQuery, signals.PaidAtDialog.Value)
 }
 
-func (e *Events) UpdateParticipantNote(c echo.Context) error {
+func UpdateParticipantNote(c echo.Context) error {
 	groupID := middleware.GetGroupID(c)
 
 	id := c.Param("id")
@@ -1804,10 +1514,10 @@ func (e *Events) UpdateParticipantNote(c echo.Context) error {
 		return c.NoContent(http.StatusBadRequest)
 	}
 
-	return e.patchUpdateParticipantNote(c, groupID, id, signals.TableQuery, memberID, signals.ParticipantNoteDialog.Value)
+	return patchUpdateParticipantNote(c, groupID, id, signals.TableQuery, memberID, signals.ParticipantNoteDialog.Value)
 }
 
-func (e *Events) UpdateParticipantPaidAt(c echo.Context) error {
+func UpdateParticipantPaidAt(c echo.Context) error {
 	groupID := middleware.GetGroupID(c)
 
 	id := c.Param("id")
@@ -1832,10 +1542,10 @@ func (e *Events) UpdateParticipantPaidAt(c echo.Context) error {
 		return c.NoContent(http.StatusBadRequest)
 	}
 
-	return e.patchUpdateParticipantPaidAt(c, groupID, id, signals.TableQuery, memberID, signals.ParticipantPaidAtDialog.Value)
+	return patchUpdateParticipantPaidAt(c, groupID, id, signals.TableQuery, memberID, signals.ParticipantPaidAtDialog.Value)
 }
 
-func (e *Events) TogglePaid(c echo.Context) error {
+func TogglePaid(c echo.Context) error {
 	groupID := middleware.GetGroupID(c)
 
 	id := c.Param("id")
@@ -1854,5 +1564,5 @@ func (e *Events) TogglePaid(c echo.Context) error {
 		return c.NoContent(http.StatusBadRequest)
 	}
 
-	return e.patchTogglePaid(c, groupID, id, signals.Mode, signals.TableQuery)
+	return patchTogglePaid(c, groupID, id, signals.Mode, signals.TableQuery)
 }

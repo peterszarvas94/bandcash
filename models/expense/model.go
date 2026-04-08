@@ -11,9 +11,7 @@ import (
 	"bandcash/internal/utils"
 )
 
-type Expenses struct{}
-
-func (e *Expenses) TableQuerySpec() utils.TableQuerySpec {
+func TableQuerySpec() utils.TableQuerySpec {
 	return utils.StandardTableQuerySpec(utils.StandardTableQuerySpecParams{
 		DefaultSort:  "date",
 		DefaultDir:   "desc",
@@ -21,11 +19,7 @@ func (e *Expenses) TableQuerySpec() utils.TableQuerySpec {
 	})
 }
 
-func New() *Expenses {
-	return &Expenses{}
-}
-
-func (e *Expenses) GetIndexData(ctx context.Context, groupID string, query utils.TableQuery) (ExpensesData, error) {
+func GetIndexData(ctx context.Context, groupID string, query utils.TableQuery) (ExpensesData, error) {
 	group, err := db.GetGroupByID(ctx, groupID)
 	if err != nil {
 		return ExpensesData{}, err
@@ -68,7 +62,7 @@ func (e *Expenses) GetIndexData(ctx context.Context, groupID string, query utils
 		Unpaid:     totalRows.Total - totalRows.Paid,
 	}
 
-	return e.buildExpensesData(ctx, groupID, group, query, expenses, totals)
+	return buildExpensesData(ctx, groupID, group, query, expenses, totals)
 }
 
 type expenseCalcTotals struct {
@@ -146,7 +140,7 @@ func sortExpenses(expenses []db.Expense, sortField, dir string) {
 	sort.Slice(expenses, less)
 }
 
-func (e *Expenses) buildExpensesData(ctx context.Context, groupID string, group db.Group, query utils.TableQuery, expenses []db.Expense, totals expenseCalcTotals) (ExpensesData, error) {
+func buildExpensesData(ctx context.Context, groupID string, group db.Group, query utils.TableQuery, expenses []db.Expense, totals expenseCalcTotals) (ExpensesData, error) {
 	query = utils.ClampPage(query, totals.TotalItems)
 
 	// Calculate group totals for display
@@ -178,7 +172,7 @@ func (e *Expenses) buildExpensesData(ctx context.Context, groupID string, group 
 	}, nil
 }
 
-func (e *Expenses) GetShowData(ctx context.Context, groupID, expenseID string) (ExpenseData, error) {
+func GetShowData(ctx context.Context, groupID, expenseID string) (ExpenseData, error) {
 	group, err := db.GetGroupByID(ctx, groupID)
 	if err != nil {
 		return ExpenseData{}, err

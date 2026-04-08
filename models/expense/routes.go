@@ -6,22 +6,19 @@ import (
 	"bandcash/internal/middleware"
 )
 
-func RegisterRoutes(e *echo.Echo) *Expenses {
-	expenses := New()
-
+func RegisterRoutes(e *echo.Echo) {
 	g := e.Group("/groups/:groupId", middleware.RequireAuth, middleware.WithDetailState, middleware.RequireGroup)
-	g.GET("/expenses", expenses.IndexPage)
-	g.GET("/expenses/:id", expenses.ShowPage)
+	g.GET("/expenses", IndexPage)
+	g.GET("/expenses/:id", ShowPage)
 
 	admin := g.Group("", middleware.RequireAdmin)
-	admin.GET("/expenses/new", expenses.NewExpensePage)
-	admin.GET("/expenses/:id/edit", expenses.EditExpensePage)
-	admin.POST("/expenses", expenses.Create)
-	admin.PUT("/expenses/:id", expenses.Update)
-	admin.DELETE("/expenses/:id", expenses.Destroy)
-	admin.PUT("/expenses/:id/toggle-paid", expenses.TogglePaid)
-	admin.GET("/expenses/:id/paid_at", expenses.OpenPaidAtPrompt)
-	admin.POST("/expenses/:id/paid_at", expenses.UpdatePaidAt)
+	admin.GET("/expenses/new", NewExpensePage)
+	admin.GET("/expenses/:id/edit", EditExpensePage)
+	admin.POST("/expenses", Create)
+	admin.PUT("/expenses/:id", Update)
+	admin.DELETE("/expenses/:id", Destroy)
+	admin.PUT("/expenses/:id/toggle-paid", TogglePaid)
+	admin.GET("/expenses/:id/paid_at", OpenPaidAtPrompt)
+	admin.POST("/expenses/:id/paid_at", UpdatePaidAt)
 
-	return expenses
 }
