@@ -849,6 +849,48 @@ func (q *Queries) ListEventsByTitleDescFiltered(ctx context.Context, arg ListEve
 	return items, nil
 }
 
+const listPaidEventsByGroup = `-- name: ListPaidEventsByGroup :many
+SELECT id, group_id, title, time, description, amount, created_at, updated_at, paid, paid_at, place FROM events
+WHERE group_id = ?1
+  AND paid = 1
+ORDER BY COALESCE(paid_at, updated_at) DESC, updated_at DESC
+`
+
+func (q *Queries) ListPaidEventsByGroup(ctx context.Context, groupID string) ([]Event, error) {
+	rows, err := q.db.QueryContext(ctx, listPaidEventsByGroup, groupID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []Event{}
+	for rows.Next() {
+		var i Event
+		if err := rows.Scan(
+			&i.ID,
+			&i.GroupID,
+			&i.Title,
+			&i.Time,
+			&i.Description,
+			&i.Amount,
+			&i.CreatedAt,
+			&i.UpdatedAt,
+			&i.Paid,
+			&i.PaidAt,
+			&i.Place,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const listRecentPaidEventsByGroup = `-- name: ListRecentPaidEventsByGroup :many
 SELECT id, group_id, title, time, description, amount, created_at, updated_at, paid, paid_at, place FROM events
 WHERE group_id = ?1
@@ -864,6 +906,48 @@ type ListRecentPaidEventsByGroupParams struct {
 
 func (q *Queries) ListRecentPaidEventsByGroup(ctx context.Context, arg ListRecentPaidEventsByGroupParams) ([]Event, error) {
 	rows, err := q.db.QueryContext(ctx, listRecentPaidEventsByGroup, arg.GroupID, arg.Limit)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []Event{}
+	for rows.Next() {
+		var i Event
+		if err := rows.Scan(
+			&i.ID,
+			&i.GroupID,
+			&i.Title,
+			&i.Time,
+			&i.Description,
+			&i.Amount,
+			&i.CreatedAt,
+			&i.UpdatedAt,
+			&i.Paid,
+			&i.PaidAt,
+			&i.Place,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const listUnpaidEventsByGroup = `-- name: ListUnpaidEventsByGroup :many
+SELECT id, group_id, title, time, description, amount, created_at, updated_at, paid, paid_at, place FROM events
+WHERE group_id = ?1
+  AND paid = 0
+ORDER BY time ASC, created_at DESC
+`
+
+func (q *Queries) ListUnpaidEventsByGroup(ctx context.Context, groupID string) ([]Event, error) {
+	rows, err := q.db.QueryContext(ctx, listUnpaidEventsByGroup, groupID)
 	if err != nil {
 		return nil, err
 	}

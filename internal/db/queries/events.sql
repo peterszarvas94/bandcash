@@ -32,6 +32,18 @@ WHERE group_id = sqlc.arg(group_id)
 ORDER BY updated_at DESC
 LIMIT sqlc.arg(limit);
 
+-- name: ListUnpaidEventsByGroup :many
+SELECT * FROM events
+WHERE group_id = sqlc.arg(group_id)
+  AND paid = 0
+ORDER BY time ASC, created_at DESC;
+
+-- name: ListPaidEventsByGroup :many
+SELECT * FROM events
+WHERE group_id = sqlc.arg(group_id)
+  AND paid = 1
+ORDER BY COALESCE(paid_at, updated_at) DESC, updated_at DESC;
+
 -- name: CountEventsFiltered :one
 SELECT COUNT(*) FROM events
 WHERE group_id = sqlc.arg(group_id)

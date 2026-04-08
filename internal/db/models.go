@@ -63,6 +63,22 @@ type GroupAccess struct {
 	CreatedAt sql.NullTime `json:"created_at"`
 }
 
+type GroupOutgoingPayment struct {
+	GroupID     string         `json:"group_id"`
+	PaymentKind string         `json:"payment_kind"`
+	PaymentID   string         `json:"payment_id"`
+	EventID     string         `json:"event_id"`
+	MemberID    string         `json:"member_id"`
+	MemberName  string         `json:"member_name"`
+	EventTitle  string         `json:"event_title"`
+	Title       string         `json:"title"`
+	Amount      int64          `json:"amount"`
+	Paid        int64          `json:"paid"`
+	PaidAt      sql.NullString `json:"paid_at"`
+	UpdatedAt   sql.NullTime   `json:"updated_at"`
+	SortDate    string         `json:"sort_date"`
+}
+
 type MagicLink struct {
 	ID         string         `json:"id"`
 	Token      string         `json:"token"`

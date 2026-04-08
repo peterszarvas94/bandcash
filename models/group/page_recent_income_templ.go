@@ -10,7 +10,7 @@ import templruntime "github.com/a-h/templ/runtime"
 
 import shared "bandcash/models/shared"
 
-func GroupRecentPaymentsPage(data GroupPaymentsPageData) templ.Component {
+func GroupRecentIncomePage(data GroupRecentIncomePageData) templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
 		if templ_7745c5c3_CtxErr := ctx.Err(); templ_7745c5c3_CtxErr != nil {
@@ -35,11 +35,11 @@ func GroupRecentPaymentsPage(data GroupPaymentsPageData) templ.Component {
 			Title:           data.Title,
 			Crumbs:          data.Breadcrumbs,
 			Signals:         data.Signals,
-			Content:         GroupRecentPaymentsMain(data),
+			Content:         GroupRecentIncomeMain(data),
 			ActiveUrl:       "/groups",
 			IsAuthenticated: data.IsAuthenticated,
 			IsSuperAdmin:    data.IsSuperAdmin,
-			TabSidebar:      shared.GroupSidebar(data.GroupID, "payments_recent"),
+			TabSidebar:      shared.GroupSidebar(data.GroupID, "recent_income"),
 			TabToggleID:     data.GroupID,
 		}).Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {

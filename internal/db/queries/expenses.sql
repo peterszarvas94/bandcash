@@ -31,6 +31,18 @@ WHERE group_id = sqlc.arg(group_id)
 ORDER BY updated_at DESC
 LIMIT sqlc.arg(limit);
 
+-- name: ListUnpaidExpensesByGroup :many
+SELECT * FROM expenses
+WHERE group_id = sqlc.arg(group_id)
+  AND paid = 0
+ORDER BY date DESC, created_at DESC;
+
+-- name: ListPaidExpensesByGroup :many
+SELECT * FROM expenses
+WHERE group_id = sqlc.arg(group_id)
+  AND paid = 1
+ORDER BY COALESCE(paid_at, updated_at) DESC, updated_at DESC;
+
 -- name: CountExpensesFiltered :one
 SELECT COUNT(*) FROM expenses
 WHERE group_id = sqlc.arg(group_id)

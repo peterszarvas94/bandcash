@@ -143,23 +143,81 @@ type GroupPageData struct {
 	IsAdmin         bool
 }
 
-type GroupPaymentsPageData struct {
-	Title               string
-	Breadcrumbs         []utils.Crumb
-	Signals             map[string]any
-	IsAuthenticated     bool
-	IsSuperAdmin        bool
-	IsAdmin             bool
-	GroupID             string
-	Group               db.Group
-	UnpaidEvents        []GroupPaymentEventRow
-	UnpaidParticipants  []GroupPaymentParticipantRow
-	UnpaidExpenses      []GroupPaymentExpenseRow
-	EventsTable         utils.TableLayout
-	ParticipantsTable   utils.TableLayout
-	ExpensesTable       utils.TableLayout
-	// Recent Payments page only: max rows per section (SQL limit); 0 on Pending.
-	RecentPaymentsTableLimit int
+type GroupToReceivePageData struct {
+	Title           string
+	Breadcrumbs     []utils.Crumb
+	Signals         map[string]any
+	IsAuthenticated bool
+	IsSuperAdmin    bool
+	IsAdmin         bool
+	GroupID         string
+	Group           db.Group
+	Rows            []GroupPaymentEventRow
+	EventsTable     utils.TableLayout
+	Query           utils.TableQuery
+	Pager           utils.TablePagination
+	RecentYears     []int
+}
+
+type GroupToPayPageData struct {
+	Title           string
+	Breadcrumbs     []utils.Crumb
+	Signals         map[string]any
+	IsAuthenticated bool
+	IsSuperAdmin    bool
+	IsAdmin         bool
+	GroupID         string
+	Group           db.Group
+	Rows            []GroupOutgoingPaymentRow
+	OutgoingTable   utils.TableLayout
+	Query           utils.TableQuery
+	Pager           utils.TablePagination
+	RecentYears     []int
+}
+
+type GroupRecentIncomePageData struct {
+	Title           string
+	Breadcrumbs     []utils.Crumb
+	Signals         map[string]any
+	IsAuthenticated bool
+	IsSuperAdmin    bool
+	IsAdmin         bool
+	GroupID         string
+	Group           db.Group
+	Rows            []GroupPaymentEventRow
+	EventsTable     utils.TableLayout
+	Query           utils.TableQuery
+	Pager           utils.TablePagination
+	RecentYears     []int
+}
+
+type GroupRecentOutgoingPageData struct {
+	Title           string
+	Breadcrumbs     []utils.Crumb
+	Signals         map[string]any
+	IsAuthenticated bool
+	IsSuperAdmin    bool
+	IsAdmin         bool
+	GroupID         string
+	Group           db.Group
+	Rows            []GroupOutgoingPaymentRow
+	OutgoingTable   utils.TableLayout
+	Query           utils.TableQuery
+	Pager           utils.TablePagination
+	RecentYears     []int
+}
+
+type GroupOutgoingPaymentRow struct {
+	Kind       string
+	PaymentID  string
+	Title      string
+	EventID    string
+	EventTitle string
+	MemberID   string
+	MemberName string
+	Amount     int64
+	PaidAt     string
+	Date       string
 }
 
 type GroupPaymentEventRow struct {
@@ -167,15 +225,16 @@ type GroupPaymentEventRow struct {
 	Title  string
 	Amount int64
 	PaidAt string
+	Date   string
 }
 
 type GroupPaymentParticipantRow struct {
-	MemberID      string
-	MemberName    string
-	EventID       string
-	EventTitle    string
-	PayoutAmount  int64
-	PaidAt        string
+	MemberID     string
+	MemberName   string
+	EventID      string
+	EventTitle   string
+	PayoutAmount int64
+	PaidAt       string
 }
 
 type GroupPaymentExpenseRow struct {

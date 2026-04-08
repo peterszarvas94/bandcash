@@ -37,3 +37,13 @@ func GroupPaymentsExpensesTableLayout() utils.TableLayout {
 		{Key: "paid_at", MaxWRem: 12, WRem: 12},
 	}, 0)
 }
+
+func GroupOutgoingPaymentsTableLayout() utils.TableLayout {
+	return utils.NewTableLayout([]utils.TableColumn{
+		{Key: "kind"},
+		{Key: "title"},
+		{Key: "amount"},
+		{Key: "paid", MaxWRem: 7, WRem: 7},
+		{Key: "paid_at", MaxWRem: 12, WRem: 12},
+	}, 0)
+}

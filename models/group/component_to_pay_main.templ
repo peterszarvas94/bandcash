@@ -1,0 +1,83 @@
+package group
+
+import (
+	"fmt"
+
+	"bandcash/internal/utils"
+	shared "bandcash/models/shared"
+	icons "bandcash/models/shared/icons"
+	ctxi18n "github.com/invopop/ctxi18n/i18n"
+)
+
+templ GroupToPayMain(data GroupToPayPageData) {
+	@shared.PageHeader(shared.PageHeaderProps{Title: ctxi18n.T(ctx, "groups.to_pay")}) {}
+	@shared.TableSearchFormWithClass(fmt.Sprintf("/groups/%s/to-pay", data.GroupID), data.Query, "table.search_placeholder_expenses", "pt")
+	<div class="row row-wrap justify-between pb">
+		<div class="radiogroup" role="radiogroup" aria-label={ ctxi18n.T(ctx, "table.date_filters") }>
+			@shared.RadioLink(shared.RadioLinkProps{Href: utils.BuildTableDateClearURL(fmt.Sprintf("/groups/%s/to-pay", data.GroupID), data.Query), Label: ctxi18n.T(ctx, "table.all"), IsSelected: utils.DateFilterAllActive(data.Query), NoIcon: true, ClassName: "btn btn-xs"})
+			for _, year := range data.RecentYears {
+				@shared.RadioLink(shared.RadioLinkProps{Href: utils.BuildTableDateYearURL(fmt.Sprintf("/groups/%s/to-pay", data.GroupID), data.Query, fmt.Sprintf("%d", year)), Label: fmt.Sprintf("%d", year), IsSelected: utils.DateFilterYearActive(data.Query, fmt.Sprintf("%d", year)), NoIcon: true, ClassName: "btn btn-xs"})
+			}
+			@shared.RadioLink(shared.RadioLinkProps{Href: utils.BuildTableDateCustomURL(fmt.Sprintf("/groups/%s/to-pay", data.GroupID), data.Query), Label: ctxi18n.T(ctx, "table.custom"), IsSelected: utils.DateFilterCustomActive(data.Query), NoIcon: true, ClassName: "btn btn-xs"})
+		</div>
+	</div>
+	@shared.TablePaginationRow(fmt.Sprintf("/groups/%s/to-pay", data.GroupID), data.Query, data.Pager)
+	<section class="section">
+		<h2>{ ctxi18n.T(ctx, "groups.payouts") }</h2>
+		@shared.TableOpenFixed(data.OutgoingTable, "") {
+				<thead><tr>
+					@shared.THCol(data.OutgoingTable.ColMaxWRem("kind")) { @shared.TableSortHeader(ctxi18n.T(ctx, "fields.type"), "type", data.Query, utils.BuildTableSortURL(fmt.Sprintf("/groups/%s/to-pay", data.GroupID), data.Query, "type")) }
+					@shared.THCol(data.OutgoingTable.ColMaxWRem("title")) { @shared.TableSortHeader(ctxi18n.T(ctx, "fields.title"), "title", data.Query, utils.BuildTableSortURL(fmt.Sprintf("/groups/%s/to-pay", data.GroupID), data.Query, "title")) }
+					@shared.THCol(data.OutgoingTable.ColMaxWRem("amount")) { <div class="text-right">@shared.TableSortHeader(ctxi18n.T(ctx, "fields.amount"), "amount", data.Query, utils.BuildTableSortURL(fmt.Sprintf("/groups/%s/to-pay", data.GroupID), data.Query, "amount"))</div> }
+					@shared.THColFixed(data.OutgoingTable.ColMaxWRem("paid"), data.OutgoingTable.ColWRem("paid")) { <div class="text-right">@shared.TableSortHeader(ctxi18n.T(ctx, "table.paid_question"), "paid", data.Query, utils.BuildTableSortURL(fmt.Sprintf("/groups/%s/to-pay", data.GroupID), data.Query, "paid"))</div> }
+					@shared.THColFixed(data.OutgoingTable.ColMaxWRem("paid_at"), data.OutgoingTable.ColWRem("paid_at")) { <div class="text-right">@shared.TableSortHeader(ctxi18n.T(ctx, "fields.paid_at"), "paid_at", data.Query, utils.BuildTableSortURL(fmt.Sprintf("/groups/%s/to-pay", data.GroupID), data.Query, "paid_at"))</div> }
+				</tr></thead>
+				<tbody>
+					if len(data.Rows) == 0 {
+						<tr><td colspan="5">{ ctxi18n.T(ctx, "groups.to_pay_empty_outgoing") }</td></tr>
+					} else {
+						for _, row := range data.Rows {
+							{{
+								togglePaidExpr := fmt.Sprintf("@put('/groups/%s/payments/expenses/%s/toggle-paid', {mode: 'table', tableQuery: $tableQuery})", data.GroupID, row.PaymentID)
+								openPaidAtExpr := fmt.Sprintf("$paidAtDialog.open = true; $paidAtDialog.url = '/groups/%s/payments/expenses/%s/paid_at'; $paidAtDialog.value = ''", data.GroupID, row.PaymentID)
+								kindLabel := ctxi18n.T(ctx, "groups.payment_type_expense")
+								if row.Kind == "participant" {
+									kindLabel = ctxi18n.T(ctx, "groups.payment_type_participant")
+									togglePaidExpr = fmt.Sprintf("@put('/groups/%s/payments/participants/%s/%s/toggle-paid', {mode: 'table', tableQuery: $tableQuery})", data.GroupID, row.EventID, row.MemberID)
+									openPaidAtExpr = fmt.Sprintf("$paidAtDialog.open = true; $paidAtDialog.url = '/groups/%s/payments/participants/%s/%s/paid_at'; $paidAtDialog.value = ''", data.GroupID, row.EventID, row.MemberID)
+								}
+							}}
+							<tr>
+								<td>{ kindLabel }</td>
+								<td>
+									if row.Kind == "participant" {
+										<a class="table-link" href={ fmt.Sprintf("/groups/%s/events/%s", data.GroupID, row.EventID) }>{ row.EventTitle }</a>
+										<span> - </span>
+										<a class="table-link" href={ fmt.Sprintf("/groups/%s/members/%s", data.GroupID, row.MemberID) }>{ row.MemberName }</a>
+									} else {
+										<a class="table-link" href={ fmt.Sprintf("/groups/%s/expenses/%s", data.GroupID, row.PaymentID) }>{ row.Title }</a>
+									}
+								</td>
+								<td class="text-right">{ utils.FormatNumberLocalized(ctx, row.Amount) }</td>
+								<td class="text-right">
+									if data.IsAdmin {
+										@shared.ToggleSwitch(shared.ToggleSwitchProps{IsOn: false, OnClick: togglePaidExpr, DisabledExpr: "false", AriaLabel: ctxi18n.T(ctx, "table.paid")})
+									} else {
+										{ ctxi18n.T(ctx, "table.unpaid") }
+									}
+								</td>
+								<td class="text-right">
+									<div class="row row-right"><span>-</span>
+										if data.IsAdmin {
+											@shared.IconActionButton(shared.IconActionButtonProps{ClassName: "btn btn-xs btn-text", OnClick: openPaidAtExpr, DisabledExpr: "false", AriaLabel: ctxi18n.T(ctx, "actions.edit"), Title: ctxi18n.T(ctx, "actions.edit"), IconName: icons.IconPencil})
+										}
+									</div>
+								</td>
+							</tr>
+						}
+					}
+				</tbody>
+			}
+	</section>
+	@GroupPaymentsPaidAtDialog()
+}

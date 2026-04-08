@@ -87,6 +87,79 @@ WHERE participants.group_id = sqlc.arg(group_id)
 ORDER BY participants.updated_at DESC
 LIMIT sqlc.arg(limit);
 
+-- name: ListUnpaidOutgoingParticipantsByGroup :many
+SELECT
+  participants.event_id,
+  participants.member_id,
+  participants.amount AS participant_amount,
+  participants.expense AS participant_expense,
+  participants.paid_at AS participant_paid_at,
+  members.name AS member_name,
+  events.title AS event_title
+FROM participants
+JOIN members ON members.id = participants.member_id AND members.group_id = participants.group_id
+JOIN events ON events.id = participants.event_id AND events.group_id = participants.group_id
+WHERE participants.group_id = sqlc.arg(group_id)
+  AND participants.paid = 0
+ORDER BY events.time ASC, members.name ASC;
+
+-- name: ListPaidOutgoingParticipantsByGroup :many
+SELECT
+  participants.event_id,
+  participants.member_id,
+  participants.amount AS participant_amount,
+  participants.expense AS participant_expense,
+  participants.paid_at AS participant_paid_at,
+  participants.updated_at AS participant_updated_at,
+  members.name AS member_name,
+  events.title AS event_title
+FROM participants
+JOIN members ON members.id = participants.member_id AND members.group_id = participants.group_id
+JOIN events ON events.id = participants.event_id AND events.group_id = participants.group_id
+WHERE participants.group_id = sqlc.arg(group_id)
+  AND participants.paid = 1
+ORDER BY COALESCE(participants.paid_at, participants.updated_at) DESC, participants.updated_at DESC;
+
+-- name: ListUnpaidOutgoingPaymentsByGroup :many
+SELECT
+  group_id,
+  payment_kind,
+  payment_id,
+  event_id,
+  member_id,
+  member_name,
+  event_title,
+  title,
+  amount,
+  paid,
+  paid_at,
+  updated_at,
+  sort_date
+FROM group_outgoing_payments
+WHERE group_id = sqlc.arg(group_id)
+  AND paid = 0
+ORDER BY sort_date ASC, updated_at DESC, payment_kind ASC;
+
+-- name: ListPaidOutgoingPaymentsByGroup :many
+SELECT
+  group_id,
+  payment_kind,
+  payment_id,
+  event_id,
+  member_id,
+  member_name,
+  event_title,
+  title,
+  amount,
+  paid,
+  paid_at,
+  updated_at,
+  sort_date
+FROM group_outgoing_payments
+WHERE group_id = sqlc.arg(group_id)
+  AND paid = 1
+ORDER BY COALESCE(paid_at, updated_at) DESC, updated_at DESC, payment_kind ASC;
+
 -- name: SumParticipantAmountsByGroup :one
 SELECT CAST(COALESCE(SUM(amount), 0) AS INTEGER) FROM participants
 WHERE group_id = ?;

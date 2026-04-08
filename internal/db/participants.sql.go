@@ -113,6 +113,125 @@ func (q *Queries) CountParticipantsByMemberFiltered(ctx context.Context, arg Cou
 	return count, err
 }
 
+const listPaidOutgoingParticipantsByGroup = `-- name: ListPaidOutgoingParticipantsByGroup :many
+SELECT
+  participants.event_id,
+  participants.member_id,
+  participants.amount AS participant_amount,
+  participants.expense AS participant_expense,
+  participants.paid_at AS participant_paid_at,
+  participants.updated_at AS participant_updated_at,
+  members.name AS member_name,
+  events.title AS event_title
+FROM participants
+JOIN members ON members.id = participants.member_id AND members.group_id = participants.group_id
+JOIN events ON events.id = participants.event_id AND events.group_id = participants.group_id
+WHERE participants.group_id = ?1
+  AND participants.paid = 1
+ORDER BY COALESCE(participants.paid_at, participants.updated_at) DESC, participants.updated_at DESC
+`
+
+type ListPaidOutgoingParticipantsByGroupRow struct {
+	EventID              string         `json:"event_id"`
+	MemberID             string         `json:"member_id"`
+	ParticipantAmount    int64          `json:"participant_amount"`
+	ParticipantExpense   int64          `json:"participant_expense"`
+	ParticipantPaidAt    sql.NullString `json:"participant_paid_at"`
+	ParticipantUpdatedAt sql.NullTime   `json:"participant_updated_at"`
+	MemberName           string         `json:"member_name"`
+	EventTitle           string         `json:"event_title"`
+}
+
+func (q *Queries) ListPaidOutgoingParticipantsByGroup(ctx context.Context, groupID string) ([]ListPaidOutgoingParticipantsByGroupRow, error) {
+	rows, err := q.db.QueryContext(ctx, listPaidOutgoingParticipantsByGroup, groupID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []ListPaidOutgoingParticipantsByGroupRow{}
+	for rows.Next() {
+		var i ListPaidOutgoingParticipantsByGroupRow
+		if err := rows.Scan(
+			&i.EventID,
+			&i.MemberID,
+			&i.ParticipantAmount,
+			&i.ParticipantExpense,
+			&i.ParticipantPaidAt,
+			&i.ParticipantUpdatedAt,
+			&i.MemberName,
+			&i.EventTitle,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const listPaidOutgoingPaymentsByGroup = `-- name: ListPaidOutgoingPaymentsByGroup :many
+SELECT
+  group_id,
+  payment_kind,
+  payment_id,
+  event_id,
+  member_id,
+  member_name,
+  event_title,
+  title,
+  amount,
+  paid,
+  paid_at,
+  updated_at,
+  sort_date
+FROM group_outgoing_payments
+WHERE group_id = ?1
+  AND paid = 1
+ORDER BY COALESCE(paid_at, updated_at) DESC, updated_at DESC, payment_kind ASC
+`
+
+func (q *Queries) ListPaidOutgoingPaymentsByGroup(ctx context.Context, groupID string) ([]GroupOutgoingPayment, error) {
+	rows, err := q.db.QueryContext(ctx, listPaidOutgoingPaymentsByGroup, groupID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []GroupOutgoingPayment{}
+	for rows.Next() {
+		var i GroupOutgoingPayment
+		if err := rows.Scan(
+			&i.GroupID,
+			&i.PaymentKind,
+			&i.PaymentID,
+			&i.EventID,
+			&i.MemberID,
+			&i.MemberName,
+			&i.EventTitle,
+			&i.Title,
+			&i.Amount,
+			&i.Paid,
+			&i.PaidAt,
+			&i.UpdatedAt,
+			&i.SortDate,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const listParticipantsByEvent = `-- name: ListParticipantsByEvent :many
 SELECT members.id, members.group_id, members.name, members.description, members.created_at, members.updated_at, participants.amount AS participant_amount, participants.expense AS participant_expense, participants.note AS participant_note, participants.paid AS participant_paid, participants.paid_at AS participant_paid_at
 FROM members
@@ -1820,6 +1939,122 @@ func (q *Queries) ListRecentPaidParticipantsByGroup(ctx context.Context, arg Lis
 			&i.ParticipantPaidAt,
 			&i.ParticipantUpdatedAt,
 			&i.MemberName,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const listUnpaidOutgoingParticipantsByGroup = `-- name: ListUnpaidOutgoingParticipantsByGroup :many
+SELECT
+  participants.event_id,
+  participants.member_id,
+  participants.amount AS participant_amount,
+  participants.expense AS participant_expense,
+  participants.paid_at AS participant_paid_at,
+  members.name AS member_name,
+  events.title AS event_title
+FROM participants
+JOIN members ON members.id = participants.member_id AND members.group_id = participants.group_id
+JOIN events ON events.id = participants.event_id AND events.group_id = participants.group_id
+WHERE participants.group_id = ?1
+  AND participants.paid = 0
+ORDER BY events.time ASC, members.name ASC
+`
+
+type ListUnpaidOutgoingParticipantsByGroupRow struct {
+	EventID            string         `json:"event_id"`
+	MemberID           string         `json:"member_id"`
+	ParticipantAmount  int64          `json:"participant_amount"`
+	ParticipantExpense int64          `json:"participant_expense"`
+	ParticipantPaidAt  sql.NullString `json:"participant_paid_at"`
+	MemberName         string         `json:"member_name"`
+	EventTitle         string         `json:"event_title"`
+}
+
+func (q *Queries) ListUnpaidOutgoingParticipantsByGroup(ctx context.Context, groupID string) ([]ListUnpaidOutgoingParticipantsByGroupRow, error) {
+	rows, err := q.db.QueryContext(ctx, listUnpaidOutgoingParticipantsByGroup, groupID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []ListUnpaidOutgoingParticipantsByGroupRow{}
+	for rows.Next() {
+		var i ListUnpaidOutgoingParticipantsByGroupRow
+		if err := rows.Scan(
+			&i.EventID,
+			&i.MemberID,
+			&i.ParticipantAmount,
+			&i.ParticipantExpense,
+			&i.ParticipantPaidAt,
+			&i.MemberName,
+			&i.EventTitle,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const listUnpaidOutgoingPaymentsByGroup = `-- name: ListUnpaidOutgoingPaymentsByGroup :many
+SELECT
+  group_id,
+  payment_kind,
+  payment_id,
+  event_id,
+  member_id,
+  member_name,
+  event_title,
+  title,
+  amount,
+  paid,
+  paid_at,
+  updated_at,
+  sort_date
+FROM group_outgoing_payments
+WHERE group_id = ?1
+  AND paid = 0
+ORDER BY sort_date ASC, updated_at DESC, payment_kind ASC
+`
+
+func (q *Queries) ListUnpaidOutgoingPaymentsByGroup(ctx context.Context, groupID string) ([]GroupOutgoingPayment, error) {
+	rows, err := q.db.QueryContext(ctx, listUnpaidOutgoingPaymentsByGroup, groupID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []GroupOutgoingPayment{}
+	for rows.Next() {
+		var i GroupOutgoingPayment
+		if err := rows.Scan(
+			&i.GroupID,
+			&i.PaymentKind,
+			&i.PaymentID,
+			&i.EventID,
+			&i.MemberID,
+			&i.MemberName,
+			&i.EventTitle,
+			&i.Title,
+			&i.Amount,
+			&i.Paid,
+			&i.PaidAt,
+			&i.UpdatedAt,
+			&i.SortDate,
 		); err != nil {
 			return nil, err
 		}
