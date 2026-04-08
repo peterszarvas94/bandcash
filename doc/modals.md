@@ -22,7 +22,7 @@
   - `FetchDoneExpr` -> reset `fetching/open` after request
 
 ## How to build a modal (feature-level)
-1. Add dialog state to `<feature>/view.go`.
+1. Add dialog state to `<feature>/page_data.go`.
 2. Expose it in `<feature>/signals.go`.
 3. Create a dialog template using `@shared.DialogShell(...)`.
 4. Add open button(s) in page table/card.

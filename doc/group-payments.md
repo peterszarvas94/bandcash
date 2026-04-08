@@ -16,8 +16,8 @@ Use this when changing group payment tabs, payment table behavior, or paid/unpai
 
 ## Route and handler entry points
 - Route registration: `models/group/routes.go`
-- Page handlers: `ToPayPage`, `ToReceivePage`, `RecentOutgoingPage`, `RecentIncomePage` in `models/group/handlers.go`
-- Active page patch selection: `detectPaymentsPageFromReferer` and `renderCurrentPaymentsPageHTML` in `models/group/handlers.go`
+- Page handlers: `ToPayPage`, `ToReceivePage`, `RecentOutgoingPage`, `RecentIncomePage` in `models/group/handlers_pages.go`
+- Active page patch selection: `detectPaymentsPageFromReferer` and `renderCurrentPaymentsPageHTML` in `models/group/handlers_actions.go`
 
 ## Templates
 - `models/group/page_to_pay.templ`

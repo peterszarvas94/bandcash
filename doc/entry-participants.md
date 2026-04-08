@@ -10,7 +10,7 @@ Use this when adding participant UI or wiring add/remove participant actions.
 
 ## Key paths
 - Event detail template: `models/event/page_show.templ` and `models/event/component_show_*.templ`
-- Event handlers: `models/event/handlers.go`
+- Event handlers: `models/event/handlers_pages.go`, `models/event/handlers_actions.go`
 - Participant data access: `internal/db/bun_queries.go`, `internal/db/bun_api.go`
 - SSE hub: `internal/utils/hub.go`
 
@@ -18,7 +18,7 @@ Use this when adding participant UI or wiring add/remove participant actions.
 - Tables use `.table` and numeric values use `.text-right`.
 - Forms use `class="form"` and `data-on:submit`.
 - Number inputs use `type="number"` and `step="0.01"`.
-- Keep signal structs in handlers aligned with `data-bind` names in templ.
+- Keep signal structs in `signals.go` aligned with `data-bind` names in templ.
 
 ## SSE update pattern
 - Use `utils.SSEHub.PatchHTML(c, html)` to patch full view markup.

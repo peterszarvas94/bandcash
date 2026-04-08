@@ -9,8 +9,8 @@
 Use this when you need to locate where to make changes without scanning the whole repo.
 
 ## Key paths
-- Routes and handlers: `models/**/routes.go`, `models/**/handlers.go`
-- View/data structs: `models/**/view.go`, `models/**/model.go`, `models/**/signals.go`
+- Routes and handlers: `models/**/routes.go`, `models/**/handlers_pages.go`, `models/**/handlers_actions.go`
+- View/data structs: `models/**/page_data.go`, `models/**/model.go`, `models/**/signals.go`
 - SSE + helpers: `internal/utils/hub.go`, `models/sse/**`
 - Middleware: `internal/middleware/*.go`
 - Templates: `models/**/*.templ` (+ generated `*_templ.go`)
@@ -22,7 +22,7 @@ Use this when you need to locate where to make changes without scanning the whol
 
 ## Scoped search rules
 - Start with `models/<area>/*.templ` when UI is mentioned.
-- Use `models/<area>/handlers.go` for request logic.
+- Use `models/<area>/handlers_pages.go` for page renders and `models/<area>/handlers_actions.go` for mutations/dialog actions.
 - Use `models/shared/table.templ` + `internal/utils/table_query.go` for table search/sort/pagination.
 - Use `internal/db/bunmigrations/*.sql` for schema changes.
 - Use `Glob` with narrow patterns before `Grep`.
