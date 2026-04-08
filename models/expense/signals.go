@@ -2,6 +2,37 @@ package expense
 
 import "bandcash/internal/utils"
 
+type expenseParams struct {
+	Title       string `json:"title" validate:"required,min=1,max=255"`
+	Description string `json:"description" validate:"max=1000"`
+	Amount      int64  `json:"amount" validate:"required,gt=0"`
+	Date        string `json:"date" validate:"required"`
+	Paid        bool   `json:"paid"`
+	PaidAt      string `json:"paidAt"`
+}
+
+type expenseTableParams struct {
+	TabID      string           `json:"tab_id"`
+	FormData   expenseParams    `json:"formData"`
+	TableQuery utils.TableQuery `json:"tableQuery"`
+	Mode       string           `json:"mode"`
+}
+
+type modeParams struct {
+	TabID      string           `json:"tab_id"`
+	Mode       string           `json:"mode"`
+	TableQuery utils.TableQuery `json:"tableQuery"`
+}
+
+type paidAtParams struct {
+	TabID        string           `json:"tab_id"`
+	Mode         string           `json:"mode"`
+	TableQuery   utils.TableQuery `json:"tableQuery"`
+	PaidAtDialog struct {
+		Value string `json:"value"`
+	} `json:"paidAtDialog"`
+}
+
 func expenseIndexSignals(query utils.TableQuery) map[string]any {
 	return map[string]any{
 		"tableQuery":      utils.TableQuerySignals(query),
