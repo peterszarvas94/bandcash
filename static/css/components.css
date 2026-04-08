@@ -942,6 +942,30 @@
     }
   }
 
+  /* .wide_layout { */
+  /*   display: flex; */
+  /*   justify-content: center; */
+  /*   width: 100%; */
+  /**/
+  /*   main { */
+  /*     padding: var(--space); */
+  /*     max-width: var(--wide-width); */
+  /*     width: 100%; */
+  /*   } */
+  /* } */
+
+  .common_layout {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+
+    main {
+      padding: var(--space);
+      max-width: var(--content-width);
+      width: 100%;
+    }
+  }
+
   .error-page {
     display: flex;
     flex-direction: column;
