@@ -9,7 +9,7 @@ RUN go mod download
 
 COPY . .
 ENV CGO_ENABLED=1
-RUN APP_ENV=production go run ./cmd/assets/main.go
+RUN APP_ENV=production go run ./cmd/assets
 RUN go build -o server ./cmd/server
 
 FROM alpine:latest
@@ -20,8 +20,6 @@ WORKDIR /app
 
 COPY --from=builder /app/server .
 COPY --from=builder /app/static ./static
-COPY --from=builder /app/models ./models
-COPY --from=builder /app/internal/db/migrations ./internal/db/migrations
 
 EXPOSE 8080
 
