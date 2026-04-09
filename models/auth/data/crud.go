@@ -157,6 +157,8 @@ func CreateMagicLink(ctx context.Context, arg CreateMagicLinkParams) (db.MagicLi
 		Action:    arg.Action,
 		GroupID:   arg.GroupID,
 		ExpiresAt: arg.ExpiresAt,
+		// TODO: Make invite_role schema/action-aware so login links do not need a placeholder role.
+		InviteRole: "viewer",
 	}
 	_, err := db.BunDB.NewInsert().
 		Model(&row).
