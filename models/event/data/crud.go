@@ -24,10 +24,11 @@ func GetEventByID(ctx context.Context, id string) (db.Event, error) {
 func ListEvents(ctx context.Context, groupID string) ([]db.Event, error) {
 	rows := make([]db.Event, 0)
 	err := db.BunDB.NewSelect().
-		Model(&rows).
+		TableExpr("events").
+		Column("amount", "paid").
 		Where("group_id = ?", groupID).
 		OrderExpr("time ASC").
-		Scan(ctx)
+		Scan(ctx, &rows)
 	return rows, err
 }
 
