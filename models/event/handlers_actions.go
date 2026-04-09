@@ -14,8 +14,8 @@ import (
 
 	"bandcash/internal/db"
 	"bandcash/internal/utils"
-	eventstore "bandcash/models/event/store"
-	memberstore "bandcash/models/member/store"
+	eventstore "bandcash/models/event/data"
+	memberstore "bandcash/models/member/data"
 )
 
 // Default signal states for resetting forms on success

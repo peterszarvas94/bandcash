@@ -10,8 +10,8 @@ import (
 	"github.com/starfederation/datastar-go/datastar"
 
 	"bandcash/internal/utils"
-	eventstore "bandcash/models/event/store"
-	memberstore "bandcash/models/member/store"
+	eventstore "bandcash/models/event/data"
+	memberstore "bandcash/models/member/data"
 )
 
 // Default signal state for resetting member forms on success

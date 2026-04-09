@@ -6,7 +6,7 @@ import (
 
 	"bandcash/internal/db"
 	"bandcash/internal/utils"
-	groupstore "bandcash/models/group/store"
+	groupstore "bandcash/models/group/data"
 )
 
 type GroupModel struct {

@@ -7,9 +7,10 @@ import (
 	"strconv"
 	"strings"
 
+	"bandcash/internal/flags"
 	"bandcash/internal/utils"
-	adminstore "bandcash/models/admin/store"
-	authstore "bandcash/models/auth/store"
+	adminstore "bandcash/models/admin/data"
+	authstore "bandcash/models/auth/data"
 	shared "bandcash/models/shared"
 
 	ctxi18n "github.com/invopop/ctxi18n/i18n"
@@ -34,7 +35,7 @@ func FlagsPage(c echo.Context) error {
 		return c.Redirect(http.StatusFound, "/login")
 	}
 
-	signupEnabled, err := utils.IsSignupEnabled(c.Request().Context())
+	signupEnabled, err := flags.IsSignupEnabled(c.Request().Context())
 	if err != nil {
 		slog.Error("admin.flags: failed to read enable_signup flag", "err", err)
 		return c.NoContent(http.StatusInternalServerError)
@@ -199,7 +200,7 @@ func UpdateSignupFlag(c echo.Context) error {
 	case "0", "false", "off":
 		next = false
 	default:
-		current, err := utils.IsSignupEnabled(c.Request().Context())
+		current, err := flags.IsSignupEnabled(c.Request().Context())
 		if err != nil {
 			slog.Error("admin.flags.update_signup: failed to read flag", "err", err)
 			return c.NoContent(http.StatusInternalServerError)
@@ -207,7 +208,7 @@ func UpdateSignupFlag(c echo.Context) error {
 		next = !current
 	}
 
-	if err := utils.SetSignupEnabled(c.Request().Context(), next); err != nil {
+	if err := flags.SetSignupEnabled(c.Request().Context(), next); err != nil {
 		slog.Error("admin.flags.update_signup: failed to update flag", "err", err)
 		utils.Notify(c, ctxi18n.T(c.Request().Context(), "admin.flags.update_failed"))
 		return c.NoContent(http.StatusInternalServerError)

@@ -6,8 +6,8 @@ import (
 	ctxi18n "github.com/invopop/ctxi18n/i18n"
 
 	"bandcash/internal/utils"
-	groupstore "bandcash/models/group/store"
-	memberstore "bandcash/models/member/store"
+	groupstore "bandcash/models/group/data"
+	memberstore "bandcash/models/member/data"
 )
 
 func TableQuerySpec() utils.TableQuerySpec {

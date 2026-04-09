@@ -4,7 +4,7 @@ import (
 	"database/sql"
 	"testing"
 
-	memberstore "bandcash/models/member/store"
+	memberstore "bandcash/models/member/data"
 )
 
 func TestMemberTableSpecs(t *testing.T) {

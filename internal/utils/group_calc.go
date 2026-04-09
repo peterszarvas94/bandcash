@@ -4,8 +4,8 @@ import (
 	"context"
 	"log/slog"
 
-	eventstore "bandcash/models/event/store"
-	expensestore "bandcash/models/expense/store"
+	eventstore "bandcash/models/event/data"
+	expensestore "bandcash/models/expense/data"
 )
 
 // CalculateGroupTotals computes all financial totals for a group in-memory

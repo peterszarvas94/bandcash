@@ -3,7 +3,7 @@ package event
 import (
 	"bandcash/internal/db"
 	"bandcash/internal/utils"
-	eventstore "bandcash/models/event/store"
+	eventstore "bandcash/models/event/data"
 )
 
 type EventData struct {

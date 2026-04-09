@@ -11,8 +11,8 @@ import (
 
 	appi18n "bandcash/internal/i18n"
 	"bandcash/internal/utils"
-	authstore "bandcash/models/auth/store"
-	groupstore "bandcash/models/group/store"
+	authstore "bandcash/models/auth/data"
+	groupstore "bandcash/models/group/data"
 )
 
 // RequireAuth ensures user is logged in.

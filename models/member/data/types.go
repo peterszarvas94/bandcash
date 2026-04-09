@@ -1,4 +1,4 @@
-package store
+package data
 
 type GetMemberParams struct {
 	ID      string `json:"id"`

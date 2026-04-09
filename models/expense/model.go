@@ -9,8 +9,8 @@ import (
 
 	"bandcash/internal/db"
 	"bandcash/internal/utils"
-	expensestore "bandcash/models/expense/store"
-	groupstore "bandcash/models/group/store"
+	expensestore "bandcash/models/expense/data"
+	groupstore "bandcash/models/group/data"
 )
 
 func TableQuerySpec() utils.TableQuerySpec {

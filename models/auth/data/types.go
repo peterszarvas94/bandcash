@@ -1,4 +1,4 @@
-package store
+package data
 
 import (
 	"database/sql"
@@ -31,11 +31,6 @@ type BanUserParams struct {
 type UpdateUserPreferredLangParams struct {
 	PreferredLang string `json:"preferred_lang"`
 	ID            string `json:"id"`
-}
-
-type UpsertAppFlagBoolParams struct {
-	Key       string `json:"key"`
-	BoolValue int64  `json:"bool_value"`
 }
 
 type ListUserDetailCardStatesRow struct {

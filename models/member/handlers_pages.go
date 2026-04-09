@@ -8,8 +8,8 @@ import (
 	"github.com/labstack/echo/v4"
 
 	"bandcash/internal/utils"
-	groupstore "bandcash/models/group/store"
-	memberstore "bandcash/models/member/store"
+	groupstore "bandcash/models/group/data"
+	memberstore "bandcash/models/member/data"
 )
 
 func NewMemberPage(c echo.Context) error {

@@ -10,8 +10,8 @@ import (
 	"github.com/labstack/echo/v4"
 
 	"bandcash/internal/utils"
-	authstore "bandcash/models/auth/store"
-	groupstore "bandcash/models/group/store"
+	authstore "bandcash/models/auth/data"
+	groupstore "bandcash/models/group/data"
 )
 
 func (g *Group) NewGroupPage(c echo.Context) error {

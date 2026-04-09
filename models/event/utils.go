@@ -11,7 +11,7 @@ import (
 
 	"bandcash/internal/db"
 	"bandcash/internal/utils"
-	authstore "bandcash/models/auth/store"
+	authstore "bandcash/models/auth/data"
 )
 
 func normalizeCacheKeyPart(value string) string {

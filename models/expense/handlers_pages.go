@@ -8,8 +8,8 @@ import (
 	"github.com/labstack/echo/v4"
 
 	"bandcash/internal/utils"
-	expensestore "bandcash/models/expense/store"
-	groupstore "bandcash/models/group/store"
+	expensestore "bandcash/models/expense/data"
+	groupstore "bandcash/models/group/data"
 )
 
 func NewExpensePage(c echo.Context) error {

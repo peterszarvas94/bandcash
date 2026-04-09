@@ -1,4 +1,4 @@
-package store
+package data
 
 type GetExpenseParams struct {
 	ID      string `json:"id"`

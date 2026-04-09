@@ -6,7 +6,7 @@ import (
 	"github.com/labstack/echo/v4"
 
 	"bandcash/internal/utils"
-	authstore "bandcash/models/auth/store"
+	authstore "bandcash/models/auth/data"
 )
 
 type staticTableQueryable struct {

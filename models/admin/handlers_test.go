@@ -6,7 +6,7 @@ import (
 
 	"github.com/labstack/echo/v4"
 
-	adminstore "bandcash/models/admin/store"
+	adminstore "bandcash/models/admin/data"
 )
 
 func TestParseIntParamAndAdminQueries(t *testing.T) {

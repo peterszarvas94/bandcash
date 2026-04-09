@@ -14,7 +14,7 @@ import (
 	"bandcash/internal/email"
 	appi18n "bandcash/internal/i18n"
 	"bandcash/internal/utils"
-	authstore "bandcash/models/auth/store"
+	authstore "bandcash/models/auth/data"
 	shared "bandcash/models/shared"
 	icons "bandcash/models/shared/icons"
 )

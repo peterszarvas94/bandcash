@@ -8,7 +8,7 @@ import (
 	"github.com/labstack/echo/v4"
 
 	"bandcash/internal/utils"
-	groupstore "bandcash/models/group/store"
+	groupstore "bandcash/models/group/data"
 )
 
 func IndexPage(c echo.Context) error {

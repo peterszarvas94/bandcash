@@ -1,4 +1,4 @@
-package store
+package data
 
 import (
 	"context"
@@ -96,22 +96,6 @@ func ListUserSessions(ctx context.Context, userID string) ([]db.UserSession, err
 		OrderExpr("created_at DESC").
 		Scan(ctx)
 	return rows, err
-}
-
-func GetAppFlagBool(ctx context.Context, key string) (int64, error) {
-	var row db.AppFlag
-	err := db.BunDB.NewSelect().Model(&row).Where("key = ?", key).Scan(ctx)
-	return row.BoolValue, err
-}
-
-func UpsertAppFlagBool(ctx context.Context, arg UpsertAppFlagBoolParams) error {
-	_, err := db.BunDB.NewInsert().
-		Model(&db.AppFlag{Key: arg.Key, BoolValue: arg.BoolValue}).
-		On("CONFLICT(key) DO UPDATE").
-		Set("bool_value = EXCLUDED.bool_value").
-		Set("updated_at = CURRENT_TIMESTAMP").
-		Exec(ctx)
-	return err
 }
 
 func ListUserDetailCardStates(ctx context.Context, userID string) ([]ListUserDetailCardStatesRow, error) {

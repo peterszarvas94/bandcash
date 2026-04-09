@@ -10,7 +10,7 @@ import (
 	"github.com/starfederation/datastar-go/datastar"
 
 	"bandcash/internal/utils"
-	expensestore "bandcash/models/expense/store"
+	expensestore "bandcash/models/expense/data"
 )
 
 var (
