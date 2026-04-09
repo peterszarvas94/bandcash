@@ -57,21 +57,32 @@ func ListEventsTable(ctx context.Context, params EventTableListParams) ([]db.Eve
 }
 
 func SumEventIncomeTotalsTable(ctx context.Context, filter EventTableFilter) (EventIncomeTotals, error) {
-	var totals EventIncomeTotals
-	q := db.BunDB.NewSelect().TableExpr("events")
+	rows := make([]db.Event, 0)
+	q := db.BunDB.NewSelect().
+		Model(&rows).
+		Column("amount", "paid")
 	q = applyEventTableFilters(q, filter)
-	err := q.ColumnExpr("CAST(COALESCE(SUM(amount), 0) AS INTEGER) AS total").
-		ColumnExpr("CAST(COALESCE(SUM(CASE WHEN paid = 1 THEN amount ELSE 0 END), 0) AS INTEGER) AS paid").
-		Scan(ctx, &totals)
-	return totals, err
+	if err := q.Scan(ctx); err != nil {
+		return EventIncomeTotals{}, err
+	}
+
+	totals := EventIncomeTotals{}
+	for _, row := range rows {
+		totals.Total += row.Amount
+		if row.Paid == 1 {
+			totals.Paid += row.Amount
+		}
+	}
+	return totals, nil
 }
 
 func SumParticipantTotalsByGroupTable(ctx context.Context, filter EventTableFilter) (ParticipantGroupTotals, error) {
-	var totals ParticipantGroupTotals
+	rows := make([]db.Participant, 0)
 	q := db.BunDB.NewSelect().
 		TableExpr("participants").
-		ColumnExpr("CAST(COALESCE(SUM(CASE WHEN participants.paid = 1 THEN participants.amount + participants.expense ELSE 0 END), 0) AS INTEGER) AS total_paid").
-		ColumnExpr("CAST(COALESCE(SUM(CASE WHEN participants.paid = 0 THEN participants.amount + participants.expense ELSE 0 END), 0) AS INTEGER) AS total_unpaid").
+		ColumnExpr("participants.amount").
+		ColumnExpr("participants.expense").
+		ColumnExpr("participants.paid").
 		Join("JOIN events ON events.id = participants.event_id").
 		Where("participants.group_id = ?", filter.GroupID)
 
@@ -80,8 +91,20 @@ func SumParticipantTotalsByGroupTable(ctx context.Context, filter EventTableFilt
 	})
 	q = applyDateRangeOrYear(q, filter.From, filter.To, filter.Year, "events.time")
 
-	err := q.Scan(ctx, &totals)
-	return totals, err
+	if err := q.Scan(ctx, &rows); err != nil {
+		return ParticipantGroupTotals{}, err
+	}
+
+	totals := ParticipantGroupTotals{}
+	for _, row := range rows {
+		value := row.Amount + row.Expense
+		if row.Paid == 1 {
+			totals.TotalPaid += value
+		} else {
+			totals.TotalUnpaid += value
+		}
+	}
+	return totals, nil
 }
 
 func applyEventTableFilters(q *bun.SelectQuery, filter EventTableFilter) *bun.SelectQuery {

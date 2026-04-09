@@ -52,13 +52,23 @@ func ListExpensesTable(ctx context.Context, params ExpenseTableListParams) ([]db
 }
 
 func SumExpenseTotalsTable(ctx context.Context, filter ExpenseTableFilter) (ExpenseTotals, error) {
-	var totals ExpenseTotals
-	q := db.BunDB.NewSelect().TableExpr("expenses")
+	rows := make([]db.Expense, 0)
+	q := db.BunDB.NewSelect().
+		Model(&rows).
+		Column("amount", "paid")
 	q = applyExpenseTableFilters(q, filter)
-	err := q.ColumnExpr("CAST(COALESCE(SUM(amount), 0) AS INTEGER) AS total").
-		ColumnExpr("CAST(COALESCE(SUM(CASE WHEN paid = 1 THEN amount ELSE 0 END), 0) AS INTEGER) AS paid").
-		Scan(ctx, &totals)
-	return totals, err
+	if err := q.Scan(ctx); err != nil {
+		return ExpenseTotals{}, err
+	}
+
+	totals := ExpenseTotals{}
+	for _, row := range rows {
+		totals.Total += row.Amount
+		if row.Paid == 1 {
+			totals.Paid += row.Amount
+		}
+	}
+	return totals, nil
 }
 
 func applyExpenseTableFilters(q *bun.SelectQuery, filter ExpenseTableFilter) *bun.SelectQuery {

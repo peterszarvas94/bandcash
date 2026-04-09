@@ -35,13 +35,20 @@ func CountUsersTable(ctx context.Context, search string) (int64, error) {
 }
 
 func ListUsersTable(ctx context.Context, search, sort, dir string, limit, offset int) ([]AdminUserTableRow, error) {
-	rows := make([]AdminUserTableRow, 0)
+	type rawRow struct {
+		ID           string         `bun:"id"`
+		Email        string         `bun:"email"`
+		CreatedAt    sql.NullTime   `bun:"created_at"`
+		BannedUserID sql.NullString `bun:"banned_user_id"`
+	}
+
+	rawRows := make([]rawRow, 0)
 	q := db.BunDB.NewSelect().
 		TableExpr("users").
 		ColumnExpr("users.id").
 		ColumnExpr("users.email").
 		ColumnExpr("users.created_at").
-		ColumnExpr("CAST(CASE WHEN bu.user_id IS NULL THEN 0 ELSE 1 END AS INTEGER) AS is_banned").
+		ColumnExpr("bu.user_id AS banned_user_id").
 		Join("LEFT JOIN banned_users AS bu ON bu.user_id = users.id")
 
 	search = strings.TrimSpace(search)
@@ -67,8 +74,25 @@ func ListUsersTable(ctx context.Context, search, sort, dir string, limit, offset
 		q = q.Offset(offset)
 	}
 
-	err := q.Scan(ctx, &rows)
-	return rows, err
+	err := q.Scan(ctx, &rawRows)
+	if err != nil {
+		return nil, err
+	}
+
+	rows := make([]AdminUserTableRow, 0, len(rawRows))
+	for _, row := range rawRows {
+		isBanned := int64(0)
+		if row.BannedUserID.Valid && row.BannedUserID.String != "" {
+			isBanned = 1
+		}
+		rows = append(rows, AdminUserTableRow{
+			ID:        row.ID,
+			Email:     row.Email,
+			CreatedAt: row.CreatedAt,
+			IsBanned:  isBanned,
+		})
+	}
+	return rows, nil
 }
 
 func CountGroupsTable(ctx context.Context, search string) (int64, error) {

@@ -194,14 +194,25 @@ func ListParticipantsByEvent(ctx context.Context, arg ListParticipantsByEventPar
 }
 
 func SumParticipantPaidAmountsByGroup(ctx context.Context, groupID string) (SumParticipantPaidAmountsByGroupRow, error) {
-	var row SumParticipantPaidAmountsByGroupRow
+	rows := make([]db.Participant, 0)
 	err := db.BunDB.NewSelect().
-		TableExpr("participants").
-		ColumnExpr("CAST(COALESCE(SUM(CASE WHEN paid = 1 THEN amount ELSE 0 END), 0) AS INTEGER) AS paid_amount").
-		ColumnExpr("CAST(COALESCE(SUM(CASE WHEN paid = 0 THEN amount ELSE 0 END), 0) AS INTEGER) AS unpaid_amount").
+		Model(&rows).
+		Column("amount", "paid").
 		Where("group_id = ?", groupID).
-		Scan(ctx, &row)
-	return row, err
+		Scan(ctx)
+	if err != nil {
+		return SumParticipantPaidAmountsByGroupRow{}, err
+	}
+
+	totals := SumParticipantPaidAmountsByGroupRow{}
+	for _, row := range rows {
+		if row.Paid == 1 {
+			totals.PaidAmount += row.Amount
+		} else {
+			totals.UnpaidAmount += row.Amount
+		}
+	}
+	return totals, nil
 }
 
 func ToggleParticipantPaid(ctx context.Context, arg ToggleParticipantPaidParams) (db.Participant, error) {

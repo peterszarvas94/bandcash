@@ -112,18 +112,35 @@ func CountMemberEventsTable(ctx context.Context, filter MemberEventFilter) (int6
 }
 
 func SumMemberEventTotalsTable(ctx context.Context, filter MemberEventFilter) (MemberEventTotals, error) {
-	var totals MemberEventTotals
+	rows := make([]struct {
+		Amount  int64 `bun:"amount"`
+		Expense int64 `bun:"expense"`
+		Paid    int64 `bun:"paid"`
+	}, 0)
 	q := db.BunDB.NewSelect().
 		TableExpr("events").
-		ColumnExpr("CAST(COALESCE(SUM(participants.amount), 0) AS INTEGER) AS total_cut").
-		ColumnExpr("CAST(COALESCE(SUM(participants.expense), 0) AS INTEGER) AS total_expense").
-		ColumnExpr("CAST(COALESCE(SUM(participants.amount + participants.expense), 0) AS INTEGER) AS total_payout").
-		ColumnExpr("CAST(COALESCE(SUM(CASE WHEN participants.paid = 1 THEN participants.amount + participants.expense ELSE 0 END), 0) AS INTEGER) AS total_paid").
-		ColumnExpr("CAST(COALESCE(SUM(CASE WHEN participants.paid = 0 THEN participants.amount + participants.expense ELSE 0 END), 0) AS INTEGER) AS total_unpaid").
+		ColumnExpr("participants.amount").
+		ColumnExpr("participants.expense").
+		ColumnExpr("participants.paid").
 		Join("JOIN participants ON participants.event_id = events.id")
 	q = applyMemberEventFilters(q, filter)
-	err := q.Scan(ctx, &totals)
-	return totals, err
+	if err := q.Scan(ctx, &rows); err != nil {
+		return MemberEventTotals{}, err
+	}
+
+	totals := MemberEventTotals{}
+	for _, row := range rows {
+		totals.TotalCut += row.Amount
+		totals.TotalExpense += row.Expense
+		payout := row.Amount + row.Expense
+		totals.TotalPayout += payout
+		if row.Paid == 1 {
+			totals.TotalPaid += payout
+		} else {
+			totals.TotalUnpaid += payout
+		}
+	}
+	return totals, nil
 }
 
 func ListMemberEventsTable(ctx context.Context, params MemberEventListParams) ([]MemberEventRow, error) {
