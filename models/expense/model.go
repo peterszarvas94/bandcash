@@ -9,6 +9,8 @@ import (
 
 	"bandcash/internal/db"
 	"bandcash/internal/utils"
+	expensestore "bandcash/models/expense/store"
+	groupstore "bandcash/models/group/store"
 )
 
 func TableQuerySpec() utils.TableQuerySpec {
@@ -20,12 +22,12 @@ func TableQuerySpec() utils.TableQuerySpec {
 }
 
 func GetIndexData(ctx context.Context, groupID string, query utils.TableQuery) (ExpensesData, error) {
-	group, err := db.GetGroupByID(ctx, groupID)
+	group, err := groupstore.GetGroupByID(ctx, groupID)
 	if err != nil {
 		return ExpensesData{}, err
 	}
 
-	filters := db.ExpenseTableFilter{
+	filters := expensestore.ExpenseTableFilter{
 		GroupID: groupID,
 		Search:  query.Search,
 		Year:    query.Year,
@@ -33,13 +35,13 @@ func GetIndexData(ctx context.Context, groupID string, query utils.TableQuery) (
 		To:      query.To,
 	}
 
-	totalItems, err := db.CountExpensesTable(ctx, filters)
+	totalItems, err := expensestore.CountExpensesTable(ctx, filters)
 	if err != nil {
 		return ExpensesData{}, err
 	}
 	query = utils.ClampPage(query, totalItems)
 
-	expenses, err := db.ListExpensesTable(ctx, db.ExpenseTableListParams{
+	expenses, err := expensestore.ListExpensesTable(ctx, expensestore.ExpenseTableListParams{
 		ExpenseTableFilter: filters,
 		Sort:               query.Sort,
 		Dir:                query.Dir,
@@ -50,7 +52,7 @@ func GetIndexData(ctx context.Context, groupID string, query utils.TableQuery) (
 		return ExpensesData{}, err
 	}
 
-	totalRows, err := db.SumExpenseTotalsTable(ctx, filters)
+	totalRows, err := expensestore.SumExpenseTotalsTable(ctx, filters)
 	if err != nil {
 		return ExpensesData{}, err
 	}
@@ -173,12 +175,12 @@ func buildExpensesData(ctx context.Context, groupID string, group db.Group, quer
 }
 
 func GetShowData(ctx context.Context, groupID, expenseID string) (ExpenseData, error) {
-	group, err := db.GetGroupByID(ctx, groupID)
+	group, err := groupstore.GetGroupByID(ctx, groupID)
 	if err != nil {
 		return ExpenseData{}, err
 	}
 
-	expense, err := db.GetExpense(ctx, db.GetExpenseParams{
+	expense, err := expensestore.GetExpense(ctx, expensestore.GetExpenseParams{
 		ID:      expenseID,
 		GroupID: groupID,
 	})

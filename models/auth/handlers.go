@@ -16,14 +16,12 @@ import (
 	"bandcash/internal/db"
 	"bandcash/internal/email"
 	appi18n "bandcash/internal/i18n"
-	"bandcash/internal/middleware"
 	"bandcash/internal/utils"
+	authstore "bandcash/models/auth/store"
+	groupstore "bandcash/models/group/store"
 	shared "bandcash/models/shared"
 	icons "bandcash/models/shared/icons"
 )
-
-type Auth struct {
-}
 
 const resendCooldown = 30 * time.Second
 
@@ -32,10 +30,6 @@ type authSignals struct {
 	FormData struct {
 		Email string `json:"email" validate:"required,email,max=320"`
 	} `json:"formData"`
-}
-
-func New() *Auth {
-	return &Auth{}
 }
 
 func maskEmail(email string) string {
@@ -70,12 +64,12 @@ func authSessionUser(c echo.Context) (bool, string) {
 		return false, ""
 	}
 
-	session, err := db.GetUserSessionByToken(c.Request().Context(), cookie.Value)
+	session, err := authstore.GetUserSessionByToken(c.Request().Context(), cookie.Value)
 	if err != nil {
 		return false, ""
 	}
 
-	user, err := db.GetUserByID(c.Request().Context(), session.UserID)
+	user, err := authstore.GetUserByID(c.Request().Context(), session.UserID)
 	if err != nil {
 		return true, ""
 	}
@@ -95,13 +89,13 @@ func syncPreferredLangFromQuery(c echo.Context, userID string, currentPreferredL
 		return
 	}
 
-	_ = db.UpdateUserPreferredLang(c.Request().Context(), db.UpdateUserPreferredLangParams{
+	_ = authstore.UpdateUserPreferredLang(c.Request().Context(), authstore.UpdateUserPreferredLangParams{
 		ID:            userID,
 		PreferredLang: lang,
 	})
 }
 
-func (a *Auth) patchLoginSentState(c echo.Context, emailAddress string) {
+func patchLoginSentState(c echo.Context, emailAddress string) {
 	_ = utils.SSEHub.PatchSignals(c, map[string]any{
 		"authError":            "",
 		"authServerError":      "",
@@ -112,7 +106,7 @@ func (a *Auth) patchLoginSentState(c echo.Context, emailAddress string) {
 	})
 }
 
-func (a *Auth) renderVerifyLinkError(c echo.Context, status int) error {
+func renderVerifyLinkError(c echo.Context, status int) error {
 	ctx := c.Request().Context()
 	return utils.RenderPage(c, shared.ErrorPage(shared.ErrorPageData{
 		Title:      ctxi18n.T(ctx, "error_pages.link.invalid_title"),
@@ -126,7 +120,7 @@ func (a *Auth) renderVerifyLinkError(c echo.Context, status int) error {
 }
 
 // LoginPage shows the login form
-func (a *Auth) LoginPage(c echo.Context) error {
+func LoginPageHandler(c echo.Context) error {
 	utils.EnsureTabID(c)
 
 	ctx := c.Request().Context()
@@ -154,7 +148,7 @@ func (a *Auth) LoginPage(c echo.Context) error {
 }
 
 // LoginRequest handles login form submission (sends magic link)
-func (a *Auth) LoginRequest(c echo.Context) error {
+func LoginRequest(c echo.Context) error {
 	signals := authSignals{}
 	if err := datastar.ReadSignals(c.Request(), &signals); err != nil {
 		return c.NoContent(http.StatusBadRequest)
@@ -169,7 +163,7 @@ func (a *Auth) LoginRequest(c echo.Context) error {
 	}
 	emailAddress := signals.FormData.Email
 
-	loginUser, err := db.GetUserByEmail(c.Request().Context(), emailAddress)
+	loginUser, err := authstore.GetUserByEmail(c.Request().Context(), emailAddress)
 	if err != nil {
 		if !errors.Is(err, sql.ErrNoRows) {
 			slog.Error("auth.login: failed to load user by email", "err", err)
@@ -183,42 +177,42 @@ func (a *Auth) LoginRequest(c echo.Context) error {
 		signupEnabled, err := utils.IsSignupEnabled(c.Request().Context())
 		if err != nil {
 			slog.Error("auth.login: failed to read signup flag", "err", err)
-			a.patchLoginSentState(c, emailAddress)
+			patchLoginSentState(c, emailAddress)
 			return c.NoContent(http.StatusOK)
 		}
 
 		if !signupEnabled {
-			a.patchLoginSentState(c, emailAddress)
+			patchLoginSentState(c, emailAddress)
 			return c.NoContent(http.StatusOK)
 		}
 
-		loginUser, err = db.CreateUser(c.Request().Context(), db.CreateUserParams{
+		loginUser, err = authstore.CreateUser(c.Request().Context(), authstore.CreateUserParams{
 			ID:            utils.GenerateID("usr"),
 			Email:         emailAddress,
 			PreferredLang: appi18n.LocaleCode(c.Request().Context()),
 		})
 		if err != nil {
 			slog.Error("auth.login: failed to create user", "err", err)
-			a.patchLoginSentState(c, emailAddress)
+			patchLoginSentState(c, emailAddress)
 			return c.NoContent(http.StatusOK)
 		}
 	}
 
-	bannedCount, err := db.IsUserBanned(c.Request().Context(), loginUser.ID)
+	bannedCount, err := authstore.IsUserBanned(c.Request().Context(), loginUser.ID)
 	if err != nil {
 		slog.Error("auth.login: failed to check user ban", "err", err)
-		a.patchLoginSentState(c, emailAddress)
+		patchLoginSentState(c, emailAddress)
 		return c.NoContent(http.StatusOK)
 	}
 	if bannedCount > 0 {
-		a.patchLoginSentState(c, emailAddress)
+		patchLoginSentState(c, emailAddress)
 		return c.NoContent(http.StatusOK)
 	}
 
 	token := utils.GenerateID("tok")
 	expiresAt := time.Now().Add(1 * time.Hour)
 
-	_, err = db.CreateMagicLink(c.Request().Context(), db.CreateMagicLinkParams{
+	_, err = authstore.CreateMagicLink(c.Request().Context(), authstore.CreateMagicLinkParams{
 		ID:        utils.GenerateID("mag"),
 		Token:     token,
 		Email:     emailAddress,
@@ -227,7 +221,7 @@ func (a *Auth) LoginRequest(c echo.Context) error {
 	})
 	if err != nil {
 		slog.Error("auth.login: failed to create magic link", "err", err)
-		a.patchLoginSentState(c, emailAddress)
+		patchLoginSentState(c, emailAddress)
 		return c.NoContent(http.StatusOK)
 	}
 
@@ -242,72 +236,72 @@ func (a *Auth) LoginRequest(c echo.Context) error {
 		slog.Error("auth.login: failed to send email", "err", err)
 	}
 
-	a.patchLoginSentState(c, emailAddress)
+	patchLoginSentState(c, emailAddress)
 	return c.NoContent(http.StatusOK)
 }
 
 // LoginSentPage shows confirmation that email was sent
-func (a *Auth) LoginSentPage(c echo.Context) error {
+func LoginSentPage(c echo.Context) error {
 	return c.Redirect(http.StatusFound, "/login")
 }
 
 // VerifyMagicLink handles the magic link verification
-func (a *Auth) VerifyMagicLink(c echo.Context) error {
+func VerifyMagicLink(c echo.Context) error {
 	token := c.QueryParam("token")
 	if !utils.IsValidID(token, "tok") {
-		return a.renderVerifyLinkError(c, http.StatusBadRequest)
+		return renderVerifyLinkError(c, http.StatusBadRequest)
 	}
 
 	locale := appi18n.NormalizeLocale(c.QueryParam("lang"))
 
 	// Get magic link
-	magicLink, err := db.GetMagicLinkByToken(c.Request().Context(), token)
+	magicLink, err := authstore.GetMagicLinkByToken(c.Request().Context(), token)
 	if err != nil {
-		return a.renderVerifyLinkError(c, http.StatusBadRequest)
+		return renderVerifyLinkError(c, http.StatusBadRequest)
 	}
 
 	// Check if already used
 	if magicLink.UsedAt.Valid {
-		return a.renderVerifyLinkError(c, http.StatusBadRequest)
+		return renderVerifyLinkError(c, http.StatusBadRequest)
 	}
 
 	// Invite links do not expire.
 	if magicLink.Action != "invite" && time.Now().After(magicLink.ExpiresAt) {
-		return a.renderVerifyLinkError(c, http.StatusBadRequest)
+		return renderVerifyLinkError(c, http.StatusBadRequest)
 	}
 
 	// Mark as used
-	err = db.UseMagicLink(c.Request().Context(), magicLink.ID)
+	err = authstore.UseMagicLink(c.Request().Context(), magicLink.ID)
 	if err != nil {
 		slog.Error("auth: failed to mark magic link used", "err", err)
-		return a.renderVerifyLinkError(c, http.StatusBadRequest)
+		return renderVerifyLinkError(c, http.StatusBadRequest)
 	}
 
 	// Get user
-	user, err := db.GetUserByEmail(c.Request().Context(), magicLink.Email)
+	user, err := authstore.GetUserByEmail(c.Request().Context(), magicLink.Email)
 	if err != nil {
 		// Create user on invite accept
-		user, err = db.CreateUser(c.Request().Context(), db.CreateUserParams{
+		user, err = authstore.CreateUser(c.Request().Context(), authstore.CreateUserParams{
 			ID:            utils.GenerateID("usr"),
 			Email:         magicLink.Email,
 			PreferredLang: locale,
 		})
 		if err != nil {
 			slog.Error("auth: failed to create user", "err", err)
-			return a.renderVerifyLinkError(c, http.StatusBadRequest)
+			return renderVerifyLinkError(c, http.StatusBadRequest)
 		}
 	} else if user.PreferredLang != locale {
-		if err := db.UpdateUserPreferredLang(c.Request().Context(), db.UpdateUserPreferredLangParams{PreferredLang: locale, ID: user.ID}); err != nil {
+		if err := authstore.UpdateUserPreferredLang(c.Request().Context(), authstore.UpdateUserPreferredLangParams{PreferredLang: locale, ID: user.ID}); err != nil {
 			slog.Warn("auth.verify: failed to update user preferred language", "user_id", user.ID, "err", err)
 		} else {
 			user.PreferredLang = locale
 		}
 	}
 
-	bannedCount, err := db.IsUserBanned(c.Request().Context(), user.ID)
+	bannedCount, err := authstore.IsUserBanned(c.Request().Context(), user.ID)
 	if err != nil {
 		slog.Error("auth.verify: failed to check user ban", "user_id", user.ID, "err", err)
-		return a.renderVerifyLinkError(c, http.StatusBadRequest)
+		return renderVerifyLinkError(c, http.StatusBadRequest)
 	}
 	if bannedCount > 0 {
 		utils.Notify(c, ctxi18n.T(c.Request().Context(), "auth.banned"))
@@ -316,7 +310,7 @@ func (a *Auth) VerifyMagicLink(c echo.Context) error {
 
 	// Create session
 	expiresAt := time.Now().Add(30 * 24 * time.Hour)
-	session, err := db.CreateUserSession(c.Request().Context(), db.CreateUserSessionParams{
+	session, err := authstore.CreateUserSession(c.Request().Context(), authstore.CreateUserSessionParams{
 		ID:        utils.GenerateID("ses"),
 		UserID:    user.ID,
 		Token:     utils.GenerateID("tok"),
@@ -324,14 +318,14 @@ func (a *Auth) VerifyMagicLink(c echo.Context) error {
 	})
 	if err != nil {
 		slog.Error("auth.verify: failed to create session", "user_id", user.ID, "err", err)
-		return a.renderVerifyLinkError(c, http.StatusInternalServerError)
+		return renderVerifyLinkError(c, http.StatusInternalServerError)
 	}
 	utils.SetSessionCookie(c, session.Token)
 
 	// If invite, add viewer access
 	if magicLink.Action == "invite" {
 		if !magicLink.GroupID.Valid {
-			return a.renderVerifyLinkError(c, http.StatusBadRequest)
+			return renderVerifyLinkError(c, http.StatusBadRequest)
 		}
 
 		groupID := magicLink.GroupID.String
@@ -340,13 +334,13 @@ func (a *Auth) VerifyMagicLink(c echo.Context) error {
 			inviteRole = "viewer"
 		}
 		groupName := groupID
-		group, groupErr := db.GetGroupByID(c.Request().Context(), groupID)
+		group, groupErr := groupstore.GetGroupByID(c.Request().Context(), groupID)
 		if groupErr == nil {
 			groupName = group.Name
 			if group.AdminUserID != user.ID {
 				if inviteRole == "admin" {
-					_ = db.RemoveGroupReader(c.Request().Context(), db.RemoveGroupReaderParams{UserID: user.ID, GroupID: groupID})
-					_, err = db.CreateGroupAdmin(c.Request().Context(), db.CreateGroupAdminParams{
+					_ = groupstore.RemoveGroupReader(c.Request().Context(), groupstore.RemoveGroupReaderParams{UserID: user.ID, GroupID: groupID})
+					_, err = groupstore.CreateGroupAdmin(c.Request().Context(), groupstore.CreateGroupAdminParams{
 						ID:      utils.GenerateID("gad"),
 						UserID:  user.ID,
 						GroupID: groupID,
@@ -355,8 +349,8 @@ func (a *Auth) VerifyMagicLink(c echo.Context) error {
 						slog.Warn("auth: failed to add group admin", "group_id", groupID, "user_id", user.ID, "err", err)
 					}
 				} else {
-					_ = db.RemoveGroupAdmin(c.Request().Context(), db.RemoveGroupAdminParams{UserID: user.ID, GroupID: groupID})
-					_, err = db.CreateGroupReader(c.Request().Context(), db.CreateGroupReaderParams{
+					_ = groupstore.RemoveGroupAdmin(c.Request().Context(), groupstore.RemoveGroupAdminParams{UserID: user.ID, GroupID: groupID})
+					_, err = groupstore.CreateGroupReader(c.Request().Context(), groupstore.CreateGroupReaderParams{
 						ID:      utils.GenerateID("grd"),
 						UserID:  user.ID,
 						GroupID: groupID,
@@ -369,8 +363,8 @@ func (a *Auth) VerifyMagicLink(c echo.Context) error {
 		} else {
 			slog.Warn("auth.verify: failed to load group for invite", "group_id", groupID, "err", groupErr)
 			if inviteRole == "admin" {
-				_ = db.RemoveGroupReader(c.Request().Context(), db.RemoveGroupReaderParams{UserID: user.ID, GroupID: groupID})
-				_, err = db.CreateGroupAdmin(c.Request().Context(), db.CreateGroupAdminParams{
+				_ = groupstore.RemoveGroupReader(c.Request().Context(), groupstore.RemoveGroupReaderParams{UserID: user.ID, GroupID: groupID})
+				_, err = groupstore.CreateGroupAdmin(c.Request().Context(), groupstore.CreateGroupAdminParams{
 					ID:      utils.GenerateID("gad"),
 					UserID:  user.ID,
 					GroupID: groupID,
@@ -379,8 +373,8 @@ func (a *Auth) VerifyMagicLink(c echo.Context) error {
 					slog.Warn("auth: failed to add group admin", "group_id", groupID, "user_id", user.ID, "err", err)
 				}
 			} else {
-				_ = db.RemoveGroupAdmin(c.Request().Context(), db.RemoveGroupAdminParams{UserID: user.ID, GroupID: groupID})
-				_, err = db.CreateGroupReader(c.Request().Context(), db.CreateGroupReaderParams{
+				_ = groupstore.RemoveGroupAdmin(c.Request().Context(), groupstore.RemoveGroupAdminParams{UserID: user.ID, GroupID: groupID})
+				_, err = groupstore.CreateGroupReader(c.Request().Context(), groupstore.CreateGroupReaderParams{
 					ID:      utils.GenerateID("grd"),
 					UserID:  user.ID,
 					GroupID: groupID,
@@ -410,7 +404,7 @@ func (a *Auth) VerifyMagicLink(c echo.Context) error {
 }
 
 // Logout clears the session
-func (a *Auth) Logout(c echo.Context) error {
+func Logout(c echo.Context) error {
 	type logoutSignals struct {
 		TabID string `json:"tab_id"`
 	}
@@ -426,11 +420,11 @@ func (a *Auth) Logout(c echo.Context) error {
 	// Delete session from DB
 	cookie, err := c.Cookie(utils.SessionCookieName)
 	if err == nil {
-		session, err := db.GetUserSessionByToken(c.Request().Context(), cookie.Value)
+		session, err := authstore.GetUserSessionByToken(c.Request().Context(), cookie.Value)
 		if err == nil {
-			userID := middleware.GetUserID(c)
+			userID := utils.GetUserID(c)
 			if userID != "" {
-				_ = db.DeleteUserSession(c.Request().Context(), db.DeleteUserSessionParams{
+				_ = authstore.DeleteUserSession(c.Request().Context(), authstore.DeleteUserSessionParams{
 					ID:     session.ID,
 					UserID: userID,
 				})
@@ -449,16 +443,16 @@ func (a *Auth) Logout(c echo.Context) error {
 }
 
 // Dashboard shows user's groups or create group page
-func (a *Auth) Dashboard(c echo.Context) error {
-	userID := middleware.GetUserID(c)
+func Dashboard(c echo.Context) error {
+	userID := utils.GetUserID(c)
 
-	adminGroups, err := db.ListGroupsByAdmin(c.Request().Context(), userID)
+	adminGroups, err := groupstore.ListGroupsByAdmin(c.Request().Context(), userID)
 	if err != nil {
 		slog.Error("auth: failed to load admin groups", "err", err)
 		return c.Redirect(http.StatusFound, "/groups/new")
 	}
 
-	readerGroups, err := db.ListGroupsByReader(c.Request().Context(), userID)
+	readerGroups, err := groupstore.ListGroupsByReader(c.Request().Context(), userID)
 	if err != nil {
 		slog.Error("auth: failed to load reader groups", "err", err)
 		return c.Redirect(http.StatusFound, "/groups/new")

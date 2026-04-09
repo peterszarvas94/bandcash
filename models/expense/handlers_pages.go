@@ -7,16 +7,16 @@ import (
 	ctxi18n "github.com/invopop/ctxi18n/i18n"
 	"github.com/labstack/echo/v4"
 
-	"bandcash/internal/db"
-	"bandcash/internal/middleware"
 	"bandcash/internal/utils"
+	expensestore "bandcash/models/expense/store"
+	groupstore "bandcash/models/group/store"
 )
 
 func NewExpensePage(c echo.Context) error {
 	utils.EnsureTabID(c)
-	groupID := middleware.GetGroupID(c)
+	groupID := utils.GetGroupID(c)
 
-	group, err := db.GetGroupByID(c.Request().Context(), groupID)
+	group, err := groupstore.GetGroupByID(c.Request().Context(), groupID)
 	if err != nil {
 		slog.Error("expense.new_page: failed to get group", "group_id", groupID, "err", err)
 		return c.NoContent(http.StatusInternalServerError)
@@ -36,14 +36,14 @@ func NewExpensePage(c echo.Context) error {
 			"errors":   map[string]any{"title": "", "description": "", "amount": "", "date": ""},
 		},
 		IsAuthenticated: true,
-		IsSuperAdmin:    middleware.IsSuperadmin(c),
+		IsSuperAdmin:    utils.IsSuperadmin(c),
 	}
 	return utils.RenderPage(c, ExpenseNewPage(data))
 }
 
 func EditExpensePage(c echo.Context) error {
 	utils.EnsureTabID(c)
-	groupID := middleware.GetGroupID(c)
+	groupID := utils.GetGroupID(c)
 
 	id := c.Param("id")
 	if !utils.IsValidID(id, utils.PrefixExpense) {
@@ -51,13 +51,13 @@ func EditExpensePage(c echo.Context) error {
 		return c.NoContent(http.StatusBadRequest)
 	}
 
-	group, err := db.GetGroupByID(c.Request().Context(), groupID)
+	group, err := groupstore.GetGroupByID(c.Request().Context(), groupID)
 	if err != nil {
 		slog.Error("expense.edit_page: failed to get group", "group_id", groupID, "err", err)
 		return c.NoContent(http.StatusInternalServerError)
 	}
 
-	expense, err := db.GetExpense(c.Request().Context(), db.GetExpenseParams{
+	expense, err := expensestore.GetExpense(c.Request().Context(), expensestore.GetExpenseParams{
 		ID:      id,
 		GroupID: groupID,
 	})
@@ -94,14 +94,14 @@ func EditExpensePage(c echo.Context) error {
 			"errors": map[string]any{"title": "", "description": "", "amount": "", "date": ""},
 		},
 		IsAuthenticated: true,
-		IsSuperAdmin:    middleware.IsSuperadmin(c),
+		IsSuperAdmin:    utils.IsSuperadmin(c),
 	}
 	return utils.RenderPage(c, ExpenseEditPage(data))
 }
 
 func IndexPage(c echo.Context) error {
 	utils.EnsureTabID(c)
-	groupID := middleware.GetGroupID(c)
+	groupID := utils.GetGroupID(c)
 	query := utils.ParseTableQuery(c, staticTableQueryable{spec: TableQuerySpec()})
 
 	data, err := GetIndexData(c.Request().Context(), groupID, query)
@@ -109,17 +109,17 @@ func IndexPage(c echo.Context) error {
 		slog.Error("expense.list: failed to get data", "err", err)
 		return c.NoContent(http.StatusInternalServerError)
 	}
-	applyExpenseTableByRole(&data, middleware.IsAdmin(c))
+	applyExpenseTableByRole(&data, utils.IsAdmin(c))
 	data.Signals = expenseIndexSignals(data.Query)
 	data.IsAuthenticated = true
-	data.IsSuperAdmin = middleware.IsSuperadmin(c)
+	data.IsSuperAdmin = utils.IsSuperadmin(c)
 
 	return utils.RenderPage(c, ExpenseIndexPage(data))
 }
 
 func ShowPage(c echo.Context) error {
 	utils.EnsureTabID(c)
-	groupID := middleware.GetGroupID(c)
+	groupID := utils.GetGroupID(c)
 
 	id := c.Param("id")
 	if !utils.IsValidID(id, utils.PrefixExpense) {
@@ -132,10 +132,10 @@ func ShowPage(c echo.Context) error {
 		slog.Error("expense.show: failed to get data", "err", err)
 		return c.NoContent(http.StatusInternalServerError)
 	}
-	data.IsAdmin = middleware.IsAdmin(c)
+	data.IsAdmin = utils.IsAdmin(c)
 	data.Signals = expenseShowSignals(data)
 	data.IsAuthenticated = true
-	data.IsSuperAdmin = middleware.IsSuperadmin(c)
+	data.IsSuperAdmin = utils.IsSuperadmin(c)
 
 	return utils.RenderPage(c, ExpenseShowPage(data))
 }

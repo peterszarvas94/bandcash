@@ -10,8 +10,8 @@ import (
 	"github.com/labstack/echo/v4"
 
 	"bandcash/internal/db"
-	"bandcash/internal/middleware"
 	"bandcash/internal/utils"
+	authstore "bandcash/models/auth/store"
 )
 
 func normalizeCacheKeyPart(value string) string {
@@ -114,11 +114,11 @@ func paidAtArg(isPaid bool, paidAt string) sql.NullString {
 }
 
 func getUserEmail(c echo.Context) string {
-	userID := middleware.GetUserID(c)
+	userID := utils.GetUserID(c)
 	if userID == "" {
 		return ""
 	}
-	user, err := db.GetUserByID(c.Request().Context(), userID)
+	user, err := authstore.GetUserByID(c.Request().Context(), userID)
 	if err != nil {
 		return ""
 	}
@@ -291,9 +291,9 @@ func patchEventShow(c echo.Context, groupID, eventID string, query utils.TableQu
 		return err
 	}
 
-	applyEventShowTableByRole(&data, middleware.IsAdmin(c))
+	applyEventShowTableByRole(&data, utils.IsAdmin(c))
 	data.IsAuthenticated = true
-	data.IsSuperAdmin = middleware.IsSuperadmin(c)
+	data.IsSuperAdmin = utils.IsSuperadmin(c)
 
 	if editorMode != "" {
 		data.EditorMode = editorMode

@@ -18,18 +18,6 @@ import (
 	"bandcash/internal/i18n"
 	"bandcash/internal/middleware"
 	"bandcash/internal/utils"
-	"bandcash/models/account"
-	"bandcash/models/admin"
-	"bandcash/models/auth"
-	"bandcash/models/dev"
-	"bandcash/models/event"
-	"bandcash/models/expense"
-	"bandcash/models/group"
-	"bandcash/models/health"
-	"bandcash/models/home"
-	"bandcash/models/member"
-	"bandcash/models/sse"
-	"bandcash/models/static"
 )
 
 func main() {
@@ -56,18 +44,7 @@ func main() {
 	e.Use(middleware.RequestLogger)
 
 	// Routes
-	static.RegisterRoutes(e)
-	health.RegisterRoutes(e)
-	auth.RegisterRoutes(e)
-	admin.RegisterRoutes(e)
-	group.RegisterRoutes(e)
-	home.RegisterRoutes(e)
-	event.RegisterRoutes(e)
-	expense.RegisterRoutes(e)
-	member.RegisterRoutes(e)
-	account.RegisterRoutes(e)
-	sse.RegisterRoutes(e)
-	dev.RegisterRoutes(e)
+	registerRoutes(e)
 
 	if *routesFlag {
 		utils.PrintRoutes(e)

@@ -5,9 +5,8 @@ import (
 
 	"github.com/labstack/echo/v4"
 
-	"bandcash/internal/db"
-	"bandcash/internal/middleware"
 	"bandcash/internal/utils"
+	authstore "bandcash/models/auth/store"
 )
 
 type staticTableQueryable struct {
@@ -33,11 +32,11 @@ func normalizePaidAtInput(value string) string {
 }
 
 func getUserEmail(c echo.Context) string {
-	userID := middleware.GetUserID(c)
+	userID := utils.GetUserID(c)
 	if userID == "" {
 		return ""
 	}
-	user, err := db.GetUserByID(c.Request().Context(), userID)
+	user, err := authstore.GetUserByID(c.Request().Context(), userID)
 	if err != nil {
 		return ""
 	}

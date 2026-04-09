@@ -19,8 +19,11 @@ import (
 
 	"bandcash/internal/db"
 	"bandcash/internal/email"
-	"bandcash/internal/middleware"
 	"bandcash/internal/utils"
+	authstore "bandcash/models/auth/store"
+	eventstore "bandcash/models/event/store"
+	expensestore "bandcash/models/expense/store"
+	groupstore "bandcash/models/group/store"
 )
 
 type Group struct {
@@ -133,7 +136,7 @@ type paymentPaidAtSignals struct {
 // EditGroupPage shows the form to edit a group name.
 // CreateGroup handles group creation
 func (g *Group) CreateGroup(c echo.Context) error {
-	userID := middleware.GetUserID(c)
+	userID := utils.GetUserID(c)
 	if userID == "" {
 		err := utils.SSEHub.Redirect(c, "/login")
 		if err != nil {
@@ -158,7 +161,7 @@ func (g *Group) CreateGroup(c echo.Context) error {
 	name := signals.FormData.Name
 
 	// Create group
-	group, err := db.CreateGroup(c.Request().Context(), db.CreateGroupParams{
+	group, err := groupstore.CreateGroup(c.Request().Context(), groupstore.CreateGroupParams{
 		ID:          utils.GenerateID("grp"),
 		Name:        name,
 		AdminUserID: userID,
@@ -196,7 +199,7 @@ func (g *Group) TogglePaymentEventPaid(c echo.Context) error {
 	} else {
 		utils.EnsureTabID(c)
 	}
-	groupID := middleware.GetGroupID(c)
+	groupID := utils.GetGroupID(c)
 	pageKind := detectPaymentsPageFromReferer(c, groupID)
 	eventID := c.Param("id")
 	if !utils.IsValidID(eventID, utils.PrefixEvent) {
@@ -206,7 +209,7 @@ func (g *Group) TogglePaymentEventPaid(c echo.Context) error {
 	if err != nil {
 		return c.NoContent(http.StatusInternalServerError)
 	}
-	updatedEvent, err := db.ToggleEventPaid(c.Request().Context(), db.ToggleEventPaidParams{ID: eventID, GroupID: groupID})
+	updatedEvent, err := eventstore.ToggleEventPaid(c.Request().Context(), eventstore.ToggleEventPaidParams{ID: eventID, GroupID: groupID})
 	if err != nil {
 		slog.Error("group.payments.toggle_event_paid: failed", "group_id", groupID, "event_id", eventID, "err", err)
 		utils.Notify(c, ctxi18n.T(c.Request().Context(), "events.notifications.toggle_paid_failed"))
@@ -232,7 +235,7 @@ func (g *Group) UpdatePaymentEventPaidAt(c echo.Context) error {
 	if !utils.SetTabID(c, signals.TabID) {
 		return c.NoContent(http.StatusBadRequest)
 	}
-	groupID := middleware.GetGroupID(c)
+	groupID := utils.GetGroupID(c)
 	pageKind := detectPaymentsPageFromReferer(c, groupID)
 	paidAt := normalizePaymentsPaidAtInput(signals.PaidAtDialog.Value)
 	targetPaid := int64(0)
@@ -247,7 +250,7 @@ func (g *Group) UpdatePaymentEventPaidAt(c echo.Context) error {
 	if err != nil {
 		return c.NoContent(http.StatusInternalServerError)
 	}
-	updatedEvent, err := db.UpdateEventPaidAt(c.Request().Context(), db.UpdateEventPaidAtParams{
+	updatedEvent, err := eventstore.UpdateEventPaidAt(c.Request().Context(), eventstore.UpdateEventPaidAtParams{
 		PaidAt:  paidAt,
 		ID:      eventID,
 		GroupID: groupID,
@@ -280,7 +283,7 @@ func (g *Group) TogglePaymentParticipantPaid(c echo.Context) error {
 	} else {
 		utils.EnsureTabID(c)
 	}
-	groupID := middleware.GetGroupID(c)
+	groupID := utils.GetGroupID(c)
 	pageKind := detectPaymentsPageFromReferer(c, groupID)
 	eventID := c.Param("eventId")
 	memberID := c.Param("memberId")
@@ -291,7 +294,7 @@ func (g *Group) TogglePaymentParticipantPaid(c echo.Context) error {
 	if err != nil {
 		return c.NoContent(http.StatusInternalServerError)
 	}
-	updatedParticipant, err := db.ToggleParticipantPaid(c.Request().Context(), db.ToggleParticipantPaidParams{
+	updatedParticipant, err := eventstore.ToggleParticipantPaid(c.Request().Context(), eventstore.ToggleParticipantPaidParams{
 		EventID:  eventID,
 		MemberID: memberID,
 		GroupID:  groupID,
@@ -321,7 +324,7 @@ func (g *Group) UpdatePaymentParticipantPaidAt(c echo.Context) error {
 	if !utils.SetTabID(c, signals.TabID) {
 		return c.NoContent(http.StatusBadRequest)
 	}
-	groupID := middleware.GetGroupID(c)
+	groupID := utils.GetGroupID(c)
 	pageKind := detectPaymentsPageFromReferer(c, groupID)
 	paidAt := normalizePaymentsPaidAtInput(signals.PaidAtDialog.Value)
 	targetPaid := int64(0)
@@ -337,7 +340,7 @@ func (g *Group) UpdatePaymentParticipantPaidAt(c echo.Context) error {
 	if err != nil {
 		return c.NoContent(http.StatusInternalServerError)
 	}
-	updatedParticipant, err := db.UpdateParticipantPaidAt(c.Request().Context(), db.UpdateParticipantPaidAtParams{
+	updatedParticipant, err := eventstore.UpdateParticipantPaidAt(c.Request().Context(), eventstore.UpdateParticipantPaidAtParams{
 		PaidAt:   paidAt,
 		EventID:  eventID,
 		MemberID: memberID,
@@ -371,7 +374,7 @@ func (g *Group) TogglePaymentExpensePaid(c echo.Context) error {
 	} else {
 		utils.EnsureTabID(c)
 	}
-	groupID := middleware.GetGroupID(c)
+	groupID := utils.GetGroupID(c)
 	pageKind := detectPaymentsPageFromReferer(c, groupID)
 	expenseID := c.Param("id")
 	if !utils.IsValidID(expenseID, utils.PrefixExpense) {
@@ -381,7 +384,7 @@ func (g *Group) TogglePaymentExpensePaid(c echo.Context) error {
 	if err != nil {
 		return c.NoContent(http.StatusInternalServerError)
 	}
-	updatedExpense, err := db.ToggleExpensePaid(c.Request().Context(), db.ToggleExpensePaidParams{ID: expenseID, GroupID: groupID})
+	updatedExpense, err := expensestore.ToggleExpensePaid(c.Request().Context(), expensestore.ToggleExpensePaidParams{ID: expenseID, GroupID: groupID})
 	if err != nil {
 		slog.Error("group.payments.toggle_expense_paid: failed", "group_id", groupID, "expense_id", expenseID, "err", err)
 		utils.Notify(c, ctxi18n.T(c.Request().Context(), "expenses.notifications.toggle_paid_failed"))
@@ -407,13 +410,13 @@ func (g *Group) UpdatePaymentExpensePaidAt(c echo.Context) error {
 	if !utils.SetTabID(c, signals.TabID) {
 		return c.NoContent(http.StatusBadRequest)
 	}
-	groupID := middleware.GetGroupID(c)
+	groupID := utils.GetGroupID(c)
 	pageKind := detectPaymentsPageFromReferer(c, groupID)
 	expenseID := c.Param("id")
 	if !utils.IsValidID(expenseID, utils.PrefixExpense) {
 		return c.NoContent(http.StatusBadRequest)
 	}
-	expense, err := db.GetExpense(c.Request().Context(), db.GetExpenseParams{
+	expense, err := expensestore.GetExpense(c.Request().Context(), expensestore.GetExpenseParams{
 		ID:      expenseID,
 		GroupID: groupID,
 	})
@@ -429,7 +432,7 @@ func (g *Group) UpdatePaymentExpensePaidAt(c echo.Context) error {
 	if err != nil {
 		return c.NoContent(http.StatusInternalServerError)
 	}
-	updatedExpense, err := db.UpdateExpense(c.Request().Context(), db.UpdateExpenseParams{
+	updatedExpense, err := expensestore.UpdateExpense(c.Request().Context(), expensestore.UpdateExpenseParams{
 		Title:       expense.Title,
 		Description: expense.Description,
 		Amount:      expense.Amount,
@@ -460,7 +463,7 @@ func (g *Group) UpdatePaymentExpensePaidAt(c echo.Context) error {
 
 // UpdateGroup updates group name (admin only).
 func (g *Group) UpdateGroup(c echo.Context) error {
-	groupID := middleware.GetGroupID(c)
+	groupID := utils.GetGroupID(c)
 
 	signals := updateGroupSignals{}
 	if err := datastar.ReadSignals(c.Request(), &signals); err != nil {
@@ -475,7 +478,7 @@ func (g *Group) UpdateGroup(c echo.Context) error {
 		return c.NoContent(http.StatusUnprocessableEntity)
 	}
 
-	_, err := db.UpdateGroupName(c.Request().Context(), db.UpdateGroupNameParams{
+	_, err := groupstore.UpdateGroupName(c.Request().Context(), groupstore.UpdateGroupNameParams{
 		Name: signals.FormData.Name,
 		ID:   groupID,
 	})
@@ -505,8 +508,8 @@ func (g *Group) LeaveGroup(c echo.Context) error {
 		return c.NoContent(http.StatusBadRequest)
 	}
 
-	groupID := middleware.GetGroupID(c)
-	userID := middleware.GetUserID(c)
+	groupID := utils.GetGroupID(c)
+	userID := utils.GetUserID(c)
 	var err error
 	if userID == "" {
 		err = utils.SSEHub.Redirect(c, "/login")
@@ -516,7 +519,7 @@ func (g *Group) LeaveGroup(c echo.Context) error {
 		return c.NoContent(http.StatusOK)
 	}
 
-	_, err = db.GetGroupByID(c.Request().Context(), groupID)
+	_, err = groupstore.GetGroupByID(c.Request().Context(), groupID)
 	if err != nil {
 		utils.Notify(c, ctxi18n.T(c.Request().Context(), "groups.errors.group_not_found"))
 		err = utils.SSEHub.Redirect(c, "/groups")
@@ -548,7 +551,7 @@ func (g *Group) LeaveGroup(c echo.Context) error {
 		return c.NoContent(http.StatusOK)
 	}
 
-	err = db.RemoveGroupReader(c.Request().Context(), db.RemoveGroupReaderParams{
+	err = groupstore.RemoveGroupReader(c.Request().Context(), groupstore.RemoveGroupReaderParams{
 		UserID:  userID,
 		GroupID: groupID,
 	})
@@ -572,8 +575,8 @@ func (g *Group) LeaveGroup(c echo.Context) error {
 
 // DeleteGroup removes the group and all data (admin only).
 func (g *Group) DeleteGroup(c echo.Context) error {
-	groupID := middleware.GetGroupID(c)
-	userID := middleware.GetUserID(c)
+	groupID := utils.GetGroupID(c)
+	userID := utils.GetUserID(c)
 	signals := deleteGroupSignals{}
 	if err := datastar.ReadSignals(c.Request(), &signals); err != nil {
 		return c.NoContent(http.StatusBadRequest)
@@ -583,7 +586,7 @@ func (g *Group) DeleteGroup(c echo.Context) error {
 	}
 	var err error
 
-	_, err = db.GetGroupByID(c.Request().Context(), groupID)
+	_, err = groupstore.GetGroupByID(c.Request().Context(), groupID)
 	if err != nil {
 		utils.Notify(c, ctxi18n.T(c.Request().Context(), "groups.errors.group_not_found"))
 		err = utils.SSEHub.Redirect(c, "/groups")
@@ -592,7 +595,7 @@ func (g *Group) DeleteGroup(c echo.Context) error {
 		}
 		return c.NoContent(http.StatusOK)
 	}
-	if err := db.DeleteGroup(c.Request().Context(), groupID); err != nil {
+	if err := groupstore.DeleteGroup(c.Request().Context(), groupID); err != nil {
 		slog.Error("group: failed to delete", "err", err)
 		utils.Notify(c, ctxi18n.T(c.Request().Context(), "groups.errors.delete_failed"))
 		err = utils.SSEHub.Redirect(c, "/groups")
@@ -615,7 +618,7 @@ func (g *Group) DeleteGroup(c echo.Context) error {
 		data.Breadcrumbs = []utils.Crumb{{Label: ctxi18n.T(c.Request().Context(), "groups.title")}}
 		data.Signals = map[string]any{"mode": "table", "tableQuery": utils.TableQuerySignals(data.Query)}
 		data.IsAuthenticated = true
-		data.IsSuperAdmin = middleware.IsSuperadmin(c)
+		data.IsSuperAdmin = utils.IsSuperadmin(c)
 
 		html, err := utils.RenderHTMLForRequest(c, GroupIndexPage(data))
 		if err != nil {
@@ -702,7 +705,7 @@ func (g *Group) patchUsersPageWithState(c echo.Context, groupID string, query ut
 
 // AddViewer invites a user to the group with selected user role.
 func (g *Group) AddViewer(c echo.Context) error {
-	groupID := middleware.GetGroupID(c)
+	groupID := utils.GetGroupID(c)
 	signals := addViewerSignals{}
 	if err := datastar.ReadSignals(c.Request(), &signals); err != nil {
 		return c.NoContent(http.StatusBadRequest)
@@ -720,13 +723,13 @@ func (g *Group) AddViewer(c echo.Context) error {
 	inviteRole := signals.FormData.Role
 	var err error
 
-	group, err := db.GetGroupByID(c.Request().Context(), groupID)
+	group, err := groupstore.GetGroupByID(c.Request().Context(), groupID)
 	if err != nil {
 		return g.patchUsersPageWithState(c, groupID, signals.TableQuery, "", "groups.errors.group_not_found")
 	}
 
 	// If user exists and already has access, short-circuit
-	user, err := db.GetUserByEmail(c.Request().Context(), emailAddress)
+	user, err := authstore.GetUserByEmail(c.Request().Context(), emailAddress)
 	if err == nil {
 		userRole, roleErr := getGroupAccessRole(c.Request().Context(), groupID, user.ID)
 		if roleErr == nil && (userRole == "owner" || userRole == "admin") {
@@ -734,12 +737,12 @@ func (g *Group) AddViewer(c echo.Context) error {
 		}
 		if roleErr == nil && userRole == "viewer" {
 			if inviteRole == "admin" {
-				err = db.RemoveGroupReader(c.Request().Context(), db.RemoveGroupReaderParams{
+				err = groupstore.RemoveGroupReader(c.Request().Context(), groupstore.RemoveGroupReaderParams{
 					UserID:  user.ID,
 					GroupID: groupID,
 				})
 				if err == nil {
-					_, err = db.CreateGroupAdmin(c.Request().Context(), db.CreateGroupAdminParams{
+					_, err = groupstore.CreateGroupAdmin(c.Request().Context(), groupstore.CreateGroupAdminParams{
 						ID:      utils.GenerateID("gad"),
 						UserID:  user.ID,
 						GroupID: groupID,
@@ -761,7 +764,7 @@ func (g *Group) AddViewer(c echo.Context) error {
 	// Create invite magic link that does not expire.
 	token := utils.GenerateID("tok")
 
-	_, err = db.CreateInviteMagicLink(c.Request().Context(), db.CreateInviteMagicLinkParams{
+	_, err = groupstore.CreateInviteMagicLink(c.Request().Context(), groupstore.CreateInviteMagicLinkParams{
 		ID:         utils.GenerateID("mag"),
 		Token:      token,
 		Email:      emailAddress,
@@ -798,7 +801,7 @@ func (g *Group) RemoveViewer(c echo.Context) error {
 		return c.NoContent(http.StatusBadRequest)
 	}
 
-	groupID := middleware.GetGroupID(c)
+	groupID := utils.GetGroupID(c)
 	userID := c.Param("userId")
 	if userID == "" {
 		userID = c.Param("id")
@@ -807,9 +810,9 @@ func (g *Group) RemoveViewer(c echo.Context) error {
 		return g.redirectUsersPage(c, groupID, "", "groups.errors.invalid_user", http.StatusBadRequest)
 	}
 	ctx := c.Request().Context()
-	currentUserID := middleware.GetUserID(c)
+	currentUserID := utils.GetUserID(c)
 	if currentUserID == userID {
-		if middleware.IsOwner(c) {
+		if utils.IsOwner(c) {
 			return g.redirectUsersPage(c, groupID, "", "groups.errors.transfer_group_before_removing_owner", http.StatusConflict)
 		}
 	}
@@ -825,7 +828,7 @@ func (g *Group) RemoveViewer(c echo.Context) error {
 		return g.redirectUsersPage(c, groupID, "groups.messages.viewer_removed", "", http.StatusOK)
 	}
 
-	err := db.RemoveGroupReader(ctx, db.RemoveGroupReaderParams{
+	err := groupstore.RemoveGroupReader(ctx, groupstore.RemoveGroupReaderParams{
 		UserID:  userID,
 		GroupID: groupID,
 	})
@@ -847,7 +850,7 @@ func (g *Group) PromoteViewerToAdmin(c echo.Context) error {
 		return c.NoContent(http.StatusBadRequest)
 	}
 
-	groupID := middleware.GetGroupID(c)
+	groupID := utils.GetGroupID(c)
 	userID := c.Param("userId")
 	if userID == "" {
 		userID = c.Param("id")
@@ -874,7 +877,7 @@ func (g *Group) PromoteViewerToAdmin(c echo.Context) error {
 		return g.redirectUsersPage(c, groupID, "", "groups.errors.promote_failed", http.StatusInternalServerError)
 	}
 
-	err := db.RemoveGroupReader(ctx, db.RemoveGroupReaderParams{
+	err := groupstore.RemoveGroupReader(ctx, groupstore.RemoveGroupReaderParams{
 		UserID:  userID,
 		GroupID: groupID,
 	})
@@ -886,7 +889,7 @@ func (g *Group) PromoteViewerToAdmin(c echo.Context) error {
 		return g.redirectUsersPage(c, groupID, "", "groups.errors.promote_failed", http.StatusInternalServerError)
 	}
 
-	_, err = db.CreateGroupAdmin(ctx, db.CreateGroupAdminParams{
+	_, err = groupstore.CreateGroupAdmin(ctx, groupstore.CreateGroupAdminParams{
 		ID:      utils.GenerateID("gad"),
 		UserID:  userID,
 		GroupID: groupID,
@@ -899,9 +902,9 @@ func (g *Group) PromoteViewerToAdmin(c echo.Context) error {
 		return g.redirectUsersPage(c, groupID, "", "groups.errors.promote_failed", http.StatusInternalServerError)
 	}
 
-	group, err := db.GetGroupByID(ctx, groupID)
+	group, err := groupstore.GetGroupByID(ctx, groupID)
 	if err == nil {
-		if user, userErr := db.GetUserByID(ctx, userID); userErr == nil {
+		if user, userErr := authstore.GetUserByID(ctx, userID); userErr == nil {
 			if mailErr := sendRoleChangeEmail(ctx, user, group.Name, group.ID, "admin"); mailErr != nil {
 				slog.Warn("group: failed to send role-change email", "group_id", groupID, "user_id", userID, "err", mailErr)
 			}
@@ -928,12 +931,12 @@ func (g *Group) DemoteAdminToViewer(c echo.Context) error {
 		return c.NoContent(http.StatusBadRequest)
 	}
 
-	groupID := middleware.GetGroupID(c)
+	groupID := utils.GetGroupID(c)
 	userID := c.Param("userId")
 	if userID == "" {
 		userID = c.Param("id")
 	}
-	currentUserID := middleware.GetUserID(c)
+	currentUserID := utils.GetUserID(c)
 	ctx := c.Request().Context()
 	if !utils.IsValidID(userID, "usr") {
 		if signals.Mode == "table" {
@@ -960,9 +963,9 @@ func (g *Group) DemoteAdminToViewer(c echo.Context) error {
 		}
 		return g.redirectUsersPage(c, groupID, "", "groups.errors.demote_failed", http.StatusInternalServerError)
 	}
-	group, err := db.GetGroupByID(ctx, groupID)
+	group, err := groupstore.GetGroupByID(ctx, groupID)
 	if err == nil {
-		if user, userErr := db.GetUserByID(ctx, userID); userErr == nil {
+		if user, userErr := authstore.GetUserByID(ctx, userID); userErr == nil {
 			if mailErr := sendRoleChangeEmail(ctx, user, group.Name, group.ID, "viewer"); mailErr != nil {
 				slog.Warn("group: failed to send role-change email", "group_id", groupID, "user_id", userID, "err", mailErr)
 			}
@@ -1003,7 +1006,7 @@ func (g *Group) TransferGroupOwnership(c echo.Context) error {
 		return c.NoContent(http.StatusBadRequest)
 	}
 
-	groupID := middleware.GetGroupID(c)
+	groupID := utils.GetGroupID(c)
 	userID := c.Param("userId")
 	if userID == "" {
 		userID = c.Param("id")
@@ -1013,7 +1016,7 @@ func (g *Group) TransferGroupOwnership(c echo.Context) error {
 	}
 
 	ctx := c.Request().Context()
-	group, err := db.GetGroupByID(ctx, groupID)
+	group, err := groupstore.GetGroupByID(ctx, groupID)
 	if err != nil {
 		return g.redirectUsersPage(c, groupID, "", "groups.errors.group_not_found", http.StatusNotFound)
 	}
@@ -1026,7 +1029,7 @@ func (g *Group) TransferGroupOwnership(c echo.Context) error {
 		return g.redirectUsersPage(c, groupID, "", "groups.errors.invalid_user", http.StatusBadRequest)
 	}
 
-	if err := db.UpdateGroupAdmin(ctx, db.UpdateGroupAdminParams{AdminUserID: userID, ID: groupID}); err != nil {
+	if err := groupstore.UpdateGroupAdmin(ctx, groupstore.UpdateGroupAdminParams{AdminUserID: userID, ID: groupID}); err != nil {
 		slog.Error("group: failed to transfer ownership", "group_id", groupID, "user_id", userID, "err", err)
 		return g.redirectUsersPage(c, groupID, "", "groups.errors.transfer_failed", http.StatusInternalServerError)
 	}
@@ -1049,7 +1052,7 @@ func (g *Group) CancelInvite(c echo.Context) error {
 		return c.NoContent(http.StatusBadRequest)
 	}
 
-	groupID := middleware.GetGroupID(c)
+	groupID := utils.GetGroupID(c)
 	inviteID := c.Param("inviteId")
 	if inviteID == "" {
 		inviteID = c.Param("id")
@@ -1058,7 +1061,7 @@ func (g *Group) CancelInvite(c echo.Context) error {
 		return g.redirectUsersPage(c, groupID, "", "groups.errors.invalid_invite", http.StatusBadRequest)
 	}
 
-	err := db.DeleteGroupPendingInvite(c.Request().Context(), db.DeleteGroupPendingInviteParams{
+	err := groupstore.DeleteGroupPendingInvite(c.Request().Context(), groupstore.DeleteGroupPendingInviteParams{
 		ID:      inviteID,
 		GroupID: sql.NullString{String: groupID, Valid: true},
 	})
@@ -1083,7 +1086,7 @@ func (g *Group) DeleteUserEntry(c echo.Context) error {
 
 func (g *Group) usersPageData(c echo.Context, groupID string, values url.Values) (UsersPageData, error) {
 	ctx := c.Request().Context()
-	group, err := db.GetGroupByID(ctx, groupID)
+	group, err := groupstore.GetGroupByID(ctx, groupID)
 	if err != nil {
 		return UsersPageData{}, err
 	}
@@ -1107,17 +1110,17 @@ func (g *Group) usersPageData(c echo.Context, groupID string, values url.Values)
 			{Label: group.Name, Href: "/groups/" + group.ID + "/events"},
 			{Label: ctxi18n.T(ctx, "groups.users"), Href: "/groups/" + group.ID + "/users"},
 		},
-		CurrentUserID:   middleware.GetUserID(c),
+		CurrentUserID:   utils.GetUserID(c),
 		Group:           group,
 		UserRows:        rows,
-		IsAdmin:         middleware.IsAdmin(c),
+		IsAdmin:         utils.IsAdmin(c),
 		Query:           query,
 		Pager:           utils.BuildTablePagination(total, query),
 		GroupID:         groupID,
 		UsersTable:      GroupUsersTableLayout(),
 		Signals:         map[string]any{"mode": "table", "tableQuery": utils.TableQuerySignals(query)},
 		IsAuthenticated: true,
-		IsSuperAdmin:    middleware.IsSuperadmin(c),
+		IsSuperAdmin:    utils.IsSuperadmin(c),
 	}, nil
 }
 
@@ -1148,7 +1151,7 @@ func tableQueryValues(query utils.TableQuery) url.Values {
 }
 
 func (g *Group) buildUserRows(ctx context.Context, groupID string) ([]GroupUserRow, error) {
-	userAccessRows, err := db.ListGroupUserAccess(ctx, groupID)
+	userAccessRows, err := groupstore.ListGroupUserAccess(ctx, groupID)
 	if err != nil {
 		return nil, err
 	}
@@ -1170,7 +1173,7 @@ func (g *Group) buildUserRows(ctx context.Context, groupID string) ([]GroupUserR
 		})
 	}
 
-	invites, err := db.ListGroupPendingInvites(ctx, sql.NullString{String: groupID, Valid: true})
+	invites, err := groupstore.ListGroupPendingInvites(ctx, sql.NullString{String: groupID, Valid: true})
 	if err != nil {
 		return nil, err
 	}
@@ -1248,7 +1251,7 @@ func pageUserRows(rows []GroupUserRow, query utils.TableQuery) []GroupUserRow {
 }
 
 func listGroupAdmins(ctx context.Context, groupID string) ([]db.User, error) {
-	return db.ListGroupAdmins(ctx, groupID)
+	return groupstore.ListGroupAdmins(ctx, groupID)
 }
 
 func isAdminUser(ctx context.Context, groupID, userID string) bool {
@@ -1260,18 +1263,18 @@ func isAdminUser(ctx context.Context, groupID, userID string) bool {
 }
 
 func getGroupAccessRole(ctx context.Context, groupID, userID string) (string, error) {
-	return db.GetGroupAccessRole(ctx, db.GetGroupAccessRoleParams{UserID: userID, GroupID: groupID})
+	return groupstore.GetGroupAccessRole(ctx, groupstore.GetGroupAccessRoleParams{UserID: userID, GroupID: groupID})
 }
 
 func (g *Group) demoteAdminToViewer(ctx context.Context, groupID, userID string) error {
 	if err := g.removeAdminAccess(ctx, groupID, userID); err != nil {
 		return err
 	}
-	count, err := db.IsGroupReader(ctx, db.IsGroupReaderParams{UserID: userID, GroupID: groupID})
+	count, err := groupstore.IsGroupReader(ctx, groupstore.IsGroupReaderParams{UserID: userID, GroupID: groupID})
 	if err == nil && count > 0 {
 		return nil
 	}
-	_, err = db.CreateGroupReader(ctx, db.CreateGroupReaderParams{ID: utils.GenerateID("grd"), UserID: userID, GroupID: groupID})
+	_, err = groupstore.CreateGroupReader(ctx, groupstore.CreateGroupReaderParams{ID: utils.GenerateID("grd"), UserID: userID, GroupID: groupID})
 	return err
 }
 
@@ -1283,7 +1286,7 @@ func (g *Group) removeAdminAccess(ctx context.Context, groupID, userID string) e
 	if len(adminUsers) <= 1 {
 		return errAtLeastOneAdmin
 	}
-	group, err := db.GetGroupByID(ctx, groupID)
+	group, err := groupstore.GetGroupByID(ctx, groupID)
 	if err != nil {
 		return err
 	}
@@ -1298,12 +1301,12 @@ func (g *Group) removeAdminAccess(ctx context.Context, groupID, userID string) e
 		if replacement == "" {
 			return errAtLeastOneAdmin
 		}
-		if err := db.UpdateGroupAdmin(ctx, db.UpdateGroupAdminParams{AdminUserID: replacement, ID: groupID}); err != nil {
+		if err := groupstore.UpdateGroupAdmin(ctx, groupstore.UpdateGroupAdminParams{AdminUserID: replacement, ID: groupID}); err != nil {
 			return err
 		}
 	}
-	_ = db.RemoveGroupAdmin(ctx, db.RemoveGroupAdminParams{UserID: userID, GroupID: groupID})
-	_ = db.RemoveGroupReader(ctx, db.RemoveGroupReaderParams{UserID: userID, GroupID: groupID})
+	_ = groupstore.RemoveGroupAdmin(ctx, groupstore.RemoveGroupAdminParams{UserID: userID, GroupID: groupID})
+	_ = groupstore.RemoveGroupReader(ctx, groupstore.RemoveGroupReaderParams{UserID: userID, GroupID: groupID})
 	return nil
 }
 
@@ -1322,12 +1325,12 @@ func sendRoleChangeEmail(ctx context.Context, user db.User, groupName, groupID, 
 }
 
 func notifyAccessRemoved(ctx context.Context, groupID, userID string) {
-	group, err := db.GetGroupByID(ctx, groupID)
+	group, err := groupstore.GetGroupByID(ctx, groupID)
 	if err != nil {
 		slog.Warn("group: failed to load group for access-removed email", "group_id", groupID, "user_id", userID, "err", err)
 		return
 	}
-	user, err := db.GetUserByID(ctx, userID)
+	user, err := authstore.GetUserByID(ctx, userID)
 	if err != nil {
 		slog.Warn("group: failed to load user for access-removed email", "group_id", groupID, "user_id", userID, "err", err)
 		return
@@ -1678,11 +1681,11 @@ func normalizePaymentsPaidAtInput(value string) interface{} {
 }
 
 func getUserEmail(c echo.Context) string {
-	userID := middleware.GetUserID(c)
+	userID := utils.GetUserID(c)
 	if userID == "" {
 		return ""
 	}
-	user, err := db.GetUserByID(c.Request().Context(), userID)
+	user, err := authstore.GetUserByID(c.Request().Context(), userID)
 	if err != nil {
 		return ""
 	}
@@ -1691,12 +1694,12 @@ func getUserEmail(c echo.Context) string {
 
 func (g *Group) groupPageData(c echo.Context, groupID string) (GroupPageData, error) {
 	ctx := c.Request().Context()
-	group, err := db.GetGroupByID(ctx, groupID)
+	group, err := groupstore.GetGroupByID(ctx, groupID)
 	if err != nil {
 		return GroupPageData{}, err
 	}
 
-	admin, err := db.GetUserByID(ctx, group.AdminUserID)
+	admin, err := authstore.GetUserByID(ctx, group.AdminUserID)
 	if err != nil {
 		return GroupPageData{}, err
 	}
@@ -1711,7 +1714,7 @@ func (g *Group) groupPageData(c echo.Context, groupID string) (GroupPageData, er
 		Breadcrumbs:     []utils.Crumb{{Label: ctxi18n.T(ctx, "groups.title"), Href: "/groups"}, {Label: group.Name, Href: "/groups/" + groupID + "/about"}, {Label: ctxi18n.T(ctx, "groups.about")}},
 		Signals:         map[string]any{"mode": "single", "formState": "", "eventFormState": "", "summaryMode": "all", "formData": map[string]any{"name": group.Name}, "errors": map[string]any{"name": ""}},
 		IsAuthenticated: true,
-		IsSuperAdmin:    middleware.IsSuperadmin(c),
+		IsSuperAdmin:    utils.IsSuperadmin(c),
 		Group:           group,
 		Admin:           admin,
 		Income:          totals.TotalEventAmount,
@@ -1724,7 +1727,7 @@ func (g *Group) groupPageData(c echo.Context, groupID string) (GroupPageData, er
 		ExpensesPaid:    totals.ExpensePaid,
 		ExpensesUnpaid:  totals.ExpenseUnpaid,
 		Leftover:        totals.TotalLeftover,
-		IsAdmin:         middleware.IsAdmin(c),
+		IsAdmin:         utils.IsAdmin(c),
 	}, nil
 }
 
@@ -1748,11 +1751,11 @@ func newPaymentsDialogSignals(ctx context.Context, query utils.TableQuery) map[s
 func (g *Group) toReceivePageData(c echo.Context, groupID string, query utils.TableQuery) (GroupToReceivePageData, error) {
 	ctx := c.Request().Context()
 
-	group, err := db.GetGroupByID(ctx, groupID)
+	group, err := groupstore.GetGroupByID(ctx, groupID)
 	if err != nil {
 		return GroupToReceivePageData{}, err
 	}
-	rows, err := db.ListUnpaidEventsByGroup(ctx, groupID)
+	rows, err := eventstore.ListUnpaidEventsByGroup(ctx, groupID)
 	if err != nil {
 		return GroupToReceivePageData{}, err
 	}
@@ -1781,8 +1784,8 @@ func (g *Group) toReceivePageData(c echo.Context, groupID string, query utils.Ta
 		},
 		Signals:         newPaymentsDialogSignals(ctx, query),
 		IsAuthenticated: true,
-		IsSuperAdmin:    middleware.IsSuperadmin(c),
-		IsAdmin:         middleware.IsAdmin(c),
+		IsSuperAdmin:    utils.IsSuperadmin(c),
+		IsAdmin:         utils.IsAdmin(c),
 		GroupID:         groupID,
 		Group:           group,
 		Rows:            events,
@@ -1797,11 +1800,11 @@ func (g *Group) toReceivePageData(c echo.Context, groupID string, query utils.Ta
 func (g *Group) toPayPageData(c echo.Context, groupID string, query utils.TableQuery) (GroupToPayPageData, error) {
 	ctx := c.Request().Context()
 
-	group, err := db.GetGroupByID(ctx, groupID)
+	group, err := groupstore.GetGroupByID(ctx, groupID)
 	if err != nil {
 		return GroupToPayPageData{}, err
 	}
-	outgoingRows, err := db.ListUnpaidOutgoingPaymentsByGroup(ctx, groupID)
+	outgoingRows, err := groupstore.ListUnpaidOutgoingPaymentsByGroup(ctx, groupID)
 	if err != nil {
 		return GroupToPayPageData{}, err
 	}
@@ -1835,8 +1838,8 @@ func (g *Group) toPayPageData(c echo.Context, groupID string, query utils.TableQ
 		},
 		Signals:         newPaymentsDialogSignals(ctx, query),
 		IsAuthenticated: true,
-		IsSuperAdmin:    middleware.IsSuperadmin(c),
-		IsAdmin:         middleware.IsAdmin(c),
+		IsSuperAdmin:    utils.IsSuperadmin(c),
+		IsAdmin:         utils.IsAdmin(c),
 		GroupID:         groupID,
 		Group:           group,
 		Rows:            rows,
@@ -1851,11 +1854,11 @@ func (g *Group) toPayPageData(c echo.Context, groupID string, query utils.TableQ
 func (g *Group) recentIncomePageData(c echo.Context, groupID string, query utils.TableQuery) (GroupRecentIncomePageData, error) {
 	ctx := c.Request().Context()
 
-	group, err := db.GetGroupByID(ctx, groupID)
+	group, err := groupstore.GetGroupByID(ctx, groupID)
 	if err != nil {
 		return GroupRecentIncomePageData{}, err
 	}
-	rows, err := db.ListPaidEventsByGroup(ctx, groupID)
+	rows, err := eventstore.ListPaidEventsByGroup(ctx, groupID)
 	if err != nil {
 		return GroupRecentIncomePageData{}, err
 	}
@@ -1884,8 +1887,8 @@ func (g *Group) recentIncomePageData(c echo.Context, groupID string, query utils
 		},
 		Signals:         newPaymentsDialogSignals(ctx, query),
 		IsAuthenticated: true,
-		IsSuperAdmin:    middleware.IsSuperadmin(c),
-		IsAdmin:         middleware.IsAdmin(c),
+		IsSuperAdmin:    utils.IsSuperadmin(c),
+		IsAdmin:         utils.IsAdmin(c),
 		GroupID:         groupID,
 		Group:           group,
 		Rows:            events,
@@ -1900,11 +1903,11 @@ func (g *Group) recentIncomePageData(c echo.Context, groupID string, query utils
 func (g *Group) recentOutgoingPageData(c echo.Context, groupID string, query utils.TableQuery) (GroupRecentOutgoingPageData, error) {
 	ctx := c.Request().Context()
 
-	group, err := db.GetGroupByID(ctx, groupID)
+	group, err := groupstore.GetGroupByID(ctx, groupID)
 	if err != nil {
 		return GroupRecentOutgoingPageData{}, err
 	}
-	outgoingRows, err := db.ListPaidOutgoingPaymentsByGroup(ctx, groupID)
+	outgoingRows, err := groupstore.ListPaidOutgoingPaymentsByGroup(ctx, groupID)
 	if err != nil {
 		return GroupRecentOutgoingPageData{}, err
 	}
@@ -1937,8 +1940,8 @@ func (g *Group) recentOutgoingPageData(c echo.Context, groupID string, query uti
 		},
 		Signals:         newPaymentsDialogSignals(ctx, query),
 		IsAuthenticated: true,
-		IsSuperAdmin:    middleware.IsSuperadmin(c),
-		IsAdmin:         middleware.IsAdmin(c),
+		IsSuperAdmin:    utils.IsSuperadmin(c),
+		IsAdmin:         utils.IsAdmin(c),
 		GroupID:         groupID,
 		Group:           group,
 		Rows:            rows,

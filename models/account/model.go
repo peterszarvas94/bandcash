@@ -9,13 +9,7 @@ import (
 	"bandcash/internal/utils"
 )
 
-type Account struct{}
-
-func New() *Account {
-	return &Account{}
-}
-
-func (s *Account) Data(ctx context.Context) AccountData {
+func Data(ctx context.Context) AccountData {
 	return AccountData{
 		Title:       ctxi18n.T(ctx, "account.page_title"),
 		CurrentLang: appi18n.LocaleCode(ctx),

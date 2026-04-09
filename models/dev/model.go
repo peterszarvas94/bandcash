@@ -2,8 +2,6 @@ package dev
 
 import "bandcash/internal/utils"
 
-type DevNotifications struct{}
-
 type DevPageData struct {
 	Title           string
 	Breadcrumbs     []utils.Crumb

@@ -6,6 +6,7 @@ import (
 
 	"bandcash/internal/db"
 	"bandcash/internal/utils"
+	groupstore "bandcash/models/group/store"
 )
 
 type GroupModel struct {
@@ -24,7 +25,7 @@ func (m *GroupModel) TableQuerySpec() utils.TableQuerySpec {
 }
 
 func (m *GroupModel) GetGroupsPageData(ctx context.Context, userID string, query utils.TableQuery) (GroupsPageData, error) {
-	total, err := db.CountUserGroupsTable(ctx, userID, query.Search)
+	total, err := groupstore.CountUserGroupsTable(ctx, userID, query.Search)
 	if err != nil {
 		slog.Error("group.model: failed to count groups", "err", err)
 		return GroupsPageData{}, err
@@ -32,7 +33,7 @@ func (m *GroupModel) GetGroupsPageData(ctx context.Context, userID string, query
 
 	allGroups := make([]GroupWithRole, 0)
 	if total > 0 {
-		rows, err := db.ListUserGroupsTable(ctx, userID, query.Search, int(total), 0)
+		rows, err := groupstore.ListUserGroupsTable(ctx, userID, query.Search, int(total), 0)
 		if err != nil {
 			slog.Error("group.model: failed to list groups", "err", err)
 			return GroupsPageData{}, err
@@ -49,7 +50,7 @@ func (m *GroupModel) GetGroupsPageData(ctx context.Context, userID string, query
 	}, nil
 }
 
-func convertUserGroupRowsToGroupWithRole(rows []db.UserGroupRow) []GroupWithRole {
+func convertUserGroupRowsToGroupWithRole(rows []groupstore.UserGroupRow) []GroupWithRole {
 	result := make([]GroupWithRole, len(rows))
 	for i, r := range rows {
 		result[i] = GroupWithRole{

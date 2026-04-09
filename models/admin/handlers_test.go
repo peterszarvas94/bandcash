@@ -1,13 +1,12 @@
 package admin
 
 import (
-	"database/sql"
 	"net/http/httptest"
 	"testing"
 
 	"github.com/labstack/echo/v4"
 
-	"bandcash/internal/db"
+	adminstore "bandcash/models/admin/store"
 )
 
 func TestParseIntParamAndAdminQueries(t *testing.T) {
@@ -49,21 +48,15 @@ func TestAdminTabLabelFallback(t *testing.T) {
 }
 
 func TestMapUserRowsSetsBanFlag(t *testing.T) {
-	descRows := []db.ListUsersByEmailDescFilteredRow{{ID: "usr_1", Email: "a@example.com", IsBanned: 1}}
-	ascRows := []db.ListUsersByEmailAscFilteredRow{{ID: "usr_2", Email: "b@example.com", IsBanned: 0}}
-	createdAscRows := []db.ListUsersByCreatedAscFilteredRow{{ID: "usr_3", Email: "c@example.com", CreatedAt: sql.NullTime{}, IsBanned: 1}}
-	createdDescRows := []db.ListUsersByCreatedDescFilteredRow{{ID: "usr_4", Email: "d@example.com", CreatedAt: sql.NullTime{}, IsBanned: 0}}
-
-	if mapped := mapEmailDescUserRows(descRows); len(mapped) != 1 || !mapped[0].IsBanned {
+	rows := []adminstore.AdminUserTableRow{
+		{ID: "usr_1", Email: "a@example.com", IsBanned: 1},
+		{ID: "usr_2", Email: "b@example.com", IsBanned: 0},
+	}
+	mapped := mapUsers(rows)
+	if len(mapped) != 2 || !mapped[0].IsBanned {
 		t.Fatalf("expected banned user in desc mapping, got %+v", mapped)
 	}
-	if mapped := mapEmailAscUserRows(ascRows); len(mapped) != 1 || mapped[0].IsBanned {
-		t.Fatalf("expected unbanned user in asc mapping, got %+v", mapped)
-	}
-	if mapped := mapCreatedAscUserRows(createdAscRows); len(mapped) != 1 || !mapped[0].IsBanned {
-		t.Fatalf("expected banned user in created asc mapping, got %+v", mapped)
-	}
-	if mapped := mapCreatedDescUserRows(createdDescRows); len(mapped) != 1 || mapped[0].IsBanned {
-		t.Fatalf("expected unbanned user in created desc mapping, got %+v", mapped)
+	if mapped[1].IsBanned {
+		t.Fatalf("expected second user to be unbanned, got %+v", mapped)
 	}
 }

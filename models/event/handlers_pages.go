@@ -7,14 +7,13 @@ import (
 	ctxi18n "github.com/invopop/ctxi18n/i18n"
 	"github.com/labstack/echo/v4"
 
-	"bandcash/internal/db"
-	"bandcash/internal/middleware"
 	"bandcash/internal/utils"
+	groupstore "bandcash/models/group/store"
 )
 
 func IndexPage(c echo.Context) error {
 	utils.EnsureTabID(c)
-	groupID := middleware.GetGroupID(c)
+	groupID := utils.GetGroupID(c)
 	query := utils.ParseTableQuery(c, staticTableQueryable{spec: TableQuerySpec()})
 
 	data, err := GetIndexData(c.Request().Context(), groupID, query)
@@ -22,10 +21,10 @@ func IndexPage(c echo.Context) error {
 		slog.Error("event.list: failed to get data", "err", err)
 		return c.NoContent(http.StatusInternalServerError)
 	}
-	applyEventIndexTableByRole(&data, middleware.IsAdmin(c))
+	applyEventIndexTableByRole(&data, utils.IsAdmin(c))
 	data.Signals = eventIndexSignals(data.Query)
 	data.IsAuthenticated = true
-	data.IsSuperAdmin = middleware.IsSuperadmin(c)
+	data.IsSuperAdmin = utils.IsSuperadmin(c)
 
 	slog.Debug("event.index", "event_count", len(data.Events))
 	return utils.RenderPage(c, EventIndexPage(data))
@@ -33,7 +32,7 @@ func IndexPage(c echo.Context) error {
 
 func ShowPage(c echo.Context) error {
 	utils.EnsureTabID(c)
-	groupID := middleware.GetGroupID(c)
+	groupID := utils.GetGroupID(c)
 	query := parseParticipantTableQuery(c)
 
 	id := c.Param("id")
@@ -47,19 +46,19 @@ func ShowPage(c echo.Context) error {
 		slog.Error("event.show: failed to get data", "err", err)
 		return c.NoContent(http.StatusInternalServerError)
 	}
-	applyEventShowTableByRole(&data, middleware.IsAdmin(c))
+	applyEventShowTableByRole(&data, utils.IsAdmin(c))
 	data.Signals = eventShowSignals(data)
 	data.IsAuthenticated = true
-	data.IsSuperAdmin = middleware.IsSuperadmin(c)
+	data.IsSuperAdmin = utils.IsSuperadmin(c)
 
 	return utils.RenderPage(c, EventShowPage(data))
 }
 
 func NewEventPage(c echo.Context) error {
 	utils.EnsureTabID(c)
-	groupID := middleware.GetGroupID(c)
+	groupID := utils.GetGroupID(c)
 
-	group, err := db.GetGroupByID(c.Request().Context(), groupID)
+	group, err := groupstore.GetGroupByID(c.Request().Context(), groupID)
 	if err != nil {
 		slog.Error("event.new_page: failed to get group", "group_id", groupID, "err", err)
 		return c.NoContent(http.StatusInternalServerError)
@@ -79,14 +78,14 @@ func NewEventPage(c echo.Context) error {
 			"errors":   map[string]any{"title": "", "date": "", "time": "", "place": "", "description": "", "amount": ""},
 		},
 		IsAuthenticated: true,
-		IsSuperAdmin:    middleware.IsSuperadmin(c),
+		IsSuperAdmin:    utils.IsSuperadmin(c),
 	}
 	return utils.RenderPage(c, EventNewPage(data))
 }
 
 func EditEventPage(c echo.Context) error {
 	utils.EnsureTabID(c)
-	groupID := middleware.GetGroupID(c)
+	groupID := utils.GetGroupID(c)
 	query := parseParticipantTableQuery(c)
 
 	id := c.Param("id")
@@ -101,7 +100,7 @@ func EditEventPage(c echo.Context) error {
 		return c.NoContent(http.StatusInternalServerError)
 	}
 
-	applyEventShowTableByRole(&data, middleware.IsAdmin(c))
+	applyEventShowTableByRole(&data, utils.IsAdmin(c))
 	if len(data.Breadcrumbs) > 0 {
 		data.Breadcrumbs[len(data.Breadcrumbs)-1].Href = "/groups/" + groupID + "/events/" + id
 	}
@@ -109,7 +108,7 @@ func EditEventPage(c echo.Context) error {
 	data.EditorMode = "edit"
 	data.Signals = eventShowSignals(data)
 	data.IsAuthenticated = true
-	data.IsSuperAdmin = middleware.IsSuperadmin(c)
+	data.IsSuperAdmin = utils.IsSuperadmin(c)
 
 	return utils.RenderPage(c, EventEditPage(data))
 }

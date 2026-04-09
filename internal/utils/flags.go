@@ -5,13 +5,13 @@ import (
 	"database/sql"
 	"errors"
 
-	"bandcash/internal/db"
+	authstore "bandcash/models/auth/store"
 )
 
 const EnableSignupFlagKey = "enable_signup"
 
 func IsSignupEnabled(ctx context.Context) (bool, error) {
-	value, err := db.GetAppFlagBool(ctx, EnableSignupFlagKey)
+	value, err := authstore.GetAppFlagBool(ctx, EnableSignupFlagKey)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
 			return false, nil
@@ -26,7 +26,7 @@ func SetSignupEnabled(ctx context.Context, enabled bool) error {
 	if enabled {
 		boolValue = 1
 	}
-	return db.UpsertAppFlagBool(ctx, db.UpsertAppFlagBoolParams{
+	return authstore.UpsertAppFlagBool(ctx, authstore.UpsertAppFlagBoolParams{
 		Key:       EnableSignupFlagKey,
 		BoolValue: boolValue,
 	})

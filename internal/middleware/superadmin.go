@@ -7,8 +7,8 @@ import (
 	ctxi18n "github.com/invopop/ctxi18n/i18n"
 	"github.com/labstack/echo/v4"
 
-	"bandcash/internal/db"
 	"bandcash/internal/utils"
+	authstore "bandcash/models/auth/store"
 )
 
 // RequireSuperadmin ensures user email matches configured superadmin email.
@@ -20,12 +20,12 @@ func RequireSuperadmin(next echo.HandlerFunc) echo.HandlerFunc {
 			return c.Redirect(http.StatusFound, "/groups")
 		}
 
-		userID := GetUserID(c)
+		userID := utils.GetUserID(c)
 		if userID == "" {
 			return c.Redirect(http.StatusFound, "/login")
 		}
 
-		user, err := db.GetUserByID(c.Request().Context(), userID)
+		user, err := authstore.GetUserByID(c.Request().Context(), userID)
 		if err != nil {
 			return c.Redirect(http.StatusFound, "/login")
 		}

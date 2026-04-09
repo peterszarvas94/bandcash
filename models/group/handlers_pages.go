@@ -9,9 +9,9 @@ import (
 	ctxi18n "github.com/invopop/ctxi18n/i18n"
 	"github.com/labstack/echo/v4"
 
-	"bandcash/internal/db"
-	"bandcash/internal/middleware"
 	"bandcash/internal/utils"
+	authstore "bandcash/models/auth/store"
+	groupstore "bandcash/models/group/store"
 )
 
 func (g *Group) NewGroupPage(c echo.Context) error {
@@ -21,16 +21,16 @@ func (g *Group) NewGroupPage(c echo.Context) error {
 		Breadcrumbs:     []utils.Crumb{{Label: ctxi18n.T(c.Request().Context(), "groups.title"), Href: "/groups"}, {Label: ctxi18n.T(c.Request().Context(), "groups.new")}},
 		Signals:         map[string]any{"formData": map[string]any{"name": ""}},
 		IsAuthenticated: true,
-		IsSuperAdmin:    middleware.IsSuperadmin(c),
+		IsSuperAdmin:    utils.IsSuperadmin(c),
 	}
 	return utils.RenderPage(c, GroupNewPage(data))
 }
 
 func (g *Group) EditGroupPage(c echo.Context) error {
 	utils.EnsureTabID(c)
-	groupID := middleware.GetGroupID(c)
+	groupID := utils.GetGroupID(c)
 
-	group, err := db.GetGroupByID(c.Request().Context(), groupID)
+	group, err := groupstore.GetGroupByID(c.Request().Context(), groupID)
 	if err != nil {
 		slog.Error("group.edit_page: failed to get group", "group_id", groupID, "err", err)
 		return c.NoContent(http.StatusInternalServerError)
@@ -50,7 +50,7 @@ func (g *Group) EditGroupPage(c echo.Context) error {
 			"errors":   map[string]any{"name": ""},
 		},
 		IsAuthenticated: true,
-		IsSuperAdmin:    middleware.IsSuperadmin(c),
+		IsSuperAdmin:    utils.IsSuperadmin(c),
 	}
 
 	return utils.RenderPage(c, GroupEditPage(data))
@@ -58,7 +58,7 @@ func (g *Group) EditGroupPage(c echo.Context) error {
 
 func (g *Group) IndexPage(c echo.Context) error {
 	utils.EnsureTabID(c)
-	userID := middleware.GetUserID(c)
+	userID := utils.GetUserID(c)
 	if userID == "" {
 		return c.Redirect(http.StatusFound, "/login")
 	}
@@ -75,19 +75,19 @@ func (g *Group) IndexPage(c echo.Context) error {
 	data.Breadcrumbs = []utils.Crumb{{Label: ctxi18n.T(c.Request().Context(), "groups.title")}}
 	data.Signals = nil
 	data.IsAuthenticated = true
-	data.IsSuperAdmin = middleware.IsSuperadmin(c)
+	data.IsSuperAdmin = utils.IsSuperadmin(c)
 
 	return utils.RenderPage(c, GroupIndexPage(data))
 }
 
 func (g *Group) RootPage(c echo.Context) error {
-	groupID := middleware.GetGroupID(c)
+	groupID := utils.GetGroupID(c)
 	return c.Redirect(http.StatusFound, "/groups/"+groupID+"/events")
 }
 
 func (g *Group) AboutPage(c echo.Context) error {
 	utils.EnsureTabID(c)
-	groupID := middleware.GetGroupID(c)
+	groupID := utils.GetGroupID(c)
 
 	data, err := g.groupPageData(c, groupID)
 	if err != nil {
@@ -100,7 +100,7 @@ func (g *Group) AboutPage(c echo.Context) error {
 
 func (g *Group) ToPayPage(c echo.Context) error {
 	utils.EnsureTabID(c)
-	groupID := middleware.GetGroupID(c)
+	groupID := utils.GetGroupID(c)
 	query := utils.ParseTableQuery(c, staticTableQueryable{spec: toPayPaymentsTableQuerySpec()})
 
 	data, err := g.toPayPageData(c, groupID, query)
@@ -114,7 +114,7 @@ func (g *Group) ToPayPage(c echo.Context) error {
 
 func (g *Group) ToReceivePage(c echo.Context) error {
 	utils.EnsureTabID(c)
-	groupID := middleware.GetGroupID(c)
+	groupID := utils.GetGroupID(c)
 	query := utils.ParseTableQuery(c, staticTableQueryable{spec: toReceivePaymentsTableQuerySpec()})
 
 	data, err := g.toReceivePageData(c, groupID, query)
@@ -128,7 +128,7 @@ func (g *Group) ToReceivePage(c echo.Context) error {
 
 func (g *Group) RecentIncomePage(c echo.Context) error {
 	utils.EnsureTabID(c)
-	groupID := middleware.GetGroupID(c)
+	groupID := utils.GetGroupID(c)
 	query := utils.ParseTableQuery(c, staticTableQueryable{spec: recentIncomePaymentsTableQuerySpec()})
 
 	data, err := g.recentIncomePageData(c, groupID, query)
@@ -142,7 +142,7 @@ func (g *Group) RecentIncomePage(c echo.Context) error {
 
 func (g *Group) RecentOutgoingPage(c echo.Context) error {
 	utils.EnsureTabID(c)
-	groupID := middleware.GetGroupID(c)
+	groupID := utils.GetGroupID(c)
 	query := utils.ParseTableQuery(c, staticTableQueryable{spec: recentOutgoingPaymentsTableQuerySpec()})
 
 	data, err := g.recentOutgoingPageData(c, groupID, query)
@@ -156,7 +156,7 @@ func (g *Group) RecentOutgoingPage(c echo.Context) error {
 
 func (g *Group) UsersPage(c echo.Context) error {
 	utils.EnsureTabID(c)
-	groupID := middleware.GetGroupID(c)
+	groupID := utils.GetGroupID(c)
 	data, err := g.usersPageData(c, groupID, c.QueryParams())
 	if err != nil {
 		slog.Error("group: failed to load users page", "group_id", groupID, "err", err)
@@ -179,9 +179,9 @@ func (g *Group) UsersEntryPage(c echo.Context) error {
 
 func (g *Group) UsersNewPage(c echo.Context) error {
 	utils.EnsureTabID(c)
-	groupID := middleware.GetGroupID(c)
+	groupID := utils.GetGroupID(c)
 
-	group, err := db.GetGroupByID(c.Request().Context(), groupID)
+	group, err := groupstore.GetGroupByID(c.Request().Context(), groupID)
 	if err != nil {
 		slog.Error("group.users_new_page: failed to get group", "group_id", groupID, "err", err)
 		return c.NoContent(http.StatusInternalServerError)
@@ -201,7 +201,7 @@ func (g *Group) UsersNewPage(c echo.Context) error {
 			"formData": map[string]any{"email": "", "role": "viewer"},
 		},
 		IsAuthenticated: true,
-		IsSuperAdmin:    middleware.IsSuperadmin(c),
+		IsSuperAdmin:    utils.IsSuperadmin(c),
 	}
 
 	return utils.RenderPage(c, GroupUsersNewPage(data))
@@ -209,14 +209,14 @@ func (g *Group) UsersNewPage(c echo.Context) error {
 
 func (g *Group) UserEditPage(c echo.Context) error {
 	utils.EnsureTabID(c)
-	groupID := middleware.GetGroupID(c)
+	groupID := utils.GetGroupID(c)
 	userID := c.Param("id")
 	if !utils.IsValidID(userID, "usr") {
 		return c.NoContent(http.StatusBadRequest)
 	}
 
 	ctx := c.Request().Context()
-	group, err := db.GetGroupByID(ctx, groupID)
+	group, err := groupstore.GetGroupByID(ctx, groupID)
 	if err != nil {
 		slog.Error("group.users_edit_page: failed to get group", "group_id", groupID, "err", err)
 		return c.NoContent(http.StatusInternalServerError)
@@ -227,7 +227,7 @@ func (g *Group) UserEditPage(c echo.Context) error {
 		return c.NoContent(http.StatusNotFound)
 	}
 
-	user, err := db.GetUserByID(ctx, userID)
+	user, err := authstore.GetUserByID(ctx, userID)
 	if err != nil {
 		return c.NoContent(http.StatusNotFound)
 	}
@@ -253,7 +253,7 @@ func (g *Group) UserEditPage(c echo.Context) error {
 		UserRow:         row,
 		Signals:         map[string]any{"formData": map[string]any{"role": row.Role}},
 		IsAuthenticated: true,
-		IsSuperAdmin:    middleware.IsSuperadmin(c),
+		IsSuperAdmin:    utils.IsSuperadmin(c),
 	}
 
 	return utils.RenderPage(c, GroupUserEditPage(data))
@@ -261,7 +261,7 @@ func (g *Group) UserEditPage(c echo.Context) error {
 
 func (g *Group) UserPage(c echo.Context) error {
 	utils.EnsureTabID(c)
-	groupID := middleware.GetGroupID(c)
+	groupID := utils.GetGroupID(c)
 	userID := c.Param("userId")
 	if userID == "" {
 		userID = c.Param("id")
@@ -271,7 +271,7 @@ func (g *Group) UserPage(c echo.Context) error {
 	}
 
 	ctx := c.Request().Context()
-	group, err := db.GetGroupByID(ctx, groupID)
+	group, err := groupstore.GetGroupByID(ctx, groupID)
 	if err != nil {
 		slog.Error("group.users_user_page: failed to get group", "group_id", groupID, "err", err)
 		return c.NoContent(http.StatusInternalServerError)
@@ -282,7 +282,7 @@ func (g *Group) UserPage(c echo.Context) error {
 		return c.NoContent(http.StatusNotFound)
 	}
 
-	user, err := db.GetUserByID(ctx, userID)
+	user, err := authstore.GetUserByID(ctx, userID)
 	if err != nil {
 		return c.NoContent(http.StatusNotFound)
 	}
@@ -317,14 +317,14 @@ func (g *Group) UserPage(c echo.Context) error {
 			{Label: ctxi18n.T(ctx, "groups.users"), Href: "/groups/" + groupID + "/users"},
 			{Label: user.Email},
 		},
-		CurrentUserID:   middleware.GetUserID(c),
+		CurrentUserID:   utils.GetUserID(c),
 		GroupID:         groupID,
 		Group:           group,
 		UserRow:         row,
-		IsAdmin:         middleware.IsAdmin(c),
+		IsAdmin:         utils.IsAdmin(c),
 		Signals:         nil,
 		IsAuthenticated: true,
-		IsSuperAdmin:    middleware.IsSuperadmin(c),
+		IsSuperAdmin:    utils.IsSuperadmin(c),
 	}
 
 	return utils.RenderPage(c, GroupUserPage(data))
@@ -332,7 +332,7 @@ func (g *Group) UserPage(c echo.Context) error {
 
 func (g *Group) UserInvitePage(c echo.Context) error {
 	utils.EnsureTabID(c)
-	groupID := middleware.GetGroupID(c)
+	groupID := utils.GetGroupID(c)
 	inviteID := c.Param("inviteId")
 	if inviteID == "" {
 		inviteID = c.Param("id")
@@ -342,13 +342,13 @@ func (g *Group) UserInvitePage(c echo.Context) error {
 	}
 
 	ctx := c.Request().Context()
-	group, err := db.GetGroupByID(ctx, groupID)
+	group, err := groupstore.GetGroupByID(ctx, groupID)
 	if err != nil {
 		slog.Error("group.users_invite_page: failed to get group", "group_id", groupID, "err", err)
 		return c.NoContent(http.StatusInternalServerError)
 	}
 
-	invites, err := db.ListGroupPendingInvites(ctx, sql.NullString{String: groupID, Valid: true})
+	invites, err := groupstore.ListGroupPendingInvites(ctx, sql.NullString{String: groupID, Valid: true})
 	if err != nil {
 		slog.Error("group.users_invite_page: failed to load invites", "group_id", groupID, "err", err)
 		return c.NoContent(http.StatusInternalServerError)
@@ -390,10 +390,10 @@ func (g *Group) UserInvitePage(c echo.Context) error {
 		GroupID:         groupID,
 		Group:           group,
 		UserRow:         row,
-		IsAdmin:         middleware.IsAdmin(c),
+		IsAdmin:         utils.IsAdmin(c),
 		Signals:         nil,
 		IsAuthenticated: true,
-		IsSuperAdmin:    middleware.IsSuperadmin(c),
+		IsSuperAdmin:    utils.IsSuperadmin(c),
 	}
 
 	return utils.RenderPage(c, GroupUserInvitePage(data))

@@ -11,10 +11,10 @@ import (
 	"github.com/labstack/echo/v4"
 	"github.com/starfederation/datastar-go/datastar"
 
-	"bandcash/internal/db"
 	"bandcash/internal/email"
 	appi18n "bandcash/internal/i18n"
 	"bandcash/internal/utils"
+	authstore "bandcash/models/auth/store"
 	shared "bandcash/models/shared"
 	icons "bandcash/models/shared/icons"
 )
@@ -34,8 +34,8 @@ var devErrorFields = []string{"name"}
 
 func devSessionUser(c echo.Context) (bool, string) {
 	if cookie, err := c.Cookie(utils.SessionCookieName); err == nil && cookie.Value != "" {
-		if session, err := db.GetUserSessionByToken(c.Request().Context(), cookie.Value); err == nil {
-			if user, err := db.GetUserByID(c.Request().Context(), session.UserID); err == nil {
+		if session, err := authstore.GetUserSessionByToken(c.Request().Context(), cookie.Value); err == nil {
+			if user, err := authstore.GetUserByID(c.Request().Context(), session.UserID); err == nil {
 				return true, user.Email
 			}
 
@@ -46,7 +46,7 @@ func devSessionUser(c echo.Context) (bool, string) {
 	return false, ""
 }
 
-func (h *DevNotifications) DevPageHandler(c echo.Context) error {
+func DevPageHandler(c echo.Context) error {
 	utils.EnsureTabID(c)
 	selector := strings.TrimSpace(c.QueryParam("selector"))
 	switch selector {
@@ -66,7 +66,7 @@ func (h *DevNotifications) DevPageHandler(c echo.Context) error {
 	return utils.RenderPage(c, DevPage(data))
 }
 
-func (h *DevNotifications) TestInline(c echo.Context) error {
+func TestInline(c echo.Context) error {
 	signals := devSignals{}
 	if err := datastar.ReadSignals(c.Request(), &signals); err != nil {
 		return c.NoContent(http.StatusBadRequest)
@@ -88,14 +88,14 @@ func (h *DevNotifications) TestInline(c echo.Context) error {
 		"formData": map[string]any{"name": ""},
 	})
 	utils.Notify(c, "Inline validation passed")
-	if err := h.patchNotifications(c); err != nil {
+	if err := patchNotifications(c); err != nil {
 		return c.NoContent(http.StatusInternalServerError)
 	}
 
 	return c.NoContent(http.StatusOK)
 }
 
-func (h *DevNotifications) Test(c echo.Context) error {
+func Test(c echo.Context) error {
 	signals := devTabSignals{}
 	if err := datastar.ReadSignals(c.Request(), &signals); err != nil {
 		return c.NoContent(http.StatusBadRequest)
@@ -105,13 +105,13 @@ func (h *DevNotifications) Test(c echo.Context) error {
 	}
 
 	utils.Notify(c, "Notification test")
-	if err := h.patchNotifications(c); err != nil {
+	if err := patchNotifications(c); err != nil {
 		return c.NoContent(http.StatusInternalServerError)
 	}
 	return c.NoContent(http.StatusOK)
 }
 
-func (h *DevNotifications) TestSpinner(c echo.Context) error {
+func TestSpinner(c echo.Context) error {
 	delay := 500
 	if raw := strings.TrimSpace(c.QueryParam("ms")); raw != "" {
 		parsed, err := strconv.Atoi(raw)
@@ -123,7 +123,7 @@ func (h *DevNotifications) TestSpinner(c echo.Context) error {
 	return c.NoContent(http.StatusOK)
 }
 
-func (h *DevNotifications) TestMultiAction(c echo.Context) error {
+func TestMultiAction(c echo.Context) error {
 	signals := devTabSignals{}
 	if err := datastar.ReadSignals(c.Request(), &signals); err != nil {
 		return c.NoContent(http.StatusBadRequest)
@@ -141,14 +141,14 @@ func (h *DevNotifications) TestMultiAction(c echo.Context) error {
 	})
 
 	utils.Notify(c, "Completed: "+action)
-	if err := h.patchNotifications(c); err != nil {
+	if err := patchNotifications(c); err != nil {
 		return c.NoContent(http.StatusInternalServerError)
 	}
 
 	return c.NoContent(http.StatusOK)
 }
 
-func (h *DevNotifications) PreviewLoginEmail(c echo.Context) error {
+func PreviewLoginEmail(c echo.Context) error {
 	subject, html, err := email.Email().PreviewMagicLinkHTML(c.Request().Context(), "tok_12345678901234567890", devBaseURL(c))
 	if err != nil {
 		return c.String(http.StatusInternalServerError, err.Error())
@@ -162,7 +162,7 @@ func (h *DevNotifications) PreviewLoginEmail(c echo.Context) error {
 	})
 }
 
-func (h *DevNotifications) PreviewInviteEmail(c echo.Context) error {
+func PreviewInviteEmail(c echo.Context) error {
 	subject, html, err := email.Email().PreviewGroupInvitationHTML(c.Request().Context(), "Preview Group", "tok_ABCDEFGHIJ1234567890", devBaseURL(c))
 	if err != nil {
 		return c.String(http.StatusInternalServerError, err.Error())
@@ -176,7 +176,7 @@ func (h *DevNotifications) PreviewInviteEmail(c echo.Context) error {
 	})
 }
 
-func (h *DevNotifications) PreviewInviteAcceptedEmail(c echo.Context) error {
+func PreviewInviteAcceptedEmail(c echo.Context) error {
 	subject, html, err := email.Email().PreviewInviteAcceptedHTML(c.Request().Context(), "Preview Group", "grp_preview1234567890", devBaseURL(c))
 	if err != nil {
 		return c.String(http.StatusInternalServerError, err.Error())
@@ -190,7 +190,7 @@ func (h *DevNotifications) PreviewInviteAcceptedEmail(c echo.Context) error {
 	})
 }
 
-func (h *DevNotifications) PreviewGroupCreatedEmail(c echo.Context) error {
+func PreviewGroupCreatedEmail(c echo.Context) error {
 	subject, html, err := email.Email().PreviewGroupCreatedHTML(c.Request().Context(), "Preview Group", "grp_preview1234567890", devBaseURL(c))
 	if err != nil {
 		return c.String(http.StatusInternalServerError, err.Error())
@@ -204,7 +204,7 @@ func (h *DevNotifications) PreviewGroupCreatedEmail(c echo.Context) error {
 	})
 }
 
-func (h *DevNotifications) PreviewRoleUpgradedEmail(c echo.Context) error {
+func PreviewRoleUpgradedEmail(c echo.Context) error {
 	subject, html, err := email.Email().PreviewRoleUpgradedToAdminHTML(c.Request().Context(), "Preview Group", "grp_preview1234567890", devBaseURL(c))
 	if err != nil {
 		return c.String(http.StatusInternalServerError, err.Error())
@@ -218,7 +218,7 @@ func (h *DevNotifications) PreviewRoleUpgradedEmail(c echo.Context) error {
 	})
 }
 
-func (h *DevNotifications) PreviewRoleDowngradedEmail(c echo.Context) error {
+func PreviewRoleDowngradedEmail(c echo.Context) error {
 	subject, html, err := email.Email().PreviewRoleDowngradedToViewerHTML(c.Request().Context(), "Preview Group", "grp_preview1234567890", devBaseURL(c))
 	if err != nil {
 		return c.String(http.StatusInternalServerError, err.Error())
@@ -232,7 +232,7 @@ func (h *DevNotifications) PreviewRoleDowngradedEmail(c echo.Context) error {
 	})
 }
 
-func (h *DevNotifications) PreviewAccessRemovedEmail(c echo.Context) error {
+func PreviewAccessRemovedEmail(c echo.Context) error {
 	subject, html, err := email.Email().PreviewAccessRemovedHTML(c.Request().Context(), "Preview Group", []string{"admin.one@example.com", "admin.two@example.com"}, devBaseURL(c))
 	if err != nil {
 		return c.String(http.StatusInternalServerError, err.Error())
@@ -246,23 +246,23 @@ func (h *DevNotifications) PreviewAccessRemovedEmail(c echo.Context) error {
 	})
 }
 
-func (h *DevNotifications) PreviewInvalidLinkErrorPage(c echo.Context) error {
+func PreviewInvalidLinkErrorPage(c echo.Context) error {
 	return renderDevErrorPage(c, http.StatusBadRequest, icons.IconLink2Off, "error_pages.link.invalid_title", "error_pages.link.invalid_body")
 }
 
-func (h *DevNotifications) PreviewBadRequestErrorPage(c echo.Context) error {
+func PreviewBadRequestErrorPage(c echo.Context) error {
 	return echo.NewHTTPError(http.StatusBadRequest)
 }
 
-func (h *DevNotifications) PreviewForbiddenErrorPage(c echo.Context) error {
+func PreviewForbiddenErrorPage(c echo.Context) error {
 	return echo.NewHTTPError(http.StatusForbidden)
 }
 
-func (h *DevNotifications) PreviewNotFoundErrorPage(c echo.Context) error {
+func PreviewNotFoundErrorPage(c echo.Context) error {
 	return echo.NewHTTPError(http.StatusNotFound)
 }
 
-func (h *DevNotifications) PreviewInternalErrorPage(c echo.Context) error {
+func PreviewInternalErrorPage(c echo.Context) error {
 	return echo.NewHTTPError(http.StatusInternalServerError)
 }
 
@@ -291,7 +291,7 @@ func devBaseURL(c echo.Context) string {
 	return fmt.Sprintf("%s://%s", c.Scheme(), c.Request().Host)
 }
 
-func (h *DevNotifications) patchNotifications(c echo.Context) error {
+func patchNotifications(c echo.Context) error {
 	html, err := utils.RenderHTMLForRequest(c, shared.Notifications())
 	if err != nil {
 		return err

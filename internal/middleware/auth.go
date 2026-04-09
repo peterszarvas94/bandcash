@@ -9,16 +9,10 @@ import (
 	ctxi18n "github.com/invopop/ctxi18n/i18n"
 	"github.com/labstack/echo/v4"
 
-	"bandcash/internal/db"
 	appi18n "bandcash/internal/i18n"
 	"bandcash/internal/utils"
-)
-
-const (
-	UserIDKey       contextKey = "user_id"
-	GroupIDKey      contextKey = "group_id"
-	GroupRoleKey    contextKey = "group_role"
-	IsSuperadminKey contextKey = "is_superadmin"
+	authstore "bandcash/models/auth/store"
+	groupstore "bandcash/models/group/store"
 )
 
 // RequireAuth ensures user is logged in.
@@ -30,14 +24,14 @@ func RequireAuth(next echo.HandlerFunc) echo.HandlerFunc {
 		}
 
 		// Verify user exists
-		user, err := db.GetUserByID(c.Request().Context(), userID)
+		user, err := authstore.GetUserByID(c.Request().Context(), userID)
 		if err != nil {
 			slog.Warn("auth: invalid session user", "user_id", userID)
 			clearSession(c)
 			return c.Redirect(http.StatusFound, "/login")
 		}
 
-		bannedCount, err := db.IsUserBanned(c.Request().Context(), user.ID)
+		bannedCount, err := authstore.IsUserBanned(c.Request().Context(), user.ID)
 		if err != nil {
 			slog.Warn("auth: failed to check user ban", "user_id", user.ID, "err", err)
 			clearSession(c)
@@ -64,8 +58,8 @@ func RequireAuth(next echo.HandlerFunc) echo.HandlerFunc {
 			c.SetRequest(c.Request().WithContext(localizedCtx))
 		}
 
-		c.Set(string(UserIDKey), user.ID)
-		c.Set(string(IsSuperadminKey), isSuperadmin)
+		c.Set(utils.CtxUserIDKey, user.ID)
+		c.Set(utils.CtxIsSuperadminKey, isSuperadmin)
 		return next(c)
 	}
 }
@@ -73,22 +67,22 @@ func RequireAuth(next echo.HandlerFunc) echo.HandlerFunc {
 // RequireGroup ensures user has access to the requested group.
 func RequireGroup(next echo.HandlerFunc) echo.HandlerFunc {
 	return func(c echo.Context) error {
-		userID := c.Get(string(UserIDKey)).(string)
+		userID := utils.GetUserID(c)
 		groupID := c.Param("groupId")
-		isSuperadmin := IsSuperadmin(c)
+		isSuperadmin := utils.IsSuperadmin(c)
 
 		if !utils.IsValidID(groupID, "grp") {
 			return c.String(http.StatusBadRequest, "Invalid group ID")
 		}
 
 		if isSuperadmin {
-			c.Set(string(GroupIDKey), groupID)
+			c.Set(utils.CtxGroupIDKey, groupID)
 			// Superadmin is treated as admin across all groups.
-			c.Set(string(GroupRoleKey), "admin")
+			c.Set(utils.CtxGroupRoleKey, "admin")
 			return next(c)
 		}
 
-		role, err := db.GetGroupAccessRole(c.Request().Context(), db.GetGroupAccessRoleParams{
+		role, err := groupstore.GetGroupAccessRole(c.Request().Context(), groupstore.GetGroupAccessRoleParams{
 			UserID:  userID,
 			GroupID: groupID,
 		})
@@ -97,8 +91,8 @@ func RequireGroup(next echo.HandlerFunc) echo.HandlerFunc {
 			return c.Redirect(http.StatusFound, "/groups")
 		}
 
-		c.Set(string(GroupIDKey), groupID)
-		c.Set(string(GroupRoleKey), role)
+		c.Set(utils.CtxGroupIDKey, groupID)
+		c.Set(utils.CtxGroupRoleKey, role)
 		return next(c)
 	}
 }
@@ -106,7 +100,7 @@ func RequireGroup(next echo.HandlerFunc) echo.HandlerFunc {
 // RequireAdmin ensures user is admin of the group.
 func RequireAdmin(next echo.HandlerFunc) echo.HandlerFunc {
 	return func(c echo.Context) error {
-		if !IsAdmin(c) {
+		if !utils.IsAdmin(c) {
 			utils.Notify(c, ctxi18n.T(c.Request().Context(), "groups.errors.admin_required"))
 			return c.Redirect(http.StatusFound, "/groups")
 		}
@@ -117,7 +111,7 @@ func RequireAdmin(next echo.HandlerFunc) echo.HandlerFunc {
 // RequireOwner ensures user is owner of the group.
 func RequireOwner(next echo.HandlerFunc) echo.HandlerFunc {
 	return func(c echo.Context) error {
-		if !IsOwner(c) {
+		if !utils.IsOwner(c) {
 			utils.Notify(c, ctxi18n.T(c.Request().Context(), "groups.errors.owner_required"))
 			return c.Redirect(http.StatusFound, "/groups")
 		}
@@ -128,53 +122,11 @@ func RequireOwner(next echo.HandlerFunc) echo.HandlerFunc {
 // RequireOwnerOrSuperadmin ensures user is owner or superadmin.
 func RequireOwnerOrSuperadmin(next echo.HandlerFunc) echo.HandlerFunc {
 	return func(c echo.Context) error {
-		if IsSuperadmin(c) {
+		if utils.IsSuperadmin(c) {
 			return next(c)
 		}
 		return RequireOwner(next)(c)
 	}
-}
-
-// GetUserID retrieves user ID from context
-func GetUserID(c echo.Context) string {
-	if id, ok := c.Get(string(UserIDKey)).(string); ok {
-		return id
-	}
-	return ""
-}
-
-// GetGroupID retrieves group ID from context
-func GetGroupID(c echo.Context) string {
-	if id, ok := c.Get(string(GroupIDKey)).(string); ok {
-		return id
-	}
-	return ""
-}
-
-// IsAdmin checks if user is admin
-func IsAdmin(c echo.Context) bool {
-	role := GetGroupRole(c)
-	return role == "owner" || role == "admin"
-}
-
-// GetGroupRole retrieves current user's role in active group from context.
-func GetGroupRole(c echo.Context) string {
-	if role, ok := c.Get(string(GroupRoleKey)).(string); ok {
-		return role
-	}
-	return ""
-}
-
-// IsOwner checks if current user is owner in active group.
-func IsOwner(c echo.Context) bool {
-	return GetGroupRole(c) == "owner"
-}
-
-func IsSuperadmin(c echo.Context) bool {
-	if isSuperadmin, ok := c.Get(string(IsSuperadminKey)).(bool); ok {
-		return isSuperadmin
-	}
-	return false
 }
 
 func getSessionUserID(c echo.Context) string {
@@ -183,7 +135,7 @@ func getSessionUserID(c echo.Context) string {
 		return ""
 	}
 
-	session, err := db.GetUserSessionByToken(c.Request().Context(), cookie.Value)
+	session, err := authstore.GetUserSessionByToken(c.Request().Context(), cookie.Value)
 	if err != nil {
 		return ""
 	}
@@ -195,11 +147,11 @@ func clearSession(c echo.Context) {
 	cookie, err := c.Cookie(utils.SessionCookieName)
 	if err == nil {
 		// Try to get session and delete it from DB
-		session, err := db.GetUserSessionByToken(c.Request().Context(), cookie.Value)
+		session, err := authstore.GetUserSessionByToken(c.Request().Context(), cookie.Value)
 		if err == nil {
-			userID := GetUserID(c)
+			userID := utils.GetUserID(c)
 			if userID != "" {
-				_ = db.DeleteUserSession(c.Request().Context(), db.DeleteUserSessionParams{
+				_ = authstore.DeleteUserSession(c.Request().Context(), authstore.DeleteUserSessionParams{
 					ID:     session.ID,
 					UserID: userID,
 				})

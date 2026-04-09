@@ -1,6 +1,7 @@
 package event
 
 import (
+	"context"
 	"database/sql"
 	"log/slog"
 	"net/http"
@@ -9,10 +10,12 @@ import (
 	ctxi18n "github.com/invopop/ctxi18n/i18n"
 	"github.com/labstack/echo/v4"
 	"github.com/starfederation/datastar-go/datastar"
+	"github.com/uptrace/bun"
 
 	"bandcash/internal/db"
-	"bandcash/internal/middleware"
 	"bandcash/internal/utils"
+	eventstore "bandcash/models/event/store"
+	memberstore "bandcash/models/member/store"
 )
 
 // Default signal states for resetting forms on success
@@ -29,7 +32,7 @@ var (
 )
 
 func Create(c echo.Context) error {
-	groupID := middleware.GetGroupID(c)
+	groupID := utils.GetGroupID(c)
 
 	var signals eventInlineParams
 	err := datastar.ReadSignals(c.Request(), &signals)
@@ -57,7 +60,7 @@ func Create(c echo.Context) error {
 		return c.NoContent(http.StatusUnprocessableEntity)
 	}
 
-	event, err := db.CreateEvent(c.Request().Context(), db.CreateEventParams{
+	event, err := eventstore.CreateEvent(c.Request().Context(), eventstore.CreateEventParams{
 		ID:          utils.GenerateID(utils.PrefixEvent),
 		GroupID:     groupID,
 		Title:       signals.FormData.Title,
@@ -95,7 +98,7 @@ func Create(c echo.Context) error {
 }
 
 func Update(c echo.Context) error {
-	groupID := middleware.GetGroupID(c)
+	groupID := utils.GetGroupID(c)
 
 	id := c.Param("id")
 	if !utils.IsValidID(id, utils.PrefixEvent) {
@@ -136,7 +139,7 @@ func Update(c echo.Context) error {
 		return c.NoContent(http.StatusUnprocessableEntity)
 	}
 
-	_, err = db.UpdateEvent(c.Request().Context(), db.UpdateEventParams{
+	_, err = eventstore.UpdateEvent(c.Request().Context(), eventstore.UpdateEventParams{
 		Title:       eventForm.Title,
 		Date:        eventForm.Date,
 		EventTime:   eventForm.Time,
@@ -174,7 +177,7 @@ func Update(c echo.Context) error {
 }
 
 func Destroy(c echo.Context) error {
-	groupID := middleware.GetGroupID(c)
+	groupID := utils.GetGroupID(c)
 
 	id := c.Param("id")
 	if !utils.IsValidID(id, utils.PrefixEvent) {
@@ -192,7 +195,7 @@ func Destroy(c echo.Context) error {
 		return c.NoContent(http.StatusBadRequest)
 	}
 
-	err = db.DeleteEvent(c.Request().Context(), db.DeleteEventParams{
+	err = eventstore.DeleteEvent(c.Request().Context(), eventstore.DeleteEventParams{
 		ID:      id,
 		GroupID: groupID,
 	})
@@ -224,10 +227,10 @@ func Destroy(c echo.Context) error {
 		slog.Error("event.destroy: failed to get data", "err", err)
 		return c.NoContent(http.StatusInternalServerError)
 	}
-	applyEventIndexTableByRole(&data, middleware.IsAdmin(c))
+	applyEventIndexTableByRole(&data, utils.IsAdmin(c))
 	data.Signals = eventIndexSignals(data.Query)
 	data.IsAuthenticated = true
-	data.IsSuperAdmin = middleware.IsSuperadmin(c)
+	data.IsSuperAdmin = utils.IsSuperadmin(c)
 	html, err := utils.RenderHTMLForRequest(c, EventIndexPage(data))
 	if err != nil {
 		slog.Error("event.destroy: failed to render", "err", err)
@@ -240,7 +243,7 @@ func Destroy(c echo.Context) error {
 }
 
 func ToggleParticipantPaid(c echo.Context) error {
-	groupID := middleware.GetGroupID(c)
+	groupID := utils.GetGroupID(c)
 
 	eventID := c.Param("id")
 	if !utils.IsValidID(eventID, utils.PrefixEvent) {
@@ -264,7 +267,7 @@ func ToggleParticipantPaid(c echo.Context) error {
 		return c.NoContent(http.StatusBadRequest)
 	}
 
-	_, err = db.ToggleParticipantPaid(c.Request().Context(), db.ToggleParticipantPaidParams{
+	_, err = eventstore.ToggleParticipantPaid(c.Request().Context(), eventstore.ToggleParticipantPaidParams{
 		EventID:  eventID,
 		MemberID: memberID,
 		GroupID:  groupID,
@@ -283,10 +286,10 @@ func ToggleParticipantPaid(c echo.Context) error {
 		slog.Error("participant.togglePaid: failed to get data", "err", err)
 		return c.NoContent(http.StatusInternalServerError)
 	}
-	applyEventShowTableByRole(&data, middleware.IsAdmin(c))
+	applyEventShowTableByRole(&data, utils.IsAdmin(c))
 	data.Signals = eventShowSignals(data)
 	data.IsAuthenticated = true
-	data.IsSuperAdmin = middleware.IsSuperadmin(c)
+	data.IsSuperAdmin = utils.IsSuperadmin(c)
 	html, err := utils.RenderHTMLForRequest(c, EventShowPage(data))
 	if err != nil {
 		slog.Error("participant.togglePaid: failed to render", "err", err)
@@ -298,7 +301,7 @@ func ToggleParticipantPaid(c echo.Context) error {
 }
 
 func OpenParticipantsDraft(c echo.Context) error {
-	groupID := middleware.GetGroupID(c)
+	groupID := utils.GetGroupID(c)
 
 	eventID := c.Param("id")
 	if !utils.IsValidID(eventID, utils.PrefixEvent) {
@@ -322,7 +325,7 @@ func OpenParticipantsDraft(c echo.Context) error {
 }
 
 func CancelParticipantsDraft(c echo.Context) error {
-	groupID := middleware.GetGroupID(c)
+	groupID := utils.GetGroupID(c)
 
 	eventID := c.Param("id")
 	if !utils.IsValidID(eventID, utils.PrefixEvent) {
@@ -346,7 +349,7 @@ func CancelParticipantsDraft(c echo.Context) error {
 }
 
 func UpdateParticipantsDraftRows(c echo.Context) error {
-	groupID := middleware.GetGroupID(c)
+	groupID := utils.GetGroupID(c)
 
 	eventID := c.Param("id")
 	if !utils.IsValidID(eventID, utils.PrefixEvent) {
@@ -492,7 +495,7 @@ func UpdateParticipantsDraftRows(c echo.Context) error {
 }
 
 func SaveParticipantsBulk(c echo.Context) error {
-	groupID := middleware.GetGroupID(c)
+	groupID := utils.GetGroupID(c)
 
 	eventID := c.Param("id")
 	if !utils.IsValidID(eventID, utils.PrefixEvent) {
@@ -522,7 +525,7 @@ func SaveParticipantsBulk(c echo.Context) error {
 		return c.NoContent(http.StatusUnprocessableEntity)
 	}
 
-	members, err := db.ListMembers(c.Request().Context(), groupID)
+	members, err := memberstore.ListMembers(c.Request().Context(), groupID)
 	if err != nil {
 		slog.Error("participant.bulk: failed to list members", "err", err)
 		utils.Notify(c, ctxi18n.T(c.Request().Context(), "participants.notifications.update_failed"))
@@ -606,119 +609,104 @@ func SaveParticipantsBulk(c echo.Context) error {
 	}
 	signals.Wizard.Rows = normalizedRows
 
-	tx, err := db.DB.BeginTx(c.Request().Context(), &sql.TxOptions{})
-	if err != nil {
-		slog.Error("participant.bulk: failed to begin tx", "err", err)
-		utils.Notify(c, ctxi18n.T(c.Request().Context(), "participants.notifications.update_failed"))
-		return c.NoContent(http.StatusInternalServerError)
-	}
-	defer tx.Rollback()
-	qtx := db.New(tx)
-
-	_, err = qtx.UpdateEvent(c.Request().Context(), db.UpdateEventParams{
-		Title:       signals.EventFormData.Title,
-		Date:        signals.EventFormData.Date,
-		EventTime:   signals.EventFormData.Time,
-		Place:       signals.EventFormData.Place,
-		Description: signals.EventFormData.Description,
-		Amount:      signals.EventFormData.Amount,
-		Paid: func() int64 {
-			if signals.EventFormData.Paid {
-				return 1
-			}
-			return 0
-		}(),
-		PaidAt:  paidAtArg(signals.EventFormData.Paid, signals.EventFormData.PaidAt),
-		ID:      eventID,
-		GroupID: groupID,
-	})
-	if err != nil {
-		slog.Error("participant.bulk: failed to update event", "err", err)
-		utils.Notify(c, ctxi18n.T(c.Request().Context(), "events.notifications.update_failed"))
-		return c.NoContent(http.StatusInternalServerError)
-	}
-
-	currentParticipants, err := qtx.ListParticipantsByEvent(c.Request().Context(), db.ListParticipantsByEventParams{EventID: eventID, GroupID: groupID})
-	if err != nil {
-		slog.Error("participant.bulk: failed to list participants", "err", err)
-		utils.Notify(c, ctxi18n.T(c.Request().Context(), "participants.notifications.update_failed"))
-		return c.NoContent(http.StatusInternalServerError)
-	}
-	currentSet := make(map[string]struct{}, len(currentParticipants))
-	for _, participant := range currentParticipants {
-		currentSet[participant.ID] = struct{}{}
-	}
-
-	desiredSet := make(map[string]struct{}, len(signals.Wizard.Rows))
-	for _, row := range signals.Wizard.Rows {
-		if !row.Included {
-			continue
-		}
-
-		amount := row.Amount
-		expense := row.Expense
-		paid := row.Paid
-		paidAt := normalizePaidAtInput(row.PaidAt)
-
-		desiredSet[row.MemberID] = struct{}{}
-		if _, exists := currentSet[row.MemberID]; exists {
-			err = qtx.UpdateParticipant(c.Request().Context(), db.UpdateParticipantParams{
-				Amount:  amount,
-				Expense: expense,
-				Note:    row.Note,
-				Paid: func() int64 {
-					if paid {
-						return 1
-					}
-					return 0
-				}(),
-				PaidAt:   paidAtArg(paid, paidAt),
-				EventID:  eventID,
-				MemberID: row.MemberID,
-				GroupID:  groupID,
-			})
-		} else {
-			_, err = qtx.AddParticipant(c.Request().Context(), db.AddParticipantParams{
-				GroupID:  groupID,
-				EventID:  eventID,
-				MemberID: row.MemberID,
-				Amount:   amount,
-				Expense:  expense,
-				Note:     row.Note,
-				Paid: func() int64 {
-					if paid {
-						return 1
-					}
-					return 0
-				}(),
-				PaidAt: paidAtArg(paid, paidAt),
-			})
-		}
-		if err != nil {
-			slog.Error("participant.bulk: failed to upsert participant", "err", err, "event_id", eventID, "member_id", row.MemberID)
-			utils.Notify(c, ctxi18n.T(c.Request().Context(), "participants.notifications.update_failed"))
-			return c.NoContent(http.StatusInternalServerError)
-		}
-	}
-
-	for memberID := range currentSet {
-		if _, keep := desiredSet[memberID]; keep {
-			continue
-		}
-		err = qtx.RemoveParticipant(c.Request().Context(), db.RemoveParticipantParams{
-			EventID:  eventID,
-			MemberID: memberID,
-			GroupID:  groupID,
+	err = db.BunDB.RunInTx(c.Request().Context(), &sql.TxOptions{}, func(ctx context.Context, tx bun.Tx) error {
+		_, err = eventstore.UpdateEventTx(ctx, tx, eventstore.UpdateEventParams{
+			Title:       signals.EventFormData.Title,
+			Date:        signals.EventFormData.Date,
+			EventTime:   signals.EventFormData.Time,
+			Place:       signals.EventFormData.Place,
+			Description: signals.EventFormData.Description,
+			Amount:      signals.EventFormData.Amount,
+			Paid: func() int64 {
+				if signals.EventFormData.Paid {
+					return 1
+				}
+				return 0
+			}(),
+			PaidAt:  paidAtArg(signals.EventFormData.Paid, signals.EventFormData.PaidAt),
+			ID:      eventID,
+			GroupID: groupID,
 		})
 		if err != nil {
-			slog.Error("participant.bulk: failed to remove participant", "err", err, "event_id", eventID, "member_id", memberID)
-			utils.Notify(c, ctxi18n.T(c.Request().Context(), "participants.notifications.update_failed"))
-			return c.NoContent(http.StatusInternalServerError)
+			return err
 		}
-	}
 
-	if err = tx.Commit(); err != nil {
-		slog.Error("participant.bulk: failed to commit tx", "err", err)
+		currentParticipants, err := eventstore.ListParticipantsByEventTx(ctx, tx, eventstore.ListParticipantsByEventParams{EventID: eventID, GroupID: groupID})
+		if err != nil {
+			return err
+		}
+		currentSet := make(map[string]struct{}, len(currentParticipants))
+		for _, participant := range currentParticipants {
+			currentSet[participant.ID] = struct{}{}
+		}
+
+		desiredSet := make(map[string]struct{}, len(signals.Wizard.Rows))
+		for _, row := range signals.Wizard.Rows {
+			if !row.Included {
+				continue
+			}
+
+			amount := row.Amount
+			expense := row.Expense
+			paid := row.Paid
+			paidAt := normalizePaidAtInput(row.PaidAt)
+
+			desiredSet[row.MemberID] = struct{}{}
+			if _, exists := currentSet[row.MemberID]; exists {
+				err = eventstore.UpdateParticipantTx(ctx, tx, eventstore.UpdateParticipantParams{
+					Amount:  amount,
+					Expense: expense,
+					Note:    row.Note,
+					Paid: func() int64 {
+						if paid {
+							return 1
+						}
+						return 0
+					}(),
+					PaidAt:   paidAtArg(paid, paidAt),
+					EventID:  eventID,
+					MemberID: row.MemberID,
+					GroupID:  groupID,
+				})
+			} else {
+				_, err = eventstore.AddParticipantTx(ctx, tx, eventstore.AddParticipantParams{
+					GroupID:  groupID,
+					EventID:  eventID,
+					MemberID: row.MemberID,
+					Amount:   amount,
+					Expense:  expense,
+					Note:     row.Note,
+					Paid: func() int64 {
+						if paid {
+							return 1
+						}
+						return 0
+					}(),
+					PaidAt: paidAtArg(paid, paidAt),
+				})
+			}
+			if err != nil {
+				return err
+			}
+		}
+
+		for memberID := range currentSet {
+			if _, keep := desiredSet[memberID]; keep {
+				continue
+			}
+			err = eventstore.RemoveParticipantTx(ctx, tx, eventstore.RemoveParticipantParams{
+				EventID:  eventID,
+				MemberID: memberID,
+				GroupID:  groupID,
+			})
+			if err != nil {
+				return err
+			}
+		}
+		return nil
+	})
+	if err != nil {
+		slog.Error("participant.bulk: tx failed", "err", err)
 		utils.Notify(c, ctxi18n.T(c.Request().Context(), "participants.notifications.update_failed"))
 		return c.NoContent(http.StatusInternalServerError)
 	}
@@ -743,9 +731,9 @@ func openPaidAtDialog(c echo.Context, groupID, id string, tableQuery utils.Table
 		slog.Error("event.openPaidAtDialog: failed to get data", "err", err)
 		return c.NoContent(http.StatusInternalServerError)
 	}
-	applyEventShowTableByRole(&data, middleware.IsAdmin(c))
+	applyEventShowTableByRole(&data, utils.IsAdmin(c))
 	data.IsAuthenticated = true
-	data.IsSuperAdmin = middleware.IsSuperadmin(c)
+	data.IsSuperAdmin = utils.IsSuperadmin(c)
 	data.PaidAtDialog = PaidAtDialogState{
 		Open:  true,
 		Mode:  "single",
@@ -781,9 +769,9 @@ func openPaidAtDialogInIndex(c echo.Context, groupID, id string, tableQuery util
 		slog.Error("event.openPaidAtDialogInIndex: failed to get data", "err", err)
 		return c.NoContent(http.StatusInternalServerError)
 	}
-	applyEventIndexTableByRole(&data, middleware.IsAdmin(c))
+	applyEventIndexTableByRole(&data, utils.IsAdmin(c))
 	data.IsAuthenticated = true
-	data.IsSuperAdmin = middleware.IsSuperadmin(c)
+	data.IsSuperAdmin = utils.IsSuperadmin(c)
 
 	paidAtValue := ""
 	eventTitle := ""
@@ -851,9 +839,9 @@ func openParticipantNoteDialog(c echo.Context, groupID, id, memberID string, tab
 		slog.Error("event.openParticipantNoteDialog: failed to get data", "err", err)
 		return c.NoContent(http.StatusInternalServerError)
 	}
-	applyEventShowTableByRole(&data, middleware.IsAdmin(c))
+	applyEventShowTableByRole(&data, utils.IsAdmin(c))
 	data.IsAuthenticated = true
-	data.IsSuperAdmin = middleware.IsSuperadmin(c)
+	data.IsSuperAdmin = utils.IsSuperadmin(c)
 
 	participantName := ""
 	participantNote := ""
@@ -871,7 +859,7 @@ func openParticipantNoteDialog(c echo.Context, groupID, id, memberID string, tab
 		return c.NoContent(http.StatusBadRequest)
 	}
 
-	isAdmin := middleware.IsAdmin(c)
+	isAdmin := utils.IsAdmin(c)
 	data.ParticipantNoteDialog = ParticipantNoteDialogState{
 		Open:        true,
 		ReadOnly:    !isAdmin,
@@ -909,9 +897,9 @@ func openParticipantPaidAtDialog(c echo.Context, groupID, id, memberID string, t
 		slog.Error("event.openParticipantPaidAtDialog: failed to get data", "err", err)
 		return c.NoContent(http.StatusInternalServerError)
 	}
-	applyEventShowTableByRole(&data, middleware.IsAdmin(c))
+	applyEventShowTableByRole(&data, utils.IsAdmin(c))
 	data.IsAuthenticated = true
-	data.IsSuperAdmin = middleware.IsSuperadmin(c)
+	data.IsSuperAdmin = utils.IsSuperadmin(c)
 
 	participantName := ""
 	participantPaidAt := ""
@@ -958,7 +946,7 @@ func openParticipantPaidAtDialog(c echo.Context, groupID, id, memberID string, t
 func patchUpdatePaidAt(c echo.Context, groupID, id, mode string, tableQuery utils.TableQuery, value string) error {
 	paidAt := normalizePaidAtInput(value)
 
-	_, err := db.UpdateEventPaidAt(c.Request().Context(), db.UpdateEventPaidAtParams{
+	_, err := eventstore.UpdateEventPaidAt(c.Request().Context(), eventstore.UpdateEventPaidAtParams{
 		PaidAt:  paidAt,
 		ID:      id,
 		GroupID: groupID,
@@ -981,10 +969,10 @@ func patchUpdatePaidAt(c echo.Context, groupID, id, mode string, tableQuery util
 			slog.Error("event.updatePaidAt: failed to get index data", "err", err)
 			return c.NoContent(http.StatusInternalServerError)
 		}
-		applyEventIndexTableByRole(&data, middleware.IsAdmin(c))
+		applyEventIndexTableByRole(&data, utils.IsAdmin(c))
 		data.Signals = eventIndexSignals(data.Query)
 		data.IsAuthenticated = true
-		data.IsSuperAdmin = middleware.IsSuperadmin(c)
+		data.IsSuperAdmin = utils.IsSuperadmin(c)
 		html, err := utils.RenderHTMLForRequest(c, EventIndexPage(data))
 		if err != nil {
 			slog.Error("event.updatePaidAt: failed to render index", "err", err)
@@ -1008,10 +996,10 @@ func patchUpdatePaidAt(c echo.Context, groupID, id, mode string, tableQuery util
 		slog.Error("event.updatePaidAt: failed to get data", "err", err)
 		return c.NoContent(http.StatusInternalServerError)
 	}
-	applyEventShowTableByRole(&data, middleware.IsAdmin(c))
+	applyEventShowTableByRole(&data, utils.IsAdmin(c))
 	data.Signals = eventShowSignals(data)
 	data.IsAuthenticated = true
-	data.IsSuperAdmin = middleware.IsSuperadmin(c)
+	data.IsSuperAdmin = utils.IsSuperadmin(c)
 	html, err := utils.RenderHTMLForRequest(c, EventShowPage(data))
 	if err != nil {
 		slog.Error("event.updatePaidAt: failed to render", "err", err)
@@ -1035,7 +1023,7 @@ func patchUpdateParticipantNote(c echo.Context, groupID, id string, tableQuery u
 		return c.NoContent(http.StatusBadRequest)
 	}
 
-	err := db.UpdateParticipantNote(c.Request().Context(), db.UpdateParticipantNoteParams{
+	err := eventstore.UpdateParticipantNote(c.Request().Context(), eventstore.UpdateParticipantNoteParams{
 		Note:     strings.TrimSpace(value),
 		EventID:  id,
 		MemberID: memberID,
@@ -1056,10 +1044,10 @@ func patchUpdateParticipantNote(c echo.Context, groupID, id string, tableQuery u
 		slog.Error("event.updateParticipantNote: failed to get data", "err", err)
 		return c.NoContent(http.StatusInternalServerError)
 	}
-	applyEventShowTableByRole(&data, middleware.IsAdmin(c))
+	applyEventShowTableByRole(&data, utils.IsAdmin(c))
 	data.Signals = eventShowSignals(data)
 	data.IsAuthenticated = true
-	data.IsSuperAdmin = middleware.IsSuperadmin(c)
+	data.IsSuperAdmin = utils.IsSuperadmin(c)
 	html, err := utils.RenderHTMLForRequest(c, EventShowPage(data))
 	if err != nil {
 		slog.Error("event.updateParticipantNote: failed to render", "err", err)
@@ -1083,7 +1071,7 @@ func patchUpdateParticipantPaidAt(c echo.Context, groupID, id string, tableQuery
 		return c.NoContent(http.StatusBadRequest)
 	}
 
-	_, err := db.UpdateParticipantPaidAt(c.Request().Context(), db.UpdateParticipantPaidAtParams{
+	_, err := eventstore.UpdateParticipantPaidAt(c.Request().Context(), eventstore.UpdateParticipantPaidAtParams{
 		PaidAt:   normalizePaidAtInput(value),
 		EventID:  id,
 		MemberID: memberID,
@@ -1104,10 +1092,10 @@ func patchUpdateParticipantPaidAt(c echo.Context, groupID, id string, tableQuery
 		slog.Error("event.updateParticipantPaidAt: failed to get data", "err", err)
 		return c.NoContent(http.StatusInternalServerError)
 	}
-	applyEventShowTableByRole(&data, middleware.IsAdmin(c))
+	applyEventShowTableByRole(&data, utils.IsAdmin(c))
 	data.Signals = eventShowSignals(data)
 	data.IsAuthenticated = true
-	data.IsSuperAdmin = middleware.IsSuperadmin(c)
+	data.IsSuperAdmin = utils.IsSuperadmin(c)
 	html, err := utils.RenderHTMLForRequest(c, EventShowPage(data))
 	if err != nil {
 		slog.Error("event.updateParticipantPaidAt: failed to render", "err", err)
@@ -1126,7 +1114,7 @@ func patchUpdateParticipantPaidAt(c echo.Context, groupID, id string, tableQuery
 }
 
 func patchTogglePaid(c echo.Context, groupID, id, mode string, tableQuery utils.TableQuery) error {
-	_, err := db.ToggleEventPaid(c.Request().Context(), db.ToggleEventPaidParams{
+	_, err := eventstore.ToggleEventPaid(c.Request().Context(), eventstore.ToggleEventPaidParams{
 		ID:      id,
 		GroupID: groupID,
 	})
@@ -1148,10 +1136,10 @@ func patchTogglePaid(c echo.Context, groupID, id, mode string, tableQuery utils.
 			slog.Error("event.togglePaid: failed to get data", "err", err)
 			return c.NoContent(http.StatusInternalServerError)
 		}
-		applyEventShowTableByRole(&data, middleware.IsAdmin(c))
+		applyEventShowTableByRole(&data, utils.IsAdmin(c))
 		data.Signals = eventShowSignals(data)
 		data.IsAuthenticated = true
-		data.IsSuperAdmin = middleware.IsSuperadmin(c)
+		data.IsSuperAdmin = utils.IsSuperadmin(c)
 		html, err := utils.RenderHTMLForRequest(c, EventShowPage(data))
 		if err != nil {
 			slog.Error("event.togglePaid: failed to render", "err", err)
@@ -1167,10 +1155,10 @@ func patchTogglePaid(c echo.Context, groupID, id, mode string, tableQuery utils.
 		slog.Error("event.togglePaid: failed to get data", "err", err)
 		return c.NoContent(http.StatusInternalServerError)
 	}
-	applyEventIndexTableByRole(&data, middleware.IsAdmin(c))
+	applyEventIndexTableByRole(&data, utils.IsAdmin(c))
 	data.Signals = eventIndexSignals(data.Query)
 	data.IsAuthenticated = true
-	data.IsSuperAdmin = middleware.IsSuperadmin(c)
+	data.IsSuperAdmin = utils.IsSuperadmin(c)
 	html, err := utils.RenderHTMLForRequest(c, EventIndexPage(data))
 	if err != nil {
 		slog.Error("event.togglePaid: failed to render", "err", err)
@@ -1182,7 +1170,7 @@ func patchTogglePaid(c echo.Context, groupID, id, mode string, tableQuery utils.
 }
 
 func OpenPaidAtPrompt(c echo.Context) error {
-	groupID := middleware.GetGroupID(c)
+	groupID := utils.GetGroupID(c)
 
 	id := c.Param("id")
 	if !utils.IsValidID(id, utils.PrefixEvent) {
@@ -1210,7 +1198,7 @@ func OpenPaidAtPrompt(c echo.Context) error {
 }
 
 func OpenParticipantNoteDialog(c echo.Context) error {
-	groupID := middleware.GetGroupID(c)
+	groupID := utils.GetGroupID(c)
 
 	id := c.Param("id")
 	if !utils.IsValidID(id, utils.PrefixEvent) {
@@ -1234,7 +1222,7 @@ func OpenParticipantNoteDialog(c echo.Context) error {
 }
 
 func OpenParticipantPaidAtDialog(c echo.Context) error {
-	groupID := middleware.GetGroupID(c)
+	groupID := utils.GetGroupID(c)
 
 	id := c.Param("id")
 	if !utils.IsValidID(id, utils.PrefixEvent) {
@@ -1258,7 +1246,7 @@ func OpenParticipantPaidAtDialog(c echo.Context) error {
 }
 
 func UpdatePaidAt(c echo.Context) error {
-	groupID := middleware.GetGroupID(c)
+	groupID := utils.GetGroupID(c)
 
 	id := c.Param("id")
 	if !utils.IsValidID(id, utils.PrefixEvent) {
@@ -1280,7 +1268,7 @@ func UpdatePaidAt(c echo.Context) error {
 }
 
 func UpdateParticipantNote(c echo.Context) error {
-	groupID := middleware.GetGroupID(c)
+	groupID := utils.GetGroupID(c)
 
 	id := c.Param("id")
 	if !utils.IsValidID(id, utils.PrefixEvent) {
@@ -1308,7 +1296,7 @@ func UpdateParticipantNote(c echo.Context) error {
 }
 
 func UpdateParticipantPaidAt(c echo.Context) error {
-	groupID := middleware.GetGroupID(c)
+	groupID := utils.GetGroupID(c)
 
 	id := c.Param("id")
 	if !utils.IsValidID(id, utils.PrefixEvent) {
@@ -1336,7 +1324,7 @@ func UpdateParticipantPaidAt(c echo.Context) error {
 }
 
 func TogglePaid(c echo.Context) error {
-	groupID := middleware.GetGroupID(c)
+	groupID := utils.GetGroupID(c)
 
 	id := c.Param("id")
 	if !utils.IsValidID(id, utils.PrefixEvent) {

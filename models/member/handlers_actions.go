@@ -9,9 +9,9 @@ import (
 	"github.com/labstack/echo/v4"
 	"github.com/starfederation/datastar-go/datastar"
 
-	"bandcash/internal/db"
-	"bandcash/internal/middleware"
 	"bandcash/internal/utils"
+	eventstore "bandcash/models/event/store"
+	memberstore "bandcash/models/member/store"
 )
 
 // Default signal state for resetting member forms on success
@@ -27,7 +27,7 @@ var (
 )
 
 func Create(c echo.Context) error {
-	groupID := middleware.GetGroupID(c)
+	groupID := utils.GetGroupID(c)
 
 	var signals memberTableParams
 	err := datastar.ReadSignals(c.Request(), &signals)
@@ -47,7 +47,7 @@ func Create(c echo.Context) error {
 		return c.NoContent(http.StatusUnprocessableEntity)
 	}
 
-	member, err := db.CreateMember(c.Request().Context(), db.CreateMemberParams{
+	member, err := memberstore.CreateMember(c.Request().Context(), memberstore.CreateMemberParams{
 		ID:          utils.GenerateID(utils.PrefixMember),
 		GroupID:     groupID,
 		Name:        signals.FormData.Name,
@@ -70,7 +70,7 @@ func Create(c echo.Context) error {
 }
 
 func Update(c echo.Context) error {
-	groupID := middleware.GetGroupID(c)
+	groupID := utils.GetGroupID(c)
 
 	id := c.Param("id")
 	if !utils.IsValidID(id, utils.PrefixMember) {
@@ -96,7 +96,7 @@ func Update(c echo.Context) error {
 		return c.NoContent(http.StatusUnprocessableEntity)
 	}
 
-	_, err = db.UpdateMember(c.Request().Context(), db.UpdateMemberParams{
+	_, err = memberstore.UpdateMember(c.Request().Context(), memberstore.UpdateMemberParams{
 		Name:        signals.FormData.Name,
 		Description: signals.FormData.Description,
 		ID:          id,
@@ -119,7 +119,7 @@ func Update(c echo.Context) error {
 }
 
 func Destroy(c echo.Context) error {
-	groupID := middleware.GetGroupID(c)
+	groupID := utils.GetGroupID(c)
 
 	id := c.Param("id")
 	if !utils.IsValidID(id, utils.PrefixMember) {
@@ -137,7 +137,7 @@ func Destroy(c echo.Context) error {
 		return c.NoContent(http.StatusBadRequest)
 	}
 
-	err = db.DeleteMember(c.Request().Context(), db.DeleteMemberParams{
+	err = memberstore.DeleteMember(c.Request().Context(), memberstore.DeleteMemberParams{
 		ID:      id,
 		GroupID: groupID,
 	})
@@ -165,10 +165,10 @@ func Destroy(c echo.Context) error {
 		slog.Error("member.destroy: failed to get data", "err", err)
 		return c.NoContent(http.StatusInternalServerError)
 	}
-	data.IsAdmin = middleware.IsAdmin(c)
+	data.IsAdmin = utils.IsAdmin(c)
 	data.Signals = memberIndexSignals(utils.TableQuerySignals(data.Query))
 	data.IsAuthenticated = true
-	data.IsSuperAdmin = middleware.IsSuperadmin(c)
+	data.IsSuperAdmin = utils.IsSuperadmin(c)
 	html, err := utils.RenderHTMLForRequest(c, MemberIndex(data))
 	if err != nil {
 		slog.Error("member.destroy: failed to render", "err", err)
@@ -181,7 +181,7 @@ func Destroy(c echo.Context) error {
 }
 
 func ToggleParticipantPaid(c echo.Context) error {
-	groupID := middleware.GetGroupID(c)
+	groupID := utils.GetGroupID(c)
 
 	memberID := c.Param("id")
 	if !utils.IsValidID(memberID, utils.PrefixMember) {
@@ -205,7 +205,7 @@ func ToggleParticipantPaid(c echo.Context) error {
 		return c.NoContent(http.StatusBadRequest)
 	}
 
-	_, err = db.ToggleParticipantPaid(c.Request().Context(), db.ToggleParticipantPaidParams{
+	_, err = eventstore.ToggleParticipantPaid(c.Request().Context(), eventstore.ToggleParticipantPaidParams{
 		EventID:  eventID,
 		MemberID: memberID,
 		GroupID:  groupID,
@@ -222,10 +222,10 @@ func ToggleParticipantPaid(c echo.Context) error {
 		slog.Error("member.toggleParticipantPaid: failed to get data", "err", err)
 		return c.NoContent(http.StatusInternalServerError)
 	}
-	applyMemberShowTableByRole(&data, middleware.IsAdmin(c))
+	applyMemberShowTableByRole(&data, utils.IsAdmin(c))
 	data.Signals = memberShowSignals(data)
 	data.IsAuthenticated = true
-	data.IsSuperAdmin = middleware.IsSuperadmin(c)
+	data.IsSuperAdmin = utils.IsSuperadmin(c)
 
 	html, err := utils.RenderHTMLForRequest(c, MemberShow(data))
 	if err != nil {
@@ -238,7 +238,7 @@ func ToggleParticipantPaid(c echo.Context) error {
 }
 
 func OpenParticipantPaidAtDialog(c echo.Context) error {
-	groupID := middleware.GetGroupID(c)
+	groupID := utils.GetGroupID(c)
 
 	memberID := c.Param("id")
 	if !utils.IsValidID(memberID, utils.PrefixMember) {
@@ -265,9 +265,9 @@ func OpenParticipantPaidAtDialog(c echo.Context) error {
 		slog.Error("member.openParticipantPaidAtDialog: failed to get data", "err", err)
 		return c.NoContent(http.StatusInternalServerError)
 	}
-	applyMemberShowTableByRole(&data, middleware.IsAdmin(c))
+	applyMemberShowTableByRole(&data, utils.IsAdmin(c))
 	data.IsAuthenticated = true
-	data.IsSuperAdmin = middleware.IsSuperadmin(c)
+	data.IsSuperAdmin = utils.IsSuperadmin(c)
 
 	eventTitle := ""
 	paidAtValue := ""
@@ -313,7 +313,7 @@ func OpenParticipantPaidAtDialog(c echo.Context) error {
 }
 
 func UpdateParticipantPaidAt(c echo.Context) error {
-	groupID := middleware.GetGroupID(c)
+	groupID := utils.GetGroupID(c)
 
 	memberID := c.Param("id")
 	if !utils.IsValidID(memberID, utils.PrefixMember) {
@@ -337,7 +337,7 @@ func UpdateParticipantPaidAt(c echo.Context) error {
 		return c.NoContent(http.StatusBadRequest)
 	}
 
-	_, err = db.UpdateParticipantPaidAt(c.Request().Context(), db.UpdateParticipantPaidAtParams{
+	_, err = eventstore.UpdateParticipantPaidAt(c.Request().Context(), eventstore.UpdateParticipantPaidAtParams{
 		PaidAt:   normalizePaidAtInput(signals.ParticipantPaidAtDialog.Value),
 		EventID:  eventID,
 		MemberID: memberID,
@@ -358,10 +358,10 @@ func UpdateParticipantPaidAt(c echo.Context) error {
 		slog.Error("member.updateParticipantPaidAt: failed to get data", "err", err)
 		return c.NoContent(http.StatusInternalServerError)
 	}
-	applyMemberShowTableByRole(&data, middleware.IsAdmin(c))
+	applyMemberShowTableByRole(&data, utils.IsAdmin(c))
 	data.Signals = memberShowSignals(data)
 	data.IsAuthenticated = true
-	data.IsSuperAdmin = middleware.IsSuperadmin(c)
+	data.IsSuperAdmin = utils.IsSuperadmin(c)
 
 	html, err := utils.RenderHTMLForRequest(c, MemberShow(data))
 	if err != nil {

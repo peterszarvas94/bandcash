@@ -7,16 +7,16 @@ import (
 	ctxi18n "github.com/invopop/ctxi18n/i18n"
 	"github.com/labstack/echo/v4"
 
-	"bandcash/internal/db"
-	"bandcash/internal/middleware"
 	"bandcash/internal/utils"
+	groupstore "bandcash/models/group/store"
+	memberstore "bandcash/models/member/store"
 )
 
 func NewMemberPage(c echo.Context) error {
 	utils.EnsureTabID(c)
-	groupID := middleware.GetGroupID(c)
+	groupID := utils.GetGroupID(c)
 
-	group, err := db.GetGroupByID(c.Request().Context(), groupID)
+	group, err := groupstore.GetGroupByID(c.Request().Context(), groupID)
 	if err != nil {
 		slog.Error("member.new_page: failed to get group", "group_id", groupID, "err", err)
 		return c.NoContent(http.StatusInternalServerError)
@@ -36,14 +36,14 @@ func NewMemberPage(c echo.Context) error {
 			"errors":   map[string]any{"name": "", "description": ""},
 		},
 		IsAuthenticated: true,
-		IsSuperAdmin:    middleware.IsSuperadmin(c),
+		IsSuperAdmin:    utils.IsSuperadmin(c),
 	}
 	return utils.RenderPage(c, MemberNewPage(data))
 }
 
 func EditMemberPage(c echo.Context) error {
 	utils.EnsureTabID(c)
-	groupID := middleware.GetGroupID(c)
+	groupID := utils.GetGroupID(c)
 
 	id := c.Param("id")
 	if !utils.IsValidID(id, utils.PrefixMember) {
@@ -51,13 +51,13 @@ func EditMemberPage(c echo.Context) error {
 		return c.NoContent(http.StatusBadRequest)
 	}
 
-	group, err := db.GetGroupByID(c.Request().Context(), groupID)
+	group, err := groupstore.GetGroupByID(c.Request().Context(), groupID)
 	if err != nil {
 		slog.Error("member.edit_page: failed to get group", "group_id", groupID, "err", err)
 		return c.NoContent(http.StatusInternalServerError)
 	}
 
-	member, err := db.GetMember(c.Request().Context(), db.GetMemberParams{
+	member, err := memberstore.GetMember(c.Request().Context(), memberstore.GetMemberParams{
 		ID:      id,
 		GroupID: groupID,
 	})
@@ -82,14 +82,14 @@ func EditMemberPage(c echo.Context) error {
 			"errors":   map[string]any{"name": "", "description": ""},
 		},
 		IsAuthenticated: true,
-		IsSuperAdmin:    middleware.IsSuperadmin(c),
+		IsSuperAdmin:    utils.IsSuperadmin(c),
 	}
 	return utils.RenderPage(c, MemberEditPage(data))
 }
 
 func Index(c echo.Context) error {
 	utils.EnsureTabID(c)
-	groupID := middleware.GetGroupID(c)
+	groupID := utils.GetGroupID(c)
 	query := utils.ParseTableQuery(c, staticTableQueryable{spec: TableQuerySpec()})
 
 	data, err := GetIndexData(c.Request().Context(), groupID, query)
@@ -97,10 +97,10 @@ func Index(c echo.Context) error {
 		slog.Error("member.list: failed to get data", "err", err)
 		return c.NoContent(http.StatusInternalServerError)
 	}
-	data.IsAdmin = middleware.IsAdmin(c)
+	data.IsAdmin = utils.IsAdmin(c)
 	data.Signals = memberIndexSignals(utils.TableQuerySignals(data.Query))
 	data.IsAuthenticated = true
-	data.IsSuperAdmin = middleware.IsSuperadmin(c)
+	data.IsSuperAdmin = utils.IsSuperadmin(c)
 
 	slog.Debug("member.index", "member_count", len(data.Members))
 	return utils.RenderPage(c, MemberIndex(data))
@@ -108,7 +108,7 @@ func Index(c echo.Context) error {
 
 func Show(c echo.Context) error {
 	utils.EnsureTabID(c)
-	groupID := middleware.GetGroupID(c)
+	groupID := utils.GetGroupID(c)
 	query := utils.ParseTableQuery(c, staticTableQueryable{spec: MemberEventsTableQuerySpec()})
 
 	id := c.Param("id")
@@ -122,10 +122,10 @@ func Show(c echo.Context) error {
 		slog.Error("member.show: failed to get data", "err", err)
 		return c.NoContent(http.StatusInternalServerError)
 	}
-	applyMemberShowTableByRole(&data, middleware.IsAdmin(c))
+	applyMemberShowTableByRole(&data, utils.IsAdmin(c))
 	data.Signals = memberShowSignals(data)
 	data.IsAuthenticated = true
-	data.IsSuperAdmin = middleware.IsSuperadmin(c)
+	data.IsSuperAdmin = utils.IsSuperadmin(c)
 
 	return utils.RenderPage(c, MemberShow(data))
 }

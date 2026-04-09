@@ -4,7 +4,7 @@ import (
 	"database/sql"
 	"testing"
 
-	"bandcash/internal/db"
+	memberstore "bandcash/models/member/store"
 )
 
 func TestMemberTableSpecs(t *testing.T) {
@@ -30,7 +30,7 @@ func TestMemberTableSpecs(t *testing.T) {
 }
 
 func TestConvertToMemberEvent(t *testing.T) {
-	row := db.ListParticipantsByMemberByTitleAscFilteredRow{
+	row := memberstore.MemberEventRow{
 		ID:                 "evt_1",
 		GroupID:            "grp_1",
 		Title:              "Event",
@@ -49,10 +49,5 @@ func TestConvertToMemberEvent(t *testing.T) {
 	}
 	if converted.ParticipantPaidAt.String != "2026-01-02" || !converted.ParticipantPaidAt.Valid {
 		t.Fatalf("expected paid_at to carry over, got %+v", converted.ParticipantPaidAt)
-	}
-
-	empty := convertToMemberEvent(struct{}{})
-	if empty.ID != "" {
-		t.Fatalf("expected unsupported row type to return zero value, got %+v", empty)
 	}
 }

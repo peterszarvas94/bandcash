@@ -4,7 +4,8 @@ import (
 	"context"
 	"log/slog"
 
-	"bandcash/internal/db"
+	eventstore "bandcash/models/event/store"
+	expensestore "bandcash/models/expense/store"
 )
 
 // CalculateGroupTotals computes all financial totals for a group in-memory
@@ -21,7 +22,7 @@ func CalculateGroupTotals(ctx context.Context, groupID string) (GroupTotals, err
 	totals := GroupTotals{}
 
 	// Calculate from events
-	events, err := db.ListEvents(ctx, groupID)
+	events, err := eventstore.ListEvents(ctx, groupID)
 	if err != nil {
 		slog.Error("failed to list events for totals", "group_id", groupID, "err", err)
 		return totals, err
@@ -36,7 +37,7 @@ func CalculateGroupTotals(ctx context.Context, groupID string) (GroupTotals, err
 	}
 
 	// Calculate from expenses
-	expenses, err := db.ListExpenses(ctx, groupID)
+	expenses, err := expensestore.ListExpenses(ctx, groupID)
 	if err != nil {
 		slog.Error("failed to list expenses for totals", "group_id", groupID, "err", err)
 		return totals, err
@@ -51,7 +52,7 @@ func CalculateGroupTotals(ctx context.Context, groupID string) (GroupTotals, err
 	}
 
 	// Calculate from participants
-	payoutTotals, err := db.SumParticipantPaidAmountsByGroup(ctx, groupID)
+	payoutTotals, err := eventstore.SumParticipantPaidAmountsByGroup(ctx, groupID)
 	if err != nil {
 		slog.Error("failed to sum participants for totals", "group_id", groupID, "err", err)
 		return totals, err

@@ -8,9 +8,8 @@ import (
 
 	"github.com/labstack/echo/v4"
 
-	"bandcash/internal/db"
-	"bandcash/internal/middleware"
 	"bandcash/internal/utils"
+	authstore "bandcash/models/auth/store"
 )
 
 func normalizeCacheKeyPart(value string) string {
@@ -46,11 +45,11 @@ func (s staticTableQueryable) TableQuerySpec() utils.TableQuerySpec {
 }
 
 func getUserEmail(c echo.Context) string {
-	userID := middleware.GetUserID(c)
+	userID := utils.GetUserID(c)
 	if userID == "" {
 		return ""
 	}
-	user, err := db.GetUserByID(c.Request().Context(), userID)
+	user, err := authstore.GetUserByID(c.Request().Context(), userID)
 	if err != nil {
 		return ""
 	}

@@ -9,9 +9,8 @@ import (
 	"github.com/labstack/echo/v4"
 	"github.com/starfederation/datastar-go/datastar"
 
-	"bandcash/internal/db"
-	"bandcash/internal/middleware"
 	"bandcash/internal/utils"
+	expensestore "bandcash/models/expense/store"
 )
 
 var (
@@ -26,7 +25,7 @@ var (
 )
 
 func Create(c echo.Context) error {
-	groupID := middleware.GetGroupID(c)
+	groupID := utils.GetGroupID(c)
 
 	var signals expenseTableParams
 	err := datastar.ReadSignals(c.Request(), &signals)
@@ -47,7 +46,7 @@ func Create(c echo.Context) error {
 		return c.NoContent(http.StatusUnprocessableEntity)
 	}
 
-	_, err = db.CreateExpense(c.Request().Context(), db.CreateExpenseParams{
+	_, err = expensestore.CreateExpense(c.Request().Context(), expensestore.CreateExpenseParams{
 		ID:          utils.GenerateID(utils.PrefixExpense),
 		GroupID:     groupID,
 		Title:       signals.FormData.Title,
@@ -81,7 +80,7 @@ func Create(c echo.Context) error {
 }
 
 func Update(c echo.Context) error {
-	groupID := middleware.GetGroupID(c)
+	groupID := utils.GetGroupID(c)
 
 	id := c.Param("id")
 	if !utils.IsValidID(id, utils.PrefixExpense) {
@@ -108,7 +107,7 @@ func Update(c echo.Context) error {
 		return c.NoContent(http.StatusUnprocessableEntity)
 	}
 
-	_, err = db.UpdateExpense(c.Request().Context(), db.UpdateExpenseParams{
+	_, err = expensestore.UpdateExpense(c.Request().Context(), expensestore.UpdateExpenseParams{
 		Title:       signals.FormData.Title,
 		Description: signals.FormData.Description,
 		Amount:      signals.FormData.Amount,
@@ -142,7 +141,7 @@ func Update(c echo.Context) error {
 }
 
 func Destroy(c echo.Context) error {
-	groupID := middleware.GetGroupID(c)
+	groupID := utils.GetGroupID(c)
 
 	id := c.Param("id")
 	if !utils.IsValidID(id, utils.PrefixExpense) {
@@ -160,7 +159,7 @@ func Destroy(c echo.Context) error {
 		return c.NoContent(http.StatusBadRequest)
 	}
 
-	err = db.DeleteExpense(c.Request().Context(), db.DeleteExpenseParams{
+	err = expensestore.DeleteExpense(c.Request().Context(), expensestore.DeleteExpenseParams{
 		ID:      id,
 		GroupID: groupID,
 	})
@@ -191,10 +190,10 @@ func Destroy(c echo.Context) error {
 		slog.Error("expense.destroy: failed to get data", "err", err)
 		return c.NoContent(http.StatusInternalServerError)
 	}
-	applyExpenseTableByRole(&data, middleware.IsAdmin(c))
+	applyExpenseTableByRole(&data, utils.IsAdmin(c))
 	data.Signals = expenseIndexSignals(data.Query)
 	data.IsAuthenticated = true
-	data.IsSuperAdmin = middleware.IsSuperadmin(c)
+	data.IsSuperAdmin = utils.IsSuperadmin(c)
 
 	html, err := utils.RenderHTMLForRequest(c, ExpenseIndexPage(data))
 	if err != nil {
@@ -212,9 +211,9 @@ func openPaidAtDialog(c echo.Context, groupID, id string, _ utils.TableQuery) er
 		slog.Error("expense.openPaidAtDialog: failed to get data", "err", err)
 		return c.NoContent(http.StatusInternalServerError)
 	}
-	data.IsAdmin = middleware.IsAdmin(c)
+	data.IsAdmin = utils.IsAdmin(c)
 	data.IsAuthenticated = true
-	data.IsSuperAdmin = middleware.IsSuperadmin(c)
+	data.IsSuperAdmin = utils.IsSuperadmin(c)
 	data.PaidAtDialog = PaidAtDialogState{
 		Open:  true,
 		Mode:  "single",
@@ -250,9 +249,9 @@ func openPaidAtDialogInIndex(c echo.Context, groupID, id string, tableQuery util
 		slog.Error("expense.openPaidAtDialogInIndex: failed to get data", "err", err)
 		return c.NoContent(http.StatusInternalServerError)
 	}
-	applyExpenseTableByRole(&data, middleware.IsAdmin(c))
+	applyExpenseTableByRole(&data, utils.IsAdmin(c))
 	data.IsAuthenticated = true
-	data.IsSuperAdmin = middleware.IsSuperadmin(c)
+	data.IsSuperAdmin = utils.IsSuperadmin(c)
 
 	paidAtValue := ""
 	expenseTitle := ""
@@ -311,7 +310,7 @@ func openPaidAtDialogInIndex(c echo.Context, groupID, id string, tableQuery util
 func patchUpdatePaidAt(c echo.Context, groupID, id, mode string, tableQuery utils.TableQuery, value string) error {
 	paidAt := normalizePaidAtInput(value)
 
-	expense, err := db.GetExpense(c.Request().Context(), db.GetExpenseParams{
+	expense, err := expensestore.GetExpense(c.Request().Context(), expensestore.GetExpenseParams{
 		ID:      id,
 		GroupID: groupID,
 	})
@@ -326,7 +325,7 @@ func patchUpdatePaidAt(c echo.Context, groupID, id, mode string, tableQuery util
 		paid = 1
 	}
 
-	_, err = db.UpdateExpense(c.Request().Context(), db.UpdateExpenseParams{
+	_, err = expensestore.UpdateExpense(c.Request().Context(), expensestore.UpdateExpenseParams{
 		Title:       expense.Title,
 		Description: expense.Description,
 		Amount:      expense.Amount,
@@ -352,10 +351,10 @@ func patchUpdatePaidAt(c echo.Context, groupID, id, mode string, tableQuery util
 			slog.Error("expense.updatePaidAt: failed to get index data", "err", err)
 			return c.NoContent(http.StatusInternalServerError)
 		}
-		applyExpenseTableByRole(&data, middleware.IsAdmin(c))
+		applyExpenseTableByRole(&data, utils.IsAdmin(c))
 		data.Signals = expenseIndexSignals(data.Query)
 		data.IsAuthenticated = true
-		data.IsSuperAdmin = middleware.IsSuperadmin(c)
+		data.IsSuperAdmin = utils.IsSuperadmin(c)
 		html, err := utils.RenderHTMLForRequest(c, ExpenseIndexPage(data))
 		if err != nil {
 			slog.Error("expense.updatePaidAt: failed to render index", "err", err)
@@ -378,10 +377,10 @@ func patchUpdatePaidAt(c echo.Context, groupID, id, mode string, tableQuery util
 		slog.Error("expense.updatePaidAt: failed to get data", "err", err)
 		return c.NoContent(http.StatusInternalServerError)
 	}
-	data.IsAdmin = middleware.IsAdmin(c)
+	data.IsAdmin = utils.IsAdmin(c)
 	data.Signals = expenseShowSignals(data)
 	data.IsAuthenticated = true
-	data.IsSuperAdmin = middleware.IsSuperadmin(c)
+	data.IsSuperAdmin = utils.IsSuperadmin(c)
 	html, err := utils.RenderHTMLForRequest(c, ExpenseShowPage(data))
 	if err != nil {
 		slog.Error("expense.updatePaidAt: failed to render", "err", err)
@@ -400,7 +399,7 @@ func patchUpdatePaidAt(c echo.Context, groupID, id, mode string, tableQuery util
 }
 
 func OpenPaidAtPrompt(c echo.Context) error {
-	groupID := middleware.GetGroupID(c)
+	groupID := utils.GetGroupID(c)
 
 	id := c.Param("id")
 	if !utils.IsValidID(id, utils.PrefixExpense) {
@@ -425,7 +424,7 @@ func OpenPaidAtPrompt(c echo.Context) error {
 }
 
 func UpdatePaidAt(c echo.Context) error {
-	groupID := middleware.GetGroupID(c)
+	groupID := utils.GetGroupID(c)
 
 	id := c.Param("id")
 	if !utils.IsValidID(id, utils.PrefixExpense) {
@@ -447,7 +446,7 @@ func UpdatePaidAt(c echo.Context) error {
 }
 
 func TogglePaid(c echo.Context) error {
-	groupID := middleware.GetGroupID(c)
+	groupID := utils.GetGroupID(c)
 
 	id := c.Param("id")
 	if !utils.IsValidID(id, utils.PrefixExpense) {
@@ -465,7 +464,7 @@ func TogglePaid(c echo.Context) error {
 		return c.NoContent(http.StatusBadRequest)
 	}
 
-	_, err = db.ToggleExpensePaid(c.Request().Context(), db.ToggleExpensePaidParams{
+	_, err = expensestore.ToggleExpensePaid(c.Request().Context(), expensestore.ToggleExpensePaidParams{
 		ID:      id,
 		GroupID: groupID,
 	})
@@ -486,10 +485,10 @@ func TogglePaid(c echo.Context) error {
 			slog.Error("expense.togglePaid: failed to get data", "err", err)
 			return c.NoContent(http.StatusInternalServerError)
 		}
-		data.IsAdmin = middleware.IsAdmin(c)
+		data.IsAdmin = utils.IsAdmin(c)
 		data.Signals = expenseShowSignals(data)
 		data.IsAuthenticated = true
-		data.IsSuperAdmin = middleware.IsSuperadmin(c)
+		data.IsSuperAdmin = utils.IsSuperadmin(c)
 		html, err := utils.RenderHTMLForRequest(c, ExpenseShowPage(data))
 		if err != nil {
 			slog.Error("expense.togglePaid: failed to render", "err", err)
@@ -505,10 +504,10 @@ func TogglePaid(c echo.Context) error {
 		slog.Error("expense.togglePaid: failed to get data", "err", err)
 		return c.NoContent(http.StatusInternalServerError)
 	}
-	applyExpenseTableByRole(&data, middleware.IsAdmin(c))
+	applyExpenseTableByRole(&data, utils.IsAdmin(c))
 	data.Signals = expenseIndexSignals(data.Query)
 	data.IsAuthenticated = true
-	data.IsSuperAdmin = middleware.IsSuperadmin(c)
+	data.IsSuperAdmin = utils.IsSuperadmin(c)
 	html, err := utils.RenderHTMLForRequest(c, ExpenseIndexPage(data))
 	if err != nil {
 		slog.Error("expense.togglePaid: failed to render", "err", err)

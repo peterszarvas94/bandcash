@@ -7,9 +7,7 @@ import (
 )
 
 func TestHomeDataDefaults(t *testing.T) {
-	h := &Home{}
-
-	data := h.Data(t.Context())
+	data := Data(t.Context())
 	if data.CurrentLang != appi18n.DefaultLocale {
 		t.Fatalf("expected default locale %q, got %q", appi18n.DefaultLocale, data.CurrentLang)
 	}

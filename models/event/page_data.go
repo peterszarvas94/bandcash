@@ -3,12 +3,13 @@ package event
 import (
 	"bandcash/internal/db"
 	"bandcash/internal/utils"
+	eventstore "bandcash/models/event/store"
 )
 
 type EventData struct {
 	Title                   string
 	Event                   *db.Event
-	Participants            []db.ListParticipantsByEventRow
+	Participants            []eventstore.ListParticipantsByEventRow
 	WizardRows              []ParticipantWizardRow
 	Query                   utils.TableQuery
 	Pager                   utils.TablePagination

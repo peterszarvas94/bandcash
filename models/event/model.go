@@ -10,6 +10,11 @@ import (
 
 	"bandcash/internal/db"
 	"bandcash/internal/utils"
+	authstore "bandcash/models/auth/store"
+	eventstore "bandcash/models/event/store"
+	expensestore "bandcash/models/expense/store"
+	groupstore "bandcash/models/group/store"
+	memberstore "bandcash/models/member/store"
 )
 
 func TableQuerySpec() utils.TableQuerySpec {
@@ -29,12 +34,12 @@ func ParticipantTableQuerySpec() utils.TableQuerySpec {
 }
 
 func GetShowData(ctx context.Context, groupID, eventID string, query utils.TableQuery) (EventData, error) {
-	group, err := db.GetGroupByID(ctx, groupID)
+	group, err := groupstore.GetGroupByID(ctx, groupID)
 	if err != nil {
 		return EventData{}, err
 	}
 
-	event, err := db.GetEvent(ctx, db.GetEventParams{
+	event, err := eventstore.GetEvent(ctx, eventstore.GetEventParams{
 		ID:      eventID,
 		GroupID: groupID,
 	})
@@ -42,7 +47,7 @@ func GetShowData(ctx context.Context, groupID, eventID string, query utils.Table
 		return EventData{}, err
 	}
 
-	allParticipants, err := db.ListParticipantsByEvent(ctx, db.ListParticipantsByEventParams{
+	allParticipants, err := eventstore.ListParticipantsByEvent(ctx, eventstore.ListParticipantsByEventParams{
 		EventID: eventID,
 		GroupID: groupID,
 	})
@@ -50,13 +55,13 @@ func GetShowData(ctx context.Context, groupID, eventID string, query utils.Table
 		return EventData{}, err
 	}
 
-	members, err := db.ListMembers(ctx, groupID)
+	members, err := memberstore.ListMembers(ctx, groupID)
 	if err != nil {
 		return EventData{}, err
 	}
 
 	participantMemberIDs := make(map[string]bool, len(allParticipants))
-	participantByMemberID := make(map[string]db.ListParticipantsByEventRow, len(allParticipants))
+	participantByMemberID := make(map[string]eventstore.ListParticipantsByEventRow, len(allParticipants))
 	for _, participant := range allParticipants {
 		participantMemberIDs[participant.ID] = true
 		participantByMemberID[participant.ID] = participant
@@ -231,12 +236,12 @@ func GetShowData(ctx context.Context, groupID, eventID string, query utils.Table
 }
 
 func GetIndexData(ctx context.Context, groupID string, query utils.TableQuery) (EventsData, error) {
-	group, err := db.GetGroupByID(ctx, groupID)
+	group, err := groupstore.GetGroupByID(ctx, groupID)
 	if err != nil {
 		return EventsData{}, err
 	}
 
-	filters := db.EventTableFilter{
+	filters := eventstore.EventTableFilter{
 		GroupID: groupID,
 		Search:  query.Search,
 		Year:    query.Year,
@@ -244,13 +249,13 @@ func GetIndexData(ctx context.Context, groupID string, query utils.TableQuery) (
 		To:      query.To,
 	}
 
-	totalItems, err := db.CountEventsTable(ctx, filters)
+	totalItems, err := eventstore.CountEventsTable(ctx, filters)
 	if err != nil {
 		return EventsData{}, err
 	}
 	query = utils.ClampPage(query, totalItems)
 
-	events, err := db.ListEventsTable(ctx, db.EventTableListParams{
+	events, err := eventstore.ListEventsTable(ctx, eventstore.EventTableListParams{
 		EventTableFilter: filters,
 		Sort:             query.Sort,
 		Dir:              query.Dir,
@@ -261,28 +266,22 @@ func GetIndexData(ctx context.Context, groupID string, query utils.TableQuery) (
 		return EventsData{}, err
 	}
 
-	incomeTotals, err := db.SumEventIncomeTotalsTable(ctx, filters)
+	incomeTotals, err := eventstore.SumEventIncomeTotalsTable(ctx, filters)
 	if err != nil {
 		return EventsData{}, err
 	}
 
-	participantTotals, err := db.SumParticipantTotalsByGroupFiltered(ctx, db.SumParticipantTotalsByGroupFilteredParams{
+	participantTotals, err := eventstore.SumParticipantTotalsByGroupTable(ctx, filters)
+	if err != nil {
+		return EventsData{}, err
+	}
+
+	expenseTotals, err := expensestore.SumExpenseTotalsTable(ctx, expensestore.ExpenseTableFilter{
 		GroupID: groupID,
 		Search:  query.Search,
 		Year:    query.Year,
 		From:    query.From,
 		To:      query.To,
-	})
-	if err != nil {
-		return EventsData{}, err
-	}
-
-	expenseTotals, err := db.SumExpenseTotalsFiltered(ctx, db.SumExpenseTotalsFilteredParams{
-		GroupID:    groupID,
-		Search:     query.Search,
-		YearFilter: query.Year,
-		FromDate:   query.From,
-		ToDate:     query.To,
 	})
 	if err != nil {
 		return EventsData{}, err
@@ -295,8 +294,8 @@ func GetIndexData(ctx context.Context, groupID string, query utils.TableQuery) (
 		IncomeUnpaid:  incomeTotals.Total - incomeTotals.Paid,
 		Paid:          participantTotals.TotalPaid,
 		Unpaid:        participantTotals.TotalUnpaid,
-		ExpensePaid:   expenseTotals.TotalPaid,
-		ExpenseUnpaid: expenseTotals.TotalUnpaid,
+		ExpensePaid:   expenseTotals.Paid,
+		ExpenseUnpaid: expenseTotals.Total - expenseTotals.Paid,
 	}
 
 	return buildEventsData(ctx, groupID, group, query, events, totals)
@@ -416,7 +415,7 @@ func buildEventsData(ctx context.Context, groupID string, group db.Group, query 
 		return EventsData{}, err
 	}
 
-	admin, err := db.GetUserByID(ctx, group.AdminUserID)
+	admin, err := authstore.GetUserByID(ctx, group.AdminUserID)
 	if err != nil {
 		return EventsData{}, err
 	}
