@@ -73,51 +73,58 @@ func ListParticipantsByEventTx(ctx context.Context, tx bun.Tx, arg ListParticipa
 }
 
 func UpdateParticipantTx(ctx context.Context, tx bun.Tx, arg UpdateParticipantParams) error {
-	_, err := tx.ExecContext(
-		ctx,
-		`UPDATE participants
-SET amount = ?,
-    expense = ?,
-    note = ?,
-    paid = ?,
-    paid_at = CASE
-      WHEN ? = 0 THEN NULL
-      WHEN ? IS NOT NULL THEN ?
-      WHEN paid = 0 THEN CURRENT_TIMESTAMP
-      ELSE paid_at
-    END
-WHERE event_id = ?
-  AND member_id = ?
-  AND group_id = ?`,
-		arg.Amount,
-		arg.Expense,
-		arg.Note,
-		arg.Paid,
-		arg.Paid,
-		arg.PaidAt,
-		arg.PaidAt,
-		arg.EventID,
-		arg.MemberID,
-		arg.GroupID,
-	)
+	var current db.Participant
+	err := tx.NewSelect().Model(&current).
+		Where("event_id = ?", arg.EventID).
+		Where("member_id = ?", arg.MemberID).
+		Where("group_id = ?", arg.GroupID).
+		Scan(ctx)
+	if err != nil {
+		return err
+	}
+
+	paidAtInput := paidAtNullable(arg.PaidAt)
+	finalPaidAt := current.PaidAt
+	if arg.Paid == 0 || isPaidAtClearRequest(arg.PaidAt) {
+		finalPaidAt = sql.NullString{}
+	} else if paidAtInput.Valid {
+		finalPaidAt = paidAtInput
+	} else if current.Paid == 0 {
+		finalPaidAt = currentTimestampNullString()
+	}
+
+	_, err = tx.NewUpdate().
+		Model((*db.Participant)(nil)).
+		Set("amount = ?", arg.Amount).
+		Set("expense = ?", arg.Expense).
+		Set("note = ?", arg.Note).
+		Set("paid = ?", arg.Paid).
+		Set("paid_at = ?", paidAtValue(finalPaidAt)).
+		Where("event_id = ?", arg.EventID).
+		Where("member_id = ?", arg.MemberID).
+		Where("group_id = ?", arg.GroupID).
+		Exec(ctx)
 	return err
 }
 
 func AddParticipantTx(ctx context.Context, tx bun.Tx, arg AddParticipantParams) (db.Participant, error) {
-	_, err := tx.ExecContext(
-		ctx,
-		`INSERT INTO participants (group_id, event_id, member_id, amount, expense, note, paid, paid_at)
-VALUES (?, ?, ?, ?, ?, ?, ?, CASE WHEN ? = 0 THEN NULL ELSE ? END)`,
-		arg.GroupID,
-		arg.EventID,
-		arg.MemberID,
-		arg.Amount,
-		arg.Expense,
-		arg.Note,
-		arg.Paid,
-		arg.Paid,
-		arg.PaidAt,
-	)
+	paidAt := paidAtNullable(arg.PaidAt)
+	if arg.Paid == 0 {
+		paidAt = sql.NullString{}
+	}
+
+	row := db.Participant{
+		GroupID:  arg.GroupID,
+		EventID:  arg.EventID,
+		MemberID: arg.MemberID,
+		Amount:   arg.Amount,
+		Expense:  arg.Expense,
+		Note:     arg.Note,
+		Paid:     arg.Paid,
+		PaidAt:   paidAt,
+	}
+
+	_, err := tx.NewInsert().Model(&row).Exec(ctx)
 	if err != nil {
 		return db.Participant{}, err
 	}

@@ -14,26 +14,50 @@ func GetGroupByID(ctx context.Context, id string) (db.Group, error) {
 }
 
 func CreateGroupAdmin(ctx context.Context, arg CreateGroupAdminParams) (CreateGroupAdminRow, error) {
-	var row CreateGroupAdminRow
-	err := db.BunDB.QueryRowContext(
-		ctx,
-		"INSERT INTO group_access (id, user_id, group_id, role) VALUES (?, ?, ?, 'admin') ON CONFLICT(user_id, group_id) DO UPDATE SET role = 'admin' WHERE group_access.role != 'owner' RETURNING id, user_id, group_id, created_at",
-		arg.ID,
-		arg.UserID,
-		arg.GroupID,
-	).Scan(&row.ID, &row.UserID, &row.GroupID, &row.CreatedAt)
+	input := struct {
+		ID      string `bun:"id"`
+		UserID  string `bun:"user_id"`
+		GroupID string `bun:"group_id"`
+		Role    string `bun:"role"`
+	}{
+		ID:      arg.ID,
+		UserID:  arg.UserID,
+		GroupID: arg.GroupID,
+		Role:    "admin",
+	}
+	row := CreateGroupAdminRow{}
+	err := db.BunDB.NewInsert().
+		TableExpr("group_access").
+		Model(&input).
+		On("CONFLICT(user_id, group_id) DO UPDATE").
+		Set("role = ?", "admin").
+		Where("group_access.role != 'owner'").
+		Returning("id, user_id, group_id, created_at").
+		Scan(ctx, &row)
 	return row, err
 }
 
 func CreateGroupReader(ctx context.Context, arg CreateGroupReaderParams) (CreateGroupReaderRow, error) {
-	var row CreateGroupReaderRow
-	err := db.BunDB.QueryRowContext(
-		ctx,
-		"INSERT INTO group_access (id, user_id, group_id, role) VALUES (?, ?, ?, 'viewer') ON CONFLICT(user_id, group_id) DO UPDATE SET role = 'viewer' WHERE group_access.role != 'owner' RETURNING id, user_id, group_id, created_at",
-		arg.ID,
-		arg.UserID,
-		arg.GroupID,
-	).Scan(&row.ID, &row.UserID, &row.GroupID, &row.CreatedAt)
+	input := struct {
+		ID      string `bun:"id"`
+		UserID  string `bun:"user_id"`
+		GroupID string `bun:"group_id"`
+		Role    string `bun:"role"`
+	}{
+		ID:      arg.ID,
+		UserID:  arg.UserID,
+		GroupID: arg.GroupID,
+		Role:    "viewer",
+	}
+	row := CreateGroupReaderRow{}
+	err := db.BunDB.NewInsert().
+		TableExpr("group_access").
+		Model(&input).
+		On("CONFLICT(user_id, group_id) DO UPDATE").
+		Set("role = ?", "viewer").
+		Where("group_access.role != 'owner'").
+		Returning("id, user_id, group_id, created_at").
+		Scan(ctx, &row)
 	return row, err
 }
 
@@ -197,16 +221,19 @@ func DeleteGroupPendingInvite(ctx context.Context, arg DeleteGroupPendingInviteP
 }
 
 func CreateInviteMagicLink(ctx context.Context, arg CreateInviteMagicLinkParams) (db.MagicLink, error) {
-	var row db.MagicLink
-	err := db.BunDB.QueryRowContext(
-		ctx,
-		"INSERT INTO magic_links (id, token, email, action, group_id, expires_at, invite_role) VALUES (?, ?, ?, 'invite', ?, CURRENT_TIMESTAMP, ?) RETURNING id, token, email, action, group_id, expires_at, used_at, created_at, invite_role",
-		arg.ID,
-		arg.Token,
-		arg.Email,
-		arg.GroupID,
-		arg.InviteRole,
-	).Scan(&row.ID, &row.Token, &row.Email, &row.Action, &row.GroupID, &row.ExpiresAt, &row.UsedAt, &row.CreatedAt, &row.InviteRole)
+	row := db.MagicLink{
+		ID:         arg.ID,
+		Token:      arg.Token,
+		Email:      arg.Email,
+		Action:     "invite",
+		GroupID:    arg.GroupID,
+		InviteRole: arg.InviteRole,
+	}
+	_, err := db.BunDB.NewInsert().
+		Model(&row).
+		Value("expires_at", "CURRENT_TIMESTAMP").
+		Returning("id, token, email, action, group_id, expires_at, used_at, created_at, invite_role").
+		Exec(ctx)
 	return row, err
 }
 

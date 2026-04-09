@@ -14,7 +14,16 @@ func GetUserByID(ctx context.Context, id string) (db.User, error) {
 }
 
 func BanUser(ctx context.Context, arg BanUserParams) error {
-	_, err := db.BunDB.ExecContext(ctx, "INSERT INTO banned_users (id, user_id) VALUES (?, ?) ON CONFLICT(user_id) DO NOTHING", arg.ID, arg.UserID)
+	row := struct {
+		ID     string `bun:"id"`
+		UserID string `bun:"user_id"`
+	}{ID: arg.ID, UserID: arg.UserID}
+
+	_, err := db.BunDB.NewInsert().
+		TableExpr("banned_users").
+		Model(&row).
+		On("CONFLICT(user_id) DO NOTHING").
+		Exec(ctx)
 	return err
 }
 
@@ -109,13 +118,19 @@ func ListUserDetailCardStates(ctx context.Context, userID string) ([]ListUserDet
 }
 
 func UpsertUserDetailCardState(ctx context.Context, arg UpsertUserDetailCardStateParams) error {
-	_, err := db.BunDB.ExecContext(
-		ctx,
-		"INSERT INTO user_detail_card_states (user_id, state_key, is_open, updated_at) VALUES (?, ?, ?, CURRENT_TIMESTAMP) ON CONFLICT(user_id, state_key) DO UPDATE SET is_open = excluded.is_open, updated_at = CURRENT_TIMESTAMP",
-		arg.UserID,
-		arg.StateKey,
-		arg.IsOpen,
-	)
+	row := struct {
+		UserID   string `bun:"user_id"`
+		StateKey string `bun:"state_key"`
+		IsOpen   int64  `bun:"is_open"`
+	}{UserID: arg.UserID, StateKey: arg.StateKey, IsOpen: arg.IsOpen}
+
+	_, err := db.BunDB.NewInsert().
+		TableExpr("user_detail_card_states").
+		Model(&row).
+		On("CONFLICT(user_id, state_key) DO UPDATE").
+		Set("is_open = EXCLUDED.is_open").
+		Set("updated_at = CURRENT_TIMESTAMP").
+		Exec(ctx)
 	return err
 }
 
@@ -135,16 +150,17 @@ func UseMagicLink(ctx context.Context, id string) error {
 }
 
 func CreateMagicLink(ctx context.Context, arg CreateMagicLinkParams) (db.MagicLink, error) {
-	var row db.MagicLink
-	err := db.BunDB.QueryRowContext(
-		ctx,
-		"INSERT INTO magic_links (id, token, email, action, group_id, expires_at) VALUES (?, ?, ?, ?, ?, ?) RETURNING id, token, email, action, group_id, expires_at, used_at, created_at, invite_role",
-		arg.ID,
-		arg.Token,
-		arg.Email,
-		arg.Action,
-		arg.GroupID,
-		arg.ExpiresAt,
-	).Scan(&row.ID, &row.Token, &row.Email, &row.Action, &row.GroupID, &row.ExpiresAt, &row.UsedAt, &row.CreatedAt, &row.InviteRole)
+	row := db.MagicLink{
+		ID:        arg.ID,
+		Token:     arg.Token,
+		Email:     arg.Email,
+		Action:    arg.Action,
+		GroupID:   arg.GroupID,
+		ExpiresAt: arg.ExpiresAt,
+	}
+	_, err := db.BunDB.NewInsert().
+		Model(&row).
+		Returning("id, token, email, action, group_id, expires_at, used_at, created_at, invite_role").
+		Exec(ctx)
 	return row, err
 }
