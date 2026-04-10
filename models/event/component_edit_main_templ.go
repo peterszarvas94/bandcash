@@ -57,7 +57,7 @@ func EventEditMain(data EventData) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "\" data-effect=\"$wizard.total = $wizard.rows.reduce((sum, row) => sum + (row.amount || 0) + (row.expense || 0), 0); $wizard.leftover = ($eventFormData.amount || 0) - $wizard.total\" data-indicator:_fetching><div data-show=\"$wizard.error\" class=\"fielderror\" data-text=\"$wizard.error\"></div><div class=\"field\"><label for=\"event-edit-title\" class=\"row\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "\" data-effect=\"$wizard.total = $wizard.rows.reduce((sum, row) => sum + (row.amount || 0) + (row.expense || 0), 0); $wizard.balance = ($eventFormData.amount || 0) - $wizard.total\" data-indicator:_fetching><div data-show=\"$wizard.error\" class=\"fielderror\" data-text=\"$wizard.error\"></div><div class=\"field\"><label for=\"event-edit-title\" class=\"row\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -199,20 +199,20 @@ func EventEditMain(data EventData) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 13, "</label> <input id=\"event-edit-total\" type=\"number\" class=\"input w-details\" disabled data-bind=\"wizard.total\"></div><div class=\"field\"><label for=\"event-edit-leftover\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 13, "</label> <input id=\"event-edit-total\" type=\"number\" class=\"input w-details\" disabled data-bind=\"wizard.total\"></div><div class=\"field\"><label for=\"event-edit-balance\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var13 string
-		templ_7745c5c3_Var13, templ_7745c5c3_Err = templ.JoinStringErrs(ctxi18n.T(ctx, "events.leftover"))
+		templ_7745c5c3_Var13, templ_7745c5c3_Err = templ.JoinStringErrs(ctxi18n.T(ctx, "events.balance"))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/event/component_edit_main.templ`, Line: 67, Col: 71}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/event/component_edit_main.templ`, Line: 67, Col: 69}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var13))
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 14, "</label> <input id=\"event-edit-leftover\" type=\"number\" class=\"input w-details\" disabled data-bind=\"wizard.leftover\"></div><div class=\"table-scroll pt\"><table class=\"table\"><thead><tr><th style=\"")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 14, "</label> <input id=\"event-edit-balance\" type=\"number\" class=\"input w-details\" disabled data-bind=\"wizard.balance\"></div><div class=\"table-scroll pt\"><table class=\"table\"><thead><tr><th style=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

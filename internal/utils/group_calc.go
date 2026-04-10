@@ -28,11 +28,11 @@ func CalculateGroupTotals(ctx context.Context, groupID string) (GroupTotals, err
 		return totals, err
 	}
 	for _, event := range events {
-		totals.TotalEventAmount += event.Amount
+		totals.Income.All += event.Amount
 		if event.Paid == 1 {
-			totals.EventPaid += event.Amount
+			totals.Income.Paid += event.Amount
 		} else {
-			totals.EventUnpaid += event.Amount
+			totals.Income.Unpaid += event.Amount
 		}
 	}
 
@@ -43,11 +43,11 @@ func CalculateGroupTotals(ctx context.Context, groupID string) (GroupTotals, err
 		return totals, err
 	}
 	for _, expense := range expenses {
-		totals.TotalExpenseAmount += expense.Amount
+		totals.Expenses.All += expense.Amount
 		if expense.Paid == 1 {
-			totals.ExpensePaid += expense.Amount
+			totals.Expenses.Paid += expense.Amount
 		} else {
-			totals.ExpenseUnpaid += expense.Amount
+			totals.Expenses.Unpaid += expense.Amount
 		}
 	}
 
@@ -57,12 +57,14 @@ func CalculateGroupTotals(ctx context.Context, groupID string) (GroupTotals, err
 		slog.Error("failed to sum participants for totals", "group_id", groupID, "err", err)
 		return totals, err
 	}
-	totals.PayoutPaid = payoutTotals.PaidAmount
-	totals.PayoutUnpaid = payoutTotals.UnpaidAmount
-	totals.TotalPayoutAmount = payoutTotals.PaidAmount + payoutTotals.UnpaidAmount
+	totals.Payouts.Paid = payoutTotals.PaidAmount
+	totals.Payouts.Unpaid = payoutTotals.UnpaidAmount
+	totals.Payouts.All = payoutTotals.PaidAmount + payoutTotals.UnpaidAmount
 
-	// Calculate leftover: events - expenses - payouts
-	totals.TotalLeftover = totals.TotalEventAmount - totals.TotalExpenseAmount - totals.TotalPayoutAmount
+	// Calculate balance: events - expenses - payouts
+	totals.Balance.Paid = totals.Income.Paid - totals.Expenses.Paid - totals.Payouts.Paid
+	totals.Balance.Unpaid = totals.Income.Unpaid - totals.Expenses.Unpaid - totals.Payouts.Unpaid
+	totals.Balance.All = totals.Income.All - totals.Expenses.All - totals.Payouts.All
 
 	// Cache the result
 	CalcCacheInstance.Set(cacheKey, totals)

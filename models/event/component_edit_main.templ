@@ -15,7 +15,7 @@ templ EventEditMain(data EventData) {
 		cancelParticipantsEditExpr := fmt.Sprintf("@delete('/groups/%s/events/%s/participants/draft')", data.GroupID, data.Event.ID)
 	}}
 	@shared.PageHeader(shared.PageHeaderProps{Title: data.Event.Title}) {}
-	<form class="form" data-on:submit={ participantsSubmitExpr } data-effect="$wizard.total = $wizard.rows.reduce((sum, row) => sum + (row.amount || 0) + (row.expense || 0), 0); $wizard.leftover = ($eventFormData.amount || 0) - $wizard.total" data-indicator:_fetching>
+	<form class="form" data-on:submit={ participantsSubmitExpr } data-effect="$wizard.total = $wizard.rows.reduce((sum, row) => sum + (row.amount || 0) + (row.expense || 0), 0); $wizard.balance = ($eventFormData.amount || 0) - $wizard.total" data-indicator:_fetching>
 		<div data-show="$wizard.error" class="fielderror" data-text="$wizard.error"></div>
 		<div class="field">
 			<label for="event-edit-title" class="row">{ ctxi18n.T(ctx, "fields.title") } <span class="fielderror">*</span></label>
@@ -64,8 +64,8 @@ templ EventEditMain(data EventData) {
 			<input id="event-edit-total" type="number" class="input w-details" disabled data-bind="wizard.total"/>
 		</div>
 		<div class="field">
-			<label for="event-edit-leftover">{ ctxi18n.T(ctx, "events.leftover") }</label>
-			<input id="event-edit-leftover" type="number" class="input w-details" disabled data-bind="wizard.leftover"/>
+			<label for="event-edit-balance">{ ctxi18n.T(ctx, "events.balance") }</label>
+			<input id="event-edit-balance" type="number" class="input w-details" disabled data-bind="wizard.balance"/>
 		</div>
 		<div class="table-scroll pt">
 			<table class="table">

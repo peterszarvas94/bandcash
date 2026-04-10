@@ -100,23 +100,24 @@ func (c *CalcCache) Stats() (total int, byPrefix map[string]int) {
 // Global cache instance for shared use
 var CalcCacheInstance = NewCalcCache()
 
+type TotalsBreakdown struct {
+	Paid   int64
+	Unpaid int64
+	All    int64
+}
+
 // GroupTotals holds calculated financial totals for a group
 type GroupTotals struct {
-	TotalEventAmount   int64
-	TotalExpenseAmount int64
-	TotalPayoutAmount  int64
-	TotalLeftover      int64
-	PayoutPaid         int64
-	PayoutUnpaid       int64
-	EventPaid          int64
-	EventUnpaid        int64
-	ExpensePaid        int64
-	ExpenseUnpaid      int64
+	Income   TotalsBreakdown
+	Payouts  TotalsBreakdown
+	Expenses TotalsBreakdown
+	Balance  TotalsBreakdown
 }
 
 func (gt GroupTotals) String() string {
-	return fmt.Sprintf("events=%d/%d expenses=%d/%d payouts=%d leftover=%d",
-		gt.EventPaid, gt.EventUnpaid,
-		gt.ExpensePaid, gt.ExpenseUnpaid,
-		gt.TotalPayoutAmount, gt.TotalLeftover)
+	return fmt.Sprintf("income=%d/%d/%d expenses=%d/%d/%d payouts=%d/%d/%d balance=%d/%d/%d",
+		gt.Income.Paid, gt.Income.Unpaid, gt.Income.All,
+		gt.Expenses.Paid, gt.Expenses.Unpaid, gt.Expenses.All,
+		gt.Payouts.Paid, gt.Payouts.Unpaid, gt.Payouts.All,
+		gt.Balance.Paid, gt.Balance.Unpaid, gt.Balance.All)
 }

@@ -272,14 +272,17 @@ func renderEmailPreview(c echo.Context, data EmailPreviewData) error {
 
 func renderDevErrorPage(c echo.Context, status int, iconName icons.IconName, titleKey, bodyKey string) error {
 	ctx := c.Request().Context()
+	isAuthenticated, isSuperAdmin := utils.ResolveAuthState(c)
 	return utils.RenderPage(c, shared.ErrorPage(shared.ErrorPageData{
-		Title:      ctxi18n.T(ctx, titleKey),
-		StatusCode: status,
-		IconName:   iconName,
-		Heading:    ctxi18n.T(ctx, titleKey),
-		Message:    ctxi18n.T(ctx, bodyKey),
-		HomeLabel:  ctxi18n.T(ctx, "error_pages.home_action"),
-		HomeHref:   appi18n.LocalizedHomePath(ctx),
+		Title:           ctxi18n.T(ctx, titleKey),
+		StatusCode:      status,
+		IconName:        iconName,
+		Heading:         ctxi18n.T(ctx, titleKey),
+		Message:         ctxi18n.T(ctx, bodyKey),
+		HomeLabel:       ctxi18n.T(ctx, "error_pages.home_action"),
+		HomeHref:        appi18n.LocalizedHomePath(ctx),
+		IsAuthenticated: isAuthenticated,
+		IsSuperAdmin:    isSuperAdmin,
 	}))
 }
 

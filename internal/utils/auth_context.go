@@ -1,6 +1,12 @@
 package utils
 
-import "github.com/labstack/echo/v4"
+import (
+	"strings"
+
+	"github.com/labstack/echo/v4"
+
+	authstore "bandcash/models/auth/data"
+)
 
 const (
 	CtxUserIDKey       = "user_id"
@@ -44,4 +50,35 @@ func IsSuperadmin(c echo.Context) bool {
 		return isSuperadmin
 	}
 	return false
+}
+
+func ResolveAuthState(c echo.Context) (bool, bool) {
+	if GetUserID(c) != "" {
+		return true, IsSuperadmin(c)
+	}
+
+	cookie, err := c.Cookie(SessionCookieName)
+	if err != nil || strings.TrimSpace(cookie.Value) == "" {
+		return false, false
+	}
+
+	session, err := authstore.GetUserSessionByToken(c.Request().Context(), cookie.Value)
+	if err != nil {
+		return false, false
+	}
+
+	user, err := authstore.GetUserByID(c.Request().Context(), session.UserID)
+	if err != nil {
+		return false, false
+	}
+
+	bannedCount, err := authstore.IsUserBanned(c.Request().Context(), user.ID)
+	if err != nil || bannedCount > 0 {
+		return false, false
+	}
+
+	superadminEmail := strings.ToLower(strings.TrimSpace(Env().SuperadminEmail))
+	isSuperadmin := superadminEmail != "" && strings.ToLower(strings.TrimSpace(user.Email)) == superadminEmail
+
+	return true, isSuperadmin
 }

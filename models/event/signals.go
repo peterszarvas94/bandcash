@@ -83,7 +83,7 @@ type participantWizardSignals struct {
 	Paids       map[string]bool          `json:"paids"`
 	PaidAts     map[string]string        `json:"paidAts"`
 	Total       int64                    `json:"total"`
-	Leftover    int64                    `json:"leftover"`
+	Balance     int64                    `json:"balance"`
 	Error       string                   `json:"error"`
 }
 
@@ -191,7 +191,7 @@ func eventShowSignals(data EventData) map[string]any {
 			"paids":       wizardPaids,
 			"paidAts":     wizardPaidAts,
 			"total":       wizardTotal,
-			"leftover":    data.WizardEventAmount - wizardTotal,
+			"balance":     data.WizardEventAmount - wizardTotal,
 		},
 		"eventFormData": map[string]any{
 			"title":       data.Event.Title,

@@ -140,7 +140,7 @@ type GroupPageData struct {
 	Expenses        int64
 	ExpensesPaid    int64
 	ExpensesUnpaid  int64
-	Leftover        int64
+	Balance         int64
 	IsAdmin         bool
 }
 

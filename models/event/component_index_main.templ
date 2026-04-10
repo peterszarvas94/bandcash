@@ -12,15 +12,15 @@ templ EventIndexMain(data EventsData) {
 	{{
 		allIncome := data.FilteredTotal
 		allPayout := data.FilteredPayoutsPaid + data.FilteredPayoutsUnpaid + data.FilteredExpensesPaid + data.FilteredExpensesUnpaid
-		allLeftover := allIncome - allPayout
+		allBalance := allIncome - allPayout
 
 		paidIncome := data.FilteredIncomePaid
 		paidPayout := data.FilteredPayoutsPaid + data.FilteredExpensesPaid
-		paidLeftover := paidIncome - paidPayout
+		paidBalance := paidIncome - paidPayout
 
 		unpaidIncome := data.FilteredIncomeUnpaid
 		unpaidPayout := data.FilteredPayoutsUnpaid + data.FilteredExpensesUnpaid
-		unpaidLeftover := unpaidIncome - unpaidPayout
+		unpaidBalance := unpaidIncome - unpaidPayout
 	}}
 	@shared.PageHeader(shared.PageHeaderProps{Title: data.GroupName}) {
 		if data.IsAdmin {
@@ -45,9 +45,9 @@ templ EventIndexMain(data EventsData) {
 		},
 		Balance: EventBalanceStatusCardProps{
 			Title:  ctxi18n.T(ctx, "groups.balance"),
-			Paid:   utils.FormatNumberLocalized(ctx, paidLeftover),
-			Unpaid: utils.FormatNumberLocalized(ctx, unpaidLeftover),
-			All:    utils.FormatNumberLocalized(ctx, allLeftover),
+			Paid:   utils.FormatNumberLocalized(ctx, paidBalance),
+			Unpaid: utils.FormatNumberLocalized(ctx, unpaidBalance),
+			All:    utils.FormatNumberLocalized(ctx, allBalance),
 		},
 	})
 	@shared.TableSearchFormWithClass(fmt.Sprintf("/groups/%s/events", data.GroupID), data.Query, "table.search_placeholder_events", "pt")

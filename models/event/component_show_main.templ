@@ -58,15 +58,15 @@ templ EventShowMain(data EventData) {
 
 			allIncome := data.Event.Amount
 			allPayout := data.TotalPaid + data.TotalUnpaid
-			allLeftover := allIncome - allPayout
+			allBalance := allIncome - allPayout
 
 			paidIncome := incomePaid
 			paidPayout := data.TotalPaid
-			paidLeftover := paidIncome - paidPayout
+			paidBalance := paidIncome - paidPayout
 
 			unpaidIncome := incomeUnpaid
 			unpaidPayout := data.TotalUnpaid
-			unpaidLeftover := unpaidIncome - unpaidPayout
+			unpaidBalance := unpaidIncome - unpaidPayout
 		}}
 		@shared.StatusSummaryCards(shared.StatusSummaryCardsProps{ClassName: "pb"}) {
 			@EventIncomeCard(EventIncomeCardProps{
@@ -85,9 +85,9 @@ templ EventShowMain(data EventData) {
 			})
 			@EventBalanceByTypeCard(EventBalanceStatusCardProps{
 				Title:  ctxi18n.T(ctx, "groups.balance"),
-				Paid:   utils.FormatNumberLocalized(ctx, paidLeftover),
-				Unpaid: utils.FormatNumberLocalized(ctx, unpaidLeftover),
-				All:    utils.FormatNumberLocalized(ctx, allLeftover),
+				Paid:   utils.FormatNumberLocalized(ctx, paidBalance),
+				Unpaid: utils.FormatNumberLocalized(ctx, unpaidBalance),
+				All:    utils.FormatNumberLocalized(ctx, allBalance),
 			})
 		}
 		@shared.TableOpenFixed(data.ParticipantsTable, "") {

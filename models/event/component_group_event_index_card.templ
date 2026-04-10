@@ -9,7 +9,7 @@ type EventBalanceCardProps struct {
 	Title    string
 	Income   string
 	Payout   string
-	Leftover string
+	Balance  string
 	HideIncome bool
 }
 
@@ -54,9 +54,9 @@ templ EventBalanceCard(props EventBalanceCardProps) {
 				<dt>{ ctxi18n.T(ctx, "groups.payouts") }</dt>
 				<dd>{ props.Payout }</dd>
 			</div>
-			<div class="leftover">
+			<div class="balance">
 				<dt>{ ctxi18n.T(ctx, "groups.balance") }</dt>
-				<dd>{ props.Leftover }</dd>
+				<dd>{ props.Balance }</dd>
 			</div>
 		</dl>
 	</section>

@@ -13,6 +13,8 @@ type ErrorPageData struct {
 	Message    string
 	HomeLabel  string
 	HomeHref   string
+	IsAuthenticated bool
+	IsSuperAdmin    bool
 }
 
 templ ErrorPage(data ErrorPageData) {
@@ -21,7 +23,7 @@ templ ErrorPage(data ErrorPageData) {
 		Crumbs:          []utils.Crumb{},
 		Content:         CommonContent(ErrorPageMain(data)),
 		ActiveUrl:       "",
-		IsAuthenticated: false,
-		IsSuperAdmin:    false,
+		IsAuthenticated: data.IsAuthenticated,
+		IsSuperAdmin:    data.IsSuperAdmin,
 	})
 }

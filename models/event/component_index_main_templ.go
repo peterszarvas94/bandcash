@@ -39,15 +39,15 @@ func EventIndexMain(data EventsData) templ.Component {
 		ctx = templ.ClearChildren(ctx)
 		allIncome := data.FilteredTotal
 		allPayout := data.FilteredPayoutsPaid + data.FilteredPayoutsUnpaid + data.FilteredExpensesPaid + data.FilteredExpensesUnpaid
-		allLeftover := allIncome - allPayout
+		allBalance := allIncome - allPayout
 
 		paidIncome := data.FilteredIncomePaid
 		paidPayout := data.FilteredPayoutsPaid + data.FilteredExpensesPaid
-		paidLeftover := paidIncome - paidPayout
+		paidBalance := paidIncome - paidPayout
 
 		unpaidIncome := data.FilteredIncomeUnpaid
 		unpaidPayout := data.FilteredPayoutsUnpaid + data.FilteredExpensesUnpaid
-		unpaidLeftover := unpaidIncome - unpaidPayout
+		unpaidBalance := unpaidIncome - unpaidPayout
 		templ_7745c5c3_Var2 := templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 			templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
 			templ_7745c5c3_Buffer, templ_7745c5c3_IsBuffer := templruntime.GetBuffer(templ_7745c5c3_W)
@@ -117,9 +117,9 @@ func EventIndexMain(data EventsData) templ.Component {
 			},
 			Balance: EventBalanceStatusCardProps{
 				Title:  ctxi18n.T(ctx, "groups.balance"),
-				Paid:   utils.FormatNumberLocalized(ctx, paidLeftover),
-				Unpaid: utils.FormatNumberLocalized(ctx, unpaidLeftover),
-				All:    utils.FormatNumberLocalized(ctx, allLeftover),
+				Paid:   utils.FormatNumberLocalized(ctx, paidBalance),
+				Unpaid: utils.FormatNumberLocalized(ctx, unpaidBalance),
+				All:    utils.FormatNumberLocalized(ctx, allBalance),
 			},
 		}).Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {

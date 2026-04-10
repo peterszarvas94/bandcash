@@ -17,12 +17,12 @@ type EventData struct {
 	AllMembers              []db.Member
 	Breadcrumbs             []utils.Crumb
 	Signals                 map[string]any
-	Leftover                int64
+	Balance                 int64
 	TotalPaid               int64
 	TotalUnpaid             int64
 	FilteredPaid            int64
 	FilteredUnpaid          int64
-	FilteredLeftover        int64
+	FilteredBalance         int64
 	WizardEventAmount       int64
 	WizardError             string
 	EditorMode              string

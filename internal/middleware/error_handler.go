@@ -39,6 +39,7 @@ func ErrorHandler() echo.HTTPErrorHandler {
 			HomeLabel:  ctxi18n.T(c.Request().Context(), "error_pages.home_action"),
 			HomeHref:   appi18n.LocalizedHomePath(c.Request().Context()),
 		}
+		data.IsAuthenticated, data.IsSuperAdmin = utils.ResolveAuthState(c)
 
 		if renderErr := utils.RenderPage(c, shared.ErrorPage(data)); renderErr != nil {
 			slog.Warn("http.error: failed to render error page", "status", status, "err", renderErr)

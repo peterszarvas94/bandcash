@@ -17,7 +17,7 @@ type EventBalanceCardProps struct {
 	Title      string
 	Income     string
 	Payout     string
-	Leftover   string
+	Balance    string
 	HideIncome bool
 }
 
@@ -207,7 +207,7 @@ func EventBalanceCard(props EventBalanceCardProps) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 12, "</dd></div><div class=\"leftover\"><dt>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 12, "</dd></div><div class=\"balance\"><dt>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -225,9 +225,9 @@ func EventBalanceCard(props EventBalanceCardProps) templ.Component {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var11 string
-		templ_7745c5c3_Var11, templ_7745c5c3_Err = templ.JoinStringErrs(props.Leftover)
+		templ_7745c5c3_Var11, templ_7745c5c3_Err = templ.JoinStringErrs(props.Balance)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/event/component_group_event_index_card.templ`, Line: 59, Col: 24}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/event/component_group_event_index_card.templ`, Line: 59, Col: 23}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var11))
 		if templ_7745c5c3_Err != nil {

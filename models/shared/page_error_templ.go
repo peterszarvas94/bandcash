@@ -14,13 +14,15 @@ import (
 )
 
 type ErrorPageData struct {
-	Title      string
-	StatusCode int
-	IconName   icons.IconName
-	Heading    string
-	Message    string
-	HomeLabel  string
-	HomeHref   string
+	Title           string
+	StatusCode      int
+	IconName        icons.IconName
+	Heading         string
+	Message         string
+	HomeLabel       string
+	HomeHref        string
+	IsAuthenticated bool
+	IsSuperAdmin    bool
 }
 
 func ErrorPage(data ErrorPageData) templ.Component {
@@ -49,8 +51,8 @@ func ErrorPage(data ErrorPageData) templ.Component {
 			Crumbs:          []utils.Crumb{},
 			Content:         CommonContent(ErrorPageMain(data)),
 			ActiveUrl:       "",
-			IsAuthenticated: false,
-			IsSuperAdmin:    false,
+			IsAuthenticated: data.IsAuthenticated,
+			IsSuperAdmin:    data.IsSuperAdmin,
 		}).Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err

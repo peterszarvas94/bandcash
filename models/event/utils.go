@@ -276,7 +276,7 @@ func patchWizardError(c echo.Context, wizard participantWizardSignals, message s
 			"paids":       wizard.Paids,
 			"paidAts":     wizard.PaidAts,
 			"total":       wizard.Total,
-			"leftover":    wizard.Leftover,
+			"balance":     wizard.Balance,
 			"error":       message,
 		},
 		"errors": map[string]any{

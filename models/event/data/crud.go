@@ -198,7 +198,7 @@ func SumParticipantPaidAmountsByGroup(ctx context.Context, groupID string) (SumP
 	rows := make([]db.Participant, 0)
 	err := db.BunDB.NewSelect().
 		Model(&rows).
-		Column("amount", "paid").
+		Column("amount", "expense", "paid").
 		Where("group_id = ?", groupID).
 		Scan(ctx)
 	if err != nil {
@@ -207,10 +207,11 @@ func SumParticipantPaidAmountsByGroup(ctx context.Context, groupID string) (SumP
 
 	totals := SumParticipantPaidAmountsByGroupRow{}
 	for _, row := range rows {
+		value := row.Amount + row.Expense
 		if row.Paid == 1 {
-			totals.PaidAmount += row.Amount
+			totals.PaidAmount += value
 		} else {
-			totals.UnpaidAmount += row.Amount
+			totals.UnpaidAmount += value
 		}
 	}
 	return totals, nil

@@ -179,9 +179,9 @@ func GetShowData(ctx context.Context, groupID, eventID string, query utils.Table
 		return !less
 	})
 
-	// Calculate paid/unpaid amounts and leftover
-	// If event is unpaid: leftover = -totalPaid (we paid out but haven't received)
-	// If event is paid: leftover = event.Amount - totalPaid (received minus paid out)
+	// Calculate paid/unpaid amounts and balance
+	// If event is unpaid: balance = -totalPaid (we paid out but haven't received)
+	// If event is paid: balance = event.Amount - totalPaid (received minus paid out)
 	var totalPaid, totalUnpaid int64
 	for _, p := range allParticipants {
 		amount := p.ParticipantAmount + p.ParticipantExpense
@@ -202,10 +202,10 @@ func GetShowData(ctx context.Context, groupID, eventID string, query utils.Table
 		}
 	}
 
-	leftover := event.Amount - totalPaid
-	filteredLeftover := event.Amount - filteredPaid
+	balance := event.Amount - totalPaid
+	filteredBalance := event.Amount - filteredPaid
 
-	slog.Info("event.show.data", "event_id", eventID, "participants", len(participants), "members_total", len(members), "members_filtered", len(filteredMembers), "leftover", leftover)
+	slog.Info("event.show.data", "event_id", eventID, "participants", len(participants), "members_total", len(members), "members_filtered", len(filteredMembers), "balance", balance)
 
 	return EventData{
 		Title:             "Bandcash - " + event.Title,
@@ -215,12 +215,12 @@ func GetShowData(ctx context.Context, groupID, eventID string, query utils.Table
 		Query:             query,
 		Members:           filteredMembers,
 		AllMembers:        members,
-		Leftover:          leftover,
+		Balance:           balance,
 		TotalPaid:         totalPaid,
 		TotalUnpaid:       totalUnpaid,
 		FilteredPaid:      filteredPaid,
 		FilteredUnpaid:    filteredUnpaid,
-		FilteredLeftover:  filteredLeftover,
+		FilteredBalance:   filteredBalance,
 		WizardEventAmount: event.Amount,
 		WizardError:       "",
 		EditorMode:        "read",
@@ -435,9 +435,9 @@ func buildEventsData(ctx context.Context, groupID string, group db.Group, query 
 		Query:                  query,
 		Pager:                  utils.BuildTablePagination(totals.TotalItems, query),
 		GroupID:                groupID,
-		TotalEventAmount:       groupTotals.TotalEventAmount,
-		TotalPaid:              groupTotals.EventPaid,
-		TotalUnpaid:            groupTotals.EventUnpaid,
+		TotalEventAmount:       groupTotals.Income.All,
+		TotalPaid:              groupTotals.Income.Paid,
+		TotalUnpaid:            groupTotals.Income.Unpaid,
 		FilteredTotal:          totals.Total,
 		FilteredIncomePaid:     totals.IncomePaid,
 		FilteredIncomeUnpaid:   totals.IncomeUnpaid,

@@ -74,8 +74,8 @@ func (m *GroupModel) enrichBalances(ctx context.Context, groups []GroupWithRole)
 			return err
 		}
 
-		// Paid balance mirrors the first number on the balance summary card.
-		groups[i].Balance = totals.EventPaid - totals.PayoutPaid - totals.ExpensePaid
+		// Current balance mirrors the "All" value on the events balance card.
+		groups[i].Balance = totals.Balance.All
 	}
 	return nil
 }
