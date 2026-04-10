@@ -116,7 +116,7 @@ func EventEditMembersForm(data EventData) templ.Component {
 		var templ_7745c5c3_Var6 string
 		templ_7745c5c3_Var6, templ_7745c5c3_Err = templ.JoinStringErrs(ctxi18n.T(ctx, "participants.member"))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/event/component_event_edit_form.templ`, Line: 43, Col: 150}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/event/component_event_edit_form.templ`, Line: 44, Col: 64}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var6))
 		if templ_7745c5c3_Err != nil {
@@ -129,7 +129,7 @@ func EventEditMembersForm(data EventData) templ.Component {
 		var templ_7745c5c3_Var7 string
 		templ_7745c5c3_Var7, templ_7745c5c3_Err = templruntime.SanitizeStyleAttributeValues(fmt.Sprintf("--max-w: %drem", data.ParticipantsTable.ColMaxWRem("amount")))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/event/component_event_edit_form.templ`, Line: 44, Col: 92}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/event/component_event_edit_form.templ`, Line: 46, Col: 92}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var7))
 		if templ_7745c5c3_Err != nil {
@@ -142,7 +142,7 @@ func EventEditMembersForm(data EventData) templ.Component {
 		var templ_7745c5c3_Var8 string
 		templ_7745c5c3_Var8, templ_7745c5c3_Err = templ.JoinStringErrs(ctxi18n.T(ctx, "participants.cut_amount"))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/event/component_event_edit_form.templ`, Line: 44, Col: 156}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/event/component_event_edit_form.templ`, Line: 47, Col: 68}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var8))
 		if templ_7745c5c3_Err != nil {
@@ -155,7 +155,7 @@ func EventEditMembersForm(data EventData) templ.Component {
 		var templ_7745c5c3_Var9 string
 		templ_7745c5c3_Var9, templ_7745c5c3_Err = templruntime.SanitizeStyleAttributeValues(fmt.Sprintf("--max-w: %drem", data.ParticipantsTable.ColMaxWRem("expense")))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/event/component_event_edit_form.templ`, Line: 45, Col: 93}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/event/component_event_edit_form.templ`, Line: 49, Col: 93}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var9))
 		if templ_7745c5c3_Err != nil {
@@ -168,7 +168,7 @@ func EventEditMembersForm(data EventData) templ.Component {
 		var templ_7745c5c3_Var10 string
 		templ_7745c5c3_Var10, templ_7745c5c3_Err = templ.JoinStringErrs(ctxi18n.T(ctx, "participants.expense"))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/event/component_event_edit_form.templ`, Line: 45, Col: 154}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/event/component_event_edit_form.templ`, Line: 50, Col: 65}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var10))
 		if templ_7745c5c3_Err != nil {
@@ -181,7 +181,7 @@ func EventEditMembersForm(data EventData) templ.Component {
 		var templ_7745c5c3_Var11 string
 		templ_7745c5c3_Var11, templ_7745c5c3_Err = templ.JoinStringErrs(ctxi18n.T(ctx, "participants.total"))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/event/component_event_edit_form.templ`, Line: 46, Col: 66}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/event/component_event_edit_form.templ`, Line: 53, Col: 63}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var11))
 		if templ_7745c5c3_Err != nil {
@@ -194,7 +194,7 @@ func EventEditMembersForm(data EventData) templ.Component {
 		var templ_7745c5c3_Var12 string
 		templ_7745c5c3_Var12, templ_7745c5c3_Err = templ.JoinStringErrs(ctxi18n.T(ctx, "table.paid"))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/event/component_event_edit_form.templ`, Line: 47, Col: 72}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/event/component_event_edit_form.templ`, Line: 56, Col: 55}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var12))
 		if templ_7745c5c3_Err != nil {
@@ -207,7 +207,7 @@ func EventEditMembersForm(data EventData) templ.Component {
 		var templ_7745c5c3_Var13 string
 		templ_7745c5c3_Var13, templ_7745c5c3_Err = templruntime.SanitizeStyleAttributeValues(fmt.Sprintf("--max-w: %drem", data.ParticipantsTable.ColMaxWRem("paid_at")))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/event/component_event_edit_form.templ`, Line: 48, Col: 93}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/event/component_event_edit_form.templ`, Line: 58, Col: 93}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var13))
 		if templ_7745c5c3_Err != nil {
@@ -220,7 +220,7 @@ func EventEditMembersForm(data EventData) templ.Component {
 		var templ_7745c5c3_Var14 string
 		templ_7745c5c3_Var14, templ_7745c5c3_Err = templ.JoinStringErrs(ctxi18n.T(ctx, "fields.paid_at"))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/event/component_event_edit_form.templ`, Line: 48, Col: 148}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/event/component_event_edit_form.templ`, Line: 59, Col: 59}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var14))
 		if templ_7745c5c3_Err != nil {
@@ -233,7 +233,7 @@ func EventEditMembersForm(data EventData) templ.Component {
 		var templ_7745c5c3_Var15 string
 		templ_7745c5c3_Var15, templ_7745c5c3_Err = templruntime.SanitizeStyleAttributeValues(fmt.Sprintf("--max-w: %drem", data.ParticipantsTable.ColMaxWRem("note")))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/event/component_event_edit_form.templ`, Line: 49, Col: 90}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/event/component_event_edit_form.templ`, Line: 61, Col: 90}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var15))
 		if templ_7745c5c3_Err != nil {
@@ -246,7 +246,7 @@ func EventEditMembersForm(data EventData) templ.Component {
 		var templ_7745c5c3_Var16 string
 		templ_7745c5c3_Var16, templ_7745c5c3_Err = templ.JoinStringErrs(ctxi18n.T(ctx, "participants.note"))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/event/component_event_edit_form.templ`, Line: 49, Col: 148}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/event/component_event_edit_form.templ`, Line: 62, Col: 62}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var16))
 		if templ_7745c5c3_Err != nil {
@@ -266,7 +266,7 @@ func EventEditMembersForm(data EventData) templ.Component {
 			var templ_7745c5c3_Var17 string
 			templ_7745c5c3_Var17, templ_7745c5c3_Err = templruntime.SanitizeStyleAttributeValues(fmt.Sprintf("--max-w: %drem", data.ParticipantsTable.ColMaxWRem("name")))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/event/component_event_edit_form.templ`, Line: 60, Col: 91}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/event/component_event_edit_form.templ`, Line: 77, Col: 88}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var17))
 			if templ_7745c5c3_Err != nil {
@@ -279,7 +279,7 @@ func EventEditMembersForm(data EventData) templ.Component {
 			var templ_7745c5c3_Var18 string
 			templ_7745c5c3_Var18, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("wizard.memberIds.%s", row.RowID))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/event/component_event_edit_form.templ`, Line: 61, Col: 96}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/event/component_event_edit_form.templ`, Line: 81, Col: 66}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var18))
 			if templ_7745c5c3_Err != nil {
@@ -292,7 +292,7 @@ func EventEditMembersForm(data EventData) templ.Component {
 			var templ_7745c5c3_Var19 string
 			templ_7745c5c3_Var19, templ_7745c5c3_Err = templ.JoinStringErrs(ctxi18n.T(ctx, "participants.select_member"))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/event/component_event_edit_form.templ`, Line: 62, Col: 72}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/event/component_event_edit_form.templ`, Line: 83, Col: 72}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var19))
 			if templ_7745c5c3_Err != nil {
@@ -311,7 +311,7 @@ func EventEditMembersForm(data EventData) templ.Component {
 					var templ_7745c5c3_Var20 string
 					templ_7745c5c3_Var20, templ_7745c5c3_Err = templ.JoinStringErrs(member.ID)
 					if templ_7745c5c3_Err != nil {
-						return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/event/component_event_edit_form.templ`, Line: 65, Col: 36}
+						return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/event/component_event_edit_form.templ`, Line: 86, Col: 36}
 					}
 					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var20))
 					if templ_7745c5c3_Err != nil {
@@ -324,7 +324,7 @@ func EventEditMembersForm(data EventData) templ.Component {
 					var templ_7745c5c3_Var21 string
 					templ_7745c5c3_Var21, templ_7745c5c3_Err = templ.JoinStringErrs(member.Name)
 					if templ_7745c5c3_Err != nil {
-						return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/event/component_event_edit_form.templ`, Line: 65, Col: 52}
+						return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/event/component_event_edit_form.templ`, Line: 86, Col: 52}
 					}
 					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var21))
 					if templ_7745c5c3_Err != nil {
@@ -343,7 +343,7 @@ func EventEditMembersForm(data EventData) templ.Component {
 			var templ_7745c5c3_Var22 string
 			templ_7745c5c3_Var22, templ_7745c5c3_Err = templruntime.SanitizeStyleAttributeValues(fmt.Sprintf("--max-w: %drem", data.ParticipantsTable.ColMaxWRem("amount")))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/event/component_event_edit_form.templ`, Line: 70, Col: 93}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/event/component_event_edit_form.templ`, Line: 91, Col: 93}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var22))
 			if templ_7745c5c3_Err != nil {
@@ -356,7 +356,7 @@ func EventEditMembersForm(data EventData) templ.Component {
 			var templ_7745c5c3_Var23 string
 			templ_7745c5c3_Var23, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("wizard.amounts.%s", row.RowID))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/event/component_event_edit_form.templ`, Line: 72, Col: 125}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/event/component_event_edit_form.templ`, Line: 98, Col: 65}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var23))
 			if templ_7745c5c3_Err != nil {
@@ -369,7 +369,7 @@ func EventEditMembersForm(data EventData) templ.Component {
 			var templ_7745c5c3_Var24 string
 			templ_7745c5c3_Var24, templ_7745c5c3_Err = templruntime.SanitizeStyleAttributeValues(fmt.Sprintf("--max-w: %drem", data.ParticipantsTable.ColMaxWRem("expense")))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/event/component_event_edit_form.templ`, Line: 75, Col: 94}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/event/component_event_edit_form.templ`, Line: 103, Col: 91}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var24))
 			if templ_7745c5c3_Err != nil {
@@ -382,7 +382,7 @@ func EventEditMembersForm(data EventData) templ.Component {
 			var templ_7745c5c3_Var25 string
 			templ_7745c5c3_Var25, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("wizard.expenses.%s", row.RowID))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/event/component_event_edit_form.templ`, Line: 77, Col: 126}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/event/component_event_edit_form.templ`, Line: 111, Col: 66}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var25))
 			if templ_7745c5c3_Err != nil {
@@ -395,7 +395,7 @@ func EventEditMembersForm(data EventData) templ.Component {
 			var templ_7745c5c3_Var26 string
 			templ_7745c5c3_Var26, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("($wizard.amounts['%s'] || 0) + ($wizard.expenses['%s'] || 0)", row.RowID, row.RowID))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/event/component_event_edit_form.templ`, Line: 81, Col: 135}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/event/component_event_edit_form.templ`, Line: 118, Col: 118}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var26))
 			if templ_7745c5c3_Err != nil {
@@ -420,7 +420,7 @@ func EventEditMembersForm(data EventData) templ.Component {
 			var templ_7745c5c3_Var27 string
 			templ_7745c5c3_Var27, templ_7745c5c3_Err = templruntime.SanitizeStyleAttributeValues(fmt.Sprintf("--max-w: %drem", data.ParticipantsTable.ColMaxWRem("paid_at")))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/event/component_event_edit_form.templ`, Line: 92, Col: 94}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/event/component_event_edit_form.templ`, Line: 130, Col: 94}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var27))
 			if templ_7745c5c3_Err != nil {
@@ -433,7 +433,7 @@ func EventEditMembersForm(data EventData) templ.Component {
 			var templ_7745c5c3_Var28 string
 			templ_7745c5c3_Var28, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("wizard.paidAts.%s", row.RowID))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/event/component_event_edit_form.templ`, Line: 94, Col: 106}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/event/component_event_edit_form.templ`, Line: 135, Col: 65}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var28))
 			if templ_7745c5c3_Err != nil {
@@ -446,7 +446,7 @@ func EventEditMembersForm(data EventData) templ.Component {
 			var templ_7745c5c3_Var29 string
 			templ_7745c5c3_Var29, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("!$wizard.paids.%s || $_fetching", row.RowID))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/event/component_event_edit_form.templ`, Line: 94, Col: 187}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/event/component_event_edit_form.templ`, Line: 136, Col: 88}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var29))
 			if templ_7745c5c3_Err != nil {
@@ -459,20 +459,20 @@ func EventEditMembersForm(data EventData) templ.Component {
 			var templ_7745c5c3_Var30 string
 			templ_7745c5c3_Var30, templ_7745c5c3_Err = templruntime.SanitizeStyleAttributeValues(fmt.Sprintf("--max-w: %drem", data.ParticipantsTable.ColMaxWRem("note")))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/event/component_event_edit_form.templ`, Line: 97, Col: 91}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/event/component_event_edit_form.templ`, Line: 141, Col: 88}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var30))
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 35, "\"><div class=\"cell\"><textarea class=\"input input-sm\" rows=\"1\" style=\"resize: vertical; min-width: 14rem;\" data-bind=\"")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 35, "\"><div class=\"cell\"><textarea class=\"input input-sm\" rows=\"1\" data-bind=\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			var templ_7745c5c3_Var31 string
 			templ_7745c5c3_Var31, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("wizard.notes.%s", row.RowID))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/event/component_event_edit_form.templ`, Line: 99, Col: 148}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/event/component_event_edit_form.templ`, Line: 147, Col: 63}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var31))
 			if templ_7745c5c3_Err != nil {

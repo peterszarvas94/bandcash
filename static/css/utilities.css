@@ -47,24 +47,6 @@
     align-items: flex-start;
   }
 
-  .text-right {
-    text-align: right;
-  }
-
-  .text-sm {
-    font-size: 0.875rem;
-  }
-
-  .input-sm {
-    height: 2rem;
-    padding: var(--space-sm) var(--space);
-  }
-
-  .input-xs {
-    height: 1.75rem;
-    padding: calc(var(--space) * 0.25) var(--space);
-  }
-
   .pb {
     padding-bottom: var(--space);
   }
@@ -95,10 +77,6 @@
 
   .fielderror {
     color: var(--bg-primary);
-  }
-
-  .text-muted {
-    color: var(--text-muted);
   }
 
   .w-fit {

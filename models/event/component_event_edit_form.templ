@@ -40,14 +40,30 @@ templ EventEditMembersForm(data EventData) {
 			<table class="table">
 				<thead>
 					<tr>
-						<th style={ fmt.Sprintf("--max-w: %drem", data.ParticipantsTable.ColMaxWRem("name")) }><div class="cell">{ ctxi18n.T(ctx, "participants.member") }</div></th>
-						<th style={ fmt.Sprintf("--max-w: %drem", data.ParticipantsTable.ColMaxWRem("amount")) }><div class="cell">{ ctxi18n.T(ctx, "participants.cut_amount") }</div></th>
-						<th style={ fmt.Sprintf("--max-w: %drem", data.ParticipantsTable.ColMaxWRem("expense")) }><div class="cell">{ ctxi18n.T(ctx, "participants.expense") }</div></th>
-						<th><div class="cell">{ ctxi18n.T(ctx, "participants.total") }</div></th>
-						<th class="w-fit"><div class="cell">{ ctxi18n.T(ctx, "table.paid") }</div></th>
-						<th style={ fmt.Sprintf("--max-w: %drem", data.ParticipantsTable.ColMaxWRem("paid_at")) }><div class="cell">{ ctxi18n.T(ctx, "fields.paid_at") }</div></th>
-						<th style={ fmt.Sprintf("--max-w: %drem", data.ParticipantsTable.ColMaxWRem("note")) }><div class="cell">{ ctxi18n.T(ctx, "participants.note") }</div></th>
-						<th class="w-fit"><div class="cell"></div></th>
+						<th style={ fmt.Sprintf("--max-w: %drem", data.ParticipantsTable.ColMaxWRem("name")) }>
+							<div class="cell">{ ctxi18n.T(ctx, "participants.member") }</div>
+						</th>
+						<th style={ fmt.Sprintf("--max-w: %drem", data.ParticipantsTable.ColMaxWRem("amount")) }>
+							<div class="cell">{ ctxi18n.T(ctx, "participants.cut_amount") }</div>
+						</th>
+						<th style={ fmt.Sprintf("--max-w: %drem", data.ParticipantsTable.ColMaxWRem("expense")) }>
+							<div class="cell">{ ctxi18n.T(ctx, "participants.expense") }</div>
+						</th>
+						<th>
+							<div class="cell">{ ctxi18n.T(ctx, "participants.total") }</div>
+						</th>
+						<th class="w-fit">
+							<div class="cell">{ ctxi18n.T(ctx, "table.paid") }</div>
+						</th>
+						<th style={ fmt.Sprintf("--max-w: %drem", data.ParticipantsTable.ColMaxWRem("paid_at")) }>
+							<div class="cell">{ ctxi18n.T(ctx, "fields.paid_at") }</div>
+						</th>
+						<th style={ fmt.Sprintf("--max-w: %drem", data.ParticipantsTable.ColMaxWRem("note")) }>
+							<div class="cell">{ ctxi18n.T(ctx, "participants.note") }</div>
+						</th>
+						<th class="w-fit">
+							<div class="cell"></div>
+						</th>
 					</tr>
 				</thead>
 				<tbody>
@@ -57,8 +73,13 @@ templ EventEditMembersForm(data EventData) {
 							copyDraftExpr := fmt.Sprintf("$draftRowsAction='copy'; $draftRowsRowId=%s; @post('/groups/%s/events/%s/participants/draft/rows')", utils.JSONString(row.RowID), data.GroupID, data.Event.ID)
 						}}
 						<tr>
-							<td style={ fmt.Sprintf("--max-w: %drem", data.ParticipantsTable.ColMaxWRem("name")) }>
-								<select class="input input-sm" data-bind={ fmt.Sprintf("wizard.memberIds.%s", row.RowID) }>
+							<td
+								style={ fmt.Sprintf("--max-w: %drem", data.ParticipantsTable.ColMaxWRem("name")) }
+							>
+								<select
+									class="input input-sm"
+									data-bind={ fmt.Sprintf("wizard.memberIds.%s", row.RowID) }
+								>
 									<option value="">{ ctxi18n.T(ctx, "participants.select_member") }</option>
 									for _, member := range data.AllMembers {
 										if row.MemberID == member.ID || !usedMemberIDs[member.ID] {
@@ -69,16 +90,33 @@ templ EventEditMembersForm(data EventData) {
 							</td>
 							<td style={ fmt.Sprintf("--max-w: %drem", data.ParticipantsTable.ColMaxWRem("amount")) }>
 								<div class="cell">
-									<input type="number" class="input input-sm" step="1" min="0" data-bind={ fmt.Sprintf("wizard.amounts.%s", row.RowID) }/>
+									<input
+										type="number"
+										class="input input-sm"
+										step="1"
+										min="0"
+										data-bind={ fmt.Sprintf("wizard.amounts.%s", row.RowID) }
+									/>
 								</div>
 							</td>
-							<td style={ fmt.Sprintf("--max-w: %drem", data.ParticipantsTable.ColMaxWRem("expense")) }>
+							<td
+								style={ fmt.Sprintf("--max-w: %drem", data.ParticipantsTable.ColMaxWRem("expense")) }
+							>
 								<div class="cell">
-									<input type="number" class="input input-sm" step="1" min="0" data-bind={ fmt.Sprintf("wizard.expenses.%s", row.RowID) }/>
+									<input
+										type="number"
+										class="input input-sm"
+										step="1"
+										min="0"
+										data-bind={ fmt.Sprintf("wizard.expenses.%s", row.RowID) }
+									/>
 								</div>
 							</td>
 							<td class="text-right">
-								<div class="cell" data-text={ fmt.Sprintf("($wizard.amounts['%s'] || 0) + ($wizard.expenses['%s'] || 0)", row.RowID, row.RowID) }></div>
+								<div
+									class="cell"
+									data-text={ fmt.Sprintf("($wizard.amounts['%s'] || 0) + ($wizard.expenses['%s'] || 0)", row.RowID, row.RowID) }
+								></div>
 							</td>
 							<td class="w-fit">
 								<div class="cell">
@@ -91,12 +129,23 @@ templ EventEditMembersForm(data EventData) {
 							</td>
 							<td style={ fmt.Sprintf("--max-w: %drem", data.ParticipantsTable.ColMaxWRem("paid_at")) }>
 								<div class="cell">
-									<input type="date" class="input input-sm" data-bind={ fmt.Sprintf("wizard.paidAts.%s", row.RowID) } data-attr:disabled={ fmt.Sprintf("!$wizard.paids.%s || $_fetching", row.RowID) }/>
+									<input
+										type="date"
+										class="input input-sm"
+										data-bind={ fmt.Sprintf("wizard.paidAts.%s", row.RowID) }
+										data-attr:disabled={ fmt.Sprintf("!$wizard.paids.%s || $_fetching", row.RowID) }
+									/>
 								</div>
 							</td>
-							<td style={ fmt.Sprintf("--max-w: %drem", data.ParticipantsTable.ColMaxWRem("note")) }>
+							<td
+								style={ fmt.Sprintf("--max-w: %drem", data.ParticipantsTable.ColMaxWRem("note")) }
+							>
 								<div class="cell">
-									<textarea class="input input-sm" rows="1" style="resize: vertical; min-width: 14rem;" data-bind={ fmt.Sprintf("wizard.notes.%s", row.RowID) }></textarea>
+									<textarea
+										class="input input-sm"
+										rows="1"
+										data-bind={ fmt.Sprintf("wizard.notes.%s", row.RowID) }
+									></textarea>
 								</div>
 							</td>
 							<td class="text-right w-fit">

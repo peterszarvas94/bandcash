@@ -197,10 +197,11 @@
         }
 
         textarea {
-          field-sizing: content;
-          height: auto;
+          /* field-sizing: content; */
+          /* height: auto; */
           min-height: 2rem;
-          resize: vertical;
+          width: 100%;
+          /* resize: vertical; */
         }
 
         th > .cell,
@@ -553,6 +554,16 @@
       color: var(--text-muted);
     }
 
+    &.input-sm {
+      height: 2rem;
+      padding: var(--space-sm) var(--space);
+    }
+
+    &.input-xs {
+      height: 1.75rem;
+      padding: calc(var(--space) * 0.25) var(--space);
+    }
+
     &.input-primary,
     &.input-primary:where(
         :not(:disabled, [disabled], [aria-disabled="true"])
@@ -570,6 +581,26 @@
     height: auto;
     min-height: 6rem;
     resize: vertical;
+
+    &.input-sm {
+      min-height: 2rem;
+    }
+
+    &.input-xs {
+      min-height: 1.75rem;
+    }
+  }
+
+  .text-right {
+    text-align: right;
+  }
+
+  .text-sm {
+    font-size: 0.875rem;
+  }
+
+  .text-muted {
+    color: var(--text-muted);
   }
 
   .link,
