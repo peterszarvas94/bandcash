@@ -148,49 +148,53 @@ templ EventIndexMain(data EventsData) {
 					}
 				}}
 				<tr>
-					<td><a class="table-link" href={ fmt.Sprintf("/groups/%s/events/%s", data.GroupID, event.ID) }>{ event.Title }</a></td>
-					<td>{ utils.FormatDateLocalized(ctx, eventDateValue(event)) }</td>
-					<td>{ eventTimeValue(event) }</td>
-					<td>{ event.Place }</td>
-					<td class="text-right">{ utils.FormatNumberLocalized(ctx, event.Amount) }</td>
+					<td><div class="cell"><a class="table-link" href={ fmt.Sprintf("/groups/%s/events/%s", data.GroupID, event.ID) }>{ event.Title }</a></div></td>
+					<td><div class="cell">{ utils.FormatDateLocalized(ctx, eventDateValue(event)) }</div></td>
+					<td><div class="cell">{ eventTimeValue(event) }</div></td>
+					<td><div class="cell">{ event.Place }</div></td>
+					<td class="text-right"><div class="cell">{ utils.FormatNumberLocalized(ctx, event.Amount) }</div></td>
 					<td class="text-right">
-						if data.IsAdmin {
-							@shared.ToggleSwitch(shared.ToggleSwitchProps{
-								IsOn:         event.Paid == 1,
-								OnClick:      togglePaidExpr,
-								DisabledExpr: "false",
-								AriaLabel:    ctxi18n.T(ctx, "table.paid"),
-							})
-						} else {
-							{ paidLabel }
-						}
+						<div class="cell">
+							if data.IsAdmin {
+								@shared.ToggleSwitch(shared.ToggleSwitchProps{
+									IsOn:         event.Paid == 1,
+									OnClick:      togglePaidExpr,
+									DisabledExpr: "false",
+									AriaLabel:    ctxi18n.T(ctx, "table.paid"),
+								})
+							} else {
+								{ paidLabel }
+							}
+						</div>
 					</td>
 					<td class="text-right">
-						<div class="row row-right">
-							<span>
-								if paidAtLabel != "" {
-									{ paidAtLabel }
-								} else {
-									-
+						<div class="cell">
+							<div class="row row-right">
+								<span>
+									if paidAtLabel != "" {
+										{ paidAtLabel }
+									} else {
+										-
+									}
+								</span>
+								if data.IsAdmin {
+									@shared.IconActionButton(shared.IconActionButtonProps{
+										ClassName:    "btn btn-xs btn-text",
+										OnClick:      openPaidAtExpr,
+										DisabledExpr: "false",
+										AriaLabel:    ctxi18n.T(ctx, "actions.edit"),
+										Title:        ctxi18n.T(ctx, "actions.edit"),
+										IconName:     icons.IconPencil,
+									})
 								}
-							</span>
-							if data.IsAdmin {
-								@shared.IconActionButton(shared.IconActionButtonProps{
-									ClassName:    "btn btn-xs btn-text",
-									OnClick:      openPaidAtExpr,
-									DisabledExpr: "false",
-									AriaLabel:    ctxi18n.T(ctx, "actions.edit"),
-									Title:        ctxi18n.T(ctx, "actions.edit"),
-									IconName:     icons.IconPencil,
-								})
-							}
+							</div>
 						</div>
 					</td>
 				</tr>
 			}
 			if len(data.Events) == 0 {
 				<tr>
-					<td colspan="7">{ ctxi18n.T(ctx, "table.empty") }</td>
+					<td colspan="7"><div class="cell">{ ctxi18n.T(ctx, "table.empty") }</div></td>
 				</tr>
 			}
 		</tbody>

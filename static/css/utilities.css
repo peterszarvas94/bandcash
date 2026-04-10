@@ -75,10 +75,6 @@
     border-bottom: 0;
   }
 
-  .fielderror {
-    color: var(--bg-primary);
-  }
-
   .w-fit {
     width: fit-content;
     min-width: 0;

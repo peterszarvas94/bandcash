@@ -77,7 +77,6 @@
       --table-col-min-w: 8rem;
       font-variant-numeric: tabular-nums;
       font-feature-settings: "tnum" 1;
-      /* width: max(100%, max-content); */
       width: 100%;
       border-collapse: collapse;
       border-spacing: 0;
@@ -89,57 +88,54 @@
       td {
         min-width: var(--table-col-min-w, 0);
         max-width: var(--max-w, 24rem);
-      }
 
-      th > .cell,
-      td > .cell {
-        display: flex;
-        align-items: center;
-        min-height: calc(var(--space) * 5);
-        padding: var(--space) var(--space-lg);
-        text-align: left;
-        white-space: nowrap;
-        word-break: normal;
-        overflow-wrap: normal;
-        overflow: hidden;
-        text-overflow: ellipsis;
-      }
+        .cell {
+          display: flex;
+          align-items: center;
+          min-height: calc(var(--space) * 5);
+          padding: var(--space) var(--space-lg);
+          text-align: left;
 
-      /* Fallback for existing templates not yet migrated to .cell wrappers */
-      th:not(:has(> .cell)),
-      td:not(:has(> .cell)) {
-        min-height: calc(var(--space) * 5);
-        padding: var(--space) var(--space-lg);
-        text-align: left;
-        white-space: nowrap;
-        word-break: normal;
-        overflow-wrap: normal;
-        overflow: hidden;
-        text-overflow: ellipsis;
+          white-space: nowrap;
+          word-break: normal;
+          overflow-wrap: normal;
+          overflow: hidden;
+          text-overflow: ellipsis;
+        }
+
+        &:first-child {
+          max-width: none;
+
+          .cell {
+            text-overflow: clip;
+          }
+        }
+
+        &[data-actions-col] {
+          width: calc(var(--actions-w-rem, 0) * 1rem);
+          min-width: calc(var(--actions-w-rem, 0) * 1rem);
+          max-width: calc(var(--actions-w-rem, 0) * 1rem);
+          border-left: var(--border) solid var(--bg-dark);
+
+          .cell {
+            overflow: visible;
+            text-overflow: clip;
+          }
+        }
+
+        &.text-right {
+          .cell {
+            justify-content: flex-end;
+          }
+        }
       }
 
       th {
+        font-family: var(--font-sans);
+        font-weight: 600;
         width: var(--w, auto);
         min-width: var(--w, var(--table-col-min-w, 0));
         max-width: var(--w, var(--max-w, 24rem));
-      }
-
-      th > .cell,
-      th:not(:has(> .cell)) {
-        font-family: var(--font-sans);
-        font-weight: 600;
-      }
-
-      th:first-child,
-      td:first-child {
-        max-width: none;
-      }
-
-      th:first-child > .cell,
-      td:first-child > .cell,
-      th:first-child:not(:has(> .cell)),
-      td:first-child:not(:has(> .cell)) {
-        text-overflow: clip;
       }
 
       td {
@@ -155,34 +151,16 @@
         opacity: 0;
       }
 
-      min-width: 100%;
-
       thead tr,
       tbody tr {
         display: var(--table-row-display, table-row);
         grid-template-columns: var(--grid-template-columns);
       }
 
-      th[data-actions-col],
-      td[data-actions-col] {
-        width: calc(var(--actions-w-rem, 0) * 1rem);
-        min-width: calc(var(--actions-w-rem, 0) * 1rem);
-        max-width: calc(var(--actions-w-rem, 0) * 1rem);
-        border-left: var(--border) solid var(--bg-dark);
-      }
-
-      th[data-actions-col] > .cell,
-      td[data-actions-col] > .cell,
-      th[data-actions-col]:not(:has(> .cell)),
-      td[data-actions-col]:not(:has(> .cell)) {
-        overflow: visible;
-        text-overflow: clip;
-      }
-
       .input,
       select,
       textarea {
-        width: clamp(0, 100%, var(--max-w));
+        width: 100%;
       }
     }
 
@@ -192,27 +170,25 @@
       border-radius: 0;
 
       .table {
-        td {
-          border-top: 0;
-        }
-
         textarea {
-          /* field-sizing: content; */
-          /* height: auto; */
+          field-sizing: content;
+          height: auto;
           min-height: 2rem;
           width: 100%;
-          /* resize: vertical; */
+          resize: vertical;
         }
 
-        th > .cell,
-        td > .cell {
-          min-height: 0;
-          padding: 0;
-          justify-content: flex-start;
+        th,
+        td {
+          .cell {
+            min-height: 0;
+            padding: 0;
+            justify-content: flex-start;
+          }
         }
 
-        td.text-right > .cell {
-          justify-content: flex-end;
+        td {
+          border-top: 0;
         }
       }
     }

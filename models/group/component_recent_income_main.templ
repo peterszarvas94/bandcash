@@ -32,7 +32,7 @@ templ GroupRecentIncomeMain(data GroupRecentIncomePageData) {
 				</tr></thead>
 				<tbody>
 					if len(data.Rows) == 0 {
-						<tr><td colspan="4">{ ctxi18n.T(ctx, "groups.recent_incomes_empty_events") }</td></tr>
+						<tr><td colspan="4"><div class="cell">{ ctxi18n.T(ctx, "groups.recent_incomes_empty_events") }</div></td></tr>
 					} else {
 						for _, row := range data.Rows {
 							{{
@@ -45,28 +45,30 @@ templ GroupRecentIncomeMain(data GroupRecentIncomePageData) {
 								}
 							}}
 							<tr class={ rowClass }>
-								<td><a class="table-link" href={ fmt.Sprintf("/groups/%s/events/%s", data.GroupID, row.ID) }>{ row.Title }</a></td>
-								<td class="text-right">{ utils.FormatNumberLocalized(ctx, row.Amount) }</td>
+								<td><div class="cell"><a class="table-link" href={ fmt.Sprintf("/groups/%s/events/%s", data.GroupID, row.ID) }>{ row.Title }</a></div></td>
+								<td class="text-right"><div class="cell">{ utils.FormatNumberLocalized(ctx, row.Amount) }</div></td>
 								<td class="text-right">
-									if data.IsAdmin {
-										@shared.ToggleSwitch(shared.ToggleSwitchProps{IsOn: true, OnClick: togglePaidExpr, DisabledExpr: "false", AriaLabel: ctxi18n.T(ctx, "table.paid")})
-									} else {
-										{ ctxi18n.T(ctx, "table.paid") }
-									}
-								</td>
-								<td class="text-right">
-									<div class="row row-right">
-										<span>
-											if row.PaidAt != "" {
-												{ utils.FormatDateLocalized(ctx, row.PaidAt) }
-											} else {
-												-
-											}
-										</span>
+									<div class="cell">
 										if data.IsAdmin {
-											@shared.IconActionButton(shared.IconActionButtonProps{ClassName: "btn btn-xs btn-text", OnClick: openPaidAtExpr, DisabledExpr: "false", AriaLabel: ctxi18n.T(ctx, "actions.edit"), Title: ctxi18n.T(ctx, "actions.edit"), IconName: icons.IconPencil})
+											@shared.ToggleSwitch(shared.ToggleSwitchProps{IsOn: true, OnClick: togglePaidExpr, DisabledExpr: "false", AriaLabel: ctxi18n.T(ctx, "table.paid")})
+										} else {
+											{ ctxi18n.T(ctx, "table.paid") }
 										}
 									</div>
+								</td>
+								<td class="text-right">
+									<div class="cell"><div class="row row-right">
+											<span>
+												if row.PaidAt != "" {
+													{ utils.FormatDateLocalized(ctx, row.PaidAt) }
+												} else {
+													-
+												}
+											</span>
+											if data.IsAdmin {
+												@shared.IconActionButton(shared.IconActionButtonProps{ClassName: "btn btn-xs btn-text", OnClick: openPaidAtExpr, DisabledExpr: "false", AriaLabel: ctxi18n.T(ctx, "actions.edit"), Title: ctxi18n.T(ctx, "actions.edit"), IconName: icons.IconPencil})
+											}
+										</div></div>
 								</td>
 							</tr>
 						}

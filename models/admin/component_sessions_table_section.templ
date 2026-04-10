@@ -34,41 +34,45 @@ templ SessionsTableSection(data DashboardData) {
 			<tbody>
 				for _, session := range data.Sessions {
 					<tr>
-						<td><span class="cell-ellipsis" title={ session.UserEmail }>{ session.UserEmail }</span></td>
-						<td><span class="cell-ellipsis" style="max-width: 14rem;" title={ session.ID }>{ session.ID }</span></td>
+						<td><div class="cell"><span class="cell-ellipsis" title={ session.UserEmail }>{ session.UserEmail }</span></div></td>
+						<td><div class="cell"><span class="cell-ellipsis" style="max-width: 14rem;" title={ session.ID }>{ session.ID }</span></div></td>
 						<td>
-							if session.CreatedAt.Valid {
-								{ utils.FormatTimeLocalized(ctx, session.CreatedAt.Time) }
-							} else {
-								{ "-" }
-							}
+							<div class="cell">
+								if session.CreatedAt.Valid {
+									{ utils.FormatTimeLocalized(ctx, session.CreatedAt.Time) }
+								} else {
+									{ "-" }
+								}
+							</div>
 						</td>
-						<td>{ utils.FormatTimeLocalized(ctx, session.ExpiresAt) }</td>
+						<td><div class="cell">{ utils.FormatTimeLocalized(ctx, session.ExpiresAt) }</div></td>
 						<td>
-							<div class="row row-tight">
-							@shared.LoadingIconActionButton(shared.LoadingIconActionButtonProps{
-							ClassName:    "btn btn-sm btn-icon",
-								OnClick:      fmt.Sprintf("@delete('/admin/users/%s/sessions/%s')", session.UserID, session.ID),
-								DisabledExpr: "$_fetching",
-								AriaLabel:    ctxi18n.T(ctx, "auth.logout"),
-								Title:        ctxi18n.T(ctx, "auth.logout"),
-								IconName:     icons.IconLogOut,
-							})
-							@shared.LoadingIconActionButton(shared.LoadingIconActionButtonProps{
-								ClassName:    "btn btn-sm btn-icon",
-								OnClick:      fmt.Sprintf("@delete('/admin/users/%s/sessions/')", session.UserID),
-								DisabledExpr: "$_fetching",
-								AriaLabel:    ctxi18n.T(ctx, "admin.sessions.logout_all_user"),
-								Title:        ctxi18n.T(ctx, "admin.sessions.logout_all_user"),
-								IconName:     icons.IconUsers,
-							})
+							<div class="cell">
+								<div class="row row-tight">
+									@shared.LoadingIconActionButton(shared.LoadingIconActionButtonProps{
+										ClassName:    "btn btn-sm btn-icon",
+										OnClick:      fmt.Sprintf("@delete('/admin/users/%s/sessions/%s')", session.UserID, session.ID),
+										DisabledExpr: "$_fetching",
+										AriaLabel:    ctxi18n.T(ctx, "auth.logout"),
+										Title:        ctxi18n.T(ctx, "auth.logout"),
+										IconName:     icons.IconLogOut,
+									})
+									@shared.LoadingIconActionButton(shared.LoadingIconActionButtonProps{
+										ClassName:    "btn btn-sm btn-icon",
+										OnClick:      fmt.Sprintf("@delete('/admin/users/%s/sessions/')", session.UserID),
+										DisabledExpr: "$_fetching",
+										AriaLabel:    ctxi18n.T(ctx, "admin.sessions.logout_all_user"),
+										Title:        ctxi18n.T(ctx, "admin.sessions.logout_all_user"),
+										IconName:     icons.IconUsers,
+									})
+								</div>
 							</div>
 						</td>
 					</tr>
 				}
 				if len(data.Sessions) == 0 {
 					<tr>
-						<td colspan="5">{ ctxi18n.T(ctx, "table.empty") }</td>
+						<td colspan="5"><div class="cell">{ ctxi18n.T(ctx, "table.empty") }</div></td>
 					</tr>
 				}
 			</tbody>

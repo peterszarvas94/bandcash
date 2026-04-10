@@ -30,47 +30,53 @@ templ UsersTableSection(data DashboardData) {
 			<tbody>
 				for _, user := range data.Users {
 					<tr>
-						<td>{ user.Email }</td>
+						<td><div class="cell">{ user.Email }</div></td>
 						<td>
-							if user.CreatedAt.Valid {
-								{ utils.FormatTimeLocalized(ctx, user.CreatedAt.Time) }
-							} else {
-								{ "-" }
-							}
+							<div class="cell">
+								if user.CreatedAt.Valid {
+									{ utils.FormatTimeLocalized(ctx, user.CreatedAt.Time) }
+								} else {
+									{ "-" }
+								}
+							</div>
 						</td>
 						<td>
-							if user.IsBanned {
-								{ ctxi18n.T(ctx, "admin.users.banned_status") }
-							} else {
-								{ ctxi18n.T(ctx, "admin.users.active_status") }
-							}
+							<div class="cell">
+								if user.IsBanned {
+									{ ctxi18n.T(ctx, "admin.users.banned_status") }
+								} else {
+									{ ctxi18n.T(ctx, "admin.users.active_status") }
+								}
+							</div>
 						</td>
 						<td data-actions-col>
-							if user.IsBanned {
-								@shared.LoadingIconActionButton(shared.LoadingIconActionButtonProps{
-									ClassName:    "btn btn-sm btn-icon",
-									OnClick:      fmt.Sprintf("@post('/admin/users/%s/unban')", user.ID),
-									DisabledExpr: "$_fetching",
-									AriaLabel:    ctxi18n.T(ctx, "admin.users.unban"),
-									Title:        ctxi18n.T(ctx, "admin.users.unban"),
-									IconName:     icons.IconCheck,
-								})
-							} else {
-								@shared.LoadingIconActionButton(shared.LoadingIconActionButtonProps{
-								ClassName:    "btn btn-sm btn-icon",
-									OnClick:      fmt.Sprintf("@post('/admin/users/%s/ban')", user.ID),
-									DisabledExpr: "$_fetching",
-									AriaLabel:    ctxi18n.T(ctx, "admin.users.ban"),
-									Title:        ctxi18n.T(ctx, "admin.users.ban"),
-									IconName:     icons.IconTrash2,
-								})
-							}
+							<div class="cell row row-tight">
+								if user.IsBanned {
+									@shared.LoadingIconActionButton(shared.LoadingIconActionButtonProps{
+										ClassName:    "btn btn-sm btn-icon",
+										OnClick:      fmt.Sprintf("@post('/admin/users/%s/unban')", user.ID),
+										DisabledExpr: "$_fetching",
+										AriaLabel:    ctxi18n.T(ctx, "admin.users.unban"),
+										Title:        ctxi18n.T(ctx, "admin.users.unban"),
+										IconName:     icons.IconCheck,
+									})
+								} else {
+									@shared.LoadingIconActionButton(shared.LoadingIconActionButtonProps{
+										ClassName:    "btn btn-sm btn-icon",
+										OnClick:      fmt.Sprintf("@post('/admin/users/%s/ban')", user.ID),
+										DisabledExpr: "$_fetching",
+										AriaLabel:    ctxi18n.T(ctx, "admin.users.ban"),
+										Title:        ctxi18n.T(ctx, "admin.users.ban"),
+										IconName:     icons.IconTrash2,
+									})
+								}
+							</div>
 						</td>
 					</tr>
 				}
 				if len(data.Users) == 0 {
 					<tr>
-						<td colspan="4">{ ctxi18n.T(ctx, "table.empty") }</td>
+						<td colspan="4"><div class="cell">{ ctxi18n.T(ctx, "table.empty") }</div></td>
 					</tr>
 				}
 			</tbody>

@@ -431,10 +431,6 @@ func UpdateParticipantsDraftRows(c echo.Context) error {
 		return c.NoContent(http.StatusBadRequest)
 	}
 
-	// TEMP: force validation error on every members form submit for UI testing.
-	patchWizardError(c, signals.Wizard, ctxi18n.T(c.Request().Context(), "participants.bulk_validation_error"), "")
-	return c.NoContent(http.StatusUnprocessableEntity)
-
 	signals.EventFormData.Title = strings.TrimSpace(signals.EventFormData.Title)
 	signals.EventFormData.Date = strings.TrimSpace(signals.EventFormData.Date)
 	signals.EventFormData.Time = strings.TrimSpace(signals.EventFormData.Time)

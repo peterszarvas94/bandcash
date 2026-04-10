@@ -6,12 +6,12 @@ import (
 
 templ THCol(maxWRem int) {
 	<th style={ fmt.Sprintf("--max-w: %drem", maxWRem) }>
-		{ children... }
+		<div class="cell">{ children... }</div>
 	</th>
 }
 
 templ THColFixed(maxWRem int, wRem int) {
 	<th style={ fmt.Sprintf("--w: %drem", wRem) }>
-		{ children... }
+		<div class="cell">{ children... }</div>
 	</th>
 }

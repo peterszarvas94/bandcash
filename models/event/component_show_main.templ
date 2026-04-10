@@ -137,76 +137,82 @@ templ EventShowMain(data EventData) {
 						}
 					}}
 					<tr>
-						<td><a class="table-link" href={ fmt.Sprintf("/groups/%s/members/%s", data.GroupID, participant.ID) }>{ participant.Name }</a></td>
-						<td class="text-right">{ utils.FormatNumberLocalized(ctx, participant.ParticipantAmount) }</td>
-						<td class="text-right">{ utils.FormatNumberLocalized(ctx, participant.ParticipantExpense) }</td>
-						<td class="text-right">{ utils.FormatNumberLocalized(ctx, participant.ParticipantAmount+participant.ParticipantExpense) }</td>
+						<td><div class="cell"><a class="table-link" href={ fmt.Sprintf("/groups/%s/members/%s", data.GroupID, participant.ID) }>{ participant.Name }</a></div></td>
+						<td class="text-right"><div class="cell">{ utils.FormatNumberLocalized(ctx, participant.ParticipantAmount) }</div></td>
+						<td class="text-right"><div class="cell">{ utils.FormatNumberLocalized(ctx, participant.ParticipantExpense) }</div></td>
+						<td class="text-right"><div class="cell">{ utils.FormatNumberLocalized(ctx, participant.ParticipantAmount+participant.ParticipantExpense) }</div></td>
 						<td class="text-right" style={ fmt.Sprintf("--max-w: %drem", data.ParticipantsTable.ColMaxWRem("note")) }>
-							<div class="row row-right">
-								if noteValue != "" {
-									<span class="cell-ellipsis" title={ noteValue }>{ noteValue }</span>
-								} else {
-									<span class="text-muted">-</span>
-								}
+							<div class="cell">
+								<div class="row row-right">
+									if noteValue != "" {
+										<span class="cell-ellipsis" title={ noteValue }>{ noteValue }</span>
+									} else {
+										<span class="text-muted">-</span>
+									}
+									if data.IsAdmin {
+										@shared.IconActionButton(shared.IconActionButtonProps{
+											ClassName:    "btn btn-xs btn-text",
+											OnClick:      openNoteExpr,
+											DisabledExpr: "false",
+											AriaLabel:    ctxi18n.T(ctx, "actions.edit"),
+											Title:        ctxi18n.T(ctx, "actions.edit"),
+											IconName:     icons.IconPencil,
+										})
+									} else if noteValue != "" {
+										@shared.IconActionButton(shared.IconActionButtonProps{
+											ClassName:    "btn btn-xs btn-text",
+											OnClick:      openNoteExpr,
+											DisabledExpr: "false",
+											AriaLabel:    ctxi18n.T(ctx, "participants.note"),
+											Title:        ctxi18n.T(ctx, "participants.note"),
+											IconName:     icons.IconEye,
+										})
+									}
+								</div>
+							</div>
+						</td>
+						<td class="text-right">
+							<div class="cell">
 								if data.IsAdmin {
-									@shared.IconActionButton(shared.IconActionButtonProps{
-										ClassName:    "btn btn-xs btn-text",
-										OnClick:      openNoteExpr,
+									@shared.ToggleSwitch(shared.ToggleSwitchProps{
+										IsOn:         participant.ParticipantPaid == 1,
+										OnClick:      togglePaidExpr,
 										DisabledExpr: "false",
-										AriaLabel:    ctxi18n.T(ctx, "actions.edit"),
-										Title:        ctxi18n.T(ctx, "actions.edit"),
-										IconName:     icons.IconPencil,
+										AriaLabel:    ctxi18n.T(ctx, "table.paid"),
 									})
-								} else if noteValue != "" {
-									@shared.IconActionButton(shared.IconActionButtonProps{
-										ClassName:    "btn btn-xs btn-text",
-										OnClick:      openNoteExpr,
-										DisabledExpr: "false",
-										AriaLabel:    ctxi18n.T(ctx, "participants.note"),
-										Title:        ctxi18n.T(ctx, "participants.note"),
-										IconName:     icons.IconEye,
-									})
+								} else {
+									{ paidLabel }
 								}
 							</div>
 						</td>
 						<td class="text-right">
-							if data.IsAdmin {
-								@shared.ToggleSwitch(shared.ToggleSwitchProps{
-									IsOn:         participant.ParticipantPaid == 1,
-									OnClick:      togglePaidExpr,
-									DisabledExpr: "false",
-									AriaLabel:    ctxi18n.T(ctx, "table.paid"),
-								})
-							} else {
-								{ paidLabel }
-							}
-						</td>
-						<td class="text-right">
-							<div class="row row-right">
-								<span>
-									if paidAtLabel != "" {
-										{ paidAtLabel }
-									} else {
-										-
+							<div class="cell">
+								<div class="row row-right">
+									<span>
+										if paidAtLabel != "" {
+											{ paidAtLabel }
+										} else {
+											-
+										}
+									</span>
+									if data.IsAdmin {
+										@shared.IconActionButton(shared.IconActionButtonProps{
+											ClassName:    "btn btn-xs btn-text",
+											OnClick:      openParticipantPaidAtExpr,
+											DisabledExpr: "false",
+											AriaLabel:    ctxi18n.T(ctx, "actions.edit"),
+											Title:        ctxi18n.T(ctx, "actions.edit"),
+											IconName:     icons.IconPencil,
+										})
 									}
-								</span>
-								if data.IsAdmin {
-									@shared.IconActionButton(shared.IconActionButtonProps{
-										ClassName:    "btn btn-xs btn-text",
-										OnClick:      openParticipantPaidAtExpr,
-										DisabledExpr: "false",
-										AriaLabel:    ctxi18n.T(ctx, "actions.edit"),
-										Title:        ctxi18n.T(ctx, "actions.edit"),
-										IconName:     icons.IconPencil,
-									})
-								}
+								</div>
 							</div>
 						</td>
 					</tr>
 				}
 				if len(data.Participants) == 0 {
 					<tr>
-						<td colspan="7">{ ctxi18n.T(ctx, "table.empty") }</td>
+						<td colspan="7"><div class="cell">{ ctxi18n.T(ctx, "table.empty") }</div></td>
 					</tr>
 				}
 			</tbody>

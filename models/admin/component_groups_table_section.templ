@@ -31,21 +31,23 @@ templ GroupsTableSection(data DashboardData) {
 			<tbody>
 				for _, group := range data.Groups {
 					<tr>
-					<td><a class="table-link" href={ fmt.Sprintf("/groups/%s/events", group.ID) }>{ group.Name }</a></td>
-						<td>{ group.AdminUserID }</td>
-						<td></td>
+						<td><div class="cell"><a class="table-link" href={ fmt.Sprintf("/groups/%s/events", group.ID) }>{ group.Name }</a></div></td>
+						<td><div class="cell">{ group.AdminUserID }</div></td>
+						<td><div class="cell"></div></td>
 						<td>
-							if group.CreatedAt.Valid {
-								{ utils.FormatTimeLocalized(ctx, group.CreatedAt.Time) }
-							} else {
-								{ "-" }
-							}
+							<div class="cell">
+								if group.CreatedAt.Valid {
+									{ utils.FormatTimeLocalized(ctx, group.CreatedAt.Time) }
+								} else {
+									{ "-" }
+								}
+							</div>
 						</td>
 					</tr>
 				}
 				if len(data.Groups) == 0 {
 					<tr>
-						<td colspan="4">{ ctxi18n.T(ctx, "table.empty") }</td>
+						<td colspan="4"><div class="cell">{ ctxi18n.T(ctx, "table.empty") }</div></td>
 					</tr>
 				}
 			</tbody>

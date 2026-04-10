@@ -51,43 +51,49 @@ templ GroupUsersMain(data UsersPageData) {
 				}}
 				<tr>
 					<td>
-						<a class="table-link" href={ rowPath }>{ row.Email }</a>
-						if row.UserID == data.CurrentUserID {
-							{ youText }
-						}
-					</td>
-					<td>
-						if row.Role == "owner" {
-							@shared.Badge("owner")
-						} else if data.IsAdmin {
-							@shared.ToggleSwitch(shared.ToggleSwitchProps{
-								IsOn:         row.Role == "admin",
-								Disabled:     roleToggleDisabled,
-								OnClick:      roleToggleExpr,
-								DisabledExpr: "false",
-								AriaLabel:    ctxi18n.T(ctx, "fields.role"),
-							})
-						} else {
-							if row.Role == "admin" {
-								{ ctxi18n.T(ctx, "groups.role_admin") }
-							} else if row.Role == "owner" {
-								{ ctxi18n.T(ctx, "groups.role_owner") }
-							} else {
-								{ ctxi18n.T(ctx, "groups.role_viewer") }
+						<div class="cell">
+							<a class="table-link" href={ rowPath }>{ row.Email }</a>
+							if row.UserID == data.CurrentUserID {
+								{ youText }
 							}
-						}
+						</div>
 					</td>
 					<td>
-						if row.Status == "pending" {
-							<span class="badge badge-inverse">{ ctxi18n.T(ctx, "groups.pending") }</span>
-						} else {
-							<span class="badge badge-primary">{ ctxi18n.T(ctx, "groups.active") }</span>
-						}
+						<div class="cell">
+							if row.Role == "owner" {
+								@shared.Badge("owner")
+							} else if data.IsAdmin {
+								@shared.ToggleSwitch(shared.ToggleSwitchProps{
+									IsOn:         row.Role == "admin",
+									Disabled:     roleToggleDisabled,
+									OnClick:      roleToggleExpr,
+									DisabledExpr: "false",
+									AriaLabel:    ctxi18n.T(ctx, "fields.role"),
+								})
+							} else {
+								if row.Role == "admin" {
+									{ ctxi18n.T(ctx, "groups.role_admin") }
+								} else if row.Role == "owner" {
+									{ ctxi18n.T(ctx, "groups.role_owner") }
+								} else {
+									{ ctxi18n.T(ctx, "groups.role_viewer") }
+								}
+							}
+						</div>
+					</td>
+					<td>
+						<div class="cell">
+							if row.Status == "pending" {
+								<span class="badge badge-inverse">{ ctxi18n.T(ctx, "groups.pending") }</span>
+							} else {
+								<span class="badge badge-primary">{ ctxi18n.T(ctx, "groups.active") }</span>
+							}
+						</div>
 					</td>
 				</tr>
 			}
 			if len(data.UserRows) == 0 {
-				<tr><td colspan="3">{ ctxi18n.T(ctx, "table.empty") }</td></tr>
+				<tr><td colspan="3"><div class="cell">{ ctxi18n.T(ctx, "table.empty") }</div></td></tr>
 			}
 		</tbody>
 	}

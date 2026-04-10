@@ -49,9 +49,6 @@ templ EventEditMembersForm(data EventData) {
 						<th style={ fmt.Sprintf("--max-w: %drem", data.ParticipantsTable.ColMaxWRem("expense")) }>
 							<div class="cell">{ ctxi18n.T(ctx, "participants.expense") }</div>
 						</th>
-						<th>
-							<div class="cell">{ ctxi18n.T(ctx, "participants.total") }</div>
-						</th>
 						<th class="w-fit">
 							<div class="cell">{ ctxi18n.T(ctx, "table.paid") }</div>
 						</th>
@@ -60,6 +57,9 @@ templ EventEditMembersForm(data EventData) {
 						</th>
 						<th style={ fmt.Sprintf("--max-w: %drem", data.ParticipantsTable.ColMaxWRem("note")) }>
 							<div class="cell">{ ctxi18n.T(ctx, "participants.note") }</div>
+						</th>
+						<th>
+							<div class="cell">{ ctxi18n.T(ctx, "participants.total") }</div>
 						</th>
 						<th class="w-fit">
 							<div class="cell"></div>
@@ -76,17 +76,19 @@ templ EventEditMembersForm(data EventData) {
 							<td
 								style={ fmt.Sprintf("--max-w: %drem", data.ParticipantsTable.ColMaxWRem("name")) }
 							>
-								<select
-									class="input input-sm"
-									data-bind={ fmt.Sprintf("wizard.memberIds.%s", row.RowID) }
-								>
-									<option value="">{ ctxi18n.T(ctx, "participants.select_member") }</option>
-									for _, member := range data.AllMembers {
-										if row.MemberID == member.ID || !usedMemberIDs[member.ID] {
-											<option value={ member.ID }>{ member.Name }</option>
+								<div class="cell">
+									<select
+										class="input input-sm"
+										data-bind={ fmt.Sprintf("wizard.memberIds.%s", row.RowID) }
+									>
+										<option value="">{ ctxi18n.T(ctx, "participants.select_member") }</option>
+										for _, member := range data.AllMembers {
+											if row.MemberID == member.ID || !usedMemberIDs[member.ID] {
+												<option value={ member.ID }>{ member.Name }</option>
+											}
 										}
-									}
-								</select>
+									</select>
+								</div>
 							</td>
 							<td style={ fmt.Sprintf("--max-w: %drem", data.ParticipantsTable.ColMaxWRem("amount")) }>
 								<div class="cell">
@@ -111,12 +113,6 @@ templ EventEditMembersForm(data EventData) {
 										data-bind={ fmt.Sprintf("wizard.expenses.%s", row.RowID) }
 									/>
 								</div>
-							</td>
-							<td class="text-right">
-								<div
-									class="cell"
-									data-text={ fmt.Sprintf("($wizard.amounts['%s'] || 0) + ($wizard.expenses['%s'] || 0)", row.RowID, row.RowID) }
-								></div>
 							</td>
 							<td class="w-fit">
 								<div class="cell">
@@ -147,6 +143,12 @@ templ EventEditMembersForm(data EventData) {
 										data-bind={ fmt.Sprintf("wizard.notes.%s", row.RowID) }
 									></textarea>
 								</div>
+							</td>
+							<td class="text-right">
+								<div
+									class="cell"
+									data-text={ fmt.Sprintf("($wizard.amounts['%s'] || 0) + ($wizard.expenses['%s'] || 0)", row.RowID, row.RowID) }
+								></div>
 							</td>
 							<td class="text-right w-fit">
 								<div class="cell row row-tight">

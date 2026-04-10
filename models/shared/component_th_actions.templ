@@ -6,6 +6,6 @@ import (
 
 templ THActions(widthRem int) {
 	<th data-actions-col style={ fmt.Sprintf("--actions-w-rem: %d", widthRem) }>
-		{ children... }
+		<div class="cell">{ children... }</div>
 	</th>
 }
