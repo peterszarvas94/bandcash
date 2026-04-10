@@ -980,10 +980,13 @@
     .error-icon {
       width: 3rem;
       height: 3rem;
-      margin: 0 auto;
+      margin: 0 auto 1rem auto;
       display: inline-flex;
       align-items: center;
       justify-content: center;
+      background: var(--bg-light);
+      border: var(--border) solid var(--bg-dark);
+      border-radius: var(--radius);
 
       .icon {
         width: 1.25rem;

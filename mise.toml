@@ -14,7 +14,7 @@ app = "air"
 preflight = "go run ./cmd/devpreflight/main.go"
 assets = "go run ./cmd/assets/main.go"
 start = "./tmp/server"
-routes = "go run ./cmd/server/main.go --routes"
+routes = "go run ./cmd/server --routes"
 test = "go test ./..."
 test-pretty = "gotestsum --format testdox -- -count=1 ./..."
 format = "go fmt ./..."
@@ -40,12 +40,12 @@ deploy-staging = "./scripts/deploy.sh staging"
 
 [tasks.build]
 depends = ["assets"]
-run = "go build -o tmp/server cmd/server/main.go"
+run = "go build -o tmp/server ./cmd/server"
 
 [tasks.run]
 run = [
   { task = "assets" },
-  "go run ./cmd/server/main.go",
+  "go run ./cmd/server",
 ]
 
 [tasks.check]
