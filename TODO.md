@@ -2,26 +2,11 @@
 
 ## General
 
-- prefer drop shadows over borders for card-like elements (detail sections, tables, etc.)
-
-## Color
-
-- find a good accent color (e.g. orange)
-
-## Dashboard
-
-- make groups as cards
-- add button should be bigger and marked with primary color
-
-## General for all pages
-
-- improve details section
-- move paid/unpaid/all radio into normal table filter, like search or date filters
+- remove open/close info, its deprecated
 
 ## UI
 
 - check admin pages
-- figure out tab styling (in both admin and group pages)
 
 # Features
 
