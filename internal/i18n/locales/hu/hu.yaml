@@ -340,7 +340,12 @@ hu:
       update_failed: "Nem sikerült résztvevőt frissíteni. Próbáld újra."
       delete_failed: "Nem sikerült résztvevőt eltávolítani. Próbáld újra."
       toggle_paid_failed: "Nem sikerült a fizetés állapotot frissíteni. Próbáld újra."
-    bulk_validation_error: "Ellenőrizd a résztvevői értékeket, majd próbáld újra."
+    bulk_validation_error: "Nem sikerült a művelet, próbáld újra."
+    validation:
+      member_required: "Ehhez a sorhoz válassz tagot."
+      member_invalid: "A kiválasztott tag érvénytelen."
+      member_duplicate: "Ez a tag már szerepel egy másik sorban."
+      field_error: "%s: %s"
   validation:
     required: "Kötelező"
     min: "Minimum %s"

@@ -11,8 +11,8 @@ import (
 templ ReadModeActions(data EventData) {
 	if data.IsAdmin {
 		{{
-			editDetailsExpr := fmt.Sprintf("@get('/groups/%s/events/%s/edit/details')", data.GroupID, data.Event.ID)
-			editMembersExpr := fmt.Sprintf("@get('/groups/%s/events/%s/edit/members')", data.GroupID, data.Event.ID)
+			editDetailsHref := fmt.Sprintf("/groups/%s/events/%s/edit", data.GroupID, data.Event.ID)
+			editMembersHref := fmt.Sprintf("/groups/%s/events/%s/participant/edit", data.GroupID, data.Event.ID)
 			deleteEventExpr := fmt.Sprintf(
 				"$confirm = {title: %s, message: %s, submitLabel: %s, cancelLabel: %s, method: 'delete', url: '/groups/%s/events/%s', triggerID: 'event-show-delete', open: true, fetching: false}",
 				utils.JSONString(ctxi18n.T(ctx, "events.delete_confirm")),
@@ -24,20 +24,14 @@ templ ReadModeActions(data EventData) {
 			)
 		}}
 		<div class="row">
-			@shared.ActionButton(shared.ActionButtonProps{
-				ClassName:    "btn btn-sm",
-				OnClick:      editDetailsExpr,
-				DisabledExpr: "$_fetching",
-				Label:        ctxi18n.T(ctx, "events.edit_details"),
-				IconName:     icons.IconPencil,
-			})
-			@shared.ActionButton(shared.ActionButtonProps{
-				ClassName:    "btn btn-sm",
-				OnClick:      editMembersExpr,
-				DisabledExpr: "$_fetching",
-				Label:        ctxi18n.T(ctx, "events.edit_members"),
-				IconName:     icons.IconUserPen,
-			})
+			<a class="btn btn-sm" href={ editDetailsHref }>
+				@icons.Icon(icons.IconPencil, templ.Attributes{"class": "icon"})
+				<span>{ ctxi18n.T(ctx, "events.edit_details") }</span>
+			</a>
+			<a class="btn btn-sm" href={ editMembersHref }>
+				@icons.Icon(icons.IconUserPen, templ.Attributes{"class": "icon"})
+				<span>{ ctxi18n.T(ctx, "events.edit_members") }</span>
+			</a>
 			@shared.ActionButton(shared.ActionButtonProps{
 				ClassName:    "btn btn-sm",
 				OnClick:      deleteEventExpr,

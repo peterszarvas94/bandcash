@@ -317,7 +317,7 @@ func OpenParticipantsDraft(c echo.Context) error {
 		return c.NoContent(http.StatusBadRequest)
 	}
 
-	if err := utils.SSEHub.Redirect(c, "/groups/"+groupID+"/events/"+eventID+"/edit/members"); err != nil {
+	if err := utils.SSEHub.Redirect(c, "/groups/"+groupID+"/events/"+eventID+"/participant/edit"); err != nil {
 		slog.Warn("participant.draft.open: failed to redirect", "err", err)
 	}
 
@@ -430,6 +430,10 @@ func UpdateParticipantsDraftRows(c echo.Context) error {
 	if !utils.SetTabID(c, signals.TabID) {
 		return c.NoContent(http.StatusBadRequest)
 	}
+
+	// TEMP: force validation error on every members form submit for UI testing.
+	patchWizardError(c, signals.Wizard, ctxi18n.T(c.Request().Context(), "participants.bulk_validation_error"), "")
+	return c.NoContent(http.StatusUnprocessableEntity)
 
 	signals.EventFormData.Title = strings.TrimSpace(signals.EventFormData.Title)
 	signals.EventFormData.Date = strings.TrimSpace(signals.EventFormData.Date)
@@ -585,7 +589,7 @@ func SaveParticipantsBulk(c echo.Context) error {
 	signals.EventFormData.PaidAt = normalizePaidAtInput(signals.EventFormData.PaidAt)
 
 	if errs := utils.ValidateWithLocale(c.Request().Context(), signals.EventFormData); errs != nil {
-		patchWizardError(c, signals.Wizard, ctxi18n.T(c.Request().Context(), "participants.bulk_validation_error"))
+		patchWizardError(c, signals.Wizard, ctxi18n.T(c.Request().Context(), "participants.bulk_validation_error"), "")
 		utils.SSEHub.PatchSignals(c, map[string]any{"errors": utils.WithErrors(eventErrorFields, errs)})
 		return c.NoContent(http.StatusUnprocessableEntity)
 	}
@@ -609,7 +613,7 @@ func SaveParticipantsBulk(c echo.Context) error {
 	for i := range signals.Wizard.Rows {
 		signals.Wizard.Rows[i].RowID = strings.TrimSpace(signals.Wizard.Rows[i].RowID)
 		if signals.Wizard.Rows[i].RowID == "" {
-			patchWizardError(c, signals.Wizard, ctxi18n.T(c.Request().Context(), "participants.bulk_validation_error"))
+			patchWizardError(c, signals.Wizard, ctxi18n.T(c.Request().Context(), "participants.bulk_validation_error"), "")
 			return c.NoContent(http.StatusUnprocessableEntity)
 		}
 
@@ -650,23 +654,38 @@ func SaveParticipantsBulk(c echo.Context) error {
 			if signals.Wizard.Rows[i].Amount == 0 && signals.Wizard.Rows[i].Expense == 0 && signals.Wizard.Rows[i].Note == "" && !signals.Wizard.Rows[i].Paid && signals.Wizard.Rows[i].PaidAt == "" {
 				continue
 			}
-			patchWizardError(c, signals.Wizard, ctxi18n.T(c.Request().Context(), "participants.bulk_validation_error"))
+			patchWizardError(c, signals.Wizard, ctxi18n.T(c.Request().Context(), "participants.validation.member_required"), signals.Wizard.Rows[i].RowID)
 			return c.NoContent(http.StatusUnprocessableEntity)
 		}
 
 		if _, ok := memberIDs[signals.Wizard.Rows[i].MemberID]; !ok {
-			patchWizardError(c, signals.Wizard, ctxi18n.T(c.Request().Context(), "participants.bulk_validation_error"))
+			patchWizardError(c, signals.Wizard, ctxi18n.T(c.Request().Context(), "participants.validation.member_invalid"), signals.Wizard.Rows[i].RowID)
 			return c.NoContent(http.StatusUnprocessableEntity)
 		}
 
 		if _, exists := memberIDsSeen[signals.Wizard.Rows[i].MemberID]; exists {
-			patchWizardError(c, signals.Wizard, ctxi18n.T(c.Request().Context(), "participants.bulk_validation_error"))
+			patchWizardError(c, signals.Wizard, ctxi18n.T(c.Request().Context(), "participants.validation.member_duplicate"), signals.Wizard.Rows[i].RowID)
 			return c.NoContent(http.StatusUnprocessableEntity)
 		}
 		memberIDsSeen[signals.Wizard.Rows[i].MemberID] = struct{}{}
 
 		if errs := utils.ValidateWithLocale(c.Request().Context(), signals.Wizard.Rows[i]); errs != nil {
-			patchWizardError(c, signals.Wizard, ctxi18n.T(c.Request().Context(), "participants.bulk_validation_error"))
+			detailed := ctxi18n.T(c.Request().Context(), "participants.bulk_validation_error")
+			if msg, ok := errs["amount"]; ok && strings.TrimSpace(msg) != "" {
+				detailed = ctxi18n.T(c.Request().Context(), "participants.validation.field_error", ctxi18n.T(c.Request().Context(), "participants.cut_amount"), msg)
+			} else if msg, ok := errs["expense"]; ok && strings.TrimSpace(msg) != "" {
+				detailed = ctxi18n.T(c.Request().Context(), "participants.validation.field_error", ctxi18n.T(c.Request().Context(), "participants.expense"), msg)
+			} else if msg, ok := errs["note"]; ok && strings.TrimSpace(msg) != "" {
+				detailed = ctxi18n.T(c.Request().Context(), "participants.validation.field_error", ctxi18n.T(c.Request().Context(), "participants.note"), msg)
+			} else {
+				for _, msg := range errs {
+					if strings.TrimSpace(msg) != "" {
+						detailed = msg
+						break
+					}
+				}
+			}
+			patchWizardError(c, signals.Wizard, detailed, signals.Wizard.Rows[i].RowID)
 			return c.NoContent(http.StatusUnprocessableEntity)
 		}
 

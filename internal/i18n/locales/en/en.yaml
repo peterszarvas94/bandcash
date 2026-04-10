@@ -340,7 +340,12 @@ en:
       update_failed: "Could not update participant. Please try again."
       delete_failed: "Could not remove participant. Please try again."
       toggle_paid_failed: "Could not update paid status. Please try again."
-    bulk_validation_error: "Please check participant values and try again."
+    bulk_validation_error: "The operation failed, please try again."
+    validation:
+      member_required: "Select a member for this row."
+      member_invalid: "Selected member is invalid."
+      member_duplicate: "This member is already used in another row."
+      field_error: "%s: %s"
   validation:
     required: "Required"
     min: "Minimum %s"

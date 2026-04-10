@@ -87,26 +87,35 @@
 
       th,
       td {
-        height: calc(var(--space) * 5);
-        padding-block: var(--space);
-        padding-inline: var(--space-lg);
-        text-align: left;
         min-width: var(--table-col-min-w, 0);
+        max-width: var(--max-w, 24rem);
+      }
+
+      th > .cell,
+      td > .cell {
+        display: flex;
+        align-items: center;
+        min-height: calc(var(--space) * 5);
+        padding: var(--space) var(--space-lg);
+        text-align: left;
         white-space: nowrap;
         word-break: normal;
         overflow-wrap: normal;
-        vertical-align: middle;
+        overflow: hidden;
+        text-overflow: ellipsis;
       }
 
-      thead tr,
-      tbody tr {
-        display: var(--table-row-display, table-row);
-        grid-template-columns: var(--grid-template-columns);
-      }
-
-      th,
-      td {
-        max-width: var(--max-w, 24rem);
+      /* Fallback for existing templates not yet migrated to .cell wrappers */
+      th:not(:has(> .cell)),
+      td:not(:has(> .cell)) {
+        min-height: calc(var(--space) * 5);
+        padding: var(--space) var(--space-lg);
+        text-align: left;
+        white-space: nowrap;
+        word-break: normal;
+        overflow-wrap: normal;
+        overflow: hidden;
+        text-overflow: ellipsis;
       }
 
       th {
@@ -115,16 +124,22 @@
         max-width: var(--w, var(--max-w, 24rem));
       }
 
+      th > .cell,
+      th:not(:has(> .cell)) {
+        font-family: var(--font-sans);
+        font-weight: 600;
+      }
+
       th:first-child,
       td:first-child {
         max-width: none;
-        text-overflow: clip;
       }
 
-      th {
-        font-family: var(--font-sans);
-        background: inherit;
-        font-weight: 600;
+      th:first-child > .cell,
+      td:first-child > .cell,
+      th:first-child:not(:has(> .cell)),
+      td:first-child:not(:has(> .cell)) {
+        text-overflow: clip;
       }
 
       td {
@@ -142,10 +157,10 @@
 
       min-width: 100%;
 
-      th,
-      td {
-        overflow: hidden;
-        text-overflow: ellipsis;
+      thead tr,
+      tbody tr {
+        display: var(--table-row-display, table-row);
+        grid-template-columns: var(--grid-template-columns);
       }
 
       th[data-actions-col],
@@ -154,8 +169,50 @@
         min-width: calc(var(--actions-w-rem, 0) * 1rem);
         max-width: calc(var(--actions-w-rem, 0) * 1rem);
         border-left: var(--border) solid var(--bg-dark);
+      }
+
+      th[data-actions-col] > .cell,
+      td[data-actions-col] > .cell,
+      th[data-actions-col]:not(:has(> .cell)),
+      td[data-actions-col]:not(:has(> .cell)) {
         overflow: visible;
         text-overflow: clip;
+      }
+
+      .input,
+      select,
+      textarea {
+        width: clamp(0, 100%, var(--max-w));
+      }
+    }
+
+    &.table-plain {
+      box-shadow: none;
+      background: transparent;
+      border-radius: 0;
+
+      .table {
+        td {
+          border-top: 0;
+        }
+
+        textarea {
+          field-sizing: content;
+          height: auto;
+          min-height: 2rem;
+          resize: vertical;
+        }
+
+        th > .cell,
+        td > .cell {
+          min-height: 0;
+          padding: 0;
+          justify-content: flex-start;
+        }
+
+        td.text-right > .cell {
+          justify-content: flex-end;
+        }
       }
     }
   }
@@ -290,6 +347,22 @@
 
       &:focus-visible {
         outline-offset: var(--focus-ring-offset);
+      }
+    }
+
+    &.btn-ghost {
+      border: 0;
+      background: transparent;
+      color: var(--text);
+
+      &:where(:not(:disabled, [disabled], [aria-disabled="true"])):hover {
+        background: var(--bg-light);
+        color: var(--text);
+      }
+
+      &:where(:not(:disabled, [disabled], [aria-disabled="true"])):active {
+        background: var(--bg-dark);
+        color: var(--text);
       }
     }
 
@@ -478,12 +551,6 @@
 
     &::placeholder {
       color: var(--text-muted);
-    }
-
-    &.input-table {
-      width: 100%;
-      min-width: 0;
-      max-width: var(--max-w);
     }
 
     &.input-primary,
@@ -699,11 +766,6 @@
     display: grid;
     gap: var(--space-lg);
 
-    /* > div { */
-    /*   display: grid; */
-    /*   gap: calc(var(--space) * 0.5); */
-    /* } */
-
     input,
     select {
       field-sizing: fixed;
@@ -713,9 +775,6 @@
     textarea {
       field-sizing: content;
       width: 100%;
-    }
-
-    textarea {
       min-height: 6rem;
       resize: vertical;
     }

@@ -264,11 +264,14 @@ func mergeWizardRows(base []ParticipantWizardRow, allMembers []db.Member, incomi
 	return merged
 }
 
-func patchWizardError(c echo.Context, wizard participantWizardSignals, message string) {
+func patchWizardError(c echo.Context, wizard participantWizardSignals, message string, rowID string) {
+	_ = rowID
+
 	utils.SSEHub.PatchSignals(c, map[string]any{
 		"wizard": map[string]any{
 			"eventAmount": wizard.EventAmount,
 			"rows":        wizard.Rows,
+			"rowErrors":   map[string]string{},
 			"memberIds":   wizard.MemberIDs,
 			"amounts":     wizard.Amounts,
 			"expenses":    wizard.Expenses,
@@ -280,7 +283,7 @@ func patchWizardError(c echo.Context, wizard participantWizardSignals, message s
 			"error":       message,
 		},
 		"errors": map[string]any{
-			"memberId": message,
+			"memberId": "",
 		},
 	})
 }

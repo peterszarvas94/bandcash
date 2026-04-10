@@ -76,6 +76,7 @@ type participantBulkRowData struct {
 type participantWizardSignals struct {
 	EventAmount int64                    `json:"eventAmount"`
 	Rows        []participantBulkRowData `json:"rows"`
+	RowErrors   map[string]string        `json:"rowErrors"`
 	MemberIDs   map[string]string        `json:"memberIds"`
 	Amounts     map[string]int64         `json:"amounts"`
 	Expenses    map[string]int64         `json:"expenses"`
@@ -142,6 +143,7 @@ func eventIndexSignals(query utils.TableQuery) map[string]any {
 func eventShowSignals(data EventData) map[string]any {
 	wizardRows := make([]map[string]any, 0, len(data.WizardRows))
 	wizardMemberIDs := make(map[string]string, len(data.WizardRows))
+	wizardRowErrors := map[string]string{}
 	wizardAmounts := make(map[string]int64, len(data.WizardRows))
 	wizardExpenses := make(map[string]int64, len(data.WizardRows))
 	wizardNotes := make(map[string]string, len(data.WizardRows))
@@ -184,6 +186,7 @@ func eventShowSignals(data EventData) map[string]any {
 			"error":       data.WizardError,
 			"eventAmount": data.WizardEventAmount,
 			"rows":        wizardRows,
+			"rowErrors":   wizardRowErrors,
 			"memberIds":   wizardMemberIDs,
 			"amounts":     wizardAmounts,
 			"expenses":    wizardExpenses,
