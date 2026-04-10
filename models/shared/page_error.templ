@@ -19,7 +19,7 @@ templ ErrorPage(data ErrorPageData) {
 	@BaseLayout(BaseLayoutProps{
 		Title:           data.Title,
 		Crumbs:          []utils.Crumb{},
-		Content:         ErrorPageMain(data),
+		Content:         CommonContent(ErrorPageMain(data)),
 		ActiveUrl:       "",
 		IsAuthenticated: false,
 		IsSuperAdmin:    false,

@@ -47,7 +47,7 @@ func ErrorPage(data ErrorPageData) templ.Component {
 		templ_7745c5c3_Err = BaseLayout(BaseLayoutProps{
 			Title:           data.Title,
 			Crumbs:          []utils.Crumb{},
-			Content:         ErrorPageMain(data),
+			Content:         CommonContent(ErrorPageMain(data)),
 			ActiveUrl:       "",
 			IsAuthenticated: false,
 			IsSuperAdmin:    false,

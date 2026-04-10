@@ -3,15 +3,17 @@ package shared
 import icons "bandcash/models/shared/icons"
 
 templ ErrorPageMain(data ErrorPageData) {
-	<section class="error-card">
-		<div class="error-icon">
-			@icons.Icon(data.IconName, templ.Attributes{"class": "icon"})
-		</div>
-		<p class="error-status">HTTP { data.StatusCode }</p>
-		<h1>{ data.Heading }</h1>
-		<p class="text-muted">{ data.Message }</p>
-		<div class="row row-wrap justify-center pt">
-			<a class="btn" href={ data.HomeHref }>{ data.HomeLabel }</a>
+	<section class="error-page">
+		<div class="error-card">
+			<div class="error-icon">
+				@icons.Icon(data.IconName, templ.Attributes{"class": "icon"})
+			</div>
+			<p class="error-status">HTTP { data.StatusCode }</p>
+			<h1>{ data.Heading }</h1>
+			<p class="text-muted">{ data.Message }</p>
+			<div class="row row-wrap justify-center pt">
+				<a class="btn" href={ data.HomeHref }>{ data.HomeLabel }</a>
+			</div>
 		</div>
 	</section>
 }
