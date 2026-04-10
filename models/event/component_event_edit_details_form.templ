@@ -1,0 +1,68 @@
+package event
+
+import (
+	shared "bandcash/models/shared"
+	icons "bandcash/models/shared/icons"
+	"fmt"
+	ctxi18n "github.com/invopop/ctxi18n/i18n"
+)
+
+templ EventEditDetailsForm(data EventData) {
+	{{
+		updateDetailsExpr := fmt.Sprintf("@post('/groups/%s/events/%s/details')", data.GroupID, data.Event.ID)
+	}}
+	@shared.PageHeader(shared.PageHeaderProps{Title: data.Event.Title})
+	<form class="form w-details" data-on:submit={ updateDetailsExpr } data-indicator:_fetching>
+		<div class="field">
+			<label for="event-edit-title" class="row">{ ctxi18n.T(ctx, "fields.title") } <span class="fielderror">*</span></label>
+			<input id="event-edit-title" type="text" data-bind="eventFormData.title" class="input"/>
+			<div data-show="$errors && $errors.title" class="fielderror" data-text="$errors.title"></div>
+		</div>
+		<div class="field">
+			<label for="event-edit-date" class="row">{ ctxi18n.T(ctx, "fields.date") } <span class="fielderror">*</span></label>
+			<input id="event-edit-date" type="date" data-bind="eventFormData.date" class="input"/>
+			<div data-show="$errors && $errors.date" class="fielderror" data-text="$errors.date"></div>
+		</div>
+		<div class="field">
+			<label for="event-edit-time" class="row">{ ctxi18n.T(ctx, "fields.time") } <span class="fielderror">*</span></label>
+			<input id="event-edit-time" type="time" data-bind="eventFormData.time" class="input"/>
+			<div data-show="$errors && $errors.time" class="fielderror" data-text="$errors.time"></div>
+		</div>
+		<div class="field">
+			<label for="event-edit-place">{ ctxi18n.T(ctx, "fields.place") }</label>
+			<input id="event-edit-place" type="text" data-bind="eventFormData.place" class="input"/>
+			<div data-show="$errors && $errors.place" class="fielderror" data-text="$errors.place"></div>
+		</div>
+		<div class="field">
+			<label for="event-edit-description">{ ctxi18n.T(ctx, "fields.description") }</label>
+			<textarea id="event-edit-description" data-bind="eventFormData.description" rows="3" class="input">{ data.Event.Description }</textarea>
+			<div data-show="$errors && $errors.description" class="fielderror" data-text="$errors.description"></div>
+		</div>
+		<div class="field">
+			<label for="event-edit-amount" class="row">{ ctxi18n.T(ctx, "fields.income") } <span class="fielderror">*</span></label>
+			<input id="event-edit-amount" type="number" data-bind="eventFormData.amount" step="1" min="1" class="input"/>
+			<div data-show="$errors && $errors.amount" class="fielderror" data-text="$errors.amount"></div>
+		</div>
+		<div class="form-row">
+			<div class="field">
+				<label for="event-edit-paid" class="row">{ ctxi18n.T(ctx, "table.paid") }</label>
+				<div>
+					@shared.ToggleSwitch(shared.ToggleSwitchProps{
+						Bind:         "eventFormData.paid",
+						DisabledExpr: "$_fetching",
+						AriaLabel:    ctxi18n.T(ctx, "table.paid"),
+					})
+				</div>
+			</div>
+			<div class="field" data-show="$eventFormData.paid" style="display: none">
+				<label for="event-edit-paid-at" class="row">{ ctxi18n.T(ctx, "fields.paid_at") }</label>
+				<input id="event-edit-paid-at" type="date" data-bind="eventFormData.paidAt" class="input"/>
+			</div>
+		</div>
+		@shared.LoadingSubmitButton(shared.LoadingSubmitButtonProps{
+			ClassName: "btn btn-primary",
+			Label:     ctxi18n.T(ctx, "events.update"),
+			IconName:  icons.IconSave,
+		})
+	</form>
+}

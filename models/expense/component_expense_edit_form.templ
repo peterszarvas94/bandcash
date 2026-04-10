@@ -30,17 +30,19 @@ templ ExpenseEditForm(data EditExpensePageData) {
 			<input id="expense-edit-date" type="date" data-bind="formData.date" class="input"/>
 			<div data-show="$errors && $errors.date" class="fielderror" data-text="$errors.date"></div>
 		</div>
-		<div class="field">
-			<label for="expense-edit-paid" class="row">{ ctxi18n.T(ctx, "table.paid") }</label>
-			@shared.ToggleSwitch(shared.ToggleSwitchProps{
-				Bind:         "formData.paid",
-				DisabledExpr: "$_fetching",
-				AriaLabel:    ctxi18n.T(ctx, "table.paid"),
-			})
-		</div>
-		<div class="field" data-show="$formData.paid" style="display: none">
-			<label for="expense-edit-paid-at" class="row">{ ctxi18n.T(ctx, "fields.paid_at") }</label>
-			<input id="expense-edit-paid-at" type="date" data-bind="formData.paidAt" class="input"/>
+		<div class="form-row">
+			<div class="field">
+				<label for="expense-edit-paid" class="row">{ ctxi18n.T(ctx, "table.paid") }</label>
+				@shared.ToggleSwitch(shared.ToggleSwitchProps{
+					Bind:         "formData.paid",
+					DisabledExpr: "$_fetching",
+					AriaLabel:    ctxi18n.T(ctx, "table.paid"),
+				})
+			</div>
+			<div class="field" data-show="$formData.paid" style="display: none">
+				<label for="expense-edit-paid-at" class="row">{ ctxi18n.T(ctx, "fields.paid_at") }</label>
+				<input id="expense-edit-paid-at" type="date" data-bind="formData.paidAt" class="input"/>
+			</div>
 		</div>
 		@shared.LoadingSubmitButton(shared.LoadingSubmitButtonProps{
 			ClassName: "btn btn-primary",

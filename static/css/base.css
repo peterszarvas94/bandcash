@@ -63,6 +63,8 @@
 
     --border: 1px;
 
+    --height-input: 2.5rem;
+
     --radius: 0.5rem;
     --radius-sm: calc(var(--radius) * 0.5);
     --radius-lg: calc(var(--radius) * 1.5);

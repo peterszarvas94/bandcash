@@ -105,7 +105,37 @@ func EditEventPage(c echo.Context) error {
 		data.Breadcrumbs[len(data.Breadcrumbs)-1].Href = "/groups/" + groupID + "/events/" + id
 	}
 	data.Breadcrumbs = append(data.Breadcrumbs, utils.Crumb{Label: ctxi18n.T(c.Request().Context(), "events.edit")})
-	data.EditorMode = "edit"
+	data.EditorMode = "edit_members"
+	data.Signals = eventShowSignals(data)
+	data.IsAuthenticated = true
+	data.IsSuperAdmin = utils.IsSuperadmin(c)
+
+	return utils.RenderPage(c, EventEditPage(data))
+}
+
+func EditEventDetailsPage(c echo.Context) error {
+	utils.EnsureTabID(c)
+	groupID := utils.GetGroupID(c)
+	query := parseParticipantTableQuery(c)
+
+	id := c.Param("id")
+	if !utils.IsValidID(id, utils.PrefixEvent) {
+		slog.Info("event.edit_details_page: invalid id")
+		return c.NoContent(http.StatusBadRequest)
+	}
+
+	data, err := GetShowData(c.Request().Context(), groupID, id, query)
+	if err != nil {
+		slog.Error("event.edit_details_page: failed to get data", "group_id", groupID, "event_id", id, "err", err)
+		return c.NoContent(http.StatusInternalServerError)
+	}
+
+	applyEventShowTableByRole(&data, utils.IsAdmin(c))
+	if len(data.Breadcrumbs) > 0 {
+		data.Breadcrumbs[len(data.Breadcrumbs)-1].Href = "/groups/" + groupID + "/events/" + id
+	}
+	data.Breadcrumbs = append(data.Breadcrumbs, utils.Crumb{Label: ctxi18n.T(c.Request().Context(), "events.edit")})
+	data.EditorMode = "edit_details"
 	data.Signals = eventShowSignals(data)
 	data.IsAuthenticated = true
 	data.IsSuperAdmin = utils.IsSuperadmin(c)

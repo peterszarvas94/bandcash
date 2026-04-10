@@ -6,6 +6,7 @@ func MembersIndexTableLayout() utils.TableLayout {
 	return utils.NewTableLayout([]utils.TableColumn{
 		{Key: "name"},
 		{Key: "description"},
+		{Key: "unpaid"},
 	}, 0)
 }
 

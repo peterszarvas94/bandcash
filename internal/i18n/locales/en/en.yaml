@@ -244,6 +244,8 @@ en:
     page_title: "BandCash - Events"
     add: "Add Event"
     edit: "Edit Event"
+    edit_details: "Edit Details"
+    edit_members: "Edit Members"
     create: "Create Event"
     update: "Update Event"
     balance: "Balance"

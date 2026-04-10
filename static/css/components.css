@@ -28,6 +28,10 @@
         flex: 1 1 auto;
         overflow: hidden;
 
+        &:focus-within {
+          overflow: visible;
+        }
+
         > a,
         > span {
           display: inline-flex;
@@ -229,17 +233,17 @@
     }
 
     &.btn-input {
-      min-height: 2.5rem;
-      height: 2.5rem;
+      min-height: var(--height-input);
+      height: var(--height-input);
       padding-block: var(--space);
       padding-inline: var(--space-lg);
     }
 
     &.btn-icon {
-      min-width: 2.5rem;
-      width: 2.5rem;
-      min-height: 2.5rem;
-      height: 2.5rem;
+      min-width: var(--height-input);
+      width: var(--height-input);
+      min-height: var(--height-input);
+      height: var(--height-input);
       padding: 0;
       gap: 0;
     }
@@ -435,7 +439,7 @@
     font: inherit;
     border-radius: var(--radius);
     width: 100%;
-    height: 2.5rem;
+    height: var(--height-input);
     padding-block: var(--space);
     padding-inline: var(--space-lg);
     border: var(--border) solid var(--text);
@@ -722,6 +726,27 @@
       align-items: flex-start;
       gap: var(--space);
       flex-wrap: wrap;
+      max-width: var(--details-width, 100%);
+
+      > .field:has(.toggle) {
+        flex: 0 0 auto;
+        min-width: 5rem;
+
+        > div {
+          height: var(--height-input);
+          display: flex;
+          align-items: center;
+        }
+      }
+
+      > .field:has(input[type="date"]) {
+        flex: 1 1 auto;
+        min-width: 10rem;
+
+        input {
+          width: 100%;
+        }
+      }
     }
   }
 
@@ -757,6 +782,39 @@
     > div {
       display: grid;
       gap: var(--space);
+    }
+  }
+
+  .event-edit-section {
+    margin-bottom: calc(var(--space) * 2);
+  }
+
+  .event-edit-section-row {
+    display: grid;
+    gap: calc(var(--space) * 1.5);
+  }
+
+  .event-edit-section-meta {
+    display: grid;
+    gap: calc(var(--space) * 0.5);
+    align-content: start;
+
+    > p {
+      margin: 0;
+      color: var(--text-muted);
+    }
+  }
+
+  .event-edit-section-content {
+    display: grid;
+    gap: var(--space);
+  }
+
+  @media (min-width: 64rem) {
+    .event-edit-section-row {
+      grid-template-columns: minmax(13rem, 16rem) minmax(0, 1fr);
+      align-items: start;
+      column-gap: calc(var(--space) * 2);
     }
   }
 

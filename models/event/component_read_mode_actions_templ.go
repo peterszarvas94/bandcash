@@ -38,7 +38,8 @@ func ReadModeActions(data EventData) templ.Component {
 		}
 		ctx = templ.ClearChildren(ctx)
 		if data.IsAdmin {
-			editParticipantsExpr := fmt.Sprintf("@post('/groups/%s/events/%s/participants/draft')", data.GroupID, data.Event.ID)
+			editDetailsExpr := fmt.Sprintf("@get('/groups/%s/events/%s/edit/details')", data.GroupID, data.Event.ID)
+			editMembersExpr := fmt.Sprintf("@get('/groups/%s/events/%s/edit/members')", data.GroupID, data.Event.ID)
 			deleteEventExpr := fmt.Sprintf(
 				"$confirm = {title: %s, message: %s, submitLabel: %s, cancelLabel: %s, method: 'delete', url: '/groups/%s/events/%s', triggerID: 'event-show-delete', open: true, fetching: false}",
 				utils.JSONString(ctxi18n.T(ctx, "events.delete_confirm")),
@@ -54,10 +55,20 @@ func ReadModeActions(data EventData) templ.Component {
 			}
 			templ_7745c5c3_Err = shared.ActionButton(shared.ActionButtonProps{
 				ClassName:    "btn btn-sm",
-				OnClick:      editParticipantsExpr,
+				OnClick:      editDetailsExpr,
 				DisabledExpr: "$_fetching",
-				Label:        ctxi18n.T(ctx, "actions.edit"),
+				Label:        ctxi18n.T(ctx, "events.edit_details"),
 				IconName:     icons.IconPencil,
+			}).Render(ctx, templ_7745c5c3_Buffer)
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			templ_7745c5c3_Err = shared.ActionButton(shared.ActionButtonProps{
+				ClassName:    "btn btn-sm",
+				OnClick:      editMembersExpr,
+				DisabledExpr: "$_fetching",
+				Label:        ctxi18n.T(ctx, "events.edit_members"),
+				IconName:     icons.IconUserPen,
 			}).Render(ctx, templ_7745c5c3_Buffer)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err

@@ -18,6 +18,16 @@ type MemberTableListParams struct {
 	Offset  int
 }
 
+type MemberTableRow struct {
+	ID          string       `bun:"id"`
+	GroupID     string       `bun:"group_id"`
+	Name        string       `bun:"name"`
+	Description string       `bun:"description"`
+	CreatedAt   sql.NullTime `bun:"created_at"`
+	UpdatedAt   sql.NullTime `bun:"updated_at"`
+	Unpaid      int64        `bun:"unpaid"`
+}
+
 type MemberEventFilter struct {
 	MemberID string
 	GroupID  string
@@ -68,28 +78,41 @@ func CountMembersTable(ctx context.Context, groupID, search string) (int64, erro
 	return int64(n), err
 }
 
-func ListMembersTable(ctx context.Context, params MemberTableListParams) ([]db.Member, error) {
-	rows := make([]db.Member, 0)
-	q := db.BunDB.NewSelect().Model(&rows).Where("group_id = ?", params.GroupID)
+func ListMembersTable(ctx context.Context, params MemberTableListParams) ([]MemberTableRow, error) {
+	rows := make([]MemberTableRow, 0)
+	q := db.BunDB.NewSelect().
+		TableExpr("members").
+		ColumnExpr("members.id").
+		ColumnExpr("members.group_id").
+		ColumnExpr("members.name").
+		ColumnExpr("members.description").
+		ColumnExpr("members.created_at").
+		ColumnExpr("members.updated_at").
+		ColumnExpr("COALESCE(SUM(CASE WHEN participants.paid = 0 THEN participants.amount + participants.expense ELSE 0 END), 0) AS unpaid").
+		Join("LEFT JOIN participants ON participants.member_id = members.id AND participants.group_id = members.group_id").
+		Where("members.group_id = ?", params.GroupID)
 	q = applySearch(q, params.Search, func(sq *bun.SelectQuery, s string) *bun.SelectQuery {
 		like := "%" + s + "%"
 		return sq.WhereGroup(" AND ", func(qq *bun.SelectQuery) *bun.SelectQuery {
-			return qq.Where("name LIKE ?", like).WhereOr("description LIKE ?", like)
+			return qq.Where("members.name LIKE ?", like).WhereOr("members.description LIKE ?", like)
 		})
 	})
+	q = q.GroupExpr("members.id").GroupExpr("members.group_id").GroupExpr("members.name").GroupExpr("members.description").GroupExpr("members.created_at").GroupExpr("members.updated_at")
 
 	d := normalizeDir(params.Dir)
 	switch params.Sort {
 	case "name":
-		q = q.OrderExpr("name " + d)
+		q = q.OrderExpr("members.name " + d)
 	case "description":
-		q = q.OrderExpr("description " + d)
+		q = q.OrderExpr("members.description " + d)
+	case "unpaid":
+		q = q.OrderExpr("unpaid " + d)
 	case "createdAt":
-		q = q.OrderExpr("created_at " + d)
+		q = q.OrderExpr("members.created_at " + d)
 	default:
-		q = q.OrderExpr("created_at DESC")
+		q = q.OrderExpr("members.created_at DESC")
 	}
-	q = q.OrderExpr("created_at DESC")
+	q = q.OrderExpr("members.created_at DESC")
 
 	if params.Limit > 0 {
 		q = q.Limit(params.Limit)
@@ -98,7 +121,7 @@ func ListMembersTable(ctx context.Context, params MemberTableListParams) ([]db.M
 		q = q.Offset(params.Offset)
 	}
 
-	err := q.Scan(ctx)
+	err := q.Scan(ctx, &rows)
 	return rows, err
 }
 

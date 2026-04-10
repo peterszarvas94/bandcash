@@ -28,6 +28,11 @@ templ MemberIndexMain(data MembersData) {
 				@shared.THCol(data.MembersTable.ColMaxWRem("description")) {
 					@shared.TableSortHeader(ctxi18n.T(ctx, "fields.description"), "description", data.Query, utils.BuildTableSortURL(fmt.Sprintf("/groups/%s/members", data.GroupID), data.Query, "description"))
 				}
+				@shared.THCol(data.MembersTable.ColMaxWRem("unpaid")) {
+					<div class="text-right">
+						@shared.TableSortHeader(ctxi18n.T(ctx, "table.unpaid"), "unpaid", data.Query, utils.BuildTableSortURL(fmt.Sprintf("/groups/%s/members", data.GroupID), data.Query, "unpaid"))
+					</div>
+				}
 			</tr>
 		</thead>
 		<tbody>
@@ -35,11 +40,12 @@ templ MemberIndexMain(data MembersData) {
 				<tr>
 					<td><a class="table-link" href={ fmt.Sprintf("/groups/%s/members/%s", data.GroupID, member.ID) }>{ member.Name }</a></td>
 					<td><span class="cell-ellipsis" title={ member.Description }>{ member.Description }</span></td>
+					<td class="text-right">{ utils.FormatNumberLocalized(ctx, member.Unpaid) }</td>
 				</tr>
 			}
 			if len(data.Members) == 0 {
 				<tr>
-					<td colspan="2">{ ctxi18n.T(ctx, "table.empty") }</td>
+					<td colspan="3">{ ctxi18n.T(ctx, "table.empty") }</td>
 				</tr>
 			}
 		</tbody>

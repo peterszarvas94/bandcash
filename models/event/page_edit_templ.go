@@ -33,11 +33,15 @@ func EventEditPage(data EventData) templ.Component {
 			templ_7745c5c3_Var1 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
+		content := EventEditMain(data)
+		if data.EditorMode == "edit_details" {
+			content = EventEditDetailsForm(data)
+		}
 		templ_7745c5c3_Err = shared.BaseLayout(shared.BaseLayoutProps{
 			Title:           data.Title,
 			Crumbs:          data.Breadcrumbs,
 			Signals:         data.Signals,
-			Content:         EventEditMain(data),
+			Content:         content,
 			ActiveUrl:       "/groups",
 			IsAuthenticated: data.IsAuthenticated,
 			IsSuperAdmin:    data.IsSuperAdmin,

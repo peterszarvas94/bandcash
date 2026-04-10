@@ -1,0 +1,121 @@
+package event
+
+import (
+	"bandcash/internal/utils"
+	shared "bandcash/models/shared"
+	icons "bandcash/models/shared/icons"
+	"fmt"
+	ctxi18n "github.com/invopop/ctxi18n/i18n"
+)
+
+templ EventEditMembersForm(data EventData) {
+	{{
+		participantsSubmitExpr := fmt.Sprintf("@put('/groups/%s/events/%s/participants')", data.GroupID, data.Event.ID)
+		addEmptyRowExpr := fmt.Sprintf("$draftRowsAction='add'; $draftRowsRowId=''; @post('/groups/%s/events/%s/participants/draft/rows')", data.GroupID, data.Event.ID)
+		cancelParticipantsEditExpr := fmt.Sprintf("@delete('/groups/%s/events/%s/participants/draft')", data.GroupID, data.Event.ID)
+	}}
+	@shared.PageHeader(shared.PageHeaderProps{Title: data.Event.Title})
+	<form class="form" data-on:submit={ participantsSubmitExpr } data-effect="$wizard.total = $wizard.rows.reduce((sum, row) => sum + (row.amount || 0) + (row.expense || 0), 0); $wizard.balance = ($eventFormData.amount || 0) - $wizard.total" data-indicator:_fetching>
+		<div data-show="$wizard.error" class="fielderror" data-text="$wizard.error"></div>
+		<div class="field">
+			<label for="event-edit-total">{ ctxi18n.T(ctx, "participants.payout_total") }</label>
+			<input id="event-edit-total" type="number" class="input w-details" disabled data-bind="wizard.total"/>
+		</div>
+		<div class="field">
+			<label for="event-edit-balance">{ ctxi18n.T(ctx, "events.balance") }</label>
+			<input id="event-edit-balance" type="number" class="input w-details" disabled data-bind="wizard.balance"/>
+		</div>
+		<div class="table-scroll pt">
+			<table class="table">
+				<thead>
+					<tr>
+						<th style={ fmt.Sprintf("--max-w: %drem", data.ParticipantsTable.ColMaxWRem("name")) }>{ ctxi18n.T(ctx, "participants.member") }</th>
+						<th style={ fmt.Sprintf("--max-w: %drem", data.ParticipantsTable.ColMaxWRem("amount")) }>{ ctxi18n.T(ctx, "participants.cut_amount") }</th>
+						<th style={ fmt.Sprintf("--max-w: %drem", data.ParticipantsTable.ColMaxWRem("expense")) }>{ ctxi18n.T(ctx, "participants.expense") }</th>
+						<th>{ ctxi18n.T(ctx, "participants.total") }</th>
+						<th>{ ctxi18n.T(ctx, "table.paid") }</th>
+						<th style={ fmt.Sprintf("--max-w: %drem", data.ParticipantsTable.ColMaxWRem("paid_at")) }>{ ctxi18n.T(ctx, "fields.paid_at") }</th>
+						<th style={ fmt.Sprintf("--max-w: %drem", data.ParticipantsTable.ColMaxWRem("note")) }>{ ctxi18n.T(ctx, "participants.note") }</th>
+						<th></th>
+					</tr>
+				</thead>
+				<tbody>
+					for _, row := range data.WizardRows {
+						{{
+							removeDraftExpr := fmt.Sprintf("$draftRowsAction='remove'; $draftRowsRowId=%s; @post('/groups/%s/events/%s/participants/draft/rows')", utils.JSONString(row.RowID), data.GroupID, data.Event.ID)
+							copyDraftExpr := fmt.Sprintf("$draftRowsAction='copy'; $draftRowsRowId=%s; @post('/groups/%s/events/%s/participants/draft/rows')", utils.JSONString(row.RowID), data.GroupID, data.Event.ID)
+						}}
+						<tr>
+							<td style={ fmt.Sprintf("--max-w: %drem", data.ParticipantsTable.ColMaxWRem("name")) }>
+								<select class="input input-table" data-bind={ fmt.Sprintf("wizard.memberIds.%s", row.RowID) }>
+									<option value="">{ ctxi18n.T(ctx, "participants.select_member") }</option>
+									for _, member := range data.AllMembers {
+										<option value={ member.ID }>{ member.Name }</option>
+									}
+								</select>
+							</td>
+							<td style={ fmt.Sprintf("--max-w: %drem", data.ParticipantsTable.ColMaxWRem("amount")) }><input type="number" class="input input-table" step="1" min="0" data-bind={ fmt.Sprintf("wizard.amounts.%s", row.RowID) }/></td>
+							<td style={ fmt.Sprintf("--max-w: %drem", data.ParticipantsTable.ColMaxWRem("expense")) }><input type="number" class="input input-table" step="1" min="0" data-bind={ fmt.Sprintf("wizard.expenses.%s", row.RowID) }/></td>
+							<td class="text-right" data-text={ fmt.Sprintf("($wizard.amounts['%s'] || 0) + ($wizard.expenses['%s'] || 0)", row.RowID, row.RowID) }></td>
+							<td>
+								@shared.ToggleSwitch(shared.ToggleSwitchProps{
+									Bind:         fmt.Sprintf("wizard.paids.%s", row.RowID),
+									DisabledExpr: "$_fetching",
+									AriaLabel:    ctxi18n.T(ctx, "table.paid"),
+								})
+							</td>
+							<td style={ fmt.Sprintf("--max-w: %drem", data.ParticipantsTable.ColMaxWRem("paid_at")) }>
+								<input type="date" class="input input-table" data-bind={ fmt.Sprintf("wizard.paidAts.%s", row.RowID) } data-attr:disabled={ fmt.Sprintf("!$wizard.paids.%s || $_fetching", row.RowID) }/>
+							</td>
+							<td style={ fmt.Sprintf("--max-w: %drem", data.ParticipantsTable.ColMaxWRem("note")) }><textarea class="input input-table h-min-input" rows="1" style="resize: vertical; min-width: 14rem;" data-bind={ fmt.Sprintf("wizard.notes.%s", row.RowID) }></textarea></td>
+							<td class="text-right">
+								@shared.IconActionButton(shared.IconActionButtonProps{
+									ClassName:    "btn btn-sm btn-icon",
+									OnClick:      copyDraftExpr,
+									DisabledExpr: "$_fetching",
+									AriaLabel:    ctxi18n.T(ctx, "actions.copy"),
+									Title:        ctxi18n.T(ctx, "actions.copy"),
+									IconName:     icons.IconCopy,
+								})
+								@shared.IconActionButton(shared.IconActionButtonProps{
+									ClassName:    "btn btn-sm btn-icon",
+									OnClick:      removeDraftExpr,
+									DisabledExpr: "$_fetching",
+									AriaLabel:    ctxi18n.T(ctx, "actions.delete"),
+									Title:        ctxi18n.T(ctx, "actions.delete"),
+									IconName:     icons.IconTrash2,
+								})
+							</td>
+						</tr>
+					}
+					<tr>
+						<td colspan="8">
+							@shared.ActionButton(shared.ActionButtonProps{
+								ClassName:    "btn",
+								OnClick:      addEmptyRowExpr,
+								DisabledExpr: "$_fetching",
+								Label:        ctxi18n.T(ctx, "participants.add"),
+								IconName:     icons.IconPlus,
+							})
+						</td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+		<div data-show="$errors && $errors.memberId" class="fielderror" data-text="$errors.memberId"></div>
+		<div class="row row-wrap">
+			@shared.LoadingSubmitButton(shared.LoadingSubmitButtonProps{
+				ClassName: "btn btn-primary",
+				Label:     ctxi18n.T(ctx, "participants.save_all"),
+				IconName:  icons.IconSave,
+			})
+			@shared.ActionButton(shared.ActionButtonProps{
+				ClassName:    "btn",
+				OnClick:      cancelParticipantsEditExpr,
+				DisabledExpr: "$_fetching",
+				Label:        ctxi18n.T(ctx, "actions.cancel"),
+				IconName:     icons.IconX,
+			})
+		</div>
+	</form>
+}

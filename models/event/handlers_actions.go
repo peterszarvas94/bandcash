@@ -317,8 +317,73 @@ func OpenParticipantsDraft(c echo.Context) error {
 		return c.NoContent(http.StatusBadRequest)
 	}
 
-	if err := utils.SSEHub.Redirect(c, "/groups/"+groupID+"/events/"+eventID+"/edit"); err != nil {
+	if err := utils.SSEHub.Redirect(c, "/groups/"+groupID+"/events/"+eventID+"/edit/members"); err != nil {
 		slog.Warn("participant.draft.open: failed to redirect", "err", err)
+	}
+
+	return c.NoContent(http.StatusOK)
+}
+
+func UpdateDetails(c echo.Context) error {
+	groupID := utils.GetGroupID(c)
+
+	id := c.Param("id")
+	if !utils.IsValidID(id, utils.PrefixEvent) {
+		slog.Info("event.update_details: invalid id")
+		return c.NoContent(http.StatusBadRequest)
+	}
+
+	var signals eventInlineParams
+	err := datastar.ReadSignals(c.Request(), &signals)
+	if err != nil {
+		slog.Info("event.update_details: failed to read signals", "err", err)
+		return c.NoContent(http.StatusBadRequest)
+	}
+	if !utils.SetTabID(c, signals.TabID) {
+		return c.NoContent(http.StatusBadRequest)
+	}
+	signals.EventFormData.Title = strings.TrimSpace(signals.EventFormData.Title)
+	signals.EventFormData.Date = strings.TrimSpace(signals.EventFormData.Date)
+	signals.EventFormData.Time = strings.TrimSpace(signals.EventFormData.Time)
+	signals.EventFormData.Place = strings.TrimSpace(signals.EventFormData.Place)
+	signals.EventFormData.Description = strings.TrimSpace(signals.EventFormData.Description)
+	signals.EventFormData.PaidAt = normalizePaidAtInput(signals.EventFormData.PaidAt)
+
+	eventForm := signals.EventFormData
+
+	if errs := utils.ValidateWithLocale(c.Request().Context(), eventForm); errs != nil {
+		utils.SSEHub.PatchSignals(c, map[string]any{"errors": utils.WithErrors(eventErrorFields, errs)})
+		return c.NoContent(http.StatusUnprocessableEntity)
+	}
+
+	_, err = eventstore.UpdateEvent(c.Request().Context(), eventstore.UpdateEventParams{
+		Title:       eventForm.Title,
+		Date:        eventForm.Date,
+		EventTime:   eventForm.Time,
+		Place:       eventForm.Place,
+		Description: eventForm.Description,
+		Amount:      eventForm.Amount,
+		Paid: func() int64 {
+			if eventForm.Paid {
+				return 1
+			}
+			return 0
+		}(),
+		PaidAt:  paidAtArg(eventForm.Paid, eventForm.PaidAt),
+		ID:      id,
+		GroupID: groupID,
+	})
+	if err != nil {
+		slog.Error("event.update_details: failed to update event", "err", err)
+		utils.Notify(c, ctxi18n.T(c.Request().Context(), "events.notifications.update_failed"))
+		return c.NoContent(http.StatusInternalServerError)
+	}
+
+	utils.Notify(c, ctxi18n.T(c.Request().Context(), "events.notifications.updated"))
+	utils.InvalidateGroupCaches(groupID)
+
+	if err := utils.SSEHub.Redirect(c, "/groups/"+groupID+"/events/"+id); err != nil {
+		slog.Warn("event.update_details: failed to redirect", "err", err)
 	}
 
 	return c.NoContent(http.StatusOK)

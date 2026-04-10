@@ -14,7 +14,7 @@ func TableQuerySpec() utils.TableQuerySpec {
 	return utils.StandardTableQuerySpec(utils.StandardTableQuerySpecParams{
 		DefaultSort:  "createdAt",
 		DefaultDir:   "desc",
-		AllowedSorts: []string{"name", "createdAt", "description"},
+		AllowedSorts: []string{"name", "createdAt", "description", "unpaid"},
 	})
 }
 
@@ -38,6 +38,15 @@ func convertToMemberEvent(r memberstore.MemberEventRow) MemberEvent {
 		ParticipantExpense: r.ParticipantExpense,
 		ParticipantPaid:    r.ParticipantPaid,
 		ParticipantPaidAt:  r.ParticipantPaidAt,
+	}
+}
+
+func convertToMemberListRow(r memberstore.MemberTableRow) MemberListRow {
+	return MemberListRow{
+		ID:          r.ID,
+		Name:        r.Name,
+		Description: r.Description,
+		Unpaid:      r.Unpaid,
 	}
 }
 
@@ -126,7 +135,7 @@ func GetIndexData(ctx context.Context, groupID string, query utils.TableQuery) (
 
 	query = utils.ClampPage(query, totalItems)
 
-	members, err := memberstore.ListMembersTable(ctx, memberstore.MemberTableListParams{
+	memberRows, err := memberstore.ListMembersTable(ctx, memberstore.MemberTableListParams{
 		GroupID: groupID,
 		Search:  query.Search,
 		Sort:    query.Sort,
@@ -136,6 +145,10 @@ func GetIndexData(ctx context.Context, groupID string, query utils.TableQuery) (
 	})
 	if err != nil {
 		return MembersData{}, err
+	}
+	members := make([]MemberListRow, 0, len(memberRows))
+	for _, row := range memberRows {
+		members = append(members, convertToMemberListRow(row))
 	}
 	return MembersData{
 		Title:     ctxi18n.T(ctx, "members.page_title"),

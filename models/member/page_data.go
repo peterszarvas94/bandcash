@@ -58,7 +58,7 @@ type ParticipantPaidAtDialogState struct {
 type MembersData struct {
 	Title           string
 	GroupName       string
-	Members         []db.Member
+	Members         []MemberListRow
 	Query           utils.TableQuery
 	Pager           utils.TablePagination
 	Breadcrumbs     []utils.Crumb
@@ -68,6 +68,13 @@ type MembersData struct {
 	IsAuthenticated bool
 	IsSuperAdmin    bool
 	MembersTable    utils.TableLayout
+}
+
+type MemberListRow struct {
+	ID          string
+	Name        string
+	Description string
+	Unpaid      int64
 }
 
 type NewMemberPageData struct {
