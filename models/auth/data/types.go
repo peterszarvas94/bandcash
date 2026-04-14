@@ -33,17 +33,6 @@ type UpdateUserPreferredLangParams struct {
 	ID            string `json:"id"`
 }
 
-type ListUserDetailCardStatesRow struct {
-	StateKey string `json:"state_key"`
-	IsOpen   int64  `json:"is_open"`
-}
-
-type UpsertUserDetailCardStateParams struct {
-	UserID   string `json:"user_id"`
-	StateKey string `json:"state_key"`
-	IsOpen   int64  `json:"is_open"`
-}
-
 type CreateMagicLinkParams struct {
 	ID        string         `json:"id"`
 	Token     string         `json:"token"`

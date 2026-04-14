@@ -118,14 +118,6 @@ type User struct {
 	PreferredLang string       `json:"preferred_lang"`
 }
 
-type UserDetailCardState struct {
-	UserID    string    `json:"user_id"`
-	StateKey  string    `json:"state_key"`
-	IsOpen    int64     `json:"is_open"`
-	CreatedAt time.Time `json:"created_at"`
-	UpdatedAt time.Time `json:"updated_at"`
-}
-
 type UserSession struct {
 	ID        string       `json:"id"`
 	UserID    string       `json:"user_id"`
