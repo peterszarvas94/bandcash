@@ -27,11 +27,12 @@ templ EventShowMain(data EventData) {
 		}
 	}}
 	@shared.PageHeader(shared.PageHeaderProps{Title: data.Event.Title}) {
-		if data.IsAdmin {
-			<div data-show="$participantEditorMode === 'read'">
+		<div class="row row-wrap" data-show="$participantEditorMode === 'read'">
+			if data.IsAdmin {
 				@ReadModeActions(data)
-			</div>
-		}
+			}
+			@shared.TableCardsToggleButton("eventShowCardsVisible")
+		</div>
 		<div class="page-header-meta">
 			<p>
 				@icons.Icon(icons.IconCalendar, templ.Attributes{"class": "icon"})
@@ -68,28 +69,30 @@ templ EventShowMain(data EventData) {
 			unpaidPayout := data.TotalUnpaid
 			unpaidBalance := unpaidIncome - unpaidPayout
 		}}
-		@shared.StatusSummaryCards(shared.StatusSummaryCardsProps{ClassName: "pb"}) {
-			@EventIncomeCard(EventIncomeCardProps{
-				Income:         utils.FormatNumberLocalized(ctx, data.Event.Amount),
-				PaidAt:         paidAt,
-				IsPaid:         data.Event.Paid == 1,
-				CanEditPaidAt:  data.IsAdmin,
-				OpenPaidAtExpr: openPaidAtExpr,
-				TogglePaidExpr: togglePaidExpr,
-			})
-			@EventBalanceByTypeCard(EventBalanceStatusCardProps{
-				Title:  ctxi18n.T(ctx, "groups.payouts"),
-				Paid:   utils.FormatNumberLocalized(ctx, paidPayout),
-				Unpaid: utils.FormatNumberLocalized(ctx, unpaidPayout),
-				All:    utils.FormatNumberLocalized(ctx, allPayout),
-			})
-			@EventBalanceByTypeCard(EventBalanceStatusCardProps{
-				Title:  ctxi18n.T(ctx, "groups.balance"),
-				Paid:   utils.FormatNumberLocalized(ctx, paidBalance),
-				Unpaid: utils.FormatNumberLocalized(ctx, unpaidBalance),
-				All:    utils.FormatNumberLocalized(ctx, allBalance),
-			})
-		}
+		<div data-show="$eventShowCardsVisible !== false">
+			@shared.StatusSummaryCards(shared.StatusSummaryCardsProps{ClassName: "pb"}) {
+				@EventIncomeCard(EventIncomeCardProps{
+					Income:         utils.FormatNumberLocalized(ctx, data.Event.Amount),
+					PaidAt:         paidAt,
+					IsPaid:         data.Event.Paid == 1,
+					CanEditPaidAt:  data.IsAdmin,
+					OpenPaidAtExpr: openPaidAtExpr,
+					TogglePaidExpr: togglePaidExpr,
+				})
+				@EventBalanceByTypeCard(EventBalanceStatusCardProps{
+					Title:  ctxi18n.T(ctx, "groups.payouts"),
+					Paid:   utils.FormatNumberLocalized(ctx, paidPayout),
+					Unpaid: utils.FormatNumberLocalized(ctx, unpaidPayout),
+					All:    utils.FormatNumberLocalized(ctx, allPayout),
+				})
+				@EventBalanceByTypeCard(EventBalanceStatusCardProps{
+					Title:  ctxi18n.T(ctx, "groups.balance"),
+					Paid:   utils.FormatNumberLocalized(ctx, paidBalance),
+					Unpaid: utils.FormatNumberLocalized(ctx, unpaidBalance),
+					All:    utils.FormatNumberLocalized(ctx, allBalance),
+				})
+			}
+		</div>
 		@shared.TableOpenFixed(data.ParticipantsTable, "") {
 			<thead>
 				<tr>

@@ -232,6 +232,8 @@ hu:
     copy: "Másolás"
     delete: "Törlés"
     cancel: "Mégse"
+    hide_cards: "Kártyák elrejtése"
+    show_cards: "Kártyák mutatása"
     toggle_paid: "Fizetés állapot váltás"
   paid_status:
     marked_as_paid: "Fizetettnek jelölve"

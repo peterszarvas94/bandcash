@@ -232,6 +232,8 @@ en:
     copy: "Copy"
     delete: "Delete"
     cancel: "Cancel"
+    hide_cards: "Hide cards"
+    show_cards: "Show cards"
     toggle_paid: "Toggle paid status"
   paid_status:
     marked_as_paid: "Marked as paid"

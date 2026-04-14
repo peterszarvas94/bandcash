@@ -18,11 +18,12 @@ templ MemberShowMain(data MemberData) {
 		}
 	}}
 	@shared.PageHeader(shared.PageHeaderProps{Title: data.Member.Name}) {
-		if data.IsAdmin {
-			<div data-show="$formState !== 'edit'">
+		<div class="row row-wrap" data-show="$formState !== 'edit'">
+			if data.IsAdmin {
 				@MemberShowDetailsActions(data)
-			</div>
-		}
+			}
+			@shared.TableCardsToggleButton("memberShowCardsVisible")
+		</div>
 		<div class="page-header-meta">
 			<p>
 				@icons.Icon(icons.IconUser, templ.Attributes{"class": "icon"})
@@ -35,11 +36,13 @@ templ MemberShowMain(data MemberData) {
 		</div>
 	}
 	<div data-show="$formState !== 'edit'">
-		@MemberPayoutCards(MemberPayoutCardsProps{
-			Paid:   utils.FormatNumberLocalized(ctx, data.TotalPaid),
-			Unpaid: utils.FormatNumberLocalized(ctx, data.TotalUnpaid),
-			All:    utils.FormatNumberLocalized(ctx, data.TotalPayout),
-		})
+		<div data-show="$memberShowCardsVisible !== false">
+			@MemberPayoutCards(MemberPayoutCardsProps{
+				Paid:   utils.FormatNumberLocalized(ctx, data.TotalPaid),
+				Unpaid: utils.FormatNumberLocalized(ctx, data.TotalUnpaid),
+				All:    utils.FormatNumberLocalized(ctx, data.TotalPayout),
+			})
+		</div>
 		@shared.TableSearchFormWithClass(fmt.Sprintf("/groups/%s/members/%s", data.GroupID, data.Member.ID), data.Query, "table.search_placeholder_member_events", "pt")
 		<div class="row row-wrap justify-between pb">
 			<div class="radiogroup" role="radiogroup" aria-label={ ctxi18n.T(ctx, "table.date_filters") }>

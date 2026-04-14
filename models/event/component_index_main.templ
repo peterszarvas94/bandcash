@@ -23,33 +23,38 @@ templ EventIndexMain(data EventsData) {
 		unpaidBalance := unpaidIncome - unpaidPayout
 	}}
 	@shared.PageHeader(shared.PageHeaderProps{Title: data.GroupName}) {
-		if data.IsAdmin {
-			<a href={ fmt.Sprintf("/groups/%s/events/new", data.GroupID) } class="btn btn-sm btn-primary">
-				@icons.Icon(icons.IconPlus, templ.Attributes{"class": "icon"})
-				{ ctxi18n.T(ctx, "events.add") }
-			</a>
-		}
+		<div class="row row-wrap">
+			if data.IsAdmin {
+				<a href={ fmt.Sprintf("/groups/%s/events/new", data.GroupID) } class="btn btn-sm btn-primary">
+					@icons.Icon(icons.IconPlus, templ.Attributes{"class": "icon"})
+					{ ctxi18n.T(ctx, "events.add") }
+				</a>
+			}
+			@shared.TableCardsToggleButton("eventIndexCardsVisible")
+		</div>
 	}
-	@EventBalanceByTypeCards(EventBalanceByTypeCardsProps{
-		Income: EventBalanceStatusCardProps{
-			Title:  ctxi18n.T(ctx, "groups.income"),
-			Paid:   utils.FormatNumberLocalized(ctx, paidIncome),
-			Unpaid: utils.FormatNumberLocalized(ctx, unpaidIncome),
-			All:    utils.FormatNumberLocalized(ctx, allIncome),
-		},
-		Payouts: EventBalanceStatusCardProps{
-			Title:  ctxi18n.T(ctx, "groups.payouts"),
-			Paid:   utils.FormatNumberLocalized(ctx, paidPayout),
-			Unpaid: utils.FormatNumberLocalized(ctx, unpaidPayout),
-			All:    utils.FormatNumberLocalized(ctx, allPayout),
-		},
-		Balance: EventBalanceStatusCardProps{
-			Title:  ctxi18n.T(ctx, "groups.balance"),
-			Paid:   utils.FormatNumberLocalized(ctx, paidBalance),
-			Unpaid: utils.FormatNumberLocalized(ctx, unpaidBalance),
-			All:    utils.FormatNumberLocalized(ctx, allBalance),
-		},
-	})
+	<div data-show="$eventIndexCardsVisible !== false">
+		@EventBalanceByTypeCards(EventBalanceByTypeCardsProps{
+			Income: EventBalanceStatusCardProps{
+				Title:  ctxi18n.T(ctx, "groups.income"),
+				Paid:   utils.FormatNumberLocalized(ctx, paidIncome),
+				Unpaid: utils.FormatNumberLocalized(ctx, unpaidIncome),
+				All:    utils.FormatNumberLocalized(ctx, allIncome),
+			},
+			Payouts: EventBalanceStatusCardProps{
+				Title:  ctxi18n.T(ctx, "groups.payouts"),
+				Paid:   utils.FormatNumberLocalized(ctx, paidPayout),
+				Unpaid: utils.FormatNumberLocalized(ctx, unpaidPayout),
+				All:    utils.FormatNumberLocalized(ctx, allPayout),
+			},
+			Balance: EventBalanceStatusCardProps{
+				Title:  ctxi18n.T(ctx, "groups.balance"),
+				Paid:   utils.FormatNumberLocalized(ctx, paidBalance),
+				Unpaid: utils.FormatNumberLocalized(ctx, unpaidBalance),
+				All:    utils.FormatNumberLocalized(ctx, allBalance),
+			},
+		})
+	</div>
 	@shared.TableSearchFormWithClass(fmt.Sprintf("/groups/%s/events", data.GroupID), data.Query, "table.search_placeholder_events", "pt")
 	<div class="row row-wrap justify-between pb">
 		<div class="radiogroup" role="radiogroup" aria-label={ ctxi18n.T(ctx, "table.date_filters") }>

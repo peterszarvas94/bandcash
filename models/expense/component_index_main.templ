@@ -10,14 +10,19 @@ import (
 
 templ ExpenseIndexMain(data ExpensesData) {
 	@shared.PageHeader(shared.PageHeaderProps{Title: ctxi18n.T(ctx, "expenses.title")}) {
-		if data.IsAdmin {
-			<a href={ fmt.Sprintf("/groups/%s/expenses/new", data.GroupID) } class="btn btn-sm btn-primary">
-				@icons.Plus(templ.Attributes{"class": "icon"})
-				{ ctxi18n.T(ctx, "expenses.add") }
-			</a>
-		}
+		<div class="row row-wrap">
+			if data.IsAdmin {
+				<a href={ fmt.Sprintf("/groups/%s/expenses/new", data.GroupID) } class="btn btn-sm btn-primary">
+					@icons.Plus(templ.Attributes{"class": "icon"})
+					{ ctxi18n.T(ctx, "expenses.add") }
+				</a>
+			}
+			@shared.TableCardsToggleButton("expenseIndexCardsVisible")
+		</div>
 	}
-	@ExpenseTotalsContent(data)
+	<div data-show="$expenseIndexCardsVisible !== false">
+		@ExpenseTotalsContent(data)
+	</div>
 	@shared.TableSearchFormWithClass(fmt.Sprintf("/groups/%s/expenses", data.GroupID), data.Query, "table.search_placeholder_expenses", "pt")
 	<div class="row row-wrap justify-between pb">
 		<div class="radiogroup" role="radiogroup" aria-label={ ctxi18n.T(ctx, "table.date_filters") }>

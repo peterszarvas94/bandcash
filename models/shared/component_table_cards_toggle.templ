@@ -1,0 +1,24 @@
+package shared
+
+import (
+	"fmt"
+	icons "bandcash/models/shared/icons"
+	ctxi18n "github.com/invopop/ctxi18n/i18n"
+)
+
+templ TableCardsToggleButton(signal string) {
+	{{
+		showExpr := fmt.Sprintf("$%s !== false", signal)
+		hideExpr := fmt.Sprintf("$%s = false", signal)
+		restoreExpr := fmt.Sprintf("$%s === false", signal)
+		showCardsExpr := fmt.Sprintf("$%s = true", signal)
+	}}
+	<button class="btn btn-sm" type="button" data-show={ showExpr } data-on:click={ hideExpr }>
+		@icons.Icon(icons.IconChevronUp, templ.Attributes{"class": "icon"})
+		<span>{ ctxi18n.T(ctx, "actions.hide_cards") }</span>
+	</button>
+	<button class="btn btn-sm" type="button" data-show={ restoreExpr } data-on:click={ showCardsExpr } style="display: none">
+		@icons.Icon(icons.IconChevronDown, templ.Attributes{"class": "icon"})
+		<span>{ ctxi18n.T(ctx, "actions.show_cards") }</span>
+	</button>
+}
