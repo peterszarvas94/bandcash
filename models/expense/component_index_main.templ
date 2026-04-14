@@ -17,12 +17,11 @@ templ ExpenseIndexMain(data ExpensesData) {
 					{ ctxi18n.T(ctx, "expenses.add") }
 				</a>
 			}
-			@shared.TableCardsToggleButton("expenseIndexCardsVisible")
 		</div>
 	}
-	<div data-show="$expenseIndexCardsVisible !== false">
+	@shared.TableCardsToggleSection("expenseIndexCardsVisible") {
 		@ExpenseTotalsContent(data)
-	</div>
+	}
 	@shared.TableSearchFormWithClass(fmt.Sprintf("/groups/%s/expenses", data.GroupID), data.Query, "table.search_placeholder_expenses", "pt")
 	<div class="row row-wrap justify-between pb">
 		<div class="radiogroup" role="radiogroup" aria-label={ ctxi18n.T(ctx, "table.date_filters") }>

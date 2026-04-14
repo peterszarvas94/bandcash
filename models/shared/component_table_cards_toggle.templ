@@ -22,3 +22,15 @@ templ TableCardsToggleButton(signal string) {
 		<span>{ ctxi18n.T(ctx, "actions.show_cards") }</span>
 	</button>
 }
+
+templ TableCardsToggleSection(signal string) {
+	{{
+		showExpr := fmt.Sprintf("$%s !== false", signal)
+	}}
+	<div class="row row-wrap pb">
+		@TableCardsToggleButton(signal)
+	</div>
+	<div data-show={ showExpr }>
+		{ children... }
+	</div>
+}

@@ -31,7 +31,6 @@ templ EventShowMain(data EventData) {
 			if data.IsAdmin {
 				@ReadModeActions(data)
 			}
-			@shared.TableCardsToggleButton("eventShowCardsVisible")
 		</div>
 		<div class="page-header-meta">
 			<p>
@@ -69,7 +68,7 @@ templ EventShowMain(data EventData) {
 			unpaidPayout := data.TotalUnpaid
 			unpaidBalance := unpaidIncome - unpaidPayout
 		}}
-		<div data-show="$eventShowCardsVisible !== false">
+		@shared.TableCardsToggleSection("eventShowCardsVisible") {
 			@shared.StatusSummaryCards(shared.StatusSummaryCardsProps{ClassName: "pb"}) {
 				@EventIncomeCard(EventIncomeCardProps{
 					Income:         utils.FormatNumberLocalized(ctx, data.Event.Amount),
@@ -92,7 +91,7 @@ templ EventShowMain(data EventData) {
 					All:    utils.FormatNumberLocalized(ctx, allBalance),
 				})
 			}
-		</div>
+		}
 		@shared.TableOpenFixed(data.ParticipantsTable, "") {
 			<thead>
 				<tr>

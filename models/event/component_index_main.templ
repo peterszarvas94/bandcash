@@ -30,10 +30,9 @@ templ EventIndexMain(data EventsData) {
 					{ ctxi18n.T(ctx, "events.add") }
 				</a>
 			}
-			@shared.TableCardsToggleButton("eventIndexCardsVisible")
 		</div>
 	}
-	<div data-show="$eventIndexCardsVisible !== false">
+	@shared.TableCardsToggleSection("eventIndexCardsVisible") {
 		@EventBalanceByTypeCards(EventBalanceByTypeCardsProps{
 			Income: EventBalanceStatusCardProps{
 				Title:  ctxi18n.T(ctx, "groups.income"),
@@ -54,7 +53,7 @@ templ EventIndexMain(data EventsData) {
 				All:    utils.FormatNumberLocalized(ctx, allBalance),
 			},
 		})
-	</div>
+	}
 	@shared.TableSearchFormWithClass(fmt.Sprintf("/groups/%s/events", data.GroupID), data.Query, "table.search_placeholder_events", "pt")
 	<div class="row row-wrap justify-between pb">
 		<div class="radiogroup" role="radiogroup" aria-label={ ctxi18n.T(ctx, "table.date_filters") }>

@@ -22,7 +22,6 @@ templ MemberShowMain(data MemberData) {
 			if data.IsAdmin {
 				@MemberShowDetailsActions(data)
 			}
-			@shared.TableCardsToggleButton("memberShowCardsVisible")
 		</div>
 		<div class="page-header-meta">
 			<p>
@@ -36,13 +35,13 @@ templ MemberShowMain(data MemberData) {
 		</div>
 	}
 	<div data-show="$formState !== 'edit'">
-		<div data-show="$memberShowCardsVisible !== false">
+		@shared.TableCardsToggleSection("memberShowCardsVisible") {
 			@MemberPayoutCards(MemberPayoutCardsProps{
 				Paid:   utils.FormatNumberLocalized(ctx, data.TotalPaid),
 				Unpaid: utils.FormatNumberLocalized(ctx, data.TotalUnpaid),
 				All:    utils.FormatNumberLocalized(ctx, data.TotalPayout),
 			})
-		</div>
+		}
 		@shared.TableSearchFormWithClass(fmt.Sprintf("/groups/%s/members/%s", data.GroupID, data.Member.ID), data.Query, "table.search_placeholder_member_events", "pt")
 		<div class="row row-wrap justify-between pb">
 			<div class="radiogroup" role="radiogroup" aria-label={ ctxi18n.T(ctx, "table.date_filters") }>

@@ -10,7 +10,7 @@ ruby = "3.4.2"
 "gem:kamal" = "2.10.1"
 
 [tasks]
-app = "air"
+air = "air"
 preflight = "go run ./cmd/devpreflight/main.go"
 assets = "go run ./cmd/assets/main.go"
 start = "./tmp/server"
@@ -29,13 +29,10 @@ db-create = "go run ./cmd/dbmigrate/main.go -cmd=create -name=${name}"
 seed = "go run ./cmd/seed/main.go"
 mailpit = "mailpit --listen 0.0.0.0:8025 --smtp 0.0.0.0:1025"
 check-versions = "go run ./cmd/checkversions"
-kamal = "kamal"
 tag = "./scripts/tag.sh"
 setup = "kamal setup"
 setup-staging = "kamal setup --destination staging"
-deploy-check = "kamal config"
 deploy = "./scripts/deploy.sh production"
-deploy-staging-check = "kamal config --destination staging"
 deploy-staging = "./scripts/deploy.sh staging"
 
 [tasks.build]
@@ -57,7 +54,7 @@ run = [
 
 [tasks.dev]
 depends = ["preflight"]
-run = [{ tasks = ["app", "mailpit", "caddy"] }]
+run = [{ tasks = ["air", "mailpit", "caddy"] }]
 
 [tasks.caddy]
 run = "exec caddy run --config ./Caddyfile.local"
