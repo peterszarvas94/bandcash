@@ -1,0 +1,77 @@
+package shared
+
+import (
+	"fmt"
+	icons "bandcash/models/shared/icons"
+	ctxi18n "github.com/invopop/ctxi18n/i18n"
+)
+
+type NoteDialogProps struct {
+	ID           string
+	PopoverClass string
+	DialogClass  string
+	LabelledBy   string
+	DescribedBy  string
+	Signal       string
+	SubmitExpr   string
+	InputID      string
+	ReadOnlyID   string
+	ClearID      string
+	CancelID     string
+	SubmitID     string
+}
+
+templ NoteDialog(props NoteDialogProps) {
+	{{
+		closeExpr := fmt.Sprintf("!$%s.fetching && ($%s.open = false)", props.Signal, props.Signal)
+		overlayCloseExpr := fmt.Sprintf("evt.target === el && !$%s.fetching && ($%s.open = false)", props.Signal, props.Signal)
+		cancelExpr := fmt.Sprintf("$%s.fetching && evt.preventDefault()", props.Signal)
+		clearExpr := fmt.Sprintf("!$%s.fetching && !$%s.readOnly && ($%s.value = '')", props.Signal, props.Signal, props.Signal)
+		dialogEffect := fmt.Sprintf("$%s.open ? (!el.open && el.showModal()) : (el.open && el.close())", props.Signal)
+		dialogCloseExpr := fmt.Sprintf("$%s.open = false; $%s.fetching = false", props.Signal, props.Signal)
+		fetchDoneExpr := fmt.Sprintf("$%s.fetching && ['finished', 'error', 'retries-failed'].includes(evt.detail.type) && ($%s.fetching = false, $%s.open = false)", props.Signal, props.Signal, props.Signal)
+		titleExpr := fmt.Sprintf("$%s.title", props.Signal)
+		messageExpr := fmt.Sprintf("$%s.message", props.Signal)
+		messageShowExpr := fmt.Sprintf("$%s.message !== ''", props.Signal)
+		bindExpr := fmt.Sprintf("%s.value", props.Signal)
+		readOnlyExpr := fmt.Sprintf("$%s.readOnly", props.Signal)
+		editableExpr := fmt.Sprintf("!$%s.readOnly", props.Signal)
+		cancelLabelExpr := fmt.Sprintf("$%s.cancelLabel", props.Signal)
+		submitLabelExpr := fmt.Sprintf("$%s.submitLabel", props.Signal)
+		fetchingExpr := fmt.Sprintf("$%s.fetching", props.Signal)
+		valueExpr := fmt.Sprintf("$%s.value", props.Signal)
+	}}
+	@DialogShell(DialogProps{
+		ID:               props.ID,
+		PopoverClass:     props.PopoverClass,
+		DialogClass:      props.DialogClass,
+		LabelledBy:       props.LabelledBy,
+		DescribedBy:      props.DescribedBy,
+		EffectExpr:       dialogEffect,
+		OverlayCloseExpr: overlayCloseExpr,
+		CancelExpr:       cancelExpr,
+		CloseExpr:        dialogCloseExpr,
+		FetchDoneExpr:    fetchDoneExpr,
+	}) {
+		<h3 id={ props.LabelledBy } class="dialog-title" data-text={ titleExpr }></h3>
+		<p id={ props.DescribedBy } class="dialog-message" data-show={ messageShowExpr } style="display: none" data-text={ messageExpr }></p>
+		<textarea id={ props.InputID } class="input" rows="4" data-show={ editableExpr } style="display: none" data-bind={ bindExpr }></textarea>
+		<div id={ props.ReadOnlyID } class="input dialog-readonly" data-show={ readOnlyExpr } style="display: none" data-text={ valueExpr }></div>
+		<div class="row row-wrap justify-between">
+			<button id={ props.ClearID } type="button" class="btn" data-show={ editableExpr } style="display: none" data-attr:disabled={ fetchingExpr } data-on:click={ clearExpr }>
+				{ ctxi18n.T(ctx, "actions.clear") }
+			</button>
+			<div class="row row-right row-wrap">
+				<button id={ props.CancelID } type="button" class="btn" autofocus data-attr:disabled={ fetchingExpr } data-on:click={ closeExpr }>
+					<span data-text={ cancelLabelExpr }></span>
+				</button>
+				<button id={ props.SubmitID } type="button" class="btn btn-primary" data-show={ editableExpr } style="display: none" data-attr:disabled={ fetchingExpr } data-on:click={ props.SubmitExpr }>
+					<span data-show={ fetchingExpr } style="display: none">
+						@icons.LoaderCircle(templ.Attributes{"class": "icon icon-spin"})
+					</span>
+					<span data-text={ submitLabelExpr }></span>
+				</button>
+			</div>
+		</div>
+	}
+}

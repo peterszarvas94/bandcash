@@ -10,8 +10,6 @@ import templruntime "github.com/a-h/templ/runtime"
 
 import (
 	shared "bandcash/models/shared"
-	icons "bandcash/models/shared/icons"
-	ctxi18n "github.com/invopop/ctxi18n/i18n"
 )
 
 func ParticipantPaidAtDialog() templ.Component {
@@ -35,104 +33,20 @@ func ParticipantPaidAtDialog() templ.Component {
 			templ_7745c5c3_Var1 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		closeExpr := `!$participantPaidAtDialog.fetching && ($participantPaidAtDialog.open = false)`
-		overlayCloseExpr := `evt.target === el && !$participantPaidAtDialog.fetching && ($participantPaidAtDialog.open = false)`
-		cancelExpr := `$participantPaidAtDialog.fetching && evt.preventDefault()`
-		clearExpr := `!$participantPaidAtDialog.fetching && ($participantPaidAtDialog.value = '')`
-		dialogEffect := `$participantPaidAtDialog.open ? (!el.open && el.showModal()) : (el.open && el.close())`
-		dialogCloseExpr := `$participantPaidAtDialog.open = false; $participantPaidAtDialog.fetching = false`
 		submitExpr := `!$participantPaidAtDialog.fetching && (el.open && el.close(), $participantPaidAtDialog.fetching = true, @post($participantPaidAtDialog.url, {tableQuery: $tableQuery}))`
-		fetchDoneExpr := `$participantPaidAtDialog.fetching && ['finished', 'error', 'retries-failed'].includes(evt.detail.type) && ($participantPaidAtDialog.fetching = false, $participantPaidAtDialog.open = false)`
-		templ_7745c5c3_Var2 := templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
-			templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
-			templ_7745c5c3_Buffer, templ_7745c5c3_IsBuffer := templruntime.GetBuffer(templ_7745c5c3_W)
-			if !templ_7745c5c3_IsBuffer {
-				defer func() {
-					templ_7745c5c3_BufErr := templruntime.ReleaseBuffer(templ_7745c5c3_Buffer)
-					if templ_7745c5c3_Err == nil {
-						templ_7745c5c3_Err = templ_7745c5c3_BufErr
-					}
-				}()
-			}
-			ctx = templ.InitializeContext(ctx)
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<h3 id=\"member-participant-paid-at-title\" class=\"dialog-title\" data-text=\"$participantPaidAtDialog.title\"></h3><p id=\"member-participant-paid-at-message\" class=\"dialog-message\" data-show=\"$participantPaidAtDialog.message !== ''\" style=\"display: none\" data-text=\"$participantPaidAtDialog.message\"></p><input id=\"member-participant-paid-at-input\" type=\"date\" class=\"input\" data-bind=\"participantPaidAtDialog.value\"><div class=\"row row-wrap justify-between\"><button id=\"member-participant-paid-at-clear\" type=\"button\" class=\"btn\" data-attr:disabled=\"$participantPaidAtDialog.fetching\" data-on:click=\"")
-			if templ_7745c5c3_Err != nil {
-				return templ_7745c5c3_Err
-			}
-			var templ_7745c5c3_Var3 string
-			templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.JoinStringErrs(clearExpr)
-			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/member/component_participant_paid_at_dialog.templ`, Line: 36, Col: 155}
-			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var3))
-			if templ_7745c5c3_Err != nil {
-				return templ_7745c5c3_Err
-			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "\">")
-			if templ_7745c5c3_Err != nil {
-				return templ_7745c5c3_Err
-			}
-			var templ_7745c5c3_Var4 string
-			templ_7745c5c3_Var4, templ_7745c5c3_Err = templ.JoinStringErrs(ctxi18n.T(ctx, "actions.clear"))
-			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/member/component_participant_paid_at_dialog.templ`, Line: 37, Col: 37}
-			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var4))
-			if templ_7745c5c3_Err != nil {
-				return templ_7745c5c3_Err
-			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "</button><div class=\"row row-right row-wrap\"><button id=\"member-participant-paid-at-cancel\" type=\"button\" class=\"btn\" autofocus data-attr:disabled=\"$participantPaidAtDialog.fetching\" data-on:click=\"")
-			if templ_7745c5c3_Err != nil {
-				return templ_7745c5c3_Err
-			}
-			var templ_7745c5c3_Var5 string
-			templ_7745c5c3_Var5, templ_7745c5c3_Err = templ.JoinStringErrs(closeExpr)
-			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/member/component_participant_paid_at_dialog.templ`, Line: 40, Col: 167}
-			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var5))
-			if templ_7745c5c3_Err != nil {
-				return templ_7745c5c3_Err
-			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, "\"><span data-text=\"$participantPaidAtDialog.cancelLabel\"></span></button> <button id=\"member-participant-paid-at-submit\" type=\"button\" class=\"btn btn-primary\" data-attr:disabled=\"$participantPaidAtDialog.fetching\" data-on:click=\"")
-			if templ_7745c5c3_Err != nil {
-				return templ_7745c5c3_Err
-			}
-			var templ_7745c5c3_Var6 string
-			templ_7745c5c3_Var6, templ_7745c5c3_Err = templ.JoinStringErrs(submitExpr)
-			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/member/component_participant_paid_at_dialog.templ`, Line: 43, Col: 170}
-			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var6))
-			if templ_7745c5c3_Err != nil {
-				return templ_7745c5c3_Err
-			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 5, "\"><span data-show=\"$participantPaidAtDialog.fetching\" style=\"display: none\">")
-			if templ_7745c5c3_Err != nil {
-				return templ_7745c5c3_Err
-			}
-			templ_7745c5c3_Err = icons.LoaderCircle(templ.Attributes{"class": "icon icon-spin"}).Render(ctx, templ_7745c5c3_Buffer)
-			if templ_7745c5c3_Err != nil {
-				return templ_7745c5c3_Err
-			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 6, "</span> <span data-text=\"$participantPaidAtDialog.submitLabel\"></span></button></div></div>")
-			if templ_7745c5c3_Err != nil {
-				return templ_7745c5c3_Err
-			}
-			return nil
-		})
-		templ_7745c5c3_Err = shared.DialogShell(shared.DialogProps{
-			ID:               "member-participant-paid-at-popover",
-			PopoverClass:     "member-participant-paid-at-popover",
-			DialogClass:      "paid-at-dialog",
-			LabelledBy:       "member-participant-paid-at-title",
-			DescribedBy:      "member-participant-paid-at-message",
-			EffectExpr:       dialogEffect,
-			OverlayCloseExpr: overlayCloseExpr,
-			CancelExpr:       cancelExpr,
-			CloseExpr:        dialogCloseExpr,
-			FetchDoneExpr:    fetchDoneExpr,
-		}).Render(templ.WithChildren(ctx, templ_7745c5c3_Var2), templ_7745c5c3_Buffer)
+		templ_7745c5c3_Err = shared.PaidAtDialog(shared.PaidAtDialogProps{
+			ID:           "member-participant-paid-at-popover",
+			PopoverClass: "member-participant-paid-at-popover",
+			DialogClass:  "paid-at-dialog",
+			LabelledBy:   "member-participant-paid-at-title",
+			DescribedBy:  "member-participant-paid-at-message",
+			Signal:       "participantPaidAtDialog",
+			SubmitExpr:   submitExpr,
+			InputID:      "member-participant-paid-at-input",
+			ClearID:      "member-participant-paid-at-clear",
+			CancelID:     "member-participant-paid-at-cancel",
+			SubmitID:     "member-participant-paid-at-submit",
+		}).Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
