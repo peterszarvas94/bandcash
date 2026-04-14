@@ -66,14 +66,14 @@ func PaidAtDialog() templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "\"><span data-text=\"$paidAtDialog.cancelLabel\"></span></button> <button id=\"paid-at-submit\" type=\"button\" class=\"btn\" data-attr:disabled=\"$paidAtDialog.fetching\" data-on:click=\"")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "\"><span data-text=\"$paidAtDialog.cancelLabel\"></span></button> <button id=\"paid-at-submit\" type=\"button\" class=\"btn btn-primary\" data-attr:disabled=\"$paidAtDialog.fetching\" data-on:click=\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			var templ_7745c5c3_Var4 string
 			templ_7745c5c3_Var4, templ_7745c5c3_Err = templ.JoinStringErrs(submitExpr)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/expense/component_paid_at_dialog.templ`, Line: 37, Col: 127}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/expense/component_paid_at_dialog.templ`, Line: 37, Col: 139}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var4))
 			if templ_7745c5c3_Err != nil {

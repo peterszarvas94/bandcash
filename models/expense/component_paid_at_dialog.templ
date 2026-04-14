@@ -34,7 +34,7 @@ templ PaidAtDialog() {
 			<button id="paid-at-cancel" type="button" class="btn" autofocus data-attr:disabled="$paidAtDialog.fetching" data-on:click={ closeExpr }>
 				<span data-text="$paidAtDialog.cancelLabel"></span>
 			</button>
-			<button id="paid-at-submit" type="button" class="btn" data-attr:disabled="$paidAtDialog.fetching" data-on:click={ submitExpr }>
+			<button id="paid-at-submit" type="button" class="btn btn-primary" data-attr:disabled="$paidAtDialog.fetching" data-on:click={ submitExpr }>
 				<span data-show="$paidAtDialog.fetching" style="display: none">
 					@icons.LoaderCircle(templ.Attributes{"class": "icon icon-spin"})
 				</span>

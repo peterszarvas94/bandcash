@@ -35,7 +35,7 @@ templ ParticipantNoteDialog() {
 			<button id="participant-note-cancel" type="button" class="btn" autofocus data-attr:disabled="$participantNoteDialog.fetching" data-on:click={ closeExpr }>
 				<span data-text="$participantNoteDialog.cancelLabel"></span>
 			</button>
-			<button id="participant-note-submit" type="button" class="btn" data-show="!$participantNoteDialog.readOnly" data-attr:disabled="$participantNoteDialog.fetching" data-on:click={ submitExpr }>
+			<button id="participant-note-submit" type="button" class="btn btn-primary" data-show="!$participantNoteDialog.readOnly" data-attr:disabled="$participantNoteDialog.fetching" data-on:click={ submitExpr }>
 				<span data-show="$participantNoteDialog.fetching" style="display: none">
 					@icons.LoaderCircle(templ.Attributes{"class": "icon icon-spin"})
 				</span>

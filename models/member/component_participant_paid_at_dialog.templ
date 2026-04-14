@@ -34,7 +34,7 @@ templ ParticipantPaidAtDialog() {
 			<button id="member-participant-paid-at-cancel" type="button" class="btn" autofocus data-attr:disabled="$participantPaidAtDialog.fetching" data-on:click={ closeExpr }>
 				<span data-text="$participantPaidAtDialog.cancelLabel"></span>
 			</button>
-			<button id="member-participant-paid-at-submit" type="button" class="btn" data-attr:disabled="$participantPaidAtDialog.fetching" data-on:click={ submitExpr }>
+			<button id="member-participant-paid-at-submit" type="button" class="btn btn-primary" data-attr:disabled="$participantPaidAtDialog.fetching" data-on:click={ submitExpr }>
 				<span data-show="$participantPaidAtDialog.fetching" style="display: none">
 					@icons.LoaderCircle(templ.Attributes{"class": "icon icon-spin"})
 				</span>
