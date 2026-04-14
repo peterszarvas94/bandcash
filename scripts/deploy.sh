@@ -9,6 +9,36 @@ usage() {
   echo "  production - Deploy to production (requires master branch)"
 }
 
+prompt_version_bump() {
+  local bump
+
+  if [ ! -t 0 ]; then
+    echo "Non-interactive shell detected; skipping version tag."
+    VERSION_BUMP="skip"
+    return
+  fi
+
+  while true; do
+    echo ""
+    echo "Choose release version bump after successful production deploy:"
+    echo "  patch - Increment patch version (x.y.z+1)"
+    echo "  minor - Increment minor version (x.y+1.0)"
+    echo "  major - Increment major version (x+1.0.0)"
+    echo "  skip  - Do not create a tag"
+    read -r -p "Version bump [patch/minor/major/skip] (default: skip): " bump || true
+
+    case "${bump:-skip}" in
+      patch|minor|major|skip)
+        VERSION_BUMP="${bump:-skip}"
+        return
+        ;;
+      *)
+        echo "Invalid choice: ${bump}"
+        ;;
+    esac
+  done
+}
+
 # Require exactly one argument
 if [ $# -ne 1 ]; then
   echo "Error: Environment is required"
@@ -49,6 +79,11 @@ if [ "$CURRENT_BRANCH" != "$REQUIRED_BRANCH" ]; then
   exit 1
 fi
 
+VERSION_BUMP="skip"
+if [ "$ENV" = "production" ]; then
+  prompt_version_bump
+fi
+
 echo "Deploying to $ENV from $CURRENT_BRANCH branch..."
 
 # Run kamal deploy
@@ -75,5 +110,10 @@ docker exec \"\${BUILDKIT_CONTAINER}\" buildctl prune --all --keep-storage 6144 
 AFTER_MB=\$(docker exec \"\${BUILDKIT_CONTAINER}\" sh -lc 'du -sm /var/lib/buildkit | cut -f1')
 echo \"BuildKit cache: \${BEFORE_MB}MB -> \${AFTER_MB}MB (freed \$((BEFORE_MB - AFTER_MB))MB)\"
 " || true
+
+if [ "$ENV" = "production" ] && [ "$VERSION_BUMP" != "skip" ]; then
+  echo "Creating production tag with '$VERSION_BUMP' bump..."
+  ./scripts/tag.sh "$VERSION_BUMP"
+fi
 
 echo "$ENV deployment complete!"

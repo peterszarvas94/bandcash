@@ -11,7 +11,9 @@ Use this for production/staging deployment workflow only.
 ## Commands
 
 - `mise run deploy-check` - render Kamal config to validate secret/config resolution.
-- `mise run deploy` - run Kamal deploy.
+- `mise run deploy` - run Kamal production deploy, then optionally create and push a `vX.Y.Z` tag (`patch|minor|major|skip` prompt).
+- `mise run deploy-staging` - run staging deploy (no version tag prompt).
+- `mise run tag <patch|minor|major>` - manual tag creation/push remains available.
 
 ## Notes
 
