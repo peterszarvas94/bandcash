@@ -3,6 +3,7 @@ package group
 import (
 	shared "bandcash/models/shared"
 	icons "bandcash/models/shared/icons"
+	ctxi18n "github.com/invopop/ctxi18n/i18n"
 )
 
 templ GroupPaymentsPaidAtDialog() {
@@ -10,6 +11,7 @@ templ GroupPaymentsPaidAtDialog() {
 		closeExpr := `!$paidAtDialog.fetching && ($paidAtDialog.open = false)`
 		overlayCloseExpr := `evt.target === el && !$paidAtDialog.fetching && ($paidAtDialog.open = false)`
 		cancelExpr := `$paidAtDialog.fetching && evt.preventDefault()`
+		clearExpr := `!$paidAtDialog.fetching && ($paidAtDialog.value = '')`
 		dialogEffect := `$paidAtDialog.open ? (!el.open && el.showModal()) : (el.open && el.close())`
 		dialogCloseExpr := `$paidAtDialog.open = false; $paidAtDialog.fetching = false`
 		submitExpr := `!$paidAtDialog.fetching && (el.open && el.close(), $paidAtDialog.fetching = true, @post($paidAtDialog.url))`
@@ -30,16 +32,21 @@ templ GroupPaymentsPaidAtDialog() {
 		<h3 id="paid-at-title" class="dialog-title" data-text="$paidAtDialog.title"></h3>
 		<p id="paid-at-message" class="dialog-message" data-show="$paidAtDialog.message !== ''" style="display: none" data-text="$paidAtDialog.message"></p>
 		<input id="paid-at-input" type="date" class="input" data-bind="paidAtDialog.value" data-attr:placeholder="$paidAtDialog.placeholder || ''"/>
-		<div class="row row-right row-wrap">
-			<button id="paid-at-cancel" type="button" class="btn" autofocus data-attr:disabled="$paidAtDialog.fetching" data-on:click={ closeExpr }>
-				<span data-text="$paidAtDialog.cancelLabel"></span>
+		<div class="row row-wrap justify-between">
+			<button id="paid-at-clear" type="button" class="btn" data-attr:disabled="$paidAtDialog.fetching" data-on:click={ clearExpr }>
+				{ ctxi18n.T(ctx, "actions.clear") }
 			</button>
-			<button id="paid-at-submit" type="button" class="btn btn-primary" data-attr:disabled="$paidAtDialog.fetching" data-on:click={ submitExpr }>
-				<span data-show="$paidAtDialog.fetching" style="display: none">
-					@icons.LoaderCircle(templ.Attributes{"class": "icon icon-spin"})
-				</span>
-				<span data-text="$paidAtDialog.submitLabel"></span>
-			</button>
+			<div class="row row-right row-wrap">
+				<button id="paid-at-cancel" type="button" class="btn" autofocus data-attr:disabled="$paidAtDialog.fetching" data-on:click={ closeExpr }>
+					<span data-text="$paidAtDialog.cancelLabel"></span>
+				</button>
+				<button id="paid-at-submit" type="button" class="btn btn-primary" data-attr:disabled="$paidAtDialog.fetching" data-on:click={ submitExpr }>
+					<span data-show="$paidAtDialog.fetching" style="display: none">
+						@icons.LoaderCircle(templ.Attributes{"class": "icon icon-spin"})
+					</span>
+					<span data-text="$paidAtDialog.submitLabel"></span>
+				</button>
+			</div>
 		</div>
 	}
 }

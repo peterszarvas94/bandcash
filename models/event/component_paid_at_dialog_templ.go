@@ -11,6 +11,7 @@ import templruntime "github.com/a-h/templ/runtime"
 import (
 	shared "bandcash/models/shared"
 	icons "bandcash/models/shared/icons"
+	ctxi18n "github.com/invopop/ctxi18n/i18n"
 )
 
 func PaidAtDialog() templ.Component {
@@ -37,6 +38,7 @@ func PaidAtDialog() templ.Component {
 		closeExpr := `!$paidAtDialog.fetching && ($paidAtDialog.open = false)`
 		overlayCloseExpr := `evt.target === el && !$paidAtDialog.fetching && ($paidAtDialog.open = false)`
 		cancelExpr := `$paidAtDialog.fetching && evt.preventDefault()`
+		clearExpr := `!$paidAtDialog.fetching && ($paidAtDialog.value = '')`
 		dialogEffect := `$paidAtDialog.open ? (!el.open && el.showModal()) : (el.open && el.close())`
 		dialogCloseExpr := `$paidAtDialog.open = false; $paidAtDialog.fetching = false`
 		submitExpr := `!$paidAtDialog.fetching && (el.open && el.close(), $paidAtDialog.fetching = true, @post($paidAtDialog.url, {mode: $paidAtDialog.mode || 'single', tableQuery: $tableQuery}))`
@@ -53,33 +55,59 @@ func PaidAtDialog() templ.Component {
 				}()
 			}
 			ctx = templ.InitializeContext(ctx)
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<h3 id=\"paid-at-title\" class=\"dialog-title\" data-text=\"$paidAtDialog.title\"></h3><p id=\"paid-at-message\" class=\"dialog-message\" data-show=\"$paidAtDialog.message !== ''\" style=\"display: none\" data-text=\"$paidAtDialog.message\"></p><input id=\"paid-at-input\" type=\"date\" class=\"input\" data-bind=\"paidAtDialog.value\" data-attr:placeholder=\"$paidAtDialog.placeholder || ''\"><div class=\"row row-right row-wrap\"><button id=\"paid-at-cancel\" type=\"button\" class=\"btn\" autofocus data-attr:disabled=\"$paidAtDialog.fetching\" data-on:click=\"")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<h3 id=\"paid-at-title\" class=\"dialog-title\" data-text=\"$paidAtDialog.title\"></h3><p id=\"paid-at-message\" class=\"dialog-message\" data-show=\"$paidAtDialog.message !== ''\" style=\"display: none\" data-text=\"$paidAtDialog.message\"></p><input id=\"paid-at-input\" type=\"date\" class=\"input\" data-bind=\"paidAtDialog.value\" data-attr:placeholder=\"$paidAtDialog.placeholder || ''\"><div class=\"row row-wrap justify-between\"><button id=\"paid-at-clear\" type=\"button\" class=\"btn\" data-attr:disabled=\"$paidAtDialog.fetching\" data-on:click=\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			var templ_7745c5c3_Var3 string
-			templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.JoinStringErrs(closeExpr)
+			templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.JoinStringErrs(clearExpr)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/event/component_paid_at_dialog.templ`, Line: 34, Col: 136}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/event/component_paid_at_dialog.templ`, Line: 36, Col: 125}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var3))
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "\"><span data-text=\"$paidAtDialog.cancelLabel\"></span></button> <button id=\"paid-at-submit\" type=\"button\" class=\"btn btn-primary\" data-attr:disabled=\"$paidAtDialog.fetching\" data-on:click=\"")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			var templ_7745c5c3_Var4 string
-			templ_7745c5c3_Var4, templ_7745c5c3_Err = templ.JoinStringErrs(submitExpr)
+			templ_7745c5c3_Var4, templ_7745c5c3_Err = templ.JoinStringErrs(ctxi18n.T(ctx, "actions.clear"))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/event/component_paid_at_dialog.templ`, Line: 37, Col: 139}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/event/component_paid_at_dialog.templ`, Line: 37, Col: 37}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var4))
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "\"><span data-show=\"$paidAtDialog.fetching\" style=\"display: none\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "</button><div class=\"row row-right row-wrap\"><button id=\"paid-at-cancel\" type=\"button\" class=\"btn\" autofocus data-attr:disabled=\"$paidAtDialog.fetching\" data-on:click=\"")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			var templ_7745c5c3_Var5 string
+			templ_7745c5c3_Var5, templ_7745c5c3_Err = templ.JoinStringErrs(closeExpr)
+			if templ_7745c5c3_Err != nil {
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/event/component_paid_at_dialog.templ`, Line: 40, Col: 137}
+			}
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var5))
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, "\"><span data-text=\"$paidAtDialog.cancelLabel\"></span></button> <button id=\"paid-at-submit\" type=\"button\" class=\"btn btn-primary\" data-attr:disabled=\"$paidAtDialog.fetching\" data-on:click=\"")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			var templ_7745c5c3_Var6 string
+			templ_7745c5c3_Var6, templ_7745c5c3_Err = templ.JoinStringErrs(submitExpr)
+			if templ_7745c5c3_Err != nil {
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `models/event/component_paid_at_dialog.templ`, Line: 43, Col: 140}
+			}
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var6))
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 5, "\"><span data-show=\"$paidAtDialog.fetching\" style=\"display: none\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -87,7 +115,7 @@ func PaidAtDialog() templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, "</span> <span data-text=\"$paidAtDialog.submitLabel\"></span></button></div>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 6, "</span> <span data-text=\"$paidAtDialog.submitLabel\"></span></button></div></div>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}

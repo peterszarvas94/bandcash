@@ -231,6 +231,7 @@ hu:
     edit: "Szerkesztés"
     copy: "Másolás"
     delete: "Törlés"
+    clear: "Törlés"
     cancel: "Mégse"
     hide_cards: "Kártyák elrejtése"
     show_cards: "Kártyák mutatása"

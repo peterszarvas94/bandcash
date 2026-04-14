@@ -3,6 +3,7 @@ package event
 import (
 	shared "bandcash/models/shared"
 	icons "bandcash/models/shared/icons"
+	ctxi18n "github.com/invopop/ctxi18n/i18n"
 )
 
 templ ParticipantNoteDialog() {
@@ -10,6 +11,7 @@ templ ParticipantNoteDialog() {
 		closeExpr := `!$participantNoteDialog.fetching && ($participantNoteDialog.open = false)`
 		overlayCloseExpr := `evt.target === el && !$participantNoteDialog.fetching && ($participantNoteDialog.open = false)`
 		cancelExpr := `$participantNoteDialog.fetching && evt.preventDefault()`
+		clearExpr := `!$participantNoteDialog.fetching && !$participantNoteDialog.readOnly && ($participantNoteDialog.value = '')`
 		dialogEffect := `$participantNoteDialog.open ? (!el.open && el.showModal()) : (el.open && el.close())`
 		dialogCloseExpr := `$participantNoteDialog.open = false; $participantNoteDialog.fetching = false`
 		submitExpr := `!$participantNoteDialog.fetching && !$participantNoteDialog.readOnly && (el.open && el.close(), $participantNoteDialog.fetching = true, @post($participantNoteDialog.url, {mode: 'single', tableQuery: $tableQuery}))`
@@ -31,16 +33,21 @@ templ ParticipantNoteDialog() {
 		<p id="participant-note-message" class="dialog-message" data-show="$participantNoteDialog.message !== ''" style="display: none" data-text="$participantNoteDialog.message"></p>
 		<textarea id="participant-note-input" class="input" rows="4" data-show="!$participantNoteDialog.readOnly" style="display: none" data-bind="participantNoteDialog.value"></textarea>
 		<div class="input dialog-readonly" data-show="$participantNoteDialog.readOnly" style="display: none;" data-text="$participantNoteDialog.value"></div>
-		<div class="row row-right row-wrap">
-			<button id="participant-note-cancel" type="button" class="btn" autofocus data-attr:disabled="$participantNoteDialog.fetching" data-on:click={ closeExpr }>
-				<span data-text="$participantNoteDialog.cancelLabel"></span>
+		<div class="row row-wrap justify-between">
+			<button id="participant-note-clear" type="button" class="btn" data-show="!$participantNoteDialog.readOnly" data-attr:disabled="$participantNoteDialog.fetching" data-on:click={ clearExpr }>
+				{ ctxi18n.T(ctx, "actions.clear") }
 			</button>
-			<button id="participant-note-submit" type="button" class="btn btn-primary" data-show="!$participantNoteDialog.readOnly" data-attr:disabled="$participantNoteDialog.fetching" data-on:click={ submitExpr }>
-				<span data-show="$participantNoteDialog.fetching" style="display: none">
-					@icons.LoaderCircle(templ.Attributes{"class": "icon icon-spin"})
-				</span>
-				<span data-text="$participantNoteDialog.submitLabel"></span>
-			</button>
+			<div class="row row-right row-wrap">
+				<button id="participant-note-cancel" type="button" class="btn" autofocus data-attr:disabled="$participantNoteDialog.fetching" data-on:click={ closeExpr }>
+					<span data-text="$participantNoteDialog.cancelLabel"></span>
+				</button>
+				<button id="participant-note-submit" type="button" class="btn btn-primary" data-show="!$participantNoteDialog.readOnly" data-attr:disabled="$participantNoteDialog.fetching" data-on:click={ submitExpr }>
+					<span data-show="$participantNoteDialog.fetching" style="display: none">
+						@icons.LoaderCircle(templ.Attributes{"class": "icon icon-spin"})
+					</span>
+					<span data-text="$participantNoteDialog.submitLabel"></span>
+				</button>
+			</div>
 		</div>
 	}
 }

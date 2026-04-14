@@ -231,6 +231,7 @@ en:
     edit: "Edit"
     copy: "Copy"
     delete: "Delete"
+    clear: "Clear"
     cancel: "Cancel"
     hide_cards: "Hide cards"
     show_cards: "Show cards"
