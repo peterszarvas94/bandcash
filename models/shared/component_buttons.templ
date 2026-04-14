@@ -372,7 +372,10 @@ templ RadioLink(props RadioLinkProps) {
 			<span>{ props.Label }</span>
 		</a>
 	} else {
-		<a class={ className } href={ props.Href } aria-pressed={ fmt.Sprintf("%t", props.IsSelected) }>
+		{{
+			onClickExpr := fmt.Sprintf("window.bandcashTableQuery.push(%s), @get(%s)", utils.JSONString(props.Href), utils.JSONString(props.Href))
+		}}
+		<button class={ className } type="button" data-on:click={ onClickExpr } aria-pressed={ fmt.Sprintf("%t", props.IsSelected) }>
 			if !props.NoIcon {
 				if props.IsSelected {
 					@icons.CircleDot(templ.Attributes{"class": "icon"})
@@ -381,7 +384,7 @@ templ RadioLink(props RadioLinkProps) {
 				}
 			}
 			<span>{ props.Label }</span>
-		</a>
+		</button>
 	}
 }
 

@@ -35,22 +35,30 @@ templ TablePaginationControls(basePath string, query utils.TableQuery, pager uti
 			<input type="hidden" name="to" value={ query.To }/>
 		}
 		if pager.HasPrev {
-			<a
+			{{
+				firstURL := utils.BuildTablePageURL(basePath, query, 1, pager.TotalPages)
+				firstOnClick := fmt.Sprintf("window.bandcashTableQuery.push(%s), @get(%s)", utils.JSONString(firstURL), utils.JSONString(firstURL))
+				prevURL := utils.BuildTablePageURL(basePath, query, pager.Page-1, pager.TotalPages)
+				prevOnClick := fmt.Sprintf("window.bandcashTableQuery.push(%s), @get(%s)", utils.JSONString(prevURL), utils.JSONString(prevURL))
+			}}
+			<button
+				type="button"
 				class="btn btn-xs btn-icon btn-table hide-tablet"
-				href={ utils.BuildTablePageURL(basePath, query, 1, pager.TotalPages) }
+				data-on:click={ firstOnClick }
 				aria-label={ ctxi18n.T(ctx, "table.first") }
 				title={ ctxi18n.T(ctx, "table.first") }
 			>
 				1
-			</a>
-			<a
+			</button>
+			<button
+				type="button"
 				class="btn btn-xs btn-icon btn-table"
-				href={ utils.BuildTablePageURL(basePath, query, pager.Page-1, pager.TotalPages) }
+				data-on:click={ prevOnClick }
 				aria-label={ ctxi18n.T(ctx, "table.prev") }
 				title={ ctxi18n.T(ctx, "table.prev") }
 			>
 				@icons.ArrowLeft(templ.Attributes{"class": "icon"})
-			</a>
+			</button>
 		} else {
 			<button type="button" class="btn btn-xs btn-icon btn-table hide-tablet" aria-label={ ctxi18n.T(ctx, "table.first") } title={ ctxi18n.T(ctx, "table.first") } disabled>
 				1
@@ -70,22 +78,30 @@ templ TablePaginationControls(basePath string, query utils.TableQuery, pager uti
 			<span class="text-sm show-tablet" aria-live="polite" aria-label={ fmt.Sprintf("%s %d/%d", ctxi18n.T(ctx, "table.page"), pager.Page, pager.TotalPages) }>{ fmt.Sprintf("%d/%d", pager.Page, pager.TotalPages) }</span>
 		</label>
 		if pager.HasNext {
-			<a
+			{{
+				nextURL := utils.BuildTablePageURL(basePath, query, pager.Page+1, pager.TotalPages)
+				nextOnClick := fmt.Sprintf("window.bandcashTableQuery.push(%s), @get(%s)", utils.JSONString(nextURL), utils.JSONString(nextURL))
+				lastURL := utils.BuildTablePageURL(basePath, query, pager.TotalPages, pager.TotalPages)
+				lastOnClick := fmt.Sprintf("window.bandcashTableQuery.push(%s), @get(%s)", utils.JSONString(lastURL), utils.JSONString(lastURL))
+			}}
+			<button
+				type="button"
 				class="btn btn-xs btn-icon btn-table"
-				href={ utils.BuildTablePageURL(basePath, query, pager.Page+1, pager.TotalPages) }
+				data-on:click={ nextOnClick }
 				aria-label={ ctxi18n.T(ctx, "table.next") }
 				title={ ctxi18n.T(ctx, "table.next") }
 			>
 				@icons.ArrowRight(templ.Attributes{"class": "icon"})
-			</a>
-			<a
+			</button>
+			<button
+				type="button"
 				class="btn btn-xs btn-icon btn-table hide-tablet"
-				href={ utils.BuildTablePageURL(basePath, query, pager.TotalPages, pager.TotalPages) }
+				data-on:click={ lastOnClick }
 				aria-label={ ctxi18n.T(ctx, "table.last") }
 				title={ ctxi18n.T(ctx, "table.last") }
 			>
 				{ fmt.Sprintf("%d", pager.TotalPages) }
-			</a>
+			</button>
 		} else {
 			<button type="button" class="btn btn-xs btn-icon btn-table" aria-label={ ctxi18n.T(ctx, "table.next") } title={ ctxi18n.T(ctx, "table.next") } disabled>
 				@icons.ArrowRight(templ.Attributes{"class": "icon"})

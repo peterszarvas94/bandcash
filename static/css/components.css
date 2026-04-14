@@ -923,7 +923,7 @@
           width: 80%;
           max-width: var(--wide-width);
           display: flex;
-          align-items: stretch;
+          align-items: center;
           justify-content: space-between;
           flex-wrap: wrap;
           gap: var(--space);
@@ -935,9 +935,6 @@
           }
 
           > div:first-child {
-            align-items: flex-start;
-            font-size: 1rem;
-
             p {
               margin: 0;
               padding: 0;
@@ -971,12 +968,7 @@
             }
 
             > div:first-child {
-              /* gap: 0; */
               align-items: center;
-
-              p {
-                /* padding-bottom: 0; */
-              }
             }
 
             > div:last-child {
@@ -988,8 +980,10 @@
     }
 
     &:has(.content_inner > aside) {
+      --padding-left: calc(var(--space-lg) + var(--sidebar-width));
+
       aside {
-        position: sticky;
+        position: fixed;
         top: var(--header-height);
         align-self: flex-start;
         flex: 0 0 var(--sidebar-width);
@@ -997,7 +991,6 @@
         background: var(--bg-dark);
         padding: var(--space-lg);
         min-height: calc(100vh - var(--header-height));
-        /* min-height: calc(100lvh - var(--header-height)); */
 
         .sidebar {
           display: flex;
@@ -1017,11 +1010,24 @@
       .content_main {
         flex: 1 1 auto;
         width: 100%;
-        max-width: var(--content-width);
+        max-width: calc(var(--padding-left) + var(--content-width));
         min-width: 0;
         overflow-x: hidden;
-        padding: var(--space-lg);
+        padding: var(--space-lg) var(--space-lg) var(--space-lg)
+          var(--padding-left);
+
         min-height: calc(100vh - var(--header-height));
+      }
+
+      .footer {
+        padding: var(--space-xl) var(--space-lg) var(--space-xl)
+          var(--padding-left);
+
+        nav {
+          width: 100%;
+          max-width: calc(var(--padding-left) + var(--content-width));
+          min-width: 0;
+        }
       }
 
       @media (max-width: 1020px) {
@@ -1074,6 +1080,15 @@
         .nav-toggle:checked ~ .header .header-tab-toggle {
           visibility: hidden;
           pointer-events: none;
+        }
+
+        .footer {
+          padding: var(--space-xl) var(--space-lg);
+
+          nav {
+            width: 80%;
+            max-width: var(--wide-width);
+          }
         }
       }
     }
