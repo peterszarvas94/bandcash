@@ -46,6 +46,15 @@
 
         > a:not(:first-child) {
           min-width: 0;
+          max-width: 20ch;
+
+          .breadcrumb-label {
+            display: block;
+            min-width: 0;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+          }
         }
 
         @media (max-width: 1020px) {
@@ -652,24 +661,26 @@
     text-transform: capitalize;
     white-space: nowrap;
     border-radius: var(--radius-pill);
-  }
+    min-width: fit-content;
+    width: fit-content;
 
-  .badge-default {
-    border-color: var(--bg-dark);
-    background: var(--bg);
-    color: var(--text);
-  }
+    &.badge-default {
+      border-color: var(--bg-dark);
+      background: var(--bg);
+      color: var(--text);
+    }
 
-  .badge-primary {
-    border-color: var(--bg-primary);
-    background: var(--bg-primary);
-    color: var(--text-primary);
-  }
+    &.badge-primary {
+      border-color: var(--bg-primary);
+      background: var(--bg-primary);
+      color: var(--text-primary);
+    }
 
-  .badge-inverse {
-    border-color: var(--bg);
-    background: var(--text);
-    color: var(--bg-light);
+    &.badge-inverse {
+      border-color: var(--bg);
+      background: var(--text);
+      color: var(--bg-light);
+    }
   }
 
   .group-form {
@@ -713,13 +724,10 @@
         font-size: 1.4rem;
         line-height: 1.15;
         font-weight: 700;
+        min-width: 0;
+        white-space: nowrap;
         overflow: hidden;
-        display: -webkit-box;
-        -webkit-box-orient: vertical;
-        -webkit-line-clamp: 3;
-        line-clamp: 3;
         padding-bottom: 0.08em;
-        overflow: hidden;
         text-overflow: ellipsis;
       }
 

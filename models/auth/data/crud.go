@@ -107,33 +107,6 @@ func ListUserSessions(ctx context.Context, userID string) ([]db.UserSession, err
 	return rows, err
 }
 
-func ListUserDetailCardStates(ctx context.Context, userID string) ([]ListUserDetailCardStatesRow, error) {
-	rows := make([]ListUserDetailCardStatesRow, 0)
-	err := db.BunDB.NewSelect().
-		TableExpr("user_detail_card_states").
-		Column("state_key", "is_open").
-		Where("user_id = ?", userID).
-		Scan(ctx, &rows)
-	return rows, err
-}
-
-func UpsertUserDetailCardState(ctx context.Context, arg UpsertUserDetailCardStateParams) error {
-	row := struct {
-		UserID   string `bun:"user_id"`
-		StateKey string `bun:"state_key"`
-		IsOpen   int64  `bun:"is_open"`
-	}{UserID: arg.UserID, StateKey: arg.StateKey, IsOpen: arg.IsOpen}
-
-	_, err := db.BunDB.NewInsert().
-		TableExpr("user_detail_card_states").
-		Model(&row).
-		On("CONFLICT(user_id, state_key) DO UPDATE").
-		Set("is_open = EXCLUDED.is_open").
-		Set("updated_at = CURRENT_TIMESTAMP").
-		Exec(ctx)
-	return err
-}
-
 func GetMagicLinkByToken(ctx context.Context, token string) (db.MagicLink, error) {
 	var row db.MagicLink
 	err := db.BunDB.NewSelect().Model(&row).Where("token = ?", token).Scan(ctx)

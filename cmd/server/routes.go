@@ -29,7 +29,7 @@ func registerRoutes(e *echo.Echo) {
 	e.GET("/login/verify", auth.VerifyMagicLink)
 	e.DELETE("/session", auth.Logout)
 
-	adminRoutes := e.Group("/admin", middleware.RequireAuth, middleware.WithDetailState, middleware.RequireSuperadmin)
+	adminRoutes := e.Group("/admin", middleware.RequireAuth, middleware.RequireSuperadmin)
 	adminRoutes.GET("", admin.Dashboard)
 	adminRoutes.GET("/flags", admin.FlagsPage)
 	adminRoutes.GET("/users", admin.UsersPage)
@@ -42,11 +42,11 @@ func registerRoutes(e *echo.Echo) {
 	adminRoutes.DELETE("/users/:id/sessions/", admin.LogoutAllUserSessions)
 
 	grp := group.New()
-	e.GET("/groups", grp.IndexPage, middleware.RequireAuth, middleware.WithDetailState)
-	e.GET("/groups/new", grp.NewGroupPage, middleware.RequireAuth, middleware.WithDetailState)
-	e.POST("/groups", grp.CreateGroup, middleware.RequireAuth, middleware.WithDetailState)
+	e.GET("/groups", grp.IndexPage, middleware.RequireAuth)
+	e.GET("/groups/new", grp.NewGroupPage, middleware.RequireAuth)
+	e.POST("/groups", grp.CreateGroup, middleware.RequireAuth)
 
-	groupUserRoutes := e.Group("/groups/:groupId", middleware.RequireAuth, middleware.WithDetailState, middleware.RequireGroup)
+	groupUserRoutes := e.Group("/groups/:groupId", middleware.RequireAuth, middleware.RequireGroup)
 	groupUserRoutes.GET("", grp.RootPage)
 	groupUserRoutes.GET("/about", grp.AboutPage)
 	groupUserRoutes.GET("/pending-payouts", grp.ToPayPage)
@@ -57,7 +57,7 @@ func registerRoutes(e *echo.Echo) {
 	groupUserRoutes.GET("/users/:id", grp.UsersEntryPage)
 	groupUserRoutes.POST("/leave", grp.LeaveGroup)
 
-	groupAdminRoutes := e.Group("/groups/:groupId", middleware.RequireAuth, middleware.WithDetailState, middleware.RequireGroup, middleware.RequireAdmin)
+	groupAdminRoutes := e.Group("/groups/:groupId", middleware.RequireAuth, middleware.RequireGroup, middleware.RequireAdmin)
 	groupAdminRoutes.GET("/edit", grp.EditGroupPage)
 	groupAdminRoutes.GET("/users/new", grp.UsersNewPage)
 	groupAdminRoutes.GET("/users/:id/edit", grp.UserEditPage)
@@ -74,7 +74,7 @@ func registerRoutes(e *echo.Echo) {
 	groupAdminRoutes.PUT("/payments/expenses/:id/toggle-paid", grp.TogglePaymentExpensePaid)
 	groupAdminRoutes.POST("/payments/expenses/:id/paid_at", grp.UpdatePaymentExpensePaidAt)
 
-	groupOwnerRoutes := e.Group("/groups/:groupId", middleware.RequireAuth, middleware.WithDetailState, middleware.RequireGroup, middleware.RequireOwner)
+	groupOwnerRoutes := e.Group("/groups/:groupId", middleware.RequireAuth, middleware.RequireGroup, middleware.RequireOwner)
 	groupOwnerRoutes.PUT("/users/:id/transfer-owner", grp.TransferGroupOwnership)
 
 	e.GET("/", home.Index)
@@ -83,7 +83,7 @@ func registerRoutes(e *echo.Echo) {
 	e.GET("/privacy-policy", home.PrivacyPolicy)
 	e.GET("/refund-policy", home.RefundPolicy)
 
-	eventRoutes := e.Group("/groups/:groupId", middleware.RequireAuth, middleware.WithDetailState, middleware.RequireGroup)
+	eventRoutes := e.Group("/groups/:groupId", middleware.RequireAuth, middleware.RequireGroup)
 	eventRoutes.GET("/events", event.IndexPage)
 	eventRoutes.GET("/overview", func(c echo.Context) error {
 		groupID := c.Param("groupId")
@@ -112,7 +112,7 @@ func registerRoutes(e *echo.Echo) {
 	eventAdminRoutes.DELETE("/events/:id", event.Destroy)
 	eventAdminRoutes.POST("/events/:id/members/:memberId/paid", event.ToggleParticipantPaid)
 
-	expenseRoutes := e.Group("/groups/:groupId", middleware.RequireAuth, middleware.WithDetailState, middleware.RequireGroup)
+	expenseRoutes := e.Group("/groups/:groupId", middleware.RequireAuth, middleware.RequireGroup)
 	expenseRoutes.GET("/expenses", expense.IndexPage)
 	expenseRoutes.GET("/expenses/:id", expense.ShowPage)
 
@@ -126,7 +126,7 @@ func registerRoutes(e *echo.Echo) {
 	expenseAdminRoutes.GET("/expenses/:id/paid_at", expense.OpenPaidAtPrompt)
 	expenseAdminRoutes.POST("/expenses/:id/paid_at", expense.UpdatePaidAt)
 
-	memberRoutes := e.Group("/groups/:groupId", middleware.RequireAuth, middleware.WithDetailState, middleware.RequireGroup)
+	memberRoutes := e.Group("/groups/:groupId", middleware.RequireAuth, middleware.RequireGroup)
 	memberRoutes.GET("/members", member.Index)
 	memberRoutes.GET("/members/:id", member.Show)
 
@@ -140,11 +140,10 @@ func registerRoutes(e *echo.Echo) {
 	memberAdminRoutes.PUT("/members/:id/events/:eventId/toggle-paid", member.ToggleParticipantPaid)
 	memberAdminRoutes.DELETE("/members/:id", member.Destroy)
 
-	e.GET("/account", account.Index, middleware.RequireAuth, middleware.WithDetailState)
-	e.POST("/account/language", account.UpdateLanguage, middleware.RequireAuth, middleware.WithDetailState)
-	e.POST("/account/details-state", account.UpdateDetailsState, middleware.RequireAuth, middleware.WithDetailState)
-	e.DELETE("/account/sessions/:id", account.LogoutSession, middleware.RequireAuth, middleware.WithDetailState)
-	e.DELETE("/account/sessions", account.LogoutAllOtherSessions, middleware.RequireAuth, middleware.WithDetailState)
+	e.GET("/account", account.Index, middleware.RequireAuth)
+	e.POST("/account/language", account.UpdateLanguage, middleware.RequireAuth)
+	e.DELETE("/account/sessions/:id", account.LogoutSession, middleware.RequireAuth)
+	e.DELETE("/account/sessions", account.LogoutAllOtherSessions, middleware.RequireAuth)
 
 	e.GET("/sse", sse.SSEHandler())
 
