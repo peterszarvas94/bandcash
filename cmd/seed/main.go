@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"flag"
 	"fmt"
 	"log/slog"
@@ -83,20 +84,25 @@ func main() {
 	var eventsCount int
 	var expensesCount int
 	var participantsCount int
+	ctx := context.Background()
 
-	if err := db.DB.QueryRow("SELECT COUNT(*) FROM members WHERE group_id = ?", seedGroupID).Scan(&membersCount); err != nil {
+	membersCount, err := db.BunDB.NewSelect().TableExpr("members").Where("group_id = ?", seedGroupID).Count(ctx)
+	if err != nil {
 		slog.Error("failed to count seeded members", "err", err)
 		os.Exit(1)
 	}
-	if err := db.DB.QueryRow("SELECT COUNT(*) FROM events WHERE group_id = ?", seedGroupID).Scan(&eventsCount); err != nil {
+	eventsCount, err = db.BunDB.NewSelect().TableExpr("events").Where("group_id = ?", seedGroupID).Count(ctx)
+	if err != nil {
 		slog.Error("failed to count seeded events", "err", err)
 		os.Exit(1)
 	}
-	if err := db.DB.QueryRow("SELECT COUNT(*) FROM expenses WHERE group_id = ?", seedGroupID).Scan(&expensesCount); err != nil {
+	expensesCount, err = db.BunDB.NewSelect().TableExpr("expenses").Where("group_id = ?", seedGroupID).Count(ctx)
+	if err != nil {
 		slog.Error("failed to count seeded expenses", "err", err)
 		os.Exit(1)
 	}
-	if err := db.DB.QueryRow("SELECT COUNT(*) FROM participants WHERE group_id = ?", seedGroupID).Scan(&participantsCount); err != nil {
+	participantsCount, err = db.BunDB.NewSelect().TableExpr("participants").Where("group_id = ?", seedGroupID).Count(ctx)
+	if err != nil {
 		slog.Error("failed to count seeded participants", "err", err)
 		os.Exit(1)
 	}

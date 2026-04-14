@@ -19,7 +19,7 @@ import (
 )
 
 var (
-	DB    *sql.DB
+	sqlDB *sql.DB
 	BunDB *bun.DB
 )
 
@@ -35,15 +35,17 @@ func Init(dbPath string) error {
 		return fmt.Errorf("failed to create db directory: %w", err)
 	}
 
-	DB, err = sql.Open("sqlite3", dbPath)
+	sqlDB, err = sql.Open("sqlite3", dbPath)
 	if err != nil {
 		return fmt.Errorf("failed to open database: %w", err)
 	}
 
-	err = DB.Ping()
+	err = sqlDB.Ping()
 	if err != nil {
 		return fmt.Errorf("failed to ping database: %w", err)
 	}
+
+	BunDB = bun.NewDB(sqlDB, sqlitedialect.New())
 
 	// Set per-connection PRAGMAs
 	pragmas := []string{
@@ -52,13 +54,12 @@ func Init(dbPath string) error {
 		"PRAGMA busy_timeout = 5000",
 		"PRAGMA cache_size = 10000",
 	}
+	ctx := context.Background()
 	for _, pragma := range pragmas {
-		if _, err := DB.Exec(pragma); err != nil {
+		if _, err := BunDB.ExecContext(ctx, pragma); err != nil {
 			return fmt.Errorf("failed to set pragma %q: %w", pragma, err)
 		}
 	}
-
-	BunDB = bun.NewDB(DB, sqlitedialect.New())
 
 	slog.Info("database connected", "path", dbPath)
 	return nil
@@ -69,9 +70,14 @@ func Close() error {
 		if err := BunDB.Close(); err != nil {
 			return err
 		}
+		BunDB = nil
+		sqlDB = nil
+		return nil
 	}
-	if DB != nil {
-		return DB.Close()
+	if sqlDB != nil {
+		err := sqlDB.Close()
+		sqlDB = nil
+		return err
 	}
 	return nil
 }
@@ -93,7 +99,7 @@ func Migrate() error {
 }
 
 func Seed(seedFile string) error {
-	if DB == nil {
+	if BunDB == nil {
 		return fmt.Errorf("database is not initialized")
 	}
 
@@ -102,7 +108,7 @@ func Seed(seedFile string) error {
 		return fmt.Errorf("failed to read seed file %q: %w", seedFile, err)
 	}
 
-	if _, err := DB.Exec(string(content)); err != nil {
+	if _, err := BunDB.ExecContext(context.Background(), string(content)); err != nil {
 		return fmt.Errorf("failed to execute seed file %q: %w", seedFile, err)
 	}
 
