@@ -10,7 +10,7 @@ templ PaidAtDialog() {
 		closeExpr := `!$paidAtDialog.fetching && ($paidAtDialog.open = false)`
 		overlayCloseExpr := `evt.target === el && !$paidAtDialog.fetching && ($paidAtDialog.open = false)`
 		cancelExpr := `$paidAtDialog.fetching && evt.preventDefault()`
-		dialogEffect := `$paidAtDialog.open ? (((!$paidAtDialog.value || $paidAtDialog.value === '') && ($paidAtDialog.value = new Date(Date.now() - new Date().getTimezoneOffset() * 60000).toISOString().slice(0, 10))), (!el.open && el.showModal())) : (el.open && el.close())`
+		dialogEffect := `$paidAtDialog.open ? (!el.open && el.showModal()) : (el.open && el.close())`
 		dialogCloseExpr := `$paidAtDialog.open = false; $paidAtDialog.fetching = false`
 		submitExpr := `!$paidAtDialog.fetching && (el.open && el.close(), $paidAtDialog.fetching = true, @post($paidAtDialog.url, {mode: $paidAtDialog.mode || 'single', tableQuery: $tableQuery}))`
 		fetchDoneExpr := `$paidAtDialog.fetching && ['finished', 'error', 'retries-failed'].includes(evt.detail.type) && ($paidAtDialog.fetching = false, $paidAtDialog.open = false)`

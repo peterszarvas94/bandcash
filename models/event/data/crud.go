@@ -153,13 +153,18 @@ func ToggleEventPaid(ctx context.Context, arg ToggleEventPaidParams) (db.Event, 
 }
 
 func UpdateEventPaidAt(ctx context.Context, arg UpdateEventPaidAtParams) (db.Event, error) {
+	current, err := GetEvent(ctx, GetEventParams{ID: arg.ID, GroupID: arg.GroupID})
+	if err != nil {
+		return db.Event{}, err
+	}
+
 	paidAt := paidAtNullable(arg.PaidAt)
-	paid := int64(0)
-	if paidAt.Valid {
+	paid := current.Paid
+	if paidAt.Valid && paid == 0 {
 		paid = 1
 	}
 
-	_, err := db.BunDB.NewUpdate().Model((*db.Event)(nil)).
+	_, err = db.BunDB.NewUpdate().Model((*db.Event)(nil)).
 		Set("paid = ?", paid).
 		Set("paid_at = ?", paidAtValue(paidAt)).
 		Where("id = ?", arg.ID).
@@ -256,13 +261,23 @@ func ToggleParticipantPaid(ctx context.Context, arg ToggleParticipantPaidParams)
 }
 
 func UpdateParticipantPaidAt(ctx context.Context, arg UpdateParticipantPaidAtParams) (db.Participant, error) {
+	var current db.Participant
+	err := db.BunDB.NewSelect().Model(&current).
+		Where("event_id = ?", arg.EventID).
+		Where("member_id = ?", arg.MemberID).
+		Where("group_id = ?", arg.GroupID).
+		Scan(ctx)
+	if err != nil {
+		return db.Participant{}, err
+	}
+
 	paidAt := paidAtNullable(arg.PaidAt)
-	paid := int64(0)
-	if paidAt.Valid {
+	paid := current.Paid
+	if paidAt.Valid && paid == 0 {
 		paid = 1
 	}
 
-	_, err := db.BunDB.NewUpdate().Model((*db.Participant)(nil)).
+	_, err = db.BunDB.NewUpdate().Model((*db.Participant)(nil)).
 		Set("paid = ?", paid).
 		Set("paid_at = ?", paidAtValue(paidAt)).
 		Where("event_id = ?", arg.EventID).

@@ -424,8 +424,8 @@ func (g *Group) UpdatePaymentExpensePaidAt(c echo.Context) error {
 		return c.NoContent(http.StatusBadRequest)
 	}
 	paidAtValue := normalizePaymentsPaidAtInput(signals.PaidAtDialog.Value)
-	paid := int64(0)
-	if paidAtValue != nil {
+	paid := expense.Paid
+	if paid == 0 && paidAtValue != nil {
 		paid = 1
 	}
 	fadeHTML, shouldApplyFade, err := g.preparePaymentsRowFadeHTML(c, groupID, pageKind, paid, paymentsFadeRowKeyForExpense(expenseID))
