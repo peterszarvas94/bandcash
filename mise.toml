@@ -1,6 +1,5 @@
 [tools]
 air = "1.64.5"
-caddy = "2.9.1"
 go = "1.26.0"
 "go:github.com/a-h/templ/cmd/templ" = "v0.3.1001"
 "go:gotest.tools/gotestsum" = "v1.13.0"
@@ -10,7 +9,8 @@ ruby = "3.4.2"
 "gem:kamal" = "2.10.1"
 
 [tasks]
-app = "air"
+app = "./scripts/with_dev_secrets.sh air"
+tunnel-app = "cloudflared tunnel run ${CLOUDFLARED_TUNNEL_APP:-bandcash}"
 preflight = "go run ./cmd/devpreflight/main.go"
 assets = "go run ./cmd/assets/main.go"
 start = "./tmp/server"
@@ -45,7 +45,7 @@ run = "go build -o tmp/server ./cmd/server"
 [tasks.run]
 run = [
   { task = "assets" },
-  "go run ./cmd/server",
+  "./scripts/with_dev_secrets.sh go run ./cmd/server",
 ]
 
 [tasks.check]
@@ -57,7 +57,4 @@ run = [
 
 [tasks.dev]
 depends = ["preflight"]
-run = [{ tasks = ["app", "mailpit", "caddy"] }]
-
-[tasks.caddy]
-run = "exec caddy run --config ./Caddyfile.local"
+run = [{ tasks = ["app", "mailpit", "tunnel-app"] }]

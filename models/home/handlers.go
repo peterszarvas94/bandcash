@@ -11,24 +11,24 @@ import (
 	authstore "bandcash/models/auth/data"
 )
 
-func sessionUser(c echo.Context) (bool, string) {
+func sessionUser(c echo.Context) (bool, string, string) {
 	cookie, err := c.Cookie(utils.SessionCookieName)
 	if err != nil || cookie.Value == "" {
-		return false, ""
+		return false, "", ""
 	}
 
 	session, err := authstore.GetUserSessionByToken(c.Request().Context(), cookie.Value)
 	if err != nil {
-		return false, ""
+		return false, "", ""
 	}
 
 	user, err := authstore.GetUserByID(c.Request().Context(), session.UserID)
 	if err != nil {
-		return false, ""
+		return false, "", ""
 	}
 
 	syncPreferredLangFromQuery(c, user.ID, user.PreferredLang)
-	return true, user.Email
+	return true, user.ID, user.Email
 }
 
 func syncPreferredLangFromQuery(c echo.Context, userID string, currentPreferredLang string) {
@@ -53,7 +53,7 @@ func Index(c echo.Context) error {
 	utils.EnsureTabID(c)
 
 	data := Data(c.Request().Context())
-	data.IsAuthenticated, _ = sessionUser(c)
+	data.IsAuthenticated, data.UserID, data.UserEmail = sessionUser(c)
 	data.IsSuperAdmin = false
 	return utils.RenderPage(c, HomeIndex(data))
 }
@@ -63,7 +63,7 @@ func Pricing(c echo.Context) error {
 
 	ctx := c.Request().Context()
 	data := LegalDataWithTitle(ctx, ctxi18n.T(ctx, "legal.page_title_pricing"), ctxi18n.T(ctx, "legal.pricing"))
-	data.IsAuthenticated, _ = sessionUser(c)
+	data.IsAuthenticated, data.UserID, data.UserEmail = sessionUser(c)
 	data.IsSuperAdmin = false
 	return utils.RenderPage(c, HomePricing(data))
 }
@@ -73,7 +73,7 @@ func TermsAndConditions(c echo.Context) error {
 
 	ctx := c.Request().Context()
 	data := LegalDataWithTitle(ctx, ctxi18n.T(ctx, "legal.page_title_terms"), ctxi18n.T(ctx, "legal.terms_and_conditions"))
-	data.IsAuthenticated, _ = sessionUser(c)
+	data.IsAuthenticated, data.UserID, data.UserEmail = sessionUser(c)
 	data.IsSuperAdmin = false
 	return utils.RenderPage(c, HomeTermsAndConditions(data))
 }
@@ -83,7 +83,7 @@ func PrivacyPolicy(c echo.Context) error {
 
 	ctx := c.Request().Context()
 	data := LegalDataWithTitle(ctx, ctxi18n.T(ctx, "legal.page_title_privacy"), ctxi18n.T(ctx, "legal.privacy_policy"))
-	data.IsAuthenticated, _ = sessionUser(c)
+	data.IsAuthenticated, data.UserID, data.UserEmail = sessionUser(c)
 	data.IsSuperAdmin = false
 	return utils.RenderPage(c, HomePrivacyPolicy(data))
 }
@@ -93,7 +93,7 @@ func RefundPolicy(c echo.Context) error {
 
 	ctx := c.Request().Context()
 	data := LegalDataWithTitle(ctx, ctxi18n.T(ctx, "legal.page_title_refund"), ctxi18n.T(ctx, "legal.refund_policy"))
-	data.IsAuthenticated, _ = sessionUser(c)
+	data.IsAuthenticated, data.UserID, data.UserEmail = sessionUser(c)
 	data.IsSuperAdmin = false
 	return utils.RenderPage(c, HomeRefundPolicy(data))
 }

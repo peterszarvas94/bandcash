@@ -159,12 +159,27 @@ hu:
     page_title_refund: "BandCash - Visszatérítési szabályzat"
     under_construction_title: "Ez az oldal még készül"
     under_construction_body: "A végleges jogi tartalom előkészítés alatt áll. Kérjük, nézz vissza hamarosan."
+  billing:
+    errors:
+      subscription_slots_exhausted: "Nincs elegendő aktív előfizetési helyed egy új csoporthoz."
+      transfer_target_group_limit: "Tulajdonjog átadás sikertelen: a kiválasztott felhasználónak nincs szabad előfizetési helye."
+    pricing:
+      single_title: "Előfizetési helyek"
+      single_description: "Egy aktív előfizetési hely egy csoport birtoklását engedi. Ár: 10 EUR/hó/hely."
+      buy_another_slot: "Új hely vásárlása"
+      login_required: "Előbb jelentkezz be az előfizetés indításához."
+      paddle_not_configured: "A Paddle checkout még nincs beállítva ebben a környezetben."
   account:
     title: "Fiók"
     page_title: "BandCash - Fiók"
     language: "Nyelv"
     account: "Fiók"
     sessions: "Munkamenetek"
+    subscription: "Előfizetés"
+    subscription_slots: "Vásárolt helyek"
+    used_slots: "Felhasznált helyek"
+    remaining_slots: "Szabad helyek"
+    manage_subscription: "Előfizetés kezelése"
     current_session: "Jelenlegi munkamenet"
     session_from: "Munkamenet kezdete"
     no_sessions: "Nincs aktív munkamenet"

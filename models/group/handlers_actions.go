@@ -17,6 +17,7 @@ import (
 	"github.com/labstack/echo/v4"
 	"github.com/starfederation/datastar-go/datastar"
 
+	"bandcash/internal/billing"
 	"bandcash/internal/db"
 	"bandcash/internal/email"
 	"bandcash/internal/utils"
@@ -159,6 +160,19 @@ func (g *Group) CreateGroup(c echo.Context) error {
 	}
 
 	name := signals.FormData.Name
+	canCreate, _, err := billing.CanOwnAnotherGroup(c.Request().Context(), userID)
+	if err != nil {
+		slog.Error("group.create: billing check failed", "user_id", userID, "err", err)
+		return c.NoContent(http.StatusInternalServerError)
+	}
+	if !canCreate {
+		utils.Notify(c, ctxi18n.T(c.Request().Context(), "billing.errors.subscription_slots_exhausted"))
+		err = utils.SSEHub.Redirect(c, "/pricing")
+		if err != nil {
+			return c.NoContent(http.StatusInternalServerError)
+		}
+		return c.NoContent(http.StatusOK)
+	}
 
 	// Create group
 	group, err := groupstore.CreateGroup(c.Request().Context(), groupstore.CreateGroupParams{
@@ -1027,6 +1041,15 @@ func (g *Group) TransferGroupOwnership(c echo.Context) error {
 
 	if _, roleErr := getGroupAccessRole(ctx, groupID, userID); roleErr != nil {
 		return g.redirectUsersPage(c, groupID, "", "groups.errors.invalid_user", http.StatusBadRequest)
+	}
+
+	ownershipCheck, err := billing.CanReceiveGroupOwnership(ctx, userID, groupID)
+	if err != nil {
+		slog.Error("group.transfer: billing ownership check failed", "group_id", groupID, "user_id", userID, "err", err)
+		return g.redirectUsersPage(c, groupID, "", "groups.errors.transfer_failed", http.StatusInternalServerError)
+	}
+	if !ownershipCheck.Allowed {
+		return g.redirectUsersPage(c, groupID, "", "billing.errors.transfer_target_group_limit", http.StatusConflict)
 	}
 
 	if err := groupstore.UpdateGroupAdmin(ctx, groupstore.UpdateGroupAdminParams{AdminUserID: userID, ID: groupID}); err != nil {

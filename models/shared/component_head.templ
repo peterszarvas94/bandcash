@@ -36,6 +36,7 @@ templ Head(title string) {
 		<link rel="preload" href="/static/fonts/inter/inter-normal-latin-ext.woff2" as="font" type="font/woff2" crossorigin="anonymous"/>
 		<link rel="stylesheet" href={ assets.AssetPath("css/style.css") }/>
 		@templ.Raw(importMapScript)
+		<script src="https://cdn.paddle.com/paddle/v2/paddle.js" defer></script>
 		<script type="module" src={ assets.AssetPath("js/main.js") }></script>
 		<meta name="view-transition" content="same-origin"/>
 		<script type="speculationrules">

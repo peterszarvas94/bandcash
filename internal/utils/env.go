@@ -10,22 +10,27 @@ import (
 )
 
 type EnvConfig struct {
-	Host             string
-	Port             int
-	DevGlobalDelayMS int
-	LogLevel         slog.Level
-	LogFolder        string
-	LogPrefix        string
-	DBPath           string
-	URL              string
-	AppEnv           string
-	SuperadminEmail  string
-	DisableRateLimit bool
-	SMTPHost         string
-	SMTPPort         int
-	SMTPUser         string
-	SMTPPass         string
-	EmailFrom        string
+	Host                string
+	Port                int
+	LogLevel            slog.Level
+	LogFolder           string
+	LogPrefix           string
+	DBPath              string
+	URL                 string
+	AppEnv              string
+	SuperadminEmail     string
+	DisableRateLimit    bool
+	SMTPHost            string
+	SMTPPort            int
+	SMTPUser            string
+	SMTPPass            string
+	EmailFrom           string
+	PaddleEnv           string
+	PaddleAPIKey        string
+	PaddleAPIBaseURL    string
+	PaddleClientToken   string
+	PaddleWebhookSecret string
+	PaddlePriceID       string
 }
 
 const DefaultSuperadminEmail = "admin@bandcash.localhost"
@@ -42,8 +47,6 @@ type envVars struct {
 	Host string `env:"HOST" envDefault:"0.0.0.0"`
 	// Port is the HTTP port the app listens on.
 	Port int `env:"PORT" envDefault:"2222" validate:"required,gte=1,lte=65535"`
-	// DevGlobalDelayMS adds an artificial delay to responses in development.
-	DevGlobalDelayMS int `env:"DEV_GLOBAL_DELAY_MS" envDefault:"0" validate:"gte=0"`
 	// LogLevel controls structured log verbosity.
 	LogLevel string `env:"LOG_LEVEL" envDefault:"debug" validate:"required,oneof=debug info warn error"`
 	// LogFolder is the directory where log files are stored.
@@ -53,7 +56,7 @@ type envVars struct {
 	// DBPath is the SQLite database file path.
 	DBPath string `env:"DB_PATH" envDefault:"sqlite.db" validate:"required"`
 	// URL is the public base URL used for links and callbacks.
-	URL string `env:"URL" envDefault:"http://bandcash.localhost:9080" validate:"required_if=AppEnv production,required_if=AppEnv staging"`
+	URL string `env:"URL" envDefault:"http://localhost:2222" validate:"required_if=AppEnv production,required_if=AppEnv staging"`
 	// SuperadminEmail is the bootstrap superadmin account email.
 	SuperadminEmail string `env:"SUPERADMIN_EMAIL" envDefault:"admin@bandcash.localhost" validate:"required,email"`
 	// DisableRateLimit disables request rate limiting (useful for local dev).
@@ -68,6 +71,18 @@ type envVars struct {
 	SMTPPass string `env:"SMTP_PASSWORD" validate:"required_if=AppEnv production,required_if=AppEnv staging"`
 	// EmailFrom is the default From header for app emails.
 	EmailFrom string `env:"EMAIL_FROM" envDefault:"BandCash <noreply@bandcash.localhost>" validate:"required_if=AppEnv production,required_if=AppEnv staging"`
+	// PaddleEnv defines the Paddle environment used by client SDK and API calls.
+	PaddleEnv string `env:"PADDLE_ENV" envDefault:"" validate:"omitempty,oneof=sandbox production"`
+	// PaddleAPIKey is the Paddle server API key.
+	PaddleAPIKey string `env:"PADDLE_API_KEY"`
+	// PaddleAPIBaseURL is the Paddle API base URL (for example https://sandbox-api.paddle.com).
+	PaddleAPIBaseURL string `env:"PADDLE_API_BASE_URL"`
+	// PaddleClientToken is the client-side token used by Paddle.js.
+	PaddleClientToken string `env:"PADDLE_CLIENT_TOKEN"`
+	// PaddleWebhookSecret is the endpoint secret used to verify webhook signatures.
+	PaddleWebhookSecret string `env:"PADDLE_WEBHOOK_SECRET"`
+	// PaddlePriceID is the single monthly subscription slot price id.
+	PaddlePriceID string `env:"PADDLE_PRICE_ID"`
 }
 
 func Env() *EnvConfig {
@@ -98,22 +113,27 @@ func Env() *EnvConfig {
 		}
 
 		envCfg = &EnvConfig{
-			Host:             parsed.Host,
-			Port:             parsed.Port,
-			DevGlobalDelayMS: parsed.DevGlobalDelayMS,
-			LogLevel:         logLevel,
-			LogFolder:        parsed.LogFolder,
-			LogPrefix:        parsed.LogPrefix,
-			DBPath:           parsed.DBPath,
-			URL:              parsed.URL,
-			AppEnv:           parsed.AppEnv,
-			SuperadminEmail:  superadminEmail,
-			DisableRateLimit: parsed.DisableRateLimit,
-			SMTPHost:         parsed.SMTPHost,
-			SMTPPort:         parsed.SMTPPort,
-			SMTPUser:         parsed.SMTPUser,
-			SMTPPass:         parsed.SMTPPass,
-			EmailFrom:        parsed.EmailFrom,
+			Host:                parsed.Host,
+			Port:                parsed.Port,
+			LogLevel:            logLevel,
+			LogFolder:           parsed.LogFolder,
+			LogPrefix:           parsed.LogPrefix,
+			DBPath:              parsed.DBPath,
+			URL:                 parsed.URL,
+			AppEnv:              parsed.AppEnv,
+			SuperadminEmail:     superadminEmail,
+			DisableRateLimit:    parsed.DisableRateLimit,
+			SMTPHost:            parsed.SMTPHost,
+			SMTPPort:            parsed.SMTPPort,
+			SMTPUser:            parsed.SMTPUser,
+			SMTPPass:            parsed.SMTPPass,
+			EmailFrom:           parsed.EmailFrom,
+			PaddleEnv:           strings.ToLower(strings.TrimSpace(parsed.PaddleEnv)),
+			PaddleAPIKey:        strings.TrimSpace(parsed.PaddleAPIKey),
+			PaddleAPIBaseURL:    strings.TrimSpace(parsed.PaddleAPIBaseURL),
+			PaddleClientToken:   strings.TrimSpace(parsed.PaddleClientToken),
+			PaddleWebhookSecret: strings.TrimSpace(parsed.PaddleWebhookSecret),
+			PaddlePriceID:       strings.TrimSpace(parsed.PaddlePriceID),
 		}
 	})
 	return envCfg

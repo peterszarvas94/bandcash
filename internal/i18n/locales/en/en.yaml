@@ -159,12 +159,27 @@ en:
     page_title_refund: "BandCash - Refund Policy"
     under_construction_title: "This page is under construction"
     under_construction_body: "We are preparing the final legal content. Please check back soon."
+  billing:
+    errors:
+      subscription_slots_exhausted: "You do not have enough active subscription slots for another group."
+      transfer_target_group_limit: "Ownership transfer blocked: the selected user has no free subscription slot."
+    pricing:
+      single_title: "Subscription slots"
+      single_description: "Each active subscription slot allows owning one group. Price: 10 EUR/month per slot."
+      buy_another_slot: "Buy another slot"
+      login_required: "Log in first to start a subscription."
+      paddle_not_configured: "Paddle checkout is not configured for this environment yet."
   account:
     title: "Account"
     page_title: "BandCash - Account"
     language: "Language"
     account: "Account"
     sessions: "Sessions"
+    subscription: "Subscription"
+    subscription_slots: "Purchased slots"
+    used_slots: "Used slots"
+    remaining_slots: "Remaining slots"
+    manage_subscription: "Manage subscription"
     current_session: "Current session"
     session_from: "Session from"
     no_sessions: "No active sessions"

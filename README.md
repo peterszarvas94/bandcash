@@ -17,7 +17,7 @@ mise run db-up
 mise run dev
 ```
 
-Open `http://bandcash.localhost:9080`.
+Open `http://localhost:2222`.
 
 ## Environment
 

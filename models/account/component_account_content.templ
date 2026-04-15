@@ -1,14 +1,32 @@
 package account
 
 import (
+	"strings"
+	"bandcash/internal/utils"
 	shared "bandcash/models/shared"
 	icons "bandcash/models/shared/icons"
 	ctxi18n "github.com/invopop/ctxi18n/i18n"
 )
 
 templ AccountContent(data AccountData) {
+	{{
+		priceID := strings.TrimSpace(utils.Env().PaddlePriceID)
+		paddleEnabled := strings.TrimSpace(utils.Env().PaddleClientToken) != "" && strings.TrimSpace(data.UserID) != "" && priceID != ""
+	}}
 	<div class="row row-wrap">
 		{ ctxi18n.T(ctx, "nav.logged_in_as") } <strong>{ data.UserEmail }</strong>
+	</div>
+	<div class="stack card">
+		<h2>{ ctxi18n.T(ctx, "account.subscription") }</h2>
+		<p>{ ctxi18n.T(ctx, "account.subscription_slots") }: <strong>{ data.SubscriptionSlots }</strong></p>
+		<p>{ ctxi18n.T(ctx, "account.used_slots") }: <strong>{ data.UsedSlots }</strong></p>
+		<p class="color-muted">{ ctxi18n.T(ctx, "account.remaining_slots") }: <strong>{ data.RemainingSlots }</strong></p>
+		<div class="row row-wrap">
+			<a class="btn" href="/pricing">{ ctxi18n.T(ctx, "account.manage_subscription") }</a>
+			if paddleEnabled {
+				<button class="btn btn-primary" data-paddle-price-id={ priceID } data-paddle-user-id={ data.UserID } data-paddle-user-email={ data.UserEmail }>{ ctxi18n.T(ctx, "billing.pricing.buy_another_slot") }</button>
+			}
+		</div>
 	</div>
 	<div class="row row-wrap">
 		@shared.ConfirmActionButton(shared.ConfirmActionButtonProps{

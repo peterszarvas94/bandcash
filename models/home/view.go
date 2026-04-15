@@ -8,4 +8,6 @@ type HomeData struct {
 	CurrentLang     string
 	IsAuthenticated bool
 	IsSuperAdmin    bool
+	UserID          string
+	UserEmail       string
 }

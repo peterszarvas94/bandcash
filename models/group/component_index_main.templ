@@ -24,7 +24,7 @@ templ GroupIndexMain(data GroupsPageData) {
 					<li>
 						<a class="group-card" href={ "/groups/" + group.Group.ID + "/events" }>
 							<div class="group-card-header">
-								<h2>
+								<h2 title={ group.Group.Name }>
 									{ group.Group.Name }
 								</h2>
 								@shared.Badge(group.Role)

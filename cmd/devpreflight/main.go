@@ -21,7 +21,6 @@ var checks = []portCheck{
 	{Name: "app server", Port: 2222},
 	{Name: "mailpit smtp", Port: 1025},
 	{Name: "mailpit ui", Port: 8025},
-	{Name: "caddy http", Port: 9080},
 }
 
 func main() {

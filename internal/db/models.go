@@ -17,6 +17,32 @@ type BannedUser struct {
 	CreatedAt time.Time `json:"created_at"`
 }
 
+type BillingCustomer struct {
+	UserID           string    `json:"user_id"`
+	PaddleCustomerID string    `json:"paddle_customer_id"`
+	CreatedAt        time.Time `json:"created_at"`
+	UpdatedAt        time.Time `json:"updated_at"`
+}
+
+type BillingSubscription struct {
+	UserID               string       `json:"user_id"`
+	PaddleSubscriptionID string       `json:"paddle_subscription_id"`
+	PaddlePriceID        string       `json:"paddle_price_id"`
+	Tier                 string       `json:"tier"`
+	Status               string       `json:"status"`
+	CurrentPeriodEndsAt  sql.NullTime `json:"current_period_ends_at"`
+	GraceUntil           sql.NullTime `json:"grace_until"`
+	CanceledAt           sql.NullTime `json:"canceled_at"`
+	CreatedAt            time.Time    `json:"created_at"`
+	UpdatedAt            time.Time    `json:"updated_at"`
+}
+
+type BillingWebhookEvent struct {
+	EventID   string    `json:"event_id"`
+	EventType string    `json:"event_type"`
+	CreatedAt time.Time `json:"created_at"`
+}
+
 type Event struct {
 	ID          string         `json:"id"`
 	GroupID     string         `json:"group_id"`
@@ -116,14 +142,6 @@ type User struct {
 	Email         string       `json:"email"`
 	CreatedAt     sql.NullTime `json:"created_at"`
 	PreferredLang string       `json:"preferred_lang"`
-}
-
-type UserDetailCardState struct {
-	UserID    string    `json:"user_id"`
-	StateKey  string    `json:"state_key"`
-	IsOpen    int64     `json:"is_open"`
-	CreatedAt time.Time `json:"created_at"`
-	UpdatedAt time.Time `json:"updated_at"`
 }
 
 type UserSession struct {

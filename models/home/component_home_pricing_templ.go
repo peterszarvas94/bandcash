@@ -37,7 +37,7 @@ func HomePricing(data HomeData) templ.Component {
 			Title:           data.Title,
 			Crumbs:          data.Breadcrumbs,
 			Signals:         nil,
-			Content:         shared.CommonContent(HomePricingMain(data.CurrentLang)),
+			Content:         shared.CommonContent(HomePricingMain(data.CurrentLang, data.UserID, data.UserEmail)),
 			ActiveUrl:       "/pricing",
 			IsAuthenticated: data.IsAuthenticated,
 			IsSuperAdmin:    data.IsSuperAdmin,

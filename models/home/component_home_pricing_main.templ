@@ -1,11 +1,45 @@
 package home
 
+import "strings"
+import "bandcash/internal/utils"
 import ctxi18n "github.com/invopop/ctxi18n/i18n"
 import shared "bandcash/models/shared"
 
-templ HomePricingMain(currentLang string) {
+templ HomePricingMain(currentLang string, userID string, userEmail string) {
+	{{
+		env := utils.Env()
+		priceID := strings.TrimSpace(utils.Env().PaddlePriceID)
+		isAuthenticated := strings.TrimSpace(userID) != ""
+		paddleEnabled := strings.TrimSpace(utils.Env().PaddleClientToken) != "" && isAuthenticated && priceID != ""
+		tokenState := "no"
+		if paddleEnabled {
+			tokenState = "yes"
+		}
+		priceState := "no"
+		if priceID != "" {
+			priceState = "yes"
+		}
+	}}
 	<section class="section">
 		@shared.PageTitleWithLanguage(ctxi18n.T(ctx, "legal.pricing"), "/pricing", currentLang)
-		@LegalPlaceholderBanner()
+		if env.AppEnv == "development" && (!paddleEnabled || priceID == "") {
+			<p class="color-muted text-sm">Paddle config: token={ tokenState }, price={ priceState }</p>
+		}
+		<div class="stack">
+			<section class="card stack">
+				<h2>{ ctxi18n.T(ctx, "billing.pricing.single_title") }</h2>
+				<p class="color-muted">{ ctxi18n.T(ctx, "billing.pricing.single_description") }</p>
+				<button class="btn btn-primary" data-paddle-price-id={ priceID } data-paddle-user-id={ userID } data-paddle-user-email={ userEmail } disabled?={ !paddleEnabled || priceID == "" }>
+					{ ctxi18n.T(ctx, "billing.pricing.buy_another_slot") }
+				</button>
+			</section>
+			if !paddleEnabled {
+				if !isAuthenticated {
+					<p class="color-muted text-sm">{ ctxi18n.T(ctx, "billing.pricing.login_required") }</p>
+				} else {
+					<p class="color-muted text-sm">{ ctxi18n.T(ctx, "billing.pricing.paddle_not_configured") }</p>
+				}
+			}
+		</div>
 	</section>
 }

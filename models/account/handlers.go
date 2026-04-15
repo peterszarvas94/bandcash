@@ -3,13 +3,13 @@ package account
 import (
 	"log/slog"
 	"net/http"
-	"strings"
 
 	ctxi18nlib "github.com/invopop/ctxi18n"
 	ctxi18n "github.com/invopop/ctxi18n/i18n"
 	"github.com/labstack/echo/v4"
 	"github.com/starfederation/datastar-go/datastar"
 
+	"bandcash/internal/billing"
 	"bandcash/internal/db"
 	appi18n "bandcash/internal/i18n"
 	"bandcash/internal/utils"
@@ -33,8 +33,16 @@ func Index(c echo.Context) error {
 	data := Data(c.Request().Context())
 	userID := utils.GetUserID(c)
 	if user, err := authstore.GetUserByID(c.Request().Context(), userID); err == nil {
+		data.UserID = user.ID
 		data.UserEmail = user.Email
 		data.CurrentLang = appi18n.NormalizeLocale(user.PreferredLang)
+	}
+	if state, err := billing.CurrentAccessState(c.Request().Context(), userID); err == nil {
+		data.SubscriptionSlots = state.SubscriptionCount
+		data.UsedSlots = state.OwnedGroupCount
+		data.RemainingSlots = state.RemainingSlots
+	} else {
+		slog.Warn("account.index: failed to load billing state", "user_id", userID, "err", err)
 	}
 	data.Signals = map[string]any{"formData": map[string]any{"lang": data.CurrentLang}}
 	data.IsAuthenticated = true
@@ -82,33 +90,6 @@ func UpdateLanguage(c echo.Context) error {
 		return c.NoContent(http.StatusInternalServerError)
 	}
 	return c.NoContent(http.StatusOK)
-}
-
-func UpdateDetailsState(c echo.Context) error {
-	key := strings.TrimSpace(c.QueryParam("key"))
-	if key == "" {
-		return c.NoContent(http.StatusBadRequest)
-	}
-
-	open := c.QueryParam("open") == "1"
-	userID := utils.GetUserID(c)
-	err := authstore.UpsertUserDetailCardState(c.Request().Context(), authstore.UpsertUserDetailCardStateParams{
-		UserID:   userID,
-		StateKey: key,
-		IsOpen: func() int64 {
-			if open {
-				return 1
-			}
-			return 0
-		}(),
-	})
-	if err != nil {
-		slog.Error("account.details_state: failed to upsert", "user_id", userID, "key", key, "err", err)
-		return c.NoContent(http.StatusInternalServerError)
-	}
-	slog.Debug("account.details_state: updated", "user_id", userID, "key", key, "open", open)
-
-	return c.NoContent(http.StatusNoContent)
 }
 
 func SessionsPageHandler(c echo.Context) error {
