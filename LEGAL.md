@@ -12,14 +12,17 @@ bandcash.app/data (email input + access/delete select => confirm email => send d
 # Payment
 
 bandcash.app/pricing
-bandcash.app/checkout (redirect to paddle payment, needs paddle.js integration)
+bandcash.app/account
+bandcash.app/transaction callback after payment
+
+local: https://bandcash.pengoe.hu/transactions and uses LEMON_WEBHOOK_SECRET
 
 # TODO
 
 - eu vat number => update cookie policy + terms => correct number
 - integrate legal document (copy and adjust html to match style)
 - make a pricing page
-- integrate paddle payment
+- integrate Lemon Squeezy payment
 
 # Description
 

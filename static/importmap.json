@@ -2,7 +2,6 @@
 	"imports": {
 		"datastar": "/static/js/vendor/datastar.js",
 		"bandcash/notifications": "/static/js/notifications.js",
-		"bandcash/tablequery": "/static/js/tablequery.js",
-		"bandcash/paddle": "/static/js/paddle.js"
+		"bandcash/tablequery": "/static/js/tablequery.js"
 	}
 }

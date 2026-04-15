@@ -18,8 +18,6 @@ const (
 
 func TestMain(m *testing.M) {
 	_ = os.Setenv("APP_ENV", "development")
-	_ = os.Setenv("PADDLE_PRICE_ID", "pri_test_pro")
-	_ = os.Setenv("PADDLE_API_BASE_URL", "https://sandbox-api.paddle.com")
 	os.Exit(m.Run())
 }
 
@@ -49,14 +47,14 @@ func readFixture(t *testing.T) []byte {
 }
 
 func subscriptionPayload(eventID, subscriptionID, customerID, userID, email, status, priceID string) []byte {
-	return []byte(fmt.Sprintf(`{"event_id":"%s","event_type":"subscription.created","data":{"id":"%s","status":"%s","customer_id":"%s","customer":{"email":"%s"},"items":[{"price":{"id":"%s"},"quantity":1}],"current_billing_period":{"ends_at":"2026-05-14T18:47:00.844006Z"},"custom_data":{"user_id":"%s"}}}`,
+	return []byte(fmt.Sprintf(`{"meta":{"event_name":"subscription_created","event_id":"%s","custom_data":{"user_id":"%s"}},"data":{"id":"%s","attributes":{"status":"%s","customer_id":"%s","customer_email":"%s","variant_id":"%s","renews_at":"2026-05-14T18:47:00.844006Z"}}}`,
 		eventID,
+		userID,
 		subscriptionID,
 		status,
 		customerID,
 		email,
 		priceID,
-		userID,
 	))
 }
 
@@ -70,17 +68,17 @@ func TestParseWebhookSubscription_FromFixture(t *testing.T) {
 	if !isSubscriptionEvent {
 		t.Fatal("expected subscription event")
 	}
-	if update.EventType != "subscription.created" {
+	if update.EventType != "subscription_created" {
 		t.Fatalf("unexpected event type: %s", update.EventType)
 	}
 	if update.UserID != testUserID {
 		t.Fatalf("unexpected user id: %s", update.UserID)
 	}
-	if update.PaddlePriceID != "pri_test_pro" {
-		t.Fatalf("unexpected price id: %s", update.PaddlePriceID)
+	if update.VariantID != "pri_test_pro" {
+		t.Fatalf("unexpected price id: %s", update.VariantID)
 	}
-	if update.PaddleCustomerID == "" {
-		t.Fatal("expected paddle customer id to be parsed")
+	if update.CustomerID == "" {
+		t.Fatal("expected customer id to be parsed")
 	}
 	if !update.CurrentPeriodEndsAt.Valid {
 		t.Fatal("expected current period end to be parsed")
@@ -107,7 +105,7 @@ func TestProcessWebhook_SubscriptionCreated_PersistsBillingRows(t *testing.T) {
 	if !isSub {
 		t.Fatal("expected subscription event in fixture")
 	}
-	resolvedUserID, resolveErr := ResolveUserIDForWebhook(ctx, parsed.UserID, parsed.PaddleCustomerID, parsed.CustomerEmail)
+	resolvedUserID, resolveErr := ResolveUserIDForWebhook(ctx, parsed.UserID, parsed.CustomerID, parsed.CustomerEmail)
 	if resolveErr != nil {
 		t.Fatalf("ResolveUserIDForWebhook failed: %v", resolveErr)
 	}
@@ -204,10 +202,10 @@ func TestUpsertSubscription_DirectPersist(t *testing.T) {
 		t.Fatalf("UpsertCustomer failed: %v", err)
 	}
 	if err := UpsertSubscription(ctx, WebhookSubscriptionUpdate{
-		UserID:               testUserID,
-		PaddleSubscriptionID: "sub_direct_test",
-		PaddlePriceID:        "pri_test_pro",
-		Status:               "active",
+		UserID:         testUserID,
+		SubscriptionID: "sub_direct_test",
+		VariantID:      "pri_test_pro",
+		Status:         "active",
 	}); err != nil {
 		t.Fatalf("UpsertSubscription failed: %v", err)
 	}

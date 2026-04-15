@@ -86,16 +86,12 @@ fetch_local_secrets_from_1password() {
     EMAIL_FROM
     SMTP_USERNAME
     SMTP_PASSWORD
-    PADDLE_API_KEY
-    PADDLE_API_BASE_URL
-    PADDLE_CLIENT_TOKEN
-    PADDLE_WEBHOOK_SECRET
-    PADDLE_ENV
-    PADDLE_PRICE_ID
+    LEMON_WEBHOOK_SECRET
+    LEMON_HOSTED_URL
   )
 
   if ! secrets_blob="$(kamal secrets fetch --adapter 1password --account "$op_account" --from "$op_from" "${keys[@]}")"; then
-    if [ -z "${PADDLE_CLIENT_TOKEN:-}" ]; then
+    if [ -z "${LEMON_HOSTED_URL:-}" ]; then
       echo "with_dev_secrets: could not load local secrets via 1Password (check 'op signin' and OP_FROM_LOCALHOST/OP_FROM_DEVELOPMENT)." >&2
     fi
     return 0
@@ -122,10 +118,6 @@ if [ "${APP_ENV:-development}" = "development" ] && [ "${LOCAL_USE_MAILPIT:-1}" 
   export SMTP_PORT="1025"
   export SMTP_USERNAME=""
   export SMTP_PASSWORD=""
-fi
-
-if [ -n "${PADDLE_CLIENT_TOKEN:-}" ] && [ -z "${PADDLE_ENV:-}" ]; then
-  export PADDLE_ENV="sandbox"
 fi
 
 exec "$@"

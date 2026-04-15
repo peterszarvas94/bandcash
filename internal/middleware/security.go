@@ -14,11 +14,11 @@ import (
 	"bandcash/internal/utils"
 )
 
-const paddleWebhookPath = "/paddle_webhook"
+const lemonWebhookPath = "/lemon_webhook"
 
 func FetchSiteProtection(next echo.HandlerFunc) echo.HandlerFunc {
 	return func(c echo.Context) error {
-		if c.Request().URL.Path == paddleWebhookPath {
+		if c.Request().URL.Path == lemonWebhookPath {
 			return next(c)
 		}
 		if !isStateChangingMethod(c.Request().Method) {
@@ -36,7 +36,7 @@ func FetchSiteProtection(next echo.HandlerFunc) echo.HandlerFunc {
 
 func OriginProtection(next echo.HandlerFunc) echo.HandlerFunc {
 	return func(c echo.Context) error {
-		if c.Request().URL.Path == paddleWebhookPath {
+		if c.Request().URL.Path == lemonWebhookPath {
 			return next(c)
 		}
 		if !isStateChangingMethod(c.Request().Method) {
@@ -87,7 +87,7 @@ func CSRFToken(next echo.HandlerFunc) echo.HandlerFunc {
 
 func CSRFProtection(next echo.HandlerFunc) echo.HandlerFunc {
 	return func(c echo.Context) error {
-		if c.Request().URL.Path == paddleWebhookPath {
+		if c.Request().URL.Path == lemonWebhookPath {
 			return next(c)
 		}
 		if !isStateChangingMethod(c.Request().Method) {

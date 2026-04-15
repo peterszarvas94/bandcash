@@ -4,7 +4,6 @@ import (
 	"io"
 	"log/slog"
 	"net/http"
-	"time"
 
 	"github.com/labstack/echo/v4"
 
@@ -12,17 +11,15 @@ import (
 	"bandcash/internal/utils"
 )
 
-const webhookSignatureTolerance = 5 * time.Minute
-
-func PaddleWebhook(c echo.Context) error {
+func LemonWebhook(c echo.Context) error {
 	body, err := io.ReadAll(c.Request().Body)
 	if err != nil {
 		slog.Warn("billing.webhook: failed to read body", "err", err)
 		return c.NoContent(http.StatusBadRequest)
 	}
 
-	secret := utils.Env().PaddleWebhookSecret
-	if !internalbilling.VerifyWebhookSignature(body, c.Request().Header.Get("Paddle-Signature"), secret, webhookSignatureTolerance) {
+	secret := utils.Env().LemonWebhookSecret
+	if !internalbilling.VerifyWebhookSignature(body, c.Request().Header.Get("X-Signature"), secret) {
 		slog.Warn("billing.webhook: signature verification failed")
 		return c.NoContent(http.StatusUnauthorized)
 	}

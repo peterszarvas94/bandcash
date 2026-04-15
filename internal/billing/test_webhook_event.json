@@ -1,28 +1,18 @@
 {
-  "event_id": "evt_12345678901234567890",
-  "event_type": "subscription.created",
-  "occurred_at": "2026-04-14T18:47:00.844006Z",
-  "notification_id": "ntf_12345678901234567890",
-  "data": {
-    "id": "sub_01kp6n2yzcjay6tttcsyv006bw",
-    "status": "active",
-    "customer_id": "ctm_01kp6mpnfwvzp639cqda40aabe",
-    "customer": {
-      "email": "webhook.user@example.com"
-    },
-    "items": [
-      {
-        "price": {
-          "id": "pri_test_pro"
-        },
-        "quantity": 1
-      }
-    ],
-    "current_billing_period": {
-      "ends_at": "2026-05-14T18:47:00.844006Z"
-    },
+  "meta": {
+    "event_name": "subscription_created",
     "custom_data": {
       "user_id": "usr_12345678901234567890"
+    }
+  },
+  "data": {
+    "id": "sub_01kp6n2yzcjay6tttcsyv006bw",
+    "attributes": {
+      "status": "active",
+      "customer_id": "ctm_01kp6mpnfwvzp639cqda40aabe",
+      "customer_email": "webhook.user@example.com",
+      "variant_id": "pri_test_pro",
+      "renews_at": "2026-05-14T18:47:00.844006Z"
     }
   }
 }

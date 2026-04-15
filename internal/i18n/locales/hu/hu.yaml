@@ -168,7 +168,7 @@ hu:
       single_description: "Egy aktív előfizetési hely egy csoport birtoklását engedi. Ár: 10 EUR/hó/hely."
       buy_another_slot: "Új hely vásárlása"
       login_required: "Előbb jelentkezz be az előfizetés indításához."
-      paddle_not_configured: "A Paddle checkout még nincs beállítva ebben a környezetben."
+      hosted_not_configured: "Az előfizetési felület még nincs beállítva ebben a környezetben."
   account:
     title: "Fiók"
     page_title: "BandCash - Fiók"

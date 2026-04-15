@@ -50,15 +50,7 @@ func IsSubscriptionActive(status string, graceUntil sql.NullTime, now time.Time)
 }
 
 func IsSupportedSubscriptionPrice(priceID string) bool {
-	configured := strings.TrimSpace(utils.Env().PaddlePriceID)
-	priceID = strings.TrimSpace(priceID)
-	if priceID == "" {
-		return false
-	}
-	if configured == "" {
-		return true
-	}
-	return priceID == configured
+	return strings.TrimSpace(priceID) != ""
 }
 
 func TierFromPriceID(priceID string) string {
@@ -102,7 +94,7 @@ func CountActiveSubscriptionSlots(ctx context.Context, userID string) (int, erro
 	now := time.Now().UTC()
 	total := 0
 	for _, row := range rows {
-		if !IsSupportedSubscriptionPrice(row.PaddlePriceID) {
+		if !IsSupportedSubscriptionPrice(row.ProviderVariantID) {
 			continue
 		}
 		if IsSubscriptionActive(row.Status, row.GraceUntil, now) {

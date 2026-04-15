@@ -9,31 +9,26 @@ import (
 	"encoding/hex"
 	"encoding/json"
 	"errors"
-	"fmt"
-	"io"
-	"net/http"
-	"net/url"
 	"strconv"
 	"strings"
 	"time"
 
 	"bandcash/internal/db"
-	"bandcash/internal/utils"
 	authstore "bandcash/models/auth/data"
 )
 
 type WebhookSubscriptionUpdate struct {
-	EventID              string
-	EventType            string
-	PaddleSubscriptionID string
-	PaddleCustomerID     string
-	PaddlePriceID        string
-	Status               string
-	UserID               string
-	CustomerEmail        string
-	CurrentPeriodEndsAt  sql.NullTime
-	CanceledAt           sql.NullTime
-	GraceUntil           sql.NullTime
+	EventID             string
+	EventType           string
+	SubscriptionID      string
+	CustomerID          string
+	VariantID           string
+	Status              string
+	UserID              string
+	CustomerEmail       string
+	CurrentPeriodEndsAt sql.NullTime
+	CanceledAt          sql.NullTime
+	GraceUntil          sql.NullTime
 }
 
 var ErrWebhookUserNotResolved = errors.New("webhook user could not be resolved")
@@ -44,7 +39,7 @@ func resolveUserIDBySubscriptionID(ctx context.Context, subscriptionID string) (
 	}
 	var userID string
 	err := db.BunDB.QueryRowContext(ctx,
-		"SELECT user_id FROM billing_subscriptions WHERE paddle_subscription_id = ? LIMIT 1",
+		"SELECT user_id FROM billing_subscriptions WHERE provider_subscription_id = ? LIMIT 1",
 		strings.TrimSpace(subscriptionID),
 	).Scan(&userID)
 	if err != nil {
@@ -56,7 +51,7 @@ func resolveUserIDBySubscriptionID(ctx context.Context, subscriptionID string) (
 	return strings.TrimSpace(userID), nil
 }
 
-func VerifyWebhookSignature(rawBody []byte, signatureHeader, endpointSecret string, tolerance time.Duration) bool {
+func VerifyWebhookSignature(rawBody []byte, signatureHeader, endpointSecret string) bool {
 	if len(rawBody) == 0 {
 		return false
 	}
@@ -64,62 +59,11 @@ func VerifyWebhookSignature(rawBody []byte, signatureHeader, endpointSecret stri
 		return false
 	}
 
-	parts := strings.Split(signatureHeader, ";")
-	values := map[string][]string{}
-	for _, part := range parts {
-		kv := strings.SplitN(strings.TrimSpace(part), "=", 2)
-		if len(kv) != 2 {
-			continue
-		}
-		key := strings.TrimSpace(kv[0])
-		value := strings.TrimSpace(kv[1])
-		if key == "" || value == "" {
-			continue
-		}
-		values[key] = append(values[key], value)
-	}
-
-	tsRaw := ""
-	if tsValues := values["ts"]; len(tsValues) > 0 {
-		tsRaw = tsValues[0]
-	}
-	if tsRaw == "" {
-		return false
-	}
-
-	timestamp, err := strconv.ParseInt(tsRaw, 10, 64)
-	if err != nil {
-		return false
-	}
-
-	if tolerance > 0 {
-		now := time.Now().UTC()
-		eventTime := time.Unix(timestamp, 0).UTC()
-		delta := now.Sub(eventTime)
-		if delta < 0 {
-			delta = -delta
-		}
-		if delta > tolerance {
-			return false
-		}
-	}
-
-	signedPayload := fmt.Sprintf("%s:%s", tsRaw, string(rawBody))
 	h := hmac.New(sha256.New, []byte(endpointSecret))
-	_, _ = h.Write([]byte(signedPayload))
+	_, _ = h.Write(rawBody)
 	expected := strings.ToLower(hex.EncodeToString(h.Sum(nil)))
-
-	for _, candidate := range values["h1"] {
-		candidate = strings.ToLower(strings.TrimSpace(candidate))
-		if candidate == "" {
-			continue
-		}
-		if subtle.ConstantTimeCompare([]byte(candidate), []byte(expected)) == 1 {
-			return true
-		}
-	}
-
-	return false
+	candidate := strings.ToLower(strings.TrimSpace(signatureHeader))
+	return subtle.ConstantTimeCompare([]byte(candidate), []byte(expected)) == 1
 }
 
 func markWebhookProcessed(ctx context.Context, eventID, eventType string) (bool, error) {
@@ -159,7 +103,7 @@ func ResolveUserIDForWebhook(ctx context.Context, userID, customerID, customerEm
 	if customerID != "" {
 		var mappedUserID string
 		err := db.BunDB.QueryRowContext(ctx,
-			"SELECT user_id FROM billing_customers WHERE paddle_customer_id = ? LIMIT 1",
+			"SELECT user_id FROM billing_customers WHERE provider_customer_id = ? LIMIT 1",
 			customerID,
 		).Scan(&mappedUserID)
 		if err == nil && strings.TrimSpace(mappedUserID) != "" {
@@ -185,72 +129,7 @@ func ResolveUserIDForWebhook(ctx context.Context, userID, customerID, customerEm
 		}
 	}
 
-	if customerID != "" {
-		paddleEmail, err := FetchCustomerEmailFromPaddle(ctx, customerID)
-		if err != nil {
-			return "", err
-		}
-		if paddleEmail != "" {
-			user, err := authstore.GetUserByEmail(ctx, strings.ToLower(strings.TrimSpace(paddleEmail)))
-			if err == nil {
-				if upsertErr := UpsertCustomer(ctx, user.ID, customerID); upsertErr != nil {
-					return "", upsertErr
-				}
-				return user.ID, nil
-			}
-			if err != nil && !errors.Is(err, sql.ErrNoRows) {
-				return "", err
-			}
-		}
-	}
-
 	return "", nil
-}
-
-func FetchCustomerEmailFromPaddle(ctx context.Context, customerID string) (string, error) {
-	apiKey := strings.TrimSpace(utils.Env().PaddleAPIKey)
-	if apiKey == "" {
-		return "", nil
-	}
-	apiBaseURL := strings.TrimSpace(utils.Env().PaddleAPIBaseURL)
-	if apiBaseURL == "" {
-		return "", errors.New("PADDLE_API_BASE_URL is required for Paddle API calls")
-	}
-	customerID = strings.TrimSpace(customerID)
-	if customerID == "" {
-		return "", nil
-	}
-
-	endpoint := strings.TrimRight(apiBaseURL, "/") + "/customers/" + url.PathEscape(customerID)
-	req, err := http.NewRequestWithContext(ctx, http.MethodGet, endpoint, nil)
-	if err != nil {
-		return "", err
-	}
-	req.Header.Set("Authorization", "Bearer "+apiKey)
-	req.Header.Set("Accept", "application/json")
-
-	resp, err := http.DefaultClient.Do(req)
-	if err != nil {
-		return "", err
-	}
-	defer resp.Body.Close()
-	if resp.StatusCode == http.StatusNotFound || resp.StatusCode == http.StatusUnauthorized || resp.StatusCode == http.StatusForbidden {
-		return "", nil
-	}
-	if resp.StatusCode < 200 || resp.StatusCode >= 300 {
-		body, _ := io.ReadAll(io.LimitReader(resp.Body, 2048))
-		return "", fmt.Errorf("paddle customer fetch failed status=%d body=%s", resp.StatusCode, strings.TrimSpace(string(body)))
-	}
-
-	var payload struct {
-		Data struct {
-			Email string `json:"email"`
-		} `json:"data"`
-	}
-	if err := json.NewDecoder(resp.Body).Decode(&payload); err != nil {
-		return "", err
-	}
-	return strings.ToLower(strings.TrimSpace(payload.Data.Email)), nil
 }
 
 func UpsertCustomer(ctx context.Context, userID, customerID string) error {
@@ -260,7 +139,7 @@ func UpsertCustomer(ctx context.Context, userID, customerID string) error {
 		return nil
 	}
 	result, err := db.BunDB.ExecContext(ctx,
-		"UPDATE billing_customers SET paddle_customer_id = ?, updated_at = CURRENT_TIMESTAMP WHERE user_id = ?",
+		"UPDATE billing_customers SET provider_customer_id = ?, updated_at = CURRENT_TIMESTAMP WHERE user_id = ?",
 		customerID,
 		userID,
 	)
@@ -276,14 +155,14 @@ func UpsertCustomer(ctx context.Context, userID, customerID string) error {
 	}
 
 	_, err = db.BunDB.ExecContext(ctx,
-		"INSERT INTO billing_customers(user_id, paddle_customer_id) VALUES (?, ?)",
+		"INSERT INTO billing_customers(user_id, provider_customer_id) VALUES (?, ?)",
 		userID,
 		customerID,
 	)
 	if err != nil {
 		if isUniqueConstraintErr(err) {
 			_, updateErr := db.BunDB.ExecContext(ctx,
-				"UPDATE billing_customers SET paddle_customer_id = ?, updated_at = CURRENT_TIMESTAMP WHERE user_id = ?",
+				"UPDATE billing_customers SET provider_customer_id = ?, updated_at = CURRENT_TIMESTAMP WHERE user_id = ?",
 				customerID,
 				userID,
 			)
@@ -296,45 +175,45 @@ func UpsertCustomer(ctx context.Context, userID, customerID string) error {
 
 func UpsertSubscription(ctx context.Context, update WebhookSubscriptionUpdate) error {
 	status := strings.ToLower(strings.TrimSpace(update.Status))
-	if strings.TrimSpace(update.PaddlePriceID) == "" {
+	if strings.TrimSpace(update.VariantID) == "" {
 		var existingPriceID string
 		err := db.BunDB.QueryRowContext(ctx,
-			"SELECT paddle_price_id FROM billing_subscriptions WHERE paddle_subscription_id = ? LIMIT 1",
-			strings.TrimSpace(update.PaddleSubscriptionID),
+			"SELECT provider_variant_id FROM billing_subscriptions WHERE provider_subscription_id = ? LIMIT 1",
+			strings.TrimSpace(update.SubscriptionID),
 		).Scan(&existingPriceID)
 		if err == nil {
-			update.PaddlePriceID = strings.TrimSpace(existingPriceID)
+			update.VariantID = strings.TrimSpace(existingPriceID)
 		} else if err != nil && !errors.Is(err, sql.ErrNoRows) {
 			return err
 		}
 	}
-	tier := TierFromPriceID(update.PaddlePriceID)
+	tier := TierFromPriceID(update.VariantID)
 	graceUntil := update.GraceUntil
 	if status == "past_due" && !graceUntil.Valid {
 		graceUntil = sql.NullTime{Time: time.Now().UTC().Add(PastDueGracePeriod), Valid: true}
 	}
 
 	row := db.BillingSubscription{
-		UserID:               strings.TrimSpace(update.UserID),
-		PaddleSubscriptionID: strings.TrimSpace(update.PaddleSubscriptionID),
-		PaddlePriceID:        strings.TrimSpace(update.PaddlePriceID),
-		Tier:                 tier,
-		Status:               status,
-		CurrentPeriodEndsAt:  update.CurrentPeriodEndsAt,
-		GraceUntil:           graceUntil,
-		CanceledAt:           update.CanceledAt,
+		UserID:                 strings.TrimSpace(update.UserID),
+		ProviderSubscriptionID: strings.TrimSpace(update.SubscriptionID),
+		ProviderVariantID:      strings.TrimSpace(update.VariantID),
+		Tier:                   tier,
+		Status:                 status,
+		CurrentPeriodEndsAt:    update.CurrentPeriodEndsAt,
+		GraceUntil:             graceUntil,
+		CanceledAt:             update.CanceledAt,
 	}
 
 	result, err := db.BunDB.ExecContext(ctx,
-		"UPDATE billing_subscriptions SET user_id = ?, paddle_price_id = ?, tier = ?, status = ?, current_period_ends_at = ?, grace_until = ?, canceled_at = ?, updated_at = CURRENT_TIMESTAMP WHERE paddle_subscription_id = ?",
+		"UPDATE billing_subscriptions SET user_id = ?, provider_variant_id = ?, tier = ?, status = ?, current_period_ends_at = ?, grace_until = ?, canceled_at = ?, updated_at = CURRENT_TIMESTAMP WHERE provider_subscription_id = ?",
 		row.UserID,
-		row.PaddlePriceID,
+		row.ProviderVariantID,
 		row.Tier,
 		row.Status,
 		row.CurrentPeriodEndsAt,
 		row.GraceUntil,
 		row.CanceledAt,
-		row.PaddleSubscriptionID,
+		row.ProviderSubscriptionID,
 	)
 	if err != nil {
 		return err
@@ -348,10 +227,10 @@ func UpsertSubscription(ctx context.Context, update WebhookSubscriptionUpdate) e
 	}
 
 	_, err = db.BunDB.ExecContext(ctx,
-		"INSERT INTO billing_subscriptions(paddle_subscription_id, user_id, paddle_price_id, tier, status, current_period_ends_at, grace_until, canceled_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
-		row.PaddleSubscriptionID,
+		"INSERT INTO billing_subscriptions(provider_subscription_id, user_id, provider_variant_id, tier, status, current_period_ends_at, grace_until, canceled_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
+		row.ProviderSubscriptionID,
 		row.UserID,
-		row.PaddlePriceID,
+		row.ProviderVariantID,
 		row.Tier,
 		row.Status,
 		row.CurrentPeriodEndsAt,
@@ -361,15 +240,15 @@ func UpsertSubscription(ctx context.Context, update WebhookSubscriptionUpdate) e
 	if err != nil {
 		if isUniqueConstraintErr(err) {
 			_, updateErr := db.BunDB.ExecContext(ctx,
-				"UPDATE billing_subscriptions SET user_id = ?, paddle_price_id = ?, tier = ?, status = ?, current_period_ends_at = ?, grace_until = ?, canceled_at = ?, updated_at = CURRENT_TIMESTAMP WHERE paddle_subscription_id = ?",
+				"UPDATE billing_subscriptions SET user_id = ?, provider_variant_id = ?, tier = ?, status = ?, current_period_ends_at = ?, grace_until = ?, canceled_at = ?, updated_at = CURRENT_TIMESTAMP WHERE provider_subscription_id = ?",
 				row.UserID,
-				row.PaddlePriceID,
+				row.ProviderVariantID,
 				row.Tier,
 				row.Status,
 				row.CurrentPeriodEndsAt,
 				row.GraceUntil,
 				row.CanceledAt,
-				row.PaddleSubscriptionID,
+				row.ProviderSubscriptionID,
 			)
 			return updateErr
 		}
@@ -446,22 +325,38 @@ func firstString(data map[string]any, paths ...string) string {
 	return ""
 }
 
+func statusFromEventType(eventType string) string {
+	switch strings.TrimSpace(strings.ToLower(eventType)) {
+	case "subscription_created", "subscription_resumed", "subscription_unpaused":
+		return "active"
+	case "subscription_cancelled", "subscription_expired":
+		return "canceled"
+	case "subscription_paused":
+		return "paused"
+	case "subscription_payment_failed":
+		return "past_due"
+	default:
+		return ""
+	}
+}
+
 func ParseWebhookSubscription(rawBody []byte) (WebhookSubscriptionUpdate, bool, error) {
 	var root map[string]any
 	if err := json.Unmarshal(rawBody, &root); err != nil {
 		return WebhookSubscriptionUpdate{}, false, err
 	}
 
-	eventType := firstString(root, "event_type", "type")
-	eventID := firstString(root, "event_id", "id", "notification_id")
+	eventType := strings.ToLower(firstString(root, "meta.event_name", "event_name", "event_type", "type"))
+	eventID := firstString(root, "meta.event_id", "meta.webhook_id", "event_id", "id", "notification_id")
+	if eventID == "" {
+		hash := sha256.Sum256(rawBody)
+		eventID = hex.EncodeToString(hash[:])
+	}
 	if eventType == "" {
 		return WebhookSubscriptionUpdate{}, false, errors.New("missing event type")
 	}
-	if eventID == "" {
-		return WebhookSubscriptionUpdate{}, false, errors.New("missing event id")
-	}
 
-	if !strings.HasPrefix(strings.ToLower(eventType), "subscription.") {
+	if !strings.HasPrefix(eventType, "subscription_") {
 		return WebhookSubscriptionUpdate{EventID: eventID, EventType: eventType}, false, nil
 	}
 
@@ -472,6 +367,8 @@ func ParseWebhookSubscription(rawBody []byte) (WebhookSubscriptionUpdate, bool, 
 	}
 
 	priceID := firstString(data,
+		"attributes.variant_id",
+		"attributes.first_subscription_item.variant_id",
 		"items[0].price.id",
 		"items[0].price_id",
 		"price.id",
@@ -479,20 +376,23 @@ func ParseWebhookSubscription(rawBody []byte) (WebhookSubscriptionUpdate, bool, 
 	)
 
 	update := WebhookSubscriptionUpdate{
-		EventID:              eventID,
-		EventType:            eventType,
-		PaddleSubscriptionID: firstString(data, "id", "subscription_id"),
-		PaddleCustomerID:     firstString(data, "customer_id", "customer.id"),
-		PaddlePriceID:        priceID,
-		Status:               strings.ToLower(firstString(data, "status")),
-		UserID:               firstString(data, "custom_data.user_id", "metadata.user_id"),
-		CustomerEmail:        strings.ToLower(firstString(data, "customer.email", "customer_email", "email")),
-		CurrentPeriodEndsAt:  parseTime(firstString(data, "current_billing_period.ends_at", "next_billed_at", "scheduled_change.effective_at")),
-		CanceledAt:           parseTime(firstString(data, "canceled_at")),
-		GraceUntil:           parseTime(firstString(data, "custom_data.grace_until")),
+		EventID:             eventID,
+		EventType:           eventType,
+		SubscriptionID:      firstString(data, "id", "attributes.id", "subscription_id"),
+		CustomerID:          firstString(data, "attributes.customer_id", "customer_id", "customer.id"),
+		VariantID:           priceID,
+		Status:              strings.ToLower(firstString(data, "attributes.status", "status")),
+		UserID:              firstString(root, "meta.custom_data.user_id", "meta.custom_data.userID", "data.attributes.custom_data.user_id", "custom_data.user_id", "metadata.user_id"),
+		CustomerEmail:       strings.ToLower(firstString(data, "attributes.user_email", "attributes.customer_email", "customer.email", "customer_email", "email")),
+		CurrentPeriodEndsAt: parseTime(firstString(data, "attributes.renews_at", "attributes.ends_at", "current_billing_period.ends_at", "next_billed_at", "scheduled_change.effective_at")),
+		CanceledAt:          parseTime(firstString(data, "attributes.cancelled", "attributes.ends_at", "canceled_at")),
+		GraceUntil:          parseTime(firstString(root, "meta.custom_data.grace_until", "data.attributes.custom_data.grace_until", "custom_data.grace_until")),
+	}
+	if update.Status == "" {
+		update.Status = statusFromEventType(eventType)
 	}
 
-	if update.PaddleSubscriptionID == "" {
+	if update.SubscriptionID == "" {
 		return WebhookSubscriptionUpdate{}, false, errors.New("missing subscription id")
 	}
 
@@ -516,12 +416,12 @@ func ProcessWebhook(ctx context.Context, rawBody []byte) (bool, error) {
 		return true, nil
 	}
 
-	userID, err := ResolveUserIDForWebhook(ctx, update.UserID, update.PaddleCustomerID, update.CustomerEmail)
+	userID, err := ResolveUserIDForWebhook(ctx, update.UserID, update.CustomerID, update.CustomerEmail)
 	if err != nil {
 		return false, err
 	}
 	if userID == "" {
-		userID, err = resolveUserIDBySubscriptionID(ctx, update.PaddleSubscriptionID)
+		userID, err = resolveUserIDBySubscriptionID(ctx, update.SubscriptionID)
 		if err != nil {
 			return false, err
 		}
@@ -531,7 +431,7 @@ func ProcessWebhook(ctx context.Context, rawBody []byte) (bool, error) {
 	}
 
 	update.UserID = userID
-	if err := UpsertCustomer(ctx, update.UserID, update.PaddleCustomerID); err != nil {
+	if err := UpsertCustomer(ctx, update.UserID, update.CustomerID); err != nil {
 		return false, err
 	}
 	if err := UpsertSubscription(ctx, update); err != nil {

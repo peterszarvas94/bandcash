@@ -18,23 +18,23 @@ type BannedUser struct {
 }
 
 type BillingCustomer struct {
-	UserID           string    `json:"user_id"`
-	PaddleCustomerID string    `json:"paddle_customer_id"`
-	CreatedAt        time.Time `json:"created_at"`
-	UpdatedAt        time.Time `json:"updated_at"`
+	UserID             string    `json:"user_id"`
+	ProviderCustomerID string    `json:"provider_customer_id"`
+	CreatedAt          time.Time `json:"created_at"`
+	UpdatedAt          time.Time `json:"updated_at"`
 }
 
 type BillingSubscription struct {
-	UserID               string       `json:"user_id"`
-	PaddleSubscriptionID string       `json:"paddle_subscription_id"`
-	PaddlePriceID        string       `json:"paddle_price_id"`
-	Tier                 string       `json:"tier"`
-	Status               string       `json:"status"`
-	CurrentPeriodEndsAt  sql.NullTime `json:"current_period_ends_at"`
-	GraceUntil           sql.NullTime `json:"grace_until"`
-	CanceledAt           sql.NullTime `json:"canceled_at"`
-	CreatedAt            time.Time    `json:"created_at"`
-	UpdatedAt            time.Time    `json:"updated_at"`
+	UserID                 string       `json:"user_id"`
+	ProviderSubscriptionID string       `json:"provider_subscription_id"`
+	ProviderVariantID      string       `json:"provider_variant_id"`
+	Tier                   string       `json:"tier"`
+	Status                 string       `json:"status"`
+	CurrentPeriodEndsAt    sql.NullTime `json:"current_period_ends_at"`
+	GraceUntil             sql.NullTime `json:"grace_until"`
+	CanceledAt             sql.NullTime `json:"canceled_at"`
+	CreatedAt              time.Time    `json:"created_at"`
+	UpdatedAt              time.Time    `json:"updated_at"`
 }
 
 type BillingWebhookEvent struct {

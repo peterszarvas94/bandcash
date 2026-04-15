@@ -168,7 +168,7 @@ en:
       single_description: "Each active subscription slot allows owning one group. Price: 10 EUR/month per slot."
       buy_another_slot: "Buy another slot"
       login_required: "Log in first to start a subscription."
-      paddle_not_configured: "Paddle checkout is not configured for this environment yet."
+      hosted_not_configured: "Subscription portal is not configured for this environment yet."
   account:
     title: "Account"
     page_title: "BandCash - Account"

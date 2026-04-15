@@ -29,7 +29,7 @@ func registerRoutes(e *echo.Echo) {
 	e.POST("/login", auth.LoginRequest, middleware.AuthBodyLimit, middleware.AuthRateLimit)
 	e.GET("/login/verify", auth.VerifyMagicLink)
 	e.DELETE("/session", auth.Logout)
-	e.POST("/paddle_webhook", billingmodel.PaddleWebhook)
+	e.POST("/lemon_webhook", billingmodel.LemonWebhook)
 
 	adminRoutes := e.Group("/admin", middleware.RequireAuth, middleware.RequireSuperadmin)
 	adminRoutes.GET("", admin.Dashboard)

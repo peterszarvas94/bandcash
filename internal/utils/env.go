@@ -10,27 +10,23 @@ import (
 )
 
 type EnvConfig struct {
-	Host                string
-	Port                int
-	LogLevel            slog.Level
-	LogFolder           string
-	LogPrefix           string
-	DBPath              string
-	URL                 string
-	AppEnv              string
-	SuperadminEmail     string
-	DisableRateLimit    bool
-	SMTPHost            string
-	SMTPPort            int
-	SMTPUser            string
-	SMTPPass            string
-	EmailFrom           string
-	PaddleEnv           string
-	PaddleAPIKey        string
-	PaddleAPIBaseURL    string
-	PaddleClientToken   string
-	PaddleWebhookSecret string
-	PaddlePriceID       string
+	Host               string
+	Port               int
+	LogLevel           slog.Level
+	LogFolder          string
+	LogPrefix          string
+	DBPath             string
+	URL                string
+	AppEnv             string
+	SuperadminEmail    string
+	DisableRateLimit   bool
+	SMTPHost           string
+	SMTPPort           int
+	SMTPUser           string
+	SMTPPass           string
+	EmailFrom          string
+	LemonWebhookSecret string
+	LemonHostedURL     string
 }
 
 const DefaultSuperadminEmail = "admin@bandcash.localhost"
@@ -71,18 +67,10 @@ type envVars struct {
 	SMTPPass string `env:"SMTP_PASSWORD" validate:"required_if=AppEnv production,required_if=AppEnv staging"`
 	// EmailFrom is the default From header for app emails.
 	EmailFrom string `env:"EMAIL_FROM" envDefault:"BandCash <noreply@bandcash.localhost>" validate:"required_if=AppEnv production,required_if=AppEnv staging"`
-	// PaddleEnv defines the Paddle environment used by client SDK and API calls.
-	PaddleEnv string `env:"PADDLE_ENV" envDefault:"" validate:"omitempty,oneof=sandbox production"`
-	// PaddleAPIKey is the Paddle server API key.
-	PaddleAPIKey string `env:"PADDLE_API_KEY"`
-	// PaddleAPIBaseURL is the Paddle API base URL (for example https://sandbox-api.paddle.com).
-	PaddleAPIBaseURL string `env:"PADDLE_API_BASE_URL"`
-	// PaddleClientToken is the client-side token used by Paddle.js.
-	PaddleClientToken string `env:"PADDLE_CLIENT_TOKEN"`
-	// PaddleWebhookSecret is the endpoint secret used to verify webhook signatures.
-	PaddleWebhookSecret string `env:"PADDLE_WEBHOOK_SECRET"`
-	// PaddlePriceID is the single monthly subscription slot price id.
-	PaddlePriceID string `env:"PADDLE_PRICE_ID"`
+	// LemonWebhookSecret is the endpoint secret used to verify webhook signatures.
+	LemonWebhookSecret string `env:"LEMON_WEBHOOK_SECRET"`
+	// LemonHostedURL is the hosted customer billing URL where users manage subscriptions.
+	LemonHostedURL string `env:"LEMON_HOSTED_URL"`
 }
 
 func Env() *EnvConfig {
@@ -113,27 +101,23 @@ func Env() *EnvConfig {
 		}
 
 		envCfg = &EnvConfig{
-			Host:                parsed.Host,
-			Port:                parsed.Port,
-			LogLevel:            logLevel,
-			LogFolder:           parsed.LogFolder,
-			LogPrefix:           parsed.LogPrefix,
-			DBPath:              parsed.DBPath,
-			URL:                 parsed.URL,
-			AppEnv:              parsed.AppEnv,
-			SuperadminEmail:     superadminEmail,
-			DisableRateLimit:    parsed.DisableRateLimit,
-			SMTPHost:            parsed.SMTPHost,
-			SMTPPort:            parsed.SMTPPort,
-			SMTPUser:            parsed.SMTPUser,
-			SMTPPass:            parsed.SMTPPass,
-			EmailFrom:           parsed.EmailFrom,
-			PaddleEnv:           strings.ToLower(strings.TrimSpace(parsed.PaddleEnv)),
-			PaddleAPIKey:        strings.TrimSpace(parsed.PaddleAPIKey),
-			PaddleAPIBaseURL:    strings.TrimSpace(parsed.PaddleAPIBaseURL),
-			PaddleClientToken:   strings.TrimSpace(parsed.PaddleClientToken),
-			PaddleWebhookSecret: strings.TrimSpace(parsed.PaddleWebhookSecret),
-			PaddlePriceID:       strings.TrimSpace(parsed.PaddlePriceID),
+			Host:               parsed.Host,
+			Port:               parsed.Port,
+			LogLevel:           logLevel,
+			LogFolder:          parsed.LogFolder,
+			LogPrefix:          parsed.LogPrefix,
+			DBPath:             parsed.DBPath,
+			URL:                parsed.URL,
+			AppEnv:             parsed.AppEnv,
+			SuperadminEmail:    superadminEmail,
+			DisableRateLimit:   parsed.DisableRateLimit,
+			SMTPHost:           parsed.SMTPHost,
+			SMTPPort:           parsed.SMTPPort,
+			SMTPUser:           parsed.SMTPUser,
+			SMTPPass:           parsed.SMTPPass,
+			EmailFrom:          parsed.EmailFrom,
+			LemonWebhookSecret: strings.TrimSpace(parsed.LemonWebhookSecret),
+			LemonHostedURL:     strings.TrimSpace(parsed.LemonHostedURL),
 		}
 	})
 	return envCfg

@@ -10,7 +10,7 @@ ruby = "3.4.2"
 
 [tasks]
 app = "./scripts/with_dev_secrets.sh air"
-tunnel-app = "cloudflared tunnel run ${CLOUDFLARED_TUNNEL_APP:-bandcash}"
+tunnel-app = "cloudflared tunnel run ${CLOUDFLARED_TUNNEL_APP:-bandcash-app}"
 preflight = "go run ./cmd/devpreflight/main.go"
 assets = "go run ./cmd/assets/main.go"
 start = "./tmp/server"
