@@ -13,3 +13,4 @@ static/gen/
 .env.local
 .env.*.local
 .opencode/
+*_templ.go
