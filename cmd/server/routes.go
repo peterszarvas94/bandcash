@@ -10,7 +10,6 @@ import (
 	"bandcash/models/account"
 	"bandcash/models/admin"
 	"bandcash/models/auth"
-	billingmodel "bandcash/models/billing"
 	"bandcash/models/dev"
 	"bandcash/models/event"
 	"bandcash/models/expense"
@@ -29,7 +28,8 @@ func registerRoutes(e *echo.Echo) {
 	e.POST("/login", auth.LoginRequest, middleware.AuthBodyLimit, middleware.AuthRateLimit)
 	e.GET("/login/verify", auth.VerifyMagicLink)
 	e.DELETE("/session", auth.Logout)
-	e.POST("/lemon_webhook", billingmodel.LemonWebhook)
+	// Temporarily disabled until Lemon Squeezy store approval.
+	// e.POST("/lemon_webhook", billingmodel.LemonWebhook)
 
 	adminRoutes := e.Group("/admin", middleware.RequireAuth, middleware.RequireSuperadmin)
 	adminRoutes.GET("", admin.Dashboard)
@@ -80,7 +80,8 @@ func registerRoutes(e *echo.Echo) {
 	groupOwnerRoutes.PUT("/users/:id/transfer-owner", grp.TransferGroupOwnership)
 
 	e.GET("/", home.Index)
-	e.GET("/pricing", home.Pricing)
+	// Temporarily disabled until Lemon Squeezy store approval.
+	// e.GET("/pricing", home.Pricing)
 	e.GET("/terms-and-conditions", home.TermsAndConditions)
 	e.GET("/privacy-policy", home.PrivacyPolicy)
 	e.GET("/refund-policy", home.RefundPolicy)

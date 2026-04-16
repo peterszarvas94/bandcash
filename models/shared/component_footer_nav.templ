@@ -17,9 +17,10 @@ templ Footer(isSuperAdmin bool, activeUrl string) {
 				</a>
 			</div>
 			<div>
-				<a class={ "link", templ.KV("link-active", activeUrl == "/pricing") } href="/pricing">
-					{ ctxi18n.T(ctx, "legal.pricing") }
-				</a>
+				// Temporarily disabled until Lemon Squeezy store approval.
+				// <a class={ "link", templ.KV("link-active", activeUrl == "/pricing") } href="/pricing">
+				// 	{ ctxi18n.T(ctx, "legal.pricing") }
+				// </a>
 				<a class={ "link", templ.KV("link-active", activeUrl == "/terms-and-conditions") } href="/terms-and-conditions">
 					{ ctxi18n.T(ctx, "legal.terms_and_conditions") }
 				</a>

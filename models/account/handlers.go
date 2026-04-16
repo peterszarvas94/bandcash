@@ -3,14 +3,12 @@ package account
 import (
 	"log/slog"
 	"net/http"
-	"strings"
 
 	ctxi18nlib "github.com/invopop/ctxi18n"
 	ctxi18n "github.com/invopop/ctxi18n/i18n"
 	"github.com/labstack/echo/v4"
 	"github.com/starfederation/datastar-go/datastar"
 
-	"bandcash/internal/billing"
 	"bandcash/internal/db"
 	appi18n "bandcash/internal/i18n"
 	"bandcash/internal/utils"
@@ -38,21 +36,7 @@ func Index(c echo.Context) error {
 		data.UserEmail = user.Email
 		data.CurrentLang = appi18n.NormalizeLocale(user.PreferredLang)
 	}
-	if state, err := billing.CurrentAccessState(c.Request().Context(), userID); err == nil {
-		data.SubscriptionSlots = state.SubscriptionCount
-		data.UsedSlots = state.OwnedGroupCount
-		data.RemainingSlots = state.RemainingSlots
-	} else {
-		slog.Warn("account.index: failed to load billing state", "user_id", userID, "err", err)
-	}
-	if sub, found, err := billing.GetUserSubscription(c.Request().Context(), userID); err == nil && found {
-		data.SubscriptionPortalURL = strings.TrimSpace(sub.ProviderPortalURL)
-		if data.SubscriptionPortalURL == "" {
-			data.SubscriptionPortalURL = strings.TrimSpace(utils.Env().LemonHostedURL)
-		}
-	} else if err != nil {
-		slog.Warn("account.index: failed to load user subscription", "user_id", userID, "err", err)
-	}
+	// Temporarily disabled until Lemon Squeezy store approval.
 	data.Signals = map[string]any{"formData": map[string]any{"lang": data.CurrentLang}}
 	data.IsAuthenticated = true
 	data.IsSuperAdmin = utils.IsSuperadmin(c)

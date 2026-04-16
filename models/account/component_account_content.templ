@@ -1,28 +1,16 @@
 package account
 
 import (
-	"strings"
 	shared "bandcash/models/shared"
 	icons "bandcash/models/shared/icons"
 	ctxi18n "github.com/invopop/ctxi18n/i18n"
 )
 
 templ AccountContent(data AccountData) {
-	{{ portalURL := strings.TrimSpace(data.SubscriptionPortalURL) }}
 	<div class="row row-wrap">
 		{ ctxi18n.T(ctx, "nav.logged_in_as") } <strong>{ data.UserEmail }</strong>
 	</div>
-	<div class="stack card">
-		<h2>{ ctxi18n.T(ctx, "account.subscription") }</h2>
-		<p><strong>{ data.UsedSlots }/{ data.SubscriptionSlots }</strong> { ctxi18n.T(ctx, "account.groups_created") }</p>
-		<div class="row row-wrap">
-			if portalURL != "" {
-				<a class="btn" href={ portalURL } target="_blank" rel="noopener noreferrer">{ ctxi18n.T(ctx, "account.manage_subscription") }</a>
-			} else {
-				<button class="btn" disabled>{ ctxi18n.T(ctx, "account.manage_subscription") }</button>
-			}
-		</div>
-	</div>
+	// Temporarily disabled until Lemon Squeezy store approval.
 	<div class="row row-wrap">
 		@shared.ConfirmActionButton(shared.ConfirmActionButtonProps{
 			ClassName:    "btn",
