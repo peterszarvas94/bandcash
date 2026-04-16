@@ -499,11 +499,11 @@ func DateFilterCustomButtonClass(query TableQuery) string {
 }
 
 func DateFilterAllActive(query TableQuery) bool {
-	return query.DateMode != "custom" && query.Year == "" && !(query.From != "" && query.To != "")
+	return query.DateMode != "custom" && query.Year == "" && (query.From == "" || query.To == "")
 }
 
 func DateFilterYearActive(query TableQuery, year string) bool {
-	return query.Year == year && !(query.From != "" && query.To != "")
+	return query.Year == year && (query.From == "" || query.To == "")
 }
 
 func DateFilterCustomActive(query TableQuery) bool {

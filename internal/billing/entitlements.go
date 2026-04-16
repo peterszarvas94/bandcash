@@ -14,7 +14,6 @@ import (
 const (
 	TierFree = "free"
 	TierPro  = "pro"
-	TierMax  = "max"
 )
 
 const PastDueGracePeriod = 7 * 24 * time.Hour
@@ -25,16 +24,6 @@ type AccessState struct {
 	SubscriptionCount int
 	OwnedGroupCount   int
 	RemainingSlots    int
-}
-
-func normalizeTier(tier string) string {
-	t := strings.ToLower(strings.TrimSpace(tier))
-	switch t {
-	case TierPro, TierMax:
-		return t
-	default:
-		return TierFree
-	}
 }
 
 func IsSubscriptionActive(status string, graceUntil sql.NullTime, now time.Time) bool {

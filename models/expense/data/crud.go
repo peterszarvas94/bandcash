@@ -98,7 +98,7 @@ func DeleteExpenseByID(ctx context.Context, id string) error {
 }
 
 func ToggleExpensePaid(ctx context.Context, arg ToggleExpensePaidParams) (db.Expense, error) {
-	current, err := GetExpense(ctx, GetExpenseParams{ID: arg.ID, GroupID: arg.GroupID})
+	current, err := GetExpense(ctx, GetExpenseParams(arg))
 	if err != nil {
 		return db.Expense{}, err
 	}
@@ -119,10 +119,10 @@ func ToggleExpensePaid(ctx context.Context, arg ToggleExpensePaidParams) (db.Exp
 	if err != nil {
 		return db.Expense{}, err
 	}
-	return GetExpense(ctx, GetExpenseParams{ID: arg.ID, GroupID: arg.GroupID})
+	return GetExpense(ctx, GetExpenseParams(arg))
 }
 
-func paidAtNullable(v interface{}) sql.NullString {
+func paidAtNullable(v any) sql.NullString {
 	switch t := v.(type) {
 	case nil:
 		return sql.NullString{}
@@ -142,7 +142,7 @@ func paidAtNullable(v interface{}) sql.NullString {
 	}
 }
 
-func isPaidAtClearRequest(v interface{}) bool {
+func isPaidAtClearRequest(v any) bool {
 	switch t := v.(type) {
 	case string:
 		return strings.TrimSpace(t) == ""
@@ -157,7 +157,7 @@ func currentTimestampNullString() sql.NullString {
 	return sql.NullString{String: time.Now().UTC().Format("2006-01-02 15:04:05"), Valid: true}
 }
 
-func paidAtValue(v sql.NullString) interface{} {
+func paidAtValue(v sql.NullString) any {
 	if v.Valid {
 		return v.String
 	}

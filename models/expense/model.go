@@ -2,8 +2,6 @@ package expense
 
 import (
 	"context"
-	"sort"
-	"strings"
 
 	ctxi18n "github.com/invopop/ctxi18n/i18n"
 
@@ -72,74 +70,6 @@ type expenseCalcTotals struct {
 	Total      int64
 	Paid       int64
 	Unpaid     int64
-}
-
-func matchesExpenseFilters(expense db.Expense, query utils.TableQuery) bool {
-	if query.Search != "" {
-		searchLower := strings.ToLower(query.Search)
-		if !strings.Contains(strings.ToLower(expense.Title), searchLower) &&
-			!strings.Contains(strings.ToLower(expense.Description), searchLower) {
-			return false
-		}
-	}
-
-	if query.Year != "" && !strings.HasPrefix(expense.Date, query.Year) {
-		return false
-	}
-
-	if query.From != "" && expense.Date < query.From {
-		return false
-	}
-	if query.To != "" && expense.Date > query.To {
-		return false
-	}
-
-	return true
-}
-
-func sortExpenses(expenses []db.Expense, sortField, dir string) {
-	less := func(i, j int) bool {
-		switch sortField {
-		case "title":
-			if dir == "desc" {
-				return expenses[i].Title > expenses[j].Title
-			}
-			return expenses[i].Title < expenses[j].Title
-		case "amount":
-			if dir == "desc" {
-				return expenses[i].Amount > expenses[j].Amount
-			}
-			return expenses[i].Amount < expenses[j].Amount
-		case "paid":
-			if dir == "desc" {
-				return expenses[i].Paid > expenses[j].Paid
-			}
-			return expenses[i].Paid < expenses[j].Paid
-		case "paid_at":
-			if expenses[i].PaidAt.Valid && expenses[j].PaidAt.Valid {
-				if dir == "desc" {
-					return expenses[i].PaidAt.String > expenses[j].PaidAt.String
-				}
-				return expenses[i].PaidAt.String < expenses[j].PaidAt.String
-			}
-			if expenses[i].PaidAt.Valid != expenses[j].PaidAt.Valid {
-				if dir == "desc" {
-					return !expenses[i].PaidAt.Valid
-				}
-				return expenses[i].PaidAt.Valid
-			}
-			if dir == "asc" {
-				return expenses[i].Date < expenses[j].Date
-			}
-			return expenses[i].Date > expenses[j].Date
-		default: // date
-			if dir == "asc" {
-				return expenses[i].Date < expenses[j].Date
-			}
-			return expenses[i].Date > expenses[j].Date
-		}
-	}
-	sort.Slice(expenses, less)
 }
 
 func buildExpensesData(ctx context.Context, groupID string, group db.Group, query utils.TableQuery, expenses []db.Expense, totals expenseCalcTotals) (ExpensesData, error) {

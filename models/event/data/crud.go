@@ -128,7 +128,7 @@ func DeleteEventByID(ctx context.Context, id string) error {
 }
 
 func ToggleEventPaid(ctx context.Context, arg ToggleEventPaidParams) (db.Event, error) {
-	current, err := GetEvent(ctx, GetEventParams{ID: arg.ID, GroupID: arg.GroupID})
+	current, err := GetEvent(ctx, GetEventParams(arg))
 	if err != nil {
 		return db.Event{}, err
 	}
@@ -149,7 +149,7 @@ func ToggleEventPaid(ctx context.Context, arg ToggleEventPaidParams) (db.Event, 
 	if err != nil {
 		return db.Event{}, err
 	}
-	return GetEvent(ctx, GetEventParams{ID: arg.ID, GroupID: arg.GroupID})
+	return GetEvent(ctx, GetEventParams(arg))
 }
 
 func UpdateEventPaidAt(ctx context.Context, arg UpdateEventPaidAtParams) (db.Event, error) {

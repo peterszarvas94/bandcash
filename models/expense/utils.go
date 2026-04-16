@@ -6,10 +6,7 @@ import (
 	"net/url"
 	"strings"
 
-	"github.com/labstack/echo/v4"
-
 	"bandcash/internal/utils"
-	authstore "bandcash/models/auth/data"
 )
 
 func normalizeCacheKeyPart(value string) string {
@@ -42,18 +39,6 @@ type staticTableQueryable struct {
 
 func (s staticTableQueryable) TableQuerySpec() utils.TableQuerySpec {
 	return s.spec
-}
-
-func getUserEmail(c echo.Context) string {
-	userID := utils.GetUserID(c)
-	if userID == "" {
-		return ""
-	}
-	user, err := authstore.GetUserByID(c.Request().Context(), userID)
-	if err != nil {
-		return ""
-	}
-	return user.Email
 }
 
 func applyExpenseTableByRole(data *ExpensesData, isAdmin bool) {

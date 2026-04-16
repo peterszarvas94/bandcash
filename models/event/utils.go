@@ -3,6 +3,7 @@ package event
 import (
 	"database/sql"
 	"fmt"
+	"log/slog"
 	"net/url"
 	"strings"
 
@@ -11,7 +12,6 @@ import (
 
 	"bandcash/internal/db"
 	"bandcash/internal/utils"
-	authstore "bandcash/models/auth/data"
 )
 
 func normalizeCacheKeyPart(value string) string {
@@ -111,18 +111,6 @@ func paidAtArg(isPaid bool, paidAt string) sql.NullString {
 	}
 
 	return sql.NullString{String: normalized, Valid: true}
-}
-
-func getUserEmail(c echo.Context) string {
-	userID := utils.GetUserID(c)
-	if userID == "" {
-		return ""
-	}
-	user, err := authstore.GetUserByID(c.Request().Context(), userID)
-	if err != nil {
-		return ""
-	}
-	return user.Email
 }
 
 func applyEventIndexTableByRole(data *EventsData, isAdmin bool) {
@@ -267,7 +255,7 @@ func mergeWizardRows(base []ParticipantWizardRow, allMembers []db.Member, incomi
 func patchWizardError(c echo.Context, wizard participantWizardSignals, message string, rowID string) {
 	_ = rowID
 
-	utils.SSEHub.PatchSignals(c, map[string]any{
+	if err := utils.SSEHub.PatchSignals(c, map[string]any{
 		"wizard": map[string]any{
 			"eventAmount": wizard.EventAmount,
 			"rows":        wizard.Rows,
@@ -285,7 +273,9 @@ func patchWizardError(c echo.Context, wizard participantWizardSignals, message s
 		"errors": map[string]any{
 			"memberId": "",
 		},
-	})
+	}); err != nil {
+		slog.Warn("event.wizard: failed to patch error signals", "err", err)
+	}
 }
 
 func patchEventShow(c echo.Context, groupID, eventID string, query utils.TableQuery, editorMode string, eventForm eventData, wizardEventAmount int64, wizardRows []participantBulkRowData, wizardMemberIDs map[string]string, wizardAmounts map[string]int64, wizardExpenses map[string]int64, wizardNotes map[string]string, wizardPaids map[string]bool, wizardPaidAts map[string]string, wizardError string) error {
@@ -357,7 +347,11 @@ func patchEventShow(c echo.Context, groupID, eventID string, query utils.TableQu
 		return err
 	}
 
-	utils.SSEHub.PatchHTML(c, html)
-	utils.SSEHub.PatchSignals(c, eventShowSignals(data))
+	if err := utils.SSEHub.PatchHTML(c, html); err != nil {
+		return err
+	}
+	if err := utils.SSEHub.PatchSignals(c, eventShowSignals(data)); err != nil {
+		return err
+	}
 	return nil
 }
