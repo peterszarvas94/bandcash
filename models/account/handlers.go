@@ -3,6 +3,7 @@ package account
 import (
 	"log/slog"
 	"net/http"
+	"strings"
 
 	ctxi18nlib "github.com/invopop/ctxi18n"
 	ctxi18n "github.com/invopop/ctxi18n/i18n"
@@ -44,12 +45,19 @@ func Index(c echo.Context) error {
 	} else {
 		slog.Warn("account.index: failed to load billing state", "user_id", userID, "err", err)
 	}
+	if sub, found, err := billing.GetUserSubscription(c.Request().Context(), userID); err == nil && found {
+		data.SubscriptionPortalURL = strings.TrimSpace(sub.ProviderPortalURL)
+		if data.SubscriptionPortalURL == "" {
+			data.SubscriptionPortalURL = strings.TrimSpace(utils.Env().LemonHostedURL)
+		}
+	} else if err != nil {
+		slog.Warn("account.index: failed to load user subscription", "user_id", userID, "err", err)
+	}
 	data.Signals = map[string]any{"formData": map[string]any{"lang": data.CurrentLang}}
 	data.IsAuthenticated = true
 	data.IsSuperAdmin = utils.IsSuperadmin(c)
 	return utils.RenderPage(c, AccountIndex(data))
 }
-
 func LanguagePageHandler(c echo.Context) error {
 	utils.EnsureTabID(c)
 	data := Data(c.Request().Context())

@@ -9,8 +9,7 @@ templ HomePricingMain(currentLang string, userID string, userEmail string) {
 	{{
 		env := utils.Env()
 		hostedURL := strings.TrimSpace(env.LemonHostedURL)
-		isAuthenticated := strings.TrimSpace(userID) != ""
-		lemonEnabled := isAuthenticated && hostedURL != ""
+		lemonEnabled := hostedURL != ""
 		urlState := "no"
 		if hostedURL != "" {
 			urlState = "yes"
@@ -21,22 +20,32 @@ templ HomePricingMain(currentLang string, userID string, userEmail string) {
 		if env.AppEnv == "development" && hostedURL == "" {
 			<p class="color-muted text-sm">Lemon config: hosted_url={ urlState }</p>
 		}
-		<div class="stack">
-			<section class="card stack">
-				<h2>{ ctxi18n.T(ctx, "billing.pricing.single_title") }</h2>
-				<p class="color-muted">{ ctxi18n.T(ctx, "billing.pricing.single_description") }</p>
-				if lemonEnabled {
-					<a class="btn btn-primary" href={ hostedURL } target="_blank" rel="noopener noreferrer">{ ctxi18n.T(ctx, "billing.pricing.buy_another_slot") }</a>
-				} else {
-					<button class="btn btn-primary" disabled>{ ctxi18n.T(ctx, "billing.pricing.buy_another_slot") }</button>
-				}
-			</section>
+		<div class="pricing-page">
+			<div class="pricing-grid pricing-grid-plans">
+				<article class="pricing-plan pricing-plan-free">
+					<h2>{ ctxi18n.T(ctx, "billing.pricing.free_title") }</h2>
+					<p class="pricing-price">{ ctxi18n.T(ctx, "billing.pricing.free_price") }</p>
+					<ul class="pricing-feature-list">
+						<li>{ ctxi18n.T(ctx, "billing.pricing.free_feature_groups") }</li>
+						<li>{ ctxi18n.T(ctx, "billing.pricing.free_feature_events") }</li>
+					</ul>
+				</article>
+				<article class="pricing-plan pricing-plan-pro">
+					<h2>{ ctxi18n.T(ctx, "billing.pricing.pro_title") }</h2>
+					<p class="pricing-price">{ ctxi18n.T(ctx, "billing.pricing.pro_price") }</p>
+					<ul class="pricing-feature-list">
+						<li>{ ctxi18n.T(ctx, "billing.pricing.pro_feature_groups") }</li>
+						<li>{ ctxi18n.T(ctx, "billing.pricing.pro_feature_events") }</li>
+					</ul>
+					if lemonEnabled {
+						<a class="btn btn-primary" href={ hostedURL } target="_blank" rel="noopener noreferrer">{ ctxi18n.T(ctx, "account.manage_subscription") }</a>
+					} else {
+						<button class="btn btn-primary" disabled>{ ctxi18n.T(ctx, "account.manage_subscription") }</button>
+					}
+				</article>
+			</div>
 			if !lemonEnabled {
-				if !isAuthenticated {
-					<p class="color-muted text-sm">{ ctxi18n.T(ctx, "billing.pricing.login_required") }</p>
-				} else {
-					<p class="color-muted text-sm">{ ctxi18n.T(ctx, "billing.pricing.hosted_not_configured") }</p>
-				}
+				<p class="color-muted text-sm">{ ctxi18n.T(ctx, "billing.pricing.hosted_not_configured") }</p>
 			}
 		</div>
 	</section>

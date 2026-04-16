@@ -21,11 +21,15 @@ type WebhookSubscriptionUpdate struct {
 	EventID             string
 	EventType           string
 	SubscriptionID      string
+	SubscriptionItemID  string
 	CustomerID          string
 	VariantID           string
+	SeatQuantity        int
 	Status              string
 	UserID              string
 	CustomerEmail       string
+	PortalURL           string
+	UpdatePaymentURL    string
 	CurrentPeriodEndsAt sql.NullTime
 	CanceledAt          sql.NullTime
 	GraceUntil          sql.NullTime
@@ -175,14 +179,33 @@ func UpsertCustomer(ctx context.Context, userID, customerID string) error {
 
 func UpsertSubscription(ctx context.Context, update WebhookSubscriptionUpdate) error {
 	status := strings.ToLower(strings.TrimSpace(update.Status))
+	if update.SeatQuantity < 1 {
+		update.SeatQuantity = 1
+	}
 	if strings.TrimSpace(update.VariantID) == "" {
-		var existingPriceID string
+		var existingPriceID, existingSubscriptionItemID, existingPortalURL, existingUpdatePaymentURL string
+		var existingSeatQuantity int
 		err := db.BunDB.QueryRowContext(ctx,
-			"SELECT provider_variant_id FROM billing_subscriptions WHERE provider_subscription_id = ? LIMIT 1",
+			"SELECT provider_variant_id, COALESCE(provider_subscription_item_id, ''), COALESCE(seat_quantity, 1), COALESCE(provider_portal_url, ''), COALESCE(provider_update_payment_url, '') FROM billing_subscriptions WHERE provider_subscription_id = ? LIMIT 1",
 			strings.TrimSpace(update.SubscriptionID),
-		).Scan(&existingPriceID)
+		).Scan(&existingPriceID, &existingSubscriptionItemID, &existingSeatQuantity, &existingPortalURL, &existingUpdatePaymentURL)
 		if err == nil {
 			update.VariantID = strings.TrimSpace(existingPriceID)
+			if strings.TrimSpace(update.SubscriptionItemID) == "" {
+				update.SubscriptionItemID = strings.TrimSpace(existingSubscriptionItemID)
+			}
+			if update.SeatQuantity < 1 {
+				update.SeatQuantity = existingSeatQuantity
+				if update.SeatQuantity < 1 {
+					update.SeatQuantity = 1
+				}
+			}
+			if strings.TrimSpace(update.PortalURL) == "" {
+				update.PortalURL = strings.TrimSpace(existingPortalURL)
+			}
+			if strings.TrimSpace(update.UpdatePaymentURL) == "" {
+				update.UpdatePaymentURL = strings.TrimSpace(existingUpdatePaymentURL)
+			}
 		} else if err != nil && !errors.Is(err, sql.ErrNoRows) {
 			return err
 		}
@@ -194,25 +217,33 @@ func UpsertSubscription(ctx context.Context, update WebhookSubscriptionUpdate) e
 	}
 
 	row := db.BillingSubscription{
-		UserID:                 strings.TrimSpace(update.UserID),
-		ProviderSubscriptionID: strings.TrimSpace(update.SubscriptionID),
-		ProviderVariantID:      strings.TrimSpace(update.VariantID),
-		Tier:                   tier,
-		Status:                 status,
-		CurrentPeriodEndsAt:    update.CurrentPeriodEndsAt,
-		GraceUntil:             graceUntil,
-		CanceledAt:             update.CanceledAt,
+		UserID:                     strings.TrimSpace(update.UserID),
+		ProviderSubscriptionID:     strings.TrimSpace(update.SubscriptionID),
+		ProviderSubscriptionItemID: strings.TrimSpace(update.SubscriptionItemID),
+		ProviderVariantID:          strings.TrimSpace(update.VariantID),
+		SeatQuantity:               update.SeatQuantity,
+		Tier:                       tier,
+		Status:                     status,
+		CurrentPeriodEndsAt:        update.CurrentPeriodEndsAt,
+		GraceUntil:                 graceUntil,
+		CanceledAt:                 update.CanceledAt,
+		ProviderPortalURL:          strings.TrimSpace(update.PortalURL),
+		ProviderUpdatePaymentURL:   strings.TrimSpace(update.UpdatePaymentURL),
 	}
 
 	result, err := db.BunDB.ExecContext(ctx,
-		"UPDATE billing_subscriptions SET user_id = ?, provider_variant_id = ?, tier = ?, status = ?, current_period_ends_at = ?, grace_until = ?, canceled_at = ?, updated_at = CURRENT_TIMESTAMP WHERE provider_subscription_id = ?",
+		"UPDATE billing_subscriptions SET user_id = ?, provider_subscription_item_id = ?, provider_variant_id = ?, seat_quantity = ?, tier = ?, status = ?, current_period_ends_at = ?, grace_until = ?, canceled_at = ?, provider_portal_url = ?, provider_update_payment_url = ?, updated_at = CURRENT_TIMESTAMP WHERE provider_subscription_id = ?",
 		row.UserID,
+		row.ProviderSubscriptionItemID,
 		row.ProviderVariantID,
+		row.SeatQuantity,
 		row.Tier,
 		row.Status,
 		row.CurrentPeriodEndsAt,
 		row.GraceUntil,
 		row.CanceledAt,
+		row.ProviderPortalURL,
+		row.ProviderUpdatePaymentURL,
 		row.ProviderSubscriptionID,
 	)
 	if err != nil {
@@ -227,27 +258,35 @@ func UpsertSubscription(ctx context.Context, update WebhookSubscriptionUpdate) e
 	}
 
 	_, err = db.BunDB.ExecContext(ctx,
-		"INSERT INTO billing_subscriptions(provider_subscription_id, user_id, provider_variant_id, tier, status, current_period_ends_at, grace_until, canceled_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
+		"INSERT INTO billing_subscriptions(provider_subscription_id, user_id, provider_subscription_item_id, provider_variant_id, seat_quantity, tier, status, current_period_ends_at, grace_until, canceled_at, provider_portal_url, provider_update_payment_url) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) ON CONFLICT(user_id) DO UPDATE SET provider_subscription_id = excluded.provider_subscription_id, provider_subscription_item_id = excluded.provider_subscription_item_id, provider_variant_id = excluded.provider_variant_id, seat_quantity = excluded.seat_quantity, tier = excluded.tier, status = excluded.status, current_period_ends_at = excluded.current_period_ends_at, grace_until = excluded.grace_until, canceled_at = excluded.canceled_at, provider_portal_url = excluded.provider_portal_url, provider_update_payment_url = excluded.provider_update_payment_url, updated_at = CURRENT_TIMESTAMP",
 		row.ProviderSubscriptionID,
 		row.UserID,
+		row.ProviderSubscriptionItemID,
 		row.ProviderVariantID,
+		row.SeatQuantity,
 		row.Tier,
 		row.Status,
 		row.CurrentPeriodEndsAt,
 		row.GraceUntil,
 		row.CanceledAt,
+		row.ProviderPortalURL,
+		row.ProviderUpdatePaymentURL,
 	)
 	if err != nil {
 		if isUniqueConstraintErr(err) {
 			_, updateErr := db.BunDB.ExecContext(ctx,
-				"UPDATE billing_subscriptions SET user_id = ?, provider_variant_id = ?, tier = ?, status = ?, current_period_ends_at = ?, grace_until = ?, canceled_at = ?, updated_at = CURRENT_TIMESTAMP WHERE provider_subscription_id = ?",
+				"UPDATE billing_subscriptions SET user_id = ?, provider_subscription_item_id = ?, provider_variant_id = ?, seat_quantity = ?, tier = ?, status = ?, current_period_ends_at = ?, grace_until = ?, canceled_at = ?, provider_portal_url = ?, provider_update_payment_url = ?, updated_at = CURRENT_TIMESTAMP WHERE provider_subscription_id = ?",
 				row.UserID,
+				row.ProviderSubscriptionItemID,
 				row.ProviderVariantID,
+				row.SeatQuantity,
 				row.Tier,
 				row.Status,
 				row.CurrentPeriodEndsAt,
 				row.GraceUntil,
 				row.CanceledAt,
+				row.ProviderPortalURL,
+				row.ProviderUpdatePaymentURL,
 				row.ProviderSubscriptionID,
 			)
 			return updateErr
@@ -317,12 +356,61 @@ func getValueByPath(data map[string]any, path string) any {
 func firstString(data map[string]any, paths ...string) string {
 	for _, path := range paths {
 		value := getValueByPath(data, path)
-		s, ok := value.(string)
+		s, ok := valueToString(value)
 		if ok && strings.TrimSpace(s) != "" {
 			return strings.TrimSpace(s)
 		}
 	}
 	return ""
+}
+
+func valueToString(value any) (string, bool) {
+	switch v := value.(type) {
+	case string:
+		if strings.TrimSpace(v) == "" {
+			return "", false
+		}
+		return strings.TrimSpace(v), true
+	case float64:
+		return strconv.FormatInt(int64(v), 10), true
+	case int:
+		return strconv.Itoa(v), true
+	case int64:
+		return strconv.FormatInt(v, 10), true
+	case json.Number:
+		return v.String(), true
+	default:
+		return "", false
+	}
+}
+
+func firstInt(data map[string]any, paths ...string) int {
+	for _, path := range paths {
+		value := getValueByPath(data, path)
+		switch v := value.(type) {
+		case float64:
+			if int(v) > 0 {
+				return int(v)
+			}
+		case int:
+			if v > 0 {
+				return v
+			}
+		case int64:
+			if v > 0 {
+				return int(v)
+			}
+		case json.Number:
+			if parsed, err := v.Int64(); err == nil && parsed > 0 {
+				return int(parsed)
+			}
+		case string:
+			if parsed, err := strconv.Atoi(strings.TrimSpace(v)); err == nil && parsed > 0 {
+				return parsed
+			}
+		}
+	}
+	return 0
 }
 
 func statusFromEventType(eventType string) string {
@@ -379,11 +467,15 @@ func ParseWebhookSubscription(rawBody []byte) (WebhookSubscriptionUpdate, bool, 
 		EventID:             eventID,
 		EventType:           eventType,
 		SubscriptionID:      firstString(data, "id", "attributes.id", "subscription_id"),
+		SubscriptionItemID:  firstString(data, "attributes.first_subscription_item.id", "first_subscription_item.id", "attributes.subscription_item_id", "subscription_item_id"),
 		CustomerID:          firstString(data, "attributes.customer_id", "customer_id", "customer.id"),
 		VariantID:           priceID,
+		SeatQuantity:        firstInt(data, "attributes.first_subscription_item.quantity", "first_subscription_item.quantity", "attributes.quantity", "quantity"),
 		Status:              strings.ToLower(firstString(data, "attributes.status", "status")),
 		UserID:              firstString(root, "meta.custom_data.user_id", "meta.custom_data.userID", "data.attributes.custom_data.user_id", "custom_data.user_id", "metadata.user_id"),
 		CustomerEmail:       strings.ToLower(firstString(data, "attributes.user_email", "attributes.customer_email", "customer.email", "customer_email", "email")),
+		PortalURL:           firstString(data, "attributes.urls.customer_portal", "urls.customer_portal"),
+		UpdatePaymentURL:    firstString(data, "attributes.urls.update_payment_method", "urls.update_payment_method"),
 		CurrentPeriodEndsAt: parseTime(firstString(data, "attributes.renews_at", "attributes.ends_at", "current_billing_period.ends_at", "next_billed_at", "scheduled_change.effective_at")),
 		CanceledAt:          parseTime(firstString(data, "attributes.cancelled", "attributes.ends_at", "canceled_at")),
 		GraceUntil:          parseTime(firstString(root, "meta.custom_data.grace_until", "data.attributes.custom_data.grace_until", "custom_data.grace_until")),

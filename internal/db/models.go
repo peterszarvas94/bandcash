@@ -25,16 +25,20 @@ type BillingCustomer struct {
 }
 
 type BillingSubscription struct {
-	UserID                 string       `json:"user_id"`
-	ProviderSubscriptionID string       `json:"provider_subscription_id"`
-	ProviderVariantID      string       `json:"provider_variant_id"`
-	Tier                   string       `json:"tier"`
-	Status                 string       `json:"status"`
-	CurrentPeriodEndsAt    sql.NullTime `json:"current_period_ends_at"`
-	GraceUntil             sql.NullTime `json:"grace_until"`
-	CanceledAt             sql.NullTime `json:"canceled_at"`
-	CreatedAt              time.Time    `json:"created_at"`
-	UpdatedAt              time.Time    `json:"updated_at"`
+	UserID                     string       `json:"user_id"`
+	ProviderSubscriptionID     string       `json:"provider_subscription_id"`
+	ProviderSubscriptionItemID string       `json:"provider_subscription_item_id"`
+	ProviderVariantID          string       `json:"provider_variant_id"`
+	SeatQuantity               int          `json:"seat_quantity"`
+	Tier                       string       `json:"tier"`
+	Status                     string       `json:"status"`
+	CurrentPeriodEndsAt        sql.NullTime `json:"current_period_ends_at"`
+	GraceUntil                 sql.NullTime `json:"grace_until"`
+	CanceledAt                 sql.NullTime `json:"canceled_at"`
+	ProviderPortalURL          string       `json:"provider_portal_url"`
+	ProviderUpdatePaymentURL   string       `json:"provider_update_payment_url"`
+	CreatedAt                  time.Time    `json:"created_at"`
+	UpdatedAt                  time.Time    `json:"updated_at"`
 }
 
 type BillingWebhookEvent struct {

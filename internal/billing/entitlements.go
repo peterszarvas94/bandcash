@@ -98,10 +98,37 @@ func CountActiveSubscriptionSlots(ctx context.Context, userID string) (int, erro
 			continue
 		}
 		if IsSubscriptionActive(row.Status, row.GraceUntil, now) {
-			total++
+			seats := row.SeatQuantity
+			if seats < 1 {
+				seats = 1
+			}
+			total += seats
 		}
 	}
 	return total, nil
+}
+
+func GetUserSubscription(ctx context.Context, userID string) (db.BillingSubscription, bool, error) {
+	if !utils.IsValidID(userID, "usr") {
+		return db.BillingSubscription{}, false, ErrInvalidUserID
+	}
+
+	var row db.BillingSubscription
+	err := db.BunDB.NewSelect().
+		Model(&row).
+		Where("user_id = ?", userID).
+		Limit(1).
+		Scan(ctx)
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return db.BillingSubscription{}, false, nil
+		}
+		return db.BillingSubscription{}, false, err
+	}
+	if row.SeatQuantity < 1 {
+		row.SeatQuantity = 1
+	}
+	return row, true, nil
 }
 
 func CurrentAccessState(ctx context.Context, userID string) (AccessState, error) {

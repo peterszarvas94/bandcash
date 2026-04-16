@@ -13,9 +13,9 @@ bandcash.app/data (email input + access/delete select => confirm email => send d
 
 bandcash.app/pricing
 bandcash.app/account
-bandcash.app/transaction callback after payment
+bandcash.app/transaction (callback after payment)
 
-local: https://bandcash.pengoe.hu/transactions and uses LEMON_WEBHOOK_SECRET
+local: https://bandcash.pengoe.hu/lemon_webhook and uses LEMON_WEBHOOK_SECRET
 
 # TODO
 

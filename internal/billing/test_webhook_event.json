@@ -12,6 +12,14 @@
       "customer_id": "ctm_01kp6mpnfwvzp639cqda40aabe",
       "customer_email": "webhook.user@example.com",
       "variant_id": "pri_test_pro",
+      "first_subscription_item": {
+        "id": 1234,
+        "quantity": 2
+      },
+      "urls": {
+        "customer_portal": "https://subsciprions.pengoe.hu/portal/example",
+        "update_payment_method": "https://subsciprions.pengoe.hu/portal/update-payment/example"
+      },
       "renews_at": "2026-05-14T18:47:00.844006Z"
     }
   }

@@ -2,29 +2,24 @@ package account
 
 import (
 	"strings"
-	"bandcash/internal/utils"
 	shared "bandcash/models/shared"
 	icons "bandcash/models/shared/icons"
 	ctxi18n "github.com/invopop/ctxi18n/i18n"
 )
 
 templ AccountContent(data AccountData) {
-	{{
-		hostedURL := strings.TrimSpace(utils.Env().LemonHostedURL)
-		lemonEnabled := hostedURL != ""
-	}}
+	{{ portalURL := strings.TrimSpace(data.SubscriptionPortalURL) }}
 	<div class="row row-wrap">
 		{ ctxi18n.T(ctx, "nav.logged_in_as") } <strong>{ data.UserEmail }</strong>
 	</div>
 	<div class="stack card">
 		<h2>{ ctxi18n.T(ctx, "account.subscription") }</h2>
-		<p>{ ctxi18n.T(ctx, "account.subscription_slots") }: <strong>{ data.SubscriptionSlots }</strong></p>
-		<p>{ ctxi18n.T(ctx, "account.used_slots") }: <strong>{ data.UsedSlots }</strong></p>
-		<p class="color-muted">{ ctxi18n.T(ctx, "account.remaining_slots") }: <strong>{ data.RemainingSlots }</strong></p>
+		<p><strong>{ data.UsedSlots }/{ data.SubscriptionSlots }</strong> { ctxi18n.T(ctx, "account.groups_created") }</p>
 		<div class="row row-wrap">
-			<a class="btn" href="/pricing">{ ctxi18n.T(ctx, "account.manage_subscription") }</a>
-			if lemonEnabled {
-				<a class="btn btn-primary" href={ hostedURL } target="_blank" rel="noopener noreferrer">{ ctxi18n.T(ctx, "billing.pricing.buy_another_slot") }</a>
+			if portalURL != "" {
+				<a class="btn" href={ portalURL } target="_blank" rel="noopener noreferrer">{ ctxi18n.T(ctx, "account.manage_subscription") }</a>
+			} else {
+				<button class="btn" disabled>{ ctxi18n.T(ctx, "account.manage_subscription") }</button>
 			}
 		</div>
 	</div>

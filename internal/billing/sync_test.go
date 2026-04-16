@@ -46,8 +46,9 @@ func readFixture(t *testing.T) []byte {
 	return content
 }
 
-func subscriptionPayload(eventID, subscriptionID, customerID, userID, email, status, priceID string) []byte {
-	return []byte(fmt.Sprintf(`{"meta":{"event_name":"subscription_created","event_id":"%s","custom_data":{"user_id":"%s"}},"data":{"id":"%s","attributes":{"status":"%s","customer_id":"%s","customer_email":"%s","variant_id":"%s","renews_at":"2026-05-14T18:47:00.844006Z"}}}`,
+func subscriptionPayload(eventID, eventName, subscriptionID, customerID, userID, email, status, priceID string, quantity int) []byte {
+	return []byte(fmt.Sprintf(`{"meta":{"event_name":"%s","event_id":"%s","custom_data":{"user_id":"%s"}},"data":{"id":"%s","attributes":{"status":"%s","customer_id":"%s","customer_email":"%s","variant_id":"%s","first_subscription_item":{"id":4567,"quantity":%d},"urls":{"customer_portal":"https://subscriptions.example.com/portal","update_payment_method":"https://subscriptions.example.com/update-payment"},"renews_at":"2026-05-14T18:47:00.844006Z"}}}`,
+		eventName,
 		eventID,
 		userID,
 		subscriptionID,
@@ -55,6 +56,7 @@ func subscriptionPayload(eventID, subscriptionID, customerID, userID, email, sta
 		customerID,
 		email,
 		priceID,
+		quantity,
 	))
 }
 
@@ -82,6 +84,12 @@ func TestParseWebhookSubscription_FromFixture(t *testing.T) {
 	}
 	if !update.CurrentPeriodEndsAt.Valid {
 		t.Fatal("expected current period end to be parsed")
+	}
+	if update.SubscriptionItemID != "1234" {
+		t.Fatalf("unexpected subscription item id: %s", update.SubscriptionItemID)
+	}
+	if update.SeatQuantity != 2 {
+		t.Fatalf("expected seat quantity 2, got %d", update.SeatQuantity)
 	}
 }
 
@@ -151,13 +159,19 @@ func TestProcessWebhook_SubscriptionCreated_PersistsBillingRows(t *testing.T) {
 	if sub.Status != "active" {
 		t.Fatalf("expected status active, got %s", sub.Status)
 	}
+	if sub.ProviderSubscriptionItemID == "" {
+		t.Fatal("expected provider subscription item id")
+	}
+	if sub.SeatQuantity != 2 {
+		t.Fatalf("expected seat quantity 2, got %d", sub.SeatQuantity)
+	}
 
 	state, err := CurrentAccessState(ctx, testUserID)
 	if err != nil {
 		t.Fatalf("CurrentAccessState failed: %v", err)
 	}
-	if state.SubscriptionCount != 1 {
-		t.Fatalf("expected subscription count 1, got %d", state.SubscriptionCount)
+	if state.SubscriptionCount != 2 {
+		t.Fatalf("expected subscription count 2, got %d", state.SubscriptionCount)
 	}
 }
 
@@ -202,10 +216,12 @@ func TestUpsertSubscription_DirectPersist(t *testing.T) {
 		t.Fatalf("UpsertCustomer failed: %v", err)
 	}
 	if err := UpsertSubscription(ctx, WebhookSubscriptionUpdate{
-		UserID:         testUserID,
-		SubscriptionID: "sub_direct_test",
-		VariantID:      "pri_test_pro",
-		Status:         "active",
+		UserID:             testUserID,
+		SubscriptionID:     "sub_direct_test",
+		SubscriptionItemID: "4567",
+		VariantID:          "pri_test_pro",
+		SeatQuantity:       3,
+		Status:             "active",
 	}); err != nil {
 		t.Fatalf("UpsertSubscription failed: %v", err)
 	}
@@ -223,7 +239,7 @@ func TestUpsertSubscription_DirectPersist(t *testing.T) {
 	}
 }
 
-func TestProcessWebhook_MultipleActiveSubscriptions_AccumulatesSlots(t *testing.T) {
+func TestProcessWebhook_SingleSubscription_UpdatesSeatQuantity(t *testing.T) {
 	setupTestDB(t)
 	ctx := context.Background()
 
@@ -231,8 +247,8 @@ func TestProcessWebhook_MultipleActiveSubscriptions_AccumulatesSlots(t *testing.
 		t.Fatalf("CreateUser failed: %v", err)
 	}
 
-	first := subscriptionPayload("evt_aaaaaaaaaaaaaaaaaaaa", "sub_slot_one", "ctm_slot", testUserID, testUserEmail, "active", "pri_test_pro")
-	second := subscriptionPayload("evt_bbbbbbbbbbbbbbbbbbbb", "sub_slot_two", "ctm_slot", testUserID, testUserEmail, "active", "pri_test_pro")
+	first := subscriptionPayload("evt_aaaaaaaaaaaaaaaaaaaa", "subscription_created", "sub_slot_single", "ctm_slot", testUserID, testUserEmail, "active", "pri_test_pro", 1)
+	second := subscriptionPayload("evt_bbbbbbbbbbbbbbbbbbbb", "subscription_updated", "sub_slot_single", "ctm_slot", testUserID, testUserEmail, "active", "pri_test_pro", 4)
 
 	if processed, err := ProcessWebhook(ctx, first); err != nil || !processed {
 		t.Fatalf("first webhook failed processed=%v err=%v", processed, err)
@@ -245,10 +261,18 @@ func TestProcessWebhook_MultipleActiveSubscriptions_AccumulatesSlots(t *testing.
 	if err != nil {
 		t.Fatalf("CurrentAccessState failed: %v", err)
 	}
-	if state.SubscriptionCount != 2 {
-		t.Fatalf("expected 2 subscription slots, got %d", state.SubscriptionCount)
+	if state.SubscriptionCount != 4 {
+		t.Fatalf("expected 4 subscription slots, got %d", state.SubscriptionCount)
 	}
-	if state.RemainingSlots != 2 {
-		t.Fatalf("expected 2 remaining slots with zero groups, got %d", state.RemainingSlots)
+	if state.RemainingSlots != 4 {
+		t.Fatalf("expected 4 remaining slots with zero groups, got %d", state.RemainingSlots)
+	}
+
+	rows, err := db.BunDB.NewSelect().TableExpr("billing_subscriptions").Count(ctx)
+	if err != nil {
+		t.Fatalf("count billing_subscriptions failed: %v", err)
+	}
+	if rows != 1 {
+		t.Fatalf("expected single subscription row, got %d", rows)
 	}
 }
