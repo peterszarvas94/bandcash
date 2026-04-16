@@ -110,5 +110,5 @@ func main() {
 	fmt.Printf("Seeded heavy dataset into %s\n", dbPath)
 	fmt.Printf("group_id=%s members=%d events=%d expenses=%d participants=%d\n", seedGroupID, membersCount, eventsCount, expensesCount, participantsCount)
 	fmt.Printf("Flag enabled: enable_signup=1\n")
-	fmt.Printf("Login examples: admin@bandcash.localhost, admin1@bandcash.local, admin2@bandcash.local, admin3@bandcash.local\n")
+	fmt.Printf("Login examples: peterszarvas94@gmail.com, admin1@bandcash.local, admin2@bandcash.local, admin3@bandcash.local\n")
 }

@@ -3,14 +3,13 @@ air = "1.64.5"
 go = "1.26.0"
 "go:github.com/a-h/templ/cmd/templ" = "v0.3.1001"
 "go:gotest.tools/gotestsum" = "v1.13.0"
-"github:axllent/mailpit" = "v1.27.8"
 golangci-lint = "2.9.0"
 ruby = "3.4.2"
 "gem:kamal" = "2.10.1"
 
 [tasks]
 app = "./scripts/with_dev_secrets.sh air"
-tunnel-app = "cloudflared tunnel run ${CLOUDFLARED_TUNNEL_APP:-bandcash-app}"
+tunnel-app = "cloudflared tunnel run --token \"$(cloudflared tunnel token bandcash)\""
 preflight = "go run ./cmd/devpreflight/main.go"
 assets = "go run ./cmd/assets/main.go"
 start = "./tmp/server"
@@ -27,7 +26,6 @@ db-down = "go run ./cmd/dbmigrate/main.go -cmd=down"
 db-status = "go run ./cmd/dbmigrate/main.go -cmd=status"
 db-create = "go run ./cmd/dbmigrate/main.go -cmd=create -name=${name}"
 seed = "go run ./cmd/seed/main.go"
-mailpit = "mailpit --listen 0.0.0.0:8025 --smtp 0.0.0.0:1025"
 check-versions = "go run ./cmd/checkversions"
 kamal = "kamal"
 tag = "./scripts/tag.sh"
@@ -57,4 +55,4 @@ run = [
 
 [tasks.dev]
 depends = ["preflight"]
-run = [{ tasks = ["app", "mailpit", "tunnel-app"] }]
+run = [{ tasks = ["app", "tunnel-app"] }]

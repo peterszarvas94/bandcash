@@ -4,8 +4,8 @@ Use `mise run <task>` first; fall back to raw `go test` only for targeted test r
 
 ## Run and Dev
 
-- `mise run dev` - start app with hot reload (`air`), local mail service, and app tunnel.
-- `mise run tunnel-app` - run app tunnel (`cloudflared tunnel run ${CLOUDFLARED_TUNNEL_APP:-bandcash-app}`).
+- `mise run dev` - start app with hot reload (`air`) and app tunnel.
+- `mise run tunnel-app` - run app tunnel (`cloudflared tunnel run --token "$(cloudflared tunnel token bandcash)"`).
 - `mise run run` - run server directly with `go run`.
 - `mise run build` - compile server binary to `tmp/server`.
 - `mise run start` - run built binary.
@@ -17,9 +17,8 @@ Dev env loading:
 - Set `OP_ACCOUNT` and one of `OP_FROM_LOCALHOST` (preferred for local), `OP_FROM_DEVELOPMENT`, or `OP_FROM` in your shell, then run dev commands normally.
 - Local 1Password entries should include full app env keys (clear + secret), e.g. `APP_ENV`, `PORT`, `URL`, `DB_PATH`, logging keys, SMTP keys, and Lemon keys (`LEMON_WEBHOOK_SECRET`, `LEMON_HOSTED_URL`).
 - This avoids storing plaintext local secret files while still enabling local Lemon webhook and hosted subscription testing.
-- In development, Mailpit SMTP is enforced by default (`SMTP_HOST=127.0.0.1`, `SMTP_PORT=1025`, empty SMTP auth). Set `LOCAL_USE_MAILPIT=0` to use SMTP values loaded from 1Password.
-- `mise run dev` expects a configured app tunnel named `bandcash-app` by default; override with `CLOUDFLARED_TUNNEL_APP`.
-- Configure Cloudflare ingress for the app hostname only (Mailpit stays local at `127.0.0.1:8025`).
+- `mise run dev` expects access to the `bandcash` Cloudflare tunnel token via `cloudflared tunnel token bandcash`.
+- Configure Cloudflare ingress for the app hostname.
 
 ## Formatting and Static Checks
 

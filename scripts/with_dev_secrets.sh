@@ -113,11 +113,4 @@ load_op_config_from_file "$ROOT_DIR/.kamal/secrets"
 
 fetch_local_secrets_from_1password
 
-if [ "${APP_ENV:-development}" = "development" ] && [ "${LOCAL_USE_MAILPIT:-1}" != "0" ]; then
-  export SMTP_HOST="127.0.0.1"
-  export SMTP_PORT="1025"
-  export SMTP_USERNAME=""
-  export SMTP_PASSWORD=""
-fi
-
 exec "$@"
