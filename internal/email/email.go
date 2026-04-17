@@ -131,10 +131,10 @@ func NewFromEnv() *Service {
 
 	return &Service{
 		config: Config{
-			APIKey: env.SMTPPass,
+			APIKey: env.ResendAPIKey,
 			From:   env.EmailFrom,
 		},
-		client: resend.NewClient(env.SMTPPass),
+		client: resend.NewClient(env.ResendAPIKey),
 	}
 }
 
