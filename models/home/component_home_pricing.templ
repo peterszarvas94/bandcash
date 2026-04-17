@@ -9,7 +9,7 @@ templ HomePricing(data HomeData) {
 		Title:           data.Title,
 		Crumbs:          data.Breadcrumbs,
 		Signals:         nil,
-		Content:         shared.CommonContent(HomePricingMain(data.CurrentLang, data.UserID, data.UserEmail)),
+		Content:         shared.CommonContent(HomePricingMain(data.CurrentLang)),
 		ActiveUrl:       "/pricing",
 		IsAuthenticated: data.IsAuthenticated,
 		IsSuperAdmin:    data.IsSuperAdmin,
