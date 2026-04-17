@@ -617,6 +617,19 @@
     color: var(--text-muted);
   }
 
+  .link-external,
+  .link-external:visited {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+  }
+
+  .link-external > .icon {
+    width: 0.9rem;
+    height: 0.9rem;
+    stroke-width: 2;
+  }
+
   .table-link,
   .table-link:visited {
     color: var(--text);

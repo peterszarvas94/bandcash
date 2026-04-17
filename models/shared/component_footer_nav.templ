@@ -2,6 +2,7 @@ package shared
 
 import (
 	"bandcash/internal/utils"
+	"bandcash/models/shared/icons"
 	ctxi18n "github.com/invopop/ctxi18n/i18n"
 	"strings"
 )
@@ -12,22 +13,26 @@ templ Footer(isSuperAdmin bool, activeUrl string) {
 			<div>
 				<p>{ ctxi18n.T(ctx, "app.title") }</p>
 				<p>© Szarvas Péter 2026</p>
-				<a class="link" href="https://peterszarvas.hu" target="_blank" rel="noopener noreferrer">
-					peterszarvas.hu
+				<a class="link link-external" href="https://peterszarvas.hu" target="_blank" rel="noopener noreferrer">
+					<span>peterszarvas.hu</span>
+					@icons.Icon(icons.IconArrowUpRight, templ.Attributes{"class": "icon"})
 				</a>
 			</div>
 			<div>
 				<a class={ "link", templ.KV("link-active", activeUrl == "/pricing") } href="/pricing">
 					{ ctxi18n.T(ctx, "legal.pricing") }
 				</a>
-				<a class={ "link", templ.KV("link-active", activeUrl == "/terms-and-conditions") } href="/terms-and-conditions">
-					{ ctxi18n.T(ctx, "legal.terms_and_conditions") }
+				<a class="link link-external" href="https://app.termly.io/policy-viewer/policy.html?policyUUID=3943ac6d-aba4-4da3-a9d3-c5f943607491" target="_blank" rel="noopener noreferrer">
+					<span>{ ctxi18n.T(ctx, "legal.terms_and_conditions") }</span>
+					@icons.Icon(icons.IconArrowUpRight, templ.Attributes{"class": "icon"})
 				</a>
-				<a class={ "link", templ.KV("link-active", activeUrl == "/privacy-policy") } href="/privacy-policy">
-					{ ctxi18n.T(ctx, "legal.privacy_policy") }
+				<a class="link link-external" href="https://app.termly.io/policy-viewer/policy.html?policyUUID=b6e0c0b3-1823-464f-94a4-edc886a6a2a7" target="_blank" rel="noopener noreferrer">
+					<span>{ ctxi18n.T(ctx, "legal.privacy_policy") }</span>
+					@icons.Icon(icons.IconArrowUpRight, templ.Attributes{"class": "icon"})
 				</a>
-				<a class={ "link", templ.KV("link-active", activeUrl == "/refund-policy") } href="/refund-policy">
-					{ ctxi18n.T(ctx, "legal.refund_policy") }
+				<a class="link link-external" href="https://app.termly.io/policy-viewer/policy.html?policyUUID=5e3aa2d8-185a-46be-8472-21459302efa4" target="_blank" rel="noopener noreferrer">
+					<span>{ ctxi18n.T(ctx, "legal.cookies_policy") }</span>
+					@icons.Icon(icons.IconArrowUpRight, templ.Attributes{"class": "icon"})
 				</a>
 				if isSuperAdmin {
 					<a class={ "link", templ.KV("link-active", strings.HasPrefix(activeUrl, "/admin")) } href="/admin/flags">

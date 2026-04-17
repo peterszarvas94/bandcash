@@ -1,6 +1,6 @@
 # Central legal email
 
-legal@bandcash.app
+support@bandcash.app
 
 # Privacy Policy
 

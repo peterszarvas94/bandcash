@@ -21,6 +21,18 @@ import (
 )
 
 func registerRoutes(e *echo.Echo) {
+	const (
+		termlyTermsURL   = "https://app.termly.io/policy-viewer/policy.html?policyUUID=3943ac6d-aba4-4da3-a9d3-c5f943607491"
+		termlyPrivacyURL = "https://app.termly.io/policy-viewer/policy.html?policyUUID=b6e0c0b3-1823-464f-94a4-edc886a6a2a7"
+		termlyCookiesURL = "https://app.termly.io/policy-viewer/policy.html?policyUUID=5e3aa2d8-185a-46be-8472-21459302efa4"
+	)
+
+	redirectTo := func(target string) echo.HandlerFunc {
+		return func(c echo.Context) error {
+			return c.Redirect(http.StatusFound, target)
+		}
+	}
+
 	e.Static("/static", "static")
 	e.File("/favicon.ico", "static/favicon.ico")
 	e.GET("/health", health.Check)
@@ -81,9 +93,11 @@ func registerRoutes(e *echo.Echo) {
 
 	e.GET("/", home.Index)
 	e.GET("/pricing", home.Pricing)
-	e.GET("/terms-and-conditions", home.TermsAndConditions)
-	e.GET("/privacy-policy", home.PrivacyPolicy)
-	e.GET("/refund-policy", home.RefundPolicy)
+	e.GET("/terms", redirectTo(termlyTermsURL))
+	e.GET("/privacy", redirectTo(termlyPrivacyURL))
+	e.GET("/cookies", redirectTo(termlyCookiesURL))
+	e.GET("/terms-and-conditions", redirectTo(termlyTermsURL))
+	e.GET("/privacy-policy", redirectTo(termlyPrivacyURL))
 
 	eventRoutes := e.Group("/groups/:groupId", middleware.RequireAuth, middleware.RequireGroup)
 	eventRoutes.GET("/events", event.IndexPage)
