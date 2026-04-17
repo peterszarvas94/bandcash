@@ -4,9 +4,13 @@ import (
 	"context"
 	"fmt"
 	"log/slog"
+	"mime"
+	"net/mail"
+	"net/smtp"
 	"sort"
 	"strings"
 	"sync"
+	"time"
 
 	ctxi18n "github.com/invopop/ctxi18n"
 	ctxi18ncore "github.com/invopop/ctxi18n/i18n"
@@ -17,13 +21,40 @@ import (
 )
 
 type Config struct {
-	APIKey string
-	From   string
+	Provider         string
+	ResendAPIKey     string
+	MailtrapHost     string
+	MailtrapPort     int
+	MailtrapUsername string
+	MailtrapPassword string
+	From             string
+}
+
+type sender interface {
+	Send(to, subject, textBody, htmlBody string) (providerResult, error)
+}
+
+type providerResult struct {
+	Name string
+	ID   string
+}
+
+type resendSender struct {
+	from   string
+	client *resend.Client
+}
+
+type mailtrapSMTPSender struct {
+	from     string
+	host     string
+	port     int
+	username string
+	password string
 }
 
 type Service struct {
 	config Config
-	client *resend.Client
+	sender sender
 }
 
 type builtEmail struct {
@@ -128,13 +159,35 @@ func joinBilingualHTML(ctx context.Context, huHTML, enHTML string) (string, erro
 
 func NewFromEnv() *Service {
 	env := utils.Env()
+	cfg := Config{
+		Provider:         env.EmailProvider,
+		ResendAPIKey:     env.ResendAPIKey,
+		MailtrapHost:     env.MailtrapHost,
+		MailtrapPort:     env.MailtrapPort,
+		MailtrapUsername: env.MailtrapUsername,
+		MailtrapPassword: env.MailtrapPassword,
+		From:             env.EmailFrom,
+	}
+
+	var selectedSender sender
+	switch cfg.Provider {
+	case "resend":
+		selectedSender = resendSender{from: cfg.From, client: resend.NewClient(cfg.ResendAPIKey)}
+	case "mailtrap":
+		selectedSender = mailtrapSMTPSender{
+			from:     cfg.From,
+			host:     cfg.MailtrapHost,
+			port:     cfg.MailtrapPort,
+			username: cfg.MailtrapUsername,
+			password: cfg.MailtrapPassword,
+		}
+	default:
+		panic("invalid EMAIL_PROVIDER: " + cfg.Provider)
+	}
 
 	return &Service{
-		config: Config{
-			APIKey: env.ResendAPIKey,
-			From:   env.EmailFrom,
-		},
-		client: resend.NewClient(env.ResendAPIKey),
+		config: cfg,
+		sender: selectedSender,
 	}
 }
 
@@ -146,12 +199,38 @@ func Email() *Service {
 }
 
 func (s *Service) Send(to, subject, textBody, htmlBody string) error {
-	if strings.TrimSpace(s.config.APIKey) == "" {
-		return fmt.Errorf("Resend API key not configured")
+	if s.sender == nil {
+		return fmt.Errorf("email sender not configured")
+	}
+
+	result, err := s.sender.Send(to, subject, textBody, htmlBody)
+	if err != nil {
+		return fmt.Errorf("failed to send email: %w", err)
+	}
+
+	providerName := strings.TrimSpace(result.Name)
+	if providerName == "" {
+		providerName = strings.TrimSpace(s.config.Provider)
+	}
+
+	attrs := []any{"to", to, "subject", subject, "provider", providerName}
+	if strings.TrimSpace(result.ID) != "" {
+		attrs = append(attrs, "id", result.ID)
+	}
+	slog.Info("email sent", attrs...)
+	return nil
+}
+
+func (s resendSender) Send(to, subject, textBody, htmlBody string) (providerResult, error) {
+	if strings.TrimSpace(s.from) == "" {
+		return providerResult{}, fmt.Errorf("EMAIL_FROM not configured")
+	}
+	if s.client == nil {
+		return providerResult{}, fmt.Errorf("Resend client not configured")
 	}
 
 	params := &resend.SendEmailRequest{
-		From:    s.config.From,
+		From:    s.from,
 		To:      []string{to},
 		Subject: subject,
 		Text:    textBody,
@@ -160,11 +239,75 @@ func (s *Service) Send(to, subject, textBody, htmlBody string) error {
 
 	result, err := s.client.Emails.Send(params)
 	if err != nil {
-		return fmt.Errorf("failed to send email: %w", err)
+		return providerResult{}, err
+	}
+	return providerResult{Name: "resend", ID: result.Id}, nil
+}
+
+func (s mailtrapSMTPSender) Send(to, subject, textBody, htmlBody string) (providerResult, error) {
+	if strings.TrimSpace(s.from) == "" {
+		return providerResult{}, fmt.Errorf("EMAIL_FROM not configured")
+	}
+	if strings.TrimSpace(s.host) == "" {
+		return providerResult{}, fmt.Errorf("MAILTRAP_HOST not configured")
+	}
+	if strings.TrimSpace(s.username) == "" {
+		return providerResult{}, fmt.Errorf("MAILTRAP_USERNAME not configured")
+	}
+	if strings.TrimSpace(s.password) == "" {
+		return providerResult{}, fmt.Errorf("MAILTRAP_PASSWORD not configured")
+	}
+	if s.port <= 0 {
+		return providerResult{}, fmt.Errorf("MAILTRAP_PORT not configured")
 	}
 
-	slog.Info("email sent", "to", to, "subject", subject, "provider", "resend", "id", result.Id)
-	return nil
+	message := buildSMTPMessage(s.from, to, subject, textBody, htmlBody)
+	auth := smtp.PlainAuth("", s.username, s.password, s.host)
+	addr := fmt.Sprintf("%s:%d", s.host, s.port)
+	if err := smtp.SendMail(addr, auth, envelopeFromAddress(s.from), []string{to}, []byte(message)); err != nil {
+		return providerResult{}, err
+	}
+	return providerResult{Name: "mailtrap"}, nil
+}
+
+func buildSMTPMessage(from, to, subject, textBody, htmlBody string) string {
+	boundary := fmt.Sprintf("bandcash-%d", time.Now().UnixNano())
+	encodedSubject := mime.QEncoding.Encode("utf-8", strings.TrimSpace(subject))
+
+	var b strings.Builder
+	b.WriteString("MIME-Version: 1.0\r\n")
+	b.WriteString("From: " + strings.TrimSpace(from) + "\r\n")
+	b.WriteString("To: " + strings.TrimSpace(to) + "\r\n")
+	b.WriteString("Subject: " + encodedSubject + "\r\n")
+	b.WriteString("Content-Type: multipart/alternative; boundary=\"" + boundary + "\"\r\n")
+	b.WriteString("\r\n")
+	b.WriteString("--" + boundary + "\r\n")
+	b.WriteString("Content-Type: text/plain; charset=UTF-8\r\n")
+	b.WriteString("Content-Transfer-Encoding: 8bit\r\n")
+	b.WriteString("\r\n")
+	b.WriteString(toCRLF(textBody) + "\r\n")
+	b.WriteString("--" + boundary + "\r\n")
+	b.WriteString("Content-Type: text/html; charset=UTF-8\r\n")
+	b.WriteString("Content-Transfer-Encoding: 8bit\r\n")
+	b.WriteString("\r\n")
+	b.WriteString(toCRLF(htmlBody) + "\r\n")
+	b.WriteString("--" + boundary + "--\r\n")
+
+	return b.String()
+}
+
+func toCRLF(value string) string {
+	normalized := strings.ReplaceAll(value, "\r\n", "\n")
+	normalized = strings.ReplaceAll(normalized, "\r", "\n")
+	return strings.ReplaceAll(normalized, "\n", "\r\n")
+}
+
+func envelopeFromAddress(from string) string {
+	parsed, err := mail.ParseAddress(strings.TrimSpace(from))
+	if err == nil && strings.TrimSpace(parsed.Address) != "" {
+		return parsed.Address
+	}
+	return strings.TrimSpace(from)
 }
 
 func trimBuiltEmail(data builtEmail) builtEmail {

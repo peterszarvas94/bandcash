@@ -20,7 +20,12 @@ type EnvConfig struct {
 	AppEnv             string
 	SuperadminEmail    string
 	DisableRateLimit   bool
+	EmailProvider      string
 	ResendAPIKey       string
+	MailtrapHost       string
+	MailtrapPort       int
+	MailtrapUsername   string
+	MailtrapPassword   string
 	EmailFrom          string
 	LemonWebhookSecret string
 	LemonHostedURL     string
@@ -54,8 +59,18 @@ type envVars struct {
 	SuperadminEmail string `env:"SUPERADMIN_EMAIL" envDefault:"admin@bandcash.localhost" validate:"required,email"`
 	// DisableRateLimit disables request rate limiting (useful for local dev).
 	DisableRateLimit bool `env:"DISABLE_RATE_LIMIT" envDefault:"true"`
+	// EmailProvider controls which transport is used to deliver emails.
+	EmailProvider string `env:"EMAIL_PROVIDER" validate:"required,oneof=resend mailtrap"`
 	// ResendAPIKey stores the Resend API key.
-	ResendAPIKey string `env:"RESEND_API_KEY" validate:"required_if=AppEnv production,required_if=AppEnv staging"`
+	ResendAPIKey string `env:"RESEND_API_KEY" validate:"required_if=EmailProvider resend"`
+	// MailtrapHost is the SMTP host for Mailtrap Sandbox.
+	MailtrapHost string `env:"MAILTRAP_HOST" validate:"required_if=EmailProvider mailtrap"`
+	// MailtrapPort is the SMTP port for Mailtrap Sandbox.
+	MailtrapPort int `env:"MAILTRAP_PORT" envDefault:"2525" validate:"required_if=EmailProvider mailtrap,gte=1,lte=65535"`
+	// MailtrapUsername is the SMTP username for Mailtrap Sandbox.
+	MailtrapUsername string `env:"MAILTRAP_USERNAME" validate:"required_if=EmailProvider mailtrap"`
+	// MailtrapPassword is the SMTP password for Mailtrap Sandbox.
+	MailtrapPassword string `env:"MAILTRAP_PASSWORD" validate:"required_if=EmailProvider mailtrap"`
 	// EmailFrom is the default From header for app emails.
 	EmailFrom string `env:"EMAIL_FROM" envDefault:"BandCash <noreply@bandcash.localhost>" validate:"required_if=AppEnv production,required_if=AppEnv staging"`
 	// LemonWebhookSecret is the endpoint secret used to verify webhook signatures.
@@ -75,6 +90,7 @@ func Env() *EnvConfig {
 
 		parsed.AppEnv = strings.ToLower(strings.TrimSpace(parsed.AppEnv))
 		parsed.LogLevel = strings.ToLower(strings.TrimSpace(parsed.LogLevel))
+		parsed.EmailProvider = strings.ToLower(strings.TrimSpace(parsed.EmailProvider))
 
 		err = validate.Struct(parsed)
 		if err != nil {
@@ -102,7 +118,12 @@ func Env() *EnvConfig {
 			AppEnv:             parsed.AppEnv,
 			SuperadminEmail:    superadminEmail,
 			DisableRateLimit:   parsed.DisableRateLimit,
+			EmailProvider:      parsed.EmailProvider,
 			ResendAPIKey:       parsed.ResendAPIKey,
+			MailtrapHost:       strings.TrimSpace(parsed.MailtrapHost),
+			MailtrapPort:       parsed.MailtrapPort,
+			MailtrapUsername:   strings.TrimSpace(parsed.MailtrapUsername),
+			MailtrapPassword:   strings.TrimSpace(parsed.MailtrapPassword),
 			EmailFrom:          parsed.EmailFrom,
 			LemonWebhookSecret: strings.TrimSpace(parsed.LemonWebhookSecret),
 			LemonHostedURL:     strings.TrimSpace(parsed.LemonHostedURL),

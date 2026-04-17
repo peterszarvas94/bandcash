@@ -15,7 +15,7 @@ Dev env loading:
 
 - `mise run dev` and `mise run run` can auto-load Lemon Squeezy secrets from 1Password via `kamal secrets` before starting the server.
 - Set `OP_ACCOUNT` and one of `OP_FROM_LOCALHOST` (preferred for local), `OP_FROM_DEVELOPMENT`, or `OP_FROM` in your shell, then run dev commands normally.
-- Local 1Password entries should include full app env keys (clear + secret), e.g. `APP_ENV`, `PORT`, `URL`, `DB_PATH`, logging keys, `EMAIL_FROM`, `RESEND_API_KEY`, and Lemon keys (`LEMON_WEBHOOK_SECRET`, `LEMON_HOSTED_URL`).
+- Local 1Password entries should include full app env keys (clear + secret), e.g. `APP_ENV`, `PORT`, `URL`, `DB_PATH`, logging keys, `EMAIL_PROVIDER`, `EMAIL_FROM`, Mailtrap SMTP keys (`MAILTRAP_HOST`, `MAILTRAP_PORT`, `MAILTRAP_USERNAME`, `MAILTRAP_PASSWORD`) for sandbox, and Lemon keys (`LEMON_WEBHOOK_SECRET`, `LEMON_HOSTED_URL`).
 - This avoids storing plaintext local secret files while still enabling local Lemon webhook and hosted subscription testing.
 - `mise run dev` expects access to the `bandcash` Cloudflare tunnel token via `cloudflared tunnel token bandcash`.
 - Configure Cloudflare ingress for the app hostname.
