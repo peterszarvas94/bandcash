@@ -4,6 +4,8 @@ RUN apk add --no-cache gcc musl-dev
 
 WORKDIR /app
 
+ENV GO111MODULE=on
+
 COPY go.mod go.sum ./
 RUN go mod download
 
