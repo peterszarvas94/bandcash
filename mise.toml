@@ -37,7 +37,7 @@ deploy-staging-check = "kamal config --destination staging"
 deploy-staging = "./scripts/deploy.sh staging"
 
 [tasks.build]
-depends = ["assets"]
+depends = ["templ", "assets"]
 run = "go build -o tmp/server ./cmd/server"
 
 [tasks.run]
