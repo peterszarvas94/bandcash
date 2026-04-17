@@ -1,6 +1,6 @@
 module bandcash
 
-go 1.26.0
+go 1.26.2
 
 require (
 	github.com/CAFxX/httpcompression v0.0.9

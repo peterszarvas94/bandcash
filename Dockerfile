@@ -1,16 +1,15 @@
-FROM golang:alpine AS builder
+FROM golang:1.26.2-alpine AS builder
 
 RUN apk add --no-cache gcc musl-dev
 
 WORKDIR /app
-
-ENV GO111MODULE=on
 
 COPY go.mod go.sum ./
 RUN go mod download
 
 COPY . .
 ENV CGO_ENABLED=1
+RUN go run github.com/a-h/templ/cmd/templ@v0.3.1001 generate
 RUN APP_ENV=production go run ./cmd/assets
 RUN go build -o server ./cmd/server
 

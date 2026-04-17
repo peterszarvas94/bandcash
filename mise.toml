@@ -1,6 +1,6 @@
 [tools]
 air = "1.64.5"
-go = "1.26.0"
+go = "1.26.2"
 "go:github.com/a-h/templ/cmd/templ" = "v0.3.1001"
 "go:gotest.tools/gotestsum" = "v1.13.0"
 golangci-lint = "2.9.0"
