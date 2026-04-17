@@ -32,15 +32,16 @@ func Index(c echo.Context) error {
 	data := Data(c.Request().Context())
 	userID := utils.GetUserID(c)
 	if user, err := authstore.GetUserByID(c.Request().Context(), userID); err == nil {
+		data.UserID = user.ID
 		data.UserEmail = user.Email
 		data.CurrentLang = appi18n.NormalizeLocale(user.PreferredLang)
 	}
+	// Temporarily disabled until Lemon Squeezy store approval.
 	data.Signals = map[string]any{"formData": map[string]any{"lang": data.CurrentLang}}
 	data.IsAuthenticated = true
 	data.IsSuperAdmin = utils.IsSuperadmin(c)
 	return utils.RenderPage(c, AccountIndex(data))
 }
-
 func LanguagePageHandler(c echo.Context) error {
 	utils.EnsureTabID(c)
 	data := Data(c.Request().Context())

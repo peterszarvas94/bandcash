@@ -4,11 +4,21 @@ Use `mise run <task>` first; fall back to raw `go test` only for targeted test r
 
 ## Run and Dev
 
-- `mise run dev` - start app with hot reload (`air`) plus local mail service.
+- `mise run dev` - start app with hot reload (`air`) and app tunnel.
+- `mise run tunnel-app` - run app tunnel (`cloudflared tunnel run --token "$(cloudflared tunnel token bandcash)"`).
 - `mise run run` - run server directly with `go run`.
 - `mise run build` - compile server binary to `tmp/server`.
 - `mise run start` - run built binary.
 - `mise run routes` - print registered routes and exit.
+
+Dev env loading:
+
+- `mise run dev` and `mise run run` can auto-load Lemon Squeezy secrets from 1Password via `kamal secrets` before starting the server.
+- Set `OP_ACCOUNT` and one of `OP_FROM_LOCALHOST` (preferred for local), `OP_FROM_DEVELOPMENT`, or `OP_FROM` in your shell, then run dev commands normally.
+- Local 1Password entries should include full app env keys (clear + secret), e.g. `APP_ENV`, `PORT`, `URL`, `DB_PATH`, logging keys, `EMAIL_FROM`, `RESEND_API_KEY`, and Lemon keys (`LEMON_WEBHOOK_SECRET`, `LEMON_HOSTED_URL`).
+- This avoids storing plaintext local secret files while still enabling local Lemon webhook and hosted subscription testing.
+- `mise run dev` expects access to the `bandcash` Cloudflare tunnel token via `cloudflared tunnel token bandcash`.
+- Configure Cloudflare ingress for the app hostname.
 
 ## Formatting and Static Checks
 

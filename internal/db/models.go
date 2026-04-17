@@ -17,6 +17,36 @@ type BannedUser struct {
 	CreatedAt time.Time `json:"created_at"`
 }
 
+type BillingCustomer struct {
+	UserID             string    `json:"user_id"`
+	ProviderCustomerID string    `json:"provider_customer_id"`
+	CreatedAt          time.Time `json:"created_at"`
+	UpdatedAt          time.Time `json:"updated_at"`
+}
+
+type BillingSubscription struct {
+	UserID                     string       `json:"user_id"`
+	ProviderSubscriptionID     string       `json:"provider_subscription_id"`
+	ProviderSubscriptionItemID string       `json:"provider_subscription_item_id"`
+	ProviderVariantID          string       `json:"provider_variant_id"`
+	SeatQuantity               int          `json:"seat_quantity"`
+	Tier                       string       `json:"tier"`
+	Status                     string       `json:"status"`
+	CurrentPeriodEndsAt        sql.NullTime `json:"current_period_ends_at"`
+	GraceUntil                 sql.NullTime `json:"grace_until"`
+	CanceledAt                 sql.NullTime `json:"canceled_at"`
+	ProviderPortalURL          string       `json:"provider_portal_url"`
+	ProviderUpdatePaymentURL   string       `json:"provider_update_payment_url"`
+	CreatedAt                  time.Time    `json:"created_at"`
+	UpdatedAt                  time.Time    `json:"updated_at"`
+}
+
+type BillingWebhookEvent struct {
+	EventID   string    `json:"event_id"`
+	EventType string    `json:"event_type"`
+	CreatedAt time.Time `json:"created_at"`
+}
+
 type Event struct {
 	ID          string         `json:"id"`
 	GroupID     string         `json:"group_id"`

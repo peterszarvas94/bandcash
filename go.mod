@@ -1,6 +1,6 @@
 module bandcash
 
-go 1.26.0
+go 1.26.2
 
 require (
 	github.com/CAFxX/httpcompression v0.0.9
@@ -10,12 +10,12 @@ require (
 	github.com/invopop/ctxi18n v0.9.0
 	github.com/labstack/echo/v4 v4.15.1
 	github.com/mattn/go-sqlite3 v1.14.37
+	github.com/resend/resend-go/v3 v3.5.0
 	github.com/starfederation/datastar-go v1.1.0
 	github.com/uptrace/bun v1.2.18
 	github.com/uptrace/bun/dialect/sqlitedialect v1.2.18
 	golang.org/x/text v0.35.0
 	golang.org/x/time v0.15.0
-	gopkg.in/gomail.v2 v2.0.0-20160411212932-81ebce5c23df
 )
 
 require (
@@ -41,6 +41,5 @@ require (
 	golang.org/x/crypto v0.48.0 // indirect
 	golang.org/x/net v0.50.0 // indirect
 	golang.org/x/sys v0.41.0 // indirect
-	gopkg.in/alexcesaro/quotedprintable.v3 v3.0.0-20150716171945-2caba252f4dc // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )

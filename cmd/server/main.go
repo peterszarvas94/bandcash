@@ -33,7 +33,7 @@ func main() {
 
 	e.Use(middleware.Compression)
 	e.Use(middleware.RequestID)
-	e.Use(middleware.GlobalDelay)
+	// e.Use(middleware.GlobalDelay)
 	e.Use(middleware.Locale)
 	e.Use(middleware.GlobalRateLimit)
 	e.Use(middleware.GlobalBodyLimit)
@@ -65,7 +65,11 @@ func main() {
 		slog.Error("failed to initialize database", "err", err)
 		os.Exit(1)
 	}
-	defer db.Close()
+	defer func() {
+		if err := db.Close(); err != nil {
+			slog.Error("failed to close database", "err", err)
+		}
+	}()
 
 	err = db.Migrate()
 	if err != nil {

@@ -10,23 +10,20 @@ import (
 
 	ctxi18n "github.com/invopop/ctxi18n"
 	ctxi18ncore "github.com/invopop/ctxi18n/i18n"
+	"github.com/resend/resend-go/v3"
 
 	appi18n "bandcash/internal/i18n"
 	"bandcash/internal/utils"
-
-	"gopkg.in/gomail.v2"
 )
 
 type Config struct {
-	Host     string
-	Port     int
-	Username string
-	Password string
-	From     string
+	APIKey string
+	From   string
 }
 
 type Service struct {
 	config Config
+	client *resend.Client
 }
 
 type builtEmail struct {
@@ -73,15 +70,32 @@ func contextWithLocale(base context.Context, locale string) context.Context {
 }
 
 func verifyLink(baseURL, token, locale string) string {
-	return fmt.Sprintf("%s/login/verify?token=%s&lang=%s", baseURL, token, locale)
+	link := fmt.Sprintf("%s/login/verify?token=%s&lang=%s", baseURL, token, locale)
+	logConstructedURL("magic_link", locale, link)
+	return link
 }
 
 func groupLink(baseURL, groupID string) string {
-	return fmt.Sprintf("%s/groups/%s", baseURL, groupID)
+	link := fmt.Sprintf("%s/groups/%s", baseURL, groupID)
+	logConstructedURL("group_link", "", link)
+	return link
 }
 
 func dashboardLink(baseURL string) string {
-	return fmt.Sprintf("%s/groups", baseURL)
+	link := fmt.Sprintf("%s/groups", baseURL)
+	logConstructedURL("dashboard_link", "", link)
+	return link
+}
+
+func logConstructedURL(kind, locale, link string) {
+	if utils.Env().AppEnv != "development" {
+		return
+	}
+	if locale != "" {
+		slog.Debug("email: constructed url", "kind", kind, "locale", locale, "url", link)
+		return
+	}
+	slog.Debug("email: constructed url", "kind", kind, "url", link)
 }
 
 func joinBilingualText(huText, enText string) string {
@@ -117,12 +131,10 @@ func NewFromEnv() *Service {
 
 	return &Service{
 		config: Config{
-			Host:     env.SMTPHost,
-			Port:     env.SMTPPort,
-			Username: env.SMTPUser,
-			Password: env.SMTPPass,
-			From:     env.EmailFrom,
+			APIKey: env.ResendAPIKey,
+			From:   env.EmailFrom,
 		},
+		client: resend.NewClient(env.ResendAPIKey),
 	}
 }
 
@@ -134,26 +146,24 @@ func Email() *Service {
 }
 
 func (s *Service) Send(to, subject, textBody, htmlBody string) error {
-	if s.config.Host == "" {
-		return fmt.Errorf("SMTP host not configured")
+	if strings.TrimSpace(s.config.APIKey) == "" {
+		return fmt.Errorf("Resend API key not configured")
 	}
 
-	m := gomail.NewMessage()
-	m.SetHeader("From", s.config.From)
-	m.SetHeader("To", to)
-	m.SetHeader("Subject", subject)
-	m.SetBody("text/plain", textBody)
-	if htmlBody != "" {
-		m.AddAlternative("text/html", htmlBody)
+	params := &resend.SendEmailRequest{
+		From:    s.config.From,
+		To:      []string{to},
+		Subject: subject,
+		Text:    textBody,
+		Html:    htmlBody,
 	}
 
-	d := gomail.NewDialer(s.config.Host, s.config.Port, s.config.Username, s.config.Password)
-
-	if err := d.DialAndSend(m); err != nil {
+	result, err := s.client.Emails.Send(params)
+	if err != nil {
 		return fmt.Errorf("failed to send email: %w", err)
 	}
 
-	slog.Info("email sent", "to", to, "subject", subject)
+	slog.Info("email sent", "to", to, "subject", subject, "provider", "resend", "id", result.Id)
 	return nil
 }
 

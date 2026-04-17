@@ -10,22 +10,20 @@ import (
 )
 
 type EnvConfig struct {
-	Host             string
-	Port             int
-	DevGlobalDelayMS int
-	LogLevel         slog.Level
-	LogFolder        string
-	LogPrefix        string
-	DBPath           string
-	URL              string
-	AppEnv           string
-	SuperadminEmail  string
-	DisableRateLimit bool
-	SMTPHost         string
-	SMTPPort         int
-	SMTPUser         string
-	SMTPPass         string
-	EmailFrom        string
+	Host               string
+	Port               int
+	LogLevel           slog.Level
+	LogFolder          string
+	LogPrefix          string
+	DBPath             string
+	URL                string
+	AppEnv             string
+	SuperadminEmail    string
+	DisableRateLimit   bool
+	ResendAPIKey       string
+	EmailFrom          string
+	LemonWebhookSecret string
+	LemonHostedURL     string
 }
 
 const DefaultSuperadminEmail = "admin@bandcash.localhost"
@@ -42,8 +40,6 @@ type envVars struct {
 	Host string `env:"HOST" envDefault:"0.0.0.0"`
 	// Port is the HTTP port the app listens on.
 	Port int `env:"PORT" envDefault:"2222" validate:"required,gte=1,lte=65535"`
-	// DevGlobalDelayMS adds an artificial delay to responses in development.
-	DevGlobalDelayMS int `env:"DEV_GLOBAL_DELAY_MS" envDefault:"0" validate:"gte=0"`
 	// LogLevel controls structured log verbosity.
 	LogLevel string `env:"LOG_LEVEL" envDefault:"debug" validate:"required,oneof=debug info warn error"`
 	// LogFolder is the directory where log files are stored.
@@ -53,21 +49,19 @@ type envVars struct {
 	// DBPath is the SQLite database file path.
 	DBPath string `env:"DB_PATH" envDefault:"sqlite.db" validate:"required"`
 	// URL is the public base URL used for links and callbacks.
-	URL string `env:"URL" envDefault:"http://bandcash.localhost:9080" validate:"required_if=AppEnv production,required_if=AppEnv staging"`
+	URL string `env:"URL" envDefault:"http://localhost:2222" validate:"required_if=AppEnv production,required_if=AppEnv staging"`
 	// SuperadminEmail is the bootstrap superadmin account email.
 	SuperadminEmail string `env:"SUPERADMIN_EMAIL" envDefault:"admin@bandcash.localhost" validate:"required,email"`
 	// DisableRateLimit disables request rate limiting (useful for local dev).
 	DisableRateLimit bool `env:"DISABLE_RATE_LIMIT" envDefault:"true"`
-	// SMTPHost is the SMTP server host for outgoing email.
-	SMTPHost string `env:"SMTP_HOST" envDefault:"localhost" validate:"required_if=AppEnv production,required_if=AppEnv staging"`
-	// SMTPPort is the SMTP server port for outgoing email.
-	SMTPPort int `env:"SMTP_PORT" envDefault:"1025" validate:"required_if=AppEnv production,required_if=AppEnv staging,omitempty,gt=0"`
-	// SMTPUser is the SMTP username used for authentication.
-	SMTPUser string `env:"SMTP_USERNAME" validate:"required_if=AppEnv production,required_if=AppEnv staging"`
-	// SMTPPass is the SMTP password used for authentication.
-	SMTPPass string `env:"SMTP_PASSWORD" validate:"required_if=AppEnv production,required_if=AppEnv staging"`
+	// ResendAPIKey stores the Resend API key.
+	ResendAPIKey string `env:"RESEND_API_KEY" validate:"required_if=AppEnv production,required_if=AppEnv staging"`
 	// EmailFrom is the default From header for app emails.
 	EmailFrom string `env:"EMAIL_FROM" envDefault:"BandCash <noreply@bandcash.localhost>" validate:"required_if=AppEnv production,required_if=AppEnv staging"`
+	// LemonWebhookSecret is the endpoint secret used to verify webhook signatures.
+	LemonWebhookSecret string `env:"LEMON_WEBHOOK_SECRET"`
+	// LemonHostedURL is the hosted customer billing URL where users manage subscriptions.
+	LemonHostedURL string `env:"LEMON_HOSTED_URL"`
 }
 
 func Env() *EnvConfig {
@@ -98,22 +92,20 @@ func Env() *EnvConfig {
 		}
 
 		envCfg = &EnvConfig{
-			Host:             parsed.Host,
-			Port:             parsed.Port,
-			DevGlobalDelayMS: parsed.DevGlobalDelayMS,
-			LogLevel:         logLevel,
-			LogFolder:        parsed.LogFolder,
-			LogPrefix:        parsed.LogPrefix,
-			DBPath:           parsed.DBPath,
-			URL:              parsed.URL,
-			AppEnv:           parsed.AppEnv,
-			SuperadminEmail:  superadminEmail,
-			DisableRateLimit: parsed.DisableRateLimit,
-			SMTPHost:         parsed.SMTPHost,
-			SMTPPort:         parsed.SMTPPort,
-			SMTPUser:         parsed.SMTPUser,
-			SMTPPass:         parsed.SMTPPass,
-			EmailFrom:        parsed.EmailFrom,
+			Host:               parsed.Host,
+			Port:               parsed.Port,
+			LogLevel:           logLevel,
+			LogFolder:          parsed.LogFolder,
+			LogPrefix:          parsed.LogPrefix,
+			DBPath:             parsed.DBPath,
+			URL:                parsed.URL,
+			AppEnv:             parsed.AppEnv,
+			SuperadminEmail:    superadminEmail,
+			DisableRateLimit:   parsed.DisableRateLimit,
+			ResendAPIKey:       parsed.ResendAPIKey,
+			EmailFrom:          parsed.EmailFrom,
+			LemonWebhookSecret: strings.TrimSpace(parsed.LemonWebhookSecret),
+			LemonHostedURL:     strings.TrimSpace(parsed.LemonHostedURL),
 		}
 	})
 	return envCfg

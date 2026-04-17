@@ -1,0 +1,6 @@
+ALTER TABLE billing_subscriptions RENAME COLUMN provider_variant_id TO paddle_price_id;
+ALTER TABLE billing_subscriptions RENAME COLUMN provider_subscription_id TO paddle_subscription_id;
+
+DROP INDEX IF EXISTS idx_billing_customers_provider_customer_id;
+ALTER TABLE billing_customers RENAME COLUMN provider_customer_id TO paddle_customer_id;
+CREATE INDEX IF NOT EXISTS idx_billing_customers_paddle_customer_id ON billing_customers(paddle_customer_id);

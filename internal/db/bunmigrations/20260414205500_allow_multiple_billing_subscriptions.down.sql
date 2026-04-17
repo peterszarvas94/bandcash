@@ -1,0 +1,3 @@
+-- No-op rollback.
+-- Restoring the previous user_id-primary-key model would require data loss
+-- when a user has multiple subscriptions.

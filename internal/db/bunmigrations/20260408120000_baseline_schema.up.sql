@@ -42,8 +42,6 @@ CREATE TABLE IF NOT EXISTS events (
     paid INTEGER NOT NULL DEFAULT 0,
     paid_at TEXT,
     place TEXT NOT NULL DEFAULT '',
-    date TEXT NOT NULL DEFAULT '',
-    event_time TEXT NOT NULL DEFAULT '',
     FOREIGN KEY (group_id) REFERENCES groups(id) ON DELETE CASCADE
 );
 CREATE INDEX IF NOT EXISTS idx_events_group_id ON events(group_id);

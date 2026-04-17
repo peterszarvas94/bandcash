@@ -6,6 +6,37 @@ import shared "bandcash/models/shared"
 templ HomePricingMain(currentLang string) {
 	<section class="section">
 		@shared.PageTitleWithLanguage(ctxi18n.T(ctx, "legal.pricing"), "/pricing", currentLang)
-		@LegalPlaceholderBanner()
+		<div class="pricing-page">
+			<article>
+				<h2>
+					{ ctxi18n.T(ctx, "billing.pricing.free_title") }
+					<span class="pricing-price">
+						<span>{ ctxi18n.T(ctx, "billing.pricing.free_price_amount") }</span>
+						<span>{ ctxi18n.T(ctx, "billing.pricing.free_price_period") }</span>
+					</span>
+				</h2>
+				<ul>
+					<li>{ ctxi18n.T(ctx, "billing.pricing.free_feature_groups") }</li>
+					<li>{ ctxi18n.T(ctx, "billing.pricing.free_feature_events") }</li>
+					<li>{ ctxi18n.T(ctx, "billing.pricing.free_feature_members") }</li>
+				</ul>
+			</article>
+			<article>
+				<h2>
+					{ ctxi18n.T(ctx, "billing.pricing.pro_title") }
+					<span class="pricing-price">
+						<span>{ ctxi18n.T(ctx, "billing.pricing.pro_price_amount") }</span>
+						<span>{ ctxi18n.T(ctx, "billing.pricing.pro_price_period") }</span>
+					</span>
+				</h2>
+				<ul>
+					<li>{ ctxi18n.T(ctx, "billing.pricing.pro_feature_groups") }</li>
+					<li>{ ctxi18n.T(ctx, "billing.pricing.pro_feature_events") }</li>
+					<li>{ ctxi18n.T(ctx, "billing.pricing.pro_feature_members") }</li>
+					<li>{ ctxi18n.T(ctx, "billing.pricing.pro_feature_viewers") }</li>
+					<li>{ ctxi18n.T(ctx, "billing.pricing.pro_feature_finance") }</li>
+				</ul>
+			</article>
+		</div>
 	</section>
 }

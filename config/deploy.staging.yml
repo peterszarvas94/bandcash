@@ -31,22 +31,21 @@ volumes:
   - bandcash_staging_data:/storage
 
 env:
-  clear:
-    APP_ENV: staging
-    PORT: 2222
-    URL: https://staging.bandcash.app
-    DB_PATH: /storage/sqlite.db
-    LOG_LEVEL: debug
-    LOG_FOLDER: /storage/logs
-    LOG_PREFIX: bandcash-staging
-    DISABLE_RATE_LIMIT: true
   secret:
+    - APP_ENV
+    - HOST
+    - PORT
+    - URL
+    - DB_PATH
+    - LOG_LEVEL
+    - LOG_FOLDER
+    - LOG_PREFIX
+    - DISABLE_RATE_LIMIT
     - SUPERADMIN_EMAIL
-    - SMTP_HOST
-    - SMTP_PORT
     - EMAIL_FROM
-    - SMTP_USERNAME
-    - SMTP_PASSWORD
+    - RESEND_API_KEY
+    - LEMON_WEBHOOK_SECRET
+    - LEMON_HOSTED_URL
 
 accessories:
   better-stack:

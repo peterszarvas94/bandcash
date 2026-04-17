@@ -159,6 +159,7 @@ func (g *Group) CreateGroup(c echo.Context) error {
 	}
 
 	name := signals.FormData.Name
+	// Temporarily disabled until Lemon Squeezy store approval.
 
 	// Create group
 	group, err := groupstore.CreateGroup(c.Request().Context(), groupstore.CreateGroupParams{
@@ -1028,6 +1029,8 @@ func (g *Group) TransferGroupOwnership(c echo.Context) error {
 	if _, roleErr := getGroupAccessRole(ctx, groupID, userID); roleErr != nil {
 		return g.redirectUsersPage(c, groupID, "", "groups.errors.invalid_user", http.StatusBadRequest)
 	}
+
+	// Temporarily disabled until Lemon Squeezy store approval.
 
 	if err := groupstore.UpdateGroupAdmin(ctx, groupstore.UpdateGroupAdminParams{AdminUserID: userID, ID: groupID}); err != nil {
 		slog.Error("group: failed to transfer ownership", "group_id", groupID, "user_id", userID, "err", err)

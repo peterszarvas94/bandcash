@@ -27,3 +27,4 @@
 - add live update on viewer pages when admin changes viewer list (broadcast SSE)
 - save filters
 - cancel events
+- billing safety net: add automatic Lemon API reconciliation for missed/failed webhooks (periodic + on-demand)

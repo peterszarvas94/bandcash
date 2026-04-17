@@ -233,9 +233,10 @@ func (g *Group) UserEditPage(c echo.Context) error {
 	}
 
 	row := GroupUserRow{Kind: "user", Status: "active", Email: user.Email, UserID: user.ID, Role: "viewer"}
-	if role == "owner" {
+	switch role {
+	case "owner":
 		row.Role = "owner"
-	} else if role == "admin" {
+	case "admin":
 		row.Role = "admin"
 	}
 

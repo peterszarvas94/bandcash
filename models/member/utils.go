@@ -3,10 +3,7 @@ package member
 import (
 	"strings"
 
-	"github.com/labstack/echo/v4"
-
 	"bandcash/internal/utils"
-	authstore "bandcash/models/auth/data"
 )
 
 type staticTableQueryable struct {
@@ -29,18 +26,6 @@ func normalizePaidAtInput(value string) string {
 	}
 
 	return trimmed
-}
-
-func getUserEmail(c echo.Context) string {
-	userID := utils.GetUserID(c)
-	if userID == "" {
-		return ""
-	}
-	user, err := authstore.GetUserByID(c.Request().Context(), userID)
-	if err != nil {
-		return ""
-	}
-	return user.Email
 }
 
 func applyMemberShowTableByRole(data *MemberData, isAdmin bool) {

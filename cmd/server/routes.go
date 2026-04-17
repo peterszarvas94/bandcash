@@ -28,6 +28,8 @@ func registerRoutes(e *echo.Echo) {
 	e.POST("/login", auth.LoginRequest, middleware.AuthBodyLimit, middleware.AuthRateLimit)
 	e.GET("/login/verify", auth.VerifyMagicLink)
 	e.DELETE("/session", auth.Logout)
+	// Temporarily disabled until Lemon Squeezy store approval.
+	// e.POST("/lemon_webhook", billingmodel.LemonWebhook)
 
 	adminRoutes := e.Group("/admin", middleware.RequireAuth, middleware.RequireSuperadmin)
 	adminRoutes.GET("", admin.Dashboard)
@@ -43,8 +45,8 @@ func registerRoutes(e *echo.Echo) {
 
 	grp := group.New()
 	e.GET("/groups", grp.IndexPage, middleware.RequireAuth)
-	e.GET("/groups/new", grp.NewGroupPage, middleware.RequireAuth)
-	e.POST("/groups", grp.CreateGroup, middleware.RequireAuth)
+	e.GET("/groups/new", grp.NewGroupPage, middleware.RequireAuth, middleware.RequireCanCreateGroup)
+	e.POST("/groups", grp.CreateGroup, middleware.RequireAuth, middleware.RequireCanCreateGroup)
 
 	groupUserRoutes := e.Group("/groups/:groupId", middleware.RequireAuth, middleware.RequireGroup)
 	groupUserRoutes.GET("", grp.RootPage)
