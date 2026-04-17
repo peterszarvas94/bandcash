@@ -7,31 +7,36 @@ templ HomePricingMain(currentLang string) {
 	<section class="section">
 		@shared.PageTitleWithLanguage(ctxi18n.T(ctx, "legal.pricing"), "/pricing", currentLang)
 		<div class="pricing-page">
-			<p class="color-muted text-sm">{ ctxi18n.T(ctx, "billing.pricing.subtitle") }</p>
-			<p class="color-muted text-sm">{ ctxi18n.T(ctx, "billing.pricing.intro") }</p>
-			<div class="pricing-grid pricing-grid-plans">
-				<article class="pricing-plan pricing-plan-free">
-					<h2>{ ctxi18n.T(ctx, "billing.pricing.free_title") }</h2>
-					<p class="pricing-price">{ ctxi18n.T(ctx, "billing.pricing.free_price") }</p>
-					<ul class="pricing-feature-list">
-						<li>{ ctxi18n.T(ctx, "billing.pricing.free_feature_groups") }</li>
-						<li>{ ctxi18n.T(ctx, "billing.pricing.free_feature_events") }</li>
-						<li>{ ctxi18n.T(ctx, "billing.pricing.free_feature_members") }</li>
-					</ul>
-				</article>
-				<article class="pricing-plan pricing-plan-pro">
-					<h2>{ ctxi18n.T(ctx, "billing.pricing.pro_title") }</h2>
-					<p class="pricing-price">{ ctxi18n.T(ctx, "billing.pricing.pro_price") }</p>
-					<ul class="pricing-feature-list">
-						<li>{ ctxi18n.T(ctx, "billing.pricing.pro_feature_groups") }</li>
-						<li>{ ctxi18n.T(ctx, "billing.pricing.pro_feature_events") }</li>
-						<li>{ ctxi18n.T(ctx, "billing.pricing.pro_feature_members") }</li>
-						<li>{ ctxi18n.T(ctx, "billing.pricing.pro_feature_viewers") }</li>
-						<li>{ ctxi18n.T(ctx, "billing.pricing.pro_feature_finance") }</li>
-					</ul>
-				</article>
-			</div>
-			<p class="color-muted text-sm">{ ctxi18n.T(ctx, "billing.pricing.manual_subscription_note") }</p>
+			<article>
+				<h2>
+					{ ctxi18n.T(ctx, "billing.pricing.free_title") }
+					<span class="pricing-price">
+						<span>{ ctxi18n.T(ctx, "billing.pricing.free_price_amount") }</span>
+						<span>{ ctxi18n.T(ctx, "billing.pricing.free_price_period") }</span>
+					</span>
+				</h2>
+				<ul>
+					<li>{ ctxi18n.T(ctx, "billing.pricing.free_feature_groups") }</li>
+					<li>{ ctxi18n.T(ctx, "billing.pricing.free_feature_events") }</li>
+					<li>{ ctxi18n.T(ctx, "billing.pricing.free_feature_members") }</li>
+				</ul>
+			</article>
+			<article>
+				<h2>
+					{ ctxi18n.T(ctx, "billing.pricing.pro_title") }
+					<span class="pricing-price">
+						<span>{ ctxi18n.T(ctx, "billing.pricing.pro_price_amount") }</span>
+						<span>{ ctxi18n.T(ctx, "billing.pricing.pro_price_period") }</span>
+					</span>
+				</h2>
+				<ul>
+					<li>{ ctxi18n.T(ctx, "billing.pricing.pro_feature_groups") }</li>
+					<li>{ ctxi18n.T(ctx, "billing.pricing.pro_feature_events") }</li>
+					<li>{ ctxi18n.T(ctx, "billing.pricing.pro_feature_members") }</li>
+					<li>{ ctxi18n.T(ctx, "billing.pricing.pro_feature_viewers") }</li>
+					<li>{ ctxi18n.T(ctx, "billing.pricing.pro_feature_finance") }</li>
+				</ul>
+			</article>
 		</div>
 	</section>
 }

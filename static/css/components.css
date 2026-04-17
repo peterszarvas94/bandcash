@@ -1182,110 +1182,84 @@
     color: var(--text);
   }
 
-  .pricing-grid {
+  .pricing-page {
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: var(--space);
+    gap: calc(var(--space) * 1.5);
 
     @media (max-width: 780px) {
       grid-template-columns: 1fr;
     }
-  }
 
-  .pricing-page {
-    display: grid;
-    gap: calc(var(--space) * 2);
-  }
+    article {
+      background: var(--bg-light);
+      border: var(--border) solid var(--bg-dark);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow);
+      padding: calc(var(--space) * 2);
+      display: grid;
+      gap: calc(var(--space) * 1.2);
+      align-content: start;
 
-  .pricing-hero {
-    background:
-      radial-gradient(
-        120% 160% at 0% 0%,
-        color-mix(in srgb, var(--bg-primary) 18%, transparent) 0%,
-        transparent 62%
-      ),
-      var(--bg-light);
-    border: var(--border) solid var(--bg-dark);
-    border-radius: var(--radius-lg);
-    box-shadow: var(--shadow);
-    padding: calc(var(--space) * 2.5) calc(var(--space) * 2);
-  }
+      &:last-child {
+        border-color: color-mix(in srgb, var(--bg-primary) 55%, var(--bg-dark));
+        box-shadow: var(--shadow-lg);
+      }
 
-  .pricing-subtitle {
-    font-size: 1.05rem;
-    line-height: 1.45;
-    color: var(--text);
-    max-width: 52ch;
-    margin: 0;
-    padding: 0;
-  }
+      > h2 {
+        display: flex;
+        align-items: baseline;
+        justify-content: space-between;
+        gap: calc(var(--space) * 1);
+        flex-wrap: wrap;
+        margin: 0;
+        padding: 0;
 
-  .pricing-grid-pricing,
-  .pricing-grid-plans {
-    gap: calc(var(--space) * 1.5);
-  }
+        .pricing-price {
+          display: inline-flex;
+          align-items: center;
+          gap: var(--space);
+          margin: 0;
+          padding: 0;
+          white-space: nowrap;
 
-  .pricing-plan {
-    background: var(--bg-light);
-    border: var(--border) solid var(--bg-dark);
-    border-radius: var(--radius-lg);
-    box-shadow: var(--shadow);
-    padding: calc(var(--space) * 2);
-    display: grid;
-    gap: calc(var(--space) * 1.2);
-    align-content: start;
+          > span:first-child {
+            color: var(--bg-primary);
+            font-size: var(--font-size-h1);
+            font-weight: 700;
+          }
 
-    > h2 {
-      margin: 0;
-      padding: 0;
-      font-size: 1.35rem;
-      line-height: 1.2;
-    }
+          > span {
+            vertical-align: baseline;
+          }
+        }
+      }
 
-    > .badge {
-      justify-self: start;
-    }
-  }
+      > ul {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+        display: grid;
+        gap: calc(var(--space) * 0.75);
 
-  .pricing-plan-pro {
-    border-color: color-mix(in srgb, var(--bg-primary) 55%, var(--bg-dark));
-    box-shadow: var(--shadow-lg);
-    position: relative;
-  }
+        > li {
+          position: relative;
+          padding-left: calc(var(--space) * 2);
+          color: var(--text);
+          line-height: 1.45;
+        }
 
-  .pricing-price {
-    font-size: 1.6rem;
-    line-height: 1.15;
-    font-weight: 700;
-    margin: 0;
-    padding: 0;
-    letter-spacing: -0.02em;
-  }
-
-  .pricing-feature-list {
-    list-style: none;
-    margin: 0;
-    padding: 0;
-    display: grid;
-    gap: calc(var(--space) * 0.75);
-
-    > li {
-      position: relative;
-      padding-left: calc(var(--space) * 2);
-      color: var(--text);
-      line-height: 1.45;
-    }
-
-    > li::before {
-      content: "";
-      position: absolute;
-      left: calc(var(--space) * 0.5);
-      top: 0.52em;
-      width: 0.5rem;
-      height: 0.5rem;
-      border-radius: var(--radius-pill);
-      background: var(--bg-primary);
-      box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--bg) 55%, transparent);
+        > li::before {
+          content: "";
+          position: absolute;
+          left: var(--space-xs);
+          top: 0.55em;
+          width: 0.45rem;
+          height: 0.45rem;
+          border-radius: 50%;
+          background: var(--bg-primary);
+        }
+      }
     }
   }
 

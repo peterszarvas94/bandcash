@@ -80,8 +80,7 @@ func registerRoutes(e *echo.Echo) {
 	groupOwnerRoutes.PUT("/users/:id/transfer-owner", grp.TransferGroupOwnership)
 
 	e.GET("/", home.Index)
-	// Temporarily disabled until Lemon Squeezy store approval.
-	// e.GET("/pricing", home.Pricing)
+	e.GET("/pricing", home.Pricing)
 	e.GET("/terms-and-conditions", home.TermsAndConditions)
 	e.GET("/privacy-policy", home.PrivacyPolicy)
 	e.GET("/refund-policy", home.RefundPolicy)
