@@ -14,6 +14,7 @@ import (
 
 	"github.com/labstack/echo/v4"
 
+	internalbilling "bandcash/internal/billing"
 	"bandcash/internal/db"
 	"bandcash/internal/i18n"
 	"bandcash/internal/middleware"
@@ -75,6 +76,13 @@ func main() {
 	if err != nil {
 		slog.Error("failed to run database migrations", "err", err)
 		os.Exit(1)
+	}
+
+	syncReport, syncErr := internalbilling.StartupSyncSubscriptions(context.Background())
+	if syncErr != nil {
+		slog.Warn("billing startup sync finished with errors", "candidates", syncReport.Candidates, "synced", syncReport.Synced, "failed", syncReport.Failed, "err", syncErr)
+	} else if syncReport.Candidates > 0 {
+		slog.Info("billing startup sync completed", "candidates", syncReport.Candidates, "synced", syncReport.Synced)
 	}
 
 	startErr := make(chan error, 1)

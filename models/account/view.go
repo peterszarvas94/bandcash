@@ -14,6 +14,8 @@ type AccountData struct {
 	SubscriptionSlots     int
 	UsedSlots             int
 	RemainingSlots        int
+	SeatQuantity          int
+	CanUpdateSeats        bool
 	SubscriptionPortalURL string
 	Signals               map[string]any
 	IsAuthenticated       bool

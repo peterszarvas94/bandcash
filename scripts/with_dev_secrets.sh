@@ -53,7 +53,7 @@ load_op_config_from_file() {
 }
 
 fetch_local_secrets_from_1password() {
-  local op_account op_from secrets_blob value
+  local op_account op_from value single_secret
   local keys
 
   op_account="${OP_ACCOUNT:-}"
@@ -88,25 +88,26 @@ fetch_local_secrets_from_1password() {
     MAILTRAP_USERNAME
     MAILTRAP_PASSWORD
     LEMON_WEBHOOK_SECRET
-    LEMON_HOSTED_URL
+    LEMON_API_KEY
   )
 
-  if ! secrets_blob="$(kamal secrets fetch --adapter 1password --account "$op_account" --from "$op_from" "${keys[@]}")"; then
-    if [ -z "${LEMON_HOSTED_URL:-}" ]; then
-      echo "with_dev_secrets: could not load local secrets via 1Password (check 'op signin' and OP_FROM_LOCALHOST/OP_FROM_DEVELOPMENT)." >&2
-    fi
-    return 0
-  fi
-
   for key in "${keys[@]}"; do
-    value="$(kamal secrets extract "$key" "$secrets_blob" 2>/dev/null || true)"
-    if [[ "$value" == *"ERROR (RuntimeError)"* ]] || [[ "$value" == *"Could not find secret"* ]]; then
+    single_secret="$(kamal secrets fetch --adapter 1password --account "$op_account" --from "$op_from" "$key" 2>/dev/null || true)"
+    if [ -z "$single_secret" ]; then
+      continue
+    fi
+    value="$(kamal secrets extract "$key" "$single_secret" 2>/dev/null || true)"
+    if [[ "$value" == *"ERROR (RuntimeError)"* ]] || [[ "$value" == *"Could not find secret"* ]] || [ -z "$value" ]; then
       value=""
     fi
     if [ -n "$value" ]; then
       export "$key=$value"
     fi
   done
+
+  if [ -z "${EMAIL_PROVIDER:-}" ]; then
+    echo "with_dev_secrets: could not load required local secrets via 1Password (check 'op signin' and OP_FROM_LOCALHOST/OP_FROM_DEVELOPMENT)." >&2
+  fi
 }
 
 load_op_config_from_file "$ROOT_DIR/.kamal/secrets.development"

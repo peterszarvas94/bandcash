@@ -37,6 +37,17 @@ func setupTestDB(t *testing.T) {
 	}
 }
 
+func stubCanonicalSyncFromWebhookPayload(t *testing.T) {
+	t.Helper()
+	original := fetchCanonicalWebhookUpdate
+	fetchCanonicalWebhookUpdate = func(_ context.Context, update WebhookSubscriptionUpdate) (WebhookSubscriptionUpdate, error) {
+		return update, nil
+	}
+	t.Cleanup(func() {
+		fetchCanonicalWebhookUpdate = original
+	})
+}
+
 func readFixture(t *testing.T) []byte {
 	t.Helper()
 	content, err := os.ReadFile("test_webhook_event.json")
@@ -93,8 +104,24 @@ func TestParseWebhookSubscription_FromFixture(t *testing.T) {
 	}
 }
 
+func TestParseWebhookSubscription_SubscriptionItemFromRelationships(t *testing.T) {
+	raw := []byte(`{"meta":{"event_name":"subscription_updated","event_id":"evt_rel"},"data":{"id":"sub_rel","attributes":{"status":"active","customer_id":"ctm_rel","customer_email":"webhook.user@example.com","variant_id":"pri_test_pro","quantity":3},"relationships":{"first_subscription_item":{"data":{"id":"si_rel_123"}}}}}`)
+
+	update, isSubscriptionEvent, err := ParseWebhookSubscription(raw)
+	if err != nil {
+		t.Fatalf("ParseWebhookSubscription returned error: %v", err)
+	}
+	if !isSubscriptionEvent {
+		t.Fatal("expected subscription event")
+	}
+	if update.SubscriptionItemID != "si_rel_123" {
+		t.Fatalf("expected subscription item id from relationships, got %s", update.SubscriptionItemID)
+	}
+}
+
 func TestProcessWebhook_SubscriptionCreated_PersistsBillingRows(t *testing.T) {
 	setupTestDB(t)
+	stubCanonicalSyncFromWebhookPayload(t)
 	ctx := context.Background()
 
 	if _, err := authstore.CreateUser(ctx, authstore.CreateUserParams{
@@ -177,6 +204,7 @@ func TestProcessWebhook_SubscriptionCreated_PersistsBillingRows(t *testing.T) {
 
 func TestProcessWebhook_UnresolvedUser_ReturnsErrorAndDoesNotMarkProcessed(t *testing.T) {
 	setupTestDB(t)
+	stubCanonicalSyncFromWebhookPayload(t)
 	ctx := context.Background()
 
 	raw := readFixture(t)
@@ -241,6 +269,7 @@ func TestUpsertSubscription_DirectPersist(t *testing.T) {
 
 func TestProcessWebhook_SingleSubscription_UpdatesSeatQuantity(t *testing.T) {
 	setupTestDB(t)
+	stubCanonicalSyncFromWebhookPayload(t)
 	ctx := context.Background()
 
 	if _, err := authstore.CreateUser(ctx, authstore.CreateUserParams{ID: testUserID, Email: testUserEmail, PreferredLang: "en"}); err != nil {
@@ -274,5 +303,42 @@ func TestProcessWebhook_SingleSubscription_UpdatesSeatQuantity(t *testing.T) {
 	}
 	if rows != 1 {
 		t.Fatalf("expected single subscription row, got %d", rows)
+	}
+}
+
+func TestProcessWebhook_UsesCanonicalSubscriptionState(t *testing.T) {
+	setupTestDB(t)
+	ctx := context.Background()
+
+	if _, err := authstore.CreateUser(ctx, authstore.CreateUserParams{ID: testUserID, Email: testUserEmail, PreferredLang: "en"}); err != nil {
+		t.Fatalf("CreateUser failed: %v", err)
+	}
+
+	original := fetchCanonicalWebhookUpdate
+	fetchCanonicalWebhookUpdate = func(_ context.Context, update WebhookSubscriptionUpdate) (WebhookSubscriptionUpdate, error) {
+		update.VariantID = "pri_test_pro"
+		update.SeatQuantity = 5
+		update.Status = "active"
+		return update, nil
+	}
+	t.Cleanup(func() {
+		fetchCanonicalWebhookUpdate = original
+	})
+
+	raw := subscriptionPayload("evt_canonical_aaaaaaaaaa", "subscription_created", "sub_canonical", "ctm_canonical", testUserID, testUserEmail, "active", "pri_test_pro", 1)
+	processed, err := ProcessWebhook(ctx, raw)
+	if err != nil {
+		t.Fatalf("ProcessWebhook returned error: %v", err)
+	}
+	if !processed {
+		t.Fatal("expected webhook to be processed")
+	}
+
+	state, err := CurrentAccessState(ctx, testUserID)
+	if err != nil {
+		t.Fatalf("CurrentAccessState failed: %v", err)
+	}
+	if state.SubscriptionCount != 5 {
+		t.Fatalf("expected canonical subscription count 5, got %d", state.SubscriptionCount)
 	}
 }

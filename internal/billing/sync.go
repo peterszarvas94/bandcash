@@ -467,7 +467,7 @@ func ParseWebhookSubscription(rawBody []byte) (WebhookSubscriptionUpdate, bool, 
 		EventID:             eventID,
 		EventType:           eventType,
 		SubscriptionID:      firstString(data, "id", "attributes.id", "subscription_id"),
-		SubscriptionItemID:  firstString(data, "attributes.first_subscription_item.id", "first_subscription_item.id", "attributes.subscription_item_id", "subscription_item_id"),
+		SubscriptionItemID:  firstString(data, "attributes.first_subscription_item.id", "first_subscription_item.id", "attributes.first_subscription_item.subscription_item_id", "first_subscription_item.subscription_item_id", "attributes.subscription_item_id", "subscription_item_id", "attributes.first_subscription_item_id", "first_subscription_item_id", "relationships.first_subscription_item.data.id"),
 		CustomerID:          firstString(data, "attributes.customer_id", "customer_id", "customer.id"),
 		VariantID:           priceID,
 		SeatQuantity:        firstInt(data, "attributes.first_subscription_item.quantity", "first_subscription_item.quantity", "attributes.quantity", "quantity"),
@@ -508,12 +508,19 @@ func ProcessWebhook(ctx context.Context, rawBody []byte) (bool, error) {
 		return true, nil
 	}
 
-	userID, err := ResolveUserIDForWebhook(ctx, update.UserID, update.CustomerID, update.CustomerEmail)
+	canonicalUpdate, err := fetchCanonicalWebhookUpdate(ctx, update)
+	if err != nil {
+		return false, err
+	}
+	canonicalUpdate.EventID = update.EventID
+	canonicalUpdate.EventType = update.EventType
+
+	userID, err := ResolveUserIDForWebhook(ctx, canonicalUpdate.UserID, canonicalUpdate.CustomerID, canonicalUpdate.CustomerEmail)
 	if err != nil {
 		return false, err
 	}
 	if userID == "" {
-		userID, err = resolveUserIDBySubscriptionID(ctx, update.SubscriptionID)
+		userID, err = resolveUserIDBySubscriptionID(ctx, canonicalUpdate.SubscriptionID)
 		if err != nil {
 			return false, err
 		}
@@ -522,11 +529,11 @@ func ProcessWebhook(ctx context.Context, rawBody []byte) (bool, error) {
 		return false, ErrWebhookUserNotResolved
 	}
 
-	update.UserID = userID
-	if err := UpsertCustomer(ctx, update.UserID, update.CustomerID); err != nil {
+	canonicalUpdate.UserID = userID
+	if err := UpsertCustomer(ctx, canonicalUpdate.UserID, canonicalUpdate.CustomerID); err != nil {
 		return false, err
 	}
-	if err := UpsertSubscription(ctx, update); err != nil {
+	if err := UpsertSubscription(ctx, canonicalUpdate); err != nil {
 		return false, err
 	}
 

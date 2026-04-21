@@ -28,7 +28,7 @@ type EnvConfig struct {
 	MailtrapPassword   string
 	EmailFrom          string
 	LemonWebhookSecret string
-	LemonHostedURL     string
+	LemonAPIKey        string
 }
 
 const DefaultSuperadminEmail = "admin@bandcash.localhost"
@@ -75,8 +75,8 @@ type envVars struct {
 	EmailFrom string `env:"EMAIL_FROM" envDefault:"BandCash <noreply@bandcash.localhost>" validate:"required_if=AppEnv production,required_if=AppEnv staging"`
 	// LemonWebhookSecret is the endpoint secret used to verify webhook signatures.
 	LemonWebhookSecret string `env:"LEMON_WEBHOOK_SECRET"`
-	// LemonHostedURL is the hosted customer billing URL where users manage subscriptions.
-	LemonHostedURL string `env:"LEMON_HOSTED_URL"`
+	// LemonAPIKey is used to fetch canonical subscription state from Lemon API.
+	LemonAPIKey string `env:"LEMON_API_KEY" validate:"required_with=LemonWebhookSecret"`
 }
 
 func Env() *EnvConfig {
@@ -126,7 +126,7 @@ func Env() *EnvConfig {
 			MailtrapPassword:   strings.TrimSpace(parsed.MailtrapPassword),
 			EmailFrom:          parsed.EmailFrom,
 			LemonWebhookSecret: strings.TrimSpace(parsed.LemonWebhookSecret),
-			LemonHostedURL:     strings.TrimSpace(parsed.LemonHostedURL),
+			LemonAPIKey:        strings.TrimSpace(parsed.LemonAPIKey),
 		}
 	})
 	return envCfg

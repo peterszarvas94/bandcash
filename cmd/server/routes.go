@@ -10,6 +10,7 @@ import (
 	"bandcash/models/account"
 	"bandcash/models/admin"
 	"bandcash/models/auth"
+	billingmodel "bandcash/models/billing"
 	"bandcash/models/dev"
 	"bandcash/models/event"
 	"bandcash/models/expense"
@@ -40,8 +41,7 @@ func registerRoutes(e *echo.Echo) {
 	e.POST("/login", auth.LoginRequest, middleware.AuthBodyLimit, middleware.AuthRateLimit)
 	e.GET("/login/verify", auth.VerifyMagicLink)
 	e.DELETE("/session", auth.Logout)
-	// Temporarily disabled until Lemon Squeezy store approval.
-	// e.POST("/lemon_webhook", billingmodel.LemonWebhook)
+	e.POST("/lemon_webhook", billingmodel.LemonWebhook)
 
 	adminRoutes := e.Group("/admin", middleware.RequireAuth, middleware.RequireSuperadmin)
 	adminRoutes.GET("", admin.Dashboard)
@@ -158,6 +158,7 @@ func registerRoutes(e *echo.Echo) {
 
 	e.GET("/account", account.Index, middleware.RequireAuth)
 	e.POST("/account/language", account.UpdateLanguage, middleware.RequireAuth)
+	e.POST("/account/subscription/seats", account.UpdateSeats, middleware.RequireAuth)
 	e.DELETE("/account/sessions/:id", account.LogoutSession, middleware.RequireAuth)
 	e.DELETE("/account/sessions", account.LogoutAllOtherSessions, middleware.RequireAuth)
 

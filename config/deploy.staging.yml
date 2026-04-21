@@ -49,7 +49,7 @@ env:
     - MAILTRAP_USERNAME
     - MAILTRAP_PASSWORD
     - LEMON_WEBHOOK_SECRET
-    - LEMON_HOSTED_URL
+    - LEMON_API_KEY
 
 accessories:
   better-stack:

@@ -1,14 +1,18 @@
 package account
 
 import (
+	"encoding/json"
 	"log/slog"
 	"net/http"
+	"strconv"
+	"strings"
 
 	ctxi18nlib "github.com/invopop/ctxi18n"
 	ctxi18n "github.com/invopop/ctxi18n/i18n"
 	"github.com/labstack/echo/v4"
 	"github.com/starfederation/datastar-go/datastar"
 
+	internalbilling "bandcash/internal/billing"
 	"bandcash/internal/db"
 	appi18n "bandcash/internal/i18n"
 	"bandcash/internal/utils"
@@ -20,6 +24,33 @@ type accountSignals struct {
 	TabID    string `json:"tab_id"`
 	FormData struct {
 		Lang string `json:"lang"`
+	} `json:"formData"`
+}
+
+type flexInt int
+
+func (v *flexInt) UnmarshalJSON(data []byte) error {
+	var asInt int
+	if err := json.Unmarshal(data, &asInt); err == nil {
+		*v = flexInt(asInt)
+		return nil
+	}
+	var asString string
+	if err := json.Unmarshal(data, &asString); err == nil {
+		parsed, parseErr := strconv.Atoi(strings.TrimSpace(asString))
+		if parseErr != nil {
+			return parseErr
+		}
+		*v = flexInt(parsed)
+		return nil
+	}
+	return strconv.ErrSyntax
+}
+
+type accountSeatSignals struct {
+	TabID    string `json:"tab_id"`
+	FormData struct {
+		SeatQuantity flexInt `json:"seatQuantity"`
 	} `json:"formData"`
 }
 
@@ -36,11 +67,98 @@ func Index(c echo.Context) error {
 		data.UserEmail = user.Email
 		data.CurrentLang = appi18n.NormalizeLocale(user.PreferredLang)
 	}
-	// Temporarily disabled until Lemon Squeezy store approval.
-	data.Signals = map[string]any{"formData": map[string]any{"lang": data.CurrentLang}}
+
+	if state, err := internalbilling.CurrentAccessState(c.Request().Context(), userID); err == nil {
+		data.SubscriptionSlots = state.SubscriptionCount
+		data.UsedSlots = state.OwnedGroupCount
+		data.RemainingSlots = state.RemainingSlots
+	}
+	if sub, exists, err := internalbilling.GetUserSubscription(c.Request().Context(), userID); err == nil && exists {
+		if strings.TrimSpace(sub.ProviderSubscriptionID) != "" && (strings.TrimSpace(sub.ProviderSubscriptionItemID) == "" || strings.TrimSpace(sub.ProviderPortalURL) == "") {
+			if synced, syncedExists, syncErr := internalbilling.SyncSubscriptionFromProvider(c.Request().Context(), userID); syncErr == nil && syncedExists {
+				sub = synced
+			}
+		}
+		data.SeatQuantity = sub.SeatQuantity
+		if data.SeatQuantity < 1 {
+			data.SeatQuantity = 1
+		}
+		data.CanUpdateSeats = strings.TrimSpace(sub.ProviderSubscriptionItemID) != ""
+		if sub.ProviderPortalURL != "" {
+			data.SubscriptionPortalURL = sub.ProviderPortalURL
+		}
+	}
+	if data.SeatQuantity < 1 {
+		data.SeatQuantity = data.SubscriptionSlots
+		if data.SeatQuantity < 1 {
+			data.SeatQuantity = 1
+		}
+	}
+
+	data.Signals = map[string]any{"formData": map[string]any{"lang": data.CurrentLang, "seatQuantity": data.SeatQuantity}}
 	data.IsAuthenticated = true
 	data.IsSuperAdmin = utils.IsSuperadmin(c)
 	return utils.RenderPage(c, AccountIndex(data))
+}
+
+func UpdateSeats(c echo.Context) error {
+	signals := accountSeatSignals{}
+	if err := datastar.ReadSignals(c.Request(), &signals); err != nil {
+		return c.NoContent(http.StatusBadRequest)
+	}
+	if !utils.SetTabID(c, signals.TabID) {
+		return c.NoContent(http.StatusBadRequest)
+	}
+
+	quantity := int(signals.FormData.SeatQuantity)
+	if quantity < 1 {
+		utils.Notify(c, ctxi18n.T(c.Request().Context(), "account.notifications.seats_invalid"))
+		return c.NoContent(http.StatusBadRequest)
+	}
+
+	userID := utils.GetUserID(c)
+	state, err := internalbilling.CurrentAccessState(c.Request().Context(), userID)
+	if err != nil {
+		slog.Error("account.seats: failed to load access state", "user_id", userID, "err", err)
+		utils.Notify(c, ctxi18n.T(c.Request().Context(), "account.notifications.seats_update_failed"))
+		return c.NoContent(http.StatusInternalServerError)
+	}
+	if quantity < state.OwnedGroupCount {
+		utils.Notify(c, ctxi18n.T(c.Request().Context(), "account.notifications.seats_below_used"))
+		return c.NoContent(http.StatusBadRequest)
+	}
+
+	subscription, exists, err := internalbilling.GetUserSubscription(c.Request().Context(), userID)
+	if err != nil {
+		slog.Error("account.seats: failed to load subscription", "user_id", userID, "err", err)
+		utils.Notify(c, ctxi18n.T(c.Request().Context(), "account.notifications.seats_update_failed"))
+		return c.NoContent(http.StatusInternalServerError)
+	}
+	if !exists {
+		utils.Notify(c, ctxi18n.T(c.Request().Context(), "account.notifications.subscription_missing"))
+		return c.NoContent(http.StatusBadRequest)
+	}
+	if strings.TrimSpace(subscription.ProviderSubscriptionItemID) == "" {
+		synced, syncedExists, syncErr := internalbilling.SyncSubscriptionFromProvider(c.Request().Context(), userID)
+		if syncErr != nil || !syncedExists {
+			utils.Notify(c, ctxi18n.T(c.Request().Context(), "account.seats_update_unavailable"))
+			return c.NoContent(http.StatusBadRequest)
+		}
+		subscription = synced
+		if strings.TrimSpace(subscription.ProviderSubscriptionItemID) == "" {
+			utils.Notify(c, ctxi18n.T(c.Request().Context(), "account.seats_update_unavailable"))
+			return c.NoContent(http.StatusBadRequest)
+		}
+	}
+
+	if err := internalbilling.UpdateSubscriptionItemQuantity(c.Request().Context(), subscription.ProviderSubscriptionItemID, quantity); err != nil {
+		slog.Error("account.seats: lemon update failed", "user_id", userID, "subscription_item_id", subscription.ProviderSubscriptionItemID, "quantity", quantity, "err", err)
+		utils.Notify(c, ctxi18n.T(c.Request().Context(), "account.notifications.seats_update_failed"))
+		return c.NoContent(http.StatusBadGateway)
+	}
+
+	utils.Notify(c, ctxi18n.T(c.Request().Context(), "account.notifications.seats_update_requested"))
+	return c.NoContent(http.StatusOK)
 }
 func LanguagePageHandler(c echo.Context) error {
 	utils.EnsureTabID(c)
