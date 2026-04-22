@@ -198,7 +198,7 @@ hu:
     remaining_slots: "Szabad csoportok"
     groups_remaining_format: "%d / %d csoport maradt"
     groups_status_none_format: "Még nincs egyetlen csoportod sem. Még %d csoportod lehet."
-    groups_status_can_add_format: "Jelenleg %d csoportod van. Még %d csoportod lehet."
+    groups_status_can_add_format: "Jelenleg %d csoportod van, és még %d maradt az előfizetésedben."
     groups_status_at_limit_format: "Jelenleg %d csoportod van, és az előfizetésedben már nincs több hely."
     groups_status_over_limit_format: "Jelenleg %d csoportod van, de az előfizetésed csak %d csoportot enged."
     no_active_subscription: "Nincs aktív előfizetésed"

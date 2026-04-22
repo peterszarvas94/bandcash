@@ -198,7 +198,7 @@ en:
     remaining_slots: "Remaining groups"
     groups_remaining_format: "%d / %d groups remaining"
     groups_status_none_format: "You don't have any groups yet. You can have %d more."
-    groups_status_can_add_format: "You have %d groups. You can have %d more."
+    groups_status_can_add_format: "You have %d groups, and you still have %d more left in your subscription."
     groups_status_at_limit_format: "You have %d groups and you can't have more in your subscription."
     groups_status_over_limit_format: "You have %d groups, but your subscription allows only %d."
     no_active_subscription: "You don't have an active subscription"
