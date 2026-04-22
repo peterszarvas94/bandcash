@@ -3,6 +3,7 @@ package billing
 import (
 	"bytes"
 	"context"
+	"database/sql"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -18,6 +19,7 @@ import (
 
 var ErrLemonAPIKeyMissing = errors.New("LEMON_API_KEY is required for webhook subscription sync")
 var ErrSubscriptionItemIDMissing = errors.New("missing subscription item id")
+var ErrCustomerPortalURLMissing = errors.New("missing customer portal url")
 
 var fetchCanonicalWebhookUpdate = fetchCanonicalWebhookUpdateFromAPI
 
@@ -181,4 +183,45 @@ func SyncSubscriptionFromProvider(ctx context.Context, userID string) (db.Billin
 	}
 
 	return GetUserSubscription(ctx, userID)
+}
+
+func GetSignedCustomerPortalURL(ctx context.Context, userID string) (string, error) {
+	userID = strings.TrimSpace(userID)
+	if userID == "" {
+		return "", ErrInvalidUserID
+	}
+
+	var customerID string
+	err := db.BunDB.QueryRowContext(ctx,
+		"SELECT provider_customer_id FROM billing_customers WHERE user_id = ? LIMIT 1",
+		userID,
+	).Scan(&customerID)
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return "", ErrCustomerPortalURLMissing
+		}
+		return "", err
+	}
+	customerID = strings.TrimSpace(customerID)
+	if customerID == "" {
+		return "", ErrCustomerPortalURLMissing
+	}
+
+	body, err := lemonAPIRequest(ctx, http.MethodGet, "customers/"+url.PathEscape(customerID), nil)
+	if err != nil {
+		return "", err
+	}
+
+	var root map[string]any
+	if err := json.Unmarshal(body, &root); err != nil {
+		return "", err
+	}
+	portalURL := firstString(root,
+		"data.attributes.urls.customer_portal",
+		"data.attributes.urls.customer_portal_url",
+	)
+	if strings.TrimSpace(portalURL) == "" {
+		return "", ErrCustomerPortalURLMissing
+	}
+	return strings.TrimSpace(portalURL), nil
 }

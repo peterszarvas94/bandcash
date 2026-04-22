@@ -3,47 +3,30 @@ package account
 import (
 	shared "bandcash/models/shared"
 	icons "bandcash/models/shared/icons"
+	"fmt"
+
 	ctxi18n "github.com/invopop/ctxi18n/i18n"
-	"strings"
 )
 
 templ AccountContent(data AccountData) {
-	<div class="row row-wrap">
-		{ ctxi18n.T(ctx, "nav.logged_in_as") } <strong>{ data.UserEmail }</strong>
-	</div>
 	if data.SubscriptionSlots > 0 {
 		<div class="row row-wrap">
-			<span>{ ctxi18n.T(ctx, "account.subscription_slots") }:</span>
-			<strong>{ data.SubscriptionSlots }</strong>
-			<span>{ ctxi18n.T(ctx, "account.used_slots") }:</span>
-			<strong>{ data.UsedSlots }</strong>
-			<span>{ ctxi18n.T(ctx, "account.remaining_slots") }:</span>
-			<strong>{ data.RemainingSlots }</strong>
+			<strong>{ fmt.Sprintf(ctxi18n.T(ctx, "account.groups_remaining_format"), data.RemainingSlots, data.SubscriptionSlots) }</strong>
 		</div>
+	} else {
+		<div class="row row-wrap"><strong>{ ctxi18n.T(ctx, "account.no_active_subscription") }</strong></div>
 	}
-	<form class="row row-wrap" data-on:submit="@post('/account/subscription/seats')" data-indicator:_fetching>
-		<label for="account-seat-quantity">{ ctxi18n.T(ctx, "account.seat_quantity") }</label>
-		<input id="account-seat-quantity" class="input input-xs w-fit" type="number" min="1" step="1" data-bind="formData.seatQuantity"/>
-		if data.CanUpdateSeats {
-			<button class="btn btn-xs" type="submit" data-attr:disabled="$_fetching">
-				{ ctxi18n.T(ctx, "account.update_seats") }
-			</button>
+	<div class="row row-wrap">
+		if data.HasActiveSubscription {
+			<a class="btn" href="/account/subscription/manage">{ ctxi18n.T(ctx, "account.manage_subscription") }</a>
 		} else {
-			<button class="btn btn-xs" type="button" disabled>
-				{ ctxi18n.T(ctx, "account.update_seats") }
-			</button>
+			<form class="row row-wrap" action="/account/subscription/manage" method="get">
+				<label for="account-checkout-quantity">{ ctxi18n.T(ctx, "account.group_quantity") }</label>
+				<input id="account-checkout-quantity" class="input input-xs w-fit" type="number" min="1" step="1" name="quantity" value="1"/>
+				<button class="btn btn-primary btn-xs" type="submit">{ ctxi18n.T(ctx, "account.start_subscription") }</button>
+			</form>
 		}
-	</form>
-	if !data.CanUpdateSeats {
-		<div class="row row-wrap text-muted">
-			{ ctxi18n.T(ctx, "account.seats_update_unavailable") }
-		</div>
-	}
-	if strings.TrimSpace(data.SubscriptionPortalURL) != "" {
-		<div class="row row-wrap">
-			<a class="btn" href={ data.SubscriptionPortalURL } target="_blank" rel="noopener noreferrer">{ ctxi18n.T(ctx, "account.customer_portal") }</a>
-		</div>
-	}
+	</div>
 	<div class="row row-wrap">
 		@shared.ConfirmActionButton(shared.ConfirmActionButtonProps{
 			ClassName:    "btn",

@@ -274,11 +274,13 @@ func VerifyMagicLink(c echo.Context) error {
 		return renderVerifyLinkError(c, http.StatusBadRequest)
 	}
 
-	// Mark as used
-	err = authstore.UseMagicLink(c.Request().Context(), magicLink.ID)
-	if err != nil {
-		slog.Error("auth: failed to mark magic link used", "err", err)
-		return renderVerifyLinkError(c, http.StatusBadRequest)
+	// For invite flows, consume the link only after successful acceptance.
+	if magicLink.Action != "invite" {
+		err = authstore.UseMagicLink(c.Request().Context(), magicLink.ID)
+		if err != nil {
+			slog.Error("auth: failed to mark magic link used", "err", err)
+			return renderVerifyLinkError(c, http.StatusBadRequest)
+		}
 	}
 
 	// Get user
@@ -326,7 +328,7 @@ func VerifyMagicLink(c echo.Context) error {
 	}
 	utils.SetSessionCookie(c, session.Token)
 
-	// If invite, add viewer access
+	// If invite, add viewer/admin access
 	if magicLink.Action == "invite" {
 		if !magicLink.GroupID.Valid {
 			return renderVerifyLinkError(c, http.StatusBadRequest)
@@ -398,6 +400,12 @@ func VerifyMagicLink(c echo.Context) error {
 		err = email.Email().SendInviteAccepted(notifyCtx, user.Email, groupName, groupID, utils.Env().URL)
 		if err != nil {
 			slog.Warn("auth.verify: failed to send invite accepted email", "group_id", groupID, "user_id", user.ID, "err", err)
+		}
+
+		err = authstore.UseMagicLink(c.Request().Context(), magicLink.ID)
+		if err != nil {
+			slog.Error("auth: failed to mark invite link used", "magic_link_id", magicLink.ID, "group_id", groupID, "user_id", user.ID, "err", err)
+			return renderVerifyLinkError(c, http.StatusBadRequest)
 		}
 
 		return c.Redirect(http.StatusFound, "/groups/"+groupID+"/events")

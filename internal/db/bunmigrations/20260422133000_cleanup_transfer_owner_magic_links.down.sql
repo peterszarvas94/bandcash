@@ -1,0 +1,1 @@
+-- no-op: deleted transfer_owner links cannot be restored

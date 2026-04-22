@@ -9,6 +9,7 @@ import (
 	"encoding/hex"
 	"encoding/json"
 	"errors"
+	"log/slog"
 	"strconv"
 	"strings"
 	"time"
@@ -466,7 +467,7 @@ func ParseWebhookSubscription(rawBody []byte) (WebhookSubscriptionUpdate, bool, 
 	update := WebhookSubscriptionUpdate{
 		EventID:             eventID,
 		EventType:           eventType,
-		SubscriptionID:      firstString(data, "id", "attributes.id", "subscription_id"),
+		SubscriptionID:      firstString(data, "attributes.subscription_id", "subscription_id", "relationships.subscription.data.id", "id", "attributes.id"),
 		SubscriptionItemID:  firstString(data, "attributes.first_subscription_item.id", "first_subscription_item.id", "attributes.first_subscription_item.subscription_item_id", "first_subscription_item.subscription_item_id", "attributes.subscription_item_id", "subscription_item_id", "attributes.first_subscription_item_id", "first_subscription_item_id", "relationships.first_subscription_item.data.id"),
 		CustomerID:          firstString(data, "attributes.customer_id", "customer_id", "customer.id"),
 		VariantID:           priceID,
@@ -494,55 +495,73 @@ func ParseWebhookSubscription(rawBody []byte) (WebhookSubscriptionUpdate, bool, 
 func ProcessWebhook(ctx context.Context, rawBody []byte) (bool, error) {
 	update, isSubscriptionEvent, err := ParseWebhookSubscription(rawBody)
 	if err != nil {
+		slog.Error("billing.webhook: parse failed", "err", err)
 		return false, err
 	}
+	slog.Info("billing.webhook: parsed event", "event_id", update.EventID, "event_type", update.EventType, "is_subscription_event", isSubscriptionEvent, "subscription_id", update.SubscriptionID, "customer_id", update.CustomerID, "user_id_from_payload", update.UserID)
 
 	if !isSubscriptionEvent {
 		inserted, err := markWebhookProcessed(ctx, update.EventID, update.EventType)
 		if err != nil {
+			slog.Error("billing.webhook: failed to mark non-subscription event processed", "event_id", update.EventID, "event_type", update.EventType, "err", err)
 			return false, err
 		}
 		if !inserted {
+			slog.Info("billing.webhook: duplicate non-subscription event ignored", "event_id", update.EventID, "event_type", update.EventType)
 			return false, nil
 		}
+		slog.Info("billing.webhook: non-subscription event marked processed", "event_id", update.EventID, "event_type", update.EventType)
 		return true, nil
 	}
 
 	canonicalUpdate, err := fetchCanonicalWebhookUpdate(ctx, update)
 	if err != nil {
+		slog.Error("billing.webhook: canonical sync failed", "event_id", update.EventID, "subscription_id", update.SubscriptionID, "err", err)
 		return false, err
 	}
+	slog.Info("billing.webhook: canonical sync succeeded", "event_id", update.EventID, "subscription_id", canonicalUpdate.SubscriptionID, "customer_id", canonicalUpdate.CustomerID, "variant_id", canonicalUpdate.VariantID, "seat_quantity", canonicalUpdate.SeatQuantity, "status", canonicalUpdate.Status)
 	canonicalUpdate.EventID = update.EventID
 	canonicalUpdate.EventType = update.EventType
 
 	userID, err := ResolveUserIDForWebhook(ctx, canonicalUpdate.UserID, canonicalUpdate.CustomerID, canonicalUpdate.CustomerEmail)
 	if err != nil {
+		slog.Error("billing.webhook: user resolution failed", "event_id", update.EventID, "subscription_id", canonicalUpdate.SubscriptionID, "customer_id", canonicalUpdate.CustomerID, "customer_email", canonicalUpdate.CustomerEmail, "err", err)
 		return false, err
 	}
 	if userID == "" {
+		slog.Info("billing.webhook: user not resolved directly, trying subscription mapping", "event_id", update.EventID, "subscription_id", canonicalUpdate.SubscriptionID)
 		userID, err = resolveUserIDBySubscriptionID(ctx, canonicalUpdate.SubscriptionID)
 		if err != nil {
+			slog.Error("billing.webhook: subscription mapping lookup failed", "event_id", update.EventID, "subscription_id", canonicalUpdate.SubscriptionID, "err", err)
 			return false, err
 		}
 	}
 	if userID == "" {
+		slog.Warn("billing.webhook: user unresolved", "event_id", update.EventID, "subscription_id", canonicalUpdate.SubscriptionID, "customer_id", canonicalUpdate.CustomerID, "customer_email", canonicalUpdate.CustomerEmail)
 		return false, ErrWebhookUserNotResolved
 	}
+	slog.Info("billing.webhook: user resolved", "event_id", update.EventID, "subscription_id", canonicalUpdate.SubscriptionID, "user_id", userID)
 
 	canonicalUpdate.UserID = userID
 	if err := UpsertCustomer(ctx, canonicalUpdate.UserID, canonicalUpdate.CustomerID); err != nil {
+		slog.Error("billing.webhook: customer upsert failed", "event_id", update.EventID, "user_id", canonicalUpdate.UserID, "customer_id", canonicalUpdate.CustomerID, "err", err)
 		return false, err
 	}
 	if err := UpsertSubscription(ctx, canonicalUpdate); err != nil {
+		slog.Error("billing.webhook: subscription upsert failed", "event_id", update.EventID, "user_id", canonicalUpdate.UserID, "subscription_id", canonicalUpdate.SubscriptionID, "err", err)
 		return false, err
 	}
+	slog.Info("billing.webhook: subscription state persisted", "event_id", update.EventID, "user_id", canonicalUpdate.UserID, "subscription_id", canonicalUpdate.SubscriptionID, "status", canonicalUpdate.Status, "variant_id", canonicalUpdate.VariantID, "seat_quantity", canonicalUpdate.SeatQuantity)
 
 	inserted, err := markWebhookProcessed(ctx, update.EventID, update.EventType)
 	if err != nil {
+		slog.Error("billing.webhook: failed to mark event processed", "event_id", update.EventID, "event_type", update.EventType, "err", err)
 		return false, err
 	}
 	if !inserted {
+		slog.Info("billing.webhook: duplicate subscription event ignored", "event_id", update.EventID, "event_type", update.EventType)
 		return false, nil
 	}
+	slog.Info("billing.webhook: event processed", "event_id", update.EventID, "event_type", update.EventType)
 	return true, nil
 }

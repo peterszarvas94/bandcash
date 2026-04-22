@@ -14,9 +14,7 @@ type AccountData struct {
 	SubscriptionSlots     int
 	UsedSlots             int
 	RemainingSlots        int
-	SeatQuantity          int
-	CanUpdateSeats        bool
-	SubscriptionPortalURL string
+	HasActiveSubscription bool
 	Signals               map[string]any
 	IsAuthenticated       bool
 	IsSuperAdmin          bool
@@ -30,4 +28,19 @@ type SessionsData struct {
 	Signals          map[string]any
 	IsAuthenticated  bool
 	IsSuperAdmin     bool
+}
+
+type OverLimitGroup struct {
+	Name string
+}
+
+type OverLimitData struct {
+	Title           string
+	Breadcrumbs     []utils.Crumb
+	SubscriptionCap int
+	OwnedGroups     int
+	ExcessGroups    int
+	Groups          []OverLimitGroup
+	IsAuthenticated bool
+	IsSuperAdmin    bool
 }

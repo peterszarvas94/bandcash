@@ -1120,7 +1120,7 @@
     width: 100%;
 
     main {
-      padding: var(--space);
+      padding: var(--space-lg);
       max-width: var(--content-width);
       width: 100%;
     }

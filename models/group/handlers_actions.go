@@ -159,7 +159,7 @@ func (g *Group) CreateGroup(c echo.Context) error {
 	}
 
 	name := signals.FormData.Name
-	// Temporarily disabled until Lemon Squeezy store approval.
+	// Billing gate is temporarily disabled.
 
 	// Create group
 	group, err := groupstore.CreateGroup(c.Request().Context(), groupstore.CreateGroupParams{
@@ -814,7 +814,7 @@ func (g *Group) RemoveViewer(c echo.Context) error {
 	currentUserID := utils.GetUserID(c)
 	if currentUserID == userID {
 		if utils.IsOwner(c) {
-			return g.redirectUsersPage(c, groupID, "", "groups.errors.transfer_group_before_removing_owner", http.StatusConflict)
+			return g.redirectUsersPage(c, groupID, "", "groups.errors.owner_cannot_leave", http.StatusConflict)
 		}
 	}
 	if isAdminUser(ctx, groupID, userID) {
@@ -991,53 +991,6 @@ func (g *Group) DemoteAdminToViewer(c echo.Context) error {
 		return g.patchUsersPageWithState(c, groupID, signals.TableQuery, "groups.messages.admin_demoted", "")
 	}
 	utils.Notify(c, ctxi18n.T(c.Request().Context(), "groups.messages.admin_demoted"))
-	err = utils.SSEHub.Redirect(c, "/groups/"+groupID+"/users/"+userID)
-	if err != nil {
-		return c.NoContent(http.StatusInternalServerError)
-	}
-	return c.NoContent(http.StatusOK)
-}
-
-func (g *Group) TransferGroupOwnership(c echo.Context) error {
-	signals := tabSignals{}
-	if err := datastar.ReadSignals(c.Request(), &signals); err != nil {
-		return c.NoContent(http.StatusBadRequest)
-	}
-	if !utils.SetTabID(c, signals.TabID) {
-		return c.NoContent(http.StatusBadRequest)
-	}
-
-	groupID := utils.GetGroupID(c)
-	userID := c.Param("userId")
-	if userID == "" {
-		userID = c.Param("id")
-	}
-	if !utils.IsValidID(userID, "usr") {
-		return g.redirectUsersPage(c, groupID, "", "groups.errors.invalid_user", http.StatusBadRequest)
-	}
-
-	ctx := c.Request().Context()
-	group, err := groupstore.GetGroupByID(ctx, groupID)
-	if err != nil {
-		return g.redirectUsersPage(c, groupID, "", "groups.errors.group_not_found", http.StatusNotFound)
-	}
-
-	if userID == group.AdminUserID {
-		return g.redirectUsersPage(c, groupID, "", "groups.errors.already_owner", http.StatusConflict)
-	}
-
-	if _, roleErr := getGroupAccessRole(ctx, groupID, userID); roleErr != nil {
-		return g.redirectUsersPage(c, groupID, "", "groups.errors.invalid_user", http.StatusBadRequest)
-	}
-
-	// Temporarily disabled until Lemon Squeezy store approval.
-
-	if err := groupstore.UpdateGroupAdmin(ctx, groupstore.UpdateGroupAdminParams{AdminUserID: userID, ID: groupID}); err != nil {
-		slog.Error("group: failed to transfer ownership", "group_id", groupID, "user_id", userID, "err", err)
-		return g.redirectUsersPage(c, groupID, "", "groups.errors.transfer_failed", http.StatusInternalServerError)
-	}
-
-	utils.Notify(c, ctxi18n.T(ctx, "groups.messages.owner_transferred"))
 	err = utils.SSEHub.Redirect(c, "/groups/"+groupID+"/users/"+userID)
 	if err != nil {
 		return c.NoContent(http.StatusInternalServerError)

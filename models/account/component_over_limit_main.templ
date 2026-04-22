@@ -1,0 +1,20 @@
+package account
+
+import (
+	"fmt"
+
+	shared "bandcash/models/shared"
+	ctxi18n "github.com/invopop/ctxi18n/i18n"
+)
+
+templ OverLimitMain(data OverLimitData) {
+	<h1>{ ctxi18n.T(ctx, "account.over_limit_title") }</h1>
+	@shared.Section("", OverLimitContent(data))
+}
+
+templ OverLimitContent(data OverLimitData) {
+	<p><strong>{ fmt.Sprintf(ctxi18n.T(ctx, "account.over_limit_simple_format"), data.OwnedGroups, data.SubscriptionCap) }</strong></p>
+	<div class="row row-wrap">
+		<a class="btn btn-primary" href="/account/subscription/manage">{ ctxi18n.T(ctx, "account.manage_subscription") }</a>
+	</div>
+}

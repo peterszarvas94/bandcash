@@ -1,0 +1,17 @@
+package account
+
+import (
+	shared "bandcash/models/shared"
+)
+
+templ OverLimitPage(data OverLimitData) {
+	@shared.BaseLayout(shared.BaseLayoutProps{
+		Title:           data.Title,
+		Crumbs:          data.Breadcrumbs,
+		Signals:         nil,
+		Content:         shared.CommonContent(OverLimitMain(data)),
+		ActiveUrl:       "/account",
+		IsAuthenticated: data.IsAuthenticated,
+		IsSuperAdmin:    data.IsSuperAdmin,
+	})
+}

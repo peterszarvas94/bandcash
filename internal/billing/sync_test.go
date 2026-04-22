@@ -119,6 +119,24 @@ func TestParseWebhookSubscription_SubscriptionItemFromRelationships(t *testing.T
 	}
 }
 
+func TestParseWebhookSubscription_InvoicePayloadUsesAttributesSubscriptionID(t *testing.T) {
+	raw := []byte(`{"meta":{"event_name":"subscription_payment_success","webhook_id":"wh_123"},"data":{"id":"6838947","type":"subscription-invoices","attributes":{"status":"paid","subscription_id":2083758,"customer_id":8393687,"user_email":"peterszarvas94@gmail.com"}}}`)
+
+	update, isSubscriptionEvent, err := ParseWebhookSubscription(raw)
+	if err != nil {
+		t.Fatalf("ParseWebhookSubscription returned error: %v", err)
+	}
+	if !isSubscriptionEvent {
+		t.Fatal("expected subscription event")
+	}
+	if update.SubscriptionID != "2083758" {
+		t.Fatalf("expected subscription id 2083758, got %s", update.SubscriptionID)
+	}
+	if update.CustomerID != "8393687" {
+		t.Fatalf("expected customer id 8393687, got %s", update.CustomerID)
+	}
+}
+
 func TestProcessWebhook_SubscriptionCreated_PersistsBillingRows(t *testing.T) {
 	setupTestDB(t)
 	stubCanonicalSyncFromWebhookPayload(t)

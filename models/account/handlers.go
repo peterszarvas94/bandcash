@@ -1,11 +1,13 @@
 package account
 
 import (
-	"encoding/json"
+	"database/sql"
+	"errors"
 	"log/slog"
 	"net/http"
 	"strconv"
 	"strings"
+	"time"
 
 	ctxi18nlib "github.com/invopop/ctxi18n"
 	ctxi18n "github.com/invopop/ctxi18n/i18n"
@@ -24,33 +26,6 @@ type accountSignals struct {
 	TabID    string `json:"tab_id"`
 	FormData struct {
 		Lang string `json:"lang"`
-	} `json:"formData"`
-}
-
-type flexInt int
-
-func (v *flexInt) UnmarshalJSON(data []byte) error {
-	var asInt int
-	if err := json.Unmarshal(data, &asInt); err == nil {
-		*v = flexInt(asInt)
-		return nil
-	}
-	var asString string
-	if err := json.Unmarshal(data, &asString); err == nil {
-		parsed, parseErr := strconv.Atoi(strings.TrimSpace(asString))
-		if parseErr != nil {
-			return parseErr
-		}
-		*v = flexInt(parsed)
-		return nil
-	}
-	return strconv.ErrSyntax
-}
-
-type accountSeatSignals struct {
-	TabID    string `json:"tab_id"`
-	FormData struct {
-		SeatQuantity flexInt `json:"seatQuantity"`
 	} `json:"formData"`
 }
 
@@ -74,91 +49,112 @@ func Index(c echo.Context) error {
 		data.RemainingSlots = state.RemainingSlots
 	}
 	if sub, exists, err := internalbilling.GetUserSubscription(c.Request().Context(), userID); err == nil && exists {
-		if strings.TrimSpace(sub.ProviderSubscriptionID) != "" && (strings.TrimSpace(sub.ProviderSubscriptionItemID) == "" || strings.TrimSpace(sub.ProviderPortalURL) == "") {
-			if synced, syncedExists, syncErr := internalbilling.SyncSubscriptionFromProvider(c.Request().Context(), userID); syncErr == nil && syncedExists {
-				sub = synced
-			}
-		}
-		data.SeatQuantity = sub.SeatQuantity
-		if data.SeatQuantity < 1 {
-			data.SeatQuantity = 1
-		}
-		data.CanUpdateSeats = strings.TrimSpace(sub.ProviderSubscriptionItemID) != ""
-		if sub.ProviderPortalURL != "" {
-			data.SubscriptionPortalURL = sub.ProviderPortalURL
-		}
+		data.HasActiveSubscription = strings.TrimSpace(sub.ProviderSubscriptionID) != "" &&
+			internalbilling.IsSubscriptionActive(sub.Status, sub.GraceUntil, time.Now().UTC())
 	}
-	if data.SeatQuantity < 1 {
-		data.SeatQuantity = data.SubscriptionSlots
-		if data.SeatQuantity < 1 {
-			data.SeatQuantity = 1
-		}
-	}
-
-	data.Signals = map[string]any{"formData": map[string]any{"lang": data.CurrentLang, "seatQuantity": data.SeatQuantity}}
+	data.Signals = map[string]any{"formData": map[string]any{"lang": data.CurrentLang}}
 	data.IsAuthenticated = true
 	data.IsSuperAdmin = utils.IsSuperadmin(c)
 	return utils.RenderPage(c, AccountIndex(data))
 }
 
-func UpdateSeats(c echo.Context) error {
-	signals := accountSeatSignals{}
-	if err := datastar.ReadSignals(c.Request(), &signals); err != nil {
-		return c.NoContent(http.StatusBadRequest)
-	}
-	if !utils.SetTabID(c, signals.TabID) {
-		return c.NoContent(http.StatusBadRequest)
-	}
-
-	quantity := int(signals.FormData.SeatQuantity)
-	if quantity < 1 {
-		utils.Notify(c, ctxi18n.T(c.Request().Context(), "account.notifications.seats_invalid"))
-		return c.NoContent(http.StatusBadRequest)
+func ManageSubscription(c echo.Context) error {
+	ctx := c.Request().Context()
+	userID := utils.GetUserID(c)
+	quantity := 1
+	if raw := strings.TrimSpace(c.QueryParam("quantity")); raw != "" {
+		if parsed, err := strconv.Atoi(raw); err == nil && parsed > 0 {
+			quantity = parsed
+		}
 	}
 
+	sub, exists, err := internalbilling.GetUserSubscription(ctx, userID)
+	if err != nil {
+		slog.Error("account.billing: failed to load subscription", "user_id", userID, "err", err)
+		return c.Redirect(http.StatusFound, "/account")
+	}
+
+	if exists && strings.TrimSpace(sub.ProviderSubscriptionID) != "" &&
+		internalbilling.IsSubscriptionActive(sub.Status, sub.GraceUntil, time.Now().UTC()) {
+		portalURL, portalErr := internalbilling.GetSignedCustomerPortalURL(ctx, userID)
+		if portalErr == nil && strings.TrimSpace(portalURL) != "" {
+			slog.Info("account.billing: redirecting to signed portal", "user_id", userID, "url", portalURL)
+			return c.Redirect(http.StatusFound, portalURL)
+		}
+
+		slog.Warn("account.billing: signed portal unavailable, trying sync + retry", "user_id", userID, "err", portalErr)
+		if _, syncedExists, syncErr := internalbilling.SyncSubscriptionFromProvider(ctx, userID); syncErr == nil && syncedExists {
+			portalURL, retryErr := internalbilling.GetSignedCustomerPortalURL(ctx, userID)
+			if retryErr == nil && strings.TrimSpace(portalURL) != "" {
+				slog.Info("account.billing: redirecting to signed portal after sync", "user_id", userID, "url", portalURL)
+				return c.Redirect(http.StatusFound, portalURL)
+			}
+		}
+
+		storedPortalURL := strings.TrimSpace(sub.ProviderPortalURL)
+		if storedPortalURL != "" && strings.Contains(storedPortalURL, "expires=") && strings.Contains(storedPortalURL, "signature=") {
+			slog.Warn("account.billing: using stored signed portal url fallback", "user_id", userID)
+			slog.Info("account.billing: redirecting to stored signed portal", "user_id", userID, "url", storedPortalURL)
+			return c.Redirect(http.StatusFound, storedPortalURL)
+		}
+
+		slog.Warn("account.billing: signed portal unavailable, returning to account", "user_id", userID)
+		return c.Redirect(http.StatusFound, "/account")
+	}
+
+	// TODO: move checkout URL to env-only once staging/prod env is set up.
+	checkoutURL := "https://subscriptions.bandcash.app/checkout/buy/d5eda8a8-44ee-46db-812d-cf84370c01ef"
+	separator := "?"
+	if strings.Contains(checkoutURL, "?") {
+		separator = "&"
+	}
+	redirectURL := checkoutURL + separator + "quantity=" + strconv.Itoa(quantity)
+	slog.Info("account.billing: redirecting to checkout", "user_id", userID, "url", redirectURL, "quantity", quantity)
+	return c.Redirect(http.StatusFound, redirectURL)
+}
+
+func OverLimitPageHandler(c echo.Context) error {
+	utils.EnsureTabID(c)
 	userID := utils.GetUserID(c)
 	state, err := internalbilling.CurrentAccessState(c.Request().Context(), userID)
 	if err != nil {
-		slog.Error("account.seats: failed to load access state", "user_id", userID, "err", err)
-		utils.Notify(c, ctxi18n.T(c.Request().Context(), "account.notifications.seats_update_failed"))
-		return c.NoContent(http.StatusInternalServerError)
+		slog.Error("account.over_limit: failed to load access state", "user_id", userID, "err", err)
+		return c.Redirect(http.StatusFound, "/account")
 	}
-	if quantity < state.OwnedGroupCount {
-		utils.Notify(c, ctxi18n.T(c.Request().Context(), "account.notifications.seats_below_used"))
-		return c.NoContent(http.StatusBadRequest)
+	if state.OwnedGroupCount <= state.SubscriptionCount {
+		return c.Redirect(http.StatusFound, "/account")
 	}
 
-	subscription, exists, err := internalbilling.GetUserSubscription(c.Request().Context(), userID)
-	if err != nil {
-		slog.Error("account.seats: failed to load subscription", "user_id", userID, "err", err)
-		utils.Notify(c, ctxi18n.T(c.Request().Context(), "account.notifications.seats_update_failed"))
-		return c.NoContent(http.StatusInternalServerError)
+	type groupRow struct {
+		Name string `bun:"name"`
 	}
-	if !exists {
-		utils.Notify(c, ctxi18n.T(c.Request().Context(), "account.notifications.subscription_missing"))
-		return c.NoContent(http.StatusBadRequest)
-	}
-	if strings.TrimSpace(subscription.ProviderSubscriptionItemID) == "" {
-		synced, syncedExists, syncErr := internalbilling.SyncSubscriptionFromProvider(c.Request().Context(), userID)
-		if syncErr != nil || !syncedExists {
-			utils.Notify(c, ctxi18n.T(c.Request().Context(), "account.seats_update_unavailable"))
-			return c.NoContent(http.StatusBadRequest)
-		}
-		subscription = synced
-		if strings.TrimSpace(subscription.ProviderSubscriptionItemID) == "" {
-			utils.Notify(c, ctxi18n.T(c.Request().Context(), "account.seats_update_unavailable"))
-			return c.NoContent(http.StatusBadRequest)
-		}
+	rows := make([]groupRow, 0)
+	if scanErr := db.BunDB.NewSelect().
+		TableExpr("groups").
+		Column("name").
+		Where("admin_user_id = ?", userID).
+		OrderExpr("created_at DESC").
+		Scan(c.Request().Context(), &rows); scanErr != nil && !errors.Is(scanErr, sql.ErrNoRows) {
+		slog.Error("account.over_limit: failed to list owned groups", "user_id", userID, "err", scanErr)
 	}
 
-	if err := internalbilling.UpdateSubscriptionItemQuantity(c.Request().Context(), subscription.ProviderSubscriptionItemID, quantity); err != nil {
-		slog.Error("account.seats: lemon update failed", "user_id", userID, "subscription_item_id", subscription.ProviderSubscriptionItemID, "quantity", quantity, "err", err)
-		utils.Notify(c, ctxi18n.T(c.Request().Context(), "account.notifications.seats_update_failed"))
-		return c.NoContent(http.StatusBadGateway)
+	groups := make([]OverLimitGroup, 0, len(rows))
+	for _, row := range rows {
+		groups = append(groups, OverLimitGroup{Name: strings.TrimSpace(row.Name)})
 	}
 
-	utils.Notify(c, ctxi18n.T(c.Request().Context(), "account.notifications.seats_update_requested"))
-	return c.NoContent(http.StatusOK)
+	data := OverLimitData{
+		Title:           ctxi18n.T(c.Request().Context(), "account.over_limit_page_title"),
+		Breadcrumbs:     []utils.Crumb{{Label: ctxi18n.T(c.Request().Context(), "account.over_limit_title")}},
+		SubscriptionCap: state.SubscriptionCount,
+		OwnedGroups:     state.OwnedGroupCount,
+		ExcessGroups:    state.OwnedGroupCount - state.SubscriptionCount,
+		Groups:          groups,
+		IsAuthenticated: true,
+		IsSuperAdmin:    utils.IsSuperadmin(c),
+	}
+
+	return utils.RenderPage(c, OverLimitPage(data))
 }
 func LanguagePageHandler(c echo.Context) error {
 	utils.EnsureTabID(c)
