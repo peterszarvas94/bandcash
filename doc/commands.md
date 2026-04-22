@@ -4,7 +4,7 @@ Use `mise run <task>` first; fall back to raw `go test` only for targeted test r
 
 ## Run and Dev
 
-- `mise run dev` - start app with hot reload (`air`) and app tunnel.
+- `mise run dev` - start app with hot reload (`air`) and app tunnel (tunnel runs in background so app can start immediately).
 - `mise run tunnel-app` - run app tunnel (`cloudflared tunnel run --token "$(cloudflared tunnel token bandcash)" --url http://localhost:2222`).
 - `mise run run` - run server directly with `go run`.
 - `mise run build` - compile server binary to `tmp/server`.

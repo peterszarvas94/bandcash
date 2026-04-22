@@ -78,14 +78,9 @@ func main() {
 		os.Exit(1)
 	}
 
-	syncReport, syncErr := internalbilling.StartupSyncSubscriptions(context.Background())
-	if syncErr != nil {
-		slog.Warn("billing startup sync finished with errors", "candidates", syncReport.Candidates, "synced", syncReport.Synced, "failed", syncReport.Failed, "err", syncErr)
-	} else if syncReport.Candidates > 0 {
-		slog.Info("billing startup sync completed", "candidates", syncReport.Candidates, "synced", syncReport.Synced)
-	}
-
 	startErr := make(chan error, 1)
+	lifecycleCtx, lifecycleCancel := context.WithCancel(context.Background())
+	defer lifecycleCancel()
 
 	// Graceful shutdown
 	go func() {
@@ -94,6 +89,19 @@ func main() {
 		err := e.Start(addr)
 		if err != nil && !errors.Is(err, http.ErrServerClosed) {
 			startErr <- err
+		}
+	}()
+
+	go func() {
+		// Do not block HTTP readiness on provider sync during startup.
+		syncCtx, cancel := context.WithTimeout(lifecycleCtx, 20*time.Second)
+		defer cancel()
+
+		syncReport, syncErr := internalbilling.StartupSyncSubscriptions(syncCtx)
+		if syncErr != nil {
+			slog.Warn("billing startup sync finished with errors", "candidates", syncReport.Candidates, "synced", syncReport.Synced, "failed", syncReport.Failed, "err", syncErr)
+		} else if syncReport.Candidates > 0 {
+			slog.Info("billing startup sync completed", "candidates", syncReport.Candidates, "synced", syncReport.Synced)
 		}
 	}()
 
@@ -108,6 +116,7 @@ func main() {
 	}
 
 	slog.Info("shutting down server...")
+	lifecycleCancel()
 
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
