@@ -1,20 +1,37 @@
 package account
 
 import (
+	"fmt"
+
+	shared "bandcash/models/shared"
 	ctxi18n "github.com/invopop/ctxi18n/i18n"
 )
 
 templ AccountContent(data AccountData) {
 	if data.SubscriptionSlots > 0 {
-		<p class="pb-lg">
-			{ ctxi18n.T(ctx, "account.groups_status_have_prefix") } <strong>{ data.UsedSlots }</strong> { ctxi18n.T(ctx, "account.groups_status_have_suffix") } <strong>{ data.RemainingSlots }</strong> { ctxi18n.T(ctx, "account.groups_status_more") }
-		</p>
+		if data.UsedSlots == 0 {
+			<p class="pb-lg">
+				{ fmt.Sprintf(ctxi18n.T(ctx, "account.groups_status_none_format"), data.SubscriptionSlots) }
+			</p>
+		} else if data.IsLimitExceeded {
+			<p class="pb-lg">
+				{ fmt.Sprintf(ctxi18n.T(ctx, "account.groups_status_over_limit_format"), data.UsedSlots, data.SubscriptionSlots) }
+			</p>
+		} else if data.HasAvailableGroupSlot {
+			<p class="pb-lg">
+				{ fmt.Sprintf(ctxi18n.T(ctx, "account.groups_status_can_add_format"), data.UsedSlots, data.RemainingSlots) }
+			</p>
+		} else {
+			<p class="pb-lg">
+				{ fmt.Sprintf(ctxi18n.T(ctx, "account.groups_status_at_limit_format"), data.UsedSlots) }
+			</p>
+		}
 	} else {
 		<div class="row row-wrap"><strong>{ ctxi18n.T(ctx, "account.no_active_subscription") }</strong></div>
 	}
 	<div class="row row-wrap">
 		if data.HasActiveSubscription {
-			<a class="btn" href="/account/subscription/manage" target="_blank" rel="noopener noreferrer">{ ctxi18n.T(ctx, "account.manage_subscription") }</a>
+			@shared.ManageSubscriptionButton("btn btn-primary")
 		} else {
 			<form class="row row-wrap" action="/account/subscription/manage" method="get">
 				<label for="account-checkout-quantity">{ ctxi18n.T(ctx, "account.group_quantity") }</label>

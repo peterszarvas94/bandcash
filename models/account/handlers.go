@@ -52,7 +52,9 @@ func SubscriptionPageHandler(c echo.Context) error {
 	if state, err := internalbilling.CurrentAccessState(c.Request().Context(), userID); err == nil {
 		data.SubscriptionSlots = state.SubscriptionCount
 		data.UsedSlots = state.OwnedGroupCount
-		data.RemainingSlots = state.RemainingSlots
+		data.RemainingSlots = max(state.RemainingSlots, 0)
+		data.IsLimitExceeded = internalbilling.IsLimitExceeded(state)
+		data.HasAvailableGroupSlot = internalbilling.HasAvailableGroupSlot(state)
 	}
 	if sub, exists, err := internalbilling.GetUserSubscription(c.Request().Context(), userID); err == nil && exists {
 		data.HasActiveSubscription = strings.TrimSpace(sub.ProviderSubscriptionID) != "" &&
@@ -128,7 +130,7 @@ func OverLimitPageHandler(c echo.Context) error {
 		slog.Error("account.over_limit: failed to load access state", "user_id", userID, "err", err)
 		return c.Redirect(http.StatusFound, "/account")
 	}
-	if state.OwnedGroupCount <= state.SubscriptionCount {
+	if !internalbilling.IsLimitExceeded(state) {
 		return c.Redirect(http.StatusFound, "/account")
 	}
 

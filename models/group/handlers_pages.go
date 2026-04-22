@@ -19,7 +19,11 @@ func (g *Group) NewGroupPage(c echo.Context) error {
 	data := NewGroupPageData{
 		Title:           ctxi18n.T(c.Request().Context(), "groups.new_page_title"),
 		Breadcrumbs:     []utils.Crumb{{Label: ctxi18n.T(c.Request().Context(), "groups.title"), Href: "/groups"}, {Label: ctxi18n.T(c.Request().Context(), "groups.new")}},
-		Signals:         map[string]any{"formData": map[string]any{"name": ""}},
+		Signals: map[string]any{
+			"formData":    map[string]any{"name": ""},
+			"errors":      map[string]any{"name": ""},
+			"groupCreate": map[string]any{"limitReached": false},
+		},
 		IsAuthenticated: true,
 		IsSuperAdmin:    utils.IsSuperadmin(c),
 	}

@@ -9,14 +9,23 @@ import (
 templ GroupNewMain() {
 	@shared.PageHeader(shared.PageHeaderProps{Title: ctxi18n.T(ctx, "groups.new")}) {}
 	<form class="form w-details group-form" data-on:submit="@post('/groups')" data-indicator:_fetching>
-		<div class="field">
+		<div class="field" data-show="!$groupCreate.limitReached">
 			<label for="group-new-name" class="row">{ ctxi18n.T(ctx, "groups.name") } <span class="fielderror">*</span></label>
-			<input id="group-new-name" type="text" data-bind="formData.name" placeholder={ ctxi18n.T(ctx, "groups.name_placeholder") } class="input"/>
+			<input id="group-new-name" type="text" data-bind="formData.name" placeholder={ ctxi18n.T(ctx, "groups.name_placeholder") } class="input" data-attr:class="($errors && $errors.name) ? 'input input-primary' : 'input'"/>
+			<div class="row row-wrap pt">
+				@shared.LoadingSubmitButton(shared.LoadingSubmitButtonProps{
+					ClassName: "btn btn-primary btn-input btn-full",
+					Label:     ctxi18n.T(ctx, "groups.create"),
+					IconName:  icons.IconSave,
+				})
+			</div>
+			<div data-show="$errors && $errors.name" class="fielderror" data-text="$errors.name"></div>
 		</div>
-	@shared.LoadingSubmitButton(shared.LoadingSubmitButtonProps{
-		ClassName: "btn btn-primary btn-input btn-full",
-		Label:     ctxi18n.T(ctx, "groups.create"),
-		IconName:  icons.IconSave,
-	})
+		<div data-show="$groupCreate.limitReached" style="display: none">
+			<div class="fielderror" data-text="$errors.name"></div>
+			<div class="row row-wrap pt">
+				@shared.ManageSubscriptionButton("btn btn-primary btn-input btn-full")
+			</div>
+		</div>
 	</form>
 }

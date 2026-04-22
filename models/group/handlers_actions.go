@@ -17,6 +17,7 @@ import (
 	"github.com/labstack/echo/v4"
 	"github.com/starfederation/datastar-go/datastar"
 
+	internalbilling "bandcash/internal/billing"
 	"bandcash/internal/db"
 	"bandcash/internal/email"
 	"bandcash/internal/utils"
@@ -154,12 +155,32 @@ func (g *Group) CreateGroup(c echo.Context) error {
 	}
 	signals.FormData.Name = strings.TrimSpace(signals.FormData.Name)
 	if errs := utils.ValidateWithLocale(c.Request().Context(), signals.FormData); errs != nil {
-		utils.Notify(c, errs["name"])
+		_ = utils.SSEHub.PatchSignals(c, map[string]any{
+			"errors":      utils.WithErrors([]string{"name"}, errs),
+			"groupCreate": map[string]any{"limitReached": false},
+		})
 		return c.NoContent(http.StatusUnprocessableEntity)
 	}
+	_ = utils.SSEHub.PatchSignals(c, map[string]any{
+		"errors":      map[string]string{},
+		"groupCreate": map[string]any{"limitReached": false},
+	})
 
 	name := signals.FormData.Name
-	// Billing gate is temporarily disabled.
+	canCreate, accessState, eligibilityErr := internalbilling.CanOwnAnotherGroup(c.Request().Context(), userID)
+	if eligibilityErr != nil {
+		slog.Error("group.create: failed to check group limit", "user_id", userID, "err", eligibilityErr)
+		_ = utils.SSEHub.PatchSignals(c, map[string]any{"errors": map[string]string{
+			"name": ctxi18n.T(c.Request().Context(), "groups.errors.create_failed"),
+		}, "groupCreate": map[string]any{"limitReached": false}})
+		return c.NoContent(http.StatusInternalServerError)
+	}
+	if !canCreate || internalbilling.IsLimitExceeded(accessState) {
+		_ = utils.SSEHub.PatchSignals(c, map[string]any{"errors": map[string]string{
+			"name": ctxi18n.T(c.Request().Context(), "billing.errors.subscription_slots_exhausted"),
+		}, "groupCreate": map[string]any{"limitReached": true}})
+		return c.NoContent(http.StatusConflict)
+	}
 
 	// Create group
 	group, err := groupstore.CreateGroup(c.Request().Context(), groupstore.CreateGroupParams{
@@ -169,7 +190,10 @@ func (g *Group) CreateGroup(c echo.Context) error {
 	})
 	if err != nil {
 		slog.Error("group: failed to create group", "err", err)
-		return c.String(http.StatusInternalServerError, "Failed to create group")
+		_ = utils.SSEHub.PatchSignals(c, map[string]any{"errors": map[string]string{
+			"name": ctxi18n.T(c.Request().Context(), "groups.errors.create_failed"),
+		}, "groupCreate": map[string]any{"limitReached": false}})
+		return c.NoContent(http.StatusInternalServerError)
 	}
 
 	slog.Info("group: created", "group_id", group.ID, "name", group.Name, "admin", userID)

@@ -10,21 +10,13 @@ templ GroupIndexMain(data GroupsPageData) {
 	<section class="groups">
 		@shared.PageHeader(shared.PageHeaderProps{Title: ctxi18n.T(ctx, "groups.title")}) {}
 		@shared.TableSearchFormWithClass("/groups", data.Query, "table.search_placeholder", "")
+		<div class="row row-wrap pb-lg">
+			<a class="btn btn-primary btn-input btn-full" href="/groups/new">+ Add new group</a>
+		</div>
 		if len(data.AllGroups) == 0 {
-			<ul class="grid content-start" aria-label={ ctxi18n.T(ctx, "groups.title") }>
-				<li>
-					<a class="group-card group-card-add" href="/groups/new">
-						<span>+ Add new group</span>
-					</a>
-				</li>
-			</ul>
+			<p class="text-muted">{ ctxi18n.T(ctx, "table.empty") }</p>
 		} else {
 			<ul class="grid content-start" aria-label={ ctxi18n.T(ctx, "groups.title") }>
-				<li>
-					<a class="group-card group-card-add" href="/groups/new">
-						<span>+ Add new group</span>
-					</a>
-				</li>
 				for _, group := range data.AllGroups {
 					<li>
 						<a class="group-card" href={ "/groups/" + group.Group.ID + "/events" }>

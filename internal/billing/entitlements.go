@@ -26,6 +26,14 @@ type AccessState struct {
 	RemainingSlots    int
 }
 
+func IsLimitExceeded(state AccessState) bool {
+	return state.OwnedGroupCount > state.SubscriptionCount
+}
+
+func HasAvailableGroupSlot(state AccessState) bool {
+	return state.OwnedGroupCount < state.SubscriptionCount
+}
+
 func IsSubscriptionActive(status string, graceUntil sql.NullTime, now time.Time) bool {
 	status = strings.ToLower(strings.TrimSpace(status))
 	switch status {
@@ -143,7 +151,7 @@ func CanOwnAnotherGroup(ctx context.Context, userID string) (bool, AccessState, 
 	if err != nil {
 		return false, AccessState{}, err
 	}
-	return state.OwnedGroupCount < state.SubscriptionCount, state, nil
+	return HasAvailableGroupSlot(state), state, nil
 }
 
 func CanCreateEventInGroup(ctx context.Context, groupID string) (bool, AccessState, error) {

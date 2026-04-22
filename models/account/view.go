@@ -14,6 +14,8 @@ type AccountData struct {
 	SubscriptionSlots     int
 	UsedSlots             int
 	RemainingSlots        int
+	IsLimitExceeded       bool
+	HasAvailableGroupSlot bool
 	HasActiveSubscription bool
 	ActiveTab             string
 	Signals               map[string]any

@@ -718,7 +718,7 @@
       list-style: none;
       margin: 0;
       padding: 0;
-      gap: var(--space-lg);
+      gap: var(--space-xl);
       grid-template-columns: repeat(auto-fill, minmax(16rem, 1fr));
     }
 

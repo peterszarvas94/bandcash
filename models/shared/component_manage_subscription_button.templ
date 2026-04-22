@@ -1,0 +1,20 @@
+package shared
+
+import (
+	"strings"
+
+	ctxi18n "github.com/invopop/ctxi18n/i18n"
+)
+
+templ ManageSubscriptionButton(className string) {
+	{{
+		baseClass := strings.TrimSpace(className)
+		if baseClass == "" {
+			baseClass = "btn btn-primary"
+		}
+		if !strings.Contains(baseClass, "btn-primary") {
+			baseClass = strings.TrimSpace(baseClass + " btn-primary")
+		}
+	}}
+	<a class={ baseClass } href="/account/subscription/manage" target="_blank" rel="noopener noreferrer">{ ctxi18n.T(ctx, "account.manage_subscription") }</a>
+}

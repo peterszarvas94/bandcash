@@ -33,7 +33,7 @@ func RequireWithinSubscriptionLimit(next echo.HandlerFunc) echo.HandlerFunc {
 			slog.Error("billing gate: failed to load access state", "user_id", userID, "err", err)
 			return next(c)
 		}
-		if state.OwnedGroupCount > state.SubscriptionCount {
+		if internalbilling.IsLimitExceeded(state) {
 			return c.Redirect(http.StatusFound, "/over-limit")
 		}
 		return next(c)
