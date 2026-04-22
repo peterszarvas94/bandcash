@@ -34,8 +34,14 @@ type accountTabSignals struct {
 }
 
 func Index(c echo.Context) error {
+	return c.Redirect(http.StatusFound, "/account/subscription")
+}
+
+func SubscriptionPageHandler(c echo.Context) error {
 	utils.EnsureTabID(c)
 	data := Data(c.Request().Context())
+	data.Title = ctxi18n.T(c.Request().Context(), "account.page_title")
+	data.Breadcrumbs = []utils.Crumb{{Label: ctxi18n.T(c.Request().Context(), "account.subscription")}}
 	userID := utils.GetUserID(c)
 	if user, err := authstore.GetUserByID(c.Request().Context(), userID); err == nil {
 		data.UserID = user.ID
@@ -52,6 +58,7 @@ func Index(c echo.Context) error {
 		data.HasActiveSubscription = strings.TrimSpace(sub.ProviderSubscriptionID) != "" &&
 			internalbilling.IsSubscriptionActive(sub.Status, sub.GraceUntil, time.Now().UTC())
 	}
+	data.ActiveTab = "subscription"
 	data.Signals = map[string]any{"formData": map[string]any{"lang": data.CurrentLang}}
 	data.IsAuthenticated = true
 	data.IsSuperAdmin = utils.IsSuperadmin(c)
@@ -159,13 +166,14 @@ func OverLimitPageHandler(c echo.Context) error {
 func LanguagePageHandler(c echo.Context) error {
 	utils.EnsureTabID(c)
 	data := Data(c.Request().Context())
-	data.Title = ctxi18n.T(c.Request().Context(), "account.language")
+	data.Title = ctxi18n.T(c.Request().Context(), "account.page_title")
 	data.Breadcrumbs = []utils.Crumb{{Label: ctxi18n.T(c.Request().Context(), "account.language")}}
 	userID := utils.GetUserID(c)
 	if user, err := authstore.GetUserByID(c.Request().Context(), userID); err == nil {
 		data.UserEmail = user.Email
 		data.CurrentLang = appi18n.NormalizeLocale(user.PreferredLang)
 	}
+	data.ActiveTab = "language"
 	data.Signals = map[string]any{"formData": map[string]any{"lang": data.CurrentLang}}
 	data.IsAuthenticated = true
 	data.IsSuperAdmin = utils.IsSuperadmin(c)
@@ -209,10 +217,11 @@ func SessionsPageHandler(c echo.Context) error {
 	}
 
 	data := SessionsData{
-		Title:            ctxi18n.T(c.Request().Context(), "account.account"),
-		Breadcrumbs:      []utils.Crumb{{Label: ctxi18n.T(c.Request().Context(), "account.account")}},
+		Title:            ctxi18n.T(c.Request().Context(), "account.page_title"),
+		Breadcrumbs:      []utils.Crumb{{Label: ctxi18n.T(c.Request().Context(), "account.sessions")}},
 		CurrentSessionID: "",
 		Sessions:         sessions,
+		ActiveTab:        "sessions",
 	}
 
 	if cookie, err := c.Cookie(utils.SessionCookieName); err == nil {

@@ -3,12 +3,10 @@ package shared
 import (
 	"fmt"
 	icons "bandcash/models/shared/icons"
-	ctxi18n "github.com/invopop/ctxi18n/i18n"
 )
 
 templ LanguageSelect(id string, currentLang string, loadingSignal string) {
 	<div class="field">
-		<label for={ id }>{ ctxi18n.T(ctx, "account.language") }</label>
 		<div class="row row-wrap items-center">
 			<select id={ id } data-bind="formData.lang" class="input input-xs w-fit">
 				<option value="en" selected?={ currentLang == "en" }>ENG</option>

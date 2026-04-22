@@ -1,24 +1,20 @@
 package account
 
 import (
-	shared "bandcash/models/shared"
-	icons "bandcash/models/shared/icons"
-	"fmt"
-
 	ctxi18n "github.com/invopop/ctxi18n/i18n"
 )
 
 templ AccountContent(data AccountData) {
 	if data.SubscriptionSlots > 0 {
-		<div class="row row-wrap">
-			<strong>{ fmt.Sprintf(ctxi18n.T(ctx, "account.groups_remaining_format"), data.RemainingSlots, data.SubscriptionSlots) }</strong>
-		</div>
+		<p class="pb-lg">
+			{ ctxi18n.T(ctx, "account.groups_status_have_prefix") } <strong>{ data.UsedSlots }</strong> { ctxi18n.T(ctx, "account.groups_status_have_suffix") } <strong>{ data.RemainingSlots }</strong> { ctxi18n.T(ctx, "account.groups_status_more") }
+		</p>
 	} else {
 		<div class="row row-wrap"><strong>{ ctxi18n.T(ctx, "account.no_active_subscription") }</strong></div>
 	}
 	<div class="row row-wrap">
 		if data.HasActiveSubscription {
-			<a class="btn" href="/account/subscription/manage">{ ctxi18n.T(ctx, "account.manage_subscription") }</a>
+			<a class="btn" href="/account/subscription/manage" target="_blank" rel="noopener noreferrer">{ ctxi18n.T(ctx, "account.manage_subscription") }</a>
 		} else {
 			<form class="row row-wrap" action="/account/subscription/manage" method="get">
 				<label for="account-checkout-quantity">{ ctxi18n.T(ctx, "account.group_quantity") }</label>
@@ -26,37 +22,5 @@ templ AccountContent(data AccountData) {
 				<button class="btn btn-primary btn-xs" type="submit">{ ctxi18n.T(ctx, "account.start_subscription") }</button>
 			</form>
 		}
-	</div>
-	<div class="row row-wrap">
-		@shared.ConfirmActionButton(shared.ConfirmActionButtonProps{
-			ClassName:    "btn",
-			DisabledExpr: "false",
-			Label:        ctxi18n.T(ctx, "auth.logout"),
-			IconName:     icons.IconLogOut,
-			Dialog: shared.ConfirmDialogProps{
-				Title:       ctxi18n.T(ctx, "auth.logout"),
-				Message:     ctxi18n.T(ctx, "confirm.destructive_message"),
-				SubmitLabel: ctxi18n.T(ctx, "auth.logout"),
-				CancelLabel: ctxi18n.T(ctx, "actions.cancel"),
-				Method:      "delete",
-				URL:         "/session",
-				TriggerID:   "account-logout",
-			},
-		})
-		@shared.ConfirmActionButton(shared.ConfirmActionButtonProps{
-			ClassName:    "btn",
-			DisabledExpr: "false",
-			Label:        ctxi18n.T(ctx, "account.logout_everywhere"),
-			IconName:     icons.IconLogOut,
-			Dialog: shared.ConfirmDialogProps{
-				Title:       ctxi18n.T(ctx, "account.logout_everywhere"),
-				Message:     ctxi18n.T(ctx, "confirm.destructive_message"),
-				SubmitLabel: ctxi18n.T(ctx, "account.logout_everywhere"),
-				CancelLabel: ctxi18n.T(ctx, "actions.cancel"),
-				Method:      "delete",
-				URL:         "/account/sessions",
-				TriggerID:   "account-logout-everywhere",
-			},
-		})
 	</div>
 }

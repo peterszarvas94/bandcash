@@ -15,6 +15,7 @@ type AccountData struct {
 	UsedSlots             int
 	RemainingSlots        int
 	HasActiveSubscription bool
+	ActiveTab             string
 	Signals               map[string]any
 	IsAuthenticated       bool
 	IsSuperAdmin          bool
@@ -25,6 +26,7 @@ type SessionsData struct {
 	Breadcrumbs      []utils.Crumb
 	CurrentSessionID string
 	Sessions         []db.UserSession
+	ActiveTab        string
 	Signals          map[string]any
 	IsAuthenticated  bool
 	IsSuperAdmin     bool

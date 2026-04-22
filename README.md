@@ -33,6 +33,8 @@ Production deploy uses Kamal secrets.
 
 ```bash
 mise run dev          # hot reload
+mise run tunnel       # app tunnel only
+mise run tunnel-dev   # hot reload + app tunnel
 mise run run          # run server directly
 mise run build        # build binary (tmp/server)
 mise run test         # go test ./...

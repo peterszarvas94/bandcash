@@ -9,9 +9,8 @@ ruby = "3.4.2"
 
 [tasks]
 app = "./scripts/with_dev_secrets.sh air"
-tunnel-app = "cloudflared tunnel run --token \"$(cloudflared tunnel token bandcash)\" --url http://localhost:2222"
+tunnel = "cloudflared tunnel run --token \"$(cloudflared tunnel token bandcash)\" --url http://localhost:2222"
 preflight = "go run ./cmd/devpreflight/main.go"
-assets = "go run ./cmd/assets/main.go"
 start = "./tmp/server"
 routes = "go run ./cmd/server --routes"
 test = "go test ./..."
@@ -20,7 +19,6 @@ format = "go fmt ./..."
 vet = "go vet ./..."
 lint = "golangci-lint run"
 lsp = 'gopls check -severity=hint $(git ls-files "*.go" ":!internal/db/*.go")'
-templ = "templ generate -lazy"
 db-up = "go run ./cmd/dbmigrate/main.go -cmd=up"
 db-down = "go run ./cmd/dbmigrate/main.go -cmd=down"
 db-status = "go run ./cmd/dbmigrate/main.go -cmd=status"
@@ -32,6 +30,21 @@ setup = "kamal setup"
 setup-staging = "kamal setup --destination staging"
 deploy = "./scripts/deploy.sh production"
 deploy-staging = "./scripts/deploy.sh staging"
+
+[tasks.assets]
+run = "go run ./cmd/assets/main.go"
+sources = [
+  "cmd/assets/**/*.go",
+  "static/css/**/*.css",
+  "static/js/**/*.js",
+  "static/importmap.json",
+]
+outputs = { auto = true }
+
+[tasks.templ]
+run = "templ generate -lazy"
+sources = ["**/*.templ"]
+outputs = { auto = true }
 
 [tasks.build]
 depends = ["templ", "assets"]
@@ -52,4 +65,8 @@ run = [
 
 [tasks.dev]
 depends = ["preflight"]
-run = [{ tasks = ["app", "tunnel-app"] }]
+run = [{ task = "app" }]
+
+[tasks.tunnel-dev]
+depends = ["preflight"]
+run = [{ tasks = ["app", "tunnel"] }]

@@ -4,56 +4,30 @@ import (
 	shared "bandcash/models/shared"
 	ctxi18n "github.com/invopop/ctxi18n/i18n"
 	icons "bandcash/models/shared/icons"
-	"fmt"
 )
 
 templ SessionsMain(data SessionsData) {
 	<section class="pb">
 		<header class="row items-center justify-between pb">
-			<h1>{ ctxi18n.T(ctx, "account.account") }</h1>
-			if len(data.Sessions) > 1 {
-				@shared.LoadingActionButton(shared.LoadingActionButtonProps{
-					ClassName:    "btn",
-					OnClick:      "@delete('/account/sessions')",
-					DisabledExpr: "$_fetching",
-					Label:        ctxi18n.T(ctx, "account.logout_everywhere"),
-					IconName:      icons.IconLogOut,
-				})
-			}
+			<div>
+				@AccountSectionTitle(ctxi18n.T(ctx, "account.sessions"))
+			</div>
 		</header>
-		
-		if len(data.Sessions) == 0 {
-			<p>{ ctxi18n.T(ctx, "account.no_sessions") }</p>
-		} else {
-			<ul class="stack">
-				for _, session := range data.Sessions {
-					<li class="row items-center justify-between card">
-						<div>
-							<p class="font-medium">
-							if session.ID == data.CurrentSessionID {
-								{ ctxi18n.T(ctx, "account.current_session") }
-							} else if session.CreatedAt.Valid {
-									{ ctxi18n.T(ctx, "account.session_from") } { session.CreatedAt.Time.Format("2006-01-02 15:04") }
-								} else {
-									{ ctxi18n.T(ctx, "account.session_from") } -
-								}
-							</p>
-							<p class="text-sm color-muted">
-								{ ctxi18n.T(ctx, "account.expires") }: { session.ExpiresAt.Format("2006-01-02") }
-							</p>
-						</div>
-						if session.ID != data.CurrentSessionID {
-							@shared.LoadingActionButton(shared.LoadingActionButtonProps{
-							ClassName:    "btn btn-sm",
-								OnClick:      fmt.Sprintf("@delete('/account/sessions/%s')", session.ID),
-								DisabledExpr: "$_fetching",
-								Label:        ctxi18n.T(ctx, "auth.logout"),
-								IconName:      icons.IconLogOut,
-							})
-						}
-					</li>
-				}
-			</ul>
-		}
+		<div class="row row-wrap">
+			@shared.LoadingActionButton(shared.LoadingActionButtonProps{
+				ClassName:    "btn",
+				OnClick:      "@delete('/session')",
+				DisabledExpr: "$_fetching",
+				Label:        ctxi18n.T(ctx, "auth.logout"),
+				IconName:     icons.IconLogOut,
+			})
+			@shared.LoadingActionButton(shared.LoadingActionButtonProps{
+				ClassName:    "btn",
+				OnClick:      "@delete('/account/sessions')",
+				DisabledExpr: "$_fetching",
+				Label:        ctxi18n.T(ctx, "account.logout_everywhere"),
+				IconName:     icons.IconLogOut,
+			})
+		</div>
 	</section>
 }

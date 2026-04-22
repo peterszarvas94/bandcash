@@ -4,8 +4,9 @@ Use `mise run <task>` first; fall back to raw `go test` only for targeted test r
 
 ## Run and Dev
 
-- `mise run dev` - start app with hot reload (`air`) and app tunnel (tunnel runs in background so app can start immediately).
-- `mise run tunnel-app` - run app tunnel (`cloudflared tunnel run --token "$(cloudflared tunnel token bandcash)" --url http://localhost:2222`).
+- `mise run dev` - start app with hot reload (`air`) only.
+- `mise run tunnel` - run app tunnel (`cloudflared tunnel run --token "$(cloudflared tunnel token bandcash)" --url http://localhost:2222`).
+- `mise run tunnel-dev` - start app (`air`) and tunnel in parallel.
 - `mise run run` - run server directly with `go run`.
 - `mise run build` - compile server binary to `tmp/server`.
 - `mise run start` - run built binary.
@@ -13,11 +14,11 @@ Use `mise run <task>` first; fall back to raw `go test` only for targeted test r
 
 Dev env loading:
 
-- `mise run dev` and `mise run run` can auto-load billing-related secrets from 1Password via `kamal secrets` before starting the server.
+- `mise run dev`, `mise run tunnel-dev`, and `mise run run` can auto-load billing-related secrets from 1Password via `kamal secrets` before starting the server.
 - Set `OP_ACCOUNT` and one of `OP_FROM_LOCALHOST` (preferred for local), `OP_FROM_DEVELOPMENT`, or `OP_FROM` in your shell, then run dev commands normally.
 - Local 1Password entries should include full app env keys (clear + secret), e.g. `APP_ENV`, `PORT`, `URL`, `DB_PATH`, logging keys, `EMAIL_PROVIDER`, `EMAIL_FROM`, Mailtrap SMTP keys (`MAILTRAP_HOST`, `MAILTRAP_PORT`, `MAILTRAP_USERNAME`, `MAILTRAP_PASSWORD`) for sandbox, and Lemon keys (`LEMON_WEBHOOK_SECRET`, `LEMON_API_KEY`).
 - This avoids storing plaintext local secret files while still enabling local webhook/API billing flows.
-- `mise run dev` expects access to the `bandcash` Cloudflare tunnel token via `cloudflared tunnel token bandcash`.
+- `mise run tunnel` and `mise run tunnel-dev` expect access to the `bandcash` Cloudflare tunnel token via `cloudflared tunnel token bandcash`.
 - If your managed tunnel has no ingress rule, the `--url http://localhost:2222` fallback keeps local dev routing working.
 
 ## Formatting and Static Checks
@@ -45,6 +46,7 @@ Quick rules:
 - `-run` filters by test function name regex inside the selected package.
 - Go tests run by package, not by file path.
 - After query/schema changes, run affected package tests and a compile check.
+- dont build, because the dev server is running always, unless explicitly asked to debug
 
 ## DB Migrations
 

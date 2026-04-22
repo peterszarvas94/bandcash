@@ -1,0 +1,14 @@
+package shared
+
+import (
+	icons "bandcash/models/shared/icons"
+	ctxi18n "github.com/invopop/ctxi18n/i18n"
+)
+
+templ AccountSidebar(activeTab string) {
+	@Sidebar(ctxi18n.T(ctx, "nav.actions"), []SidebarItem{
+		{Label: ctxi18n.T(ctx, "account.subscription"), Href: "/account/subscription", IsActive: activeTab == "subscription", IconName: icons.IconCreditCard},
+		{Label: ctxi18n.T(ctx, "account.language"), Href: "/account/language", IsActive: activeTab == "language", IconName: icons.IconLanguages},
+		{Label: ctxi18n.T(ctx, "account.sessions"), Href: "/account/sessions", IsActive: activeTab == "sessions", IconName: icons.IconLogOut},
+	})
+}

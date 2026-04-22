@@ -154,6 +154,9 @@ func registerRoutes(e *echo.Echo) {
 	memberAdminRoutes.DELETE("/members/:id", member.Destroy, middleware.RequireWithinSubscriptionLimit)
 
 	e.GET("/account", account.Index, middleware.RequireAuth)
+	e.GET("/account/subscription", account.SubscriptionPageHandler, middleware.RequireAuth)
+	e.GET("/account/language", account.LanguagePageHandler, middleware.RequireAuth)
+	e.GET("/account/sessions", account.SessionsPageHandler, middleware.RequireAuth)
 	e.GET("/over-limit", account.OverLimitPageHandler, middleware.RequireAuth)
 	e.GET("/account/subscription/manage", account.ManageSubscription, middleware.RequireAuth)
 	e.POST("/account/language", account.UpdateLanguage, middleware.RequireAuth)

@@ -1,12 +1,10 @@
 package account
 
 import (
-	shared "bandcash/models/shared"
 	ctxi18n "github.com/invopop/ctxi18n/i18n"
 )
 
 templ AccountMain(data AccountData) {
-	<h1>{ ctxi18n.T(ctx, "account.account") }</h1>
-	@shared.Section("", LanguageForm(data.CurrentLang))
-	@shared.Section("", AccountContent(data))
+	@AccountSectionTitle(ctxi18n.T(ctx, "account.subscription"))
+	@AccountContent(data)
 }
