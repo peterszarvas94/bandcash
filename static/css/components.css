@@ -286,6 +286,11 @@
       padding-inline: var(--space-lg);
     }
 
+    &.btn-full {
+      width: 100%;
+      justify-content: center;
+    }
+
     &.btn-icon {
       min-width: var(--height-input);
       width: var(--height-input);
@@ -705,10 +710,15 @@
   }
 
   .groups {
+    .table-search {
+      margin-bottom: var(--space-lg);
+    }
+
     ul {
       list-style: none;
       margin: 0;
       padding: 0;
+      gap: var(--space-lg);
       grid-template-columns: repeat(auto-fill, minmax(16rem, 1fr));
     }
 
@@ -790,6 +800,23 @@
           font-variant-numeric: tabular-nums;
           font-feature-settings: "tnum" 1;
         }
+      }
+    }
+
+    .group-card-add {
+      border: var(--border) dashed var(--bg-dark);
+      background: transparent;
+      box-shadow: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      font-weight: 700;
+      font-size: 1.25rem;
+      transition: background-color 140ms ease;
+
+      &:hover {
+        background: var(--bg-light);
       }
     }
   }
@@ -1126,6 +1153,12 @@
     }
   }
 
+  .thin-layout {
+    main {
+      max-width: var(--thin-width);
+    }
+  }
+
   .error-page,
   .content_inner:has(> .error-card) {
     display: flex;
@@ -1279,8 +1312,12 @@
   .page-title-row {
     padding-bottom: calc(var(--space) * 3);
     display: flex;
-    align-items: center;
+    align-items: flex-start;
     justify-content: space-between;
+
+    form {
+      margin: 0;
+    }
 
     > h1 {
       margin: 0;

@@ -42,18 +42,23 @@ func maskEmail(email string) string {
 	local := parts[0]
 	domain := parts[1]
 
-	maskedLocal := "***"
+	maskedLocal := "..."
 	if len(local) == 1 {
-		maskedLocal = local + "***"
+		maskedLocal = local + "..."
 	} else if len(local) > 1 {
-		maskedLocal = local[:1] + "***" + local[len(local)-1:]
+		maskedLocal = local[:1] + "..." + local[len(local)-1:]
 	}
 
-	maskedDomain := "***"
+	maskedDomain := "..."
 	if dot := strings.LastIndex(domain, "."); dot > 1 {
-		maskedDomain = domain[:1] + "***" + domain[dot:]
+		suffix := strings.TrimPrefix(domain[dot:], ".")
+		if suffix != "" {
+			maskedDomain = domain[:1] + "..." + suffix
+		} else {
+			maskedDomain = domain[:1] + "..."
+		}
 	} else if len(domain) > 0 {
-		maskedDomain = domain[:1] + "***"
+		maskedDomain = domain[:1] + "..."
 	}
 
 	return maskedLocal + "@" + maskedDomain

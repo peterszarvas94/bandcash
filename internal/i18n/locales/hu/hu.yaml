@@ -456,7 +456,7 @@ hu:
     unpaid_expenses: "Fizetetlen költségek"
     paid_expenses: "Fizetett költségek"
     balance: "Egyenleg"
-    current_balance: "Jelenlegi egyenleg"
+    current_balance: "Egyenleg"
     new: "Új csoport"
     new_page_title: "BandCash - Új csoport"
     edit: "Csoport szerkesztése"

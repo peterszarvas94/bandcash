@@ -5,8 +5,8 @@ import ctxi18n "github.com/invopop/ctxi18n/i18n"
 templ PageLanguagePicker(action string, currentLang string) {
 	<form method="get" action={ action }>
 		<select id="page-lang" name="lang" class="input input-xs w-fit" aria-label={ ctxi18n.T(ctx, "account.language") } onchange="this.form.submit()">
-			<option value="en" selected?={ currentLang == "en" }>ENG</option>
-			<option value="hu" selected?={ currentLang == "hu" }>HUN</option>
+			<option value="en" selected?={ currentLang == "en" }>English</option>
+			<option value="hu" selected?={ currentLang == "hu" }>Hungarian</option>
 		</select>
 	</form>
 }

@@ -14,7 +14,7 @@ templ GroupNewMain() {
 			<input id="group-new-name" type="text" data-bind="formData.name" placeholder={ ctxi18n.T(ctx, "groups.name_placeholder") } class="input"/>
 		</div>
 	@shared.LoadingSubmitButton(shared.LoadingSubmitButtonProps{
-		ClassName: "btn btn-primary",
+		ClassName: "btn btn-primary btn-input btn-full",
 		Label:     ctxi18n.T(ctx, "groups.create"),
 		IconName:  icons.IconSave,
 	})

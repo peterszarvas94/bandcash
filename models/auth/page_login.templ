@@ -9,7 +9,7 @@ templ LoginPage(data AuthPageData) {
 		Title:           data.Title,
 		Crumbs:          data.Breadcrumbs,
 		Signals:         data.Signals,
-		Content:         shared.CommonContent(LoginMain(data.CurrentLang, "/login", data.SignupEnabled)),
+		Content:         shared.ThinContent(LoginMain(data.CurrentLang, "/login", data.SignupEnabled)),
 		ActiveUrl:       "/login",
 		IsAuthenticated: data.IsAuthenticated,
 		IsSuperAdmin:    data.IsSuperAdmin,

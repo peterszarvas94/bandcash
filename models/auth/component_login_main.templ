@@ -19,10 +19,10 @@ templ LoginMain(currentLang string, langAction string, signupEnabled bool) {
 				<form class="form" data-on:submit="@post('/login')" data-indicator:_fetching>
 					<div class="field">
 						<label for="auth-login-email" class="row">{ ctxi18n.T(ctx, "auth.email") } <span class="fielderror">*</span></label>
-					<div class="row">
 						<input id="auth-login-email" type="email" data-bind="formData.email" placeholder={ ctxi18n.T(ctx, "auth.email_placeholder") } class="input" data-attr:class="(($authError !== '') || ($authServerError !== '')) ? 'input input-primary' : 'input'"/>
+						<div class="row row-wrap pt">
 							@shared.LoadingSubmitButton(shared.LoadingSubmitButtonProps{
-								ClassName: "btn btn-primary btn-input",
+								ClassName: "btn btn-primary btn-input btn-full",
 								Label:     ctxi18n.T(ctx, "auth.send_link"),
 								IconName:  icons.IconSendHorizontal,
 							})
@@ -35,10 +35,10 @@ templ LoginMain(currentLang string, langAction string, signupEnabled bool) {
 			<div data-show="$authState === 'sent'" style="display: none" class="form">
 				<div data-show="$authState === 'sent'" data-on-interval__duration.1s="$resendRemaining = Math.max(0, $resendRemaining - 1)" style="display: none"></div>
 				<p><strong>{ ctxi18n.T(ctx, "auth.masked_email") }:</strong> <span data-text="$submittedEmailMasked"></span></p>
-				<div class="row row-wrap">
+				<div class="row row-wrap pt">
 					<button
 						data-indicator:_fetching
-						class="btn"
+						class="btn btn-input btn-full"
 						type="button"
 						data-signals={ templ.JSONString(map[string]any{"_fetching": false}) }
 						data-attr:disabled="$_fetching || $resendRemaining > 0"
@@ -54,7 +54,7 @@ templ LoginMain(currentLang string, langAction string, signupEnabled bool) {
 						<span data-show="$resendRemaining > 0" data-text="' (' + $resendRemaining + 's)'" style="display: none"></span>
 					</button>
 					@shared.LoadingActionButton(shared.LoadingActionButtonProps{
-						ClassName:    "btn",
+						ClassName:    "btn btn-input btn-full",
 						OnClick:      "$authState = 'form'; $authError = ''; $authServerError = ''; $formData.email = $submittedEmail",
 						DisabledExpr: "$_fetching",
 						Label:        ctxi18n.T(ctx, "auth.use_different_email"),

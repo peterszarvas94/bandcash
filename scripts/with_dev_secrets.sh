@@ -53,8 +53,8 @@ load_op_config_from_file() {
 }
 
 fetch_local_secrets_from_1password() {
-  local op_account op_from tmp_dir
-  local keys pids key value_file
+  local op_account op_from
+  local keys key secrets_blob value
 
   op_account="${OP_ACCOUNT:-}"
   if [ "${APP_ENV:-development}" = "development" ] && [ -n "${OP_FROM_LOCALHOST:-}" ]; then
@@ -91,36 +91,16 @@ fetch_local_secrets_from_1password() {
     LEMON_API_KEY
   )
 
-  tmp_dir="$(mktemp -d)"
-  trap 'rm -rf "$tmp_dir"' RETURN
-
-  pids=()
-  for key in "${keys[@]}"; do
-    (
-      local single_secret value
-      single_secret="$(kamal secrets fetch --adapter 1password --account "$op_account" --from "$op_from" "$key" 2>/dev/null || true)"
-      if [ -z "$single_secret" ]; then
-        exit 0
-      fi
-      value="$(kamal secrets extract "$key" "$single_secret" 2>/dev/null || true)"
-      if [[ "$value" == *"ERROR (RuntimeError)"* ]] || [[ "$value" == *"Could not find secret"* ]] || [ -z "$value" ]; then
-        exit 0
-      fi
-      printf '%s' "$value" >"$tmp_dir/$key"
-    ) &
-    pids+=("$!")
-  done
-
-  for pid in "${pids[@]}"; do
-    wait "$pid" || true
-  done
+  secrets_blob="$(kamal secrets fetch --adapter 1password --account "$op_account" --from "$op_from" "${keys[@]}" 2>/dev/null || true)"
+  if [ -z "$secrets_blob" ]; then
+    return 0
+  fi
 
   for key in "${keys[@]}"; do
-    value_file="$tmp_dir/$key"
-    if [ ! -f "$value_file" ]; then
+    value="$(kamal secrets extract "$key" "$secrets_blob" 2>/dev/null || true)"
+    if [[ "$value" == *"ERROR (RuntimeError)"* ]] || [[ "$value" == *"Could not find secret"* ]]; then
       continue
     fi
-    value="$(<"$value_file")"
     if [ -n "$value" ]; then
       export "$key=$value"
     fi
