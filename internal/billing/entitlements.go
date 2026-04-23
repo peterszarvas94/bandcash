@@ -34,6 +34,13 @@ func HasAvailableGroupSlot(state AccessState) bool {
 	return state.OwnedGroupCount < state.SubscriptionCount
 }
 
+func RemainingGroupSlots(state AccessState) int {
+	if state.RemainingSlots < 0 {
+		return 0
+	}
+	return state.RemainingSlots
+}
+
 func IsSubscriptionActive(status string, graceUntil sql.NullTime, now time.Time) bool {
 	status = strings.ToLower(strings.TrimSpace(status))
 	switch status {

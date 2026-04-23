@@ -32,17 +32,18 @@ type GroupWithRole struct {
 }
 
 type GroupsPageData struct {
-	Title           string
-	Breadcrumbs     []utils.Crumb
-	Signals         map[string]any
-	IsAuthenticated bool
-	IsSuperAdmin    bool
-	AllGroups       []GroupWithRole
-	AdminGroups     []GroupSummary
-	ReaderGroups    []GroupSummary
-	Query           utils.TableQuery
-	Pagination      utils.TablePagination
-	GroupsTable     utils.TableLayout
+	Title             string
+	Breadcrumbs       []utils.Crumb
+	Signals           map[string]any
+	IsAuthenticated   bool
+	IsSuperAdmin      bool
+	AllGroups         []GroupWithRole
+	AdminGroups       []GroupSummary
+	ReaderGroups      []GroupSummary
+	Query             utils.TableQuery
+	Pagination        utils.TablePagination
+	GroupsTable       utils.TableLayout
+	RemainingSlots    int
 }
 
 type GroupSummary struct {

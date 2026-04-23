@@ -52,7 +52,7 @@ func SubscriptionPageHandler(c echo.Context) error {
 	if state, err := internalbilling.CurrentAccessState(c.Request().Context(), userID); err == nil {
 		data.SubscriptionSlots = state.SubscriptionCount
 		data.UsedSlots = state.OwnedGroupCount
-		data.RemainingSlots = max(state.RemainingSlots, 0)
+		data.RemainingSlots = internalbilling.RemainingGroupSlots(state)
 		data.IsLimitExceeded = internalbilling.IsLimitExceeded(state)
 		data.HasAvailableGroupSlot = internalbilling.HasAvailableGroupSlot(state)
 	}

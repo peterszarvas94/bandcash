@@ -1,0 +1,63 @@
+package dev
+
+import (
+	account "bandcash/models/account"
+)
+
+templ SubscriptionStatusContent() {
+	<div class="pb-lg">
+		<h3><strong>No active subscription</strong></h3>
+		@account.AccountContent(account.AccountData{
+			SubscriptionSlots:     0,
+			UsedSlots:             0,
+			RemainingSlots:        0,
+			IsLimitExceeded:       false,
+			HasAvailableGroupSlot: false,
+			HasActiveSubscription: false,
+		})
+	</div>
+	<div class="pb-lg">
+		<h3><strong>No groups yet</strong></h3>
+		@account.AccountContent(account.AccountData{
+			SubscriptionSlots:     3,
+			UsedSlots:             0,
+			RemainingSlots:        3,
+			IsLimitExceeded:       false,
+			HasAvailableGroupSlot: true,
+			HasActiveSubscription: true,
+		})
+	</div>
+	<div class="pb-lg">
+		<h3><strong>Has groups, more slots available</strong></h3>
+		@account.AccountContent(account.AccountData{
+			SubscriptionSlots:     3,
+			UsedSlots:             1,
+			RemainingSlots:        2,
+			IsLimitExceeded:       false,
+			HasAvailableGroupSlot: true,
+			HasActiveSubscription: true,
+		})
+	</div>
+	<div class="pb-lg">
+		<h3><strong>At subscription limit</strong></h3>
+		@account.AccountContent(account.AccountData{
+			SubscriptionSlots:     2,
+			UsedSlots:             2,
+			RemainingSlots:        0,
+			IsLimitExceeded:       false,
+			HasAvailableGroupSlot: false,
+			HasActiveSubscription: true,
+		})
+	</div>
+	<div>
+		<h3><strong>Over subscription limit</strong></h3>
+		@account.AccountContent(account.AccountData{
+			SubscriptionSlots:     1,
+			UsedSlots:             3,
+			RemainingSlots:        0,
+			IsLimitExceeded:       true,
+			HasAvailableGroupSlot: false,
+			HasActiveSubscription: true,
+		})
+	</div>
+}

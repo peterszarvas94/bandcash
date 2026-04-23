@@ -9,6 +9,7 @@ import (
 	ctxi18n "github.com/invopop/ctxi18n/i18n"
 	"github.com/labstack/echo/v4"
 
+	internalbilling "bandcash/internal/billing"
 	"bandcash/internal/utils"
 	authstore "bandcash/models/auth/data"
 	groupstore "bandcash/models/group/data"
@@ -80,6 +81,10 @@ func (g *Group) IndexPage(c echo.Context) error {
 	data.Signals = nil
 	data.IsAuthenticated = true
 	data.IsSuperAdmin = utils.IsSuperadmin(c)
+
+	if state, err := internalbilling.CurrentAccessState(c.Request().Context(), userID); err == nil {
+		data.RemainingSlots = internalbilling.RemainingGroupSlots(state)
+	}
 
 	return utils.RenderPage(c, GroupIndexPage(data))
 }

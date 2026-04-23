@@ -9,12 +9,22 @@ import (
 templ GroupIndexMain(data GroupsPageData) {
 	<section class="groups">
 		@shared.PageHeader(shared.PageHeaderProps{Title: ctxi18n.T(ctx, "groups.title")}) {}
-		@shared.TableSearchFormWithClass("/groups", data.Query, "table.search_placeholder", "")
+		if len(data.AllGroups) > 0 || data.Query.Search != "" {
+			@shared.TableSearchFormWithClass("/groups", data.Query, "table.search_placeholder", "")
+		}
 		<div class="row row-wrap pb-lg">
 			<a class="btn btn-primary btn-input btn-full" href="/groups/new">+ Add new group</a>
 		</div>
 		if len(data.AllGroups) == 0 {
-			<p class="text-muted">{ ctxi18n.T(ctx, "table.empty") }</p>
+			if data.Query.Search != "" {
+				<p class="text-muted text-center">{ ctxi18n.T(ctx, "groups.empty_no_matches") }</p>
+			} else if data.RemainingSlots > 0 {
+				<p class="text-muted text-center">
+					{ ctxi18n.T(ctx, "account.groups_status_none_prefix") } <strong>{ data.RemainingSlots }</strong> { ctxi18n.T(ctx, "account.groups_status_none_suffix") }
+				</p>
+			} else {
+				<p class="text-muted text-center">{ ctxi18n.T(ctx, "groups.empty_no_groups") }</p>
+			}
 		} else {
 			<ul class="grid content-start" aria-label={ ctxi18n.T(ctx, "groups.title") }>
 				for _, group := range data.AllGroups {

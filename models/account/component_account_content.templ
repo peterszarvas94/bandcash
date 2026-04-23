@@ -7,11 +7,11 @@ import (
 	ctxi18n "github.com/invopop/ctxi18n/i18n"
 )
 
-templ AccountContent(data AccountData) {
+templ AccountStatusMessage(data AccountData) {
 	if data.SubscriptionSlots > 0 {
 		if data.UsedSlots == 0 {
 			<p class="pb-lg">
-				{ fmt.Sprintf(ctxi18n.T(ctx, "account.groups_status_none_format"), data.SubscriptionSlots) }
+				{ ctxi18n.T(ctx, "account.groups_status_none_prefix") } <strong>{ data.SubscriptionSlots }</strong> { ctxi18n.T(ctx, "account.groups_status_none_suffix") }
 			</p>
 		} else if data.IsLimitExceeded {
 			<p class="pb-lg">
@@ -19,7 +19,7 @@ templ AccountContent(data AccountData) {
 			</p>
 		} else if data.HasAvailableGroupSlot {
 			<p class="pb-lg">
-				{ fmt.Sprintf(ctxi18n.T(ctx, "account.groups_status_can_add_format"), data.UsedSlots, data.RemainingSlots) }
+				{ ctxi18n.T(ctx, "account.groups_status_can_add_prefix") } <strong>{ data.UsedSlots }</strong> { ctxi18n.T(ctx, "account.groups_status_can_add_middle") } <strong>{ data.RemainingSlots }</strong> { ctxi18n.T(ctx, "account.groups_status_can_add_suffix") }
 			</p>
 		} else {
 			<p class="pb-lg">
@@ -29,6 +29,10 @@ templ AccountContent(data AccountData) {
 	} else {
 		<div class="row row-wrap"><strong>{ ctxi18n.T(ctx, "account.no_active_subscription") }</strong></div>
 	}
+}
+
+templ AccountContent(data AccountData) {
+	@AccountStatusMessage(data)
 	<div class="row row-wrap">
 		if data.HasActiveSubscription {
 			@shared.ManageSubscriptionButton("btn btn-primary")

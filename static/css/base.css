@@ -58,6 +58,8 @@
     --space-sm: calc(var(--space) * 0.5);
     --space-lg: calc(var(--space) * 2);
     --space-xl: calc(var(--space) * 4);
+    --space-2xl: calc(var(--space) * 6);
+    --space-3xl: calc(var(--space) * 8);
     --font-sans: "Inter", system-ui, sans-serif;
     --font-mono: ui-monospace, monospace;
     --font-size-h1: 1.5rem;
