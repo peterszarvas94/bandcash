@@ -475,6 +475,7 @@ en:
     current_balance: "Balance"
     empty_no_groups: "You don't have any bands yet."
     empty_no_matches: "No bands match your search."
+    add_new: "Add new band"
     new: "New Band"
     new_page_title: "bandcash - New Band"
     edit: "Edit Band"

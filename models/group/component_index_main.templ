@@ -13,7 +13,7 @@ templ GroupIndexMain(data GroupsPageData) {
 			@shared.TableSearchFormWithClass("/groups", data.Query, "table.search_placeholder", "")
 		}
 		<div class="row row-wrap pb-lg">
-			<a class="btn btn-primary btn-input btn-full" href="/groups/new">+ Add new group</a>
+			<a class="btn btn-primary btn-input btn-full" href="/groups/new">+ { ctxi18n.T(ctx, "groups.add_new") }</a>
 		</div>
 		if len(data.AllGroups) == 0 {
 			if data.Query.Search != "" {

@@ -475,6 +475,7 @@ hu:
     current_balance: "Egyenleg"
     empty_no_groups: "Még nincs együttesed."
     empty_no_matches: "Nincs a keresésnek megfelelő együttes."
+    add_new: "Új együttes"
     new: "Új együttes"
     new_page_title: "bandcash - Új együttes"
     edit: "Együttes szerkesztése"

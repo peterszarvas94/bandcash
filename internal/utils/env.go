@@ -32,7 +32,7 @@ type EnvConfig struct {
 	LemonCheckoutURL   string
 }
 
-const DefaultSuperadminEmail = "admin@bandcash.localhost"
+const DefaultSuperadminEmail = "contact@peterszarvas.hu"
 
 var (
 	envOnce sync.Once
@@ -57,11 +57,11 @@ type envVars struct {
 	// URL is the public base URL used for links and callbacks.
 	URL string `env:"URL" envDefault:"http://localhost:2222" validate:"required_if=AppEnv production,required_if=AppEnv staging"`
 	// SuperadminEmail is the bootstrap superadmin account email.
-	SuperadminEmail string `env:"SUPERADMIN_EMAIL" envDefault:"admin@bandcash.localhost" validate:"required,email"`
+	SuperadminEmail string `env:"SUPERADMIN_EMAIL" envDefault:"contact@peterszarvas.hu" validate:"required,email"`
 	// DisableRateLimit disables request rate limiting (useful for local dev).
 	DisableRateLimit bool `env:"DISABLE_RATE_LIMIT" envDefault:"true"`
 	// EmailProvider controls which transport is used to deliver emails.
-	EmailProvider string `env:"EMAIL_PROVIDER" validate:"required,oneof=resend mailtrap"`
+	EmailProvider string `env:"EMAIL_PROVIDER" validate:"omitempty,oneof=resend mailtrap,required_if=AppEnv production,required_if=AppEnv staging"`
 	// ResendAPIKey stores the Resend API key.
 	ResendAPIKey string `env:"RESEND_API_KEY" validate:"required_if=EmailProvider resend"`
 	// MailtrapHost is the SMTP host for Mailtrap Sandbox.

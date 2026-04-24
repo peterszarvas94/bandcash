@@ -68,7 +68,7 @@ templ BaseLayout(props BaseLayoutProps) {
 							@props.Content
 						}
 					</div>
-					@Footer(props.IsAuthenticated, props.ActiveUrl)
+					@Footer(props.IsAuthenticated, props.IsSuperAdmin, props.ActiveUrl)
 				</div>
 			</div>
 		</body>
