@@ -1,0 +1,13 @@
+package shared
+
+import (
+	icons "bandcash/models/shared/icons"
+	ctxi18n "github.com/invopop/ctxi18n/i18n"
+)
+
+templ BrandLogo() {
+	<div class="row items-center brand-logo">
+		@icons.AudioWaveform(templ.Attributes{"class": "icon", "style": "color:hsl(var(--primary))"})
+		<strong>{ ctxi18n.T(ctx, "app.title") }</strong>
+	</div>
+}

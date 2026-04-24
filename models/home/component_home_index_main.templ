@@ -8,7 +8,10 @@ import (
 templ HomeIndexMain(data HomeData) {
 	<section class="home-page">
 		<div class="home-content">
-			@shared.PageTitleWithLanguage(data.Title, "/", data.CurrentLang)
+			<div class="page-title-row">
+				@shared.BrandLogo()
+				@shared.PageLanguagePicker("/", data.CurrentLang)
+			</div>
 			<p class="catchphrase">{ ctxi18n.T(ctx, "home.catchphrase") }</p>
 			<p class="intro">{ ctxi18n.T(ctx, "home.intro") }</p>
 			if data.IsAuthenticated {

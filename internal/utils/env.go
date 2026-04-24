@@ -73,7 +73,7 @@ type envVars struct {
 	// MailtrapPassword is the SMTP password for Mailtrap Sandbox.
 	MailtrapPassword string `env:"MAILTRAP_PASSWORD" validate:"required_if=EmailProvider mailtrap"`
 	// EmailFrom is the default From header for app emails.
-	EmailFrom string `env:"EMAIL_FROM" envDefault:"BandCash <noreply@bandcash.localhost>" validate:"required_if=AppEnv production,required_if=AppEnv staging"`
+	EmailFrom string `env:"EMAIL_FROM" envDefault:"bandcash <noreply@bandcash.localhost>" validate:"required_if=AppEnv production,required_if=AppEnv staging"`
 	// LemonWebhookSecret is the endpoint secret used to verify webhook signatures.
 	LemonWebhookSecret string `env:"LEMON_WEBHOOK_SECRET"`
 	// LemonAPIKey is used to fetch canonical subscription state from Lemon API.

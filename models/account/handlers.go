@@ -122,6 +122,48 @@ func ManageSubscription(c echo.Context) error {
 	return c.Redirect(http.StatusFound, redirectURL)
 }
 
+func UpdatePaymentMethod(c echo.Context) error {
+	ctx := c.Request().Context()
+	userID := utils.GetUserID(c)
+
+	sub, exists, err := internalbilling.GetUserSubscription(ctx, userID)
+	if err != nil {
+		slog.Error("account.billing: failed to load subscription for update payment", "user_id", userID, "err", err)
+		return c.Redirect(http.StatusFound, "/account")
+	}
+
+	if !exists || strings.TrimSpace(sub.ProviderSubscriptionID) == "" ||
+		!internalbilling.IsSubscriptionActive(sub.Status, sub.GraceUntil, time.Now().UTC()) {
+		slog.Warn("account.billing: update payment requested without active subscription", "user_id", userID)
+		return c.Redirect(http.StatusFound, "/account")
+	}
+
+	updatePaymentURL, updateErr := internalbilling.GetSignedUpdatePaymentMethodURL(ctx, userID)
+	if updateErr == nil && strings.TrimSpace(updatePaymentURL) != "" {
+		slog.Info("account.billing: redirecting to signed update payment", "user_id", userID, "url", updatePaymentURL)
+		return c.Redirect(http.StatusFound, updatePaymentURL)
+	}
+
+	slog.Warn("account.billing: signed update payment unavailable, trying sync + retry", "user_id", userID, "err", updateErr)
+	if _, syncedExists, syncErr := internalbilling.SyncSubscriptionFromProvider(ctx, userID); syncErr == nil && syncedExists {
+		updatePaymentURL, retryErr := internalbilling.GetSignedUpdatePaymentMethodURL(ctx, userID)
+		if retryErr == nil && strings.TrimSpace(updatePaymentURL) != "" {
+			slog.Info("account.billing: redirecting to signed update payment after sync", "user_id", userID, "url", updatePaymentURL)
+			return c.Redirect(http.StatusFound, updatePaymentURL)
+		}
+	}
+
+	storedUpdateURL := strings.TrimSpace(sub.ProviderUpdatePaymentURL)
+	if storedUpdateURL != "" && strings.Contains(storedUpdateURL, "expires=") && strings.Contains(storedUpdateURL, "signature=") {
+		slog.Warn("account.billing: using stored signed update payment url fallback", "user_id", userID)
+		slog.Info("account.billing: redirecting to stored signed update payment", "user_id", userID, "url", storedUpdateURL)
+		return c.Redirect(http.StatusFound, storedUpdateURL)
+	}
+
+	slog.Warn("account.billing: signed update payment unavailable, returning to account", "user_id", userID)
+	return c.Redirect(http.StatusFound, "/account")
+}
+
 func OverLimitPageHandler(c echo.Context) error {
 	utils.EnsureTabID(c)
 	userID := utils.GetUserID(c)

@@ -56,7 +56,7 @@ func DevPageHandler(c echo.Context) error {
 	}
 	isAuthenticated, userEmail := devSessionUser(c)
 	data := DevPageData{
-		Title:           "Bandcash - Dev tools",
+		Title:           "bandcash - Dev tools",
 		Breadcrumbs:     []utils.Crumb{{Label: "Dev tools"}},
 		Signals:         DevPageSignals(),
 		LinkSelector:    selector,

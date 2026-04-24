@@ -1,6 +1,6 @@
 # Logs
 
-Bandcash uses `log/slog` with two outputs at the same time:
+bandcash uses `log/slog` with two outputs at the same time:
 
 - colored human-readable logs to stdout (good for local development)
 - JSON logs to a timestamped file (good for searching and parsing)

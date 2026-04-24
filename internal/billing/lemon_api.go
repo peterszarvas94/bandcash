@@ -20,6 +20,7 @@ import (
 var ErrLemonAPIKeyMissing = errors.New("LEMON_API_KEY is required for webhook subscription sync")
 var ErrSubscriptionItemIDMissing = errors.New("missing subscription item id")
 var ErrCustomerPortalURLMissing = errors.New("missing customer portal url")
+var ErrUpdatePaymentMethodURLMissing = errors.New("missing update payment method url")
 
 var fetchCanonicalWebhookUpdate = fetchCanonicalWebhookUpdateFromAPI
 
@@ -224,4 +225,37 @@ func GetSignedCustomerPortalURL(ctx context.Context, userID string) (string, err
 		return "", ErrCustomerPortalURLMissing
 	}
 	return strings.TrimSpace(portalURL), nil
+}
+
+func GetSignedUpdatePaymentMethodURL(ctx context.Context, userID string) (string, error) {
+	userID = strings.TrimSpace(userID)
+	if userID == "" {
+		return "", ErrInvalidUserID
+	}
+
+	subscription, exists, err := GetUserSubscription(ctx, userID)
+	if err != nil {
+		return "", err
+	}
+	if !exists || strings.TrimSpace(subscription.ProviderSubscriptionID) == "" {
+		return "", ErrUpdatePaymentMethodURLMissing
+	}
+
+	body, err := lemonAPIRequest(ctx, http.MethodGet, "subscriptions/"+url.PathEscape(strings.TrimSpace(subscription.ProviderSubscriptionID)), nil)
+	if err != nil {
+		return "", err
+	}
+
+	var root map[string]any
+	if err := json.Unmarshal(body, &root); err != nil {
+		return "", err
+	}
+	updatePaymentURL := firstString(root,
+		"data.attributes.urls.update_payment_method",
+		"data.attributes.urls.update_payment_method_url",
+	)
+	if strings.TrimSpace(updatePaymentURL) == "" {
+		return "", ErrUpdatePaymentMethodURLMissing
+	}
+	return strings.TrimSpace(updatePaymentURL), nil
 }

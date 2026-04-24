@@ -1,6 +1,6 @@
-# Bandcash
+# bandcash
 
-Bandcash is a Go web app for managing shared group expenses.
+bandcash is a Go web app for managing shared group expenses.
 
 ## Tech Stack
 

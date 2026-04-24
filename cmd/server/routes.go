@@ -159,6 +159,7 @@ func registerRoutes(e *echo.Echo) {
 	e.GET("/account/sessions", account.SessionsPageHandler, middleware.RequireAuth)
 	e.GET("/over-limit", account.OverLimitPageHandler, middleware.RequireAuth)
 	e.GET("/account/subscription/manage", account.ManageSubscription, middleware.RequireAuth)
+	e.GET("/account/subscription/update-payment", account.UpdatePaymentMethod, middleware.RequireAuth)
 	e.POST("/account/language", account.UpdateLanguage, middleware.RequireAuth)
 	e.DELETE("/account/sessions/:id", account.LogoutSession, middleware.RequireAuth)
 	e.DELETE("/account/sessions", account.LogoutAllOtherSessions, middleware.RequireAuth)

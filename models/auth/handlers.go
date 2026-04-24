@@ -144,7 +144,7 @@ func LoginPageHandler(c echo.Context) error {
 		slog.Warn("auth.login-page: failed to read signup flag", "err", err)
 	}
 	data := AuthPageData{
-		Title:           ctxi18n.T(ctx, "auth.sign_in") + " - Bandcash",
+		Title:           ctxi18n.T(ctx, "auth.sign_in") + " - bandcash",
 		Breadcrumbs:     []utils.Crumb{{Label: ctxi18n.T(ctx, "auth.sign_in")}},
 		CurrentLang:     appi18n.LocaleCode(ctx),
 		SignupEnabled:   signupEnabled,

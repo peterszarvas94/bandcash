@@ -3,7 +3,7 @@ package account
 import (
 	"fmt"
 
-	shared "bandcash/models/shared"
+	icons "bandcash/models/shared/icons"
 	ctxi18n "github.com/invopop/ctxi18n/i18n"
 )
 
@@ -35,7 +35,14 @@ templ AccountContent(data AccountData) {
 	@AccountStatusMessage(data)
 	<div class="row row-wrap">
 		if data.HasActiveSubscription {
-			@shared.ManageSubscriptionButton("btn btn-primary")
+			<a class="btn btn-primary" href="/account/subscription/manage" target="_blank" rel="noopener noreferrer">
+				@icons.Icon(icons.IconSettings, templ.Attributes{"class": "icon"})
+				<span>{ ctxi18n.T(ctx, "account.manage_subscription") }</span>
+			</a>
+			<a class="btn btn-primary" href="/account/subscription/update-payment" target="_blank" rel="noopener noreferrer">
+				@icons.Icon(icons.IconCreditCard, templ.Attributes{"class": "icon"})
+				<span>{ ctxi18n.T(ctx, "account.update_payment") }</span>
+			</a>
 		} else {
 			<form class="row row-wrap" action="/account/subscription/manage" method="get">
 				<label for="account-checkout-quantity">{ ctxi18n.T(ctx, "account.group_quantity") }</label>

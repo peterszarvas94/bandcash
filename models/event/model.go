@@ -208,7 +208,7 @@ func GetShowData(ctx context.Context, groupID, eventID string, query utils.Table
 	slog.Info("event.show.data", "event_id", eventID, "participants", len(participants), "members_total", len(members), "members_filtered", len(filteredMembers), "balance", balance)
 
 	return EventData{
-		Title:             "Bandcash - " + event.Title,
+		Title:             "bandcash - " + event.Title,
 		Event:             &event,
 		Participants:      participants,
 		WizardRows:        wizardRows,

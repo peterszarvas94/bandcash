@@ -143,3 +143,14 @@ func TestFetchCanonicalWebhookUpdateFromAPI_FallsBackToWebhookItemID(t *testing.
 		t.Fatalf("expected webhook fallback subscription item id, got %s", update.SubscriptionItemID)
 	}
 }
+
+func TestGetSignedUpdatePaymentMethodURL_MissingUserID(t *testing.T) {
+	ctx := context.Background()
+	got, err := GetSignedUpdatePaymentMethodURL(ctx, "")
+	if err != ErrInvalidUserID {
+		t.Fatalf("expected ErrInvalidUserID, got %v", err)
+	}
+	if got != "" {
+		t.Fatalf("expected empty url, got %s", got)
+	}
+}

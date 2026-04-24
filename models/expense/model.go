@@ -119,7 +119,7 @@ func GetShowData(ctx context.Context, groupID, expenseID string) (ExpenseData, e
 	}
 
 	return ExpenseData{
-		Title:   "Bandcash - " + expense.Title,
+		Title:   "bandcash - " + expense.Title,
 		Expense: &expense,
 		GroupID: groupID,
 		Breadcrumbs: []utils.Crumb{

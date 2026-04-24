@@ -1,8 +1,8 @@
 hu:
   app:
-    title: "BandCash"
+    title: "bandcash"
   nav:
-    home: "BandCash"
+    home: "bandcash"
     dashboard: "Vezérlőpult"
     admin: "Admin"
     overview: "Áttekintés"
@@ -49,62 +49,62 @@ hu:
       internal_body: "A szerver oldalon hiba történt. Próbáld újra egy kis idő múlva."
   email:
     magic_link:
-      subject: "Belépés a BandCash-be"
+      subject: "Belépés a bandcash-be"
       text:
         greeting: "Szia!"
-        intro: "Kattints az alábbi linkre a BandCash-be történő belépéshez:"
+        intro: "Kattints az alábbi linkre a bandcash-be történő belépéshez:"
         expiry: "Ez a link 1 órán belül lejár."
         ignore: "Ha nem te kérted ezt, nyugodtan figyelmen kívül hagyhatod ezt az emailt."
       html:
-        title: "Belépés a BandCash-be"
+        title: "Belépés a bandcash-be"
         intro: "Kattints az alábbi gombra a belépéshez:"
-        cta: "Belépés a BandCash-be"
+        cta: "Belépés a bandcash-be"
         copy_link: "Vagy másold be ezt a linket a böngésződbe:"
         expiry: "Ez a link 1 órán belül lejár."
         ignore: "Ha nem te kérted ezt, nyugodtan figyelmen kívül hagyhatod ezt az emailt."
     invite:
-      subject: "Meghívtak a(z) %s csoportba a BandCash-ben"
+      subject: "Meghívtak a(z) %s csoportba a bandcash-ben"
       text:
         greeting: "Szia!"
-        intro: 'Meghívtak, hogy csatlakozz a(z) "%s" csoporthoz a BandCash-ben.'
+        intro: 'Meghívtak, hogy csatlakozz a(z) "%s" csoporthoz a bandcash-ben.'
         accept: "Kattints az alábbi linkre a meghívás elfogadásához:"
         expiry: "Ez a link 1 órán belül lejár."
         ignore: "Ha nem te kérted ezt, nyugodtan figyelmen kívül hagyhatod ezt az emailt."
       html:
-        title: "Meghívás a BandCash-be"
+        title: "Meghívás a bandcash-be"
         intro: "Meghívtak, hogy csatlakozz a(z) %s csoporthoz."
         cta: "Meghívás elfogadása"
         copy_link: "Vagy másold be ezt a linket a böngésződbe:"
         expiry: "Ez a link 1 órán belül lejár."
         ignore: "Ha nem te kérted ezt, nyugodtan figyelmen kívül hagyhatod ezt az emailt."
     invite_accepted:
-      subject: "Mostantól hozzáférsz a(z) %s csoporthoz a BandCash-ben"
+      subject: "Mostantól hozzáférsz a(z) %s csoporthoz a bandcash-ben"
       text:
         greeting: "Szia!"
-        intro: "Mostantól hozzáférsz a(z) %s csoporthoz a BandCash-ben."
+        intro: "Mostantól hozzáférsz a(z) %s csoporthoz a bandcash-ben."
         open_group: "Itt tudod megnyitni a csoportot:"
       html:
         title: "Meghívás elfogadva"
-        intro: "Mostantól hozzáférsz a(z) %s csoporthoz a BandCash-ben."
+        intro: "Mostantól hozzáférsz a(z) %s csoporthoz a bandcash-ben."
         cta: "Csoport megnyitása"
         copy_link: "Vagy másold be ezt a linket a böngésződbe:"
         expiry: "Ez a link nem jár le."
         ignore: "Ha nem te kérted ezt, nyugodtan figyelmen kívül hagyhatod ezt az emailt."
     group_created:
-      subject: "A(z) %s csoportod elkészült a BandCash-ben"
+      subject: "A(z) %s csoportod elkészült a bandcash-ben"
       text:
         greeting: "Szia!"
-        intro: "A(z) %s csoportod elkészült a BandCash-ben."
+        intro: "A(z) %s csoportod elkészült a bandcash-ben."
         open_group: "Itt tudod megnyitni a csoportot:"
       html:
         title: "Csoport létrehozva"
-        intro: "A(z) %s csoportod elkészült a BandCash-ben."
+        intro: "A(z) %s csoportod elkészült a bandcash-ben."
         cta: "Csoport megnyitása"
         copy_link: "Vagy másold be ezt a linket a böngésződbe:"
         expiry: "Ez a link nem jár le."
         ignore: "Ha nem te kérted ezt, nyugodtan figyelmen kívül hagyhatod ezt az emailt."
     role_upgraded:
-      subject: "Admin lettél a(z) %s csoportban a BandCash-ben"
+      subject: "Admin lettél a(z) %s csoportban a bandcash-ben"
       text:
         greeting: "Szia!"
         intro: "A szerepköröd a(z) %s csoportban adminra változott."
@@ -117,7 +117,7 @@ hu:
         expiry: "Ez a link nem jár le."
         ignore: "Ha nem te kérted ezt, nyugodtan figyelmen kívül hagyhatod ezt az emailt."
     role_downgraded:
-      subject: "A szerepköröd nézőre változott a(z) %s csoportban a BandCash-ben"
+      subject: "A szerepköröd nézőre változott a(z) %s csoportban a bandcash-ben"
       text:
         greeting: "Szia!"
         intro: "A szerepköröd a(z) %s csoportban nézőre változott."
@@ -130,7 +130,7 @@ hu:
         expiry: "Ez a link nem jár le."
         ignore: "Ha nem te kérted ezt, nyugodtan figyelmen kívül hagyhatod ezt az emailt."
     access_removed:
-      subject: "A hozzáférésed megszűnt a(z) %s csoporthoz a BandCash-ben"
+      subject: "A hozzáférésed megszűnt a(z) %s csoporthoz a bandcash-ben"
       text:
         greeting: "Szia!"
         intro: "A hozzáférésed a(z) %s csoporthoz megszűnt."
@@ -154,10 +154,10 @@ hu:
     privacy_policy: "Adatvédelmi szabályzat"
     cookies_policy: "Süti szabályzat"
     refund_policy: "Visszatérítési szabályzat"
-    page_title_pricing: "BandCash - Árazás"
-    page_title_terms: "BandCash - Szolgáltatási feltételek"
-    page_title_privacy: "BandCash - Adatvédelmi szabályzat"
-    page_title_refund: "BandCash - Visszatérítési szabályzat"
+    page_title_pricing: "bandcash - Árazás"
+    page_title_terms: "bandcash - Szolgáltatási feltételek"
+    page_title_privacy: "bandcash - Adatvédelmi szabályzat"
+    page_title_refund: "bandcash - Visszatérítési szabályzat"
     under_construction_title: "Ez az oldal még készül"
     under_construction_body: "A végleges jogi tartalom előkészítés alatt áll. Kérjük, nézz vissza hamarosan."
   billing:
@@ -187,7 +187,7 @@ hu:
       hosted_not_configured: "Az előfizetési felület még nincs beállítva ebben a környezetben."
   account:
     title: "Fiók"
-    page_title: "BandCash - Fiók"
+    page_title: "bandcash - Fiók"
     language: "Nyelv"
     language_preference: "Felület nyelve"
     account: "Fiók"
@@ -210,7 +210,7 @@ hu:
     groups_created: "csoport létrehozva"
     customer_portal: "Ügyfélportál"
     manage_subscription: "Előfizetés kezelése"
-    over_limit_page_title: "BandCash - Túllépett limit"
+    over_limit_page_title: "bandcash - Túllépett limit"
     over_limit_title: "Elérted a csoportlimitet"
     over_limit_simple_format: "%d csoportod van, de csak %d előfizetésed."
     buy_more_groups: "Vegyél több csoportot"
@@ -314,7 +314,7 @@ hu:
     leave_message: "Később újra meghívhatnak."
   events:
     title: "Események"
-    page_title: "BandCash - Események"
+    page_title: "bandcash - Események"
     add: "Esemény hozzáadása"
     edit: "Esemény szerkesztése"
     edit_details: "Részletek szerkesztése"
@@ -342,7 +342,7 @@ hu:
       toggle_paid_failed: "Nem sikerült a fizetés állapotot frissíteni. Próbáld újra."
   expenses:
     title: "Költségek"
-    page_title: "BandCash - Költségek"
+    page_title: "bandcash - Költségek"
     add: "Költség hozzáadása"
     edit: "Költség szerkesztése"
     create: "Költség létrehozása"
@@ -366,7 +366,7 @@ hu:
       toggle_paid_failed: "Nem sikerült a fizetés állapotot frissíteni. Próbáld újra."
   members:
     title: "Tagok"
-    page_title: "BandCash - Tagok"
+    page_title: "bandcash - Tagok"
     add: "Tag hozzáadása"
     edit: "Tag szerkesztése"
     create: "Tag létrehozása"
@@ -428,7 +428,7 @@ hu:
     email: "Érvénytelen email cím"
   groups:
     title: "Csoportok"
-    page_title: "BandCash - Csoportok"
+    page_title: "bandcash - Csoportok"
     actions: "Csoport műveletek"
     overview: "Áttekintés"
     about: "Névjegy"
@@ -439,13 +439,13 @@ hu:
     recent_incomes: "Legutóbbi bevételek"
     recent_payouts: "Legutóbbi kifizetések"
     recently_paid: "Legutóbbi kifizetések"
-    users_page_title: "BandCash - Felhasználók"
-    payments_page_title: "BandCash - Kifizetések"
-    pending_payouts_page_title: "BandCash - Függő kifizetések"
-    pending_incomes_page_title: "BandCash - Függő bevételek"
-    recent_incomes_page_title: "BandCash - Legutóbbi bevételek"
-    recent_payouts_page_title: "BandCash - Legutóbbi kifizetések"
-    recently_paid_page_title: "BandCash - Legutóbbi kifizetések"
+    users_page_title: "bandcash - Felhasználók"
+    payments_page_title: "bandcash - Kifizetések"
+    pending_payouts_page_title: "bandcash - Függő kifizetések"
+    pending_incomes_page_title: "bandcash - Függő bevételek"
+    recent_incomes_page_title: "bandcash - Legutóbbi bevételek"
+    recent_payouts_page_title: "bandcash - Legutóbbi kifizetések"
+    recently_paid_page_title: "bandcash - Legutóbbi kifizetések"
     viewers: "Nézők"
     owner: "Tulajdonos"
     admin: "Admin"
@@ -466,7 +466,7 @@ hu:
     empty_no_groups: "Még nincs csoportod."
     empty_no_matches: "Nincs a keresésnek megfelelő csoport."
     new: "Új csoport"
-    new_page_title: "BandCash - Új csoport"
+    new_page_title: "bandcash - Új csoport"
     edit: "Csoport szerkesztése"
     name: "Csoport neve"
     name_placeholder: "Az én csoportom"
@@ -540,7 +540,7 @@ hu:
       leave_failed: "Kilépés sikertelen"
       delete_failed: "A csoport törlése sikertelen"
   admin:
-    title: "BandCash - Admin vezérlőpult"
+    title: "bandcash - Admin vezérlőpult"
     dashboard: "Admin"
     total_users: "Felhasználók összesen"
     total_groups: "Csoportok összesen"

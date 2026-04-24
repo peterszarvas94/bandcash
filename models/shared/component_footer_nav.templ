@@ -2,7 +2,7 @@ package shared
 
 import (
 	"bandcash/internal/utils"
-	"bandcash/models/shared/icons"
+	icons "bandcash/models/shared/icons"
 	ctxi18n "github.com/invopop/ctxi18n/i18n"
 	"strings"
 )
@@ -11,7 +11,7 @@ templ Footer(isSuperAdmin bool, activeUrl string) {
 	<footer class="footer">
 		<nav aria-label={ ctxi18n.T(ctx, "nav.footer") }>
 			<div>
-				<p>{ ctxi18n.T(ctx, "app.title") }</p>
+				<div class="footer-brand">@BrandLogo()</div>
 				<p>© Szarvas Péter 2026</p>
 				<a class="link link-external" href="https://peterszarvas.hu" target="_blank" rel="noopener noreferrer">
 					<span>peterszarvas.hu</span>

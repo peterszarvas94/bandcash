@@ -1690,7 +1690,7 @@ func (g *Group) groupPageData(c echo.Context, groupID string) (GroupPageData, er
 	}
 
 	return GroupPageData{
-		Title:           "Bandcash - " + group.Name,
+		Title:           "bandcash - " + group.Name,
 		Breadcrumbs:     []utils.Crumb{{Label: ctxi18n.T(ctx, "groups.title"), Href: "/groups"}, {Label: group.Name, Href: "/groups/" + groupID + "/about"}, {Label: ctxi18n.T(ctx, "groups.about")}},
 		Signals:         map[string]any{"mode": "single", "formState": "", "eventFormState": "", "summaryMode": "all", "formData": map[string]any{"name": group.Name}, "errors": map[string]any{"name": ""}},
 		IsAuthenticated: true,

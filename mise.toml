@@ -10,7 +10,7 @@ ruby = "3.4.2"
 [tasks]
 app = "./scripts/with_dev_secrets.sh air"
 tunnel = "cloudflared tunnel run --token \"$(cloudflared tunnel token bandcash)\" --url http://localhost:2222"
-preflight = "go run ./cmd/devpreflight/main.go"
+preflight = "bash -lc 'set -o pipefail; env GOFLAGS= GOTOOLEXEC= go run ./cmd/devpreflight/main.go 2>&1 | awk \"!/^# / && !/^real / && !/^user / && !/^sys / { print }\"'"
 build-bench = "./scripts/track_build.sh"
 start = "./tmp/server"
 routes = "go run ./cmd/server --routes"
@@ -33,7 +33,7 @@ deploy = "./scripts/deploy.sh production"
 deploy-staging = "./scripts/deploy.sh staging"
 
 [tasks.assets]
-run = "go run ./cmd/assets/main.go"
+run = "bash -lc 'set -o pipefail; env GOFLAGS= GOTOOLEXEC= go run ./cmd/assets/main.go 2>&1 | awk \"!/^# / && !/^real / && !/^user / && !/^sys / { print }\"'"
 sources = [
   "cmd/assets/**/*.go",
   "static/css/**/*.css",
@@ -49,12 +49,12 @@ outputs = { auto = true }
 
 [tasks.build]
 depends = ["templ", "assets"]
-run = "go build -o tmp/server ./cmd/server"
+run = "bash -lc 'set -o pipefail; env GOFLAGS= GOTOOLEXEC= go build -o tmp/server ./cmd/server 2>&1 | awk \"!/^# / && !/^real / && !/^user / && !/^sys / { print }\"'"
 
 [tasks.run]
 run = [
   { task = "assets" },
-  "./scripts/with_dev_secrets.sh go run ./cmd/server",
+  "./scripts/with_dev_secrets.sh env GOFLAGS= GOTOOLEXEC= go run ./cmd/server",
 ]
 
 [tasks.check]

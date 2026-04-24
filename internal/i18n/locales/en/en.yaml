@@ -1,8 +1,8 @@
 en:
   app:
-    title: "BandCash"
+    title: "bandcash"
   nav:
-    home: "BandCash"
+    home: "bandcash"
     dashboard: "Dashboard"
     admin: "Admin"
     overview: "Overview"
@@ -49,62 +49,62 @@ en:
       internal_body: "Something went wrong on our side. Please try again in a moment."
   email:
     magic_link:
-      subject: "Login to BandCash"
+      subject: "Login to bandcash"
       text:
         greeting: "Hello!"
-        intro: "Click the link below to login to BandCash:"
+        intro: "Click the link below to login to bandcash:"
         expiry: "This link will expire in 1 hour."
         ignore: "If you didn't request this, you can safely ignore this email."
       html:
-        title: "Login to BandCash"
+        title: "Login to bandcash"
         intro: "Click the button below to sign in:"
-        cta: "Sign in to BandCash"
+        cta: "Sign in to bandcash"
         copy_link: "Or copy and paste this link into your browser:"
         expiry: "This link will expire in 1 hour."
         ignore: "If you didn't request this, you can safely ignore this email."
     invite:
-      subject: "You've been invited to %s on BandCash"
+      subject: "You've been invited to %s on bandcash"
       text:
         greeting: "Hello!"
-        intro: 'You''ve been invited to join "%s" on BandCash.'
+        intro: 'You''ve been invited to join "%s" on bandcash.'
         accept: "Click the link below to accept the invitation:"
         expiry: "This link will expire in 1 hour."
         ignore: "If you didn't expect this invitation, you can safely ignore this email."
       html:
-        title: "You're invited to BandCash"
+        title: "You're invited to bandcash"
         intro: "You've been invited to join %s."
         cta: "Accept invitation"
         copy_link: "Or copy and paste this link into your browser:"
         expiry: "This link will expire in 1 hour."
         ignore: "If you didn't expect this invitation, you can safely ignore this email."
     invite_accepted:
-      subject: "You now have access to %s on BandCash"
+      subject: "You now have access to %s on bandcash"
       text:
         greeting: "Hello!"
-        intro: "You now have access to %s on BandCash."
+        intro: "You now have access to %s on bandcash."
         open_group: "Open your group here:"
       html:
         title: "Invitation accepted"
-        intro: "You now have access to %s on BandCash."
+        intro: "You now have access to %s on bandcash."
         cta: "Open group"
         copy_link: "Or copy and paste this link into your browser:"
         expiry: "This link will stay valid."
         ignore: "If this wasn't expected, you can safely ignore this email."
     group_created:
-      subject: "Your group %s is ready on BandCash"
+      subject: "Your group %s is ready on bandcash"
       text:
         greeting: "Hello!"
-        intro: "Your group %s is ready on BandCash."
+        intro: "Your group %s is ready on bandcash."
         open_group: "Open your group here:"
       html:
         title: "Group created"
-        intro: "Your group %s is ready on BandCash."
+        intro: "Your group %s is ready on bandcash."
         cta: "Open group"
         copy_link: "Or copy and paste this link into your browser:"
         expiry: "This link will stay valid."
         ignore: "If this wasn't expected, you can safely ignore this email."
     role_upgraded:
-      subject: "You were promoted to admin in %s on BandCash"
+      subject: "You were promoted to admin in %s on bandcash"
       text:
         greeting: "Hello!"
         intro: "Your role in %s has been upgraded to admin."
@@ -117,7 +117,7 @@ en:
         expiry: "This link will stay valid."
         ignore: "If this wasn't expected, you can safely ignore this email."
     role_downgraded:
-      subject: "Your role was changed to viewer in %s on BandCash"
+      subject: "Your role was changed to viewer in %s on bandcash"
       text:
         greeting: "Hello!"
         intro: "Your role in %s has been changed to viewer."
@@ -130,7 +130,7 @@ en:
         expiry: "This link will stay valid."
         ignore: "If this wasn't expected, you can safely ignore this email."
     access_removed:
-      subject: "Your access to %s was removed on BandCash"
+      subject: "Your access to %s was removed on bandcash"
       text:
         greeting: "Hello!"
         intro: "Your access to %s has been removed."
@@ -154,10 +154,10 @@ en:
     privacy_policy: "Privacy Policy"
     cookies_policy: "Cookie Policy"
     refund_policy: "Refund Policy"
-    page_title_pricing: "BandCash - Pricing"
-    page_title_terms: "BandCash - Terms of Service"
-    page_title_privacy: "BandCash - Privacy Policy"
-    page_title_refund: "BandCash - Refund Policy"
+    page_title_pricing: "bandcash - Pricing"
+    page_title_terms: "bandcash - Terms of Service"
+    page_title_privacy: "bandcash - Privacy Policy"
+    page_title_refund: "bandcash - Refund Policy"
     under_construction_title: "This page is under construction"
     under_construction_body: "We are preparing the final legal content. Please check back soon."
   billing:
@@ -187,7 +187,7 @@ en:
       hosted_not_configured: "Subscription portal is not configured for this environment yet."
   account:
     title: "Account"
-    page_title: "BandCash - Account"
+    page_title: "bandcash - Account"
     language: "Language"
     language_preference: "Preferred language"
     account: "Account"
@@ -210,7 +210,7 @@ en:
     groups_created: "groups created"
     customer_portal: "Customer portal"
     manage_subscription: "Manage subscription"
-    over_limit_page_title: "BandCash - Over limit"
+    over_limit_page_title: "bandcash - Over limit"
     over_limit_title: "Group limit reached"
     over_limit_simple_format: "You have %d groups but only %d subscriptions."
     buy_more_groups: "Buy more groups"
@@ -314,7 +314,7 @@ en:
     leave_message: "You can be invited again later."
   events:
     title: "Events"
-    page_title: "BandCash - Events"
+    page_title: "bandcash - Events"
     add: "Add Event"
     edit: "Edit Event"
     edit_details: "Edit Details"
@@ -342,7 +342,7 @@ en:
       toggle_paid_failed: "Could not update paid status. Please try again."
   expenses:
     title: "Expenses"
-    page_title: "BandCash - Expenses"
+    page_title: "bandcash - Expenses"
     add: "Add Expense"
     edit: "Edit Expense"
     create: "Create Expense"
@@ -366,7 +366,7 @@ en:
       toggle_paid_failed: "Could not update paid status. Please try again."
   members:
     title: "Members"
-    page_title: "BandCash - Members"
+    page_title: "bandcash - Members"
     add: "Add Member"
     edit: "Edit Member"
     create: "Create Member"
@@ -428,7 +428,7 @@ en:
     email: "Invalid email address"
   groups:
     title: "Groups"
-    page_title: "BandCash - Groups"
+    page_title: "bandcash - Groups"
     actions: "Group actions"
     overview: "Overview"
     about: "About"
@@ -439,13 +439,13 @@ en:
     recent_incomes: "Recent Incomes"
     recent_payouts: "Recent Payouts"
     recently_paid: "Recent Payments"
-    users_page_title: "BandCash - Users"
-    payments_page_title: "BandCash - Payments"
-    pending_payouts_page_title: "BandCash - Pending Payouts"
-    pending_incomes_page_title: "BandCash - Pending Incomes"
-    recent_incomes_page_title: "BandCash - Recent Incomes"
-    recent_payouts_page_title: "BandCash - Recent Payouts"
-    recently_paid_page_title: "BandCash - Recent Payments"
+    users_page_title: "bandcash - Users"
+    payments_page_title: "bandcash - Payments"
+    pending_payouts_page_title: "bandcash - Pending Payouts"
+    pending_incomes_page_title: "bandcash - Pending Incomes"
+    recent_incomes_page_title: "bandcash - Recent Incomes"
+    recent_payouts_page_title: "bandcash - Recent Payouts"
+    recently_paid_page_title: "bandcash - Recent Payments"
     viewers: "Viewers"
     owner: "Owner"
     admin: "Admin"
@@ -466,7 +466,7 @@ en:
     empty_no_groups: "You don't have any groups yet."
     empty_no_matches: "No groups match your search."
     new: "New Group"
-    new_page_title: "BandCash - New Group"
+    new_page_title: "bandcash - New Group"
     edit: "Edit Group"
     name: "Group Name"
     name_placeholder: "My Awesome Group"
@@ -540,7 +540,7 @@ en:
       leave_failed: "Failed to leave group"
       delete_failed: "Failed to delete group"
   admin:
-    title: "BandCash - Admin Dashboard"
+    title: "bandcash - Admin Dashboard"
     dashboard: "Admin"
     total_users: "Total users"
     total_groups: "Total groups"

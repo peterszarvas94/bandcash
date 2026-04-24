@@ -100,7 +100,7 @@ func GetShowData(ctx context.Context, groupID, memberID string, query utils.Tabl
 	}
 
 	return MemberData{
-		Title:        "Bandcash - " + member.Name,
+		Title:        "bandcash - " + member.Name,
 		Member:       &member,
 		Events:       events,
 		GroupID:      groupID,
