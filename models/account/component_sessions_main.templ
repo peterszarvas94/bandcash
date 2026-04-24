@@ -13,6 +13,7 @@ templ SessionsMain(data SessionsData) {
 				@AccountSectionTitle(ctxi18n.T(ctx, "account.sessions"))
 			</div>
 		</header>
+		@LoggedInAs(data.UserEmail)
 		<div class="row row-wrap">
 			@shared.LoadingActionButton(shared.LoadingActionButtonProps{
 				ClassName:    "btn btn-primary",

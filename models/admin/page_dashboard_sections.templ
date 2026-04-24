@@ -1,24 +1,27 @@
 package admin
 
 import (
+	shared "bandcash/models/shared"
 	ctxi18n "github.com/invopop/ctxi18n/i18n"
 )
 
-templ FlagsContent(signupEnabled bool) {
-	<div id="admin-flags" class="detail-box pb">
-		<dl>
-			<div>
-				<dt>{ ctxi18n.T(ctx, "admin.flags.signup") }</dt>
-				<dd>
-					<input
-						id="admin-signup-enabled"
-						class="native-checkbox"
-						type="checkbox"
-						checked?={ signupEnabled }
-						data-on:change="@post('/admin/flags/signup?value=' + (el.checked ? '1' : '0'))"
-					/>
-				</dd>
-			</div>
-		</dl>
+templ FlagsContent(signupEnabled bool, paymentsEnabled bool) {
+	<div id="admin-flags">
+		<div>
+			@shared.ToggleSwitch(shared.ToggleSwitchProps{
+				IsOn:      signupEnabled,
+				OnClick:   "@post('/admin/flags/signup?value=' + (el.getAttribute('aria-checked') === 'true' ? '0' : '1'))",
+				AriaLabel: ctxi18n.T(ctx, "admin.flags.signup"),
+			})
+			<span>{ ctxi18n.T(ctx, "admin.flags.signup") }</span>
+		</div>
+		<div>
+			@shared.ToggleSwitch(shared.ToggleSwitchProps{
+				IsOn:      paymentsEnabled,
+				OnClick:   "@post('/admin/flags/payments?value=' + (el.getAttribute('aria-checked') === 'true' ? '0' : '1'))",
+				AriaLabel: ctxi18n.T(ctx, "admin.flags.payments"),
+			})
+			<span>{ ctxi18n.T(ctx, "admin.flags.payments") }</span>
+		</div>
 	</div>
 }

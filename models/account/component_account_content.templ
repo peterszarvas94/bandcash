@@ -1,8 +1,7 @@
 package account
 
 import (
-	"fmt"
-
+	shared "bandcash/models/shared"
 	icons "bandcash/models/shared/icons"
 	ctxi18n "github.com/invopop/ctxi18n/i18n"
 )
@@ -15,7 +14,7 @@ templ AccountStatusMessage(data AccountData) {
 			</p>
 		} else if data.IsLimitExceeded {
 			<p class="pb-lg">
-				{ fmt.Sprintf(ctxi18n.T(ctx, "account.groups_status_over_limit_format"), data.UsedSlots, data.SubscriptionSlots) }
+				{ ctxi18n.T(ctx, "account.groups_status_over_limit_prefix") } <strong>{ data.UsedSlots }</strong> { ctxi18n.T(ctx, "account.groups_status_over_limit_middle") } <strong>{ data.SubscriptionSlots }</strong>{ ctxi18n.T(ctx, "account.groups_status_over_limit_suffix") }
 			</p>
 		} else if data.HasAvailableGroupSlot {
 			<p class="pb-lg">
@@ -23,18 +22,28 @@ templ AccountStatusMessage(data AccountData) {
 			</p>
 		} else {
 			<p class="pb-lg">
-				{ fmt.Sprintf(ctxi18n.T(ctx, "account.groups_status_at_limit_format"), data.UsedSlots) }
+				{ ctxi18n.T(ctx, "account.groups_status_at_limit_prefix") } <strong>{ data.UsedSlots }</strong> { ctxi18n.T(ctx, "account.groups_status_at_limit_suffix") }
 			</p>
 		}
 	} else {
-		<div class="row row-wrap"><strong>{ ctxi18n.T(ctx, "account.no_active_subscription") }</strong></div>
+		<p class="pb-lg">
+			{ ctxi18n.T(ctx, "account.no_active_subscription") }
+		</p>
 	}
 }
 
 templ AccountContent(data AccountData) {
+	@LoggedInAs(data.UserEmail)
 	@AccountStatusMessage(data)
+	if !data.PaymentsEnabled {
+		@shared.Alert(shared.AlertProps{
+			Text:      ctxi18n.T(ctx, "account.payments_disabled_notice"),
+			IconName:  icons.IconInfo,
+			ClassName: "alert alert-info pb",
+		})
+	}
 	<div class="row row-wrap">
-		if data.HasActiveSubscription {
+		if data.PaymentsEnabled && data.HasActiveSubscription {
 			<a class="btn btn-primary" href="/account/subscription/manage" target="_blank" rel="noopener noreferrer">
 				@icons.Icon(icons.IconSettings2, templ.Attributes{"class": "icon"})
 				<span>{ ctxi18n.T(ctx, "account.manage_subscription") }</span>
@@ -43,7 +52,7 @@ templ AccountContent(data AccountData) {
 				@icons.Icon(icons.IconCreditCard, templ.Attributes{"class": "icon"})
 				<span>{ ctxi18n.T(ctx, "account.update_payment") }</span>
 			</a>
-		} else {
+		} else if data.PaymentsEnabled {
 			<form class="row row-wrap" action="/account/subscription/manage" method="get">
 				<label for="account-checkout-quantity">{ ctxi18n.T(ctx, "account.group_quantity") }</label>
 				<input id="account-checkout-quantity" class="input input-xs w-fit" type="number" min="1" step="1" name="quantity" value="1"/>

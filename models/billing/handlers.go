@@ -8,10 +8,21 @@ import (
 	"github.com/labstack/echo/v4"
 
 	internalbilling "bandcash/internal/billing"
+	"bandcash/internal/flags"
 	"bandcash/internal/utils"
 )
 
 func LemonWebhook(c echo.Context) error {
+	paymentsEnabled, err := flags.IsPaymentEnabled(c.Request().Context())
+	if err != nil {
+		slog.Error("billing.webhook: failed to read payment flag", "err", err)
+		return c.NoContent(http.StatusInternalServerError)
+	}
+	if !paymentsEnabled {
+		slog.Info("billing.webhook: ignored because payments are disabled")
+		return c.NoContent(http.StatusOK)
+	}
+
 	body, err := io.ReadAll(c.Request().Body)
 	if err != nil {
 		slog.Warn("billing.webhook: failed to read body", "err", err)

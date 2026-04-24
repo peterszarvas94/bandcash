@@ -17,6 +17,7 @@ type AccountData struct {
 	IsLimitExceeded       bool
 	HasAvailableGroupSlot bool
 	HasActiveSubscription bool
+	PaymentsEnabled       bool
 	ActiveTab             string
 	Signals               map[string]any
 	IsAuthenticated       bool
@@ -27,6 +28,7 @@ type SessionsData struct {
 	Title            string
 	Breadcrumbs      []utils.Crumb
 	CurrentSessionID string
+	UserEmail        string
 	Sessions         []db.UserSession
 	ActiveTab        string
 	Signals          map[string]any
@@ -45,6 +47,7 @@ type OverLimitData struct {
 	OwnedGroups     int
 	ExcessGroups    int
 	Groups          []OverLimitGroup
+	PaymentsEnabled bool
 	IsAuthenticated bool
 	IsSuperAdmin    bool
 }

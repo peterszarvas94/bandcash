@@ -40,6 +40,11 @@ func FlagsPage(c echo.Context) error {
 		slog.Error("admin.flags: failed to read enable_signup flag", "err", err)
 		return c.NoContent(http.StatusInternalServerError)
 	}
+	paymentsEnabled, err := flags.IsPaymentEnabled(c.Request().Context())
+	if err != nil {
+		slog.Error("admin.flags: failed to read enable_payments flag", "err", err)
+		return c.NoContent(http.StatusInternalServerError)
+	}
 
 	data := DashboardData{
 		Title: ctxi18n.T(c.Request().Context(), "admin.title"),
@@ -49,6 +54,7 @@ func FlagsPage(c echo.Context) error {
 		},
 		Tab:             "flags",
 		SignupEnabled:   signupEnabled,
+		PaymentsEnabled: paymentsEnabled,
 		IsAuthenticated: true,
 		IsSuperAdmin:    true,
 	}
@@ -220,7 +226,59 @@ func UpdateSignupFlag(c echo.Context) error {
 		_ = utils.SSEHub.PatchHTML(c, notificationsHTML)
 	}
 
-	flagsHTML, err := utils.RenderHTMLForRequest(c, FlagsContent(next))
+	paymentsEnabled, paymentsErr := flags.IsPaymentEnabled(c.Request().Context())
+	if paymentsErr != nil {
+		paymentsEnabled = false
+	}
+	flagsHTML, err := utils.RenderHTMLForRequest(c, FlagsContent(next, paymentsEnabled))
+	if err == nil {
+		_ = utils.SSEHub.PatchHTML(c, flagsHTML)
+	}
+
+	return c.NoContent(http.StatusOK)
+}
+
+func UpdatePaymentsFlag(c echo.Context) error {
+	signals := adminTabSignals{}
+	if err := datastar.ReadSignals(c.Request(), &signals); err != nil {
+		return c.NoContent(http.StatusBadRequest)
+	}
+	if !utils.SetTabID(c, signals.TabID) {
+		return c.NoContent(http.StatusBadRequest)
+	}
+
+	var next bool
+	switch c.QueryParam("value") {
+	case "1", "true", "on":
+		next = true
+	case "0", "false", "off":
+		next = false
+	default:
+		current, err := flags.IsPaymentEnabled(c.Request().Context())
+		if err != nil {
+			slog.Error("admin.flags.update_payments: failed to read flag", "err", err)
+			return c.NoContent(http.StatusInternalServerError)
+		}
+		next = !current
+	}
+
+	if err := flags.SetPaymentEnabled(c.Request().Context(), next); err != nil {
+		slog.Error("admin.flags.update_payments: failed to update flag", "err", err)
+		utils.Notify(c, ctxi18n.T(c.Request().Context(), "admin.flags.update_failed"))
+		return c.NoContent(http.StatusInternalServerError)
+	}
+
+	utils.Notify(c, ctxi18n.T(c.Request().Context(), "admin.flags.updated"))
+	notificationsHTML, err := utils.RenderHTMLForRequest(c, shared.Notifications())
+	if err == nil {
+		_ = utils.SSEHub.PatchHTML(c, notificationsHTML)
+	}
+
+	signupEnabled, signupErr := flags.IsSignupEnabled(c.Request().Context())
+	if signupErr != nil {
+		signupEnabled = false
+	}
+	flagsHTML, err := utils.RenderHTMLForRequest(c, FlagsContent(signupEnabled, next))
 	if err == nil {
 		_ = utils.SSEHub.PatchHTML(c, flagsHTML)
 	}

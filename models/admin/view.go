@@ -29,6 +29,7 @@ type DashboardData struct {
 	EventsCount   int64
 	MembersCount  int64
 	SignupEnabled bool
+	PaymentsEnabled bool
 
 	// Users tab data
 	Users     []RecentUserRow

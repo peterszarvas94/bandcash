@@ -6,7 +6,7 @@ import (
 )
 
 templ AdminTabs(activeTab string) {
-	@Tabs(ctxi18n.T(ctx, "nav.actions"), []TabItem{
+	@Sidebar(ctxi18n.T(ctx, "nav.actions"), []SidebarItem{
 		{Label: ctxi18n.T(ctx, "admin.tab.flags"), Href: "/admin/flags", IsActive: activeTab == "flags", IconName: icons.IconFlag},
 		{Label: ctxi18n.T(ctx, "admin.tab.users"), Href: "/admin/users", IsActive: activeTab == "users", IconName: icons.IconUsers},
 		{Label: ctxi18n.T(ctx, "admin.tab.groups"), Href: "/admin/groups", IsActive: activeTab == "groups", IconName: icons.IconBuilding2},

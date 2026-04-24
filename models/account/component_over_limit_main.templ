@@ -14,7 +14,9 @@ templ OverLimitMain(data OverLimitData) {
 
 templ OverLimitContent(data OverLimitData) {
 	<p><strong>{ fmt.Sprintf(ctxi18n.T(ctx, "account.over_limit_simple_format"), data.OwnedGroups, data.SubscriptionCap) }</strong></p>
-	<div class="row row-wrap">
-		<a class="btn btn-primary" href="/account/subscription/manage">{ ctxi18n.T(ctx, "account.manage_subscription") }</a>
-	</div>
+	if data.PaymentsEnabled {
+		<div class="row row-wrap">
+			<a class="btn btn-primary" href="/account/subscription/manage">{ ctxi18n.T(ctx, "account.manage_subscription") }</a>
+		</div>
+	}
 }

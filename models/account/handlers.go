@@ -16,6 +16,7 @@ import (
 
 	internalbilling "bandcash/internal/billing"
 	"bandcash/internal/db"
+	"bandcash/internal/flags"
 	appi18n "bandcash/internal/i18n"
 	"bandcash/internal/utils"
 	authstore "bandcash/models/auth/data"
@@ -60,6 +61,9 @@ func SubscriptionPageHandler(c echo.Context) error {
 		data.HasActiveSubscription = strings.TrimSpace(sub.ProviderSubscriptionID) != "" &&
 			internalbilling.IsSubscriptionActive(sub.Status, sub.GraceUntil, time.Now().UTC())
 	}
+	if paymentsEnabled, err := flags.IsPaymentEnabled(c.Request().Context()); err == nil {
+		data.PaymentsEnabled = paymentsEnabled
+	}
 	data.ActiveTab = "subscription"
 	data.Signals = map[string]any{"formData": map[string]any{"lang": data.CurrentLang}}
 	data.IsAuthenticated = true
@@ -70,6 +74,15 @@ func SubscriptionPageHandler(c echo.Context) error {
 func ManageSubscription(c echo.Context) error {
 	ctx := c.Request().Context()
 	userID := utils.GetUserID(c)
+	paymentsEnabled, paymentsErr := flags.IsPaymentEnabled(ctx)
+	if paymentsErr != nil {
+		slog.Error("account.billing: failed to read payment flag", "user_id", userID, "err", paymentsErr)
+		return c.Redirect(http.StatusFound, "/account")
+	}
+	if !paymentsEnabled {
+		slog.Info("account.billing: payments disabled, blocking manage subscription", "user_id", userID)
+		return c.Redirect(http.StatusFound, "/account")
+	}
 	quantity := 1
 	if raw := strings.TrimSpace(c.QueryParam("quantity")); raw != "" {
 		if parsed, err := strconv.Atoi(raw); err == nil && parsed > 0 {
@@ -125,6 +138,15 @@ func ManageSubscription(c echo.Context) error {
 func UpdatePaymentMethod(c echo.Context) error {
 	ctx := c.Request().Context()
 	userID := utils.GetUserID(c)
+	paymentsEnabled, paymentsErr := flags.IsPaymentEnabled(ctx)
+	if paymentsErr != nil {
+		slog.Error("account.billing: failed to read payment flag for update payment", "user_id", userID, "err", paymentsErr)
+		return c.Redirect(http.StatusFound, "/account")
+	}
+	if !paymentsEnabled {
+		slog.Info("account.billing: payments disabled, blocking update payment", "user_id", userID)
+		return c.Redirect(http.StatusFound, "/account")
+	}
 
 	sub, exists, err := internalbilling.GetUserSubscription(ctx, userID)
 	if err != nil {
@@ -201,8 +223,12 @@ func OverLimitPageHandler(c echo.Context) error {
 		OwnedGroups:     state.OwnedGroupCount,
 		ExcessGroups:    state.OwnedGroupCount - state.SubscriptionCount,
 		Groups:          groups,
+		PaymentsEnabled: false,
 		IsAuthenticated: true,
 		IsSuperAdmin:    utils.IsSuperadmin(c),
+	}
+	if paymentsEnabled, err := flags.IsPaymentEnabled(c.Request().Context()); err == nil {
+		data.PaymentsEnabled = paymentsEnabled
 	}
 
 	return utils.RenderPage(c, OverLimitPage(data))
@@ -264,8 +290,13 @@ func SessionsPageHandler(c echo.Context) error {
 		Title:            ctxi18n.T(c.Request().Context(), "account.page_title"),
 		Breadcrumbs:      []utils.Crumb{{Label: ctxi18n.T(c.Request().Context(), "account.sessions")}},
 		CurrentSessionID: "",
+		UserEmail:        "",
 		Sessions:         sessions,
 		ActiveTab:        "sessions",
+	}
+
+	if user, err := authstore.GetUserByID(c.Request().Context(), userID); err == nil {
+		data.UserEmail = user.Email
 	}
 
 	if cookie, err := c.Cookie(utils.SessionCookieName); err == nil {

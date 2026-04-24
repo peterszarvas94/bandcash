@@ -7,7 +7,7 @@ import (
 	"strings"
 )
 
-templ Footer(isSuperAdmin bool, activeUrl string) {
+templ Footer(isAuthenticated bool, activeUrl string) {
 	<footer class="footer">
 		<nav aria-label={ ctxi18n.T(ctx, "nav.footer") }>
 			<div>
@@ -34,7 +34,7 @@ templ Footer(isSuperAdmin bool, activeUrl string) {
 					<span>{ ctxi18n.T(ctx, "legal.cookies_policy") }</span>
 					@icons.Icon(icons.IconArrowUpRight, templ.Attributes{"class": "icon"})
 				</a>
-				if isSuperAdmin {
+				if isAuthenticated {
 					<a class={ "link", templ.KV("link-active", strings.HasPrefix(activeUrl, "/admin")) } href="/admin/flags">
 						{ ctxi18n.T(ctx, "nav.admin") }
 					</a>

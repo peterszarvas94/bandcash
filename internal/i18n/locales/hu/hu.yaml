@@ -204,9 +204,15 @@ hu:
     groups_status_can_add_prefix: "Jelenleg"
     groups_status_can_add_middle: "csoportod van, és még"
     groups_status_can_add_suffix: "maradt az előfizetésedben."
+    groups_status_at_limit_prefix: "Jelenleg"
+    groups_status_at_limit_suffix: "csoportod van, és az előfizetésedben már nincs több hely."
+    groups_status_over_limit_prefix: "Jelenleg"
+    groups_status_over_limit_middle: "csoportod van, de az előfizetésed csak"
+    groups_status_over_limit_suffix: "csoportot enged."
     groups_status_at_limit_format: "Jelenleg %d csoportod van, és az előfizetésedben már nincs több hely."
     groups_status_over_limit_format: "Jelenleg %d csoportod van, de az előfizetésed csak %d csoportot enged."
     no_active_subscription: "Nincs aktív előfizetésed"
+    payments_disabled_notice: "A fizetések ideiglenesen ki vannak kapcsolva."
     groups_created: "csoport létrehozva"
     customer_portal: "Ügyfélportál"
     manage_subscription: "Előfizetés kezelése"
@@ -560,6 +566,7 @@ hu:
       cannot_ban_self: "A saját fiókodat nem tilthatod le."
     flags:
       signup: "Regisztráció"
+      payments: "Fizetés"
       updated: "Funkció kapcsoló frissítve."
       update_failed: "A funkció kapcsoló frissítése sikertelen."
     tab:

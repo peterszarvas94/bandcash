@@ -1,0 +1,11 @@
+package account
+
+import ctxi18n "github.com/invopop/ctxi18n/i18n"
+
+templ LoggedInAs(email string) {
+	if email != "" {
+		<p class="pb">
+			{ ctxi18n.T(ctx, "nav.logged_in_as") } <strong>{ email }</strong>
+		</p>
+	}
+}

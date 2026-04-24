@@ -1,0 +1,30 @@
+package shared
+
+import (
+	"strings"
+
+	icons "bandcash/models/shared/icons"
+)
+
+type AlertProps struct {
+	Text      string
+	IconName  icons.IconName
+	ClassName string
+}
+
+templ Alert(props AlertProps) {
+	{{
+		className := strings.TrimSpace(props.ClassName)
+		if className == "" {
+			className = "alert"
+		}
+		iconName := props.IconName
+		if iconName == "" {
+			iconName = icons.IconInfo
+		}
+	}}
+	<p class={ className }>
+		@icons.Icon(iconName, templ.Attributes{"class": "icon"})
+		<span>{ props.Text }</span>
+	</p>
+}

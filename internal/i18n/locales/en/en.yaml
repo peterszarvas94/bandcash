@@ -204,9 +204,15 @@ en:
     groups_status_can_add_prefix: "You have"
     groups_status_can_add_middle: "groups, and you still have"
     groups_status_can_add_suffix: "more left in your subscription."
+    groups_status_at_limit_prefix: "You have"
+    groups_status_at_limit_suffix: "groups and you can't have more in your subscription."
+    groups_status_over_limit_prefix: "You have"
+    groups_status_over_limit_middle: "groups, but your subscription allows only"
+    groups_status_over_limit_suffix: "."
     groups_status_at_limit_format: "You have %d groups and you can't have more in your subscription."
     groups_status_over_limit_format: "You have %d groups, but your subscription allows only %d."
     no_active_subscription: "You don't have an active subscription"
+    payments_disabled_notice: "Payments are temporarily disabled."
     groups_created: "groups created"
     customer_portal: "Customer portal"
     manage_subscription: "Manage subscription"
@@ -560,6 +566,7 @@ en:
       cannot_ban_self: "You cannot ban your own account."
     flags:
       signup: "Signup"
+      payments: "Payments"
       updated: "Feature flag updated."
       update_failed: "Could not update feature flag."
     tab:

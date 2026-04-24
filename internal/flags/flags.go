@@ -9,6 +9,7 @@ import (
 )
 
 const EnableSignupKey = "enable_signup"
+const EnablePaymentsKey = "enable_payments"
 
 func GetBool(ctx context.Context, key string) (bool, error) {
 	var row db.AppFlag
@@ -42,4 +43,12 @@ func IsSignupEnabled(ctx context.Context) (bool, error) {
 
 func SetSignupEnabled(ctx context.Context, enabled bool) error {
 	return UpsertBool(ctx, EnableSignupKey, enabled)
+}
+
+func IsPaymentEnabled(ctx context.Context) (bool, error) {
+	return GetBool(ctx, EnablePaymentsKey)
+}
+
+func SetPaymentEnabled(ctx context.Context, enabled bool) error {
+	return UpsertBool(ctx, EnablePaymentsKey, enabled)
 }

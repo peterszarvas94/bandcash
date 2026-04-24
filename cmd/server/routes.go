@@ -50,6 +50,7 @@ func registerRoutes(e *echo.Echo) {
 	adminRoutes.GET("/groups", admin.GroupsPage)
 	adminRoutes.GET("/sessions", admin.SessionsPage)
 	adminRoutes.POST("/flags/signup", admin.UpdateSignupFlag)
+	adminRoutes.POST("/flags/payments", admin.UpdatePaymentsFlag)
 	adminRoutes.POST("/users/:userId/ban", admin.BanUser)
 	adminRoutes.POST("/users/:userId/unban", admin.UnbanUser)
 	adminRoutes.DELETE("/users/:id/sessions/:sessionid", admin.LogoutSession)
