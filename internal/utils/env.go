@@ -32,7 +32,8 @@ type EnvConfig struct {
 	LemonCheckoutURL   string
 }
 
-const DefaultSuperadminEmail = "contact@peterszarvas.hu"
+// DefaultSuperadminEmail is a non-production placeholder; staging and production must set SUPERADMIN_EMAIL.
+const DefaultSuperadminEmail = "superadmin@example.invalid"
 
 var (
 	envOnce sync.Once
@@ -57,7 +58,7 @@ type envVars struct {
 	// URL is the public base URL used for links and callbacks.
 	URL string `env:"URL" envDefault:"http://localhost:2222" validate:"required_if=AppEnv production,required_if=AppEnv staging"`
 	// SuperadminEmail is the bootstrap superadmin account email.
-	SuperadminEmail string `env:"SUPERADMIN_EMAIL" envDefault:"contact@peterszarvas.hu" validate:"required,email"`
+	SuperadminEmail string `env:"SUPERADMIN_EMAIL" envDefault:"superadmin@example.invalid" validate:"required,email"`
 	// DisableRateLimit disables request rate limiting (useful for local dev).
 	DisableRateLimit bool `env:"DISABLE_RATE_LIMIT" envDefault:"true"`
 	// EmailProvider controls which transport is used to deliver emails.
