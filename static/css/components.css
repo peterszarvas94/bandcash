@@ -678,6 +678,15 @@
     }
   }
 
+  .brand-logo-lg {
+    font-size: 1.5rem;
+
+    > .icon {
+      width: 1.5rem;
+      height: 1.5rem;
+    }
+  }
+
   @keyframes icon-spin {
     from {
       transform: rotate(0deg);
@@ -1355,11 +1364,14 @@
   .home-page {
     .home-content {
       .page-title-row {
-        padding-bottom: calc(var(--space) * 6);
+        justify-content: flex-end;
+        padding-bottom: calc(var(--space) * 2);
+      }
 
-        h1 {
-          font-weight: 500;
-        }
+      .page-logo-row {
+        display: flex;
+        justify-content: center;
+        padding-bottom: calc(var(--space) * 6);
       }
 
       .catchphrase {

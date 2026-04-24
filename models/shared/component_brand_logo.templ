@@ -5,9 +5,9 @@ import (
 	ctxi18n "github.com/invopop/ctxi18n/i18n"
 )
 
-templ BrandLogo() {
-	<div class="row items-center brand-logo">
-		@icons.AudioWaveform(templ.Attributes{"class": "icon", "style": "color:hsl(var(--primary))"})
+templ BrandLogo(size string) {
+	<div class={ "row items-center brand-logo", templ.KV("brand-logo-lg", size == "lg") }>
+		@icons.AudioWaveform(templ.Attributes{"class": "icon", "style": "color:var(--primary)"})
 		<strong>{ ctxi18n.T(ctx, "app.title") }</strong>
 	</div>
 }

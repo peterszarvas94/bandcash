@@ -9,8 +9,10 @@ templ HomeIndexMain(data HomeData) {
 	<section class="home-page">
 		<div class="home-content">
 			<div class="page-title-row">
-				@shared.BrandLogo()
 				@shared.PageLanguagePicker("/", data.CurrentLang)
+			</div>
+			<div class="page-logo-row">
+				@shared.BrandLogo("lg")
 			</div>
 			<p class="catchphrase">{ ctxi18n.T(ctx, "home.catchphrase") }</p>
 			<p class="intro">{ ctxi18n.T(ctx, "home.intro") }</p>

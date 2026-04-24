@@ -8,7 +8,7 @@ import (
 templ Breadcrumbs(crumbs []utils.Crumb) {
 	<nav class="breadcrumbs" aria-label={ ctxi18n.T(ctx, "nav.breadcrumb") }>
 		<a class={ "link", templ.KV("link-active", len(crumbs) == 0) } href="/">
-			@BrandLogo()
+			@BrandLogo("")
 		</a>
 		for i, crumb := range crumbs {
 			{{ isActive := i == len(crumbs)-1 }}

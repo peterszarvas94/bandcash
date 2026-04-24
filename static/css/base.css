@@ -104,7 +104,8 @@
     --bg-dark: light-dark(hsl(0 0% 90%), hsl(0 0% 5%));
     --bg: light-dark(hsl(0 0% 95%), hsl(0 0% 10%));
     --bg-light: light-dark(hsl(0 0% 100%), hsl(0 0% 15%));
-    --bg-primary: light-dark(hsl(15 70% 55%), hsl(15 90% 65%));
+    --primary: light-dark(hsl(15 70% 55%), hsl(15 90% 65%));
+    --bg-primary: var(--primary);
     --text: light-dark(hsl(0 0% 5%), hsl(0 0% 95%));
     --text-muted: light-dark(hsl(0 0% 30%), hsl(0 0% 70%));
     --text-primary: light-dark(hsl(0 0% 100%), hsl(0 0% 5%));
