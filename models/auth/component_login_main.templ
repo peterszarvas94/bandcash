@@ -47,7 +47,7 @@ templ LoginMain(currentLang string, langAction string, signupEnabled bool) {
 						data-on:click="@post('/login')"
 					>
 						<span data-show="!$_fetching">
-							@icons.Icon(icons.IconSendHorizontal, templ.Attributes{"class": "icon"})
+							@icons.Icon(icons.IconRefreshCcw, templ.Attributes{"class": "icon"})
 						</span>
 						<span data-show="$_fetching" style="display: none">
 							@icons.LoaderCircle(templ.Attributes{"class": "icon icon-spin"})

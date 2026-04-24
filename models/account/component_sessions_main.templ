@@ -14,7 +14,7 @@ templ SessionsMain(data SessionsData) {
 			</div>
 		</header>
 		@LoggedInAs(data.UserEmail)
-		<div class="row row-wrap">
+		<div class="row row-wrap pt">
 			@shared.LoadingActionButton(shared.LoadingActionButtonProps{
 				ClassName:    "btn btn-primary",
 				OnClick:      "@delete('/session')",
