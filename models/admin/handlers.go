@@ -35,7 +35,7 @@ func FlagsPage(c echo.Context) error {
 		return c.Redirect(http.StatusFound, "/login")
 	}
 
-	signupEnabled, err := flags.IsSignupEnabled(c.Request().Context())
+	signupEnabled, err := flags.IsSignupEnabled(c.Request().Context(), "")
 	if err != nil {
 		slog.Error("admin.flags: failed to read enable_signup flag", "err", err)
 		return c.NoContent(http.StatusInternalServerError)
@@ -206,7 +206,7 @@ func UpdateSignupFlag(c echo.Context) error {
 	case "0", "false", "off":
 		next = false
 	default:
-		current, err := flags.IsSignupEnabled(c.Request().Context())
+		current, err := flags.IsSignupEnabled(c.Request().Context(), "")
 		if err != nil {
 			slog.Error("admin.flags.update_signup: failed to read flag", "err", err)
 			return c.NoContent(http.StatusInternalServerError)
@@ -274,7 +274,7 @@ func UpdatePaymentsFlag(c echo.Context) error {
 		_ = utils.SSEHub.PatchHTML(c, notificationsHTML)
 	}
 
-	signupEnabled, signupErr := flags.IsSignupEnabled(c.Request().Context())
+	signupEnabled, signupErr := flags.IsSignupEnabled(c.Request().Context(), "")
 	if signupErr != nil {
 		signupEnabled = false
 	}

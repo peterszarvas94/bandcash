@@ -138,7 +138,7 @@ func LoginPageHandler(c echo.Context) error {
 		return c.Redirect(http.StatusFound, "/groups")
 	}
 	signupEnabled := true
-	if flag, err := flags.IsSignupEnabled(ctx); err == nil {
+	if flag, err := flags.IsSignupEnabled(ctx, ""); err == nil {
 		signupEnabled = flag
 	} else {
 		slog.Warn("auth.login-page: failed to read signup flag", "err", err)
@@ -183,7 +183,7 @@ func LoginRequest(c echo.Context) error {
 			return c.NoContent(http.StatusInternalServerError)
 		}
 
-		signupEnabled, err := flags.IsSignupEnabled(c.Request().Context())
+		signupEnabled, err := flags.IsSignupEnabled(c.Request().Context(), emailAddress)
 		if err != nil {
 			slog.Error("auth.login: failed to read signup flag", "err", err)
 			patchLoginSentState(c, emailAddress)

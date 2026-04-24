@@ -4,8 +4,10 @@ import (
 	"context"
 	"database/sql"
 	"errors"
+	"strings"
 
 	"bandcash/internal/db"
+	"bandcash/internal/utils"
 )
 
 const EnableSignupKey = "enable_signup"
@@ -37,8 +39,21 @@ func UpsertBool(ctx context.Context, key string, enabled bool) error {
 	return err
 }
 
-func IsSignupEnabled(ctx context.Context) (bool, error) {
-	return GetBool(ctx, EnableSignupKey)
+// IsSignupEnabled reports the enable_signup flag, or (when email is non-empty) whether that
+// address may self-provision as the configured superadmin while signup is off.
+func IsSignupEnabled(ctx context.Context, email string) (bool, error) {
+	on, err := GetBool(ctx, EnableSignupKey)
+	if err != nil {
+		return false, err
+	}
+	if on {
+		return true, nil
+	}
+	email = strings.ToLower(strings.TrimSpace(email))
+	if email == "" {
+		return false, nil
+	}
+	return utils.EmailMatchesSuperadmin(email), nil
 }
 
 func SetSignupEnabled(ctx context.Context, enabled bool) error {

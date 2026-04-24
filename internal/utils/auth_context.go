@@ -52,6 +52,15 @@ func IsSuperadmin(c echo.Context) bool {
 	return false
 }
 
+// EmailMatchesSuperadmin returns true if email equals SUPERADMIN_EMAIL (case-insensitive). Empty config never matches.
+func EmailMatchesSuperadmin(email string) bool {
+	want := strings.ToLower(strings.TrimSpace(Env().SuperadminEmail))
+	if want == "" {
+		return false
+	}
+	return strings.ToLower(strings.TrimSpace(email)) == want
+}
+
 func ResolveAuthState(c echo.Context) (bool, bool) {
 	if GetUserID(c) != "" {
 		return true, IsSuperadmin(c)
@@ -77,8 +86,5 @@ func ResolveAuthState(c echo.Context) (bool, bool) {
 		return false, false
 	}
 
-	superadminEmail := strings.ToLower(strings.TrimSpace(Env().SuperadminEmail))
-	isSuperadmin := superadminEmail != "" && strings.ToLower(strings.TrimSpace(user.Email)) == superadminEmail
-
-	return true, isSuperadmin
+	return true, EmailMatchesSuperadmin(user.Email)
 }

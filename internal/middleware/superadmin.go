@@ -14,8 +14,7 @@ import (
 // RequireSuperadmin ensures user email matches configured superadmin email.
 func RequireSuperadmin(next echo.HandlerFunc) echo.HandlerFunc {
 	return func(c echo.Context) error {
-		allowedEmail := strings.ToLower(strings.TrimSpace(utils.Env().SuperadminEmail))
-		if allowedEmail == "" {
+		if strings.TrimSpace(utils.Env().SuperadminEmail) == "" {
 			utils.Notify(c, ctxi18n.T(c.Request().Context(), "admin.access_denied"))
 			return c.Redirect(http.StatusFound, "/groups")
 		}
@@ -30,7 +29,7 @@ func RequireSuperadmin(next echo.HandlerFunc) echo.HandlerFunc {
 			return c.Redirect(http.StatusFound, "/login")
 		}
 
-		if strings.ToLower(strings.TrimSpace(user.Email)) != allowedEmail {
+		if !utils.EmailMatchesSuperadmin(user.Email) {
 			utils.Notify(c, ctxi18n.T(c.Request().Context(), "admin.access_denied"))
 			return c.Redirect(http.StatusFound, "/groups")
 		}

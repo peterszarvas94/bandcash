@@ -43,11 +43,7 @@ func RequireAuth(next echo.HandlerFunc) echo.HandlerFunc {
 			return c.Redirect(http.StatusFound, "/login")
 		}
 
-		isSuperadmin := false
-		superadminEmail := strings.ToLower(strings.TrimSpace(utils.Env().SuperadminEmail))
-		if superadminEmail != "" && strings.ToLower(strings.TrimSpace(user.Email)) == superadminEmail {
-			isSuperadmin = true
-		}
+		isSuperadmin := utils.EmailMatchesSuperadmin(user.Email)
 
 		preferredLang := appi18n.NormalizeLocale(user.PreferredLang)
 		if rawLang := strings.TrimSpace(c.QueryParam("lang")); rawLang != "" {
