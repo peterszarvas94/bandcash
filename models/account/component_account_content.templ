@@ -36,10 +36,10 @@ templ AccountContent(data AccountData) {
 	<div class="row row-wrap">
 		if data.HasActiveSubscription {
 			<a class="btn btn-primary" href="/account/subscription/manage" target="_blank" rel="noopener noreferrer">
-				@icons.Icon(icons.IconSettings, templ.Attributes{"class": "icon"})
+				@icons.Icon(icons.IconSettings2, templ.Attributes{"class": "icon"})
 				<span>{ ctxi18n.T(ctx, "account.manage_subscription") }</span>
 			</a>
-			<a class="btn btn-primary" href="/account/subscription/update-payment" target="_blank" rel="noopener noreferrer">
+			<a class="btn" href="/account/subscription/update-payment" target="_blank" rel="noopener noreferrer">
 				@icons.Icon(icons.IconCreditCard, templ.Attributes{"class": "icon"})
 				<span>{ ctxi18n.T(ctx, "account.update_payment") }</span>
 			</a>

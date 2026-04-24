@@ -15,7 +15,7 @@ templ SessionsMain(data SessionsData) {
 		</header>
 		<div class="row row-wrap">
 			@shared.LoadingActionButton(shared.LoadingActionButtonProps{
-				ClassName:    "btn",
+				ClassName:    "btn btn-primary",
 				OnClick:      "@delete('/session')",
 				DisabledExpr: "$_fetching",
 				Label:        ctxi18n.T(ctx, "auth.logout"),
