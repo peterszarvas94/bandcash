@@ -12,7 +12,7 @@ templ HomeIndexMain(data HomeData) {
 				@shared.PageLanguagePicker("/", data.CurrentLang)
 			</div>
 			<div class="page-logo-row">
-				@shared.BrandLogo("lg")
+				@shared.HomeBrandLogo()
 			</div>
 			<p class="catchphrase">{ ctxi18n.T(ctx, "home.catchphrase") }</p>
 			<p class="intro">{ ctxi18n.T(ctx, "home.intro") }</p>
@@ -24,7 +24,6 @@ templ HomeIndexMain(data HomeData) {
 			} else {
 				<div class="row row-wrap justify-center">
 					<a class="btn btn-primary" href="/login">{ ctxi18n.T(ctx, "home.join_for_free") }</a>
-					// <a class="btn" href="/pricing">{ ctxi18n.T(ctx, "home.pricing") }</a>
 				</div>
 			}
 		</div>

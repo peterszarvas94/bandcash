@@ -10,15 +10,17 @@ templ LoginMain(currentLang string, langAction string, signupEnabled bool) {
 	<section class="auth-page">
 		<div class="auth-link-page">
 			@shared.PageTitleWithLanguage(ctxi18n.T(ctx, "auth.sign_in"), langAction, currentLang)
-			if signupEnabled {
-				<p class="text-muted">{ ctxi18n.T(ctx, "auth.login_intro_signup_enabled") }</p>
-			} else {
-				<p class="text-muted">{ ctxi18n.T(ctx, "auth.login_intro_signup_disabled") }</p>
+			if !signupEnabled {
+				@shared.Alert(shared.AlertProps{
+					Text:      ctxi18n.T(ctx, "auth.signup_disabled_notice"),
+					IconName:  icons.IconInfo,
+					ClassName: "alert alert-info alert-full pb",
+				})
 			}
+			<p class="text-muted">{ ctxi18n.T(ctx, "auth.login_intro_signup_disabled_base") }</p>
 			<div data-show="$authState === 'form'">
 				<form class="form" data-on:submit="@post('/login')" data-indicator:_fetching>
 					<div class="field">
-						<label for="auth-login-email" class="row">{ ctxi18n.T(ctx, "auth.email") } <span class="fielderror">*</span></label>
 						<input id="auth-login-email" type="email" data-bind="formData.email" placeholder={ ctxi18n.T(ctx, "auth.email_placeholder") } class="input" data-attr:class="(($authError !== '') || ($authServerError !== '')) ? 'input input-primary' : 'input'"/>
 						<div class="row row-wrap pt">
 							@shared.LoadingSubmitButton(shared.LoadingSubmitButtonProps{
@@ -32,10 +34,10 @@ templ LoginMain(currentLang string, langAction string, signupEnabled bool) {
 					</div>
 				</form>
 			</div>
-			<div data-show="$authState === 'sent'" style="display: none" class="form">
-				<div data-show="$authState === 'sent'" data-on-interval__duration.1s="$resendRemaining = Math.max(0, $resendRemaining - 1)" style="display: none"></div>
+			<div data-show="$authState === 'sent'" style="display: none" class="auth-sent">
+				<div class="auth-sent-timer" data-show="$authState === 'sent'" data-on-interval__duration.1s="$resendRemaining = Math.max(0, $resendRemaining - 1)" style="display: none"></div>
 				<p><strong>{ ctxi18n.T(ctx, "auth.masked_email") }:</strong> <span data-text="$submittedEmailMasked"></span></p>
-				<div class="row row-wrap pt">
+				<div class="row row-wrap">
 					<button
 						data-indicator:_fetching
 						class="btn btn-input btn-full"
