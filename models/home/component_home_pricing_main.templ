@@ -2,6 +2,7 @@ package home
 
 import ctxi18n "github.com/invopop/ctxi18n/i18n"
 import shared "bandcash/models/shared"
+import icons "bandcash/models/shared/icons"
 
 templ HomePricingMain(currentLang string) {
 	<section class="section">
@@ -9,18 +10,30 @@ templ HomePricingMain(currentLang string) {
 		<div class="pricing-page">
 			<article>
 				<h2>
-					{ ctxi18n.T(ctx, "billing.pricing.free_title") }
-					<span class="pricing-price">
-						<span>{ ctxi18n.T(ctx, "billing.pricing.free_price_amount") }</span>
-						<span>{ ctxi18n.T(ctx, "billing.pricing.free_price_period") }</span>
-					</span>
+					{ ctxi18n.T(ctx, "billing.pricing.free_header_title") }
+					<span class="pricing-price pricing-price-plain">{ ctxi18n.T(ctx, "billing.pricing.free_header_right") }</span>
 				</h2>
 				<ul>
-					<li>{ ctxi18n.T(ctx, "billing.pricing.free_feature_groups") }</li>
-					<li>{ ctxi18n.T(ctx, "billing.pricing.free_feature_events") }</li>
-					<li>{ ctxi18n.T(ctx, "billing.pricing.free_feature_members") }</li>
-					<li>{ ctxi18n.T(ctx, "billing.pricing.free_feature_viewers") }</li>
-					<li>{ ctxi18n.T(ctx, "billing.pricing.free_feature_finance") }</li>
+					<li>
+						@icons.Icon(icons.IconCheck, templ.Attributes{"class": "icon"})
+						<span>{ ctxi18n.T(ctx, "billing.pricing.free_feature_finance") }</span>
+					</li>
+					<li>
+						@icons.Icon(icons.IconCheck, templ.Attributes{"class": "icon"})
+						<span>{ ctxi18n.T(ctx, "billing.pricing.free_feature_members") }</span>
+					</li>
+					<li class="feature-unavailable">
+						@icons.Icon(icons.IconX, templ.Attributes{"class": "icon"})
+						<span>{ ctxi18n.T(ctx, "billing.pricing.free_feature_events") }</span>
+					</li>
+					<li class="feature-unavailable">
+						@icons.Icon(icons.IconX, templ.Attributes{"class": "icon"})
+						<span>{ ctxi18n.T(ctx, "billing.pricing.free_feature_groups") }</span>
+					</li>
+					<li class="feature-unavailable">
+						@icons.Icon(icons.IconX, templ.Attributes{"class": "icon"})
+						<span>{ ctxi18n.T(ctx, "billing.pricing.free_feature_viewers") }</span>
+					</li>
 				</ul>
 			</article>
 			<article>
@@ -32,11 +45,26 @@ templ HomePricingMain(currentLang string) {
 					</span>
 				</h2>
 				<ul>
-					<li>{ ctxi18n.T(ctx, "billing.pricing.pro_feature_groups") }</li>
-					<li>{ ctxi18n.T(ctx, "billing.pricing.pro_feature_events") }</li>
-					<li>{ ctxi18n.T(ctx, "billing.pricing.pro_feature_members") }</li>
-					<li>{ ctxi18n.T(ctx, "billing.pricing.pro_feature_viewers") }</li>
-					<li>{ ctxi18n.T(ctx, "billing.pricing.pro_feature_finance") }</li>
+					<li>
+						@icons.Icon(icons.IconCheck, templ.Attributes{"class": "icon"})
+						<span>{ ctxi18n.T(ctx, "billing.pricing.pro_feature_finance") }</span>
+					</li>
+					<li>
+						@icons.Icon(icons.IconCheck, templ.Attributes{"class": "icon"})
+						<span>{ ctxi18n.T(ctx, "billing.pricing.pro_feature_members") }</span>
+					</li>
+					<li>
+						@icons.Icon(icons.IconCheck, templ.Attributes{"class": "icon"})
+						<span>{ ctxi18n.T(ctx, "billing.pricing.pro_feature_events") }</span>
+					</li>
+					<li>
+						@icons.Icon(icons.IconCheck, templ.Attributes{"class": "icon"})
+						<span>{ ctxi18n.T(ctx, "billing.pricing.pro_feature_groups") }</span>
+					</li>
+					<li>
+						@icons.Icon(icons.IconCheck, templ.Attributes{"class": "icon"})
+						<span>{ ctxi18n.T(ctx, "billing.pricing.pro_feature_viewers") }</span>
+					</li>
 				</ul>
 			</article>
 		</div>
