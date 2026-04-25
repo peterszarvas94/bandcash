@@ -24,12 +24,13 @@ type DashboardData struct {
 	IsSuperAdmin    bool
 
 	// Overview stats (always present)
-	UsersCount    int64
-	GroupsCount   int64
-	EventsCount   int64
-	MembersCount  int64
-	SignupEnabled bool
-	PaymentsEnabled bool
+	UsersCount                      int64
+	GroupsCount                     int64
+	EventsCount                     int64
+	MembersCount                    int64
+	SignupEnabled                   bool
+	PaymentsEnabled                 bool
+	BypassLimitForSuperadminEnabled bool
 
 	// Users tab data
 	Users     []RecentUserRow

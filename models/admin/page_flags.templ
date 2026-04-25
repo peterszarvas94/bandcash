@@ -9,7 +9,7 @@ templ AdminFlagsPage(data DashboardData) {
 		Title:           data.Title,
 		Crumbs:          data.Breadcrumbs,
 		Signals:         data.Signals,
-		Content:         FlagsContent(data.SignupEnabled, data.PaymentsEnabled),
+		Content:         FlagsContent(data.SignupEnabled, data.PaymentsEnabled, data.BypassLimitForSuperadminEnabled),
 		ActiveUrl:       "/admin/flags",
 		IsAuthenticated: data.IsAuthenticated,
 		IsSuperAdmin:    data.IsSuperAdmin,

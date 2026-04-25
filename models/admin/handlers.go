@@ -45,6 +45,11 @@ func FlagsPage(c echo.Context) error {
 		slog.Error("admin.flags: failed to read enable_payments flag", "err", err)
 		return c.NoContent(http.StatusInternalServerError)
 	}
+	bypassLimitForSuperadminEnabled, err := flags.IsBypassLimitForSuperadminEnabled(c.Request().Context())
+	if err != nil {
+		slog.Error("admin.flags: failed to read allow_bypass_limit_for_superadmin flag", "err", err)
+		return c.NoContent(http.StatusInternalServerError)
+	}
 
 	data := DashboardData{
 		Title: ctxi18n.T(c.Request().Context(), "admin.title"),
@@ -52,11 +57,12 @@ func FlagsPage(c echo.Context) error {
 			{Label: ctxi18n.T(c.Request().Context(), "admin.dashboard"), Href: "/admin/flags"},
 			{Label: adminTabLabel(c.Request().Context(), "flags")},
 		},
-		Tab:             "flags",
-		SignupEnabled:   signupEnabled,
-		PaymentsEnabled: paymentsEnabled,
-		IsAuthenticated: true,
-		IsSuperAdmin:    true,
+		Tab:                             "flags",
+		SignupEnabled:                   signupEnabled,
+		PaymentsEnabled:                 paymentsEnabled,
+		BypassLimitForSuperadminEnabled: bypassLimitForSuperadminEnabled,
+		IsAuthenticated:                 true,
+		IsSuperAdmin:                    true,
 	}
 
 	return utils.RenderPage(c, AdminFlagsPage(data))
@@ -230,7 +236,11 @@ func UpdateSignupFlag(c echo.Context) error {
 	if paymentsErr != nil {
 		paymentsEnabled = false
 	}
-	flagsHTML, err := utils.RenderHTMLForRequest(c, FlagsContent(next, paymentsEnabled))
+	bypassLimitForSuperadminEnabled, bypassErr := flags.IsBypassLimitForSuperadminEnabled(c.Request().Context())
+	if bypassErr != nil {
+		bypassLimitForSuperadminEnabled = false
+	}
+	flagsHTML, err := utils.RenderHTMLForRequest(c, FlagsContent(next, paymentsEnabled, bypassLimitForSuperadminEnabled))
 	if err == nil {
 		_ = utils.SSEHub.PatchHTML(c, flagsHTML)
 	}
@@ -278,7 +288,63 @@ func UpdatePaymentsFlag(c echo.Context) error {
 	if signupErr != nil {
 		signupEnabled = false
 	}
-	flagsHTML, err := utils.RenderHTMLForRequest(c, FlagsContent(signupEnabled, next))
+	bypassLimitForSuperadminEnabled, bypassErr := flags.IsBypassLimitForSuperadminEnabled(c.Request().Context())
+	if bypassErr != nil {
+		bypassLimitForSuperadminEnabled = false
+	}
+	flagsHTML, err := utils.RenderHTMLForRequest(c, FlagsContent(signupEnabled, next, bypassLimitForSuperadminEnabled))
+	if err == nil {
+		_ = utils.SSEHub.PatchHTML(c, flagsHTML)
+	}
+
+	return c.NoContent(http.StatusOK)
+}
+
+func UpdateSuperadminLimitBypassFlag(c echo.Context) error {
+	signals := adminTabSignals{}
+	if err := datastar.ReadSignals(c.Request(), &signals); err != nil {
+		return c.NoContent(http.StatusBadRequest)
+	}
+	if !utils.SetTabID(c, signals.TabID) {
+		return c.NoContent(http.StatusBadRequest)
+	}
+
+	var next bool
+	switch c.QueryParam("value") {
+	case "1", "true", "on":
+		next = true
+	case "0", "false", "off":
+		next = false
+	default:
+		current, err := flags.IsBypassLimitForSuperadminEnabled(c.Request().Context())
+		if err != nil {
+			slog.Error("admin.flags.update_superadmin_limit_bypass: failed to read flag", "err", err)
+			return c.NoContent(http.StatusInternalServerError)
+		}
+		next = !current
+	}
+
+	if err := flags.SetBypassLimitForSuperadminEnabled(c.Request().Context(), next); err != nil {
+		slog.Error("admin.flags.update_superadmin_limit_bypass: failed to update flag", "err", err)
+		utils.Notify(c, ctxi18n.T(c.Request().Context(), "admin.flags.update_failed"))
+		return c.NoContent(http.StatusInternalServerError)
+	}
+
+	utils.Notify(c, ctxi18n.T(c.Request().Context(), "admin.flags.updated"))
+	notificationsHTML, err := utils.RenderHTMLForRequest(c, shared.Notifications())
+	if err == nil {
+		_ = utils.SSEHub.PatchHTML(c, notificationsHTML)
+	}
+
+	signupEnabled, signupErr := flags.IsSignupEnabled(c.Request().Context(), "")
+	if signupErr != nil {
+		signupEnabled = false
+	}
+	paymentsEnabled, paymentsErr := flags.IsPaymentEnabled(c.Request().Context())
+	if paymentsErr != nil {
+		paymentsEnabled = false
+	}
+	flagsHTML, err := utils.RenderHTMLForRequest(c, FlagsContent(signupEnabled, paymentsEnabled, next))
 	if err == nil {
 		_ = utils.SSEHub.PatchHTML(c, flagsHTML)
 	}

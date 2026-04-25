@@ -1,6 +1,8 @@
 package account
 
 import (
+	"fmt"
+
 	shared "bandcash/models/shared"
 	icons "bandcash/models/shared/icons"
 	ctxi18n "github.com/invopop/ctxi18n/i18n"
@@ -9,24 +11,32 @@ import (
 templ AccountStatusMessage(data AccountData) {
 	if data.SubscriptionSlots > 0 {
 		if data.UsedSlots == 0 {
-			<p class="pb-lg">
+			<p class="pb-xl">
 				{ ctxi18n.T(ctx, "account.groups_status_none_prefix") } <strong>{ data.SubscriptionSlots }</strong> { ctxi18n.T(ctx, "account.groups_status_none_suffix") }
 			</p>
 		} else if data.IsLimitExceeded {
-			<p class="pb-lg">
+			<p class="pb-xl">
 				{ ctxi18n.T(ctx, "account.groups_status_over_limit_prefix") } <strong>{ data.UsedSlots }</strong> { ctxi18n.T(ctx, "account.groups_status_over_limit_middle") } <strong>{ data.SubscriptionSlots }</strong>{ ctxi18n.T(ctx, "account.groups_status_over_limit_suffix") }
 			</p>
 		} else if data.HasAvailableGroupSlot {
-			<p class="pb-lg">
+			<p class="pb-xl">
 				{ ctxi18n.T(ctx, "account.groups_status_can_add_prefix") } <strong>{ data.UsedSlots }</strong> { ctxi18n.T(ctx, "account.groups_status_can_add_middle") } <strong>{ data.RemainingSlots }</strong> { ctxi18n.T(ctx, "account.groups_status_can_add_suffix") }
 			</p>
 		} else {
-			<p class="pb-lg">
+			<p class="pb-xl">
 				{ ctxi18n.T(ctx, "account.groups_status_at_limit_prefix") } <strong>{ data.UsedSlots }</strong> { ctxi18n.T(ctx, "account.groups_status_at_limit_suffix") }
 			</p>
 		}
+	} else if data.UsedSlots > 0 {
+		<p class="pb-xl">
+			{ fmt.Sprintf(
+				ctxi18n.T(ctx, "account.bands_no_active_subscription"),
+				data.UsedSlots,
+				data.UsedSlots,
+			) }
+		</p>
 	} else {
-		<p class="pb-lg">
+		<p class="pb-xl">
 			{ ctxi18n.T(ctx, "account.no_active_subscription") }
 		</p>
 	}
@@ -53,10 +63,15 @@ templ AccountContent(data AccountData) {
 				<span>{ ctxi18n.T(ctx, "account.update_payment") }</span>
 			</a>
 		} else if data.PaymentsEnabled {
-			<form class="row row-wrap" action="/account/subscription/manage" method="get">
-				<label for="account-checkout-quantity">{ ctxi18n.T(ctx, "account.group_quantity") }</label>
-				<input id="account-checkout-quantity" class="input input-xs w-fit" type="number" min="1" step="1" name="quantity" value="1"/>
-				<button class="btn btn-primary btn-xs" type="submit">{ ctxi18n.T(ctx, "account.start_subscription") }</button>
+			<form class="form" action="/account/subscription/manage" method="get">
+				<div class="field">
+					<label for="account-checkout-quantity">{ ctxi18n.T(ctx, "account.group_quantity") }</label>
+					<input id="account-checkout-quantity" class="input" type="number" min="1" step="1" name="quantity" value={ fmt.Sprintf("%d", data.CheckoutQuantity) }/>
+				</div>
+				<button class="btn btn-primary btn-full" type="submit">
+					@icons.Icon(icons.IconCreditCard, templ.Attributes{"class": "icon"})
+					<span>{ ctxi18n.T(ctx, "account.start_subscription") }</span>
+				</button>
 			</form>
 		}
 	</div>

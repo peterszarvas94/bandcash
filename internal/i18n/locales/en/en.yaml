@@ -213,6 +213,7 @@ en:
     groups_status_over_limit_prefix: "You have"
     groups_status_over_limit_middle: "bands, but your subscription allows only"
     groups_status_over_limit_suffix: "."
+    bands_no_active_subscription: "You manage %d band(s) with no active subscription. Start a plan and pick at least %d included band slot(s)."
     groups_status_at_limit_format: "You have %d bands and you can't have more in your subscription."
     groups_status_over_limit_format: "You have %d bands, but your subscription allows only %d."
     no_active_subscription: "You don't have an active subscription"
@@ -232,7 +233,7 @@ en:
     plan: "Plan"
     status: "Status"
     renews_at: "Renews at"
-    group_quantity: "Band quantity"
+    group_quantity: "How many bands do you want to manage?"
     update_groups: "Save changes"
     groups_update_unavailable: "Band updates are unavailable until the subscription item is synced by webhook."
     confirm_update_title: "Update subscription amount?"
@@ -572,6 +573,7 @@ en:
     flags:
       signup: "Signup"
       payments: "Payments"
+      superadmin_limit_bypass: "Allow limit bypass for superadmin"
       updated: "Feature flag updated."
       update_failed: "Could not update feature flag."
     tab:

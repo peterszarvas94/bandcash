@@ -9,7 +9,7 @@ templ OverLimitPage(data OverLimitData) {
 		Title:           data.Title,
 		Crumbs:          data.Breadcrumbs,
 		Signals:         nil,
-		Content:         shared.CommonContent(OverLimitMain(data)),
+		Content:         shared.ThinContent(OverLimitMain(data)),
 		ActiveUrl:       "/account",
 		IsAuthenticated: data.IsAuthenticated,
 		IsSuperAdmin:    data.IsSuperAdmin,

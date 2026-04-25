@@ -212,7 +212,8 @@ hu:
     groups_status_at_limit_suffix: "együttesed van, és az előfizetésedben már nincs több hely."
     groups_status_over_limit_prefix: "Jelenleg"
     groups_status_over_limit_middle: "együttesed van, de az előfizetésed csak"
-    groups_status_over_limit_suffix: "együttest enged."
+    groups_status_over_limit_suffix: " együttest enged."
+    bands_no_active_subscription: "%d együttest kezelsz, nincs aktív előfizetésed. Indíts legalább %d együttesre szóló helyre."
     groups_status_at_limit_format: "Jelenleg %d együttesed van, és az előfizetésedben már nincs több hely."
     groups_status_over_limit_format: "Jelenleg %d együttesed van, de az előfizetésed csak %d együttest enged."
     no_active_subscription: "Nincs aktív előfizetésed"
@@ -232,7 +233,7 @@ hu:
     plan: "Csomag"
     status: "Állapot"
     renews_at: "Megújul"
-    group_quantity: "Együttesok száma"
+    group_quantity: "Hány együttest szeretnél kezelni?"
     update_groups: "Módosítások mentése"
     groups_update_unavailable: "Az együttesszám frissítése addig nem érhető el, amíg a webhook nem szinkronizálta az előfizetési tételt."
     confirm_update_title: "Előfizetési összeg frissítése?"
@@ -572,6 +573,7 @@ hu:
     flags:
       signup: "Regisztráció"
       payments: "Fizetés"
+      superadmin_limit_bypass: "Superadmin limit megkerülés engedélyezése"
       updated: "Funkció kapcsoló frissítve."
       update_failed: "A funkció kapcsoló frissítése sikertelen."
     tab:

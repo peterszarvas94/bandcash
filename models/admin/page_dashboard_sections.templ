@@ -5,7 +5,7 @@ import (
 	ctxi18n "github.com/invopop/ctxi18n/i18n"
 )
 
-templ FlagsContent(signupEnabled bool, paymentsEnabled bool) {
+templ FlagsContent(signupEnabled bool, paymentsEnabled bool, bypassLimitForSuperadminEnabled bool) {
 	<div id="admin-flags">
 		<div>
 			@shared.ToggleSwitch(shared.ToggleSwitchProps{
@@ -22,6 +22,14 @@ templ FlagsContent(signupEnabled bool, paymentsEnabled bool) {
 				AriaLabel: ctxi18n.T(ctx, "admin.flags.payments"),
 			})
 			<span>{ ctxi18n.T(ctx, "admin.flags.payments") }</span>
+		</div>
+		<div>
+			@shared.ToggleSwitch(shared.ToggleSwitchProps{
+				IsOn:      bypassLimitForSuperadminEnabled,
+				OnClick:   "@post('/admin/flags/superadmin-limit-bypass?value=' + (el.getAttribute('aria-checked') === 'true' ? '0' : '1'))",
+				AriaLabel: ctxi18n.T(ctx, "admin.flags.superadmin_limit_bypass"),
+			})
+			<span>{ ctxi18n.T(ctx, "admin.flags.superadmin_limit_bypass") }</span>
 		</div>
 	</div>
 }

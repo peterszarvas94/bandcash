@@ -55,6 +55,10 @@
     padding-bottom: var(--space-lg);
   }
 
+  .pb-xl {
+    padding-bottom: var(--space-xl);
+  }
+
   .pt {
     padding-top: var(--space);
   }

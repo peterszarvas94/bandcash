@@ -18,6 +18,7 @@ type AccountData struct {
 	HasAvailableGroupSlot bool
 	HasActiveSubscription bool
 	PaymentsEnabled       bool
+	CheckoutQuantity      int
 	ActiveTab             string
 	Signals               map[string]any
 	IsAuthenticated       bool
@@ -41,13 +42,15 @@ type OverLimitGroup struct {
 }
 
 type OverLimitData struct {
-	Title           string
-	Breadcrumbs     []utils.Crumb
-	SubscriptionCap int
-	OwnedGroups     int
-	ExcessGroups    int
-	Groups          []OverLimitGroup
-	PaymentsEnabled bool
-	IsAuthenticated bool
-	IsSuperAdmin    bool
+	Title                 string
+	Breadcrumbs           []utils.Crumb
+	SubscriptionCap       int
+	OwnedGroups           int
+	ExcessGroups          int
+	Groups                []OverLimitGroup
+	PaymentsEnabled       bool
+	HasActiveSubscription bool
+	CheckoutQuantity      int
+	IsAuthenticated       bool
+	IsSuperAdmin          bool
 }

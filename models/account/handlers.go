@@ -50,12 +50,16 @@ func SubscriptionPageHandler(c echo.Context) error {
 		data.CurrentLang = appi18n.NormalizeLocale(user.PreferredLang)
 	}
 
+	data.CheckoutQuantity = 1
 	if state, err := internalbilling.CurrentAccessState(c.Request().Context(), userID); err == nil {
 		data.SubscriptionSlots = state.SubscriptionCount
 		data.UsedSlots = state.OwnedGroupCount
 		data.RemainingSlots = internalbilling.RemainingGroupSlots(state)
 		data.IsLimitExceeded = internalbilling.IsLimitExceeded(state)
 		data.HasAvailableGroupSlot = internalbilling.HasAvailableGroupSlot(state)
+		if state.OwnedGroupCount > data.CheckoutQuantity {
+			data.CheckoutQuantity = state.OwnedGroupCount
+		}
 	}
 	if sub, exists, err := internalbilling.GetUserSubscription(c.Request().Context(), userID); err == nil && exists {
 		data.HasActiveSubscription = strings.TrimSpace(sub.ProviderSubscriptionID) != "" &&
@@ -217,18 +221,27 @@ func OverLimitPageHandler(c echo.Context) error {
 	}
 
 	data := OverLimitData{
-		Title:           ctxi18n.T(c.Request().Context(), "account.over_limit_page_title"),
-		Breadcrumbs:     []utils.Crumb{{Label: ctxi18n.T(c.Request().Context(), "account.over_limit_title")}},
-		SubscriptionCap: state.SubscriptionCount,
-		OwnedGroups:     state.OwnedGroupCount,
-		ExcessGroups:    state.OwnedGroupCount - state.SubscriptionCount,
-		Groups:          groups,
-		PaymentsEnabled: false,
-		IsAuthenticated: true,
-		IsSuperAdmin:    utils.IsSuperadmin(c),
+		Title:                 ctxi18n.T(c.Request().Context(), "account.over_limit_page_title"),
+		Breadcrumbs:           []utils.Crumb{{Label: ctxi18n.T(c.Request().Context(), "account.over_limit_title")}},
+		SubscriptionCap:       state.SubscriptionCount,
+		OwnedGroups:           state.OwnedGroupCount,
+		ExcessGroups:          state.OwnedGroupCount - state.SubscriptionCount,
+		Groups:                groups,
+		PaymentsEnabled:       false,
+		HasActiveSubscription: false,
+		CheckoutQuantity:      1,
+		IsAuthenticated:       true,
+		IsSuperAdmin:          utils.IsSuperadmin(c),
+	}
+	if state.OwnedGroupCount > data.CheckoutQuantity {
+		data.CheckoutQuantity = state.OwnedGroupCount
 	}
 	if paymentsEnabled, err := flags.IsPaymentEnabled(c.Request().Context()); err == nil {
 		data.PaymentsEnabled = paymentsEnabled
+	}
+	if sub, exists, err := internalbilling.GetUserSubscription(c.Request().Context(), userID); err == nil && exists {
+		data.HasActiveSubscription = strings.TrimSpace(sub.ProviderSubscriptionID) != "" &&
+			internalbilling.IsSubscriptionActive(sub.Status, sub.GraceUntil, time.Now().UTC())
 	}
 
 	return utils.RenderPage(c, OverLimitPage(data))

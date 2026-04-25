@@ -4,60 +4,94 @@ import (
 	account "bandcash/models/account"
 )
 
+templ subscriptionStatusVariant(title string, data account.AccountData) {
+	<div class="dev-subscription-slot">
+		<h4><strong>{ title }</strong></h4>
+		@account.AccountContent(data)
+	</div>
+}
+
+templ subscriptionStatusPair(title string, data account.AccountData) {
+	<div class="dev-subscription-scenario">
+		<h3><strong>{ title }</strong></h3>
+		@subscriptionStatusVariant("Payments enabled", account.AccountData{
+			SubscriptionSlots:     data.SubscriptionSlots,
+			UsedSlots:             data.UsedSlots,
+			RemainingSlots:        data.RemainingSlots,
+			IsLimitExceeded:       data.IsLimitExceeded,
+			HasAvailableGroupSlot: data.HasAvailableGroupSlot,
+			HasActiveSubscription: data.HasActiveSubscription,
+			CheckoutQuantity:      data.CheckoutQuantity,
+			PaymentsEnabled:       true,
+		})
+		@subscriptionStatusVariant("Payments disabled", account.AccountData{
+			SubscriptionSlots:     data.SubscriptionSlots,
+			UsedSlots:             data.UsedSlots,
+			RemainingSlots:        data.RemainingSlots,
+			IsLimitExceeded:       data.IsLimitExceeded,
+			HasAvailableGroupSlot: data.HasAvailableGroupSlot,
+			HasActiveSubscription: data.HasActiveSubscription,
+			CheckoutQuantity:      data.CheckoutQuantity,
+			PaymentsEnabled:       false,
+		})
+	</div>
+}
+
 templ SubscriptionStatusContent() {
-	<div class="pb-lg">
-		<h3><strong>No active subscription</strong></h3>
-		@account.AccountContent(account.AccountData{
-			SubscriptionSlots:     0,
-			UsedSlots:             0,
-			RemainingSlots:        0,
-			IsLimitExceeded:       false,
-			HasAvailableGroupSlot: false,
-			HasActiveSubscription: false,
-		})
-	</div>
-	<div class="pb-lg">
-		<h3><strong>No groups yet</strong></h3>
-		@account.AccountContent(account.AccountData{
-			SubscriptionSlots:     3,
-			UsedSlots:             0,
-			RemainingSlots:        3,
-			IsLimitExceeded:       false,
-			HasAvailableGroupSlot: true,
-			HasActiveSubscription: true,
-		})
-	</div>
-	<div class="pb-lg">
-		<h3><strong>Has groups, more slots available</strong></h3>
-		@account.AccountContent(account.AccountData{
-			SubscriptionSlots:     3,
-			UsedSlots:             1,
-			RemainingSlots:        2,
-			IsLimitExceeded:       false,
-			HasAvailableGroupSlot: true,
-			HasActiveSubscription: true,
-		})
-	</div>
-	<div class="pb-lg">
-		<h3><strong>At subscription limit</strong></h3>
-		@account.AccountContent(account.AccountData{
-			SubscriptionSlots:     2,
-			UsedSlots:             2,
-			RemainingSlots:        0,
-			IsLimitExceeded:       false,
-			HasAvailableGroupSlot: false,
-			HasActiveSubscription: true,
-		})
-	</div>
-	<div>
-		<h3><strong>Over subscription limit</strong></h3>
-		@account.AccountContent(account.AccountData{
-			SubscriptionSlots:     1,
-			UsedSlots:             3,
-			RemainingSlots:        0,
-			IsLimitExceeded:       true,
-			HasAvailableGroupSlot: false,
-			HasActiveSubscription: true,
-		})
+	<div class="dev-subscription-preview">
+	@subscriptionStatusPair("No active subscription", account.AccountData{
+		SubscriptionSlots:     0,
+		UsedSlots:             0,
+		RemainingSlots:        0,
+		IsLimitExceeded:       false,
+		HasAvailableGroupSlot: false,
+		HasActiveSubscription: false,
+		CheckoutQuantity:      1,
+	})
+	@subscriptionStatusPair("No subscription, but has groups", account.AccountData{
+		SubscriptionSlots:     0,
+		UsedSlots:             2,
+		RemainingSlots:        0,
+		IsLimitExceeded:       true,
+		HasAvailableGroupSlot: false,
+		HasActiveSubscription: false,
+		CheckoutQuantity:      2,
+	})
+	@subscriptionStatusPair("No groups yet", account.AccountData{
+		SubscriptionSlots:     3,
+		UsedSlots:             0,
+		RemainingSlots:        3,
+		IsLimitExceeded:       false,
+		HasAvailableGroupSlot: true,
+		HasActiveSubscription: true,
+		CheckoutQuantity:      1,
+	})
+	@subscriptionStatusPair("Has groups, more slots available", account.AccountData{
+		SubscriptionSlots:     3,
+		UsedSlots:             1,
+		RemainingSlots:        2,
+		IsLimitExceeded:       false,
+		HasAvailableGroupSlot: true,
+		HasActiveSubscription: true,
+		CheckoutQuantity:      1,
+	})
+	@subscriptionStatusPair("At subscription limit", account.AccountData{
+		SubscriptionSlots:     2,
+		UsedSlots:             2,
+		RemainingSlots:        0,
+		IsLimitExceeded:       false,
+		HasAvailableGroupSlot: false,
+		HasActiveSubscription: true,
+		CheckoutQuantity:      2,
+	})
+	@subscriptionStatusPair("Over subscription limit", account.AccountData{
+		SubscriptionSlots:     1,
+		UsedSlots:             3,
+		RemainingSlots:        0,
+		IsLimitExceeded:       true,
+		HasAvailableGroupSlot: false,
+		HasActiveSubscription: true,
+		CheckoutQuantity:      3,
+	})
 	</div>
 }

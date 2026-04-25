@@ -173,23 +173,3 @@ func CanCreateEventInGroup(ctx context.Context, groupID string) (bool, AccessSta
 	return true, state, nil
 }
 
-type OwnershipCheckResult struct {
-	Allowed bool
-	Reason  string
-	State   AccessState
-}
-
-func CanReceiveGroupOwnership(ctx context.Context, userID, groupID string) (OwnershipCheckResult, error) {
-	state, err := CurrentAccessState(ctx, userID)
-	if err != nil {
-		return OwnershipCheckResult{}, err
-	}
-	ownedCount, err := CountOwnedGroups(ctx, userID, groupID)
-	if err != nil {
-		return OwnershipCheckResult{}, err
-	}
-	if ownedCount >= state.SubscriptionCount {
-		return OwnershipCheckResult{Allowed: false, Reason: "group_limit", State: state}, nil
-	}
-	return OwnershipCheckResult{Allowed: true, State: state}, nil
-}

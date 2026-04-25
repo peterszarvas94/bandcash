@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	shared "bandcash/models/shared"
+	icons "bandcash/models/shared/icons"
 	ctxi18n "github.com/invopop/ctxi18n/i18n"
 )
 
@@ -15,8 +16,21 @@ templ OverLimitMain(data OverLimitData) {
 templ OverLimitContent(data OverLimitData) {
 	<p><strong>{ fmt.Sprintf(ctxi18n.T(ctx, "account.over_limit_simple_format"), data.OwnedGroups, data.SubscriptionCap) }</strong></p>
 	if data.PaymentsEnabled {
-		<div class="row row-wrap">
-			<a class="btn btn-primary" href="/account/subscription/manage">{ ctxi18n.T(ctx, "account.manage_subscription") }</a>
-		</div>
+		if data.HasActiveSubscription {
+			<div class="row row-wrap">
+				<a class="btn btn-primary" href="/account/subscription/manage">{ ctxi18n.T(ctx, "account.manage_subscription") }</a>
+			</div>
+		} else {
+			<form class="form" action="/account/subscription/manage" method="get">
+				<div class="field">
+					<label for="over-limit-checkout-quantity">{ ctxi18n.T(ctx, "account.group_quantity") }</label>
+					<input id="over-limit-checkout-quantity" class="input" type="number" min="1" step="1" name="quantity" value={ fmt.Sprintf("%d", data.CheckoutQuantity) }/>
+				</div>
+				<button class="btn btn-primary" type="submit">
+					@icons.Icon(icons.IconCreditCard, templ.Attributes{"class": "icon"})
+					<span>{ ctxi18n.T(ctx, "account.start_subscription") }</span>
+				</button>
+			</form>
+		}
 	}
 }

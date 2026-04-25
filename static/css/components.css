@@ -2004,4 +2004,24 @@
   .fielderror {
     color: var(--bg-primary);
   }
+
+  /* /dev: subscription status preview (tools page) */
+  .dev-subscription-preview {
+    .dev-subscription-scenario {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space);
+      margin-bottom: var(--space-lg);
+      &:last-child {
+        margin-bottom: 0;
+      }
+    }
+    .dev-subscription-slot {
+      border: var(--border) solid
+        light-dark(var(--bg-dark), hsl(0 0% 28%));
+      border-radius: var(--radius);
+      padding: var(--space);
+      background: var(--bg-light);
+    }
+  }
 }

@@ -12,6 +12,7 @@ import (
 
 const EnableSignupKey = "enable_signup"
 const EnablePaymentsKey = "enable_payments"
+const AllowBypassLimitForSuperadminKey = "allow_bypass_limit_for_superadmin"
 
 func GetBool(ctx context.Context, key string) (bool, error) {
 	var row db.AppFlag
@@ -66,4 +67,12 @@ func IsPaymentEnabled(ctx context.Context) (bool, error) {
 
 func SetPaymentEnabled(ctx context.Context, enabled bool) error {
 	return UpsertBool(ctx, EnablePaymentsKey, enabled)
+}
+
+func IsBypassLimitForSuperadminEnabled(ctx context.Context) (bool, error) {
+	return GetBool(ctx, AllowBypassLimitForSuperadminKey)
+}
+
+func SetBypassLimitForSuperadminEnabled(ctx context.Context, enabled bool) error {
+	return UpsertBool(ctx, AllowBypassLimitForSuperadminKey, enabled)
 }
