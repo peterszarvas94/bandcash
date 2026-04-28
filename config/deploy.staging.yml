@@ -50,6 +50,7 @@ env:
     - MAILTRAP_PASSWORD
     - LEMON_WEBHOOK_SECRET
     - LEMON_API_KEY
+    - LEMON_CHECKOUT_URL
 
 accessories:
   better-stack:

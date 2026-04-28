@@ -29,6 +29,7 @@ type EnvConfig struct {
 	EmailFrom          string
 	LemonWebhookSecret string
 	LemonAPIKey        string
+	LemonCheckoutURL   string
 }
 
 // DefaultSuperadminEmail is a non-production placeholder; staging and production must set SUPERADMIN_EMAIL.
@@ -78,6 +79,8 @@ type envVars struct {
 	LemonWebhookSecret string `env:"LEMON_WEBHOOK_SECRET"`
 	// LemonAPIKey is used to fetch canonical subscription state from Lemon API.
 	LemonAPIKey string `env:"LEMON_API_KEY" validate:"required_with=LemonWebhookSecret"`
+	// LemonCheckoutURL is the hosted checkout buy URL used for new subscriptions.
+	LemonCheckoutURL string `env:"LEMON_CHECKOUT_URL" validate:"required_if=AppEnv production"`
 }
 
 func Env() *EnvConfig {
@@ -128,6 +131,7 @@ func Env() *EnvConfig {
 			EmailFrom:          parsed.EmailFrom,
 			LemonWebhookSecret: strings.TrimSpace(parsed.LemonWebhookSecret),
 			LemonAPIKey:        strings.TrimSpace(parsed.LemonAPIKey),
+			LemonCheckoutURL:   strings.TrimSpace(parsed.LemonCheckoutURL),
 		}
 	})
 	return envCfg

@@ -89,6 +89,7 @@ fetch_local_secrets_from_1password() {
     MAILTRAP_PASSWORD
     LEMON_WEBHOOK_SECRET
     LEMON_API_KEY
+    LEMON_CHECKOUT_URL
   )
 
   secrets_blob="$(kamal secrets fetch --adapter 1password --account "$op_account" --from "$op_from" "${keys[@]}" 2>/dev/null || true)"

@@ -16,7 +16,7 @@ Dev env loading:
 
 - `mise run dev`, `mise run tunnel-dev`, and `mise run run` can auto-load billing-related secrets from 1Password via `kamal secrets` before starting the server.
 - Set `OP_ACCOUNT` and one of `OP_FROM_LOCALHOST` (preferred for local), `OP_FROM_DEVELOPMENT`, or `OP_FROM` in your shell, then run dev commands normally.
-- Local 1Password entries should include full app env keys (clear + secret), e.g. `APP_ENV`, `PORT`, `URL`, `DB_PATH`, logging keys, `EMAIL_PROVIDER`, `EMAIL_FROM`, Mailtrap SMTP keys (`MAILTRAP_HOST`, `MAILTRAP_PORT`, `MAILTRAP_USERNAME`, `MAILTRAP_PASSWORD`) for sandbox, and Lemon keys (`LEMON_WEBHOOK_SECRET`, `LEMON_API_KEY`).
+- Local 1Password entries should include full app env keys (clear + secret), e.g. `APP_ENV`, `PORT`, `URL`, `DB_PATH`, logging keys, `EMAIL_PROVIDER`, `EMAIL_FROM`, Mailtrap SMTP keys (`MAILTRAP_HOST`, `MAILTRAP_PORT`, `MAILTRAP_USERNAME`, `MAILTRAP_PASSWORD`) for sandbox, and Lemon keys (`LEMON_WEBHOOK_SECRET`, `LEMON_API_KEY`, `LEMON_CHECKOUT_URL`).
 - This avoids storing plaintext local secret files while still enabling local webhook/API billing flows.
 - `mise run tunnel` and `mise run tunnel-dev` expect access to the `bandcash` Cloudflare tunnel token via `cloudflared tunnel token bandcash`.
 - If your managed tunnel has no ingress rule, the `--url http://localhost:2222` fallback keeps local dev routing working.
