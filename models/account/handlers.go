@@ -128,8 +128,7 @@ func ManageSubscription(c echo.Context) error {
 		return c.Redirect(http.StatusFound, "/account")
 	}
 
-	// TODO: move checkout URL to env-only once staging/prod env is set up.
-	checkoutURL := "https://subscriptions.bandcash.app/checkout/buy/d5eda8a8-44ee-46db-812d-cf84370c01ef"
+	checkoutURL := "https://bandcash.lemonsqueezy.com/checkout/buy/d5eda8a8-44ee-46db-812d-cf84370c01ef"
 	separator := "?"
 	if strings.Contains(checkoutURL, "?") {
 		separator = "&"
