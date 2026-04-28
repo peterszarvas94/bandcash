@@ -118,6 +118,15 @@ func dashboardLink(baseURL string) string {
 	return link
 }
 
+func emailLogoURL() string {
+	baseURL := strings.TrimSpace(utils.Env().URL)
+	baseURL = strings.TrimRight(baseURL, "/")
+	if baseURL == "" {
+		return "/static/favicon-light.png"
+	}
+	return baseURL + "/static/favicon-light.png"
+}
+
 func logConstructedURL(kind, locale, link string) {
 	if utils.Env().AppEnv != "development" {
 		return
