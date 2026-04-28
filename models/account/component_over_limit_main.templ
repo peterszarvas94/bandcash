@@ -18,10 +18,10 @@ templ OverLimitContent(data OverLimitData) {
 	if data.PaymentsEnabled {
 		if data.HasActiveSubscription {
 			<div class="row row-wrap">
-				<a class="btn btn-primary" href="/account/subscription/manage">{ ctxi18n.T(ctx, "account.manage_subscription") }</a>
+				<a class="btn btn-primary" href="/account/subscription/manage" target="_blank" rel="noopener noreferrer">{ ctxi18n.T(ctx, "account.manage_subscription") }</a>
 			</div>
 		} else {
-			<form class="form" action="/account/subscription/manage" method="get">
+			<form class="form" action="/account/subscription/manage" method="get" target="_blank">
 				<div class="field">
 					<label for="over-limit-checkout-quantity">{ ctxi18n.T(ctx, "account.group_quantity") }</label>
 					<input id="over-limit-checkout-quantity" class="input" type="number" min="1" step="1" name="quantity" value={ fmt.Sprintf("%d", data.CheckoutQuantity) }/>

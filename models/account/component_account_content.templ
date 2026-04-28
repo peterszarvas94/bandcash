@@ -63,7 +63,7 @@ templ AccountContent(data AccountData) {
 				<span>{ ctxi18n.T(ctx, "account.update_payment") }</span>
 			</a>
 		} else if data.PaymentsEnabled {
-			<form class="form" action="/account/subscription/manage" method="get">
+			<form class="form" action="/account/subscription/manage" method="get" target="_blank">
 				<div class="field">
 					<label for="account-checkout-quantity">{ ctxi18n.T(ctx, "account.group_quantity") }</label>
 					<input id="account-checkout-quantity" class="input" type="number" min="1" step="1" name="quantity" value={ fmt.Sprintf("%d", data.CheckoutQuantity) }/>
